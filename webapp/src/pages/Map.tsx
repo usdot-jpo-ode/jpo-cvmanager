@@ -79,12 +79,7 @@ import {
   FormGroup,
   IconButton,
   Switch,
-  StyledEngineProvider,
   Tooltip,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
   Accordion,
   AccordionSummary,
   AccordionDetails,
@@ -125,6 +120,7 @@ import { headerTabHeight } from '../styles'
 import { toast } from 'react-hot-toast'
 import { RoomOutlined } from '@mui/icons-material'
 import MooveAiHardBrakingLegend from '../components/MooveAiHardBrakingLegend'
+import { PrimaryButton } from '../styles/components/PrimaryButton'
 
 // @ts-ignore: workerClass does not exist in typed mapboxgl
 // eslint-disable-next-line import/no-webpack-loader-syntax
@@ -704,15 +700,13 @@ function MapPage() {
     setDisplayType('online')
   }
 
-  const handleNoneStatus = () => {
-    setDisplayType('none')
-  }
-
   const handleRsuDisplayTypeChange = (event: React.SyntheticEvent) => {
     const target = event.target as HTMLInputElement
     if (target.value === 'online') handleOnlineStatus()
     else if (target.value === 'scms') handleScmsStatus()
-    else if (target.value === 'none') handleNoneStatus()
+    if (!activeLayers.includes('rsu-layer')) {
+      dispatch(toggleLayerActive('rsu-layer'))
+    }
   }
 
   const toggleExpandLayer = (layerId: string) => {
@@ -725,36 +719,6 @@ function MapPage() {
       label: 'RSU Viewer',
       type: 'symbol',
       tag: 'rsu',
-      control: (
-        <>
-          <Typography variant="h6">RSU Status</Typography>
-          <FormControl sx={{ ml: 2, mt: 1 }}>
-            <RadioGroup value={displayType} onChange={handleRsuDisplayTypeChange}>
-              {[
-                { key: 'none', label: 'None' },
-                { key: 'online', label: 'Online Status' },
-                { key: 'scms', label: 'SCMS Status' },
-              ].map((val) => (
-                <FormControlLabel
-                  value={val.key}
-                  sx={{ mt: -1 }}
-                  control={
-                    <Radio
-                      sx={{
-                        color: theme.palette.text.primary,
-                        '&.Mui-checked': {
-                          color: theme.palette.primary.main,
-                        },
-                      }}
-                    />
-                  }
-                  label={val.label}
-                />
-              ))}
-            </RadioGroup>
-          </FormControl>
-        </>
-      ),
     },
     {
       id: 'heatmap-layer',
@@ -789,6 +753,11 @@ function MapPage() {
         'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 10, 1, 13, 0.6, 14, 0],
       },
       tag: 'rsu',
+    },
+    {
+      id: 'msg-viewer-layer',
+      label: 'V2x Message Viewer',
+      type: 'symbol',
     },
     {
       id: 'wzdx-layer',
@@ -870,7 +839,9 @@ function MapPage() {
             dispatch(getWzdxData())
             break
           case 'moove-ai-layer':
-            if (activeLayers.includes('msg-viewer-layer')) dispatch(toggleMapMenuSelection('V2x Message Viewer'))
+            if (activeLayers.includes('msg-viewer-layer')) dispatch(toggleLayerActive('msg-viewer-layer'))
+          case 'msg-viewer-layer':
+            if (activeLayers.includes('moove-ai-layer')) dispatch(toggleLayerActive('moove-ai-layer'))
         }
       }
     }
@@ -892,7 +863,7 @@ function MapPage() {
               )}
               <FormControlLabel
                 onClick={() => toggleLayer(layer.id)}
-                label={layer.label}
+                label={<Typography>{layer.label}</Typography>}
                 control={<Checkbox checked={activeLayers.includes(layer.id)} />}
               />
             </Typography>
@@ -927,201 +898,180 @@ function MapPage() {
 
   return (
     <div className="container">
-      <div className="menu-container">
+      <div className="menu-container map-control-container">
         <Accordion
           style={{ backgroundColor: theme.palette.background.paper }}
           disableGutters={true}
           sx={{ '&.accordion': { marginBottom: 0 } }}
           defaultExpanded
+          elevation={0}
         >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon style={{ color: theme.palette.text.primary }} />}
             aria-controls="panel1-content"
             id="panel1-header"
           >
-            <Typography fontSize="medium" color={theme.palette.text.primary}>
-              Layers
+            <Typography className="accordion-header museo-slab" color={theme.palette.text.primary}>
+              Map Layers
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Legend />
           </AccordionDetails>
         </Accordion>
+        <Divider />
         <Accordion
           style={{ backgroundColor: theme.palette.background.paper }}
           disableGutters={true}
           sx={{ '&.accordion': { marginBottom: 0 } }}
           defaultExpanded
-        >
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon style={{ color: theme.palette.text.primary }} />}
-            aria-controls="panel2-content"
-            id="panel2-header"
-          >
-            <Typography fontSize="medium" color={theme.palette.text.primary}>
-              Map Controls
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <List>
-              <ListItem disablePadding>
-                <ListItemButton
-                  sx={{
-                    backgroundColor: menuSelection.includes('Display Message Counts')
-                      ? theme.palette.custom.mapMenuItemBackgroundSelected
-                      : theme.palette.background.paper,
-                    borderBottom: menuSelection.includes('Display Message Counts')
-                      ? theme.palette.custom.mapMenuItemBorderSelected
-                      : 'none',
-                    ':hover': {
-                      backgroundColor: theme.palette.custom.mapMenuItemHoverUnselected,
-                    },
-                  }}
-                  onClick={() => dispatch(toggleMapMenuSelection('Display Message Counts'))}
-                >
-                  <ListItemText primary="Display Message Counts" />
-                </ListItemButton>
-              </ListItem>
-              <ListItem disablePadding>
-                <ListItemButton
-                  onClick={() => dispatch(toggleMapMenuSelection('Display RSU Status'))}
-                  sx={{
-                    backgroundColor: menuSelection.includes('Display RSU Status')
-                      ? theme.palette.custom.mapMenuItemBackgroundSelected
-                      : theme.palette.background.paper,
-                    borderBottom: menuSelection.includes('Display RSU Status')
-                      ? theme.palette.custom.mapMenuItemBorderSelected
-                      : 'none',
-                    ':hover': {
-                      backgroundColor: theme.palette.custom.mapMenuItemHoverUnselected,
-                    },
-                  }}
-                >
-                  <ListItemText primary="Display RSU Status" />
-                </ListItemButton>
-              </ListItem>
-              <ListItem disablePadding>
-                <ListItemButton
-                  onClick={() => {
-                    dispatch(toggleMapMenuSelection('V2x Message Viewer'))
-                    if (activeLayers.includes('moove-ai-layer')) dispatch(toggleLayerActive('moove-ai-layer'))
-                  }}
-                  sx={{
-                    backgroundColor: menuSelection.includes('V2x Message Viewer')
-                      ? theme.palette.custom.mapMenuItemBackgroundSelected
-                      : theme.palette.background.paper,
-                    borderBottom: menuSelection.includes('V2x Message Viewer')
-                      ? theme.palette.custom.mapMenuItemBorderSelected
-                      : 'none',
-                    ':hover': {
-                      backgroundColor: theme.palette.custom.mapMenuItemHoverUnselected,
-                    },
-                  }}
-                >
-                  <ListItemText primary="Display V2X Message Viewer" />
-                </ListItemButton>
-              </ListItem>
-            </List>
-          </AccordionDetails>
-        </Accordion>
-        <Accordion
-          style={{ backgroundColor: theme.palette.background.paper }}
-          disableGutters={true}
-          sx={{ '&.accordion': { marginBottom: 0 } }}
-          defaultExpanded
+          elevation={0}
         >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon style={{ color: theme.palette.text.primary }} />}
             aria-controls="panel3-content"
             id="panel3-header"
           >
-            <Typography fontSize="medium" color={theme.palette.text.primary}>
+            <Typography className="accordion-header museo-slab" color={theme.palette.text.primary}>
               Filter RSUs
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <ListItem>
-              <FormControl fullWidth>
-                <InputLabel htmlFor="vendor">Vendor</InputLabel>
-                <Select
-                  id="vendor"
-                  label="Vendor"
-                  value={selectedVendor}
-                  defaultValue={selectedVendor}
-                  onChange={(event) => {
-                    const vendor = event.target.value as string
-                    console.log(vendor)
-                    setVendor(vendor)
-                  }}
-                >
-                  {vendorArray.map((vendor) => (
-                    <MenuItem key={vendor} value={vendor}>
-                      {vendor}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </ListItem>
+            <FormControl fullWidth>
+              <InputLabel htmlFor="vendor">Vendor</InputLabel>
+              <Select
+                id="vendor"
+                label="Vendor"
+                value={selectedVendor}
+                defaultValue={selectedVendor}
+                onChange={(event) => {
+                  const vendor = event.target.value as string
+                  console.log(vendor)
+                  setVendor(vendor)
+                }}
+              >
+                {vendorArray.map((vendor) => (
+                  <MenuItem key={vendor} value={vendor}>
+                    <Typography>{vendor}</Typography>
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <Typography sx={{ marginTop: '12px' }}>RSU Status</Typography>
+            <FormControl sx={{ ml: 2, mt: 1 }}>
+              <RadioGroup value={displayType} onChange={handleRsuDisplayTypeChange}>
+                {[
+                  { key: 'online', label: <Typography>Online Status</Typography> },
+                  { key: 'scms', label: <Typography>SCMS Status</Typography> },
+                ].map((val) => (
+                  <FormControlLabel
+                    value={val.key}
+                    sx={{ mt: -1 }}
+                    control={
+                      <Radio
+                        sx={{
+                          color: theme.palette.text.primary,
+                          '&.Mui-checked': {
+                            color: theme.palette.primary.main,
+                          },
+                        }}
+                      />
+                    }
+                    label={val.label}
+                  />
+                ))}
+              </RadioGroup>
+            </FormControl>
           </AccordionDetails>
         </Accordion>
         {SecureStorageManager.getUserRole() === 'admin' && (
-          <Accordion
-            style={{ backgroundColor: theme.palette.background.paper }}
-            disableGutters={true}
-            sx={{ '&.accordion': { marginBottom: 0 } }}
-            defaultExpanded
-          >
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon style={{ color: theme.palette.text.primary }} />}
-              aria-controls="panel3-content"
-              id="panel3-header"
+          <>
+            <Divider />
+            <Accordion
+              style={{ backgroundColor: theme.palette.background.paper }}
+              disableGutters={true}
+              sx={{ '&.accordion': { marginBottom: 0 } }}
+              defaultExpanded
+              elevation={0}
             >
-              <Typography fontSize="medium" color={theme.palette.text.primary}>
-                Configure RSUs
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <FormGroup row className="form-group-row">
-                <FormControlLabel
-                  control={<Switch checked={addConfigPoint} />}
-                  label={'Add Points'}
-                  onChange={(e) => handleButtonToggle(e, 'config')}
-                  sx={{ ml: 1 }}
-                />
-                <Tooltip title="Clear Points">
-                  <IconButton
-                    disabled={configCoordinates.length == 0}
-                    onClick={() => {
-                      dispatch(clearConfig())
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon style={{ color: theme.palette.text.primary }} />}
+                aria-controls="panel3-content"
+                id="panel3-header"
+              >
+                <Typography className="accordion-header museo-slab" color={theme.palette.text.primary}>
+                  RSU Configuration
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <FormGroup row className="form-group-row">
+                  <FormControlLabel
+                    control={<Switch checked={addConfigPoint} />}
+                    label={<Typography>Add Points</Typography>}
+                    onChange={(e) => handleButtonToggle(e, 'config')}
+                    sx={{ ml: 1 }}
+                  />
+                  <Tooltip title="Clear Points">
+                    <IconButton
+                      disabled={configCoordinates.length == 0}
+                      onClick={() => {
+                        dispatch(clearConfig())
+                      }}
+                      size="large"
+                    >
+                      <ClearIcon />
+                    </IconButton>
+                  </Tooltip>
+                </FormGroup>
+                <FormGroup row sx={{ justifyContent: 'center', alignItems: 'center' }}>
+                  <Button
+                    variant="outlined"
+                    color="info"
+                    sx={{
+                      '&.Mui-disabled': {
+                        backgroundColor: alpha(theme.palette.primary.light, 0.5),
+                      },
+                      width: '100%',
                     }}
-                    size="large"
+                    disabled={!(configCoordinates.length > 2 && addConfigPoint)}
+                    onClick={() => {
+                      dispatch(geoRsuQuery(selectedVendor))
+                    }}
+                    className="museo-slab"
                   >
-                    <ClearIcon />
-                  </IconButton>
-                </Tooltip>
-              </FormGroup>
-              <FormGroup row sx={{ justifyContent: 'center', alignItems: 'center' }}>
-                <Button
-                  variant="outlined"
-                  color="info"
-                  sx={{
-                    '&.Mui-disabled': {
-                      backgroundColor: alpha(theme.palette.primary.light, 0.5),
-                    },
-                    width: '100%',
-                  }}
-                  disabled={!(configCoordinates.length > 2 && addConfigPoint)}
-                  onClick={() => {
-                    dispatch(geoRsuQuery(selectedVendor))
-                  }}
-                >
-                  Configure RSUs
-                </Button>
-              </FormGroup>
-            </AccordionDetails>
-          </Accordion>
+                    Configure RSUs
+                  </Button>
+                </FormGroup>
+              </AccordionDetails>
+            </Accordion>
+          </>
         )}
       </div>
+      {/* alrighty...need to add two floating buttons here. */}
+      <PrimaryButton
+        sx={{
+          zIndex: 90,
+          position: 'absolute',
+          top: `${headerTabHeight + 40}px`,
+          right: '30px',
+        }}
+        className="museo-slab"
+        onClick={() => dispatch(toggleMapMenuSelection('Display Message Counts'))}
+      >
+        Message Counts
+      </PrimaryButton>
+      <PrimaryButton
+        sx={{
+          zIndex: 90,
+          position: 'absolute',
+          top: `${headerTabHeight + 40}px`,
+          right: '210px',
+        }}
+        className="museo-slab"
+        onClick={() => dispatch(toggleMapMenuSelection('Display RSU Status'))}
+      >
+        Display RSU Status
+      </PrimaryButton>
       <Container
         fluid={true}
         style={{
@@ -1390,7 +1340,6 @@ function MapPage() {
             <Popup
               latitude={selectedRsu.geometry.coordinates[1]}
               longitude={selectedRsu.geometry.coordinates[0]}
-              className="test-popup"
               onClose={() => {
                 if (pageOpen) {
                   dispatch(selectRsu(null))
@@ -1405,7 +1354,7 @@ function MapPage() {
                 columnSpacing={0.5}
                 rowSpacing={0}
                 sx={{
-                  color: theme.palette.text.primary,
+                  color: theme.palette.text.secondary,
                   backgroundColor: theme.palette.background.paper,
                   width: '100%',
                 }}
@@ -1414,11 +1363,11 @@ function MapPage() {
                   <RoomOutlined color="info" fontSize="medium" />
                 </Grid2>
                 <Grid2 size={5}>
-                  <Typography fontSize="Medium">
+                  <Typography fontSize="Medium" color={theme.palette.text.primary} className="museo-slab">
                     {selectedRsu.properties.primary_route} Milepost {selectedRsu.properties.milepost}
-                  </Typography>{' '}
+                  </Typography>
                 </Grid2>
-                <Grid2 size={2} justifyContent="flex-start">
+                <Grid2 size={6} justifyContent="flex-start">
                   <Box
                     style={{
                       color: theme.palette.text.primary,
@@ -1435,9 +1384,7 @@ function MapPage() {
                     <Typography fontSize="medium">{getStatus()}</Typography>
                   </Box>
                 </Grid2>
-                <Grid2 size={4} />
-                <Grid2 size={1} />
-                <Grid2 size={4} justifyContent="flex-start">
+                <Grid2 size={4} justifyContent="flex-start" sx={{ ml: '25px' }}>
                   <Typography fontSize="small">{rsuIpv4}</Typography>
                 </Grid2>
               </Grid2>
@@ -1448,7 +1395,7 @@ function MapPage() {
                 columnSpacing={1}
                 rowSpacing={0}
                 sx={{
-                  color: theme.palette.text.primary,
+                  color: theme.palette.text.secondary,
                   backgroundColor: theme.palette.background.default,
                   width: '350px',
                   height: '140px',
@@ -1458,23 +1405,26 @@ function MapPage() {
                   paddingTop: '10px',
                 }}
               >
-                <Grid2 size={1} />
-                <Grid2 size={4} justifyContent="center">
-                  <Typography fontSize="medium">{countsMsgType} Counts:</Typography>
+                <Grid2 size={5} justifyContent="flex-start">
+                  <Typography fontSize="medium" sx={{ ml: '16px' }}>
+                    {countsMsgType} Counts:
+                  </Typography>
                 </Grid2>
-                <Grid2 size={7} justifyContent="flex-start">
+                <Grid2 size={6} justifyContent="flex-start">
                   <Typography fontSize="medium">{selectedRsuCount}</Typography>
                 </Grid2>
-                <Grid2 size={1} />
-                <Grid2 size={4} justifyContent="center">
-                  <Typography fontSize="medium">Last Online:</Typography>
+                <Grid2 size={5} justifyContent="flex-start">
+                  <Typography fontSize="medium" sx={{ ml: '16px' }}>
+                    Last Online:
+                  </Typography>
                 </Grid2>
-                <Grid2 size={7} justifyContent="flex-start">
+                <Grid2 size={6} justifyContent="flex-start">
                   <Typography fontSize="medium">{isOnline()}</Typography>
                 </Grid2>
-                <Grid2 size={1} />
-                <Grid2 size={4} justifyContent="center">
-                  <Typography fontSize="medium">SCMS Health:</Typography>
+                <Grid2 size={5} justifyContent="flex-start">
+                  <Typography fontSize="medium" sx={{ ml: '16px' }}>
+                    SCMS Health:
+                  </Typography>
                 </Grid2>
                 <Grid2 size={6} justifyContent="flex-start">
                   {rsuIpv4 in issScmsStatusData && issScmsStatusData[rsuIpv4] ? (
@@ -1504,7 +1454,6 @@ function MapPage() {
                       <Typography fontSize="medium">RSU is not enrolled with ISS SCMS</Typography>
                     </>
                   )}
-                  <Grid2 size={1} />
                 </Grid2>
               </Grid2>
               <Box
@@ -1514,12 +1463,13 @@ function MapPage() {
                   left: '0px',
                   width: '350px',
                   height: '40px',
-                  color: theme.palette.text.primary,
+                  color: theme.palette.text.secondary,
                   backgroundColor: theme.palette.background.default,
+                  borderRadius: '4px',
                 }}
               >
                 <Divider />
-                <Typography fontSize="small" sx={{ margin: '10px 0px 0px 30px' }}>
+                <Typography fontSize="small" sx={{ margin: '10px 0px 0px 16px' }}>
                   {selectedRsu.properties.manufacturer_name} #
                   {selectedRsu.properties.serial_number ? selectedRsu.properties.serial_number : 'Unknown'}
                 </Typography>
@@ -1606,6 +1556,7 @@ function MapPage() {
                   top: '10px',
                   left: '10px',
                 }}
+                className="museo-slab"
               >
                 Add Point
               </Button>
@@ -1621,25 +1572,34 @@ function MapPage() {
                 onClick={(e) => {
                   dispatch(clearGeoMsg())
                 }}
+                className="museo-slab"
               >
                 Clear
               </Button>
             </div>
-            <div style={{ marginBottom: 15, marginLeft: 15 }}>
-              <Select
-                placeholder="Select Message Type"
-                className="selectContainer"
-                value={geoMsgType}
-                onChange={(event) => dispatch(changeGeoMsgType(event.target.value))}
-              >
-                {messageTypeOptions.map((option) => {
-                  return (
-                    <MenuItem value={option.value} key={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  )
-                })}
-              </Select>
+            <div
+              style={{
+                marginBottom: '12px',
+              }}
+            >
+              <FormControl fullWidth>
+                <InputLabel htmlFor="message-type">Message Type</InputLabel>
+                <Select
+                  id="message-type"
+                  label="Message Type"
+                  value={geoMsgType}
+                  sx={{ width: '100%' }}
+                  onChange={(event) => dispatch(changeGeoMsgType(event.target.value))}
+                >
+                  {messageTypeOptions.map((option) => {
+                    return (
+                      <MenuItem value={option.value} key={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    )
+                  })}
+                </Select>
+              </FormControl>
             </div>
             <div style={{ marginBottom: 15 }}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -1670,7 +1630,7 @@ function MapPage() {
                 />
               </LocalizationProvider>
             </div>
-            <div style={{ marginBottom: 15 }} className="submitContainer">
+            <div>
               <Button
                 variant="contained"
                 size="small"
@@ -1681,6 +1641,7 @@ function MapPage() {
                     toast.error('Please complete the polygon (double click to close) before submitting')
                   }
                 }}
+                className="museo-slab"
               >
                 Submit
               </Button>
@@ -1719,10 +1680,16 @@ function MapPage() {
             style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}
           >
             <div className="buttonContainer" style={{ marginBottom: 15 }}>
-              <Button variant="contained" size="small" onClick={(e) => handleButtonToggle(e, 'mooveai')}>
+              <Button
+                className="museo-slab"
+                variant="contained"
+                size="small"
+                onClick={(e) => handleButtonToggle(e, 'mooveai')}
+              >
                 Add Point
               </Button>
               <Button
+                className="museo-slab"
                 variant="contained"
                 size="small"
                 onClick={(e) => {
@@ -1739,6 +1706,7 @@ function MapPage() {
             </div>
             <div style={{ marginBottom: 5 }} className="submitContainer">
               <Button
+                className="museo-slab"
                 variant="contained"
                 size="small"
                 onClick={(e) => {

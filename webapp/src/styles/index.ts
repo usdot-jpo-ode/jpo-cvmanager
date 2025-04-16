@@ -138,9 +138,24 @@ const themeMainLight = createTheme({
 const themeMainDark = createTheme({
   cssVariables: true,
   typography: {
-    fontFamily: '"museo-slab", Arial, Helvetica, sans-serif',
-    body2: {
-      fontFamily: '"Trebuchet MS", Arial, Helvetica, sans-serif',
+    fontFamily: '"Trebuchet MS", Arial, Helvetica, sans-serif',
+    h1: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h2: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h3: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h4: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h5: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h6: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
     },
   },
   components: {

@@ -156,7 +156,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                                     <input
                                       checked=""
                                       class="PrivateSwitchBase-input css-j8yymo"
-                                      name="mui-8"
+                                      name="mui-5"
                                       type="radio"
                                       value="none"
                                     />
@@ -201,7 +201,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                                   >
                                     <input
                                       class="PrivateSwitchBase-input css-j8yymo"
-                                      name="mui-8"
+                                      name="mui-5"
                                       type="radio"
                                       value="online"
                                     />
@@ -246,7 +246,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                                   >
                                     <input
                                       class="PrivateSwitchBase-input css-j8yymo"
-                                      name="mui-8"
+                                      name="mui-5"
                                       type="radio"
                                       value="scms"
                                     />
@@ -863,7 +863,7 @@ exports[`snapshot bsmData clicked 1`] = `
                                     <input
                                       checked=""
                                       class="PrivateSwitchBase-input css-j8yymo"
-                                      name="mui-11"
+                                      name="mui-8"
                                       type="radio"
                                       value="none"
                                     />
@@ -908,7 +908,7 @@ exports[`snapshot bsmData clicked 1`] = `
                                   >
                                     <input
                                       class="PrivateSwitchBase-input css-j8yymo"
-                                      name="mui-11"
+                                      name="mui-8"
                                       type="radio"
                                       value="online"
                                     />
@@ -953,7 +953,7 @@ exports[`snapshot bsmData clicked 1`] = `
                                   >
                                     <input
                                       class="PrivateSwitchBase-input css-j8yymo"
-                                      name="mui-11"
+                                      name="mui-8"
                                       type="radio"
                                       value="scms"
                                     />

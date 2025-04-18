@@ -17,14 +17,21 @@ import {
   selectMessageLoading,
   updateMessageType,
 } from '../../generalSlices/rsuSlice'
-import { selectCurrentSort, selectSortedCountList, sortCountList, changeDate } from './menuSlice'
+import {
+  selectCurrentSort,
+  selectSortedCountList,
+  sortCountList,
+  changeDate,
+  toggleMapMenuSelection,
+} from './menuSlice'
 
 import '../../components/css/SnmpwalkMenu.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { CountsListElement } from '../../models/Rsu'
 import { MessageType } from '../../models/MessageTypes'
-import { FormControl, InputLabel, MenuItem, Select, Typography, useTheme } from '@mui/material'
+import { Box, FormControl, InputLabel, MenuItem, Paper, Select, Stack, Typography, useTheme } from '@mui/material'
+import { SideBarHeader } from '../../styles/components/SideBarHeader'
 
 const messageTypeOptions = EnvironmentVars.getMessageTypes().map((type) => {
   return { value: type, label: type }
@@ -58,9 +65,7 @@ const DisplayCounts = () => {
       >
         Warning: time ranges greater than 24 hours may have longer load times.
       </Typography>
-    ) : (
-      <span></span>
-    )
+    ) : null
 
   const sortBy = (key: string) => {
     dispatch(sortCountList(key, currentSort, countList))
@@ -114,20 +119,13 @@ const DisplayCounts = () => {
     return rows.map((rowData) => <Row {...rowData} />)
   }
   return (
-    <div>
-      <div id="container" className="sideBarOn">
-        <Typography
-          fontSize="medium"
-          style={{
-            position: 'absolute',
-            top: '10px',
-            left: '10px',
-          }}
-        >
-          Message Counts
-        </Typography>
-        <div style={{ marginTop: '60px' }} />
-        <div style={{ marginBottom: '20px', width: '100%', display: 'flex', justifyContent: 'center' }}>
+    <Paper sx={{ pb: 1, pl: 1, pr: 1 }}>
+      <SideBarHeader
+        onClick={() => dispatch(toggleMapMenuSelection('Display Message Counts'))}
+        title="Message Counts"
+      />
+      <Stack direction="column" spacing={2}>
+        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateTimePicker
               sx={{ width: '90%' }}
@@ -140,8 +138,8 @@ const DisplayCounts = () => {
               }}
             />
           </LocalizationProvider>
-        </div>
-        <div style={{ marginBottom: '20px', width: '100%', display: 'flex', justifyContent: 'center' }}>
+        </Box>
+        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateTimePicker
               sx={{ width: '90%' }}
@@ -155,8 +153,8 @@ const DisplayCounts = () => {
               }}
             />
           </LocalizationProvider>
-        </div>
-        <div style={{ marginBottom: '20px', width: '100%', display: 'flex', justifyContent: 'center' }}>
+        </Box>
+        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
           <FormControl sx={{ width: '90%' }}>
             <InputLabel htmlFor="counts-msg-dropdown">Message Type</InputLabel>
             <Select
@@ -177,11 +175,11 @@ const DisplayCounts = () => {
               })}
             </Select>
           </FormControl>
-        </div>
+        </Box>
         {getWarningMessage(warning)}
         {getTable(messageLoading, sortedCountList)}
-      </div>
-    </div>
+      </Stack>
+    </Paper>
   )
 }
 const Row = ({ rsu, road, count }: { rsu: string; road: string; count: number }) => {

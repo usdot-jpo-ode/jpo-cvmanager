@@ -93,68 +93,60 @@ const ConfigureRSU = () => {
           }}
         >
           <Accordion
-            className="accordion-content"
             expanded={expanded === 'selected-rsu-current-config'}
             onChange={handleChange('selected-rsu-current-config')}
+            elevation={0}
           >
             <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1bh-content" id="panel1bh-header">
               <Typography>Current Configuration</Typography>
             </AccordionSummary>
-            <Accordion>
-              <AccordionDetails>
-                <ConfigMenu>
-                  <SnmpwalkMenu />
-                </ConfigMenu>
-              </AccordionDetails>
-            </Accordion>
+            <AccordionDetails>
+              <ConfigMenu>
+                <SnmpwalkMenu />
+              </ConfigMenu>
+            </AccordionDetails>
           </Accordion>
           <Accordion
-            className="accordion-content"
+            elevation={0}
             expanded={expanded === 'selected-rsu-add-msg-forwarding'}
             onChange={handleChange('selected-rsu-add-msg-forwarding')}
           >
             <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel2bh-content" id="panel2bh-header">
               <Typography>Message Forwarding</Typography>
             </AccordionSummary>
-            <Accordion>
-              <AccordionDetails>
-                <ConfigMenu>
-                  <SnmpsetMenu type="single_rsu" rsuIpList={[selectedRsu.properties.ipv4_address]} />
-                </ConfigMenu>
-              </AccordionDetails>
-            </Accordion>
+            <AccordionDetails>
+              <ConfigMenu>
+                <SnmpsetMenu type="single_rsu" rsuIpList={[selectedRsu.properties.ipv4_address]} />
+              </ConfigMenu>
+            </AccordionDetails>
           </Accordion>
           <Accordion
-            className="accordion-content"
+            elevation={0}
             expanded={expanded === 'selected-rsu-firmware'}
             onChange={handleChange('selected-rsu-firmware')}
           >
             <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel3bh-content" id="panel3bh-header">
               <Typography>Firmware</Typography>
             </AccordionSummary>
-            <Accordion>
-              <AccordionDetails>
-                <ConfigMenu>
-                  <RsuFirmwareMenu type="single_rsu" rsuIpList={[selectedRsu.properties.ipv4_address]} />
-                </ConfigMenu>
-              </AccordionDetails>
-            </Accordion>
+            <AccordionDetails>
+              <ConfigMenu>
+                <RsuFirmwareMenu type="single_rsu" rsuIpList={[selectedRsu.properties.ipv4_address]} />
+              </ConfigMenu>
+            </AccordionDetails>
           </Accordion>
           <Accordion
-            className="accordion-content"
+            elevation={0}
             expanded={expanded === 'selected-rsu-reboot'}
             onChange={handleChange('selected-rsu-reboot')}
           >
             <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel3bh-content" id="panel3bh-header">
               <Typography>Reboot</Typography>
             </AccordionSummary>
-            <Accordion>
-              <AccordionDetails>
-                <ConfigMenu>
-                  <RsuRebootMenu />
-                </ConfigMenu>
-              </AccordionDetails>
-            </Accordion>
+            <AccordionDetails>
+              <ConfigMenu>
+                <RsuRebootMenu />
+              </ConfigMenu>
+            </AccordionDetails>
           </Accordion>
         </Box>
       )}
@@ -188,7 +180,7 @@ const ConfigureRSU = () => {
           }}
         >
           <Accordion
-            className="accordion-content"
+            elevation={0}
             expanded={expanded === 'multiple-rsu-add-msg-forwarding'}
             onChange={handleChange('multiple-rsu-add-msg-forwarding')}
           >
@@ -204,7 +196,7 @@ const ConfigureRSU = () => {
             </Accordion>
           </Accordion>
           <Accordion
-            className="accordion-content"
+            elevation={0}
             expanded={expanded === 'multiple-rsu-firmware'}
             onChange={handleChange('multiple-rsu-firmware')}
           >

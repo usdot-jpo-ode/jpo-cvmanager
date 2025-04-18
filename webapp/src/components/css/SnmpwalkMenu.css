@@ -1,35 +1,10 @@
 @import 'https://use.typekit.net/ioz0eth.css';
 
-.snmpheader {
-  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
-  font-size: xx-large;
-  font-weight: 550;
-  margin-top: 15px;
-  margin-left: 15px;
-  margin-bottom: 5px;
-  display: inline-block;
-  margin-right: 4em;
-}
-
-.header-container {
-  display: flex;
-  align-items: center;
-}
-
 .snmpheader2 {
-  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
   font-size: large;
   font-weight: 450;
   margin-bottom: 20px;
   margin-left: 15px;
-}
-
-.firmwareHeader {
-  font-size: x-large;
-  font-weight: 550;
-  margin-bottom: 12px;
-  display: inline-block;
-  margin-right: 4em;
 }
 
 #snmptxheader {
@@ -48,28 +23,6 @@
 
 #snmpform {
   margin-bottom: 20px;
-}
-
-#snmplabel {
-  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
-  display: block;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-#snmpinput {
-  margin-left: 20px;
-}
-
-#snmpdropdown {
-  margin-left: 20px;
-  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
-}
-
-#snmpfiltertext {
-  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
-  margin-top: 30px;
-  margin-bottom: 15px;
 }
 
 #msgfwddiv {

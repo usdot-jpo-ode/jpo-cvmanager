@@ -143,7 +143,6 @@ function MapPage() {
   const issScmsStatusData = useSelector(selectIssScmsStatusData)
   const rsuOnlineStatus = useSelector(selectRsuOnlineStatus)
   const rsuIpv4 = useSelector(selectRsuIpv4)
-  const displayMap = useSelector(selectDisplayMap)
   const addConfigPoint = useSelector(selectAddConfigPoint)
   const configCoordinates = useSelector(selectConfigCoordinates)
   const geoMsgType = useSelector(selectGeoMsgType)
@@ -155,7 +154,6 @@ function MapPage() {
   const addGeoMsgPoint = useSelector(selectAddGeoMsgPoint)
   const startGeoMsgDate = useSelector(selectGeoMsgStart)
   const endGeoMsgDate = useSelector(selectGeoMsgEnd)
-  const msgViewerDateError = useSelector(selectGeoMsgDateError)
 
   const filter = useSelector(selectGeoMsgFilter)
   const filterStep = useSelector(selectGeoMsgFilterStep)
@@ -179,10 +177,7 @@ function MapPage() {
 
   // RSU layer local state variables
   const [selectedRsuCount, setSelectedRsuCount] = useState(null)
-  const [displayType, setDisplayType] = useState('none')
-
-  // Menu local state variable
-  const [displayMenu, setDisplayMenu] = useState(false)
+  const [displayType, setDisplayType] = useState('online')
 
   // Add these new state variables near the other source states
   const [previewPoint, setPreviewPoint] = useState<GeoJSON.Feature<GeoJSON.Point> | null>(null)
@@ -1051,8 +1046,8 @@ function MapPage() {
         sx={{
           zIndex: 90,
           position: 'absolute',
-          top: `${headerTabHeight + 40}px`,
-          right: '30px',
+          top: `${headerTabHeight + 25}px`,
+          right: '25px',
         }}
         className="museo-slab"
         onClick={() => dispatch(toggleMapMenuSelection('Display Message Counts'))}
@@ -1063,7 +1058,7 @@ function MapPage() {
         sx={{
           zIndex: 90,
           position: 'absolute',
-          top: `${headerTabHeight + 40}px`,
+          top: `${headerTabHeight + 25}px`,
           right: '210px',
         }}
         className="museo-slab"

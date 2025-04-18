@@ -65,9 +65,9 @@ declare -A OdeRawEncodedTIMJson=([name]="topic.OdeRawEncodedTIMJson" [collection
 ############################################################################################### 
 
 # Record Events
-declare -A CmStopLinePassageEvent=([name]="topic.CmStopLinePassageEvent" [collection]="CmStopLinePassageEvent"
+declare -A CmSignalStateEvent=([name]="topic.CmSignalStateEvent" [collection]="CmSignalStateEvent"
     [convert_timestamp]=true [timefield]="eventGeneratedAt" [use_key]=false [key]="" [add_timestamp]=false)
-declare -A CmStopLineStopEvent=([name]="topic.CmStopLineStopEvent" [collection]="CmStopLineStopEvent"
+declare -A CmSignalStateStopEvent=([name]="topic.CmSignalStateStopEvent" [collection]="CmSignalStateStopEvent"
     [convert_timestamp]=true [timefield]="eventGeneratedAt" [use_key]=false [key]="" [add_timestamp]=false)
 declare -A CmSignalStateConflictEvents=([name]="topic.CmSignalStateConflictEvents" [collection]="CmSignalStateConflictEvents"
     [convert_timestamp]=true [timefield]="eventGeneratedAt" [use_key]=false [key]="" [add_timestamp]=false)
@@ -232,8 +232,8 @@ createSink OdeTimBroadcastJson
 createSink OdeTIMCertExpirationTimeJson
 createSink OdeRawEncodedTIMJson
 
-createSink CmStopLinePassageEvent
-createSink CmStopLineStopEvent
+createSink CmSignalStateEvent
+createSink CmSignalStateStopEvent
 createSink CmSignalStateConflictEvents
 createSink CmIntersectionReferenceAlignmentEvents
 createSink CmSignalGroupAlignmentEvents

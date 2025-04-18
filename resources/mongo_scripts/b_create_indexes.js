@@ -176,13 +176,13 @@ const collections = [
 
   // Conflict Monitor Events
   {
-    name: 'CmStopLineStopEvent',
+    name: 'CmSignalStateStopEvent',
     ttlField: 'eventGeneratedAt',
     timeField: 'eventGeneratedAt',
     intersectionField: 'intersectionID',
   },
   {
-    name: 'CmStopLinePassageEvent',
+    name: 'CmSignalStateEvent',
     ttlField: 'eventGeneratedAt',
     timeField: 'eventGeneratedAt',
     intersectionField: 'intersectionID',

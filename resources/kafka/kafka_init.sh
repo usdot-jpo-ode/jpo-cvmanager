@@ -53,10 +53,10 @@ echo 'Creating kafka topics'
 /opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.CmSpatMinimumDataEvents" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
 /opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.CmSpatTimeChangeDetailsEvent" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
 /opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.CmSpatTimeChangeDetailsNotification" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
-/opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.CmStopLinePassageEvent" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
+/opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.CmSignalStateEvent" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
 /opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.CmStopLinePassageNotification" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
 /opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.CmStopLineStopAssessment" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
-/opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.CmStopLineStopEvent" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
+/opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.CmSignalStateStopEvent" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
 /opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.CmStopLineStopNotification" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
 /opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.DeduplicatedOdeMapJson" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
 /opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.DeduplicatedOdeTimJson" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1

@@ -26,7 +26,7 @@ public class SignalStateStopEventRepositoryImpl implements SignalStateStopEventR
     private final MongoTemplate mongoTemplate;
     private final ConflictMonitorApiProperties props;
 
-    private final String collectionName = "CmStopLineStopEvent";
+    private final String collectionName = "CmSignalStateStopEvent";
 
     @Autowired
     public SignalStateStopEventRepositoryImpl(MongoTemplate mongoTemplate,

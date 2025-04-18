@@ -125,6 +125,7 @@ def test_download_blob_not_supported(mock_Path, mock_download_gcp_blob, mock_log
         mock_logging.error.assert_called_with("Unsupported blob storage provider")
 
 
+@patch.dict("os.environ", {"UPGRADE_SCHEDULER_ENDPOINT": "http://test-endpoint"})
 @patch("addons.images.firmware_manager.upgrade_runner.upgrader.logging")
 @patch("addons.images.firmware_manager.upgrade_runner.upgrader.requests")
 def test_notify_firmware_manager_success(mock_requests, mock_logging):
@@ -132,7 +133,7 @@ def test_notify_firmware_manager_success(mock_requests, mock_logging):
 
     test_upgrader.notify_firmware_manager(success=True)
 
-    expected_url = "http://127.0.0.1:8080/firmware_upgrade_completed"
+    expected_url = "http://test-endpoint/firmware_upgrade_completed"
     expected_body = {"rsu_ip": "8.8.8.8", "status": "success"}
     mock_logging.info.assert_called_with(
         "Firmware upgrade script completed for 8.8.8.8 with status: success"
@@ -141,6 +142,7 @@ def test_notify_firmware_manager_success(mock_requests, mock_logging):
     mock_requests.post.assert_called_with(expected_url, json=expected_body)
 
 
+@patch.dict("os.environ", {"UPGRADE_SCHEDULER_ENDPOINT": "http://test-endpoint"})
 @patch("addons.images.firmware_manager.upgrade_runner.upgrader.logging")
 @patch("addons.images.firmware_manager.upgrade_runner.upgrader.requests")
 def test_notify_firmware_manager_fail(mock_requests, mock_logging):
@@ -148,7 +150,7 @@ def test_notify_firmware_manager_fail(mock_requests, mock_logging):
 
     test_upgrader.notify_firmware_manager(success=False)
 
-    expected_url = "http://127.0.0.1:8080/firmware_upgrade_completed"
+    expected_url = "http://test-endpoint/firmware_upgrade_completed"
     expected_body = {"rsu_ip": "8.8.8.8", "status": "fail"}
     mock_logging.info.assert_called_with(
         "Firmware upgrade script completed for 8.8.8.8 with status: fail"

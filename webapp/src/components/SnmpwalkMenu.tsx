@@ -17,7 +17,7 @@ import {
   deleteSnmpSet,
 } from '../generalSlices/configSlice'
 import { IconButton, Tooltip } from '@mui/material'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 import toast from 'react-hot-toast'
 

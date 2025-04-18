@@ -15,15 +15,6 @@
   margin-right: 10px;
 }
 
-.rsu-status-div {
-  z-index: 90;
-  border-radius: 15px;
-  position: absolute;
-  top: 175px;
-  left: 310px;
-  padding: 10px;
-}
-
 .form-dropdown {
   width: 100%;
 }
@@ -63,11 +54,11 @@
   z-index: 90;
   background: #3d3d3d;
   position: absolute;
-  top: 175px;
+  top: 144px;
   max-height: calc(100% - 205px);
   overflow-y: auto;
   scrollbar-color: var(--mui-palette-text-primary) var(--mui-palette-background-paper);
-  left: 30px;
+  left: 25px;
 }
 
 .map-control-container {
@@ -77,7 +68,7 @@
 .map-control-right-aligned {
   position: absolute;
   z-index: 90;
-  right: 30px;
+  right: 25px;
 }
 
 .accordion-header {

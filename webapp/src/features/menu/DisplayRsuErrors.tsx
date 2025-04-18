@@ -9,15 +9,17 @@ import MaterialTable, { Action } from '@material-table/core'
 import { RootState } from '../../store'
 import { selectRsuOnlineStatus, selectIssScmsStatusData } from '../../generalSlices/rsuSlice'
 
-import { ArrowBackIos, GpsFixedSharp } from '@mui/icons-material'
+import { GpsFixedSharp } from '@mui/icons-material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 import AdminTable from '../../components/AdminTable'
 import { setMapViewState } from '../../pages/mapSlice'
-import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Typography, useTheme } from '@mui/material'
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Stack, Typography, useTheme } from '@mui/material'
 import RsuErrorSummary from '../../components/RsuErrorSummary'
 import { RsuInfo } from '../../models/RsuApi'
 import { useReactToPrint } from 'react-to-print'
+import { SideBarHeader } from '../../styles/components/SideBarHeader'
+import { toggleMapMenuSelection } from './menuSlice'
 
 const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo }) => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -169,33 +171,15 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
   return (
     <div style={containerStyle}>
       {selectedRSU !== undefined ? (
-        <div
-          id="container"
-          className="sideBarOn"
-          style={{
-            width: '95%',
-            display: 'block',
-          }}
-        >
-          <h1 className="h1" style={{ marginBottom: '1rem', width: '100%', textAlign: 'center' }}>
-            {selectedRSU.properties.ipv4_address} Status
-          </h1>
-          <ArrowBackIos
-            style={{
-              position: 'absolute',
-              top: '1px',
-              left: '0.5rem',
-              margin: '1rem',
-              borderRadius: '50%',
-              zIndex: 90,
-              cursor: 'pointer',
-            }}
+        <Stack direction="column" spacing={2} sx={{ pl: 1, pr: 1, width: '100%' }}>
+          <SideBarHeader
             onClick={() => {
               setSelectedRSU(undefined)
             }}
+            title={selectedRSU.properties.ipv4_address + ' Status'}
           />
-          <div id="sideBarBlock" className="accordion">
-            <Accordion>
+          <div className="accordion">
+            <Accordion elevation={0}>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography>Online Status</Typography>
               </AccordionSummary>
@@ -213,7 +197,7 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
                 </div>
               </AccordionDetails>
             </Accordion>
-            <Accordion>
+            <Accordion elevation={0}>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography>SCMS Status</Typography>
               </AccordionSummary>
@@ -232,13 +216,14 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
               </AccordionDetails>
             </Accordion>
           </div>
-          <div style={{ display: 'flex', alignContent: 'center', justifyContent: 'center', flexDirection: 'row' }}>
+          <div style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', flexDirection: 'row' }}>
             <Button
               variant="contained"
               style={{ margin: '1rem' }}
               onClick={() => {
                 setEmailHidden(false)
               }}
+              className="museo-slab"
             >
               Generate Error Summary Email
             </Button>
@@ -255,20 +240,10 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
             hidden={emailHidden}
             setHidden={setHidden}
           />
-        </div>
+        </Stack>
       ) : (
-        <div id="container" className="sideBarOn" style={{ width: '95%', display: 'block' }}>
-          <Typography
-            fontSize="medium"
-            style={{
-              position: 'absolute',
-              top: '10px',
-              left: '10px',
-            }}
-          >
-            RSU Status
-          </Typography>
-          <div style={{ marginTop: '60px' }} />
+        <Stack direction="column" spacing={2} sx={{ pl: 1, pr: 1 }}>
+          <SideBarHeader onClick={() => dispatch(toggleMapMenuSelection('Display RSU Status'))} title="RSU Status" />
           <AdminTable
             actions={tableActions}
             columns={[
@@ -353,7 +328,7 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
             tableLayout="auto"
             pageSizeOptions={[]}
           />
-        </div>
+        </Stack>
       )}
       <div style={{ display: 'none' }}>
         <div

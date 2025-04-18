@@ -22,8 +22,8 @@ const menuStyle: React.CSSProperties = {
   zIndex: 90,
   maxHeight: `calc(100vh - ${headerTabHeight + 80}px)`,
   height: 'fit-content',
-  top: `${headerTabHeight + 90}px`,
-  right: '30px',
+  top: `${headerTabHeight + 91}px`,
+  right: '25px',
   borderRadius: '4px',
 }
 

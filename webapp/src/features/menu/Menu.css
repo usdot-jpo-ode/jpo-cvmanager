@@ -58,9 +58,6 @@
   display: none;
 }
 
-.sideBarOn {
-  display: block;
-}
 .visibleProp {
   visibility: visible;
 }

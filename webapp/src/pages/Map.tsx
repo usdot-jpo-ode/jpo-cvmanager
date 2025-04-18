@@ -1059,7 +1059,7 @@ function MapPage() {
           zIndex: 90,
           position: 'absolute',
           top: `${headerTabHeight + 25}px`,
-          right: '210px',
+          right: '215px',
         }}
         className="museo-slab"
         onClick={() => dispatch(toggleMapMenuSelection('Display RSU Status'))}

@@ -96,7 +96,23 @@ const DisplayCounts = () => {
         <div className="body">{formatRows(sortedCountList)}</div>
       </div>
     )
-  const formatRows = (rows: CountsListElement[]) => rows.map((rowData) => <Row {...rowData} />)
+  const formatRows = (rows: CountsListElement[]) => {
+    if (rows.length === 0) {
+      return (
+        <div className="row">
+          <div
+            style={{
+              gridColumn: '1 / span 3',
+              textAlign: 'center',
+            }}
+          >
+            <Typography>No data found for the selected range</Typography>
+          </div>
+        </div>
+      )
+    }
+    return rows.map((rowData) => <Row {...rowData} />)
+  }
   return (
     <div>
       <div id="container" className="sideBarOn">
@@ -172,9 +188,9 @@ const Row = ({ rsu, road, count }: { rsu: string; road: string; count: number })
   const theme = useTheme()
   return (
     <div className="row">
-      <div style={{ border: `1px solid ${theme.palette.text.primary}` }}>{rsu}</div>
-      <div style={{ border: `1px solid ${theme.palette.text.primary}` }}>{road}</div>
-      <div style={{ border: `1px solid ${theme.palette.text.primary}` }}>{count}</div>
+      <div style={{ borderBottom: `1px solid ${theme.palette.text.primary}` }}>{rsu}</div>
+      <div style={{ borderBottom: `1px solid ${theme.palette.text.primary}` }}>{road}</div>
+      <div style={{ borderBottom: `1px solid ${theme.palette.text.primary}` }}>{count}</div>
     </div>
   )
 }

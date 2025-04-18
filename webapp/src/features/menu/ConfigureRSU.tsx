@@ -12,11 +12,9 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Typography from '@mui/material/Typography'
 import { selectSelectedRsu, selectRsu } from '../../generalSlices/rsuSlice'
 import { clearConfig, selectConfigList } from '../../generalSlices/configSlice'
-
 import '../../components/css/SnmpwalkMenu.css'
 import { RootState } from '../../store'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-
 import { PositionedToggleIconButton } from '../../styles/components/PositionedToggleButton'
 import CloseIcon from '@mui/icons-material/Close'
 

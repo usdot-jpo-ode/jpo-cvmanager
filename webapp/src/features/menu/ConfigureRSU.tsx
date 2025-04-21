@@ -7,7 +7,7 @@ import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import { useDispatch, useSelector } from 'react-redux'
-import { Box, useTheme, Paper, Grid2, IconButton } from '@mui/material'
+import { Box, useTheme, Paper, Grid2, IconButton, Divider } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Typography from '@mui/material/Typography'
 import { selectSelectedRsu, selectRsu } from '../../generalSlices/rsuSlice'
@@ -17,10 +17,10 @@ import '../../components/css/SnmpwalkMenu.css'
 import { RootState } from '../../store'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 
-import { PositionedToggleIconButton } from '../../styles/components/PositionedToggleButton'
 import CloseIcon from '@mui/icons-material/Close'
 import { RoomOutlined } from '@mui/icons-material'
 import { headerTabHeight } from '../../styles'
+import { SideBarHeader } from '../../styles/components/SideBarHeader'
 
 const ConfigMenu = ({ children }) => {
   const theme = useTheme()
@@ -48,7 +48,6 @@ const ConfigureRSU = () => {
               zIndex: 100,
               top: '10px',
               right: '10px',
-              color: theme.palette.text.secondary,
             }}
             onClick={() => {
               dispatch(selectRsu(null))
@@ -106,6 +105,7 @@ const ConfigureRSU = () => {
               </ConfigMenu>
             </AccordionDetails>
           </Accordion>
+          <Divider />
           <Accordion
             elevation={0}
             expanded={expanded === 'selected-rsu-add-msg-forwarding'}
@@ -120,6 +120,7 @@ const ConfigureRSU = () => {
               </ConfigMenu>
             </AccordionDetails>
           </Accordion>
+          <Divider />
           <Accordion
             elevation={0}
             expanded={expanded === 'selected-rsu-firmware'}
@@ -134,6 +135,7 @@ const ConfigureRSU = () => {
               </ConfigMenu>
             </AccordionDetails>
           </Accordion>
+          <Divider />
           <Accordion
             elevation={0}
             expanded={expanded === 'selected-rsu-reboot'}
@@ -151,59 +153,40 @@ const ConfigureRSU = () => {
         </Box>
       )}
       {selectedConfigList.length > 0 && !selectedRsu && (
-        <div style={{ marginTop: theme.spacing(2) }}>
-          <div>
-            <PositionedToggleIconButton
-              onClick={() => {
-                dispatch(clearConfig())
-              }}
-              sx={{
-                m: 0,
-              }}
-            >
-              <CloseIcon />
-            </PositionedToggleIconButton>
-          </div>
-          <Typography fontSize="small" className="snmpheader2 museo-slab">
-            RSU IP List: {selectedConfigList.join(', ')}
-          </Typography>
-        </div>
-      )}
-      {selectedConfigList.length > 0 && !selectedRsu && (
-        <Box
-          sx={{
-            maxHeight: `calc(100vh - ${headerTabHeight + 185}px)`,
-            overflowY: 'auto',
-            height: 'fit-content',
-            width: '400px',
-            color: theme.palette.text.secondary,
-          }}
-        >
-          <Accordion
-            elevation={0}
-            expanded={expanded === 'multiple-rsu-add-msg-forwarding'}
-            onChange={handleChange('multiple-rsu-add-msg-forwarding')}
+        <Box sx={{ pl: 1, pr: 1 }}>
+          <SideBarHeader onClick={() => dispatch(clearConfig())} title={'RSUs: ' + selectedConfigList.join(', ')} />
+          <Box
+            sx={{
+              maxHeight: `calc(100vh - ${headerTabHeight + 185}px)`,
+              overflowY: 'auto',
+              height: 'fit-content',
+              width: '400px',
+              color: theme.palette.text.secondary,
+            }}
           >
-            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel2bh-content" id="panel2bh-header">
-              <Typography>Message Forwarding</Typography>
-            </AccordionSummary>
-            <Accordion>
+            <Accordion
+              elevation={0}
+              expanded={expanded === 'multiple-rsu-add-msg-forwarding'}
+              onChange={handleChange('multiple-rsu-add-msg-forwarding')}
+            >
+              <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel2bh-content" id="panel2bh-header">
+                <Typography>Message Forwarding</Typography>
+              </AccordionSummary>
               <AccordionDetails>
                 <ConfigMenu>
                   <SnmpsetMenu type="multi_rsu" rsuIpList={selectedConfigList.map((val: number) => val.toString())} />
                 </ConfigMenu>
               </AccordionDetails>
             </Accordion>
-          </Accordion>
-          <Accordion
-            elevation={0}
-            expanded={expanded === 'multiple-rsu-firmware'}
-            onChange={handleChange('multiple-rsu-firmware')}
-          >
-            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel3bh-content" id="panel3bh-header">
-              <Typography>Firmware</Typography>
-            </AccordionSummary>
-            <Accordion>
+            <Divider />
+            <Accordion
+              elevation={0}
+              expanded={expanded === 'multiple-rsu-firmware'}
+              onChange={handleChange('multiple-rsu-firmware')}
+            >
+              <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel3bh-content" id="panel3bh-header">
+                <Typography>Firmware</Typography>
+              </AccordionSummary>
               <AccordionDetails>
                 <ConfigMenu>
                   <RsuFirmwareMenu
@@ -213,7 +196,7 @@ const ConfigureRSU = () => {
                 </ConfigMenu>
               </AccordionDetails>
             </Accordion>
-          </Accordion>
+          </Box>
         </Box>
       )}
     </Paper>

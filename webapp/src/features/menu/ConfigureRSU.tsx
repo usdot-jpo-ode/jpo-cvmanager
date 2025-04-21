@@ -160,7 +160,6 @@ const ConfigureRSU = () => {
               maxHeight: `calc(100vh - ${headerTabHeight + 185}px)`,
               overflowY: 'auto',
               height: 'fit-content',
-              width: '400px',
               color: theme.palette.text.secondary,
             }}
           >

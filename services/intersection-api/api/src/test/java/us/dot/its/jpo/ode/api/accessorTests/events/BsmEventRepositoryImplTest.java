@@ -24,6 +24,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -180,8 +181,8 @@ public class BsmEventRepositoryImplTest {
         // Verify time window condition
         Document timeCondition = (Document) queryObject.get("startingBsmTimestamp");
         assertThat(timeCondition).isNotNull();
-        assertThat(timeCondition.get("$gte")).isEqualTo(new Date(startTime));
-        assertThat(timeCondition.get("$lte")).isEqualTo(new Date(endTime));
+        assertThat(timeCondition.get("$gte")).isEqualTo(Date.from(Instant.ofEpochMilli(startTime)));
+        assertThat(timeCondition.get("$lte")).isEqualTo(Date.from(Instant.ofEpochMilli(endTime)));
     }
 
     @Test
@@ -215,8 +216,8 @@ public class BsmEventRepositoryImplTest {
         // Verify time window condition
         Document timeCondition = (Document) queryObject.get("startingBsmTimestamp");
         assertThat(timeCondition).isNotNull();
-        assertThat(timeCondition.get("$gte")).isEqualTo(new Date(startTime));
-        assertThat(timeCondition.get("$lte")).isEqualTo(new Date(endTime));
+        assertThat(timeCondition.get("$gte")).isEqualTo(Date.from(Instant.ofEpochMilli(startTime)));
+        assertThat(timeCondition.get("$lte")).isEqualTo(Date.from(Instant.ofEpochMilli(endTime)));
     }
 
     @Test
@@ -250,8 +251,8 @@ public class BsmEventRepositoryImplTest {
         // Verify time window condition
         Document timeCondition = (Document) queryObject.get("startingBsmTimestamp");
         assertThat(timeCondition).isNotNull();
-        assertThat(timeCondition.get("$gte")).isEqualTo(new Date(startTime));
-        assertThat(timeCondition.get("$lte")).isEqualTo(new Date(endTime));
+        assertThat(timeCondition.get("$gte")).isEqualTo(Date.from(Instant.ofEpochMilli(startTime)));
+        assertThat(timeCondition.get("$lte")).isEqualTo(Date.from(Instant.ofEpochMilli(endTime)));
     }
 
     @Test

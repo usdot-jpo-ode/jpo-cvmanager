@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Instant;
+import java.util.Date;
 
 public class IntersectionCriteria extends Criteria {
 
@@ -26,16 +27,16 @@ public class IntersectionCriteria extends Criteria {
         if (startEpochMillis != null && endEpochMillis != null) {
             this.and(fieldName)
                     .gte(formatAsString == true ? Instant.ofEpochMilli(startEpochMillis).toString()
-                            : Instant.ofEpochMilli(startEpochMillis))
+                            : Date.from(Instant.ofEpochMilli(startEpochMillis)))
                     .lte(formatAsString == true ? Instant.ofEpochMilli(endEpochMillis).toString()
-                            : Instant.ofEpochMilli(endEpochMillis));
+                            : Date.from(Instant.ofEpochMilli(endEpochMillis)));
             return this;
         } else if (startEpochMillis != null) {
             this.and(fieldName).gte(formatAsString == true ? Instant.ofEpochMilli(startEpochMillis).toString()
-                    : Instant.ofEpochMilli(startEpochMillis));
+                    : Date.from(Instant.ofEpochMilli(startEpochMillis)));
         } else if (endEpochMillis != null) {
             this.and(fieldName).lte(formatAsString == true ? Instant.ofEpochMilli(endEpochMillis).toString()
-                    : Instant.ofEpochMilli(endEpochMillis));
+                    : Date.from(Instant.ofEpochMilli(endEpochMillis)));
         }
         return this;
     }

@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.api.accessorTests.bsm;
 
+import java.time.Instant;
 import java.util.Date;
 import org.junit.jupiter.api.Test;
 import org.bson.Document;
@@ -118,8 +119,8 @@ public class OdeBsmJsonRepositoryImplTest {
                     // Verify DATE_FIELD
                     Document dateField = (Document) criteria.getCriteriaObject()
                             .get("recordGeneratedAt");
-                    assertThat(dateField.get("$gte")).isEqualTo(new Date(startTime));
-                    assertThat(dateField.get("$lte")).isEqualTo(new Date(endTime));
+                    assertThat(dateField.get("$gte")).isEqualTo(Instant.ofEpochMilli(startTime).toString());
+                    assertThat(dateField.get("$lte")).isEqualTo(Instant.ofEpochMilli(endTime).toString());
 
                     // Verify latitude
                     Document latitudeField = (Document) criteria.getCriteriaObject()
@@ -175,8 +176,8 @@ public class OdeBsmJsonRepositoryImplTest {
                     // Verify DATE_FIELD
                     Document dateField = (Document) criteria.getCriteriaObject()
                             .get("recordGeneratedAt");
-                    assertThat(dateField.get("$gte")).isEqualTo(new Date(startTime));
-                    assertThat(dateField.get("$lte")).isEqualTo(new Date(endTime));
+                    assertThat(dateField.get("$gte")).isEqualTo(Instant.ofEpochMilli(startTime).toString());
+                    assertThat(dateField.get("$lte")).isEqualTo(Instant.ofEpochMilli(endTime).toString());
 
                     // Verify latitude
                     assertThat(criteria.getCriteriaObject().get("payload.data.coreData.position.latitude")).isNull();
@@ -226,8 +227,8 @@ public class OdeBsmJsonRepositoryImplTest {
                     // Verify DATE_FIELD
                     Document dateField = (Document) criteria.getCriteriaObject()
                             .get("recordGeneratedAt");
-                    assertThat(dateField.get("$gte")).isEqualTo(new Date(startTime));
-                    assertThat(dateField.get("$lte")).isEqualTo(new Date(endTime));
+                    assertThat(dateField.get("$gte")).isEqualTo(Instant.ofEpochMilli(startTime).toString());
+                    assertThat(dateField.get("$lte")).isEqualTo(Instant.ofEpochMilli(endTime).toString());
 
                     // Verify latitude
                     assertThat(criteria.getCriteriaObject().get("payload.data.coreData.position.latitude")).isNull();

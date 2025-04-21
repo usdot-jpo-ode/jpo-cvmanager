@@ -26,14 +26,12 @@ class EventsApi {
     token: string,
     eventType: string,
     intersectionId: number,
-    roadRegulatorId: number,
     startTime: Date,
     endTime: Date,
     { latest = false, abortController }: { latest?: boolean; abortController?: AbortController } = {}
   ): Promise<MessageMonitor.Event[]> {
     const queryParams = {
       intersection_id: intersectionId.toString(),
-      road_regulator_id: roadRegulatorId.toString(),
       start_time_utc_millis: startTime.getTime().toString(),
       end_time_utc_millis: endTime.getTime().toString(),
       latest: latest.toString(),
@@ -53,14 +51,12 @@ class EventsApi {
   async getAllEvents(
     token: string,
     intersectionId: number,
-    roadRegulatorId: number,
     startTime: Date,
     endTime: Date,
     abortController?: AbortController
   ): Promise<MessageMonitor.Event[]> {
     const queryParams = {
       intersection_id: intersectionId.toString(),
-      road_regulator_id: roadRegulatorId.toString(),
       start_time_utc_millis: startTime.getTime().toString(),
       end_time_utc_millis: endTime.getTime().toString(),
     }

@@ -59,9 +59,7 @@ export const EventListResults = ({ events, eventsCount, onPageChange, onRowsPerP
                         component="a"
                         onClick={() =>
                           navigate(
-                            `/dashboard/intersectionMap/timestamp/${event.intersectionID}/${
-                              event.roadRegulatorID ?? -1
-                            }/${event.eventGeneratedAt}`
+                            `/dashboard/intersectionMap/timestamp/${event.intersectionID}/${event.eventGeneratedAt}`
                           )
                         }
                       >

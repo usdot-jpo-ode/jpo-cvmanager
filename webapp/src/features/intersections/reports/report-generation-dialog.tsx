@@ -25,28 +25,20 @@ export const ReportGenerationDialog = (props: ReportGenerationDialogProps) => {
 
   const getReport = async ({
     intersectionId,
-    roadRegulatorId,
     startTime,
     endTime,
   }: {
     intersectionId?: number
-    roadRegulatorId?: number
     startTime: Date
     endTime: Date
   }) => {
-    if (!intersectionId || !roadRegulatorId) {
-      console.error(
-        'Did not attempt to generate report. Intersection ID:',
-        intersectionId,
-        'Road Regulator ID:',
-        roadRegulatorId
-      )
+    if (!intersectionId) {
+      console.error('Did not attempt to generate report. Intersection ID:', intersectionId)
       return
     }
     const promise = ReportsApi.generateReport({
       token: token,
       intersectionId,
-      roadRegulatorId,
       startTime,
       endTime,
     })

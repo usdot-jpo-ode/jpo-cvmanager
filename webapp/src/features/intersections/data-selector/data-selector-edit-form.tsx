@@ -22,10 +22,11 @@ import {
   FormControl,
 } from '@mui/material'
 import { FormikCheckboxList } from './formik-checkbox-list'
-import { selectDataSelectorForm, selectRoadRegulatorIntersectionIds, setDataSelectorForm } from './dataSelectorSlice'
+import { selectDataSelectorForm, setDataSelectorForm } from './dataSelectorSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../../store'
+import { selectIntersections } from '../../../generalSlices/intersectionSlice'
 
 interface Item {
   label: string
@@ -61,14 +62,14 @@ export const DataSelectorEditForm = (props: {
   onQuery: (query: any) => void
   onVisualize: (query: any) => void
   dbIntersectionId: number | undefined
-  roadRegulatorIntersectionIds: { [roadRegulatorId: number]: number[] }
 }) => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
-  const { onQuery, onVisualize, dbIntersectionId, roadRegulatorIntersectionIds, ...other } = props
+  const { onQuery, onVisualize, dbIntersectionId, ...other } = props
   const [visualize, setVisualize] = useState(false)
 
   const dataSelectorForm = useSelector(selectDataSelectorForm)
+  const intersectionIds = useSelector(selectIntersections)
 
   const formik = useFormik({
     initialValues: {
@@ -82,7 +83,6 @@ export const DataSelectorEditForm = (props: {
         if (visualize) {
           onVisualize({
             intersectionId: values.intersectionId,
-            roadRegulatorId: values.roadRegulatorId,
             startDate: values.startDate,
             endTime: endTime,
             eventTypes: values.eventTypes.map((e) => e.value).filter((e) => e !== 'All'),
@@ -94,7 +94,6 @@ export const DataSelectorEditForm = (props: {
           onQuery({
             type: values.type,
             intersectionId: values.intersectionId,
-            roadRegulatorId: values.roadRegulatorId,
             startDate: values.startDate,
             endTime: endTime,
             eventTypes: values.eventTypes.map((e) => e.value).filter((e) => e !== 'All'),
@@ -190,35 +189,11 @@ export const DataSelectorEditForm = (props: {
                   }}
                   onBlur={formik.handleBlur}
                 >
-                  {roadRegulatorIntersectionIds?.[formik.values.roadRegulatorId]?.map((intersectionId) => (
-                    <MenuItem value={intersectionId} key={intersectionId}>
+                  {intersectionIds?.map((intersectionId) => (
+                    <MenuItem value={intersectionId.intersectionID} key={intersectionId.intersectionID}>
                       {intersectionId}
                     </MenuItem>
                   ))}
-                </Select>
-              </FormControl>
-            </Grid2>
-            <Grid2 size={{ md: 6, xs: 12 }}>
-              <FormControl fullWidth error={Boolean(formik.touched.intersectionId && formik.errors.intersectionId)}>
-                <InputLabel id="roadRegulatorId-label">Road Regulator ID</InputLabel>
-                <Select
-                  error={Boolean(formik.touched.roadRegulatorId && formik.errors.roadRegulatorId)}
-                  fullWidth
-                  value={formik.values.roadRegulatorId}
-                  label="Road Regulator ID"
-                  name="roadRegulatorId"
-                  onChange={(e) => {
-                    formik.setFieldValue('roadRegulatorId', Number(e.target.value))
-                  }}
-                  onBlur={formik.handleBlur}
-                >
-                  {Object.keys(roadRegulatorIntersectionIds)?.map((roadRegulatorId) => {
-                    return (
-                      <MenuItem value={roadRegulatorId} key={roadRegulatorId}>
-                        {roadRegulatorId}
-                      </MenuItem>
-                    )
-                  })}
                 </Select>
               </FormControl>
             </Grid2>

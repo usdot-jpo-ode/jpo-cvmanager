@@ -8,7 +8,6 @@ declare namespace MessageMonitor {
     notificationText: string
     notificationHeading: string
     intersectionID: number
-    roadRegulatorID: number
     notificationExpiresAt: Date
     getUniqueId: string
   }

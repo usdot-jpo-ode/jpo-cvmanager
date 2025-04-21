@@ -1,10 +1,11 @@
-import { Card, CardContent, Grid2, Typography } from '@mui/material'
+import { Card, CardContent, Grid2, Typography, useTheme } from '@mui/material'
 import React from 'react'
 import { BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar, Tooltip, TooltipProps } from 'recharts'
 import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent'
 
 export const ConnectionOfTravelAssessmentCard = (props: { assessment: ConnectionOfTravelAssessment | undefined }) => {
   const { assessment } = props
+  const theme = useTheme()
 
   function getWidthFactorFromData(data: any[] | undefined): number {
     if (!data) return 0.1
@@ -22,6 +23,7 @@ export const ConnectionOfTravelAssessmentCard = (props: { assessment: Connection
           key={obj.laneId}
           style={{
             padding: '6px',
+            backgroundColor: theme.palette.background.paper,
             border: '1px solid grey',
           }}
         >

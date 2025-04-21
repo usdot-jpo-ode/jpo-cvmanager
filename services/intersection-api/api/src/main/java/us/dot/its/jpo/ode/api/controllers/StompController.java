@@ -52,7 +52,7 @@ public class StompController {
     }
 
     public String buildTopicName(int intersectionID, String messageType) {
-        return String.format("/live/%d/%d/%s", intersectionID, messageType);
+        return String.format("/live/%d/%s", intersectionID, messageType);
     }
 
     public void broadcastSpat(ProcessedSpat spat) {

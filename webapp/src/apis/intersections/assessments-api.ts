@@ -38,7 +38,6 @@ class AssessmentsApi {
     abortController?: AbortController
   ): Promise<Assessment[]> {
     const queryParams: Record<string, string> = {}
-    // queryParams["road_regulator_id"] = road_regulator_id;
     queryParams['intersection_id'] = intersectionId.toString()
     queryParams['latest'] = 'false'
     if (startTime) queryParams['start_time_utc_millis'] = startTime.getTime().toString()

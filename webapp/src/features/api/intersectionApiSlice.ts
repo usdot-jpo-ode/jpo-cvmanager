@@ -44,7 +44,6 @@ export const intersectionApiSlice = createApi({
       query: (intersectionId) => {
         return `config/intersection/unique${getQueryString({
           intersection_id: intersectionId.toString(),
-          road_regulator_id: '-1',
         })}`
       },
       providesTags: (result, error, intersectionId) => [{ type: 'intersectionConfigs', id: intersectionId }],

@@ -294,7 +294,7 @@ public class NotificationTest {
 
         ResponseEntity<Page<Notification>> result = controller
                 .findActiveNotifications(
-                        null, null, null, null, 1, 1, false);
+                        null, null, null, 1, 1, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody().getContent()).isEqualTo(notifications);
     }

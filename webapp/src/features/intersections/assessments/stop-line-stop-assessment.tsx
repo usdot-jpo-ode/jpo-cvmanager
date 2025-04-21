@@ -124,7 +124,7 @@ export const StopLineStopAssessmentCard = (props: { assessment: StopLineStopAsse
               <Typography color="textSecondary" gutterBottom variant="overline">
                 Signal State Stop Assessment
               </Typography>
-              {assessment === undefined || assessment.stopLineStopAssessmentGroup === undefined ? (
+              {assessment === undefined || assessment?.stopLineStopAssessmentGroup === undefined ? (
                 <Typography color="textPrimary" variant="h5" key={''}>
                   No Data
                 </Typography>

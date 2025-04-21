@@ -21,14 +21,7 @@
         "up": {
           "detached": true,
           "build": true,
-          "services": [
-            "cvmanager_postgres",
-            "cvmanager_keycloak",
-            "kafka",
-            "kafka_init",
-            "conflictvisualizer_api",
-            "mongodb_container"
-          ]
+          "profiles": ["basic", "intersection"]
         },
         "files": ["${workspaceFolder}/docker-compose.yml"],
         "envFile": "${workspaceFolder}/.env"

@@ -85,23 +85,24 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
         </Grid2>
       </form>
       <Stack spacing={2} direction="column">
-        <div>
-          <Button
-            className="museo-slab"
-            variant="contained"
-            size="medium"
-            startIcon={<ControlPointOutlined />}
-            onClick={() =>
-              dispatch(submitSnmpSet(rsuIpList)).then((data: any) => {
-                data.payload.changeSuccess
-                  ? toast.success('Forwarding Changes Applied Successfully')
-                  : toast.error('Failed to add forwarding: ', data.errorState)
-              })
-            }
-          >
-            Add Forwarding
-          </Button>
-        </div>
+        <Button
+          className="museo-slab"
+          variant="contained"
+          size="medium"
+          startIcon={<ControlPointOutlined />}
+          onClick={() =>
+            dispatch(submitSnmpSet(rsuIpList)).then((data: any) => {
+              data.payload.changeSuccess
+                ? toast.success('Forwarding Changes Applied Successfully')
+                : toast.error('Failed to add forwarding: ', data.errorState)
+            })
+          }
+          sx={{
+            width: 'fit-content',
+          }}
+        >
+          Add Forwarding
+        </Button>
         {type !== 'single_rsu' && (
           <Button
             className="museo-slab"
@@ -110,6 +111,7 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
             startIcon={<DeleteOutline />}
             sx={{
               marginTop: '10px',
+              width: 'fit-content',
             }}
             onClick={() =>
               dispatch(

@@ -10,44 +10,50 @@ exports[`should take a snapshot 1`] = `
         class="MuiGrid2-root MuiGrid2-container MuiGrid2-direction-xs-row MuiGrid2-spacing-xs-2 css-mocked-MuiGrid2-root"
       >
         <div
-          class="MuiGrid2-root MuiGrid2-direction-xs-row MuiGrid2-grid-xs-6 css-mocked-MuiGrid2-root"
+          class="MuiGrid2-root MuiGrid2-direction-xs-row MuiGrid2-grid-xs-8 css-mocked-MuiGrid2-root"
         >
           <div
             class="MuiFormControl-root MuiFormControl-marginNormal MuiFormControl-fullWidth css-mocked-MuiFormControl-root"
           >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
-              data-shrink="false"
-              for="snmpinput"
-            >
-              Destination IP
-            </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorInfo MuiInputBase-formControl css-mocked-MuiInputBase-root-MuiOutlinedInput-root"
+              class="MuiFormControl-root MuiTextField-root css-mocked-MuiFormControl-root-MuiTextField-root"
             >
-              <input
-                class="MuiInputBase-input MuiOutlinedInput-input css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
-                id="snmpinput"
-                type="text"
-                value=""
-              />
-              <fieldset
-                aria-hidden="true"
-                class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
+              <label
+                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorInfo MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
+                data-shrink="true"
+                for="snmpinput"
+                id="snmpinput-label"
               >
-                <legend
-                  class="css-81qg8w"
+                Destination IP
+              </label>
+              <div
+                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorInfo MuiInputBase-formControl css-mocked-MuiInputBase-root-MuiOutlinedInput-root"
+              >
+                <input
+                  class="MuiInputBase-input MuiOutlinedInput-input css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
+                  id="snmpinput"
+                  placeholder="Enter Destination IP"
+                  type="text"
+                  value=""
+                />
+                <fieldset
+                  aria-hidden="true"
+                  class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
                 >
-                  <span>
-                    Destination IP
-                  </span>
-                </legend>
-              </fieldset>
+                  <legend
+                    class="css-w1u3ce"
+                  >
+                    <span>
+                      Destination IP
+                    </span>
+                  </legend>
+                </fieldset>
+              </div>
             </div>
           </div>
         </div>
         <div
-          class="MuiGrid2-root MuiGrid2-direction-xs-row MuiGrid2-grid-xs-6 css-mocked-MuiGrid2-root"
+          class="MuiGrid2-root MuiGrid2-direction-xs-row MuiGrid2-grid-xs-4 css-mocked-MuiGrid2-root"
         >
           <div
             class="MuiFormControl-root MuiFormControl-marginNormal MuiFormControl-fullWidth css-mocked-MuiFormControl-root"
@@ -108,63 +114,63 @@ exports[`should take a snapshot 1`] = `
         </div>
       </div>
     </form>
-    <button
-      class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary museo-slab css-mocked-MuiButtonBase-root-MuiButton-root"
-      tabindex="0"
-      type="button"
-    >
-      <span
-        class="MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-mocked-MuiButton-startIcon"
-      >
-        <svg
-          aria-hidden="true"
-          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
-          data-testid="ControlPointOutlinedIcon"
-          focusable="false"
-          viewBox="0 0 24 24"
-        >
-          <path
-            d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4zm-1-5C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8"
-          />
-        </svg>
-      </span>
-      Add Forwarding
-    </button>
     <div
-      class="MuiBox-root css-0"
-    />
-    <button
-      class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary museo-slab css-mocked-MuiButtonBase-root-MuiButton-root"
-      tabindex="0"
-      type="button"
+      class="MuiStack-root css-mocked-MuiStack-root"
     >
-      <span
-        class="MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-mocked-MuiButton-startIcon"
-      >
-        <svg
-          aria-hidden="true"
-          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
-          data-testid="DeleteOutlineIcon"
-          focusable="false"
-          viewBox="0 0 24 24"
+      <div>
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary museo-slab css-mocked-MuiButtonBase-root-MuiButton-root"
+          tabindex="0"
+          type="button"
         >
-          <path
-            d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6zM8 9h8v10H8zm7.5-5-1-1h-5l-1 1H5v2h14V4z"
-          />
-        </svg>
-      </span>
-      Delete Forwarding
-    </button>
-    <div>
-      <p
-        id="snmpfiltertext"
-        style="margin-top: 40px;"
+          <span
+            class="MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-mocked-MuiButton-startIcon"
+          >
+            <svg
+              aria-hidden="true"
+              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+              data-testid="ControlPointOutlinedIcon"
+              focusable="false"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4zm-1-5C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8"
+              />
+            </svg>
+          </span>
+          Add Forwarding
+        </button>
+      </div>
+      <button
+        class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary museo-slab css-mocked-MuiButtonBase-root-MuiButton-root"
+        tabindex="0"
+        type="button"
       >
-        By specifying a destination IP address along with a message type, you can add message forwarding to any of the selected RSUs or delete message forwarding from any RSUs that already have that configuration.
-      </p>
+        <span
+          class="MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-mocked-MuiButton-startIcon"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+            data-testid="DeleteOutlineIcon"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6zM8 9h8v10H8zm7.5-5-1-1h-5l-1 1H5v2h14V4z"
+            />
+          </svg>
+        </span>
+        Delete Forwarding
+      </button>
+      <div>
+        <p
+          class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+        >
+          By specifying a destination IP address along with a message type, you can add message forwarding to any of the selected RSUs or delete message forwarding from any RSUs that already have that configuration.
+        </p>
+      </div>
     </div>
-    <div />
-    <div />
   </div>
 </div>
 `;

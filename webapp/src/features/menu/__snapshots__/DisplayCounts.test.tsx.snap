@@ -2,22 +2,41 @@
 
 exports[`should take a snapshot 1`] = `
 <div>
-  <div>
+  <div
+    class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-mocked-MuiPaper-root"
+    style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
+  >
     <div
-      class="sideBarOn"
-      id="container"
+      class="MuiStack-root css-mocked-MuiStack-root"
     >
       <p
         class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
-        style="position: absolute; top: 10px; left: 10px;"
       >
         Message Counts
       </p>
+      <button
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+          data-testid="CloseIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+          />
+        </svg>
+      </button>
+    </div>
+    <div
+      class="MuiStack-root css-mocked-MuiStack-root"
+    >
       <div
-        style="margin-top: 60px;"
-      />
-      <div
-        style="margin-bottom: 20px; width: 100%; display: flex; justify-content: center;"
+        class="MuiBox-root css-1ykdma4"
       >
         <div
           class="MuiFormControl-root MuiTextField-root css-mocked-MuiFormControl-root-MuiTextField-root"
@@ -80,7 +99,7 @@ exports[`should take a snapshot 1`] = `
         </div>
       </div>
       <div
-        style="margin-bottom: 20px; width: 100%; display: flex; justify-content: center;"
+        class="MuiBox-root css-1ykdma4"
       >
         <div
           class="MuiFormControl-root MuiTextField-root css-mocked-MuiFormControl-root-MuiTextField-root"
@@ -143,7 +162,7 @@ exports[`should take a snapshot 1`] = `
         </div>
       </div>
       <div
-        style="margin-bottom: 20px; width: 100%; display: flex; justify-content: center;"
+        class="MuiBox-root css-1ykdma4"
       >
         <div
           class="MuiFormControl-root css-mocked-MuiFormControl-root"
@@ -206,7 +225,6 @@ exports[`should take a snapshot 1`] = `
           </div>
         </div>
       </div>
-      <span />
       <div
         class="table"
       >
@@ -231,7 +249,21 @@ exports[`should take a snapshot 1`] = `
         </div>
         <div
           class="body"
-        />
+        >
+          <div
+            class="row"
+          >
+            <div
+              style="grid-column: 1 / span 3; text-align: center;"
+            >
+              <p
+                class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+              >
+                No data found for the selected range
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

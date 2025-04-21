@@ -94,7 +94,7 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(ORIGIN_IP_FIELD, originIp)
                 .whereOptional(VEHICLE_ID_FIELD, vehicleId)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
 
         if (centerLng != null && centerLat != null && distance != null) {
             double[] latitudes = calculateLatitudes(centerLng, centerLat, distance);
@@ -136,7 +136,7 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(ORIGIN_IP_FIELD, originIp)
                 .whereOptional(VEHICLE_ID_FIELD, vehicleId)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
 
         if (centerLng != null && centerLat != null && distance != null) {
             double[] latitudes = calculateLatitudes(centerLng, centerLat, distance);

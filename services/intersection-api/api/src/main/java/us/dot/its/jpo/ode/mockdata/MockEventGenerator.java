@@ -40,14 +40,11 @@ public class MockEventGenerator {
 
         RegulatorIntersectionId mapId = new RegulatorIntersectionId();
         mapId.setIntersectionId(12109);
-        mapId.setRoadRegulatorId(0);
 
         RegulatorIntersectionId spatId = new RegulatorIntersectionId();
         mapId.setIntersectionId(12109);
-        mapId.setRoadRegulatorId(-1);
 
         event.setIntersectionID(12109);
-        event.setRoadRegulatorID(-1);
 
         mapIds.add(mapId);
         spatIds.add(spatId);
@@ -61,7 +58,6 @@ public class MockEventGenerator {
     public static ConnectionOfTravelEvent getConnectionOfTravelEvent() {
         ConnectionOfTravelEvent event = new ConnectionOfTravelEvent();
         event.setTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
-        event.setRoadRegulatorID(3);
         event.setIntersectionID(2);
         event.setIngressLaneID(2);
         event.setEgressLaneID(7);
@@ -73,7 +69,6 @@ public class MockEventGenerator {
         LaneDirectionOfTravelEvent event = new LaneDirectionOfTravelEvent();
         event.setTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
         event.setExpectedHeading(55);
-        event.setRoadRegulatorID(2);
         event.setIntersectionID(3);
         event.setLaneID(5);
         event.setLaneSegmentNumber(1);
@@ -97,7 +92,6 @@ public class MockEventGenerator {
     public static SignalStateConflictEvent getSignalStateConflictEvent() {
         SignalStateConflictEvent event = new SignalStateConflictEvent();
         event.setTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
-        event.setRoadRegulatorID(5);
         event.setIntersectionID(2);
         event.setConflictType(J2735MovementPhaseState.DARK);
         event.setFirstConflictingSignalGroup(2);
@@ -110,7 +104,6 @@ public class MockEventGenerator {
     public static StopLinePassageEvent getStopLinePassageEvent() {
         StopLinePassageEvent event = new StopLinePassageEvent();
         event.setTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
-        event.setRoadRegulatorID(5);
         event.setIngressLane(2);
         event.setEgressLane(4);
         event.setConnectionID(2);
@@ -128,7 +121,6 @@ public class MockEventGenerator {
         StopLineStopEvent event = new StopLineStopEvent();
         event.setInitialTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
         event.setFinalTimestamp(ZonedDateTime.now().toInstant().toEpochMilli() + 100);
-        event.setRoadRegulatorID(0);
         event.setIngressLane(1);
         event.setEgressLane(5);
         event.setConnectionID(3);
@@ -150,7 +142,6 @@ public class MockEventGenerator {
     public static TimeChangeDetailsEvent getTimeChangeDetailsEvent() {
 
         TimeChangeDetailsEvent event = new TimeChangeDetailsEvent();
-        event.setRoadRegulatorID(104);
         event.setIntersectionID(12109);
         event.setSignalGroup(6);
         event.setFirstSpatTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
@@ -164,7 +155,7 @@ public class MockEventGenerator {
         event.setSecondTimeMarkType("maxEndTime");
         event.setFirstConflictingUtcTimestamp(ZonedDateTime.now().toInstant().toEpochMilli() + 100);
         event.setSecondConflictingUtcTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
-        event.setSource("{\"intersectionID\": 12109, \"roadRegulatorID\": 104, \"originIp\": \"1.1.1.1\"}");
+        event.setSource("{\"intersectionID\": 12109, \"originIp\": \"1.1.1.1\"}");
         return event;
     }
 

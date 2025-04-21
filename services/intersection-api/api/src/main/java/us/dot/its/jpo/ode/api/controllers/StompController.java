@@ -51,8 +51,8 @@ public class StompController {
         brokerMessagingTemplate.convertAndSend(topic, message);
     }
 
-    public String buildTopicName(int roadRegulatorID, int intersectionID, String messageType) {
-        return String.format("/live/%d/%d/%s", roadRegulatorID, intersectionID, messageType);
+    public String buildTopicName(int intersectionID, String messageType) {
+        return String.format("/live/%d/%d/%s", intersectionID, messageType);
     }
 
     public void broadcastSpat(ProcessedSpat spat) {
@@ -64,7 +64,7 @@ public class StompController {
 
             if (intersectionID != -1) {
                 try {
-                    broadcastMessage(buildTopicName(-1, intersectionID, "spat"), mapper.writeValueAsString(spat));
+                    broadcastMessage(buildTopicName(intersectionID, "spat"), mapper.writeValueAsString(spat));
                 } catch (JsonProcessingException e) {
                     log.error("Exception encoding SPaT data to STOMP topic", e);
                 }
@@ -82,7 +82,7 @@ public class StompController {
 
             if (intersectionID != -1) {
                 try {
-                    broadcastMessage(buildTopicName(-1, intersectionID, "map"), mapper.writeValueAsString(map));
+                    broadcastMessage(buildTopicName(intersectionID, "map"), mapper.writeValueAsString(map));
                 } catch (JsonProcessingException e) {
                     log.error("Exception encoding MAP data to STOMP topic", e);
                 }
@@ -94,7 +94,7 @@ public class StompController {
         if (bsm != null) {
             if (intersectionId != -1) {
                 try {
-                    broadcastMessage(buildTopicName(-1, intersectionId, "bsm"),
+                    broadcastMessage(buildTopicName(intersectionId, "bsm"),
                             mapper.writeValueAsString(bsm));
                 } catch (JsonProcessingException e) {
                     log.error("Exception encoding BSM data to STOMP topic", e);

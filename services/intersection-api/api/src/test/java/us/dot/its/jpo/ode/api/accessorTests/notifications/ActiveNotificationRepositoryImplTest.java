@@ -53,7 +53,6 @@ public class ActiveNotificationRepositoryImplTest {
     private ActiveNotificationRepositoryImpl repository;
 
     Integer intersectionID = 123;
-    Integer roadRegulatorID = 0;
     String notificationType = "IntersectionReferenceAlignmentNotification";
     String key = "IntersectionReferenceAlignmentNotification_123_0";
 

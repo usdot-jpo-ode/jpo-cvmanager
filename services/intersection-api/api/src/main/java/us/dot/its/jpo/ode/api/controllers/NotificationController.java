@@ -113,7 +113,6 @@ public class NotificationController implements PageableQuery {
     })
     public ResponseEntity<Page<Notification>> findActiveNotifications(
             @RequestParam(name = "intersection_id") Integer intersectionID,
-            @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
             @RequestParam(name = "notification_type", required = false) String notificationType,
             @RequestParam(name = "key", required = false) String key,
 
@@ -141,7 +140,6 @@ public class NotificationController implements PageableQuery {
     })
     public ResponseEntity<Long> countActiveNotifications(
             @RequestParam(name = "intersection_id") Integer intersectionID,
-            @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
             @RequestParam(name = "notification_type", required = false) String notificationType,
             @RequestParam(name = "key", required = false) String key,
             @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,

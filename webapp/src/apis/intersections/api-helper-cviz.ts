@@ -78,9 +78,6 @@ class CvizApiHelper {
     const resp = await fetch(url, options)
       .then((response) => {
         if (response.ok) {
-          if (response.status === 206) {
-            console.warn('Partial content received for request to ' + url)
-          }
           if (toastOnSuccess) toast.success(successMessage)
           if (booleanResponse) return true
         } else {

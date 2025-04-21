@@ -48,7 +48,6 @@ public class BsmController implements PageableQuery {
     @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role"),
     })
     public ResponseEntity<Page<OdeBsmData>> findBSMs(

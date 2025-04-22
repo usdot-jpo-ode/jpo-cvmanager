@@ -15,6 +15,7 @@ import us.dot.its.jpo.ode.api.models.AggregationResult;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -77,7 +78,11 @@ public interface PageableQuery {
      * @return a page object containing the given object
      */
     default <T> Page<T> wrapSingleResultWithPage(T latest) {
-        return new PageImpl<>(Collections.singletonList(latest));
+        List<T> resultList = new ArrayList<>();
+        if (latest != null) {
+            resultList.add(latest);
+        }
+        return new PageImpl<>(resultList);
     }
 
     /**

@@ -49,7 +49,7 @@ public class ProcessedSpatRepositoryImpl
             @Nullable Pageable pageable) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
         Query query = Query.query(criteria);
         if (pageable != null) {
             query = query.with(pageable);
@@ -74,7 +74,7 @@ public class ProcessedSpatRepositoryImpl
             boolean compact) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
         Query query = Query.query(criteria);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
         return wrapSingleResultWithPage(
@@ -104,7 +104,7 @@ public class ProcessedSpatRepositoryImpl
                 + ", endTime: " + endTime);
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
         System.out.println("find criteria: " + criteria.getCriteriaObject().toString());
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
         return findPage(mongoTemplate, collectionName, pageable, criteria, sort);

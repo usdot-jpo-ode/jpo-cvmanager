@@ -119,7 +119,7 @@ public class PageableQueryTest {
     void testWrapSingleResultWithPageNull() {
         Page<String> page = paginatedQueryInterface.wrapSingleResultWithPage(null);
 
-        assertThat(page.getContent()).containsExactly((String) null);
-        assertThat(page.getTotalElements()).isEqualTo(1);
+        assertThat(page.getContent()).isEmpty();
+        assertThat(page.getTotalElements()).isEqualTo(0);
     }
 }

@@ -60,6 +60,8 @@ public class OdeBsmJsonRepositoryImplTest {
 
     @Test
     public void testFindBsmsGeo() {
+
+        @SuppressWarnings("rawtypes")
         Page expected = Mockito.mock(Page.class);
         OdeBsmJsonRepositoryImpl repo = mock(OdeBsmJsonRepositoryImpl.class);
 
@@ -82,7 +84,7 @@ public class OdeBsmJsonRepositoryImplTest {
 
     @Test
     public void testFindWithAllParameters() {
-        // Arrange
+        @SuppressWarnings("rawtypes")
         Page expectedPage = mock(Page.class);
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "recordGeneratedAt"));
         OdeBsmJsonRepositoryImpl repo = mock(OdeBsmJsonRepositoryImpl.class);
@@ -143,7 +145,7 @@ public class OdeBsmJsonRepositoryImplTest {
 
     @Test
     public void testFindWithNullBoundingBox() {
-        // Arrange
+        @SuppressWarnings("rawtypes")
         Page expectedPage = mock(Page.class);
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "recordGeneratedAt"));
         OdeBsmJsonRepositoryImpl repo = mock(OdeBsmJsonRepositoryImpl.class);
@@ -196,7 +198,7 @@ public class OdeBsmJsonRepositoryImplTest {
 
     @Test
     public void testFindWithNullOptionalParameters() {
-        // Arrange
+        @SuppressWarnings("rawtypes")
         Page expectedPage = mock(Page.class);
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "recordGeneratedAt"));
         OdeBsmJsonRepositoryImpl repo = mock(OdeBsmJsonRepositoryImpl.class);

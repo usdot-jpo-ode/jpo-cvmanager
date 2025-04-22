@@ -77,6 +77,7 @@ public class ConnectionOfTravelEventRepositoryImplTest {
 
     @Test
     public void testFind() {
+        @SuppressWarnings("rawtypes")
         Page expected = Mockito.mock(Page.class);
         ConnectionOfTravelEventRepositoryImpl repo = mock(ConnectionOfTravelEventRepositoryImpl.class);
 

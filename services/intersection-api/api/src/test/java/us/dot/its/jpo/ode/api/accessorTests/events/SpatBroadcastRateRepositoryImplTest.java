@@ -77,6 +77,8 @@ public class SpatBroadcastRateRepositoryImplTest {
 
     @Test
     public void testFind() {
+
+        @SuppressWarnings("rawtypes")
         Page expected = Mockito.mock(Page.class);
         SpatBroadcastRateEventRepositoryImpl repo = mock(SpatBroadcastRateEventRepositoryImpl.class);
 

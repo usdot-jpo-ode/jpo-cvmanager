@@ -68,6 +68,7 @@ public class OdeSpatDataRepositoryImplTest {
 
     @Test
     public void testFind() {
+        @SuppressWarnings("rawtypes")
         Page expected = Mockito.mock(Page.class);
         OdeSpatDataRepositoryImpl repo = mock(OdeSpatDataRepositoryImpl.class);
 

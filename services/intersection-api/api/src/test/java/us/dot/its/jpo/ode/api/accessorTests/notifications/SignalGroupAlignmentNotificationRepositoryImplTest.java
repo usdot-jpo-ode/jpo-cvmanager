@@ -68,6 +68,7 @@ public class SignalGroupAlignmentNotificationRepositoryImplTest {
 
     @Test
     public void testFind() {
+        @SuppressWarnings("rawtypes")
         Page expected = Mockito.mock(Page.class);
         SignalGroupAlignmentNotificationRepositoryImpl repo = mock(
                 SignalGroupAlignmentNotificationRepositoryImpl.class);

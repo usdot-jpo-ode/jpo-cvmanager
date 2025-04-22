@@ -69,6 +69,7 @@ public class IntersectionReferenceAlignmentNotificationRepositoryImplTest {
 
     @Test
     public void testFind() {
+        @SuppressWarnings("rawtypes")
         Page expected = Mockito.mock(Page.class);
         IntersectionReferenceAlignmentNotificationRepositoryImpl repo = mock(
                 IntersectionReferenceAlignmentNotificationRepositoryImpl.class);

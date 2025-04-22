@@ -55,6 +55,7 @@ public class PageableQueryTest {
         count.setCount(2L);
         aggregationResult.setMetadata(Arrays.asList(count));
 
+        @SuppressWarnings("rawtypes")
         AggregationResults<AggregationResult> aggregationResults = new AggregationResults<>(
                 Arrays.asList(aggregationResult), new Document());
 
@@ -74,6 +75,7 @@ public class PageableQueryTest {
         Criteria criteria = new Criteria();
         Sort sort = Sort.by(Sort.Direction.DESC, "dateField");
 
+        @SuppressWarnings("rawtypes")
         AggregationResults<AggregationResult> aggregationResults = new AggregationResults<>(Collections.emptyList(),
                 new Document());
 
@@ -93,6 +95,7 @@ public class PageableQueryTest {
         Criteria criteria = new Criteria();
         Sort sort = Sort.by(Sort.Direction.DESC, "dateField");
 
+        @SuppressWarnings("rawtypes")
         AggregationResults<AggregationResult> aggregationResults = new AggregationResults<>(
                 Collections.emptyList(), new Document());
 

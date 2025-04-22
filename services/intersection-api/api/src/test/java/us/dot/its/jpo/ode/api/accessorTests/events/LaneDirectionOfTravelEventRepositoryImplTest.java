@@ -77,6 +77,8 @@ public class LaneDirectionOfTravelEventRepositoryImplTest {
 
     @Test
     public void testFind() {
+
+        @SuppressWarnings("rawtypes")
         Page expected = Mockito.mock(Page.class);
         LaneDirectionOfTravelEventRepositoryImpl repo = mock(LaneDirectionOfTravelEventRepositoryImpl.class);
 

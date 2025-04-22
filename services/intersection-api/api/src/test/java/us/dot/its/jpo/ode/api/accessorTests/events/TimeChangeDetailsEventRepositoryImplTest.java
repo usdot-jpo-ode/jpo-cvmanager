@@ -77,6 +77,8 @@ public class TimeChangeDetailsEventRepositoryImplTest {
 
     @Test
     public void testFind() {
+
+        @SuppressWarnings("rawtypes")
         Page expected = Mockito.mock(Page.class);
         TimeChangeDetailsEventRepositoryImpl repo = mock(TimeChangeDetailsEventRepositoryImpl.class);
 

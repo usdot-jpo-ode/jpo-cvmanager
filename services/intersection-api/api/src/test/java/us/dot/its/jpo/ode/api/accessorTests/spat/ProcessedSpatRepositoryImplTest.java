@@ -68,6 +68,7 @@ public class ProcessedSpatRepositoryImplTest {
 
     @Test
     public void testFind() {
+        @SuppressWarnings("rawtypes")
         Page expected = Mockito.mock(Page.class);
         ProcessedSpatRepositoryImpl repo = mock(ProcessedSpatRepositoryImpl.class);
 

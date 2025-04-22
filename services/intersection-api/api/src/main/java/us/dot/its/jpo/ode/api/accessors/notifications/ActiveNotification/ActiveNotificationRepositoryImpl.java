@@ -1,8 +1,11 @@
 package us.dot.its.jpo.ode.api.accessors.notifications.ActiveNotification;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+
 import javax.annotation.Nullable;
+import org.bson.Document;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -14,8 +17,6 @@ import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.bson.Document;
-import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -126,32 +127,39 @@ public class ActiveNotificationRepositoryImpl
                 .whereOptional(NOTIFICATION_TYPE_FIELD, notificationType)
                 .whereOptional(KEY_FIELD, key);
         Sort sort = Sort.by(Sort.Direction.DESC, NOTIFICATION_TYPE_FIELD);
-
-        Page<Document> dbObjects = findPageAsBson(mongoTemplate, collectionName, pageable, criteria, sort);
+        Page<LinkedHashMap<String, Object>> dbObjects = findPageAsHashMap(mongoTemplate, collectionName, pageable,
+                criteria, sort);
 
         List<Notification> notifications = new ArrayList<>();
-        for (Bson dbObject : dbObjects.getContent()) {
-            String type = dbObject.toBsonDocument().getString("notificationType").getValue();
+        for (LinkedHashMap<String, Object> dbObject : dbObjects.getContent()) {
+            String type = (String) dbObject.get("notificationType");
             switch (type) {
                 case "ConnectionOfTravelNotification" ->
                     notifications
-                            .add(mongoTemplate.getConverter().read(ConnectionOfTravelNotification.class, dbObject));
+                            .add(mongoTemplate.getConverter().read(ConnectionOfTravelNotification.class,
+                                    new Document(dbObject)));
                 case "IntersectionReferenceAlignmentNotification" -> notifications.add(
-                        mongoTemplate.getConverter().read(IntersectionReferenceAlignmentNotification.class, dbObject));
+                        mongoTemplate.getConverter().read(IntersectionReferenceAlignmentNotification.class,
+                                new Document(dbObject)));
                 case "LaneDirectionOfTravelAssessmentNotification" ->
                     notifications
-                            .add(mongoTemplate.getConverter().read(LaneDirectionOfTravelNotification.class, dbObject));
+                            .add(mongoTemplate.getConverter().read(LaneDirectionOfTravelNotification.class,
+                                    new Document(dbObject)));
                 case "SignalGroupAlignmentNotification" ->
                     notifications
-                            .add(mongoTemplate.getConverter().read(SignalGroupAlignmentNotification.class, dbObject));
+                            .add(mongoTemplate.getConverter().read(SignalGroupAlignmentNotification.class,
+                                    new Document(dbObject)));
                 case "SignalStateConflictNotification" ->
                     notifications
-                            .add(mongoTemplate.getConverter().read(SignalStateConflictNotification.class, dbObject));
+                            .add(mongoTemplate.getConverter().read(SignalStateConflictNotification.class,
+                                    new Document(dbObject)));
                 case "TimeChangeDetailsNotification" ->
-                    notifications.add(mongoTemplate.getConverter().read(TimeChangeDetailsNotification.class, dbObject));
+                    notifications.add(mongoTemplate.getConverter().read(TimeChangeDetailsNotification.class,
+                            new Document(dbObject)));
                 case "AppHealthNotification" ->
                     notifications
-                            .add(mongoTemplate.getConverter().read(KafkaStreamsAnomalyNotification.class, dbObject));
+                            .add(mongoTemplate.getConverter().read(KafkaStreamsAnomalyNotification.class,
+                                    new Document(dbObject)));
                 default ->
                     log.warn("Attempted to find unknown notificationType: {}", type);
             }

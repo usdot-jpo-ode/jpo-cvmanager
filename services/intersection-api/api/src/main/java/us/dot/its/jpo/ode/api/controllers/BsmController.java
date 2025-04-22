@@ -4,7 +4,6 @@ import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -35,9 +34,6 @@ public class BsmController implements PageableQuery {
 
     private final OdeBsmJsonRepository odeBsmJsonRepo;
 
-    @Value("${maximumResponseSize}")
-    int maximumResponseSize;
-
     @Autowired
     public BsmController(OdeBsmJsonRepository odeBsmJsonRepo) {
         this.odeBsmJsonRepo = odeBsmJsonRepo;
@@ -48,7 +44,6 @@ public class BsmController implements PageableQuery {
     @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role"),
     })
     public ResponseEntity<Page<OdeBsmData>> findBSMs(

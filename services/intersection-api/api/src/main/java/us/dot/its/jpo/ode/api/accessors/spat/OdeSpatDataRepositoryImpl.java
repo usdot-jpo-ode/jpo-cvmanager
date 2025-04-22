@@ -50,7 +50,7 @@ public class OdeSpatDataRepositoryImpl
             @Nullable Pageable pageable) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
         Query query = Query.query(criteria);
         if (pageable != null) {
             query = query.with(pageable);
@@ -74,7 +74,7 @@ public class OdeSpatDataRepositoryImpl
             Long endTime) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
         Query query = Query.query(criteria);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
         return wrapSingleResultWithPage(
@@ -101,9 +101,9 @@ public class OdeSpatDataRepositoryImpl
             Pageable pageable) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null, OdeSpatData.class);
     }
 
     @Override

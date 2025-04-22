@@ -68,6 +68,7 @@ public class TimeChangeDetailsNotificationRepositoryImplTest {
 
     @Test
     public void testFind() {
+        @SuppressWarnings("rawtypes")
         Page expected = Mockito.mock(Page.class);
         TimeChangeDetailsNotificationRepositoryImpl repo = mock(TimeChangeDetailsNotificationRepositoryImpl.class);
 

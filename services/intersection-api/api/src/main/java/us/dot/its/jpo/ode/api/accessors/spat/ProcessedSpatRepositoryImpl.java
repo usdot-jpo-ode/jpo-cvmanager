@@ -48,7 +48,7 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository, Pag
             @Nullable Pageable pageable) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
         Query query = Query.query(criteria);
         if (pageable != null) {
             query = query.with(pageable);
@@ -73,7 +73,7 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository, Pag
             boolean compact) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
         Query query = Query.query(criteria);
         // Exclude unnecessary fields
         if (compact) {
@@ -107,13 +107,13 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository, Pag
             Pageable pageable) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
         List<String> excludedFields = List.of("recordGeneratedAt");
         if (compact) {
             excludedFields.add("validationMessages");
         }
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, excludedFields);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, excludedFields, ProcessedSpat.class);
     }
 
     @Override

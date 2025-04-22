@@ -77,6 +77,8 @@ public class MapMinimumDataEventRepositoryImplTest {
 
     @Test
     public void testFind() {
+
+        @SuppressWarnings("rawtypes")
         Page expected = Mockito.mock(Page.class);
         MapMinimumDataEventRepositoryImpl repo = mock(MapMinimumDataEventRepositoryImpl.class);
 

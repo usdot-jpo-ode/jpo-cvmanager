@@ -77,6 +77,8 @@ public class SpatMinimumDataEventRepositoryImplTest {
 
     @Test
     public void testFind() {
+
+        @SuppressWarnings("rawtypes")
         Page expected = Mockito.mock(Page.class);
         SpatMinimumDataEventRepositoryImpl repo = mock(SpatMinimumDataEventRepositoryImpl.class);
 

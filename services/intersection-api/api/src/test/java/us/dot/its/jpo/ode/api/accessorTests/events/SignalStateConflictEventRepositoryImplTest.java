@@ -77,6 +77,8 @@ public class SignalStateConflictEventRepositoryImplTest {
 
     @Test
     public void testFind() {
+
+        @SuppressWarnings("rawtypes")
         Page expected = Mockito.mock(Page.class);
         SignalStateConflictEventRepositoryImpl repo = mock(SignalStateConflictEventRepositoryImpl.class);
 

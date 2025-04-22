@@ -3,7 +3,6 @@ package us.dot.its.jpo.ode.api.controllers;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -35,9 +34,6 @@ public class SpatController implements PageableQuery {
 
     private final ProcessedSpatRepository processedSpatRepo;
 
-    @Value("${maximumResponseSize}")
-    int maximumResponseSize;
-
     @Autowired
     public SpatController(ProcessedSpatRepository processedSpatRepo) {
         this.processedSpatRepo = processedSpatRepo;
@@ -48,7 +44,6 @@ public class SpatController implements PageableQuery {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Page<ProcessedSpat>> findSpats(
@@ -73,6 +68,7 @@ public class SpatController implements PageableQuery {
             PageRequest pageable = PageRequest.of(page, size);
             Page<ProcessedSpat> response = processedSpatRepo.find(intersectionID, startTime, endTime, compact,
                     pageable);
+
             return ResponseEntity.ok(response);
         }
     }

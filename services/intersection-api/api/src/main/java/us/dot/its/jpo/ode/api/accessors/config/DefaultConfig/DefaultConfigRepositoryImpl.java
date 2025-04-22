@@ -39,6 +39,7 @@ public class DefaultConfigRepositoryImpl implements DefaultConfigRepository {
         return mongoTemplate.count(query, DefaultConfig.class, collectionName);
     }
 
+    @SuppressWarnings("rawtypes")
     public List<DefaultConfig> find(Query query) {
         return mongoTemplate.find(query, DefaultConfig.class, collectionName);
     }

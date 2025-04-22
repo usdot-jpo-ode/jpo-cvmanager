@@ -97,6 +97,7 @@ public class ConfigController {
 
             // Request does not require authentication, ConflictMonitor API is only
             // accessible internally
+            @SuppressWarnings("rawtypes")
             ResponseEntity<DefaultConfig> response = restTemplate.getForEntity(resourceURL, DefaultConfig.class);
 
             if (response.getStatusCode().is2xxSuccessful()) {
@@ -139,11 +140,11 @@ public class ConfigController {
         try {
             String resourceURL = String.format(intersectionConfigTemplate, props.getCmServerURL(),
                     config.getRoadRegulatorID(), config.getIntersectionID(), config.getKey());
+            @SuppressWarnings("rawtypes")
             ResponseEntity<IntersectionConfig> response = restTemplate.getForEntity(resourceURL,
                     IntersectionConfig.class);
 
             if (response.getStatusCode().is2xxSuccessful()) {
-                response.getBody().getType();
                 IntersectionConfig<T> previousConfig = response.getBody();
 
                 if (previousConfig == null) {

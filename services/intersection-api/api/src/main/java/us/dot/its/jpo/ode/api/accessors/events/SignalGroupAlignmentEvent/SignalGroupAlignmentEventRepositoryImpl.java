@@ -60,7 +60,7 @@ public class SignalGroupAlignmentEventRepositoryImpl
             @Nullable Pageable pageable) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
         Query query = Query.query(criteria);
         if (pageable != null) {
             query = query.with(pageable);
@@ -84,7 +84,7 @@ public class SignalGroupAlignmentEventRepositoryImpl
             Long endTime) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
         Query query = Query.query(criteria);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
         return wrapSingleResultWithPage(
@@ -111,9 +111,9 @@ public class SignalGroupAlignmentEventRepositoryImpl
             Pageable pageable) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null, SignalGroupAlignmentEvent.class);
     }
 
     public List<IDCount> getAggregatedDailySignalGroupAlignmentEventCounts(int intersectionID, Long startTime,

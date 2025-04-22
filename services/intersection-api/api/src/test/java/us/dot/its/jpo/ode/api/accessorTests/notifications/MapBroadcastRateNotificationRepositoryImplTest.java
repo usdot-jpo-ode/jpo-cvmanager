@@ -69,6 +69,7 @@ public class MapBroadcastRateNotificationRepositoryImplTest {
 
     @Test
     public void testFind() {
+        @SuppressWarnings("rawtypes")
         Page expected = Mockito.mock(Page.class);
         MapBroadcastRateNotificationRepositoryImpl repo = mock(MapBroadcastRateNotificationRepositoryImpl.class);
 

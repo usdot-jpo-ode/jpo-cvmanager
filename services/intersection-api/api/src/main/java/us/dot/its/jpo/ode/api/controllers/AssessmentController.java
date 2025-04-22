@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -45,9 +44,6 @@ public class AssessmentController implements PageableQuery {
     private final StopLineStopAssessmentRepository stopLineStopAssessmentRepo;
     private final SignalStateEventAssessmentRepository signalStateEventAssessmentRepo;
 
-    @Value("${maximumResponseSize}")
-    int maximumResponseSize;
-
     @Autowired
     public AssessmentController(
             LaneDirectionOfTravelAssessmentRepository laneDirectionOfTravelAssessmentRepo,
@@ -65,7 +61,6 @@ public class AssessmentController implements PageableQuery {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Page<ConnectionOfTravelAssessment>> findConnectionOfTravelAssessment(
@@ -125,7 +120,6 @@ public class AssessmentController implements PageableQuery {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Page<LaneDirectionOfTravelAssessment>> findLaneDirectionOfTravelAssessment(
@@ -187,7 +181,6 @@ public class AssessmentController implements PageableQuery {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Page<StopLineStopAssessment>> findSignalStateAssessment(
@@ -247,7 +240,6 @@ public class AssessmentController implements PageableQuery {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "206", description = "Partial Content - The requested query may have more results than allowed by server. Please reduce the query bounds and try again."),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
     public ResponseEntity<Page<StopLinePassageAssessment>> findSignalStateEventAssessment(

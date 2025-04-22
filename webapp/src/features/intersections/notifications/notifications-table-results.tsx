@@ -182,6 +182,7 @@ export const NotificationsTableResults = ({
           <Table>
             <TableHead>
               <TableRow>
+                <TableCell></TableCell>
                 <TableCell padding="checkbox">
                   <Checkbox
                     checked={selectedNotifications.length === notificationsCount && selectedNotifications.length != 0}

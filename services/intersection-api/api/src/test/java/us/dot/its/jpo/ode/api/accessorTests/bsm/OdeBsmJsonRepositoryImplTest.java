@@ -1,6 +1,6 @@
 package us.dot.its.jpo.ode.api.accessorTests.bsm;
 
-import java.util.Date;
+import java.time.Instant;
 import org.junit.jupiter.api.Test;
 import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,6 +60,8 @@ public class OdeBsmJsonRepositoryImplTest {
 
     @Test
     public void testFindBsmsGeo() {
+
+        @SuppressWarnings("rawtypes")
         Page expected = Mockito.mock(Page.class);
         OdeBsmJsonRepositoryImpl repo = mock(OdeBsmJsonRepositoryImpl.class);
 
@@ -82,7 +84,7 @@ public class OdeBsmJsonRepositoryImplTest {
 
     @Test
     public void testFindWithAllParameters() {
-        // Arrange
+        @SuppressWarnings("rawtypes")
         Page expectedPage = mock(Page.class);
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "recordGeneratedAt"));
         OdeBsmJsonRepositoryImpl repo = mock(OdeBsmJsonRepositoryImpl.class);
@@ -120,8 +122,8 @@ public class OdeBsmJsonRepositoryImplTest {
                     // Verify DATE_FIELD
                     Document dateField = (Document) criteria.getCriteriaObject()
                             .get("recordGeneratedAt");
-                    assertThat(dateField.get("$gte")).isEqualTo(new Date(startTime));
-                    assertThat(dateField.get("$lte")).isEqualTo(new Date(endTime));
+                    assertThat(dateField.get("$gte")).isEqualTo(Instant.ofEpochMilli(startTime).toString());
+                    assertThat(dateField.get("$lte")).isEqualTo(Instant.ofEpochMilli(endTime).toString());
 
                     // Verify latitude
                     Document latitudeField = (Document) criteria.getCriteriaObject()
@@ -143,7 +145,7 @@ public class OdeBsmJsonRepositoryImplTest {
 
     @Test
     public void testFindWithNullBoundingBox() {
-        // Arrange
+        @SuppressWarnings("rawtypes")
         Page expectedPage = mock(Page.class);
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "recordGeneratedAt"));
         OdeBsmJsonRepositoryImpl repo = mock(OdeBsmJsonRepositoryImpl.class);
@@ -179,8 +181,8 @@ public class OdeBsmJsonRepositoryImplTest {
                     // Verify DATE_FIELD
                     Document dateField = (Document) criteria.getCriteriaObject()
                             .get("recordGeneratedAt");
-                    assertThat(dateField.get("$gte")).isEqualTo(new Date(startTime));
-                    assertThat(dateField.get("$lte")).isEqualTo(new Date(endTime));
+                    assertThat(dateField.get("$gte")).isEqualTo(Instant.ofEpochMilli(startTime).toString());
+                    assertThat(dateField.get("$lte")).isEqualTo(Instant.ofEpochMilli(endTime).toString());
 
                     // Verify latitude
                     assertThat(criteria.getCriteriaObject().get("payload.data.coreData.position.latitude")).isNull();
@@ -196,7 +198,7 @@ public class OdeBsmJsonRepositoryImplTest {
 
     @Test
     public void testFindWithNullOptionalParameters() {
-        // Arrange
+        @SuppressWarnings("rawtypes")
         Page expectedPage = mock(Page.class);
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "recordGeneratedAt"));
         OdeBsmJsonRepositoryImpl repo = mock(OdeBsmJsonRepositoryImpl.class);
@@ -232,8 +234,8 @@ public class OdeBsmJsonRepositoryImplTest {
                     // Verify DATE_FIELD
                     Document dateField = (Document) criteria.getCriteriaObject()
                             .get("recordGeneratedAt");
-                    assertThat(dateField.get("$gte")).isEqualTo(new Date(startTime));
-                    assertThat(dateField.get("$lte")).isEqualTo(new Date(endTime));
+                    assertThat(dateField.get("$gte")).isEqualTo(Instant.ofEpochMilli(startTime).toString());
+                    assertThat(dateField.get("$lte")).isEqualTo(Instant.ofEpochMilli(endTime).toString());
 
                     // Verify latitude
                     assertThat(criteria.getCriteriaObject().get("payload.data.coreData.position.latitude")).isNull();

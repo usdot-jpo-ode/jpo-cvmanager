@@ -68,6 +68,7 @@ public class StopLineStopNotificationRepositoryImplTest {
 
     @Test
     public void testFind() {
+        @SuppressWarnings("rawtypes")
         Page expected = Mockito.mock(Page.class);
         StopLineStopNotificationRepositoryImpl repo = mock(StopLineStopNotificationRepositoryImpl.class);
 

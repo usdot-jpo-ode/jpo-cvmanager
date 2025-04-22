@@ -3,27 +3,43 @@ import PropTypes from 'prop-types'
 import toast from 'react-hot-toast'
 import * as Yup from 'yup'
 import { useFormik } from 'formik'
-import { Button, Card, CardActions, CardContent, CardHeader, Divider, Grid2, TextField } from '@mui/material'
-import { configParamApi } from '../../../apis/intersections/configuration-param-api'
-import { selectToken } from '../../../generalSlices/userSlice'
-import { useSelector } from 'react-redux'
+import {
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  Chip,
+  Divider,
+  Grid2,
+  TextField,
+  Typography,
+} from '@mui/material'
 import { useNavigate } from 'react-router-dom'
+import {
+  useUpdateDefaultParameterMutation,
+  useUpdateIntersectionParameterMutation,
+} from '../../api/intersectionApiSlice'
 
 export const ConfigParamEditForm = (props) => {
   const { parameter }: { parameter: DefaultConfig | IntersectionConfig } = props
-  const token = useSelector(selectToken)
   const navigate = useNavigate()
+
+  const [updateIntersectionParameter, {}] = useUpdateIntersectionParameterMutation()
+  const [updateDefaultParameter, {}] = useUpdateDefaultParameterMutation()
+
   const formik = useFormik({
     initialValues: {
-      name: parameter.key,
-      unit: parameter.units,
       value: parameter.value,
-      description: parameter.description,
       submit: null,
     },
     validationSchema: Yup.object({
-      name: Yup.string(),
-      value: Yup.string().required('New value is required'),
+      value: Yup.string()
+        .required('New value is required')
+        .test('not-same-as-parameter', 'New value must be different from the previous value', function (value) {
+          return value?.toString() !== parameter.value?.toString()
+        }),
     }),
     onSubmit: async (values, helpers) => {
       try {
@@ -76,17 +92,17 @@ export const ConfigParamEditForm = (props) => {
             ...(parameter as IntersectionConfig),
             value: typedValue,
           }
-          await configParamApi.updateIntersectionParameter(token, values.name, updatedConfig)
+          await updateIntersectionParameter(updatedConfig)
         } else {
           const updatedConfig = {
             ...parameter,
             value: typedValue,
           }
-          await configParamApi.updateDefaultParameter(token, values.name, updatedConfig)
+          await updateDefaultParameter(updatedConfig)
         }
         helpers.setStatus({ success: true })
         helpers.setSubmitting(false)
-        navigate('/configuration')
+        navigate('/dashboard/intersectionDashboard/configuration')
       } catch (err) {
         console.error(err)
         toast.error('Something went wrong!')
@@ -100,39 +116,34 @@ export const ConfigParamEditForm = (props) => {
   return (
     <form onSubmit={formik.handleSubmit}>
       <Card>
-        <CardHeader title="Edit Configuration Parameter" />
+        <CardHeader
+          title={
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Typography variant="h6">Edit Configuration Parameter</Typography>
+              {'intersectionID' in parameter && (
+                <Chip color="secondary" sx={{ ml: 2 }} label={<Typography>Overridden</Typography>} size="small" />
+              )}
+            </Box>
+          }
+        />
         <Divider />
         <CardContent>
           <Grid2 container spacing={3}>
             <Grid2 size={{ md: 6, xs: 12 }}>
-              <TextField
-                error={Boolean(formik.touched.name && formik.errors.name)}
-                fullWidth
-                label="Parameter Name"
-                name="name"
-                onBlur={formik.handleBlur}
-                onChange={formik.handleChange}
-                disabled
-                value={formik.values.name}
-              />
+              <TextField fullWidth label="Parameter Name" disabled value={parameter.key} />
             </Grid2>
             <Grid2 size={{ md: 6, xs: 12 }}>
-              <TextField
-                error={Boolean(formik.touched.unit && formik.errors.unit)}
-                fullWidth
-                label="Unit"
-                name="unit"
-                onBlur={formik.handleBlur}
-                onChange={formik.handleChange}
-                disabled
-                value={formik.values.unit}
-              />
+              <TextField fullWidth label="Unit" disabled value={parameter.units} />
+            </Grid2>
+            <Grid2 size={{ md: 6, xs: 12 }}>
+              <TextField fullWidth label="Initial Value" disabled value={parameter.value} />
             </Grid2>
             <Grid2 size={{ md: 6, xs: 12 }}>
               <TextField
                 error={Boolean(formik.touched.value && formik.errors.value)}
                 fullWidth
-                label="Value"
+                helperText={formik.touched.value && formik.errors.value}
+                label="New Value"
                 name="value"
                 onBlur={formik.handleBlur}
                 onChange={formik.handleChange}
@@ -142,15 +153,12 @@ export const ConfigParamEditForm = (props) => {
             </Grid2>
             <Grid2 size={{ md: 12, xs: 12 }}>
               <TextField
-                error={Boolean(formik.touched.description && formik.errors.description)}
                 fullWidth
                 label="Description"
                 name="description"
-                onBlur={formik.handleBlur}
-                onChange={formik.handleChange}
                 multiline={true}
                 disabled
-                value={formik.values.description}
+                value={parameter.description}
               />
             </Grid2>
           </Grid2>
@@ -173,7 +181,7 @@ export const ConfigParamEditForm = (props) => {
               mr: 'auto',
             }}
             variant="outlined"
-            onClick={() => navigate(`/configuration`)}
+            onClick={() => navigate(`/dashboard/intersectionDashboard/configuration`)}
           >
             Cancel
           </Button>

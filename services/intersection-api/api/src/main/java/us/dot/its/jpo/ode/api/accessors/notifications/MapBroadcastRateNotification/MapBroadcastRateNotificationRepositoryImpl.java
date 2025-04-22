@@ -50,7 +50,7 @@ public class MapBroadcastRateNotificationRepositoryImpl
             @Nullable Pageable pageable) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
         Query query = Query.query(criteria);
         if (pageable != null) {
             query = query.with(pageable);
@@ -74,7 +74,7 @@ public class MapBroadcastRateNotificationRepositoryImpl
             Long endTime) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
         Query query = Query.query(criteria);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
         return wrapSingleResultWithPage(
@@ -101,9 +101,10 @@ public class MapBroadcastRateNotificationRepositoryImpl
             Pageable pageable) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null,
+                MapBroadcastRateNotification.class);
     }
 
     @Override

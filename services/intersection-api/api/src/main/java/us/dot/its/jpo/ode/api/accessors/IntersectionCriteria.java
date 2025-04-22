@@ -19,18 +19,24 @@ public class IntersectionCriteria extends Criteria {
      *                         since epoch
      * @return the criteria object to use for querying
      */
-    public IntersectionCriteria withinTimeWindow(@Nonnull String fieldName,
+    public IntersectionCriteria withinTimeWindow(
+            @Nonnull String fieldName,
             @Nullable Long startEpochMillis,
-            @Nullable Long endEpochMillis) {
+            @Nullable Long endEpochMillis,
+            @Nullable boolean formatAsString) {
         if (startEpochMillis != null && endEpochMillis != null) {
             this.and(fieldName)
-                    .gte(Date.from(Instant.ofEpochMilli(startEpochMillis)))
-                    .lte(Date.from(Instant.ofEpochMilli(endEpochMillis)));
+                    .gte(formatAsString == true ? Instant.ofEpochMilli(startEpochMillis).toString()
+                            : Date.from(Instant.ofEpochMilli(startEpochMillis)))
+                    .lte(formatAsString == true ? Instant.ofEpochMilli(endEpochMillis).toString()
+                            : Date.from(Instant.ofEpochMilli(endEpochMillis)));
             return this;
         } else if (startEpochMillis != null) {
-            this.and(fieldName).gte(new Date(startEpochMillis));
+            this.and(fieldName).gte(formatAsString == true ? Instant.ofEpochMilli(startEpochMillis).toString()
+                    : Date.from(Instant.ofEpochMilli(startEpochMillis)));
         } else if (endEpochMillis != null) {
-            this.and(fieldName).lte(new Date(endEpochMillis));
+            this.and(fieldName).lte(formatAsString == true ? Instant.ofEpochMilli(endEpochMillis).toString()
+                    : Date.from(Instant.ofEpochMilli(endEpochMillis)));
         }
         return this;
     }

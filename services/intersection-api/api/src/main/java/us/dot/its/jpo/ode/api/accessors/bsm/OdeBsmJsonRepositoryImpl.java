@@ -95,7 +95,7 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(ORIGIN_IP_FIELD, originIp)
                 .whereOptional(VEHICLE_ID_FIELD, vehicleId)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
 
         if (centerLng != null && centerLat != null && distance != null) {
             double[] latitudes = calculateLatitudes(centerLng, centerLat, distance);
@@ -109,7 +109,7 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
         List<String> excludedFields = List.of("recordGeneratedAt");
 
         // TODO: Consider mapping with jackson ObjectMapper
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, excludedFields);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, excludedFields, OdeBsmData.class);
     }
 
     /**
@@ -138,7 +138,7 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(ORIGIN_IP_FIELD, originIp)
                 .whereOptional(VEHICLE_ID_FIELD, vehicleId)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
 
         if (centerLng != null && centerLat != null && distance != null) {
             double[] latitudes = calculateLatitudes(centerLng, centerLat, distance);

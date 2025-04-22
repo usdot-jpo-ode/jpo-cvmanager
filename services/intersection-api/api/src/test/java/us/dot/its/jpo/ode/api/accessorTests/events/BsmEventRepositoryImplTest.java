@@ -24,6 +24,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -169,7 +170,6 @@ public class BsmEventRepositoryImplTest {
 
         // Get the captured Query
         Query capturedQuery = queryCaptor.getValue();
-        System.out.println("Captured Query: " + capturedQuery);
 
         // Verify the Criteria in the Query
         Document queryObject = capturedQuery.getQueryObject();
@@ -180,8 +180,8 @@ public class BsmEventRepositoryImplTest {
         // Verify time window condition
         Document timeCondition = (Document) queryObject.get("startingBsmTimestamp");
         assertThat(timeCondition).isNotNull();
-        assertThat(timeCondition.get("$gte")).isEqualTo(new Date(startTime));
-        assertThat(timeCondition.get("$lte")).isEqualTo(new Date(endTime));
+        assertThat(timeCondition.get("$gte")).isEqualTo(Date.from(Instant.ofEpochMilli(startTime)));
+        assertThat(timeCondition.get("$lte")).isEqualTo(Date.from(Instant.ofEpochMilli(endTime)));
     }
 
     @Test
@@ -204,7 +204,6 @@ public class BsmEventRepositoryImplTest {
 
         // Get the captured Query
         Query capturedQuery = queryCaptor.getValue();
-        System.out.println("Captured Query: " + capturedQuery);
 
         // Verify the Criteria in the Query
         Document queryObject = capturedQuery.getQueryObject();
@@ -215,8 +214,8 @@ public class BsmEventRepositoryImplTest {
         // Verify time window condition
         Document timeCondition = (Document) queryObject.get("startingBsmTimestamp");
         assertThat(timeCondition).isNotNull();
-        assertThat(timeCondition.get("$gte")).isEqualTo(new Date(startTime));
-        assertThat(timeCondition.get("$lte")).isEqualTo(new Date(endTime));
+        assertThat(timeCondition.get("$gte")).isEqualTo(Date.from(Instant.ofEpochMilli(startTime)));
+        assertThat(timeCondition.get("$lte")).isEqualTo(Date.from(Instant.ofEpochMilli(endTime)));
     }
 
     @Test
@@ -239,7 +238,6 @@ public class BsmEventRepositoryImplTest {
 
         // Get the captured Query
         Query capturedQuery = queryCaptor.getValue();
-        System.out.println("Captured Query: " + capturedQuery);
 
         // Verify the Criteria in the Query
         Document queryObject = capturedQuery.getQueryObject();
@@ -250,8 +248,8 @@ public class BsmEventRepositoryImplTest {
         // Verify time window condition
         Document timeCondition = (Document) queryObject.get("startingBsmTimestamp");
         assertThat(timeCondition).isNotNull();
-        assertThat(timeCondition.get("$gte")).isEqualTo(new Date(startTime));
-        assertThat(timeCondition.get("$lte")).isEqualTo(new Date(endTime));
+        assertThat(timeCondition.get("$gte")).isEqualTo(Date.from(Instant.ofEpochMilli(startTime)));
+        assertThat(timeCondition.get("$lte")).isEqualTo(Date.from(Instant.ofEpochMilli(endTime)));
     }
 
     @Test
@@ -274,7 +272,6 @@ public class BsmEventRepositoryImplTest {
 
         // Get the captured Query
         Query capturedQuery = queryCaptor.getValue();
-        System.out.println("Captured Query: " + capturedQuery);
 
         // Verify the Criteria in the Query
         Document queryObject = capturedQuery.getQueryObject();
@@ -307,7 +304,6 @@ public class BsmEventRepositoryImplTest {
 
         // Get the captured Query
         Query capturedQuery = queryCaptor.getValue();
-        System.out.println("Captured Query: " + capturedQuery);
 
         // Verify the Criteria in the Query
         Document queryObject = capturedQuery.getQueryObject();

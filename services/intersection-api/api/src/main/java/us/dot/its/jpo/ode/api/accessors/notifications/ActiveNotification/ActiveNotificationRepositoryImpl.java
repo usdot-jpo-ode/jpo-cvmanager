@@ -1,8 +1,14 @@
 package us.dot.its.jpo.ode.api.accessors.notifications.ActiveNotification;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+
 import javax.annotation.Nullable;
+import org.bson.Document;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
@@ -19,7 +25,14 @@ import org.springframework.stereotype.Component;
 
 import com.mongodb.client.result.DeleteResult;
 
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.IntersectionReferenceAlignmentNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.LaneDirectionOfTravelNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.Notification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalGroupAlignmentNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalStateConflictNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.TimeChangeDetailsNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.app_health.KafkaStreamsAnomalyNotification;
 
 @Slf4j
 @Component
@@ -114,57 +127,44 @@ public class ActiveNotificationRepositoryImpl
                 .whereOptional(NOTIFICATION_TYPE_FIELD, notificationType)
                 .whereOptional(KEY_FIELD, key);
         Sort sort = Sort.by(Sort.Direction.DESC, NOTIFICATION_TYPE_FIELD);
-        Page<Notification> dbObjects = findPage(mongoTemplate, collectionName, pageable, criteria, sort);
-        return dbObjects;
+        Page<LinkedHashMap<String, Object>> dbObjects = findPageAsHashMap(mongoTemplate, collectionName, pageable,
+                criteria, sort);
 
-        // // Page<Document> dbObjects = findPageAsBson(mongoTemplate, collectionName,
-        // // pageable, criteria, sort);
-
-        // List<Notification> notifications = new ArrayList<>();
-        // for (Notification dbObject : dbObjects.getContent()) {
-        // // print dbObject for debugging
-        // log.debug("dbObject: {}", dbObject.toString());
-        // // String type =
-        // // dbObject.toBsonDocument().getString("notificationType").getValue();
-        // // switch (type) {
-        // // case "ConnectionOfTravelNotification" ->
-        // // notifications
-        // //
-        // .add(mongoTemplate.getConverter().read(ConnectionOfTravelNotification.class,
-        // // dbObject));
-        // // case "IntersectionReferenceAlignmentNotification" -> notifications.add(
-        // //
-        // mongoTemplate.getConverter().read(IntersectionReferenceAlignmentNotification.class,
-        // // dbObject));
-        // // case "LaneDirectionOfTravelAssessmentNotification" ->
-        // // notifications
-        // //
-        // .add(mongoTemplate.getConverter().read(LaneDirectionOfTravelNotification.class,
-        // // dbObject));
-        // // case "SignalGroupAlignmentNotification" ->
-        // // notifications
-        // //
-        // .add(mongoTemplate.getConverter().read(SignalGroupAlignmentNotification.class,
-        // // dbObject));
-        // // case "SignalStateConflictNotification" ->
-        // // notifications
-        // //
-        // .add(mongoTemplate.getConverter().read(SignalStateConflictNotification.class,
-        // // dbObject));
-        // // case "TimeChangeDetailsNotification" ->
-        // //
-        // notifications.add(mongoTemplate.getConverter().read(TimeChangeDetailsNotification.class,
-        // // dbObject));
-        // // case "AppHealthNotification" ->
-        // // notifications
-        // //
-        // .add(mongoTemplate.getConverter().read(KafkaStreamsAnomalyNotification.class,
-        // // dbObject));
-        // // default ->
-        // // log.warn("Attempted to find unknown notificationType: {}", type);
-        // // }
-        // }
-        // return new PageImpl<>(notifications, pageable, dbObjects.getTotalElements());
+        List<Notification> notifications = new ArrayList<>();
+        for (LinkedHashMap<String, Object> dbObject : dbObjects.getContent()) {
+            String type = (String) dbObject.get("notificationType");
+            switch (type) {
+                case "ConnectionOfTravelNotification" ->
+                    notifications
+                            .add(mongoTemplate.getConverter().read(ConnectionOfTravelNotification.class,
+                                    new Document(dbObject)));
+                case "IntersectionReferenceAlignmentNotification" -> notifications.add(
+                        mongoTemplate.getConverter().read(IntersectionReferenceAlignmentNotification.class,
+                                new Document(dbObject)));
+                case "LaneDirectionOfTravelAssessmentNotification" ->
+                    notifications
+                            .add(mongoTemplate.getConverter().read(LaneDirectionOfTravelNotification.class,
+                                    new Document(dbObject)));
+                case "SignalGroupAlignmentNotification" ->
+                    notifications
+                            .add(mongoTemplate.getConverter().read(SignalGroupAlignmentNotification.class,
+                                    new Document(dbObject)));
+                case "SignalStateConflictNotification" ->
+                    notifications
+                            .add(mongoTemplate.getConverter().read(SignalStateConflictNotification.class,
+                                    new Document(dbObject)));
+                case "TimeChangeDetailsNotification" ->
+                    notifications.add(mongoTemplate.getConverter().read(TimeChangeDetailsNotification.class,
+                            new Document(dbObject)));
+                case "AppHealthNotification" ->
+                    notifications
+                            .add(mongoTemplate.getConverter().read(KafkaStreamsAnomalyNotification.class,
+                                    new Document(dbObject)));
+                default ->
+                    log.warn("Attempted to find unknown notificationType: {}", type);
+            }
+        }
+        return new PageImpl<>(notifications, pageable, dbObjects.getTotalElements());
     }
 
     public long delete(Integer intersectionID,

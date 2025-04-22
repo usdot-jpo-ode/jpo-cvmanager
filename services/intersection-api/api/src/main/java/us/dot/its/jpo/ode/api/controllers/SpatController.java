@@ -64,6 +64,7 @@ public class SpatController implements PageableQuery {
             PageRequest pageable = PageRequest.of(page, size);
             Page<ProcessedSpat> response = processedSpatRepo.find(intersectionID, startTime, endTime, compact,
                     pageable);
+
             return ResponseEntity.ok(response);
         }
     }

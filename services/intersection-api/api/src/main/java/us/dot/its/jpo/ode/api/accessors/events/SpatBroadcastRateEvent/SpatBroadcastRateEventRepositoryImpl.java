@@ -111,7 +111,7 @@ public class SpatBroadcastRateEventRepositoryImpl
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, SpatBroadcastRateEvent.class);
     }
 
     public List<IDCount> getAggregatedDailySpatBroadcastRateEventCounts(int intersectionID, Long startTime,

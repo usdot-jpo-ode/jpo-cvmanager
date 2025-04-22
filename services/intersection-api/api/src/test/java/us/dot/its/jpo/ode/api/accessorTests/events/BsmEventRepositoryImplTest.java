@@ -170,7 +170,6 @@ public class BsmEventRepositoryImplTest {
 
         // Get the captured Query
         Query capturedQuery = queryCaptor.getValue();
-        System.out.println("Captured Query: " + capturedQuery);
 
         // Verify the Criteria in the Query
         Document queryObject = capturedQuery.getQueryObject();
@@ -205,7 +204,6 @@ public class BsmEventRepositoryImplTest {
 
         // Get the captured Query
         Query capturedQuery = queryCaptor.getValue();
-        System.out.println("Captured Query: " + capturedQuery);
 
         // Verify the Criteria in the Query
         Document queryObject = capturedQuery.getQueryObject();
@@ -240,7 +238,6 @@ public class BsmEventRepositoryImplTest {
 
         // Get the captured Query
         Query capturedQuery = queryCaptor.getValue();
-        System.out.println("Captured Query: " + capturedQuery);
 
         // Verify the Criteria in the Query
         Document queryObject = capturedQuery.getQueryObject();
@@ -275,7 +272,6 @@ public class BsmEventRepositoryImplTest {
 
         // Get the captured Query
         Query capturedQuery = queryCaptor.getValue();
-        System.out.println("Captured Query: " + capturedQuery);
 
         // Verify the Criteria in the Query
         Document queryObject = capturedQuery.getQueryObject();
@@ -308,7 +304,6 @@ public class BsmEventRepositoryImplTest {
 
         // Get the captured Query
         Query capturedQuery = queryCaptor.getValue();
-        System.out.println("Captured Query: " + capturedQuery);
 
         // Verify the Criteria in the Query
         Document queryObject = capturedQuery.getQueryObject();

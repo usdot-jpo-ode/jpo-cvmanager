@@ -107,7 +107,7 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
 
         // TODO: Consider mapping with jackson ObjectMapper
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, OdeBsmData.class);
     }
 
     /**

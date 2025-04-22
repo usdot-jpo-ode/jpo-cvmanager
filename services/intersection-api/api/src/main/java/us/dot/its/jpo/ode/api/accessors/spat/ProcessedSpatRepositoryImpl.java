@@ -100,14 +100,11 @@ public class ProcessedSpatRepositoryImpl
             Long endTime,
             boolean compact,
             Pageable pageable) {
-        System.out.println("find called with intersectionID: " + intersectionID + ", startTime: " + startTime
-                + ", endTime: " + endTime);
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
-        System.out.println("find criteria: " + criteria.getCriteriaObject().toString());
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, ProcessedSpat.class);
     }
 
     @Override

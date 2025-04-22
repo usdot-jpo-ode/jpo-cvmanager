@@ -1,30 +1,49 @@
 # === BUILDER IMAGE for ACM ===
-FROM amazonlinux:2023 as builder
+FROM alpine:3.18 as builder
 USER root
 WORKDIR /asn1_codec
-## install build dependencies
-RUN yum install -y cmake g++ make bash automake libtool autoconf flex bison
 
-# Install librdkafka from Confluent repo
-COPY ./confluent.repo /etc/yum.repos.d
-RUN rpm --import https://packages.confluent.io/rpm/7.6/archive.key && yum clean all && yum install -y librdkafka-devel
+# Install build dependencies
+RUN apk update && apk add --no-cache \
+    bash \
+    cmake \
+    make \
+    g++ \
+    autoconf \
+    automake \
+    libtool \
+    flex \
+    bison \
+    git \
+    curl \
+    openssl-dev \
+    pkgconfig \
+    zlib-dev \
+    linux-headers \
+    build-base \
+    librdkafka \
+    librdkafka-dev 
 
 # Install pugixml
 COPY ./asn1_codec/pugixml /asn1_codec/pugixml
 RUN cd /asn1_codec/pugixml && mkdir -p build && cd build && cmake .. && make && make install
 
-# Build and install asn1c submodule. Ensure all scripts have the correct permissions - required for azure release pipeline
+# Build and install asn1c
 COPY ./asn1_codec/usdot-asn1c /asn1_codec/asn1c
-RUN find /asn1_codec/asn1c -type f -name '*.pl' -exec chmod +x {} \; && cd asn1c && test -f configure || autoreconf -iv && ./configure && make && make install
+RUN find /asn1_codec/asn1c -type f -name '*.pl' -exec chmod +x {} \; && \
+    cd /asn1_codec/asn1c && \
+    test -f configure || autoreconf -iv && ./configure && make && make install
 
-# Make generated files available to the build & compile example
+# Build combined files
 COPY ./asn1_codec/asn1c_combined /asn1_codec/asn1c_combined
 RUN export LD_LIBRARY_PATH=/usr/local/lib && cd /asn1_codec/asn1c_combined && bash doIt.sh
 
-# Remove any lingering .asn and duplicate files
-RUN rm -rf /asn1c_codec/asn1c_combined/j2735-asn-files && rm -rf /asn1c_codec/asn1c_combined/semi-asn-files && rm -rf /asn1c_codec/asn1c_combined/generated-files
+# Clean up unused asn directories
+RUN rm -rf /asn1_codec/asn1c_combined/j2735-asn-files \
+           /asn1_codec/asn1c_combined/semi-asn-files \
+           /asn1_codec/asn1c_combined/generated-files
 
-# copy the source and build files
+# Copy source and config files
 COPY ./asn1_codec/CMakeLists.txt /asn1_codec
 COPY ./asn1_codec/config /asn1_codec/config
 COPY ./asn1_codec/include /asn1_codec/include
@@ -33,14 +52,12 @@ COPY ./asn1_codec/kafka-test /asn1_codec/kafka-test
 COPY ./asn1_codec/unit-test-data /asn1_codec/unit-test-data
 COPY ./asn1_codec/data /asn1_codec/data
 COPY ./asn1_codec/run_acm.sh /asn1_codec
-COPY ./asn1_codec/data /asn1_codec/data
 
-# Build acm.
+# Build ACM
 RUN mkdir -p /build && cd /build && cmake /asn1_codec && make
 
-
-# # === Build image for Java ===
-FROM maven:3.8-eclipse-temurin-21-alpine as jbuilder
+# === BUILD IMAGE for Java ===
+FROM eclipse-temurin:21-alpine as jbuilder
 
 WORKDIR /home
 
@@ -49,6 +66,8 @@ ARG MAVEN_GITHUB_ORG
 
 ENV MAVEN_GITHUB_TOKEN=$MAVEN_GITHUB_TOKEN
 ENV MAVEN_GITHUB_ORG=$MAVEN_GITHUB_ORG
+
+RUN apk add --no-cache maven
 
 COPY ./api/pom.xml ./intersection-api/
 COPY ./api/settings.xml ./intersection-api/
@@ -59,37 +78,40 @@ RUN mvn -s settings.xml dependency:resolve
 COPY ./api/src ./src
 RUN mvn -s settings.xml install -DskipTests
 
-# # === RUNTIME IMAGE for Java and ACM ===
-# # Use Amazon Corretto Java on Amazon Linum 2023 to match the codec build env
-# # FROM alpine:3.12
-FROM amazoncorretto:21-al2023
+# === RUNTIME IMAGE for Java and ACM ===
+FROM eclipse-temurin:21-alpine
 
 WORKDIR /home
+USER root
 
+# Install runtime dependencies
+RUN apk update && apk add --no-cache \
+    bash \
+    libstdc++ \
+    zlib \
+    openssl \
+    curl \
+    librdkafka \
+    librdkafka-dev \
+    jemalloc
+
+# Set jemalloc as the allocator
+ENV LD_PRELOAD=/usr/lib/libjemalloc.so
+
+# Copy the built Java artifacts
 COPY --from=jbuilder /home/intersection-api/src/main/resources/application.yaml /home
 COPY --from=jbuilder /home/intersection-api/src/main/resources/logback.xml /home
 COPY --from=jbuilder /home/intersection-api/target/intersection-api.jar /home
-# # Copy asn1_codec executable and test files
-USER root
+
+# Copy ACM binary and required files
 WORKDIR /asn1_codec
-
-
-# # install runtime dependencies
-RUN yum install -y bash
-
-
-# Install librdkafka from Confluent repo
-COPY ./confluent.repo /etc/yum.repos.d
-RUN rpm --import https://packages.confluent.io/rpm/7.6/archive.key && yum clean all && yum install -y librdkafka-devel
-
-# # copy the built files from the builder
 COPY --from=builder /asn1_codec /asn1_codec
 COPY --from=builder /build /build
 
-# # copy test data. This changes frequently so keep it low in the file.
+# Copy test data
 COPY ./asn1_codec/docker-test /asn1_codec/docker-test
 
-# # Put workdir back to Java home
+# Back to home for entrypoint
 WORKDIR /home
 
 ENTRYPOINT ["java", \

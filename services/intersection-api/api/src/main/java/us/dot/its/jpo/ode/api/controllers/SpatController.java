@@ -2,7 +2,6 @@ package us.dot.its.jpo.ode.api.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,9 +30,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 public class SpatController implements PageableQuery {
 
     private final ProcessedSpatRepository processedSpatRepo;
-
-    @Value("${maximumResponseSize}")
-    int maximumResponseSize;
 
     @Autowired
     public SpatController(ProcessedSpatRepository processedSpatRepo) {

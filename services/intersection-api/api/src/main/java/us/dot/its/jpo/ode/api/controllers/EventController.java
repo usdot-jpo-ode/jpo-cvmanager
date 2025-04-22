@@ -13,7 +13,6 @@ import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -92,9 +91,6 @@ public class EventController implements PageableQuery {
     private final MapMessageCountProgressionEventRepository mapMessageCountProgressionEventRepo;
     private final BsmMessageCountProgressionEventRepository bsmMessageCountProgressionEventRepo;
     private final BsmEventRepository bsmEventRepo;
-
-    @Value("${maximumResponseSize}")
-    int maximumResponseSize;
 
     DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
     int MILLISECONDS_PER_MINUTE = 60 * 1000;

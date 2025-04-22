@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -72,9 +71,6 @@ public class NotificationController implements PageableQuery {
     private final StopLineStopNotificationRepository stopLineStopNotificationRepo;
     private final StopLinePassageNotificationRepository stopLinePassageNotificationRepo;
     private final ActiveNotificationRepository activeNotificationRepo;
-
-    @Value("${maximumResponseSize}")
-    int maximumResponseSize;
 
     @Autowired
     public NotificationController(

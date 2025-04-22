@@ -28,13 +28,13 @@ RUN apk update && apk add --no-cache \
 COPY ./asn1_codec/pugixml /asn1_codec/pugixml
 RUN cd /asn1_codec/pugixml && mkdir -p build && cd build && cmake .. && make && make install
 
-# Build and install asn1c
+# Build and install asn1c submodule. Ensure all scripts have the correct permissions - required for azure release pipeline
 COPY ./asn1_codec/usdot-asn1c /asn1_codec/asn1c
 RUN find /asn1_codec/asn1c -type f -name '*.pl' -exec chmod +x {} \; && \
     cd /asn1_codec/asn1c && \
     test -f configure || autoreconf -iv && ./configure && make && make install
 
-# Build combined files
+# Make generated files available to the build & compile example
 COPY ./asn1_codec/asn1c_combined /asn1_codec/asn1c_combined
 RUN export LD_LIBRARY_PATH=/usr/local/lib && cd /asn1_codec/asn1c_combined && bash doIt.sh
 
@@ -67,8 +67,6 @@ ARG MAVEN_GITHUB_ORG
 ENV MAVEN_GITHUB_TOKEN=$MAVEN_GITHUB_TOKEN
 ENV MAVEN_GITHUB_ORG=$MAVEN_GITHUB_ORG
 
-RUN apk add --no-cache maven
-
 COPY ./api/pom.xml ./intersection-api/
 COPY ./api/settings.xml ./intersection-api/
 
@@ -79,6 +77,7 @@ COPY ./api/src ./src
 RUN mvn -s settings.xml install -DskipTests
 
 # === RUNTIME IMAGE for Java and ACM ===
+# NOTE: This is alpine based to match the ACM image and allow for ARM64 support.
 FROM eclipse-temurin:21-alpine
 
 WORKDIR /home
@@ -108,7 +107,7 @@ WORKDIR /asn1_codec
 COPY --from=builder /asn1_codec /asn1_codec
 COPY --from=builder /build /build
 
-# Copy test data
+# copy test data. This changes frequently so keep it low in the file.
 COPY ./asn1_codec/docker-test /asn1_codec/docker-test
 
 # Back to home for entrypoint

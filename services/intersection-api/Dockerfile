@@ -67,6 +67,8 @@ ARG MAVEN_GITHUB_ORG
 ENV MAVEN_GITHUB_TOKEN=$MAVEN_GITHUB_TOKEN
 ENV MAVEN_GITHUB_ORG=$MAVEN_GITHUB_ORG
 
+RUN apk add --no-cache maven
+
 COPY ./api/pom.xml ./intersection-api/
 COPY ./api/settings.xml ./intersection-api/
 

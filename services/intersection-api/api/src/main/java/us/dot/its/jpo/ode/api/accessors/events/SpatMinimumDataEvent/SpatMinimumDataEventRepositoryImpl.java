@@ -111,7 +111,7 @@ public class SpatMinimumDataEventRepositoryImpl
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, SpatMinimumDataEvent.class);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null, SpatMinimumDataEvent.class);
     }
 
     public List<IDCount> getAggregatedDailySpatMinimumDataEventCounts(int intersectionID, Long startTime,

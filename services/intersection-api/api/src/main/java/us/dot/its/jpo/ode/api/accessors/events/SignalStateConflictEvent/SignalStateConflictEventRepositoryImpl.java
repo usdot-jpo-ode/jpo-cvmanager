@@ -113,7 +113,7 @@ public class SignalStateConflictEventRepositoryImpl
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, SignalStateConflictEvent.class);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null, SignalStateConflictEvent.class);
     }
 
     public List<IDCount> getAggregatedDailySignalStateConflictEventCounts(int intersectionID, Long startTime,

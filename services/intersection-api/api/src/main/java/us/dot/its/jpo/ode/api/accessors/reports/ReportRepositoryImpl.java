@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.api.accessors.reports;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.Nullable;
 
 import org.springframework.data.domain.Page;
@@ -82,7 +84,6 @@ public class ReportRepositoryImpl
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
         Query query = Query.query(criteria);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        // TODO: Add exclusion for reportContents if !includeReportContents
         return wrapSingleResultWithPage(
                 mongoTemplate.findOne(
                         query.with(sort),
@@ -112,8 +113,11 @@ public class ReportRepositoryImpl
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        // TODO: Add exclusion for reportContents if !includeReportContents
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, ReportDocument.class);
+        List<String> excludedFields = new ArrayList<>();
+        if (!includeReportContents) {
+            excludedFields.add("reportContents");
+        }
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, excludedFields, ReportDocument.class);
     }
 
     @Override

@@ -124,7 +124,8 @@ public class LaneDirectionOfTravelEventRepositoryImpl
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, LaneDirectionOfTravelEvent.class);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null,
+                LaneDirectionOfTravelEvent.class);
     }
 
     public List<IDCount> getAggregatedDailyLaneDirectionOfTravelEventCounts(int intersectionID, Long startTime,

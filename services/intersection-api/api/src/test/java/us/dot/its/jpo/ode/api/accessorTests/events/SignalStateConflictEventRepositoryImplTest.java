@@ -88,6 +88,7 @@ public class SignalStateConflictEventRepositoryImplTest {
                 any(PageRequest.class),
                 any(Criteria.class),
                 any(Sort.class),
+                any(),
                 any())).thenReturn(expected);
         PageRequest pageRequest = PageRequest.of(0, 1);
         doCallRealMethod().when(repo).find(1, null, null, pageRequest);

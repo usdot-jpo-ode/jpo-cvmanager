@@ -1,0 +1,1494 @@
+[{
+  "_id": {
+    "$oid": "66c4c172bc6a472adb01a2e3"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:16:50.318Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170595000,
+    "endTimestamp": 1724170605000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 20
+},
+{
+  "_id": {
+    "$oid": "66c4c177bc6a472adb01a33b"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:16:55.195Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170600000,
+    "endTimestamp": 1724170610000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 67
+},
+{
+  "_id": {
+    "$oid": "66c4c17cbc6a472adb01a4a0"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:17:00.271Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170605000,
+    "endTimestamp": 1724170615000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 62
+},
+{
+  "_id": {
+    "$oid": "66c4c181bc6a472adb01a4fc"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:17:05.313Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170610000,
+    "endTimestamp": 1724170620000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 62
+},
+{
+  "_id": {
+    "$oid": "66c4c186bc6a472adb01a64f"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:17:10.262Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170615000,
+    "endTimestamp": 1724170625000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 61
+},
+{
+  "_id": {
+    "$oid": "66c4c18cbc6a472adb01a6ec"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:17:16.135Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170620000,
+    "endTimestamp": 1724170630000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 61
+},
+{
+  "_id": {
+    "$oid": "66c4c190bc6a472adb01a801"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:17:20.205Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170625000,
+    "endTimestamp": 1724170635000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 67
+},
+{
+  "_id": {
+    "$oid": "66c4c196bc6a472adb01a8e5"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:17:26.821Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170630000,
+    "endTimestamp": 1724170640000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 62
+},
+{
+  "_id": {
+    "$oid": "66c4c19abc6a472adb01a9d3"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:17:30.309Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170635000,
+    "endTimestamp": 1724170645000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 70
+},
+{
+  "_id": {
+    "$oid": "66c4c1a1bc6a472adb01aae1"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:17:37.357Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170640000,
+    "endTimestamp": 1724170650000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 64
+},
+{
+  "_id": {
+    "$oid": "66c4c1a4bc6a472adb01aba0"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:17:40.228Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170645000,
+    "endTimestamp": 1724170655000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 70
+},
+{
+  "_id": {
+    "$oid": "66c4c1acbc6a472adb01acd1"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:17:48.168Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170650000,
+    "endTimestamp": 1724170660000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 64
+},
+{
+  "_id": {
+    "$oid": "66c4c1aebc6a472adb01ad75"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:17:50.334Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170655000,
+    "endTimestamp": 1724170665000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 70
+},
+{
+  "_id": {
+    "$oid": "66c4c1b6bc6a472adb01aec5"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:17:58.722Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170660000,
+    "endTimestamp": 1724170670000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 65
+},
+{
+  "_id": {
+    "$oid": "66c4c1b8bc6a472adb01af33"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:18:00.312Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170665000,
+    "endTimestamp": 1724170675000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 70
+},
+{
+  "_id": {
+    "$oid": "66c4c1bdbc6a472adb01b090"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:18:05.326Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170670000,
+    "endTimestamp": 1724170680000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 63
+},
+{
+  "_id": {
+    "$oid": "66c4c1c2bc6a472adb01b0df"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:18:10.324Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170675000,
+    "endTimestamp": 1724170685000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 65
+},
+{
+  "_id": {
+    "$oid": "66c4c1c7bc6a472adb01b23f"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:18:15.322Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170680000,
+    "endTimestamp": 1724170690000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 60
+},
+{
+  "_id": {
+    "$oid": "66c4c1ccbc6a472adb01b2a7"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:18:20.648Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170685000,
+    "endTimestamp": 1724170695000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 60
+},
+{
+  "_id": {
+    "$oid": "66c4c1d1bc6a472adb01b3f5"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:18:25.258Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170690000,
+    "endTimestamp": 1724170700000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 62
+},
+{
+  "_id": {
+    "$oid": "66c4c1d7bc6a472adb01b4a2"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:18:31.367Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170695000,
+    "endTimestamp": 1724170705000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 61
+},
+{
+  "_id": {
+    "$oid": "66c4c1dbbc6a472adb01b5b8"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:18:35.231Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170700000,
+    "endTimestamp": 1724170710000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 70
+},
+{
+  "_id": {
+    "$oid": "66c4c1ecbc6a472adb01b69a"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:18:52.274Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170722274,
+    "endTimestamp": 1724170732274
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c1f1bc6a472adb01b6a5"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:18:57.296Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170727296,
+    "endTimestamp": 1724170737296
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c1f6bc6a472adb01b6a7"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:19:02.213Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170732212,
+    "endTimestamp": 1724170742212
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c1fbbc6a472adb01b6a9"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:19:07.232Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170737232,
+    "endTimestamp": 1724170747232
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c200bc6a472adb01b6ab"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:19:12.246Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170742245,
+    "endTimestamp": 1724170752245
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c205bc6a472adb01b6ad"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:19:17.262Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170747262,
+    "endTimestamp": 1724170757262
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c20abc6a472adb01b6af"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:19:22.278Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170752278,
+    "endTimestamp": 1724170762278
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c20fbc6a472adb01b6b1"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:19:27.299Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170757298,
+    "endTimestamp": 1724170767298
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c214bc6a472adb01b6b3"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:19:32.213Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170762213,
+    "endTimestamp": 1724170772213
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c219bc6a472adb01b6b5"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:19:37.230Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170767230,
+    "endTimestamp": 1724170777230
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c21ebc6a472adb01b6b7"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:19:42.248Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170772248,
+    "endTimestamp": 1724170782248
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c223bc6a472adb01b6b9"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:19:47.265Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170777264,
+    "endTimestamp": 1724170787264
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c228bc6a472adb01b6bb"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:19:52.281Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170782281,
+    "endTimestamp": 1724170792281
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c22dbc6a472adb01b6bd"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:19:57.299Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170787299,
+    "endTimestamp": 1724170797299
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c232bc6a472adb01b6bf"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:20:02.217Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170792217,
+    "endTimestamp": 1724170802217
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c237bc6a472adb01b6c1"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:20:07.235Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170797235,
+    "endTimestamp": 1724170807235
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c23cbc6a472adb01b6c3"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:20:12.254Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170802253,
+    "endTimestamp": 1724170812253
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c241bc6a472adb01b6c5"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:20:17.268Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170807268,
+    "endTimestamp": 1724170817268
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c246bc6a472adb01b6c7"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:20:22.283Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170812282,
+    "endTimestamp": 1724170822282
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c24bbc6a472adb01b6c9"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:20:27.303Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170817302,
+    "endTimestamp": 1724170827302
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c250bc6a472adb01b6cb"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:20:32.222Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170822221,
+    "endTimestamp": 1724170832221
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c255bc6a472adb01b6cd"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:20:37.235Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170827235,
+    "endTimestamp": 1724170837235
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c25abc6a472adb01b6cf"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:20:42.249Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170832249,
+    "endTimestamp": 1724170842249
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c25fbc6a472adb01b6d1"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:20:47.264Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170837264,
+    "endTimestamp": 1724170847264
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c264bc6a472adb01b6d3"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:20:52.280Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170842280,
+    "endTimestamp": 1724170852280
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c269bc6a472adb01b6d5"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:20:57.297Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170847297,
+    "endTimestamp": 1724170857297
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c26ebc6a472adb01b6d7"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:21:02.215Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170852215,
+    "endTimestamp": 1724170862215
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c273bc6a472adb01b6d9"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:21:07.232Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170857232,
+    "endTimestamp": 1724170867232
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c278bc6a472adb01b6db"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:21:12.251Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170862251,
+    "endTimestamp": 1724170872251
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c27dbc6a472adb01b6dd"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:21:17.266Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170867266,
+    "endTimestamp": 1724170877266
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c282bc6a472adb01b6df"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:21:22.282Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170872281,
+    "endTimestamp": 1724170882281
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c287bc6a472adb01b6e1"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:21:27.300Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170877300,
+    "endTimestamp": 1724170887300
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c28cbc6a472adb01b6e3"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:21:32.217Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170882217,
+    "endTimestamp": 1724170892217
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c291bc6a472adb01b6e5"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:21:37.232Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170887231,
+    "endTimestamp": 1724170897231
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c296bc6a472adb01b6e7"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:21:42.249Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170892248,
+    "endTimestamp": 1724170902248
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c29bbc6a472adb01b6e9"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:21:47.262Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170897262,
+    "endTimestamp": 1724170907262
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2a0bc6a472adb01b6eb"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:21:52.278Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170902278,
+    "endTimestamp": 1724170912278
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2a5bc6a472adb01b6ed"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:21:57.293Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170907293,
+    "endTimestamp": 1724170917293
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2aabc6a472adb01b6ef"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:22:02.206Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170912206,
+    "endTimestamp": 1724170922206
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2afbc6a472adb01b6f1"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:22:07.220Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170917220,
+    "endTimestamp": 1724170927220
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2b4bc6a472adb01b6f3"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:22:12.236Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170922236,
+    "endTimestamp": 1724170932236
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2b9bc6a472adb01b6f5"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:22:17.253Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170927253,
+    "endTimestamp": 1724170937253
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2bebc6a472adb01b6f7"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:22:22.271Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170932271,
+    "endTimestamp": 1724170942271
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2c3bc6a472adb01b6f9"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:22:27.293Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170937293,
+    "endTimestamp": 1724170947293
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2c8bc6a472adb01b6fb"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:22:32.207Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170942206,
+    "endTimestamp": 1724170952206
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2cdbc6a472adb01b6fc"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:22:37.224Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170947223,
+    "endTimestamp": 1724170957223
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2d2bc6a472adb01b6fe"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:22:42.240Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170952240,
+    "endTimestamp": 1724170962240
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2d7bc6a472adb01b701"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:22:47.255Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170957255,
+    "endTimestamp": 1724170967255
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2dcbc6a472adb01b703"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:22:52.275Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170962275,
+    "endTimestamp": 1724170972275
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2e1bc6a472adb01b705"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:22:57.292Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170967292,
+    "endTimestamp": 1724170977292
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2e6bc6a472adb01b707"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:23:02.209Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170972209,
+    "endTimestamp": 1724170982209
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2ebbc6a472adb01b708"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:23:07.225Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170977225,
+    "endTimestamp": 1724170987225
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2f0bc6a472adb01b70b"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:23:12.241Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170982241,
+    "endTimestamp": 1724170992241
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2f5bc6a472adb01b70d"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:23:17.257Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170987256,
+    "endTimestamp": 1724170997256
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2fabc6a472adb01b70f"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:23:22.271Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170992271,
+    "endTimestamp": 1724171002271
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2ffbc6a472adb01b710"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:23:27.286Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170997286,
+    "endTimestamp": 1724171007286
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c304bc6a472adb01b713"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:23:32.301Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724171002300,
+    "endTimestamp": 1724171012300
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c309bc6a472adb01b715"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:23:37.217Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724171007217,
+    "endTimestamp": 1724171017217
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c30ebc6a472adb01b717"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:23:42.233Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724171012233,
+    "endTimestamp": 1724171022233
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c313bc6a472adb01b719"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:23:47.248Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724171017248,
+    "endTimestamp": 1724171027248
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c318bc6a472adb01b71a"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:23:52.261Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724171022261,
+    "endTimestamp": 1724171032261
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+}]

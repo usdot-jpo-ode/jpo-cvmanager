@@ -103,7 +103,7 @@ public class OdeSpatDataRepositoryImpl
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, OdeSpatData.class);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null, OdeSpatData.class);
     }
 
     @Override

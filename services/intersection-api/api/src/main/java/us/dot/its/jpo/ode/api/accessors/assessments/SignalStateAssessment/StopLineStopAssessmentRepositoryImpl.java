@@ -99,7 +99,7 @@ public class StopLineStopAssessmentRepositoryImpl implements StopLineStopAssessm
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, StopLineStopAssessment.class);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null, StopLineStopAssessment.class);
     }
 
     @Override

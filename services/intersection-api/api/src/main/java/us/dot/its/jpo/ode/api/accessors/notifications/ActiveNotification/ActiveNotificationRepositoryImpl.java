@@ -128,7 +128,7 @@ public class ActiveNotificationRepositoryImpl
                 .whereOptional(KEY_FIELD, key);
         Sort sort = Sort.by(Sort.Direction.DESC, NOTIFICATION_TYPE_FIELD);
         Page<LinkedHashMap<String, Object>> dbObjects = findPageAsHashMap(mongoTemplate, collectionName, pageable,
-                criteria, sort);
+                criteria, sort, null);
 
         List<Notification> notifications = new ArrayList<>();
         for (LinkedHashMap<String, Object> dbObject : dbObjects.getContent()) {

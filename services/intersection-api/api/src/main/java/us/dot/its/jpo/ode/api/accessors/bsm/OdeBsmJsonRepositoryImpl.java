@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.api.accessors.bsm;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -24,7 +25,7 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
     private final MongoTemplate mongoTemplate;
 
     private final String collectionName = "OdeBsmJson";
-    private final String DATE_FIELD = "recordGeneratedAt";
+    private final String DATE_FIELD = "metadata.odeReceivedAt";
     private final String ORIGIN_IP_FIELD = "metadata.originIp";
     private final String VEHICLE_ID_FIELD = "payload.data.coreData.id";
 
@@ -105,9 +106,10 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
                     .gte(Math.min(longitudes[0], longitudes[1])).lte(Math.max(longitudes[0], longitudes[1]));
         }
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
+        List<String> excludedFields = List.of("recordGeneratedAt");
 
         // TODO: Consider mapping with jackson ObjectMapper
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, OdeBsmData.class);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, excludedFields, OdeBsmData.class);
     }
 
     /**

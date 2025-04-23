@@ -112,7 +112,7 @@ public class MapBroadcastRateEventRepositoryImpl
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, MapBroadcastRateEvent.class);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null, MapBroadcastRateEvent.class);
     }
 
     public List<IDCount> getAggregatedDailyMapBroadcastRateEventCounts(int intersectionID, Long startTime,

@@ -7,13 +7,28 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.skyscreamer.jsonassert.Customization;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
+import org.skyscreamer.jsonassert.comparator.CustomComparator;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.MatchOperation;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import java.time.Instant;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.bson.Document;
@@ -21,12 +36,17 @@ import org.bson.Document;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepositoryImpl;
+import us.dot.its.jpo.ode.api.models.AggregationResult;
+import us.dot.its.jpo.ode.api.models.AggregationResultCount;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 
@@ -53,50 +73,77 @@ public class ProcessedMapRepositoryImplTest {
     }
 
     @Test
-    public void testGetQuery() {
-
-        boolean latest = true;
-
-        Query query = repository.getQuery(intersectionID, startTime, endTime, latest, false);
-
-        // Assert IntersectionID
-        assertThat(query.getQueryObject().get("properties.intersectionId")).isEqualTo(intersectionID);
-
-        // Assert Start and End Time
-        Document queryTimeDocument = (Document) query.getQueryObject().get("properties.timeStamp");
-        assertThat(queryTimeDocument.getString("$gte")).isEqualTo(Instant.ofEpochMilli(startTime).toString());
-        assertThat(queryTimeDocument.getString("$lte")).isEqualTo(Instant.ofEpochMilli(endTime).toString());
-
-        // Assert sorting and limit
-        assertThat(query.getSortObject().keySet().contains("properties.timeStamp")).isTrue();
-        assertThat(query.getSortObject().get("properties.timeStamp")).isEqualTo(-1);
-        assertThat(query.getLimit()).isEqualTo(1);
-    }
-
-    @Test
-    public void testGetQueryResultCount() {
-        Query query = new Query();
+    public void testCount() {
         long expectedCount = 10;
 
-        Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString()))
-                .thenReturn(expectedCount);
+        when(mongoTemplate.count(any(),
+                Mockito.<String>any())).thenReturn(expectedCount);
 
-        long resultCount = repository.getQueryResultCount(query);
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        long resultCount = repository.count(1, null, null, pageRequest);
 
         assertThat(resultCount).isEqualTo(expectedCount);
-        Mockito.verify(mongoTemplate).count(Mockito.eq(query), Mockito.any(), Mockito.anyString());
+        verify(mongoTemplate).count(any(Query.class), anyString());
     }
 
     @Test
-    public void testFindProcessedMaps() {
-        Query query = new Query();
-        List<ProcessedMap<LineString>> expectedMaps = new ArrayList<>();
+    public void testFind() throws IOException {
 
-        Mockito.doReturn(expectedMaps).when(mongoTemplate).find(query, ProcessedMap.class, "ProcessedMap");
+        TypeReference<List<LinkedHashMap<String, Object>>> hashMapList = new TypeReference<>() {
+        };
+        String json = new String(
+                Files.readAllBytes(Paths.get("src/test/resources/json/ConflictMonitor.ProcessedMap.json")));
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule()); // Register
+                                                                                                 // JavaTimeModule
 
-        List<ProcessedMap<LineString>> resultMaps = repository.findProcessedMaps(query);
+        List<LinkedHashMap<String, Object>> sampleDocuments = objectMapper.readValue(json, hashMapList);
 
-        assertThat(resultMaps).isEqualTo(expectedMaps);
+        // Mock dependencies
+        Page<LinkedHashMap<String, Object>> mockHashMapPage = Mockito.mock(Page.class);
+
+        when(mockHashMapPage.getContent()).thenReturn(sampleDocuments);
+        when(mockHashMapPage.getTotalElements()).thenReturn(1L);
+
+        AggregationResult<LinkedHashMap<String, Object>> aggregationResult = new AggregationResult<>();
+        aggregationResult.setResults(sampleDocuments);
+        AggregationResultCount aggregationResultCount = new AggregationResultCount();
+        aggregationResultCount.setCount(1L);
+        aggregationResult.setMetadata(List.of(aggregationResultCount));
+
+        @SuppressWarnings("rawtypes")
+        AggregationResults mockAggregationResult = Mockito.mock(AggregationResults.class);
+        when(mockAggregationResult.getUniqueMappedResult()).thenReturn(aggregationResult);
+
+        when(mongoTemplate.aggregate(Mockito.<Aggregation>any(), Mockito.<String>any(), any()))
+                .thenReturn(mockAggregationResult);
+
+        MatchOperation matchOperation = Aggregation.match(new Criteria());
+        Aggregation aggregation = Aggregation.newAggregation(
+                matchOperation);
+        System.out.println("MongoTemplate: " + mongoTemplate);
+        @SuppressWarnings("rawtypes")
+        AggregationResults<AggregationResult> results = mongoTemplate
+                .aggregate(aggregation, "name", AggregationResult.class);
+        System.out.println("Results: " + results.getMappedResults());
+
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        Page<ProcessedMap<LineString>> findResponse = repository.find(1, null, null, false, pageRequest);
+
+        // serialize results to json then compare with the original json
+        String resultJson = objectMapper.writeValueAsString(findResponse.getContent().get(0));
+
+        // remove unused fields from each entry
+        List<LinkedHashMap<String, Object>> expectedResult = sampleDocuments.stream().map(doc -> {
+            doc.remove("_id");
+            doc.remove("recordGeneratedAt");
+            return doc;
+        }).toList();
+        String expectedJson = objectMapper.writeValueAsString(expectedResult.get(0));
+        JSONAssert.assertEquals(expectedJson, resultJson, new CustomComparator(
+                JSONCompareMode.LENIENT, // allows different key orders
+                new Customization("properties.timeStamp", (o1, o2) -> true),
+                new Customization("properties.odeReceivedAt", (o1, o2) -> true)));
     }
 
     @Test
@@ -114,10 +161,12 @@ public class ProcessedMapRepositoryImplTest {
 
         AggregationResults<IDCount> aggregationResults = new AggregationResults<>(aggregatedResults, new Document());
         Mockito.when(
-                mongoTemplate.aggregate(Mockito.any(Aggregation.class), Mockito.anyString(), Mockito.eq(IDCount.class)))
+                mongoTemplate.aggregate(Mockito.any(Aggregation.class), Mockito.anyString(),
+                        Mockito.eq(IDCount.class)))
                 .thenReturn(aggregationResults);
 
-        List<IDCount> actualResults = repository.getMapBroadcastRates(intersectionID, startTime, endTime);
+        List<IDCount> actualResults = repository.getMapBroadcastRates(intersectionID,
+                startTime, endTime);
 
         assertThat(actualResults.size()).isEqualTo(2);
         assertThat(actualResults.get(0).getId()).isEqualTo("2023-06-26-01");
@@ -141,10 +190,12 @@ public class ProcessedMapRepositoryImplTest {
 
         AggregationResults<IDCount> aggregationResults = new AggregationResults<>(aggregatedResults, new Document());
         Mockito.when(
-                mongoTemplate.aggregate(Mockito.any(Aggregation.class), Mockito.anyString(), Mockito.eq(IDCount.class)))
+                mongoTemplate.aggregate(Mockito.any(Aggregation.class), Mockito.anyString(),
+                        Mockito.eq(IDCount.class)))
                 .thenReturn(aggregationResults);
 
-        List<IDCount> actualResults = repository.getMapBroadcastRateDistribution(intersectionID, startTime, endTime);
+        List<IDCount> actualResults = repository.getMapBroadcastRateDistribution(intersectionID, startTime,
+                endTime);
 
         assertThat(actualResults.size()).isEqualTo(2);
         assertThat(actualResults.get(0).getId()).isEqualTo("15");

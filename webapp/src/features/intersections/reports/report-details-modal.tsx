@@ -2,15 +2,16 @@ import React, { useEffect, useState, useRef } from 'react'
 import {
   Box,
   Typography,
-  Modal,
-  IconButton,
   Button,
   CircularProgress,
   Checkbox,
   FormControlLabel,
   LinearProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material'
-import CloseIcon from '@mui/icons-material/Close'
 import { ReportMetadata } from '../../../apis/intersections/reports-api'
 import { format } from 'date-fns'
 import ValidConnectionOfTravelGraph from './graphs/valid-connection-of-travel-graph'
@@ -232,65 +233,15 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
   }
 
   return (
-    <Modal open={open} onClose={handleClose}>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-        <Box
-          sx={{
-            position: 'relative',
-            p: 4,
-            backgroundColor: 'white',
-            margin: 'auto',
-            width: '820px',
-            maxHeight: '90vh',
-            overflow: 'hidden', // Prevent overflow for the entire modal
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          {/* Sticky Header Row */}
-          <Box
-            sx={{
-              position: 'sticky',
-              top: 0,
-              zIndex: 10,
-              backgroundColor: 'white',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              borderBottom: '1px solid #ddd',
-              pb: 2,
-              mb: 2,
-            }}
-          >
-            {/* Left Section: Download and Include Lane-Specific Charts */}
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Button
-                onClick={handleGeneratePdf}
-                variant="contained"
-                color="primary"
-                disabled={loading || !isWindowWideEnough}
-                sx={{ mr: 2 }}
-              >
-                {loading ? <CircularProgress size={24} /> : 'Download PDF'}
-              </Button>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={includeLaneSpecificCharts}
-                    onChange={(e) => setIncludeLaneSpecificCharts(e.target.checked)}
-                    color="primary"
-                    disabled={loading} // Disable the checkbox while loading
-                  />
-                }
-                label="Include lane-specific charts"
-              />
-            </Box>
+    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="lg">
+      {/* Dialog Title */}
+      <DialogTitle>
+        <Typography variant="h6">Report Details</Typography>
+      </DialogTitle>
 
-            {/* Right Section: Close Icon */}
-            <IconButton aria-label="close" onClick={handleClose}>
-              <CloseIcon />
-            </IconButton>
-          </Box>
+      {/* Dialog Content */}
+      <DialogContent dividers>
+        <Box sx={{ mb: 2 }}>
           {/* Scrollable Content */}
           <Box
             sx={{
@@ -569,8 +520,40 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
             )}
           </Box>
         </Box>
-      </Box>
-    </Modal>
+      </DialogContent>
+
+      {/* Dialog Actions */}
+      <DialogActions sx={{ justifyContent: 'space-between' }}>
+        {/* Left Section: Download and Include Lane-Specific Charts */}
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Button
+            onClick={handleGeneratePdf}
+            variant="contained"
+            color="primary"
+            disabled={loading || !isWindowWideEnough}
+            sx={{ mr: 2 }}
+          >
+            {loading ? <CircularProgress size={24} /> : 'Download PDF'}
+          </Button>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={includeLaneSpecificCharts}
+                onChange={(e) => setIncludeLaneSpecificCharts(e.target.checked)}
+                color="primary"
+                disabled={loading} // Disable the checkbox while loading
+              />
+            }
+            label="Include lane-specific charts"
+          />
+        </Box>
+
+        {/* Right Section: Close Button */}
+        <Button onClick={handleClose} color="primary">
+          Close
+        </Button>
+      </DialogActions>
+    </Dialog>
   )
 }
 export default ReportDetailsModal

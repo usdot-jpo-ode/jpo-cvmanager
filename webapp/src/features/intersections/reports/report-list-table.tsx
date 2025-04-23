@@ -3,7 +3,6 @@ import { format } from 'date-fns'
 import { Box, Button, Table, TableBody, TableCell, TablePagination, TableRow, Typography } from '@mui/material'
 import PerfectScrollbar from 'react-perfect-scrollbar'
 import { ReportMetadata } from '../../../apis/intersections/reports-api'
-import { useNavigate } from 'react-router-dom'
 
 interface ReportRowProps {
   report: ReportMetadata
@@ -11,7 +10,6 @@ interface ReportRowProps {
 }
 
 const ReportRow = (props: ReportRowProps) => {
-  const navigate = useNavigate()
   const { report, onViewReport } = props
 
   return (

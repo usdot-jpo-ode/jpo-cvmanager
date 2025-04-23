@@ -10,7 +10,6 @@ import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../
 import { selectToken } from '../../generalSlices/userSlice'
 import { useSelector } from 'react-redux'
 import ReportDetailsModal from '../../features/intersections/reports/report-details-modal'
-import toast from 'react-hot-toast'
 import { ReportTheme } from '../../styles/report-theme'
 import RefreshIcon from '@mui/icons-material/Refresh'
 

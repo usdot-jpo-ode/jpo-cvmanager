@@ -60,8 +60,7 @@ public class ReportService {
     private final SpatBroadcastRateEventRepository spatBroadcastRateEventRepo;
     private final MapBroadcastRateEventRepository mapBroadcastRateEventRepo;
     private final ReportRepository reportRepo;
-
-    int maximumResponseSize;
+    private final int maximumResponseSize;
 
     @Autowired
     public ReportService(ProcessedMapRepository processedMapRepo,

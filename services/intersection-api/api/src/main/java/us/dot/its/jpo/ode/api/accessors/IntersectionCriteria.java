@@ -23,7 +23,7 @@ public class IntersectionCriteria extends Criteria {
             @Nonnull String fieldName,
             @Nullable Long startEpochMillis,
             @Nullable Long endEpochMillis,
-            @Nullable boolean formatAsString) {
+            boolean formatAsString) {
         if (startEpochMillis != null && endEpochMillis != null) {
             this.and(fieldName)
                     .gte(formatAsString ? Instant.ofEpochMilli(startEpochMillis).toString()

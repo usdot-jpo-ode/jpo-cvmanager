@@ -97,7 +97,7 @@ RUN apk update && apk add --no-cache \
     jemalloc
 
 # Set jemalloc as the allocator
-ENV LD_PRELOAD=/usr/lib/libjemalloc.so
+ENV LD_PRELOAD=/usr/lib/libjemalloc.so.2
 
 # Copy the built Java artifacts
 COPY --from=jbuilder /home/intersection-api/src/main/resources/application.yaml /home

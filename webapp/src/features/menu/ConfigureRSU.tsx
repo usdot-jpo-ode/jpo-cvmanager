@@ -23,7 +23,6 @@ import { headerTabHeight } from '../../styles'
 import { SideBarHeader } from '../../styles/components/SideBarHeader'
 
 const ConfigMenu = ({ children }) => {
-  const theme = useTheme()
   return <Box>{children}</Box>
 }
 

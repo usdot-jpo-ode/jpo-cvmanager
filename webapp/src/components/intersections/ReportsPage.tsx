@@ -16,7 +16,6 @@ import RefreshIcon from '@mui/icons-material/Refresh'
 
 const applyPagination = (logs, page, rowsPerPage) => logs.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 const WEEK_IN_MILLISECONDS = 7 * 24 * 60 * 60 * 1000
-const FIFTEEN_MINUTES_IN_MILLISECONDS = 7 * 60 * 1000
 
 const LogsListInner = styled('div', { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }: { theme: any; open: boolean }) => ({
@@ -146,10 +145,6 @@ const Page = () => {
 
   const handleReportGenerated = () => {
     setOpenReportGenerationDialog(false)
-    const refreshTime = new Date(Date.now() + FIFTEEN_MINUTES_IN_MILLISECONDS)
-    toast.success(
-      `Reports usually take 10-15 minutes to generate. Please refresh the page at ${refreshTime.toLocaleTimeString()} to see the new report.`
-    )
   }
 
   return (

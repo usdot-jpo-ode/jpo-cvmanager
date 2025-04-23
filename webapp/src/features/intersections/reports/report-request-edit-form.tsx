@@ -69,7 +69,7 @@ export const ReportRequestEditForm = (props: Props) => {
         <Divider />
         <CardContent>
           <Grid2 container spacing={3}>
-            <Grid2 size={{ md: 6, xs: 12 }}>
+            <Grid2 size={{ md: 4, xs: 12 }}>
               <TextField
                 error={Boolean(formik.touched.intersectionId && formik.errors.intersectionId)}
                 fullWidth
@@ -77,24 +77,43 @@ export const ReportRequestEditForm = (props: Props) => {
                 name="intersectionId"
                 onChange={formik.handleChange}
                 value={formik.values.intersectionId}
+                helperText={formik.touched.intersectionId && formik.errors.intersectionId}
               />
             </Grid2>
             <Grid2 size={{ md: 4, xs: 12 }}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
                   value={dayjs(formik.values.startDate)}
+                  label="Start Date"
                   onChange={(e) => formik.setFieldValue('startDate', e?.toDate() as Date | null, true)}
                   disableFuture
-                />
+                  slotProps={{
+                    textField: {
+                      variant: 'outlined',
+                      fullWidth: true,
+                      error: Boolean(formik.touched.startDate && formik.errors.startDate),
+                      helperText: formik.touched.startDate && formik.errors.startDate,
+                    },
+                  }}
+                ></DateTimePicker>
               </LocalizationProvider>
             </Grid2>
             <Grid2 size={{ md: 4, xs: 12 }}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
                   value={dayjs(formik.values.endDate)}
+                  label="End Date"
                   onChange={(e) => formik.setFieldValue('endDate', e?.toDate() as Date | null, true)}
                   disableFuture
-                />
+                  slotProps={{
+                    textField: {
+                      variant: 'outlined',
+                      fullWidth: true,
+                      error: Boolean(formik.touched.endDate && formik.errors.endDate),
+                      helperText: formik.touched.endDate && formik.errors.endDate,
+                    },
+                  }}
+                ></DateTimePicker>
               </LocalizationProvider>
             </Grid2>
           </Grid2>

@@ -41,7 +41,6 @@ const ReportRow = (props: ReportRowProps) => {
             textDecoration: 'none',
             whiteSpace: 'nowrap',
           }}
-          onClick={() => navigate(`/dashboard/logs/1`)}
         >
           <Box sx={{ ml: 2 }}>
             <Typography color="textSecondary" variant="subtitle2">

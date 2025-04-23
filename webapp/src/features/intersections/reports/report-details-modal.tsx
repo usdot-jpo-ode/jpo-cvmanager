@@ -242,20 +242,34 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
             margin: 'auto',
             width: '820px',
             maxHeight: '90vh',
-            overflow: 'auto',
+            overflow: 'hidden', // Prevent overflow for the entire modal
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <IconButton aria-label="close" onClick={handleClose} sx={{ position: 'absolute', right: 8, top: 8 }}>
-              <CloseIcon />
-            </IconButton>
+          {/* Sticky Header Row */}
+          <Box
+            sx={{
+              position: 'sticky',
+              top: 0,
+              zIndex: 10,
+              backgroundColor: 'white',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              borderBottom: '1px solid #ddd',
+              pb: 2,
+              mb: 2,
+            }}
+          >
+            {/* Left Section: Download and Include Lane-Specific Charts */}
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Button
                 onClick={handleGeneratePdf}
                 variant="contained"
                 color="primary"
                 disabled={loading || !isWindowWideEnough}
-                sx={{ mt: -2, ml: -2 }}
+                sx={{ mr: 2 }}
               >
                 {loading ? <CircularProgress size={24} /> : 'Download PDF'}
               </Button>
@@ -269,279 +283,291 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
                   />
                 }
                 label="Include lane-specific charts"
-                sx={{ mt: -2, ml: 2 }}
               />
             </Box>
+
+            {/* Right Section: Close Icon */}
+            <IconButton aria-label="close" onClick={handleClose}>
+              <CloseIcon />
+            </IconButton>
           </Box>
-          {loading && <LinearProgress variant="determinate" value={progress} sx={{ mb: 2 }} />} {/* Progress bar */}
-          {!report ? (
-            <Typography>No report found</Typography>
-          ) : (
-            <>
-              <Typography variant="h2" align="center">
-                Conflict Monitor Report
-              </Typography>
-              <Typography variant="h6" align="center">
-                {`Intersection ${report.intersectionID}`}
-              </Typography>
-              <Typography variant="body1" align="center">
-                {`${format(new Date(report.reportStartTime), "yyyy-MM-dd' T'HH:mm:ss'Z'")} - ${format(
-                  new Date(report.reportStopTime),
-                  "yyyy-MM-dd' T'HH:mm:ss'Z'"
-                )}`}
-              </Typography>
+          {/* Scrollable Content */}
+          <Box
+            sx={{
+              overflowY: 'auto', // Enable vertical scrolling
+              flex: 1, // Allow the content to take up remaining space
+            }}
+          >
+            {loading && <LinearProgress variant="determinate" value={progress} sx={{ mb: 2 }} />} {/* Progress bar */}
+            {!report ? (
+              <Typography>No report found</Typography>
+            ) : (
+              <>
+                <Typography variant="h2" align="center">
+                  Conflict Monitor Report
+                </Typography>
+                <Typography variant="h6" align="center">
+                  {`Intersection ${report.intersectionID}`}
+                </Typography>
+                <Typography variant="body1" align="center">
+                  {`${format(new Date(report.reportStartTime), "yyyy-MM-dd' T'HH:mm:ss'Z'")} - ${format(
+                    new Date(report.reportStopTime),
+                    "yyyy-MM-dd' T'HH:mm:ss'Z'"
+                  )}`}
+                </Typography>
 
-              <Typography variant="h4" align="center" sx={{ mt: 4 }}>
-                Lane Direction of Travel
-              </Typography>
-              <Box id="lane-direction-of-travel-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
-                <BarChartComponent
-                  title="Lane Direction of Travel Events Per Day"
-                  data={laneDirectionOfTravelEventCounts}
-                  getInterval={getInterval}
-                  barColor={reportColorPalette.cyan}
-                />
-              </Box>
-              <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
-                The number of events triggered when vehicles passed a lane segment.
-              </Typography>
+                <Typography variant="h4" align="center" sx={{ mt: 4 }}>
+                  Lane Direction of Travel
+                </Typography>
+                <Box id="lane-direction-of-travel-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <BarChartComponent
+                    title="Lane Direction of Travel Events Per Day"
+                    data={laneDirectionOfTravelEventCounts}
+                    getInterval={getInterval}
+                    barColor={reportColorPalette.cyan}
+                  />
+                </Box>
+                <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
+                  The number of events triggered when vehicles passed a lane segment.
+                </Typography>
 
-              <Box id="lane-direction-distance-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
-                <LaneDirectionDistanceGraph
-                  data={laneDirectionDistanceDistribution}
-                  getInterval={getInterval}
-                  distanceTolerance={report.distanceTolerance}
-                />
-              </Box>
-              <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
-                The median deviation in distance between vehicles and the center of the lane as defined by the MAP.
-              </Typography>
+                <Box id="lane-direction-distance-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <LaneDirectionDistanceGraph
+                    data={laneDirectionDistanceDistribution}
+                    getInterval={getInterval}
+                    distanceTolerance={report.distanceTolerance}
+                  />
+                </Box>
+                <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
+                  The median deviation in distance between vehicles and the center of the lane as defined by the MAP.
+                </Typography>
 
-              <Box id="lane-direction-heading-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
-                <LaneDirectionHeadingGraph
-                  data={laneDirectionHeadingDistribution}
-                  headingTolerance={report.headingTolerance}
-                />
-              </Box>
-              <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
-                The median deviation in heading between vehicles and the lanes as defined by the MAP.
-              </Typography>
+                <Box id="lane-direction-heading-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <LaneDirectionHeadingGraph
+                    data={laneDirectionHeadingDistribution}
+                    headingTolerance={report.headingTolerance}
+                  />
+                </Box>
+                <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
+                  The median deviation in heading between vehicles and the lanes as defined by the MAP.
+                </Typography>
 
-              {includeLaneSpecificCharts && (
-                <>
-                  <Typography variant="h4" align="center" sx={{ mt: 4 }}>
-                    Distance From Centerline Over Time
-                  </Typography>
-                  <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
-                    The average of median distances between vehicles and the centerline of each lane as it changed over
-                    time.
-                  </Typography>
-                  <Box
-                    id="distance-from-centerline-over-time-graphs"
-                    sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}
-                  >
-                    <DistanceFromCenterlineGraphSet
-                      data={laneDirectionOfTravelReportDataByLaneId}
-                      distanceTolerance={report.distanceTolerance}
-                    />
-                  </Box>
+                {includeLaneSpecificCharts && (
+                  <>
+                    <Typography variant="h4" align="center" sx={{ mt: 4 }}>
+                      Distance From Centerline Over Time
+                    </Typography>
+                    <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
+                      The average of median distances between vehicles and the centerline of each lane as it changed
+                      over time.
+                    </Typography>
+                    <Box
+                      id="distance-from-centerline-over-time-graphs"
+                      sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}
+                    >
+                      <DistanceFromCenterlineGraphSet
+                        data={laneDirectionOfTravelReportDataByLaneId}
+                        distanceTolerance={report.distanceTolerance}
+                      />
+                    </Box>
 
-                  <Typography variant="h4" align="center" sx={{ mt: 4 }}>
-                    Vehicle Heading Error Delta
-                  </Typography>
-                  <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
-                    The median deviation in heading between vehicles and the expected heading as defined by the MAP.
-                  </Typography>
-                  <Box
-                    id="heading-error-over-time-graphs"
-                    sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}
-                  >
-                    <HeadingErrorGraphSet
-                      data={laneDirectionOfTravelReportDataByLaneId}
-                      headingTolerance={report.headingTolerance}
-                    />
-                  </Box>
-                </>
-              )}
+                    <Typography variant="h4" align="center" sx={{ mt: 4 }}>
+                      Vehicle Heading Error Delta
+                    </Typography>
+                    <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
+                      The median deviation in heading between vehicles and the expected heading as defined by the MAP.
+                    </Typography>
+                    <Box
+                      id="heading-error-over-time-graphs"
+                      sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}
+                    >
+                      <HeadingErrorGraphSet
+                        data={laneDirectionOfTravelReportDataByLaneId}
+                        headingTolerance={report.headingTolerance}
+                      />
+                    </Box>
+                  </>
+                )}
 
-              <Typography variant="h4" align="center" sx={{ mt: 4 }}>
-                Connection of Travel
-              </Typography>
+                <Typography variant="h4" align="center" sx={{ mt: 4 }}>
+                  Connection of Travel
+                </Typography>
 
-              <Box id="connection-of-travel-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
-                <BarChartComponent
-                  title="Connection of Travel Events Per Day"
-                  data={connectionOfTravelEventCounts}
-                  getInterval={getInterval}
-                  barColor={reportColorPalette.yellow}
-                />
-              </Box>
-              <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
-                The number of events triggered when a vehicle entered and exited the intersection.
-              </Typography>
+                <Box id="connection-of-travel-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <BarChartComponent
+                    title="Connection of Travel Events Per Day"
+                    data={connectionOfTravelEventCounts}
+                    getInterval={getInterval}
+                    barColor={reportColorPalette.yellow}
+                  />
+                </Box>
+                <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
+                  The number of events triggered when a vehicle entered and exited the intersection.
+                </Typography>
 
-              <Box id="valid-connection-of-travel-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
-                <ValidConnectionOfTravelGraph data={report.validConnectionOfTravelData} />
-              </Box>
-              <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
-                The number of vehicles that followed the defined ingress-egress lane pairings for each lane at the
-                intersection.
-              </Typography>
+                <Box id="valid-connection-of-travel-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <ValidConnectionOfTravelGraph data={report.validConnectionOfTravelData} />
+                </Box>
+                <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
+                  The number of vehicles that followed the defined ingress-egress lane pairings for each lane at the
+                  intersection.
+                </Typography>
 
-              <Box id="invalid-connection-of-travel-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
-                <InvalidConnectionOfTravelGraph data={report.invalidConnectionOfTravelData} />
-              </Box>
-              <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
-                The number of vehicles that did not follow the defined ingress-egress lane pairings for each lane at the
-                intersection.
-              </Typography>
+                <Box id="invalid-connection-of-travel-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <InvalidConnectionOfTravelGraph data={report.invalidConnectionOfTravelData} />
+                </Box>
+                <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
+                  The number of vehicles that did not follow the defined ingress-egress lane pairings for each lane at
+                  the intersection.
+                </Typography>
 
-              <Typography variant="h4" align="center" sx={{ mt: 4 }}>
-                Signal State Events
-              </Typography>
+                <Typography variant="h4" align="center" sx={{ mt: 4 }}>
+                  Signal State Events
+                </Typography>
 
-              <Box id="signal-group-stop-line-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
-                <SignalGroupStopGraph data={signalGroupStopLineData} />
-              </Box>
-              <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
-                The percentage of time vehicles spent stopped at a light depending on the color of the light.
-              </Typography>
+                <Box id="signal-group-stop-line-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <SignalGroupStopGraph data={signalGroupStopLineData} />
+                </Box>
+                <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
+                  The percentage of time vehicles spent stopped at a light depending on the color of the light.
+                </Typography>
 
-              <Box id="signal-group-passage-line-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
-                <SignalGroupPassageGraph data={signalGroupPassageData} />
-              </Box>
-              <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
-                The percentage of vehicles that passed through a light depending on the color of the signal light.
-              </Typography>
+                <Box id="signal-group-passage-line-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <SignalGroupPassageGraph data={signalGroupPassageData} />
+                </Box>
+                <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
+                  The percentage of vehicles that passed through a light depending on the color of the signal light.
+                </Typography>
 
-              <Box id="stop-line-stacked-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
-                <StopLineStackedGraph
-                  stopData={stopLineStopEventCounts}
-                  passageData={signalStateEventCounts}
-                  getInterval={getInterval}
-                />
-              </Box>
-              <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
-                A composite view comparing vehicles that stopped before passing through the intersection versus those
-                that did not.
-              </Typography>
+                <Box id="stop-line-stacked-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <StopLineStackedGraph
+                    stopData={stopLineStopEventCounts}
+                    passageData={signalStateEventCounts}
+                    getInterval={getInterval}
+                  />
+                </Box>
+                <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
+                  A composite view comparing vehicles that stopped before passing through the intersection versus those
+                  that did not.
+                </Typography>
 
-              <Box id="signal-state-conflict-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
-                <BarChartComponent
-                  title="Signal State Conflict Events per Day"
-                  data={signalStateConflictEventCount}
-                  getInterval={getInterval}
-                  barColor={reportColorPalette.blueGrey}
-                />
-              </Box>
-              <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
-                The number of times the system detected contradictory signal states, such as conflicting green lights.
-                <br />
-                Lower numbers indicate better performance.
-              </Typography>
+                <Box id="signal-state-conflict-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <BarChartComponent
+                    title="Signal State Conflict Events per Day"
+                    data={signalStateConflictEventCount}
+                    getInterval={getInterval}
+                    barColor={reportColorPalette.blueGrey}
+                  />
+                </Box>
+                <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
+                  The number of times the system detected contradictory signal states, such as conflicting green lights.
+                  <br />
+                  Lower numbers indicate better performance.
+                </Typography>
 
-              <Box id="time-change-details-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
-                <BarChartComponent
-                  title="Time Change Details Events per Day"
-                  data={timeChangeDetailsEventCount}
-                  getInterval={getInterval}
-                  barColor={reportColorPalette.blueGrey}
-                />
-              </Box>
-              <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
-                The number of times the system detected differences in timing between expected and actual signal state
-                changes.
-                <br />
-                Lower numbers indicate better performance.
-              </Typography>
+                <Box id="time-change-details-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <BarChartComponent
+                    title="Time Change Details Events per Day"
+                    data={timeChangeDetailsEventCount}
+                    getInterval={getInterval}
+                    barColor={reportColorPalette.blueGrey}
+                  />
+                </Box>
+                <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
+                  The number of times the system detected differences in timing between expected and actual signal state
+                  changes.
+                  <br />
+                  Lower numbers indicate better performance.
+                </Typography>
 
-              <Typography variant="h4" align="center" sx={{ mt: 4 }}>
-                Intersection Reference Alignments Per Day
-              </Typography>
+                <Typography variant="h4" align="center" sx={{ mt: 4 }}>
+                  Intersection Reference Alignments Per Day
+                </Typography>
 
-              <Box id="intersection-reference-alignment-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
-                <BarChartComponent
-                  title="Intersection Reference Alignments Per Day"
-                  data={intersectionReferenceAlignmentEventCounts}
-                  getInterval={getInterval}
-                  barColor={reportColorPalette.pink}
-                />
-              </Box>
-              <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
-                The number of events flagging a mismatch between intersection ID and road regulator ID.
-                <br />
-                Lower numbers indicate better performance.
-              </Typography>
+                <Box id="intersection-reference-alignment-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <BarChartComponent
+                    title="Intersection Reference Alignments Per Day"
+                    data={intersectionReferenceAlignmentEventCounts}
+                    getInterval={getInterval}
+                    barColor={reportColorPalette.pink}
+                  />
+                </Box>
+                <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
+                  The number of events flagging a mismatch between intersection ID and road regulator ID.
+                  <br />
+                  Lower numbers indicate better performance.
+                </Typography>
 
-              <Typography variant="h4" align="center" sx={{ mt: 4 }}>
-                MAP
-              </Typography>
+                <Typography variant="h4" align="center" sx={{ mt: 4 }}>
+                  MAP
+                </Typography>
 
-              <Box id="map-broadcast-rate-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
-                <BarChartComponent
-                  title="MAP Broadcast Rate Events per Day"
-                  data={mapBroadcastRateEventCount}
-                  getInterval={getInterval}
-                  barColor={reportColorPalette.teal}
-                />
-              </Box>
-              <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
-                The number of broadcast windows in which the system flagged more or less frequent MAP broadcasts than
-                the expected rate of 1 Hz. Each day has a total of 8,640 broadcast windows. Lower numbers indicate
-                better performance.
-              </Typography>
+                <Box id="map-broadcast-rate-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <BarChartComponent
+                    title="MAP Broadcast Rate Events per Day"
+                    data={mapBroadcastRateEventCount}
+                    getInterval={getInterval}
+                    barColor={reportColorPalette.teal}
+                  />
+                </Box>
+                <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
+                  The number of broadcast windows in which the system flagged more or less frequent MAP broadcasts than
+                  the expected rate of 1 Hz. Each day has a total of 8,640 broadcast windows. Lower numbers indicate
+                  better performance.
+                </Typography>
 
-              <Box id="map-minimum-data-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
-                <BarChartComponent
-                  title="MAP Minimum Data Events per Day"
-                  data={mapMinimumDataEventCount}
-                  getInterval={getInterval}
-                  barColor={reportColorPalette.teal}
-                />
-              </Box>
-              <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
-                The number of times the system flagged MAP messages with missing or incomplete data.
-                <br />
-                Lower numbers indicate better performance.
-              </Typography>
+                <Box id="map-minimum-data-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <BarChartComponent
+                    title="MAP Minimum Data Events per Day"
+                    data={mapMinimumDataEventCount}
+                    getInterval={getInterval}
+                    barColor={reportColorPalette.teal}
+                  />
+                </Box>
+                <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
+                  The number of times the system flagged MAP messages with missing or incomplete data.
+                  <br />
+                  Lower numbers indicate better performance.
+                </Typography>
 
-              {mapMissingElements.length > 0 && renderList('MAP Missing Data Elements', mapMissingElements)}
+                {mapMissingElements.length > 0 && renderList('MAP Missing Data Elements', mapMissingElements)}
 
-              <Typography variant="h4" align="center" sx={{ mt: 4 }}>
-                SPaT
-              </Typography>
+                <Typography variant="h4" align="center" sx={{ mt: 4 }}>
+                  SPaT
+                </Typography>
 
-              <Box id="spat-broadcast-rate-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
-                <BarChartComponent
-                  title="SPaT Broadcast Rate Events per Day"
-                  data={spatBroadcastRateEventCount}
-                  getInterval={getInterval}
-                  barColor={reportColorPalette.purple}
-                />
-              </Box>
-              <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
-                The number of broadcast windows in which the system flagged more or less frequent SPaT broadcasts than
-                the expected rate of 10 Hz. Each day has a total of 8,640 broadcast windows. Lower numbers indicate
-                better performance.
-              </Typography>
+                <Box id="spat-broadcast-rate-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <BarChartComponent
+                    title="SPaT Broadcast Rate Events per Day"
+                    data={spatBroadcastRateEventCount}
+                    getInterval={getInterval}
+                    barColor={reportColorPalette.purple}
+                  />
+                </Box>
+                <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
+                  The number of broadcast windows in which the system flagged more or less frequent SPaT broadcasts than
+                  the expected rate of 10 Hz. Each day has a total of 8,640 broadcast windows. Lower numbers indicate
+                  better performance.
+                </Typography>
 
-              <Box id="spat-minimum-data-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
-                <BarChartComponent
-                  title="SPaT Minimum Data Events per Day"
-                  data={spatMinimumDataEventCount}
-                  getInterval={getInterval}
-                  barColor={reportColorPalette.purple}
-                />
-              </Box>
-              <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
-                The number of times the system flagged SPaT messages with missing or incomplete data.
-                <br />
-                Lower numbers indicate better performance.
-              </Typography>
+                <Box id="spat-minimum-data-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <BarChartComponent
+                    title="SPaT Minimum Data Events per Day"
+                    data={spatMinimumDataEventCount}
+                    getInterval={getInterval}
+                    barColor={reportColorPalette.purple}
+                  />
+                </Box>
+                <Typography variant="body2" align="center" sx={{ mt: 0.5, mb: 6, fontStyle: 'italic' }}>
+                  The number of times the system flagged SPaT messages with missing or incomplete data.
+                  <br />
+                  Lower numbers indicate better performance.
+                </Typography>
 
-              {spatMissingElements.length > 0 && renderList('SPaT Missing Data Elements', spatMissingElements)}
-            </>
-          )}
+                {spatMissingElements.length > 0 && renderList('SPaT Missing Data Elements', spatMissingElements)}
+              </>
+            )}
+          </Box>
         </Box>
       </Box>
     </Modal>

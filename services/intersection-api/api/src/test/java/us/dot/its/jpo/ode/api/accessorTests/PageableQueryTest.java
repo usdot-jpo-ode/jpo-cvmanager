@@ -125,4 +125,65 @@ public class PageableQueryTest {
         assertThat(page.getContent()).isEmpty();
         assertThat(page.getTotalElements()).isEqualTo(0);
     }
+
+    @Test
+    public void testCreateNullablePageWithValidPageAndSize() {
+        // Test with valid page and size
+        Integer page = 2;
+        Integer size = 10;
+
+        Pageable pageable = paginatedQueryInterface.createNullablePage(page, size);
+
+        assertThat(pageable).isNotNull();
+        assertThat(pageable.getPageNumber()).isEqualTo(2);
+        assertThat(pageable.getPageSize()).isEqualTo(10);
+    }
+
+    @Test
+    public void testCreateNullablePageWithNullPage() {
+        // Test with null page and valid size
+        Integer page = null;
+        Integer size = 10;
+
+        Pageable pageable = paginatedQueryInterface.createNullablePage(page, size);
+
+        assertThat(pageable).isNotNull();
+        assertThat(pageable.getPageNumber()).isEqualTo(0); // Default page is 0
+        assertThat(pageable.getPageSize()).isEqualTo(10);
+    }
+
+    @Test
+    public void testCreateNullablePageWithNullSize() {
+        // Test with null size
+        Integer page = 2;
+        Integer size = null;
+
+        Pageable pageable = paginatedQueryInterface.createNullablePage(page, size);
+
+        assertThat(pageable).isNull(); // Should return null when size is null
+    }
+
+    @Test
+    public void testCreateNullablePageWithNullPageAndSize() {
+        // Test with both page and size as null
+        Integer page = null;
+        Integer size = null;
+
+        Pageable pageable = paginatedQueryInterface.createNullablePage(page, size);
+
+        assertThat(pageable).isNull(); // Should return null when size is null
+    }
+
+    @Test
+    public void testCreateNullablePageWithZeroPageAndSize() {
+        // Test with page as 0 and size as a valid value
+        Integer page = 0;
+        Integer size = 5;
+
+        Pageable pageable = paginatedQueryInterface.createNullablePage(page, size);
+
+        assertThat(pageable).isNotNull();
+        assertThat(pageable.getPageNumber()).isEqualTo(0);
+        assertThat(pageable.getPageSize()).isEqualTo(5);
+    }
 }

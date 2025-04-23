@@ -70,7 +70,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
             @Nullable Pageable pageable) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
         Query query = Query.query(criteria);
         if (pageable != null) {
             query = query.with(pageable);
@@ -95,19 +95,19 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
             boolean compact) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
         Query query = Query.query(criteria);
-        // Exclude unnecessary fields
         List<String> excludedFields = List.of("recordGeneratedAt");
         if (compact) {
             excludedFields.add("properties.validationMessages");
         }
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
+        ProcessedMap<LineString> map = mongoTemplate.findOne(
+                query.with(sort),
+                ProcessedMap.class,
+                collectionName);
         return wrapSingleResultWithPage(
-                mongoTemplate.findOne(
-                        query.with(sort),
-                        ProcessedMap.class,
-                        collectionName));
+                map);
     }
 
     /**
@@ -128,13 +128,15 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
             Pageable pageable) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
         List<String> excludedFields = List.of("recordGeneratedAt");
         if (compact) {
             excludedFields.add("properties.validationMessages");
         }
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, excludedFields);
+        return (Page<ProcessedMap<LineString>>) (Page<?>) findPage(mongoTemplate, collectionName, pageable, criteria,
+                sort,
+                excludedFields, ProcessedMap.class);
     }
 
     public List<IntersectionReferenceData> getIntersectionIDs() {

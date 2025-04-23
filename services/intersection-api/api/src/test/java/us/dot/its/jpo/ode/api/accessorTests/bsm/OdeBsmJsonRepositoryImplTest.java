@@ -71,6 +71,7 @@ public class OdeBsmJsonRepositoryImplTest {
                 any(PageRequest.class),
                 any(Criteria.class),
                 any(Sort.class),
+                any(),
                 any())).thenReturn(expected);
         PageRequest pageRequest = PageRequest.of(0, 1);
         doCallRealMethod().when(repo).find("ip", "id", startTime, endTime, longitude, latitude,
@@ -95,6 +96,7 @@ public class OdeBsmJsonRepositoryImplTest {
                 any(PageRequest.class),
                 any(Criteria.class),
                 any(Sort.class),
+                any(),
                 any())).thenReturn(expectedPage);
 
         doCallRealMethod().when(repo).find(originIp, vehicleId, startTime, endTime, longitude, latitude,
@@ -140,6 +142,7 @@ public class OdeBsmJsonRepositoryImplTest {
                     return true;
                 }),
                 eq(Sort.by(Sort.Direction.DESC, "recordGeneratedAt")),
+                any(),
                 any());
     }
 
@@ -156,6 +159,7 @@ public class OdeBsmJsonRepositoryImplTest {
                 any(PageRequest.class),
                 any(Criteria.class),
                 any(Sort.class),
+                any(),
                 any())).thenReturn(expectedPage);
 
         doCallRealMethod().when(repo).find(originIp, vehicleId, startTime, endTime, null, null, null, pageRequest);
@@ -193,6 +197,7 @@ public class OdeBsmJsonRepositoryImplTest {
                     return true;
                 }),
                 eq(Sort.by(Sort.Direction.DESC, "recordGeneratedAt")),
+                any(),
                 any());
     }
 
@@ -209,6 +214,7 @@ public class OdeBsmJsonRepositoryImplTest {
                 any(PageRequest.class),
                 any(Criteria.class),
                 any(Sort.class),
+                any(),
                 any())).thenReturn(expectedPage);
 
         doCallRealMethod().when(repo).find(null, null, startTime, endTime, null, null, null, pageRequest);
@@ -246,6 +252,7 @@ public class OdeBsmJsonRepositoryImplTest {
                     return true;
                 }),
                 eq(Sort.by(Sort.Direction.DESC, "recordGeneratedAt")),
+                any(),
                 any());
     }
 }

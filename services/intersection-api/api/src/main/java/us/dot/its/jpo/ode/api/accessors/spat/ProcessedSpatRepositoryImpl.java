@@ -75,11 +75,9 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository, Pag
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
         Query query = Query.query(criteria);
-        // Exclude unnecessary fields
+        List<String> excludedFields = List.of("recordGeneratedAt");
         if (compact) {
-            query.fields().exclude("recordGeneratedAt", "validationMessages");
-        } else {
-            query.fields().exclude("recordGeneratedAt");
+            excludedFields.add("validationMessages");
         }
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
         return wrapSingleResultWithPage(
@@ -113,7 +111,7 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository, Pag
             excludedFields.add("validationMessages");
         }
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, excludedFields, ProcessedSpat.class);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, List.of(), ProcessedSpat.class);
     }
 
     @Override

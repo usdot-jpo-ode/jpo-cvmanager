@@ -154,7 +154,7 @@ public class ActiveNotificationRepositoryImplTest {
                 .thenReturn(new KafkaStreamsAnomalyNotification());
 
         doReturn(dbObjects).when(repo).findPageAsHashMap(eq(mockMongoTemplate), anyString(), eq(pageable),
-                any(), any());
+                any(), any(), any());
 
         // Act
         Page<Notification> result = repo.find(null, null, null, pageable);
@@ -169,6 +169,6 @@ public class ActiveNotificationRepositoryImplTest {
         assertThat(result.getContent().get(5)).isInstanceOf(TimeChangeDetailsNotification.class);
         assertThat(result.getContent().get(6)).isInstanceOf(KafkaStreamsAnomalyNotification.class);
 
-        verify(repo).findPageAsHashMap(any(), any(), eq(pageable), any(), any());
+        verify(repo).findPageAsHashMap(any(), any(), eq(pageable), any(), any(), any());
     }
 }

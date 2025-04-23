@@ -77,6 +77,7 @@ public class ProcessedMapRepositoryImplTest {
 
     @Test
     public void testFind() {
+        @SuppressWarnings("rawtypes")
         Page expected = Mockito.mock(Page.class);
         ProcessedMapRepositoryImpl repo = mock(ProcessedMapRepositoryImpl.class);
 
@@ -86,6 +87,7 @@ public class ProcessedMapRepositoryImplTest {
                 any(PageRequest.class),
                 any(Criteria.class),
                 any(Sort.class),
+                any(),
                 any())).thenReturn(expected);
         PageRequest pageRequest = PageRequest.of(0, 1);
         doCallRealMethod().when(repo).find(1, null, null, false, pageRequest);

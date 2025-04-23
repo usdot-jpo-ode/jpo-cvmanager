@@ -697,7 +697,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
     </div>
     <div
       class="container-fluid"
-      style="width: 100%; height: calc(100vh - 141px); display: flex;"
+      style="width: 100%; height: calc(100vh - 119px); display: flex;"
     >
       <div
         style="position: relative; width: 100%; height: 100%;"
@@ -1404,7 +1404,7 @@ exports[`snapshot bsmData clicked 1`] = `
     </div>
     <div
       class="container-fluid"
-      style="width: 100%; height: calc(100vh - 141px); display: flex;"
+      style="width: 100%; height: calc(100vh - 119px); display: flex;"
     >
       <div
         style="position: relative; width: 100%; height: 100%;"

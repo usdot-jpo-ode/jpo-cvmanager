@@ -3,7 +3,7 @@
 exports[`should take a snapshot 1`] = `
 <div>
   <div
-    style="height: calc(100vh - 141px); background-color: rgb(255, 255, 255);"
+    style="height: calc(100vh - 119px); background-color: rgb(255, 255, 255);"
   >
     <div>
       <div
@@ -78,7 +78,7 @@ exports[`should take a snapshot 1`] = `
       style="display: flex; justify-content: center; align-items: center; width: 100%;"
     >
       <div
-        style="width: 80%; font-family: \\"museo-slab\\", Arial, Helvetica, sans-serif; overflow: auto; height: calc(100vh - 276px);"
+        style="width: 80%; font-family: \\"museo-slab\\", Arial, Helvetica, sans-serif; overflow: auto; height: calc(100vh - 254px);"
       >
         <div>
           <div

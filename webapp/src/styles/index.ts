@@ -33,7 +33,7 @@ declare module '@mui/material/styles' {
   }
 }
 
-export const headerTabHeight = 141
+export const headerTabHeight = 119
 
 export const testTheme = createTheme({
   palette: {

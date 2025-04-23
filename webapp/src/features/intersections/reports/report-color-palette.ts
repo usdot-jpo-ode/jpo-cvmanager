@@ -1,7 +1,7 @@
 const reportColorPalette = {
   pink: '#C1666B',
   orangeRed: '#9a6d32',
-  yellow: '#d4b483',
+  yellow: '#cebd21',
   grey: '#b5b1b2',
   blueGrey: '#8c8698',
   purple: '#745c97',

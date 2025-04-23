@@ -51,35 +51,43 @@ const InvalidConnectionOfTravelGraph: React.FC<InvalidConnectionOfTravelGraphPro
         <Typography variant="h6" align="center" sx={{ mt: 2 }}>
           Invalid Connection of Travel
         </Typography>
-        <BarChart
-          width={750}
-          height={450}
-          data={sortedData}
-          margin={{
-            top: 20,
-            right: 30,
-            left: 20,
-            bottom: 50,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            dataKey="ingressLaneID"
-            interval={0}
-            angle={-45}
-            height={50}
-            textAnchor="end"
-            label={{ value: 'Ingress - Egress Lane ID', position: 'center', dy: 40 }}
-            tickFormatter={(tick, index) => `${sortedData[index].ingressLaneID} - ${sortedData[index].egressLaneID}`}
-          />
-          <YAxis
-            label={{ value: 'Event Count', angle: -90, position: 'insideLeft' }}
-            tickFormatter={(tick) => tick.toString()}
-            ticks={ticks}
-          />
-          <Tooltip content={<CustomTooltip />} />
-          <Bar dataKey="eventCount" fill={reportColorPalette.pink} />
-        </BarChart>
+        {sortedData.length === 0 ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', height: 'auto' }}>
+            <Typography variant="h6" align="center" sx={{ mt: 2 }}>
+              No Data Available
+            </Typography>
+          </Box>
+        ) : (
+          <BarChart
+            width={750}
+            height={450}
+            data={sortedData}
+            margin={{
+              top: 20,
+              right: 30,
+              left: 20,
+              bottom: 50,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="ingressLaneID"
+              interval={0}
+              angle={-45}
+              height={50}
+              textAnchor="end"
+              label={{ value: 'Ingress - Egress Lane ID', position: 'center', dy: 40 }}
+              tickFormatter={(tick, index) => `${sortedData[index].ingressLaneID} - ${sortedData[index].egressLaneID}`}
+            />
+            <YAxis
+              label={{ value: 'Event Count', angle: -90, position: 'insideLeft' }}
+              tickFormatter={(tick) => tick.toString()}
+              ticks={ticks}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Bar dataKey="eventCount" fill={reportColorPalette.pink} />
+          </BarChart>
+        )}
       </Box>
     </Box>
   )

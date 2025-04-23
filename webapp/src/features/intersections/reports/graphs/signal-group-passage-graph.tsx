@@ -65,40 +65,48 @@ const SignalGroupPassageGraph: React.FC<SignalGroupPassageGraphProps> = ({ data 
         <Typography variant="h6" align="center" sx={{ mt: 2 }}>
           Signal Group Passage Events
         </Typography>
-        <BarChart
-          width={750}
-          height={450}
-          data={formattedData}
-          margin={{
-            top: 20,
-            right: 30,
-            left: 20,
-            bottom: 20,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" label={{ value: 'Signal Group', position: 'insideBottom', offset: -10, dx: -40 }} />
-          <YAxis unit="%" label={{ value: 'Event Count (%)', angle: -90, position: 'insideLeft', dy: 60 }} />
-          <Tooltip content={<CustomTooltip />} />
-          <Legend
-            wrapperStyle={{
-              paddingTop: '10px',
-              height: '50px',
+        {formattedData.length === 0 ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', height: 'auto' }}>
+            <Typography variant="h6" align="center" sx={{ mt: 2 }}>
+              No Data Available
+            </Typography>
+          </Box>
+        ) : (
+          <BarChart
+            width={750}
+            height={450}
+            data={formattedData}
+            margin={{
+              top: 20,
+              right: 30,
+              left: 20,
+              bottom: 20,
             }}
-            payload={
-              [
-                { value: 'Red', type: 'square', id: 'red', color: reportColorPalette.pink },
-                { value: 'Yellow', type: 'square', id: 'yellow', color: reportColorPalette.yellow },
-                { value: 'Green', type: 'square', id: 'green', color: reportColorPalette.green },
-                hasDark ? { value: 'Dark', type: 'square', id: 'dark', color: '#505050' } : null,
-              ].filter((item) => item !== null) as any[]
-            }
-          />
-          <Bar dataKey="red" stackId="a" fill={reportColorPalette.pink} />
-          <Bar dataKey="yellow" stackId="a" fill={reportColorPalette.yellow} />
-          <Bar dataKey="green" stackId="a" fill={reportColorPalette.green} />
-          <Bar dataKey="dark" stackId="a" fill="#505050" />
-        </BarChart>
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" label={{ value: 'Signal Group', position: 'insideBottom', offset: -10, dx: -40 }} />
+            <YAxis unit="%" label={{ value: 'Event Count (%)', angle: -90, position: 'insideLeft', dy: 60 }} />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend
+              wrapperStyle={{
+                paddingTop: '10px',
+                height: '50px',
+              }}
+              payload={
+                [
+                  { value: 'Red', type: 'square', id: 'red', color: reportColorPalette.pink },
+                  { value: 'Yellow', type: 'square', id: 'yellow', color: reportColorPalette.yellow },
+                  { value: 'Green', type: 'square', id: 'green', color: reportColorPalette.green },
+                  hasDark ? { value: 'Dark', type: 'square', id: 'dark', color: '#505050' } : null,
+                ].filter((item) => item !== null) as any[]
+              }
+            />
+            <Bar dataKey="red" stackId="a" fill={reportColorPalette.pink} />
+            <Bar dataKey="yellow" stackId="a" fill={reportColorPalette.yellow} />
+            <Bar dataKey="green" stackId="a" fill={reportColorPalette.green} />
+            <Bar dataKey="dark" stackId="a" fill="#505050" />
+          </BarChart>
+        )}
       </Box>
     </Box>
   )

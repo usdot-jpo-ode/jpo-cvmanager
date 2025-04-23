@@ -23,10 +23,10 @@ interface LaneDirectionHeadingGraphProps {
 const CustomTooltip = ({ active, payload, label }: TooltipProps<ValueType, NameType>) => {
   if (active && payload && payload.length) {
     return (
-      <div style={{ backgroundColor: 'white', border: '1px solid #ccc', padding: '10px' }}>
-        <div>{label}</div>
-        <div>events: {payload[0].value}</div>
-      </div>
+      <Box sx={{ backgroundColor: 'white', border: '1px solid #ccc', padding: '10px' }}>
+        <Typography variant="body2">{label}</Typography>
+        <Typography variant="body2">events: {payload[0].value}</Typography>
+      </Box>
     )
   }
 
@@ -98,59 +98,67 @@ const LaneDirectionHeadingGraph: React.FC<LaneDirectionHeadingGraphProps> = ({ d
       <Typography variant="h6" align="center" sx={{ mt: 2 }}>
         Deviation from Lane Heading Distribution
       </Typography>
-      <BarChart
-        width={750}
-        height={450}
-        data={numericData}
-        margin={{
-          top: 20,
-          right: 30,
-          left: 20,
-          bottom: 15,
-        }}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis
-          dataKey="name"
-          label={{ value: 'Heading (degrees)', position: 'insideBottom', offset: -10 }}
-          type="number"
-          domain={[domainMin, domainMax]}
-          tickFormatter={tickFormatter}
-        />
-        <YAxis
-          label={{ value: 'Event Count', angle: -90, position: 'insideLeft', offset: 0 }}
-          tickFormatter={(value) => `${formatAxisTickNumber(value)}`}
-        />
-        <Tooltip content={<CustomTooltip />} />
-        <Bar dataKey="value" fill={reportColorPalette.cyan} />
-        <ReferenceLine x={mean} stroke={reportColorPalette.blueGrey} />
-        <ReferenceLine x={median} stroke={reportColorPalette.green} />
-        <ReferenceLine x={headingTolerance} stroke={reportColorPalette.pink} strokeDasharray="3 3" />
-        <ReferenceLine x={-headingTolerance} stroke={reportColorPalette.pink} strokeDasharray="3 3" />
-        <ReferenceArea x1={headingTolerance} x2={domainMax} fill={reportColorPalette.grey} fillOpacity={0.1} />
-        <ReferenceArea x1={domainMin} x2={-headingTolerance} fill={reportColorPalette.grey} fillOpacity={0.1} />
-      </BarChart>
-      {data.length > 0 && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-          <Typography variant="body2" sx={{ color: reportColorPalette.grey, mx: 1 }}>
-            Mean: {mean}°
-          </Typography>
-          <Typography variant="body2" sx={{ color: reportColorPalette.green, mx: 1 }}>
-            Median: {median}°
-          </Typography>
-          <Typography variant="body2" sx={{ color: reportColorPalette.pink, mx: 1 }}>
-            Tolerance: {headingTolerance}°
-          </Typography>
-          <Typography variant="body2" sx={{ mx: 1 }}>
-            Out-of-Tolerance Events: {percentageOutsideTolerance.toFixed(2)}%
-          </Typography>
-          <Typography variant="body2" sx={{ mx: 1 }}>
-            Min: {min}°
-          </Typography>
-          <Typography variant="body2" sx={{ mx: 1 }}>
-            Max: {max}°
+      {numericData.length === 0 ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', height: 'auto' }}>
+          <Typography variant="h6" align="center" sx={{ mt: 2 }}>
+            No Data Available
           </Typography>
         </Box>
+      ) : (
+        <>
+          <BarChart
+            width={750}
+            height={450}
+            data={numericData}
+            margin={{
+              top: 20,
+              right: 30,
+              left: 20,
+              bottom: 15,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="name"
+              label={{ value: 'Heading (degrees)', position: 'insideBottom', offset: -10 }}
+              type="number"
+              domain={[domainMin, domainMax]}
+              tickFormatter={tickFormatter}
+            />
+            <YAxis
+              label={{ value: 'Event Count', angle: -90, position: 'insideLeft', offset: 0 }}
+              tickFormatter={(value) => `${formatAxisTickNumber(value)}`}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Bar dataKey="value" fill={reportColorPalette.cyan} />
+            <ReferenceLine x={mean} stroke={reportColorPalette.blueGrey} />
+            <ReferenceLine x={median} stroke={reportColorPalette.green} />
+            <ReferenceLine x={headingTolerance} stroke={reportColorPalette.pink} strokeDasharray="3 3" />
+            <ReferenceLine x={-headingTolerance} stroke={reportColorPalette.pink} strokeDasharray="3 3" />
+            <ReferenceArea x1={headingTolerance} x2={domainMax} fill={reportColorPalette.grey} fillOpacity={0.1} />
+            <ReferenceArea x1={domainMin} x2={-headingTolerance} fill={reportColorPalette.grey} fillOpacity={0.1} />
+          </BarChart>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+            <Typography variant="body2" sx={{ color: reportColorPalette.grey, mx: 1 }}>
+              Mean: {mean}°
+            </Typography>
+            <Typography variant="body2" sx={{ color: reportColorPalette.green, mx: 1 }}>
+              Median: {median}°
+            </Typography>
+            <Typography variant="body2" sx={{ color: reportColorPalette.pink, mx: 1 }}>
+              Tolerance: {headingTolerance}°
+            </Typography>
+            <Typography variant="body2" sx={{ mx: 1 }}>
+              Out-of-Tolerance Events: {percentageOutsideTolerance.toFixed(2)}%
+            </Typography>
+            <Typography variant="body2" sx={{ mx: 1 }}>
+              Min: {min}°
+            </Typography>
+            <Typography variant="body2" sx={{ mx: 1 }}>
+              Max: {max}°
+            </Typography>
+          </Box>
+        </>
       )}
     </Box>
   )

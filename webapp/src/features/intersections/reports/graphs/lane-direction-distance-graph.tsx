@@ -94,70 +94,78 @@ const LaneDirectionDistanceGraph: React.FC<LaneDirectionDistanceGraphProps> = ({
         <Typography variant="h6" align="center" sx={{ mt: 2 }}>
           Median Distance Deviation from Lane Centerline
         </Typography>
-        <BarChart
-          width={750}
-          height={450}
-          data={numericData}
-          margin={{
-            top: 20,
-            right: 30,
-            left: 20,
-            bottom: 20,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            dataKey="name"
-            label={{ value: 'Distance (ft)', position: 'insideBottom', offset: -10 }}
-            scale="linear"
-            type="number"
-            domain={[minX - 0.5, maxX + 0.5]}
-            interval={getInterval(data.length)}
-          />
-          <YAxis
-            label={{ value: 'Event Count', angle: -90, position: 'insideLeft', offset: 0 }}
-            tickFormatter={formatAxisTickNumber}
-          />
-          <Tooltip content={<CustomTooltip />} />
-          <Bar dataKey="value" fill={reportColorPalette.cyan} />
-          <ReferenceLine x={mean} stroke={reportColorPalette.blueGrey} />
-          <ReferenceLine x={median} stroke={reportColorPalette.green} />
-          <ReferenceLine x={cmToFeet(distanceTolerance)} stroke={reportColorPalette.pink} strokeDasharray="3 3" />
-          <ReferenceLine x={-cmToFeet(distanceTolerance)} stroke={reportColorPalette.pink} strokeDasharray="3 3" />
-          <ReferenceArea
-            x1={cmToFeet(distanceTolerance)}
-            x2={maxX + 0.5}
-            fill={reportColorPalette.grey}
-            fillOpacity={0.1}
-          />
-          <ReferenceArea
-            x1={minX - 0.5}
-            x2={-cmToFeet(distanceTolerance)}
-            fill={reportColorPalette.grey}
-            fillOpacity={0.1}
-          />
-        </BarChart>
-        {data.length > 0 && (
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
-            <Typography variant="body2" sx={{ color: reportColorPalette.grey, mx: 1 }}>
-              Mean: {mean} ft
-            </Typography>
-            <Typography variant="body2" sx={{ color: reportColorPalette.green, mx: 1 }}>
-              Median: {median} ft
-            </Typography>
-            <Typography variant="body2" sx={{ color: reportColorPalette.pink, mx: 1 }}>
-              Tolerance: {cmToFeet(distanceTolerance).toFixed(2)} ft
-            </Typography>
-            <Typography variant="body2" sx={{ mx: 1 }}>
-              Out-of-Tolerance Events: {percentageOutsideTolerance.toFixed(2)}%
-            </Typography>
-            <Typography variant="body2" sx={{ mx: 1 }}>
-              Min: {min} ft
-            </Typography>
-            <Typography variant="body2" sx={{ mx: 1 }}>
-              Max: {max} ft
+        {numericData.length === 0 ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', height: 'auto' }}>
+            <Typography variant="h6" align="center" sx={{ mt: 2 }}>
+              No Data Available
             </Typography>
           </Box>
+        ) : (
+          <>
+            <BarChart
+              width={750}
+              height={450}
+              data={numericData}
+              margin={{
+                top: 20,
+                right: 30,
+                left: 20,
+                bottom: 20,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="name"
+                label={{ value: 'Distance (ft)', position: 'insideBottom', offset: -10 }}
+                scale="linear"
+                type="number"
+                domain={[minX - 0.5, maxX + 0.5]}
+                interval={getInterval(data.length)}
+              />
+              <YAxis
+                label={{ value: 'Event Count', angle: -90, position: 'insideLeft', offset: 0 }}
+                tickFormatter={formatAxisTickNumber}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="value" fill={reportColorPalette.cyan} />
+              <ReferenceLine x={mean} stroke={reportColorPalette.blueGrey} />
+              <ReferenceLine x={median} stroke={reportColorPalette.green} />
+              <ReferenceLine x={cmToFeet(distanceTolerance)} stroke={reportColorPalette.pink} strokeDasharray="3 3" />
+              <ReferenceLine x={-cmToFeet(distanceTolerance)} stroke={reportColorPalette.pink} strokeDasharray="3 3" />
+              <ReferenceArea
+                x1={cmToFeet(distanceTolerance)}
+                x2={maxX + 0.5}
+                fill={reportColorPalette.grey}
+                fillOpacity={0.1}
+              />
+              <ReferenceArea
+                x1={minX - 0.5}
+                x2={-cmToFeet(distanceTolerance)}
+                fill={reportColorPalette.grey}
+                fillOpacity={0.1}
+              />
+            </BarChart>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
+              <Typography variant="body2" sx={{ color: reportColorPalette.grey, mx: 1 }}>
+                Mean: {mean} ft
+              </Typography>
+              <Typography variant="body2" sx={{ color: reportColorPalette.green, mx: 1 }}>
+                Median: {median} ft
+              </Typography>
+              <Typography variant="body2" sx={{ color: reportColorPalette.pink, mx: 1 }}>
+                Tolerance: {cmToFeet(distanceTolerance).toFixed(2)} ft
+              </Typography>
+              <Typography variant="body2" sx={{ mx: 1 }}>
+                Out-of-Tolerance Events: {percentageOutsideTolerance.toFixed(2)}%
+              </Typography>
+              <Typography variant="body2" sx={{ mx: 1 }}>
+                Min: {min} ft
+              </Typography>
+              <Typography variant="body2" sx={{ mx: 1 }}>
+                Max: {max} ft
+              </Typography>
+            </Box>
+          </>
         )}
       </Box>
     </Box>

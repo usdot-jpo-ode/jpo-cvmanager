@@ -130,62 +130,70 @@ const HeadingErrorOverTimeGraph: React.FC<HeadingErrorOverTimeGraphProps> = ({
           align="center"
           sx={{ mt: 2 }}
         >{`Heading Error for Lane ${laneNumber} Over Time`}</Typography>
-        <LineChart
-          width={750}
-          height={450}
-          data={processedData}
-          margin={{
-            top: 20,
-            right: 30,
-            left: 20,
-            bottom: 70,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            dataKey="name"
-            label={{ value: 'Time', position: 'insideBottom', offset: -60 }}
-            tickFormatter={tickFormatter}
-            angle={-45}
-            textAnchor="end"
-          />
-          <YAxis
-            label={{ value: 'Heading Delta (Degrees)', angle: -90, position: 'insideLeft', dy: 80 }}
-            domain={[domainMin, domainMax]} // Use calculated domain edges
-          />
-          <Tooltip content={<CustomTooltip />} />
-          <Legend verticalAlign="top" height={36} />
-          {lines.map((line, index) => (
-            <Line
-              key={index}
-              type="monotone"
-              dataKey={line.dataKey}
-              stroke={line.stroke}
-              name={line.name}
-              connectNulls
-              dot={false}
-              isAnimationActive={false}
-              strokeWidth={3}
+        {sortedData.length === 0 ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', height: 'auto' }}>
+            <Typography variant="h6" align="center" sx={{ mt: 2 }}>
+              No Data Available
+            </Typography>
+          </Box>
+        ) : (
+          <LineChart
+            width={750}
+            height={450}
+            data={processedData}
+            margin={{
+              top: 20,
+              right: 30,
+              left: 20,
+              bottom: 70,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="name"
+              label={{ value: 'Time', position: 'insideBottom', offset: -60 }}
+              tickFormatter={tickFormatter}
+              angle={-45}
+              textAnchor="end"
             />
-          ))}
-          <ReferenceLine
-            y={headingTolerance}
-            stroke={reportColorPalette.pink}
-            strokeDasharray="3 3"
-            label={{ value: `Tolerance: ${headingTolerance}°`, position: 'top', offset: 5 }}
-          />
-          <ReferenceArea y1={headingTolerance} y2={domainMax} fill={reportColorPalette.grey} fillOpacity={0.1} />
-          <ReferenceLine
-            y={-headingTolerance}
-            stroke={reportColorPalette.pink}
-            strokeDasharray="3 3"
-            label={{ value: `Tolerance: ${headingTolerance}°`, position: 'top', offset: 5 }}
-          />
-          <ReferenceArea y1={domainMin} y2={-headingTolerance} fill={reportColorPalette.grey} fillOpacity={0.1} />
-          {headingTolerance < minValue && (
-            <ReferenceArea y1={domainMin} y2={domainMax} fill={reportColorPalette.grey} fillOpacity={0.1} />
-          )}
-        </LineChart>
+            <YAxis
+              label={{ value: 'Heading Delta (Degrees)', angle: -90, position: 'insideLeft', dy: 80 }}
+              domain={[domainMin, domainMax]} // Use calculated domain edges
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend verticalAlign="top" height={36} />
+            {lines.map((line, index) => (
+              <Line
+                key={index}
+                type="monotone"
+                dataKey={line.dataKey}
+                stroke={line.stroke}
+                name={line.name}
+                connectNulls
+                dot={false}
+                isAnimationActive={false}
+                strokeWidth={3}
+              />
+            ))}
+            <ReferenceLine
+              y={headingTolerance}
+              stroke={reportColorPalette.pink}
+              strokeDasharray="3 3"
+              label={{ value: `Tolerance: ${headingTolerance}°`, position: 'top', offset: 5 }}
+            />
+            <ReferenceArea y1={headingTolerance} y2={domainMax} fill={reportColorPalette.grey} fillOpacity={0.1} />
+            <ReferenceLine
+              y={-headingTolerance}
+              stroke={reportColorPalette.pink}
+              strokeDasharray="3 3"
+              label={{ value: `Tolerance: ${headingTolerance}°`, position: 'top', offset: 5 }}
+            />
+            <ReferenceArea y1={domainMin} y2={-headingTolerance} fill={reportColorPalette.grey} fillOpacity={0.1} />
+            {headingTolerance < minValue && (
+              <ReferenceArea y1={domainMin} y2={domainMax} fill={reportColorPalette.grey} fillOpacity={0.1} />
+            )}
+          </LineChart>
+        )}
       </Box>
     </Box>
   )

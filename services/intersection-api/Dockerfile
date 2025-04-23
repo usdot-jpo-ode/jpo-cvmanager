@@ -88,10 +88,6 @@ USER root
 # Install runtime dependencies
 RUN apk update && apk add --no-cache \
     bash \
-    libstdc++ \
-    zlib \
-    openssl \
-    curl \
     librdkafka \
     librdkafka-dev \
     jemalloc

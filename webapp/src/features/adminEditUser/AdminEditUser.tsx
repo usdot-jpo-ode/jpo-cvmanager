@@ -12,7 +12,6 @@ import {
   setSelectedRole,
 
   // actions
-  getUserData,
   submitForm,
   updateOrganizations,
   UserApiDataOrgs,
@@ -62,15 +61,6 @@ const AdminEditUser = () => {
   })
 
   const { email } = useParams<{ email: string }>()
-
-  useEffect(() => {
-    if (
-      (userTableData ?? []).find((user: AdminUserWithId) => user.email === email) &&
-      Object.keys(apiData ?? {}).length == 0
-    ) {
-      dispatch(getUserData(email))
-    }
-  }, [email, userTableData, dispatch])
 
   useEffect(() => {
     dispatch(getAvailableUsers())

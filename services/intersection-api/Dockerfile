@@ -2,46 +2,38 @@
 FROM amazonlinux:2023 as builder
 USER root
 WORKDIR /asn1_codec
-## add build dependencies
+## install build dependencies
 RUN yum install -y cmake g++ make bash automake libtool autoconf flex bison
 
 # Install librdkafka from Confluent repo
-RUN rpm --import https://packages.confluent.io/rpm/7.6/archive.key
 COPY ./confluent.repo /etc/yum.repos.d
-RUN yum clean all
-RUN yum install -y librdkafka-devel
+RUN rpm --import https://packages.confluent.io/rpm/7.6/archive.key && yum clean all && yum install -y librdkafka-devel
 
 # Install pugixml
-ADD ./asn1_codec/pugixml /asn1_codec/pugixml
+COPY ./asn1_codec/pugixml /asn1_codec/pugixml
 RUN cd /asn1_codec/pugixml && mkdir -p build && cd build && cmake .. && make && make install
 
 # Build and install asn1c submodule. Ensure all scripts have the correct permissions - required for azure release pipeline
-ADD ./asn1_codec/usdot-asn1c /asn1_codec/asn1c
-RUN find /asn1_codec/asn1c -type f -name '*.pl' -exec chmod +x {} \;
-RUN cd asn1c && test -f configure || autoreconf -iv && ./configure && make && make install
+COPY ./asn1_codec/usdot-asn1c /asn1_codec/asn1c
+RUN find /asn1_codec/asn1c -type f -name '*.pl' -exec chmod +x {} \; && cd asn1c && test -f configure || autoreconf -iv && ./configure && make && make install
 
 # Make generated files available to the build & compile example
-RUN export LD_LIBRARY_PATH=/usr/local/lib
-ADD ./asn1_codec/asn1c_combined /asn1_codec/asn1c_combined
-RUN cd /asn1_codec/asn1c_combined && bash doIt.sh
+COPY ./asn1_codec/asn1c_combined /asn1_codec/asn1c_combined
+RUN export LD_LIBRARY_PATH=/usr/local/lib && cd /asn1_codec/asn1c_combined && bash doIt.sh
 
-# Remove any lingering .asn files
-RUN rm -rf /asn1c_codec/asn1c_combined/j2735-asn-files
-RUN rm -rf /asn1c_codec/asn1c_combined/semi-asn-files
+# Remove any lingering .asn and duplicate files
+RUN rm -rf /asn1c_codec/asn1c_combined/j2735-asn-files && rm -rf /asn1c_codec/asn1c_combined/semi-asn-files && rm -rf /asn1c_codec/asn1c_combined/generated-files
 
-# Remove duplicate files
-RUN rm -rf /asn1c_codec/asn1c_combined/generated-files
-
-# add the source and build files
-ADD ./asn1_codec/CMakeLists.txt /asn1_codec
-ADD ./asn1_codec/config /asn1_codec/config
-ADD ./asn1_codec/include /asn1_codec/include
-ADD ./asn1_codec/src /asn1_codec/src
-ADD ./asn1_codec/kafka-test /asn1_codec/kafka-test
-ADD ./asn1_codec/unit-test-data /asn1_codec/unit-test-data
-ADD ./asn1_codec/data /asn1_codec/data
-ADD ./asn1_codec/run_acm.sh /asn1_codec
-ADD ./asn1_codec/data /asn1_codec/data
+# copy the source and build files
+COPY ./asn1_codec/CMakeLists.txt /asn1_codec
+COPY ./asn1_codec/config /asn1_codec/config
+COPY ./asn1_codec/include /asn1_codec/include
+COPY ./asn1_codec/src /asn1_codec/src
+COPY ./asn1_codec/kafka-test /asn1_codec/kafka-test
+COPY ./asn1_codec/unit-test-data /asn1_codec/unit-test-data
+COPY ./asn1_codec/data /asn1_codec/data
+COPY ./asn1_codec/run_acm.sh /asn1_codec
+COPY ./asn1_codec/data /asn1_codec/data
 
 # Build acm.
 RUN mkdir -p /build && cd /build && cmake /asn1_codec && make
@@ -82,23 +74,20 @@ USER root
 WORKDIR /asn1_codec
 
 
-
-# # add runtime dependencies
+# # install runtime dependencies
 RUN yum install -y bash
 
 
 # Install librdkafka from Confluent repo
-RUN rpm --import https://packages.confluent.io/rpm/7.6/archive.key
 COPY ./confluent.repo /etc/yum.repos.d
-RUN yum clean all
-RUN yum install -y librdkafka-devel
+RUN rpm --import https://packages.confluent.io/rpm/7.6/archive.key && yum clean all && yum install -y librdkafka-devel
 
 # # copy the built files from the builder
 COPY --from=builder /asn1_codec /asn1_codec
 COPY --from=builder /build /build
 
-# # Add test data. This changes frequently so keep it low in the file.
-ADD ./asn1_codec/docker-test /asn1_codec/docker-test
+# # copy test data. This changes frequently so keep it low in the file.
+COPY ./asn1_codec/docker-test /asn1_codec/docker-test
 
 # # Put workdir back to Java home
 WORKDIR /home

@@ -25,6 +25,8 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository, Pag
     private final String collectionName = "ProcessedSpat";
     private final String DATE_FIELD = "utcTimeStamp";
     private final String INTERSECTION_ID_FIELD = "intersectionId";
+    private final String RECORD_GENERATED_AT_FIELD = "recordGeneratedAt";
+    private final String VALIDATION_MESSAGES_FIELD = "properties.validationMessages";
 
     public ProcessedSpatRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
@@ -75,9 +77,9 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository, Pag
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
         Query query = Query.query(criteria);
-        List<String> excludedFields = List.of("recordGeneratedAt");
+        List<String> excludedFields = List.of(RECORD_GENERATED_AT_FIELD);
         if (compact) {
-            excludedFields.add("validationMessages");
+            excludedFields.add(VALIDATION_MESSAGES_FIELD);
         }
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
         return wrapSingleResultWithPage(
@@ -106,9 +108,9 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository, Pag
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
-        List<String> excludedFields = List.of("recordGeneratedAt");
+        List<String> excludedFields = List.of(RECORD_GENERATED_AT_FIELD);
         if (compact) {
-            excludedFields.add("validationMessages");
+            excludedFields.add(VALIDATION_MESSAGES_FIELD);
         }
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
         return findPage(mongoTemplate, collectionName, pageable, criteria, sort, List.of(), ProcessedSpat.class);

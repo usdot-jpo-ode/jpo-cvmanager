@@ -9,7 +9,7 @@ import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
 public interface SpatMinimumDataEventRepository extends DataLoader<SpatMinimumDataEvent> {
-    long count(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
+    long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<SpatMinimumDataEvent> findLatest(Integer intersectionID, Long startTime, Long endTime);
 

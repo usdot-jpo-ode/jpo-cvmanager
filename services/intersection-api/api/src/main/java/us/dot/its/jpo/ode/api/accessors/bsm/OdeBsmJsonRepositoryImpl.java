@@ -3,8 +3,6 @@ package us.dot.its.jpo.ode.api.accessors.bsm;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nullable;
-
 import org.geotools.referencing.GeodeticCalculator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -132,8 +130,7 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
             Long endTime,
             Double centerLng,
             Double centerLat,
-            Double distance,
-            @Nullable Pageable pageable) {
+            Double distance) {
 
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(ORIGIN_IP_FIELD, originIp)
@@ -149,10 +146,6 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
                     .gte(Math.min(longitudes[0], longitudes[1])).lte(Math.max(longitudes[0], longitudes[1]));
         }
         Query query = Query.query(criteria);
-        if (pageable != null) {
-            query = query.with(pageable);
-        }
-
         return mongoTemplate.count(query, Map.class, collectionName);
     }
 

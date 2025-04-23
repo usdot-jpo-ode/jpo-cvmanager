@@ -1,7 +1,5 @@
 package us.dot.its.jpo.ode.api.accessors.bsm;
 
-import javax.annotation.Nullable;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -13,5 +11,5 @@ public interface OdeBsmJsonRepository extends DataLoader<OdeBsmData> {
             Double longitude, Double latitude, Double distance, Pageable pageable);
 
     long count(String originIp, String vehicleId, Long startTime, Long endTime, Double longitude,
-            Double latitude, Double distance, @Nullable Pageable pageable);
+            Double latitude, Double distance);
 }

@@ -6,7 +6,7 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.StopLinePassa
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
 public interface StopLinePassageNotificationRepository extends DataLoader<StopLinePassageNotification> {
-    long count(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
+    long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<StopLinePassageNotification> findLatest(Integer intersectionID, Long startTime, Long endTime);
 

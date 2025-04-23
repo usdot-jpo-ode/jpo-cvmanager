@@ -6,7 +6,7 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.LaneDirection
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
 public interface LaneDirectionOfTravelNotificationRepository extends DataLoader<LaneDirectionOfTravelNotification> {
-    long count(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
+    long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<LaneDirectionOfTravelNotification> findLatest(Integer intersectionID, Long startTime, Long endTime);
 

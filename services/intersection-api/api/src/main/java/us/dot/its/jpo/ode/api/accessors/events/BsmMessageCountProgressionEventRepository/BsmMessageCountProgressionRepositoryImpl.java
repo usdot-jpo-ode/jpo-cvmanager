@@ -1,7 +1,5 @@
 package us.dot.its.jpo.ode.api.accessors.events.BsmMessageCountProgressionEventRepository;
 
-import javax.annotation.Nullable;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -46,15 +44,11 @@ public class BsmMessageCountProgressionRepositoryImpl
     public long count(
             Integer intersectionID,
             Long startTime,
-            Long endTime,
-            @Nullable Pageable pageable) {
+            Long endTime) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
         Query query = Query.query(criteria);
-        if (pageable != null) {
-            query = query.with(pageable);
-        }
         return mongoTemplate.count(query, collectionName);
     }
 

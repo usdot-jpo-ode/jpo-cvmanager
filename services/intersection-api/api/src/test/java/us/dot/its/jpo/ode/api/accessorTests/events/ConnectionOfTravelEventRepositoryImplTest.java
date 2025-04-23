@@ -84,8 +84,7 @@ public class ConnectionOfTravelEventRepositoryImplTest {
         when(mongoTemplate.count(any(),
                 Mockito.<String>any())).thenReturn(expectedCount);
 
-        PageRequest pageRequest = PageRequest.of(0, 1);
-        long resultCount = repository.count(1, null, null, pageRequest);
+        long resultCount = repository.count(1, null, null);
 
         assertThat(resultCount).isEqualTo(expectedCount);
         verify(mongoTemplate).count(any(Query.class), anyString());

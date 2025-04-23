@@ -23,7 +23,6 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTra
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLinePassageAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLineStopAssessment;
-import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 import us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment.ConnectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment.LaneDirectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.StopLineStopAssessmentRepository;
@@ -37,7 +36,7 @@ import us.dot.its.jpo.ode.mockdata.MockAssessmentGenerator;
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
-public class AssessmentController implements PageableQuery {
+public class AssessmentController {
 
     private final LaneDirectionOfTravelAssessmentRepository laneDirectionOfTravelAssessmentRepo;
     private final ConnectionOfTravelAssessmentRepository connectionOfTravelAssessmentRepo;
@@ -101,15 +100,12 @@ public class AssessmentController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = connectionOfTravelAssessmentRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = connectionOfTravelAssessmentRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }
@@ -161,15 +157,12 @@ public class AssessmentController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = laneDirectionOfTravelAssessmentRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = laneDirectionOfTravelAssessmentRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }
@@ -221,15 +214,12 @@ public class AssessmentController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = connectionOfTravelAssessmentRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = connectionOfTravelAssessmentRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }
@@ -280,15 +270,12 @@ public class AssessmentController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = connectionOfTravelAssessmentRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = connectionOfTravelAssessmentRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }

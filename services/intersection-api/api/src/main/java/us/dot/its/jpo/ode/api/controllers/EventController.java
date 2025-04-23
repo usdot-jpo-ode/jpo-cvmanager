@@ -43,7 +43,6 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.broadcast_rate.MapBr
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.broadcast_rate.SpatBroadcastRateEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.MapMinimumDataEvent;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.SpatMinimumDataEvent;
-import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 import us.dot.its.jpo.ode.api.accessors.events.BsmEvent.BsmEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.BsmMessageCountProgressionEventRepository.BsmMessageCountProgressionEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.ConnectionOfTravelEvent.ConnectionOfTravelEventRepository;
@@ -73,7 +72,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
-public class EventController implements PageableQuery {
+public class EventController {
 
     private final ConnectionOfTravelEventRepository connectionOfTravelEventRepo;
     private final IntersectionReferenceAlignmentEventRepository intersectionReferenceAlignmentEventRepo;
@@ -176,16 +175,12 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = intersectionReferenceAlignmentEventRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = intersectionReferenceAlignmentEventRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }
@@ -203,7 +198,6 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
-
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
             @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
@@ -236,16 +230,12 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = connectionOfTravelEventRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = connectionOfTravelEventRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }
@@ -285,7 +275,6 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
-
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
             @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
@@ -318,16 +307,12 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = laneDirectionOfTravelEventRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = laneDirectionOfTravelEventRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }
@@ -367,7 +352,6 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
-
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
             @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
@@ -400,16 +384,12 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = signalGroupAlignmentEventRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = signalGroupAlignmentEventRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }
@@ -449,7 +429,6 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
-
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
             @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
@@ -482,16 +461,12 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = signalStateConflictEventRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = signalStateConflictEventRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }
@@ -531,7 +506,6 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
-
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
             @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
@@ -564,16 +538,12 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = signalStateEventRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = signalStateEventRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }
@@ -645,16 +615,12 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = signalStateStopEventRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = signalStateStopEventRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }
@@ -694,7 +660,6 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
-
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
             @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
@@ -727,16 +692,12 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = timeChangeDetailsEventRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = timeChangeDetailsEventRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }
@@ -808,16 +769,12 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = spatMinimumDataEventRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = spatMinimumDataEventRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }
@@ -867,16 +824,12 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = mapMinimumDataEventRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = mapMinimumDataEventRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }
@@ -894,7 +847,6 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
-
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
             @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
@@ -927,16 +879,12 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = mapBroadcastRateEventRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = mapBroadcastRateEventRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }
@@ -954,7 +902,6 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
-
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
             @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
@@ -987,16 +934,12 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = spatBroadcastRateEventRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = spatBroadcastRateEventRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }
@@ -1014,7 +957,6 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
-
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
             @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
@@ -1047,16 +989,12 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = spatMessageCountProgressionEventRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = spatMessageCountProgressionEventRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }
@@ -1074,7 +1012,6 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
-
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
             @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
@@ -1107,16 +1044,12 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = mapMessageCountProgressionEventRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = mapMessageCountProgressionEventRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }
@@ -1134,7 +1067,6 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
-
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
             @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
@@ -1167,16 +1099,12 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = bsmMessageCountProgressionEventRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = bsmMessageCountProgressionEventRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }
@@ -1194,7 +1122,6 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
-
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
             @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
@@ -1226,16 +1153,12 @@ public class EventController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "full_count", required = false, defaultValue = "true") boolean fullCount,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = bsmEventRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = bsmEventRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }

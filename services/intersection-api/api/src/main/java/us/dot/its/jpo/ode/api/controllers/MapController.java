@@ -20,7 +20,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
-import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
 import us.dot.its.jpo.ode.mockdata.MockMapGenerator;
 
@@ -31,7 +30,7 @@ import us.dot.its.jpo.ode.mockdata.MockMapGenerator;
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
-public class MapController implements PageableQuery {
+public class MapController {
 
     private final ProcessedMapRepository processedMapRepo;
 
@@ -85,15 +84,12 @@ public class MapController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(5L);
         } else {
-            long count = processedMapRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = processedMapRepo.count(intersectionID, startTime, endTime);
             return ResponseEntity.ok(count);
 
         }

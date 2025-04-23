@@ -9,7 +9,7 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOf
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
 public interface LaneDirectionOfTravelAssessmentRepository extends DataLoader<LaneDirectionOfTravelAssessment> {
-    long count(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
+    long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<LaneDirectionOfTravelAssessment> findLatest(Integer intersectionID, Long startTime, Long endTime);
 

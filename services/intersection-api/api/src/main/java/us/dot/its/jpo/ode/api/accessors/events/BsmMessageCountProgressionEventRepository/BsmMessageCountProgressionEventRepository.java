@@ -6,7 +6,7 @@ import us.dot.its.jpo.ode.api.models.DataLoader;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.BsmMessageCountProgressionEvent;
 
 public interface BsmMessageCountProgressionEventRepository extends DataLoader<BsmMessageCountProgressionEvent> {
-    long count(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
+    long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<BsmMessageCountProgressionEvent> findLatest(Integer intersectionID, Long startTime, Long endTime);
 

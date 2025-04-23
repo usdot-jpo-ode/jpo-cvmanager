@@ -9,7 +9,7 @@ import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
 public interface SpatBroadcastRateEventRepository extends DataLoader<SpatBroadcastRateEvent> {
-    long count(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
+    long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<SpatBroadcastRateEvent> findLatest(Integer intersectionID, Long startTime, Long endTime);
 

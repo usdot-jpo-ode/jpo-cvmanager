@@ -10,7 +10,7 @@ import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
 public interface BsmEventRepository extends DataLoader<BsmEvent> {
-    long count(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
+    long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<BsmEvent> findLatest(Integer intersectionID, Long startTime, Long endTime);
 

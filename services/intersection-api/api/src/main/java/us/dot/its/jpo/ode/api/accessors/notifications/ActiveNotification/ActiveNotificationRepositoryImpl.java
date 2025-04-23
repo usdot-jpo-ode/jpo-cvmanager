@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import javax.annotation.Nullable;
 import org.bson.Document;
 
 import org.springframework.data.domain.Page;
@@ -65,16 +64,12 @@ public class ActiveNotificationRepositoryImpl
     public long count(
             Integer intersectionID,
             String notificationType,
-            String key,
-            @Nullable Pageable pageable) {
+            String key) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .whereOptional(NOTIFICATION_TYPE_FIELD, notificationType)
                 .whereOptional(KEY_FIELD, key);
         Query query = Query.query(criteria);
-        if (pageable != null) {
-            query = query.with(pageable);
-        }
         return mongoTemplate.count(query, collectionName);
     }
 

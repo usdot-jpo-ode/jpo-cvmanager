@@ -37,7 +37,6 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.StopLineStopN
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.TimeChangeDetailsNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.MapBroadcastRateNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.SpatBroadcastRateNotification;
-import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 import us.dot.its.jpo.ode.api.accessors.notifications.ActiveNotification.ActiveNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.ConnectionOfTravelNotification.ConnectionOfTravelNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.IntersectionReferenceAlignmentNotification.IntersectionReferenceAlignmentNotificationRepository;
@@ -58,7 +57,7 @@ import us.dot.its.jpo.ode.mockdata.MockNotificationGenerator;
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
-public class NotificationController implements PageableQuery {
+public class NotificationController {
 
     private final IntersectionReferenceAlignmentNotificationRepository intersectionReferenceAlignmentNotificationRepo;
     private final LaneDirectionOfTravelNotificationRepository laneDirectionOfTravelNotificationRepo;
@@ -139,15 +138,12 @@ public class NotificationController implements PageableQuery {
             @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
             @RequestParam(name = "notification_type", required = false) String notificationType,
             @RequestParam(name = "key", required = false) String key,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = activeNotificationRepo.count(intersectionID, notificationType, key,
-                    createNullablePage(page, size));
+            long count = activeNotificationRepo.count(intersectionID, notificationType, key);
 
             return ResponseEntity.ok(count);
         }
@@ -218,15 +214,12 @@ public class NotificationController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = connectionOfTravelNotificationRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = connectionOfTravelNotificationRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }
@@ -276,15 +269,12 @@ public class NotificationController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = intersectionReferenceAlignmentNotificationRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = intersectionReferenceAlignmentNotificationRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }
@@ -334,15 +324,12 @@ public class NotificationController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = laneDirectionOfTravelNotificationRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = laneDirectionOfTravelNotificationRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }
@@ -392,15 +379,12 @@ public class NotificationController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = mapBroadcastRateNotificationRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = mapBroadcastRateNotificationRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }
@@ -450,15 +434,12 @@ public class NotificationController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = signalGroupAlignmentNotificationRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = signalGroupAlignmentNotificationRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }
@@ -508,15 +489,12 @@ public class NotificationController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = signalStateConflictNotificationRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = signalStateConflictNotificationRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }
@@ -566,15 +544,12 @@ public class NotificationController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = spatBroadcastRateNotificationRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = spatBroadcastRateNotificationRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }
@@ -624,15 +599,12 @@ public class NotificationController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = stopLineStopNotificationRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = stopLineStopNotificationRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }
@@ -682,15 +654,12 @@ public class NotificationController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = stopLinePassageNotificationRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = stopLinePassageNotificationRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }
@@ -740,15 +709,12 @@ public class NotificationController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            long count = timeChangeDetailsNotificationRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = timeChangeDetailsNotificationRepo.count(intersectionID, startTime, endTime);
 
             return ResponseEntity.ok(count);
         }

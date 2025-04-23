@@ -7,7 +7,7 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTra
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
 public interface ConnectionOfTravelAssessmentRepository extends DataLoader<ConnectionOfTravelAssessment> {
-    long count(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
+    long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<ConnectionOfTravelAssessment> findLatest(Integer intersectionID, Long startTime, Long endTime);
 

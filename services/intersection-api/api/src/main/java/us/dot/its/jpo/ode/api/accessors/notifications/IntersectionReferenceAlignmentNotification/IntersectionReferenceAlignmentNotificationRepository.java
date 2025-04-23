@@ -7,7 +7,7 @@ import us.dot.its.jpo.ode.api.models.DataLoader;
 
 public interface IntersectionReferenceAlignmentNotificationRepository
         extends DataLoader<IntersectionReferenceAlignmentNotification> {
-    long count(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
+    long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<IntersectionReferenceAlignmentNotification> findLatest(Integer intersectionID, Long startTime, Long endTime);
 

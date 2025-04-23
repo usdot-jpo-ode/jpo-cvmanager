@@ -1,7 +1,5 @@
 package us.dot.its.jpo.ode.api.accessors.map;
 
-import javax.annotation.Nullable;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,15 +41,11 @@ public class OdeMapDataRepositoryImpl implements OdeMapDataRepository, PageableQ
     public long count(
             Integer intersectionID,
             Long startTime,
-            Long endTime,
-            @Nullable Pageable pageable) {
+            Long endTime) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
         Query query = Query.query(criteria);
-        if (pageable != null) {
-            query = query.with(pageable);
-        }
         return mongoTemplate.count(query, collectionName);
     }
 

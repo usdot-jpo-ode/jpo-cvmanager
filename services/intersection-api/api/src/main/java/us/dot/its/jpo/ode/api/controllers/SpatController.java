@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
-import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 import us.dot.its.jpo.ode.api.accessors.spat.ProcessedSpatRepository;
 import us.dot.its.jpo.ode.mockdata.MockSpatGenerator;
 
@@ -30,7 +29,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
-public class SpatController implements PageableQuery {
+public class SpatController {
 
     private final ProcessedSpatRepository processedSpatRepo;
 
@@ -84,15 +83,12 @@ public class SpatController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(80L);
         } else {
-            long count = processedSpatRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = processedSpatRepo.count(intersectionID, startTime, endTime);
             return ResponseEntity.ok(count);
         }
     }

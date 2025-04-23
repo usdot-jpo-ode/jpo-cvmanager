@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 import us.dot.its.jpo.ode.api.accessors.bsm.OdeBsmJsonRepository;
 import us.dot.its.jpo.ode.mockdata.MockBsmGenerator;
 import us.dot.its.jpo.ode.model.OdeBsmData;
@@ -30,7 +29,7 @@ import us.dot.its.jpo.ode.model.OdeBsmData;
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
-public class BsmController implements PageableQuery {
+public class BsmController {
 
     private final OdeBsmJsonRepository odeBsmJsonRepo;
 
@@ -85,15 +84,13 @@ public class BsmController implements PageableQuery {
             @RequestParam(name = "latitude", required = false) Double latitude,
             @RequestParam(name = "longitude", required = false) Double longitude,
             @RequestParam(name = "distance", required = false) Double distanceInMeters,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(10L);
         } else {
             long counts = odeBsmJsonRepo.count(originIp, vehicleId, startTime, endTime, longitude,
-                    latitude, distanceInMeters, createNullablePage(page, size));
+                    latitude, distanceInMeters);
             log.debug("Found {} BSM counts", counts);
             return ResponseEntity.ok(counts);
         }

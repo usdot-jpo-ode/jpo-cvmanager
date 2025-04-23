@@ -2,7 +2,6 @@ package us.dot.its.jpo.ode.api.accessors.reports;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -49,16 +48,12 @@ public class ReportRepositoryImpl
             String reportName,
             Integer intersectionID,
             Long startTime,
-            Long endTime,
-            @Nullable Pageable pageable) {
+            Long endTime) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(REPORT_NAME_FIELD, reportName)
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
         Query query = Query.query(criteria);
-        if (pageable != null) {
-            query = query.with(pageable);
-        }
         return mongoTemplate.count(query, collectionName);
     }
 

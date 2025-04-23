@@ -7,8 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nullable;
-
 import org.bson.Document;
 import org.locationtech.jts.geom.CoordinateXY;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,15 +77,11 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
     public long count(
             Integer intersectionID,
             Long startTime,
-            Long endTime,
-            @Nullable Pageable pageable) {
+            Long endTime) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
         Query query = Query.query(criteria);
-        if (pageable != null) {
-            query = query.with(pageable);
-        }
         return mongoTemplate.count(query, collectionName);
     }
 

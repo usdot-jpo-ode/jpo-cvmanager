@@ -8,7 +8,7 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLineStopAss
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
 public interface StopLineStopAssessmentRepository extends DataLoader<StopLineStopAssessment> {
-    long count(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
+    long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<StopLineStopAssessment> findLatest(Integer intersectionID, Long startTime, Long endTime);
 

@@ -6,7 +6,7 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rat
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
 public interface MapBroadcastRateNotificationRepository extends DataLoader<MapBroadcastRateNotification> {
-    long count(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
+    long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<MapBroadcastRateNotification> findLatest(Integer intersectionID, Long startTime, Long endTime);
 

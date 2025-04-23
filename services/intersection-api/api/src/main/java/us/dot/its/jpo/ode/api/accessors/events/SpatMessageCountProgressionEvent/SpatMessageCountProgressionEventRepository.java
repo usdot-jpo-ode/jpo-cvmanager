@@ -6,7 +6,7 @@ import us.dot.its.jpo.ode.api.models.DataLoader;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SpatMessageCountProgressionEvent;
 
 public interface SpatMessageCountProgressionEventRepository extends DataLoader<SpatMessageCountProgressionEvent> {
-    long count(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
+    long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<SpatMessageCountProgressionEvent> findLatest(Integer intersectionID, Long startTime, Long endTime);
 

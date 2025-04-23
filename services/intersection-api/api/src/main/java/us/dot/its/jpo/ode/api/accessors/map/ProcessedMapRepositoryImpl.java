@@ -164,29 +164,17 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
 
                 // Stage 2: Project the required fields
                 Aggregation.project()
-                        .and("latestDocument." + INTERSECTION_ID_FIELD).as("intersectionId")
-                        .and("latestDocument.properties.originIp").as("originIp")
+                        .and("latestDocument." + INTERSECTION_ID_FIELD).as("intersectionID")
+                        .and("latestDocument.properties.originIp").as("rsuIP")
                         .and("latestDocument.properties.refPoint.latitude").as("latitude")
                         .and("latestDocument.properties.refPoint.longitude").as("longitude")
                         .and("latestDocument.properties.intersectionName").as("intersectionName"));
 
         // Execute the aggregation query
-        AggregationResults<Document> results = mongoTemplate.aggregate(aggregation, collectionName, Document.class);
+        AggregationResults<IntersectionReferenceData> results = mongoTemplate.aggregate(aggregation, collectionName,
+                IntersectionReferenceData.class);
 
-        // Map the results to IntersectionReferenceData
-        List<IntersectionReferenceData> referenceDataList = new ArrayList<>();
-        for (Document document : results.getMappedResults()) {
-            IntersectionReferenceData data = new IntersectionReferenceData();
-            data.setIntersectionID(document.getLong("intersectionId").intValue());
-            data.setRoadRegulatorID("-1");
-            data.setRsuIP(document.getString("originIp"));
-            data.setIntersectionName(document.getString("intersectionName"));
-            data.setLatitude(document.getDouble("latitude"));
-            data.setLongitude(document.getDouble("longitude"));
-            referenceDataList.add(data);
-        }
-
-        return referenceDataList;
+        return results.getMappedResults();
     }
 
     /**

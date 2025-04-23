@@ -46,6 +46,8 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
     private final String collectionName = "ProcessedMap";
     private final String DATE_FIELD = "properties.timeStamp";
     private final String INTERSECTION_ID_FIELD = "properties.intersectionId";
+    private final String RECORD_GENERATED_AT_FIELD = "recordGeneratedAt";
+    private final String VALIDATION_MESSAGES_FIELD = "properties.validationMessages";
 
     @Autowired
     public ProcessedMapRepositoryImpl(MongoTemplate mongoTemplate) {
@@ -97,9 +99,9 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
         Query query = Query.query(criteria);
-        List<String> excludedFields = List.of("recordGeneratedAt");
+        List<String> excludedFields = List.of(RECORD_GENERATED_AT_FIELD);
         if (compact) {
-            excludedFields.add("properties.validationMessages");
+            excludedFields.add(VALIDATION_MESSAGES_FIELD);
         }
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
         ProcessedMap<LineString> map = mongoTemplate.findOne(
@@ -129,9 +131,9 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
-        List<String> excludedFields = List.of("recordGeneratedAt");
+        List<String> excludedFields = List.of(RECORD_GENERATED_AT_FIELD);
         if (compact) {
-            excludedFields.add("properties.validationMessages");
+            excludedFields.add(VALIDATION_MESSAGES_FIELD);
         }
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
         return (Page<ProcessedMap<LineString>>) (Page<?>) findPage(mongoTemplate, collectionName, pageable, criteria,
@@ -144,12 +146,12 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
         Aggregation aggregation = Aggregation.newAggregation(
                 // Stage 1: Group by intersectionId and get the latest document for each
                 // intersectionId
-                Aggregation.group("properties.intersectionId")
+                Aggregation.group(INTERSECTION_ID_FIELD)
                         .first("$$ROOT").as("latestDocument"),
 
                 // Stage 2: Project the required fields
                 Aggregation.project()
-                        .and("latestDocument.properties.intersectionId").as("intersectionId")
+                        .and("latestDocument." + INTERSECTION_ID_FIELD).as("intersectionId")
                         .and("latestDocument.properties.originIp").as("originIp")
                         .and("latestDocument.properties.refPoint.latitude").as("latitude")
                         .and("latestDocument.properties.refPoint.longitude").as("longitude")
@@ -185,7 +187,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
     @Deprecated
     public List<IntersectionReferenceData> getIntersectionsContainingPoint(double longitude, double latitude) {
         MongoCollection<Document> collection = mongoTemplate.getCollection(collectionName);
-        DistinctIterable<Integer> docs = collection.distinct("properties.intersectionId", Integer.class);
+        DistinctIterable<Integer> docs = collection.distinct(INTERSECTION_ID_FIELD, Integer.class);
         MapIndex index;
         Map<Integer, ProcessedMap<LineString>> mapLookup;
         try (MongoCursor<Integer> results = docs.iterator()) {
@@ -243,9 +245,9 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
         AggregationOptions options = AggregationOptions.builder().allowDiskUse(true).build();
 
         Aggregation aggregation = Aggregation.newAggregation(
-                Aggregation.match(Criteria.where("properties.intersectionId").is(intersectionID)),
-                Aggregation.match(Criteria.where("properties.timeStamp").gte(startTimeString).lte(endTimeString)),
-                Aggregation.project("properties.timeStamp"),
+                Aggregation.match(Criteria.where(INTERSECTION_ID_FIELD).is(intersectionID)),
+                Aggregation.match(Criteria.where(DATE_FIELD).gte(startTimeString).lte(endTimeString)),
+                Aggregation.project(DATE_FIELD),
                 Aggregation.project()
                         .and(DateOperators.DateFromString.fromStringOf("timeStamp")).as("date"),
                 Aggregation.project()
@@ -278,9 +280,9 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
         AggregationOptions options = AggregationOptions.builder().allowDiskUse(true).build();
 
         Aggregation aggregation = Aggregation.newAggregation(
-                Aggregation.match(Criteria.where("properties.intersectionId").is(intersectionID)),
-                Aggregation.match(Criteria.where("properties.timeStamp").gte(startTimeString).lte(endTimeString)),
-                Aggregation.project("properties.timeStamp"),
+                Aggregation.match(Criteria.where(INTERSECTION_ID_FIELD).is(intersectionID)),
+                Aggregation.match(Criteria.where(DATE_FIELD).gte(startTimeString).lte(endTimeString)),
+                Aggregation.project(DATE_FIELD),
 
                 // Convert string timestamp to date type
                 Aggregation.project()

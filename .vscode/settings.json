@@ -69,6 +69,7 @@
     "pgdb",
     "postgis",
     "pytz",
+    "rawtypes",
     "reduxjs",
     "rsus",
     "SASL",

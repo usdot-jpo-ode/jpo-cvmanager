@@ -3,6 +3,7 @@ package us.dot.its.jpo.ode.api.accessors.map;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import org.bson.Document;
 import org.locationtech.jts.geom.CoordinateXY;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -25,6 +27,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.DistinctIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
@@ -36,6 +41,7 @@ import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.IntersectionReferenceData;
 import us.dot.its.jpo.conflictmonitor.monitor.models.map.MapBoundingBox;
 import us.dot.its.jpo.conflictmonitor.monitor.models.map.MapIndex;
+import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 
 @Component
@@ -48,6 +54,11 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
     private final String INTERSECTION_ID_FIELD = "properties.intersectionId";
     private final String RECORD_GENERATED_AT_FIELD = "recordGeneratedAt";
     private final String VALIDATION_MESSAGES_FIELD = "properties.validationMessages";
+
+    TypeReference<ProcessedMap<LineString>> processedMapTypeReference = new TypeReference<>() {
+    };
+    private ObjectMapper mapper = DateJsonMapper.getInstance()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     @Autowired
     public ProcessedMapRepositoryImpl(MongoTemplate mongoTemplate) {
@@ -104,12 +115,12 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
             excludedFields.add(VALIDATION_MESSAGES_FIELD);
         }
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        ProcessedMap<LineString> map = mongoTemplate.findOne(
+        Document document = mongoTemplate.findOne(
                 query.with(sort),
-                ProcessedMap.class,
+                Document.class,
                 collectionName);
-        return wrapSingleResultWithPage(
-                map);
+        ProcessedMap<LineString> message = mapper.convertValue(document, processedMapTypeReference);
+        return wrapSingleResultWithPage(message);
     }
 
     /**
@@ -136,9 +147,11 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
             excludedFields.add(VALIDATION_MESSAGES_FIELD);
         }
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        return (Page<ProcessedMap<LineString>>) (Page<?>) findPage(mongoTemplate, collectionName, pageable, criteria,
-                sort,
-                excludedFields, ProcessedMap.class);
+        Page<LinkedHashMap<String, Object>> hashMap = findPageAsHashMap(mongoTemplate, collectionName, pageable,
+                criteria, sort, excludedFields);
+        List<ProcessedMap<LineString>> processedMaps = hashMap.getContent().stream()
+                .map(document -> mapper.convertValue(document, processedMapTypeReference)).toList();
+        return new PageImpl<>(processedMaps, pageable, hashMap.getTotalElements());
     }
 
     public List<IntersectionReferenceData> getIntersectionIDs() {

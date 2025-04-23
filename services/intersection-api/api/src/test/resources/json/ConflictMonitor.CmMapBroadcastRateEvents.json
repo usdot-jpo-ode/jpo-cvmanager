@@ -1,0 +1,1494 @@
+[{
+  "_id": {
+    "$oid": "66c4c176bc6a472adb01a314"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:16:54.490Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170595000,
+    "endTimestamp": 1724170605000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 2
+},
+{
+  "_id": {
+    "$oid": "66c4c177bc6a472adb01a351"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:16:55.533Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170600000,
+    "endTimestamp": 1724170610000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 7
+},
+{
+  "_id": {
+    "$oid": "66c4c17cbc6a472adb01a4be"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:17:00.698Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170605000,
+    "endTimestamp": 1724170615000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 6
+},
+{
+  "_id": {
+    "$oid": "66c4c181bc6a472adb01a50f"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:17:05.526Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170610000,
+    "endTimestamp": 1724170620000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 6
+},
+{
+  "_id": {
+    "$oid": "66c4c186bc6a472adb01a65d"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:17:10.421Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170615000,
+    "endTimestamp": 1724170625000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 6
+},
+{
+  "_id": {
+    "$oid": "66c4c18cbc6a472adb01a700"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:17:16.317Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170620000,
+    "endTimestamp": 1724170630000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 6
+},
+{
+  "_id": {
+    "$oid": "66c4c190bc6a472adb01a815"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:17:20.487Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170625000,
+    "endTimestamp": 1724170635000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 7
+},
+{
+  "_id": {
+    "$oid": "66c4c196bc6a472adb01a8ec"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:17:26.965Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170630000,
+    "endTimestamp": 1724170640000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 6
+},
+{
+  "_id": {
+    "$oid": "66c4c19bbc6a472adb01aa08"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:17:31.113Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170635000,
+    "endTimestamp": 1724170645000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 7
+},
+{
+  "_id": {
+    "$oid": "66c4c1a1bc6a472adb01aae8"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:17:37.528Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170640000,
+    "endTimestamp": 1724170650000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 7
+},
+{
+  "_id": {
+    "$oid": "66c4c1a4bc6a472adb01abb8"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:17:40.543Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170645000,
+    "endTimestamp": 1724170655000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 7
+},
+{
+  "_id": {
+    "$oid": "66c4c1acbc6a472adb01acde"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:17:48.297Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170650000,
+    "endTimestamp": 1724170660000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 6
+},
+{
+  "_id": {
+    "$oid": "66c4c1aebc6a472adb01ad6e"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:17:50.265Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170655000,
+    "endTimestamp": 1724170665000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 7
+},
+{
+  "_id": {
+    "$oid": "66c4c1b6bc6a472adb01aecb"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:17:58.902Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170660000,
+    "endTimestamp": 1724170670000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 6
+},
+{
+  "_id": {
+    "$oid": "66c4c1b8bc6a472adb01af56"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:18:00.905Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170665000,
+    "endTimestamp": 1724170675000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 7
+},
+{
+  "_id": {
+    "$oid": "66c4c1c2bc6a472adb01b0ce"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:18:10.081Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170670000,
+    "endTimestamp": 1724170680000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 7
+},
+{
+  "_id": {
+    "$oid": "66c4c1c2bc6a472adb01b108"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:18:10.961Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170675000,
+    "endTimestamp": 1724170685000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 7
+},
+{
+  "_id": {
+    "$oid": "66c4c1c8bc6a472adb01b275"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:18:16.123Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170680000,
+    "endTimestamp": 1724170690000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 6
+},
+{
+  "_id": {
+    "$oid": "66c4c1ccbc6a472adb01b2c8"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:18:20.939Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170685000,
+    "endTimestamp": 1724170695000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 6
+},
+{
+  "_id": {
+    "$oid": "66c4c1d1bc6a472adb01b420"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:18:25.903Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170690000,
+    "endTimestamp": 1724170700000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 6
+},
+{
+  "_id": {
+    "$oid": "66c4c1d7bc6a472adb01b4b7"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:18:31.571Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170695000,
+    "endTimestamp": 1724170705000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 6
+},
+{
+  "_id": {
+    "$oid": "66c4c1dbbc6a472adb01b5d3"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:18:35.613Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170700000,
+    "endTimestamp": 1724170710000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 7
+},
+{
+  "_id": {
+    "$oid": "66c4c1ecbc6a472adb01b699"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:18:52.164Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170722163,
+    "endTimestamp": 1724170732163
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c1f1bc6a472adb01b6a4"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:18:57.184Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170727184,
+    "endTimestamp": 1724170737184
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c1f6bc6a472adb01b6a6"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:19:02.203Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170732202,
+    "endTimestamp": 1724170742202
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c1fbbc6a472adb01b6a8"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:19:07.123Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170737123,
+    "endTimestamp": 1724170747123
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c200bc6a472adb01b6aa"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:19:12.142Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170742142,
+    "endTimestamp": 1724170752142
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c205bc6a472adb01b6ac"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:19:17.157Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170747156,
+    "endTimestamp": 1724170757156
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c20abc6a472adb01b6ae"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:19:22.175Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170752174,
+    "endTimestamp": 1724170762174
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c20fbc6a472adb01b6b0"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:19:27.189Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170757189,
+    "endTimestamp": 1724170767189
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c214bc6a472adb01b6b2"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:19:32.204Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170762204,
+    "endTimestamp": 1724170772204
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c219bc6a472adb01b6b4"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:19:37.123Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170767123,
+    "endTimestamp": 1724170777123
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c21ebc6a472adb01b6b6"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:19:42.138Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170772137,
+    "endTimestamp": 1724170782137
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c223bc6a472adb01b6b8"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:19:47.157Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170777156,
+    "endTimestamp": 1724170787156
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c228bc6a472adb01b6ba"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:19:52.179Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170782179,
+    "endTimestamp": 1724170792179
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c22dbc6a472adb01b6bc"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:19:57.194Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170787193,
+    "endTimestamp": 1724170797193
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c232bc6a472adb01b6be"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:20:02.212Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170792212,
+    "endTimestamp": 1724170802212
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c237bc6a472adb01b6c0"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:20:07.128Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170797128,
+    "endTimestamp": 1724170807128
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c23cbc6a472adb01b6c2"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:20:12.142Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170802142,
+    "endTimestamp": 1724170812142
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c241bc6a472adb01b6c4"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:20:17.159Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170807159,
+    "endTimestamp": 1724170817159
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c246bc6a472adb01b6c6"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:20:22.178Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170812177,
+    "endTimestamp": 1724170822177
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c24bbc6a472adb01b6c8"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:20:27.194Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170817194,
+    "endTimestamp": 1724170827194
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c250bc6a472adb01b6ca"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:20:32.214Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170822214,
+    "endTimestamp": 1724170832214
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c255bc6a472adb01b6cc"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:20:37.132Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170827131,
+    "endTimestamp": 1724170837131
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c25abc6a472adb01b6ce"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:20:42.148Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170832147,
+    "endTimestamp": 1724170842147
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c25fbc6a472adb01b6d0"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:20:47.163Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170837163,
+    "endTimestamp": 1724170847163
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c264bc6a472adb01b6d2"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:20:52.178Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170842178,
+    "endTimestamp": 1724170852178
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c269bc6a472adb01b6d4"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:20:57.196Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170847195,
+    "endTimestamp": 1724170857195
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c26ebc6a472adb01b6d6"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:21:02.215Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170852215,
+    "endTimestamp": 1724170862215
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c273bc6a472adb01b6d8"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:21:07.131Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170857131,
+    "endTimestamp": 1724170867131
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c278bc6a472adb01b6da"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:21:12.146Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170862146,
+    "endTimestamp": 1724170872146
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c27dbc6a472adb01b6dc"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:21:17.166Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170867165,
+    "endTimestamp": 1724170877165
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c282bc6a472adb01b6de"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:21:22.183Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170872182,
+    "endTimestamp": 1724170882182
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c287bc6a472adb01b6e0"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:21:27.200Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170877200,
+    "endTimestamp": 1724170887200
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c28cbc6a472adb01b6e2"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:21:32.118Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170882118,
+    "endTimestamp": 1724170892118
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c291bc6a472adb01b6e4"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:21:37.134Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170887133,
+    "endTimestamp": 1724170897133
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c296bc6a472adb01b6e6"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:21:42.151Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170892150,
+    "endTimestamp": 1724170902150
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c29bbc6a472adb01b6e8"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:21:47.169Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170897168,
+    "endTimestamp": 1724170907168
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2a0bc6a472adb01b6ea"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:21:52.186Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170902185,
+    "endTimestamp": 1724170912185
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2a5bc6a472adb01b6ec"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:21:57.203Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170907202,
+    "endTimestamp": 1724170917202
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2aabc6a472adb01b6ee"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:22:02.119Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170912118,
+    "endTimestamp": 1724170922118
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2afbc6a472adb01b6f0"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:22:07.135Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170917134,
+    "endTimestamp": 1724170927134
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2b4bc6a472adb01b6f2"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:22:12.147Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170922147,
+    "endTimestamp": 1724170932147
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2b9bc6a472adb01b6f4"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:22:17.164Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170927164,
+    "endTimestamp": 1724170937164
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2bebc6a472adb01b6f6"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:22:22.180Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170932180,
+    "endTimestamp": 1724170942180
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2c3bc6a472adb01b6f8"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:22:27.199Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170937199,
+    "endTimestamp": 1724170947199
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2c8bc6a472adb01b6fa"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:22:32.117Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170942116,
+    "endTimestamp": 1724170952116
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2cdbc6a472adb01b6fd"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:22:37.135Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170947135,
+    "endTimestamp": 1724170957135
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2d2bc6a472adb01b6ff"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:22:42.153Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170952153,
+    "endTimestamp": 1724170962153
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2d7bc6a472adb01b700"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:22:47.172Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170957172,
+    "endTimestamp": 1724170967172
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2dcbc6a472adb01b702"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:22:52.189Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170962189,
+    "endTimestamp": 1724170972189
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2e1bc6a472adb01b704"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:22:57.209Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170967208,
+    "endTimestamp": 1724170977208
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2e6bc6a472adb01b706"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:23:02.128Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170972128,
+    "endTimestamp": 1724170982128
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2ebbc6a472adb01b709"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:23:07.144Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170977144,
+    "endTimestamp": 1724170987144
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2f0bc6a472adb01b70a"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:23:12.160Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170982159,
+    "endTimestamp": 1724170992159
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2f5bc6a472adb01b70c"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:23:17.178Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170987177,
+    "endTimestamp": 1724170997177
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2fabc6a472adb01b70e"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:23:22.193Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170992193,
+    "endTimestamp": 1724171002193
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c2ffbc6a472adb01b711"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:23:27.208Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170997208,
+    "endTimestamp": 1724171007208
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c304bc6a472adb01b712"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:23:32.125Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724171002124,
+    "endTimestamp": 1724171012124
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c309bc6a472adb01b714"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:23:37.138Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724171007138,
+    "endTimestamp": 1724171017138
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c30ebc6a472adb01b716"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:23:42.152Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724171012152,
+    "endTimestamp": 1724171022152
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c313bc6a472adb01b718"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:23:47.174Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724171017173,
+    "endTimestamp": 1724171027173
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+},
+{
+  "_id": {
+    "$oid": "66c4c318bc6a472adb01b71b"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:23:52.190Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724171022190,
+    "endTimestamp": 1724171032190
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 0
+}]

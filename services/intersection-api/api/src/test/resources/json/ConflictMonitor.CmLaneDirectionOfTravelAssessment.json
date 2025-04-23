@@ -1,0 +1,643 @@
+[{
+  "_id": {
+    "$oid": "66c4c17ebc6a472adb01a4dc"
+  },
+  "assessmentGeneratedAt": {
+    "$date": "2024-08-20T16:17:02.860Z"
+  },
+  "assessmentType": "LaneDirectionOfTravel",
+  "roadRegulatorID": -1,
+  "intersectionID": 12109,
+  "source": "{\"rsuId\":\"10.11.81.12\",\"intersectionId\":12109,\"region\":0}",
+  "laneDirectionOfTravelAssessmentGroup": [
+    {
+      "medianInToleranceCenterlineDistance": 7.458828740322419,
+      "laneID": 3,
+      "medianInToleranceHeading": 347.4,
+      "medianCenterlineDistance": 7.458828740322419,
+      "expectedHeading": 348.16231825699515,
+      "segmentID": 1,
+      "inToleranceEvents": 1,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 347.4,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    }
+  ],
+  "timestamp": 1724170622861
+},
+{
+  "_id": {
+    "$oid": "66c4c17fbc6a472adb01a4e0"
+  },
+  "assessmentGeneratedAt": {
+    "$date": "2024-08-20T16:17:03.017Z"
+  },
+  "assessmentType": "LaneDirectionOfTravel",
+  "roadRegulatorID": -1,
+  "intersectionID": 12109,
+  "source": "{\"rsuId\":\"10.11.81.12\",\"intersectionId\":12109,\"region\":0}",
+  "laneDirectionOfTravelAssessmentGroup": [
+    {
+      "medianInToleranceCenterlineDistance": 7.458828740322419,
+      "laneID": 3,
+      "medianInToleranceHeading": 347.4,
+      "medianCenterlineDistance": 7.458828740322419,
+      "expectedHeading": 348.16231825699515,
+      "segmentID": 1,
+      "inToleranceEvents": 1,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 347.4,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    },
+    {
+      "medianInToleranceCenterlineDistance": 6.364690160444201,
+      "laneID": 3,
+      "medianInToleranceHeading": 346.2,
+      "medianCenterlineDistance": 6.364690160444201,
+      "expectedHeading": 346.4452552323597,
+      "segmentID": 2,
+      "inToleranceEvents": 1,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 346.2,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    }
+  ],
+  "timestamp": 1724170623017
+},
+{
+  "_id": {
+    "$oid": "66c4c188bc6a472adb01a6d4"
+  },
+  "assessmentGeneratedAt": {
+    "$date": "2024-08-20T16:17:12.753Z"
+  },
+  "assessmentType": "LaneDirectionOfTravel",
+  "roadRegulatorID": -1,
+  "intersectionID": 12109,
+  "source": "{\"rsuId\":\"10.11.81.12\",\"intersectionId\":12109,\"region\":0}",
+  "laneDirectionOfTravelAssessmentGroup": [
+    {
+      "medianInToleranceCenterlineDistance": 7.458828740322419,
+      "laneID": 3,
+      "medianInToleranceHeading": 347.4,
+      "medianCenterlineDistance": 7.458828740322419,
+      "expectedHeading": 348.16231825699515,
+      "segmentID": 1,
+      "inToleranceEvents": 1,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 347.4,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    },
+    {
+      "medianInToleranceCenterlineDistance": 6.364690160444201,
+      "laneID": 3,
+      "medianInToleranceHeading": 346.2,
+      "medianCenterlineDistance": 6.364690160444201,
+      "expectedHeading": 346.4452552323597,
+      "segmentID": 2,
+      "inToleranceEvents": 2,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 346.2,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    }
+  ],
+  "timestamp": 1724170632753
+},
+{
+  "_id": {
+    "$oid": "66c4c188bc6a472adb01a6d6"
+  },
+  "assessmentGeneratedAt": {
+    "$date": "2024-08-20T16:17:12.865Z"
+  },
+  "assessmentType": "LaneDirectionOfTravel",
+  "roadRegulatorID": -1,
+  "intersectionID": 12109,
+  "source": "{\"rsuId\":\"10.11.81.12\",\"intersectionId\":12109,\"region\":0}",
+  "laneDirectionOfTravelAssessmentGroup": [
+    {
+      "medianInToleranceCenterlineDistance": 7.458828740322419,
+      "laneID": 3,
+      "medianInToleranceHeading": 347.4,
+      "medianCenterlineDistance": 7.458828740322419,
+      "expectedHeading": 348.16231825699515,
+      "segmentID": 1,
+      "inToleranceEvents": 2,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 347.4,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    },
+    {
+      "medianInToleranceCenterlineDistance": 6.364690160444201,
+      "laneID": 3,
+      "medianInToleranceHeading": 346.2,
+      "medianCenterlineDistance": 6.364690160444201,
+      "expectedHeading": 346.4452552323597,
+      "segmentID": 2,
+      "inToleranceEvents": 2,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 346.2,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    }
+  ],
+  "timestamp": 1724170632865
+},
+{
+  "_id": {
+    "$oid": "66c4c192bc6a472adb01a8bd"
+  },
+  "assessmentGeneratedAt": {
+    "$date": "2024-08-20T16:17:22.797Z"
+  },
+  "assessmentType": "LaneDirectionOfTravel",
+  "roadRegulatorID": -1,
+  "intersectionID": 12109,
+  "source": "{\"rsuId\":\"10.11.81.12\",\"intersectionId\":12109,\"region\":0}",
+  "laneDirectionOfTravelAssessmentGroup": [
+    {
+      "medianInToleranceCenterlineDistance": 7.458828740322419,
+      "laneID": 3,
+      "medianInToleranceHeading": 347.4,
+      "medianCenterlineDistance": 7.458828740322419,
+      "expectedHeading": 348.16231825699515,
+      "segmentID": 1,
+      "inToleranceEvents": 3,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 347.4,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    },
+    {
+      "medianInToleranceCenterlineDistance": 6.364690160444201,
+      "laneID": 3,
+      "medianInToleranceHeading": 346.2,
+      "medianCenterlineDistance": 6.364690160444201,
+      "expectedHeading": 346.4452552323597,
+      "segmentID": 2,
+      "inToleranceEvents": 3,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 346.2,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    }
+  ],
+  "timestamp": 1724170642797
+},
+{
+  "_id": {
+    "$oid": "66c4c19cbc6a472adb01aa7d"
+  },
+  "assessmentGeneratedAt": {
+    "$date": "2024-08-20T16:17:32.646Z"
+  },
+  "assessmentType": "LaneDirectionOfTravel",
+  "roadRegulatorID": -1,
+  "intersectionID": 12109,
+  "source": "{\"rsuId\":\"10.11.81.12\",\"intersectionId\":12109,\"region\":0}",
+  "laneDirectionOfTravelAssessmentGroup": [
+    {
+      "medianInToleranceCenterlineDistance": 7.458828740322419,
+      "laneID": 3,
+      "medianInToleranceHeading": 347.4,
+      "medianCenterlineDistance": 7.458828740322419,
+      "expectedHeading": 348.16231825699515,
+      "segmentID": 1,
+      "inToleranceEvents": 3,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 347.4,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    },
+    {
+      "medianInToleranceCenterlineDistance": 6.364690160444201,
+      "laneID": 3,
+      "medianInToleranceHeading": 346.2,
+      "medianCenterlineDistance": 6.364690160444201,
+      "expectedHeading": 346.4452552323597,
+      "segmentID": 2,
+      "inToleranceEvents": 4,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 346.2,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    }
+  ],
+  "timestamp": 1724170652646
+},
+{
+  "_id": {
+    "$oid": "66c4c19cbc6a472adb01aa8a"
+  },
+  "assessmentGeneratedAt": {
+    "$date": "2024-08-20T16:17:32.761Z"
+  },
+  "assessmentType": "LaneDirectionOfTravel",
+  "roadRegulatorID": -1,
+  "intersectionID": 12109,
+  "source": "{\"rsuId\":\"10.11.81.12\",\"intersectionId\":12109,\"region\":0}",
+  "laneDirectionOfTravelAssessmentGroup": [
+    {
+      "medianInToleranceCenterlineDistance": 7.458828740322419,
+      "laneID": 3,
+      "medianInToleranceHeading": 347.4,
+      "medianCenterlineDistance": 7.458828740322419,
+      "expectedHeading": 348.16231825699515,
+      "segmentID": 1,
+      "inToleranceEvents": 4,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 347.4,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    },
+    {
+      "medianInToleranceCenterlineDistance": 6.364690160444201,
+      "laneID": 3,
+      "medianInToleranceHeading": 346.2,
+      "medianCenterlineDistance": 6.364690160444201,
+      "expectedHeading": 346.4452552323597,
+      "segmentID": 2,
+      "inToleranceEvents": 4,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 346.2,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    }
+  ],
+  "timestamp": 1724170652761
+},
+{
+  "_id": {
+    "$oid": "66c4c1b0bc6a472adb01ae1f"
+  },
+  "assessmentGeneratedAt": {
+    "$date": "2024-08-20T16:17:52.802Z"
+  },
+  "assessmentType": "LaneDirectionOfTravel",
+  "roadRegulatorID": -1,
+  "intersectionID": 12109,
+  "source": "{\"rsuId\":\"10.11.81.12\",\"intersectionId\":12109,\"region\":0}",
+  "laneDirectionOfTravelAssessmentGroup": [
+    {
+      "medianInToleranceCenterlineDistance": 7.458828740322419,
+      "laneID": 3,
+      "medianInToleranceHeading": 347.4,
+      "medianCenterlineDistance": 7.458828740322419,
+      "expectedHeading": 348.16231825699515,
+      "segmentID": 1,
+      "inToleranceEvents": 5,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 347.4,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    },
+    {
+      "medianInToleranceCenterlineDistance": 6.364690160444201,
+      "laneID": 3,
+      "medianInToleranceHeading": 346.2,
+      "medianCenterlineDistance": 6.364690160444201,
+      "expectedHeading": 346.4452552323597,
+      "segmentID": 2,
+      "inToleranceEvents": 5,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 346.2,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    }
+  ],
+  "timestamp": 1724170672802
+},
+{
+  "_id": {
+    "$oid": "66c4c1babc6a472adb01afd6"
+  },
+  "assessmentGeneratedAt": {
+    "$date": "2024-08-20T16:18:02.669Z"
+  },
+  "assessmentType": "LaneDirectionOfTravel",
+  "roadRegulatorID": -1,
+  "intersectionID": 12109,
+  "source": "{\"rsuId\":\"10.11.81.12\",\"intersectionId\":12109,\"region\":0}",
+  "laneDirectionOfTravelAssessmentGroup": [
+    {
+      "medianInToleranceCenterlineDistance": 7.458828740322419,
+      "laneID": 3,
+      "medianInToleranceHeading": 347.4,
+      "medianCenterlineDistance": 7.458828740322419,
+      "expectedHeading": 348.16231825699515,
+      "segmentID": 1,
+      "inToleranceEvents": 6,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 347.4,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    },
+    {
+      "medianInToleranceCenterlineDistance": 6.364690160444201,
+      "laneID": 3,
+      "medianInToleranceHeading": 346.2,
+      "medianCenterlineDistance": 6.364690160444201,
+      "expectedHeading": 346.4452552323597,
+      "segmentID": 2,
+      "inToleranceEvents": 6,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 346.2,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    }
+  ],
+  "timestamp": 1724170682669
+},
+{
+  "_id": {
+    "$oid": "66c4c1c4bc6a472adb01b182"
+  },
+  "assessmentGeneratedAt": {
+    "$date": "2024-08-20T16:18:12.656Z"
+  },
+  "assessmentType": "LaneDirectionOfTravel",
+  "roadRegulatorID": -1,
+  "intersectionID": 12109,
+  "source": "{\"rsuId\":\"10.11.81.12\",\"intersectionId\":12109,\"region\":0}",
+  "laneDirectionOfTravelAssessmentGroup": [
+    {
+      "medianInToleranceCenterlineDistance": 7.458828740322419,
+      "laneID": 3,
+      "medianInToleranceHeading": 347.4,
+      "medianCenterlineDistance": 7.458828740322419,
+      "expectedHeading": 348.16231825699515,
+      "segmentID": 1,
+      "inToleranceEvents": 6,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 347.4,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    },
+    {
+      "medianInToleranceCenterlineDistance": 6.364690160444201,
+      "laneID": 3,
+      "medianInToleranceHeading": 346.2,
+      "medianCenterlineDistance": 6.364690160444201,
+      "expectedHeading": 346.4452552323597,
+      "segmentID": 2,
+      "inToleranceEvents": 7,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 346.2,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    }
+  ],
+  "timestamp": 1724170692656
+},
+{
+  "_id": {
+    "$oid": "66c4c1c4bc6a472adb01b193"
+  },
+  "assessmentGeneratedAt": {
+    "$date": "2024-08-20T16:18:12.795Z"
+  },
+  "assessmentType": "LaneDirectionOfTravel",
+  "roadRegulatorID": -1,
+  "intersectionID": 12109,
+  "source": "{\"rsuId\":\"10.11.81.12\",\"intersectionId\":12109,\"region\":0}",
+  "laneDirectionOfTravelAssessmentGroup": [
+    {
+      "medianInToleranceCenterlineDistance": 7.458828740322419,
+      "laneID": 3,
+      "medianInToleranceHeading": 347.4,
+      "medianCenterlineDistance": 7.458828740322419,
+      "expectedHeading": 348.16231825699515,
+      "segmentID": 1,
+      "inToleranceEvents": 7,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 347.4,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    },
+    {
+      "medianInToleranceCenterlineDistance": 6.364690160444201,
+      "laneID": 3,
+      "medianInToleranceHeading": 346.2,
+      "medianCenterlineDistance": 6.364690160444201,
+      "expectedHeading": 346.4452552323597,
+      "segmentID": 2,
+      "inToleranceEvents": 7,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 346.2,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    }
+  ],
+  "timestamp": 1724170692795
+},
+{
+  "_id": {
+    "$oid": "66c4c1cebc6a472adb01b346"
+  },
+  "assessmentGeneratedAt": {
+    "$date": "2024-08-20T16:18:22.774Z"
+  },
+  "assessmentType": "LaneDirectionOfTravel",
+  "roadRegulatorID": -1,
+  "intersectionID": 12109,
+  "source": "{\"rsuId\":\"10.11.81.12\",\"intersectionId\":12109,\"region\":0}",
+  "laneDirectionOfTravelAssessmentGroup": [
+    {
+      "medianInToleranceCenterlineDistance": 7.458828740322419,
+      "laneID": 3,
+      "medianInToleranceHeading": 347.4,
+      "medianCenterlineDistance": 7.458828740322419,
+      "expectedHeading": 348.16231825699515,
+      "segmentID": 1,
+      "inToleranceEvents": 8,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 347.4,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    },
+    {
+      "medianInToleranceCenterlineDistance": 6.364690160444201,
+      "laneID": 3,
+      "medianInToleranceHeading": 346.2,
+      "medianCenterlineDistance": 6.364690160444201,
+      "expectedHeading": 346.4452552323597,
+      "segmentID": 2,
+      "inToleranceEvents": 8,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 346.2,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    }
+  ],
+  "timestamp": 1724170702774
+},
+{
+  "_id": {
+    "$oid": "66c4c1d8bc6a472adb01b510"
+  },
+  "assessmentGeneratedAt": {
+    "$date": "2024-08-20T16:18:32.749Z"
+  },
+  "assessmentType": "LaneDirectionOfTravel",
+  "roadRegulatorID": -1,
+  "intersectionID": 12109,
+  "source": "{\"rsuId\":\"10.11.81.12\",\"intersectionId\":12109,\"region\":0}",
+  "laneDirectionOfTravelAssessmentGroup": [
+    {
+      "medianInToleranceCenterlineDistance": 7.458828740322419,
+      "laneID": 3,
+      "medianInToleranceHeading": 347.4,
+      "medianCenterlineDistance": 7.458828740322419,
+      "expectedHeading": 348.16231825699515,
+      "segmentID": 1,
+      "inToleranceEvents": 9,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 347.4,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    },
+    {
+      "medianInToleranceCenterlineDistance": 6.364690160444201,
+      "laneID": 3,
+      "medianInToleranceHeading": 346.2,
+      "medianCenterlineDistance": 6.364690160444201,
+      "expectedHeading": 346.4452552323597,
+      "segmentID": 2,
+      "inToleranceEvents": 9,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 346.2,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    }
+  ],
+  "timestamp": 1724170712749
+},
+{
+  "_id": {
+    "$oid": "66c4c1e2bc6a472adb01b691"
+  },
+  "assessmentGeneratedAt": {
+    "$date": "2024-08-20T16:18:42.686Z"
+  },
+  "assessmentType": "LaneDirectionOfTravel",
+  "roadRegulatorID": -1,
+  "intersectionID": 12109,
+  "source": "{\"rsuId\":\"10.11.81.12\",\"intersectionId\":12109,\"region\":0}",
+  "laneDirectionOfTravelAssessmentGroup": [
+    {
+      "medianInToleranceCenterlineDistance": 7.458828740322419,
+      "laneID": 3,
+      "medianInToleranceHeading": 347.4,
+      "medianCenterlineDistance": 7.458828740322419,
+      "expectedHeading": 348.16231825699515,
+      "segmentID": 1,
+      "inToleranceEvents": 9,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 347.4,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    },
+    {
+      "medianInToleranceCenterlineDistance": 6.364690160444201,
+      "laneID": 3,
+      "medianInToleranceHeading": 346.2,
+      "medianCenterlineDistance": 6.364690160444201,
+      "expectedHeading": 346.4452552323597,
+      "segmentID": 2,
+      "inToleranceEvents": 10,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 346.2,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    }
+  ],
+  "timestamp": 1724170722687
+},
+{
+  "_id": {
+    "$oid": "66c4c1e2bc6a472adb01b698"
+  },
+  "assessmentGeneratedAt": {
+    "$date": "2024-08-20T16:18:42.887Z"
+  },
+  "assessmentType": "LaneDirectionOfTravel",
+  "roadRegulatorID": -1,
+  "intersectionID": 12109,
+  "source": "{\"rsuId\":\"10.11.81.12\",\"intersectionId\":12109,\"region\":0}",
+  "laneDirectionOfTravelAssessmentGroup": [
+    {
+      "medianInToleranceCenterlineDistance": 7.458828740322419,
+      "laneID": 3,
+      "medianInToleranceHeading": 347.4,
+      "medianCenterlineDistance": 7.458828740322419,
+      "expectedHeading": 348.16231825699515,
+      "segmentID": 1,
+      "inToleranceEvents": 10,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 347.4,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    },
+    {
+      "medianInToleranceCenterlineDistance": 6.364690160444201,
+      "laneID": 3,
+      "medianInToleranceHeading": 346.2,
+      "medianCenterlineDistance": 6.364690160444201,
+      "expectedHeading": 346.4452552323597,
+      "segmentID": 2,
+      "inToleranceEvents": 10,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 346.2,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    }
+  ],
+  "timestamp": 1724170722887
+},
+{
+  "_id": {
+    "$oid": "66c4c1ecbc6a472adb01b6a0"
+  },
+  "assessmentGeneratedAt": {
+    "$date": "2024-08-20T16:18:52.773Z"
+  },
+  "assessmentType": "LaneDirectionOfTravel",
+  "roadRegulatorID": -1,
+  "intersectionID": 12109,
+  "source": "{\"rsuId\":\"10.11.81.12\",\"intersectionId\":12109,\"region\":0}",
+  "laneDirectionOfTravelAssessmentGroup": [
+    {
+      "medianInToleranceCenterlineDistance": 7.458828740322419,
+      "laneID": 3,
+      "medianInToleranceHeading": 347.4,
+      "medianCenterlineDistance": 7.458828740322419,
+      "expectedHeading": 348.16231825699515,
+      "segmentID": 1,
+      "inToleranceEvents": 11,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 347.4,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    },
+    {
+      "medianInToleranceCenterlineDistance": 6.364690160444201,
+      "laneID": 3,
+      "medianInToleranceHeading": 346.2,
+      "medianCenterlineDistance": 6.364690160444201,
+      "expectedHeading": 346.4452552323597,
+      "segmentID": 2,
+      "inToleranceEvents": 11,
+      "distanceFromCenterlineTolerance": 100,
+      "medianHeading": 346.2,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    }
+  ],
+  "timestamp": 1724170732773
+}]

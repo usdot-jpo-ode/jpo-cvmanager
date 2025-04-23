@@ -1,0 +1,69 @@
+[{
+  "_id": {
+    "$oid": "6808ff6f741ee5d25151e944"
+  },
+  "metadata": {
+    "logFileName": "",
+    "recordType": "ssmTx",
+    "securityResultCode": "success",
+    "receivedMessageDetails": {
+      "rxSource": "NA"
+    },
+    "payloadType": "us.dot.its.jpo.ode.model.OdeSsmPayload",
+    "serialId": {
+      "streamId": "daccfc21-e356-4481-be37-5963a056bfc0",
+      "bundleSize": 1,
+      "bundleId": 0,
+      "recordId": 0,
+      "serialNumber": 0
+    },
+    "odeReceivedAt": {
+      "$date": "2025-04-23T14:55:43.570Z"
+    },
+    "schemaVersion": 6,
+    "maxDurationTime": 0,
+    "recordGeneratedAt": "",
+    "recordGeneratedBy": "RSU",
+    "sanitized": false,
+    "odePacketID": "",
+    "odeTimStartDateTime": "",
+    "originIp": "10.0.0.78",
+    "ssmSource": "RSU"
+  },
+  "payload": {
+    "data": {
+      "second": 0,
+      "status": {
+        "signalStatus": [
+          {
+            "sequenceNumber": 0,
+            "id": {
+              "id": 12110
+            },
+            "sigStatus": {
+              "signalStatusPackage": [
+                {
+                  "requester": {
+                    "id": {
+                      "stationID": 2366845094
+                    },
+                    "request": 3,
+                    "sequenceNumber": 0,
+                    "typeData": {
+                      "role": "publicTransport"
+                    }
+                  },
+                  "inboundOn": {
+                    "lane": 2
+                  },
+                  "status": "granted"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "dataType": "us.dot.its.jpo.ode.plugin.j2735.J2735SSM"
+  }
+}]

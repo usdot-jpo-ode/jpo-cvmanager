@@ -87,7 +87,7 @@ public class OdeBsmJsonRepositoryImplTest {
     public void testFindWithAllParameters() {
         @SuppressWarnings("rawtypes")
         Page expectedPage = mock(Page.class);
-        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "recordGeneratedAt"));
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "metadata.odeReceivedAt"));
         OdeBsmJsonRepositoryImpl repo = mock(OdeBsmJsonRepositoryImpl.class);
 
         when(repo.findPage(
@@ -123,7 +123,7 @@ public class OdeBsmJsonRepositoryImplTest {
 
                     // Verify DATE_FIELD
                     Document dateField = (Document) criteria.getCriteriaObject()
-                            .get("recordGeneratedAt");
+                            .get("metadata.odeReceivedAt");
                     assertThat(dateField.get("$gte")).isEqualTo(Instant.ofEpochMilli(startTime).toString());
                     assertThat(dateField.get("$lte")).isEqualTo(Instant.ofEpochMilli(endTime).toString());
 
@@ -141,7 +141,7 @@ public class OdeBsmJsonRepositoryImplTest {
 
                     return true;
                 }),
-                eq(Sort.by(Sort.Direction.DESC, "recordGeneratedAt")),
+                eq(Sort.by(Sort.Direction.DESC, "metadata.odeReceivedAt")),
                 any(),
                 any());
     }
@@ -150,7 +150,7 @@ public class OdeBsmJsonRepositoryImplTest {
     public void testFindWithNullBoundingBox() {
         @SuppressWarnings("rawtypes")
         Page expectedPage = mock(Page.class);
-        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "recordGeneratedAt"));
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "metadata.odeReceivedAt"));
         OdeBsmJsonRepositoryImpl repo = mock(OdeBsmJsonRepositoryImpl.class);
 
         when(repo.findPage(
@@ -184,7 +184,7 @@ public class OdeBsmJsonRepositoryImplTest {
 
                     // Verify DATE_FIELD
                     Document dateField = (Document) criteria.getCriteriaObject()
-                            .get("recordGeneratedAt");
+                            .get("metadata.odeReceivedAt");
                     assertThat(dateField.get("$gte")).isEqualTo(Instant.ofEpochMilli(startTime).toString());
                     assertThat(dateField.get("$lte")).isEqualTo(Instant.ofEpochMilli(endTime).toString());
 
@@ -196,7 +196,7 @@ public class OdeBsmJsonRepositoryImplTest {
 
                     return true;
                 }),
-                eq(Sort.by(Sort.Direction.DESC, "recordGeneratedAt")),
+                eq(Sort.by(Sort.Direction.DESC, "metadata.odeReceivedAt")),
                 any(),
                 any());
     }
@@ -205,7 +205,7 @@ public class OdeBsmJsonRepositoryImplTest {
     public void testFindWithNullOptionalParameters() {
         @SuppressWarnings("rawtypes")
         Page expectedPage = mock(Page.class);
-        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "recordGeneratedAt"));
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "metadata.odeReceivedAt"));
         OdeBsmJsonRepositoryImpl repo = mock(OdeBsmJsonRepositoryImpl.class);
 
         when(repo.findPage(
@@ -239,7 +239,7 @@ public class OdeBsmJsonRepositoryImplTest {
 
                     // Verify DATE_FIELD
                     Document dateField = (Document) criteria.getCriteriaObject()
-                            .get("recordGeneratedAt");
+                            .get("metadata.odeReceivedAt");
                     assertThat(dateField.get("$gte")).isEqualTo(Instant.ofEpochMilli(startTime).toString());
                     assertThat(dateField.get("$lte")).isEqualTo(Instant.ofEpochMilli(endTime).toString());
 
@@ -251,7 +251,7 @@ public class OdeBsmJsonRepositoryImplTest {
 
                     return true;
                 }),
-                eq(Sort.by(Sort.Direction.DESC, "recordGeneratedAt")),
+                eq(Sort.by(Sort.Direction.DESC, "metadata.odeReceivedAt")),
                 any(),
                 any());
     }

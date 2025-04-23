@@ -361,42 +361,42 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
                   title: 'Online Status',
                   field: 'online_status',
                   render: (rowData) => (
-                    <p
-                      style={
+                    <Typography
+                      fontSize="medium"
+                      sx={
                         rowData.online_status.includes('RSU Offline')
                           ? {
-                              color: '#B60202',
+                              color: theme.palette.error.dark,
                               fontWeight: 'bold',
                             }
                           : {
-                              color: '#2B6510',
+                              color: theme.palette.success.dark,
                               fontWeight: 'bold',
                             }
                       }
                     >
                       {rowData.online_status}
-                    </p>
+                    </Typography>
                   ),
                 },
                 {
                   title: 'SCMS Status',
                   field: 'scms_status',
                   render: (rowData) => (
-                    <p
-                      style={
-                        rowData.scms_status.includes('SCMS Healthy')
-                          ? {
-                              color: '#2B6510',
-                              fontWeight: 'bold',
-                            }
-                          : {
-                              color: '#B60202',
-                              fontWeight: 'bold',
-                            }
-                      }
-                    >
-                      {rowData.scms_status}
-                    </p>
+                    <>
+                      <Typography
+                        fontSize="medium"
+                        sx={{
+                          color: rowData.scms_status == '1' ? theme.palette.success.dark : theme.palette.error.dark,
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        {rowData.scms_status == '1' ? 'Healthy' : 'Unhealthy'}
+                      </Typography>
+                      <Typography fontSize="small" sx={{ color: 'black' }}>
+                        {rowData.cert_expiration}
+                      </Typography>
+                    </>
                   ),
                 },
               ].map((column) => ({
@@ -456,42 +456,42 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
                   title: 'Online Status',
                   field: 'online_status',
                   render: (rowData) => (
-                    <p
-                      style={
+                    <Typography
+                      fontSize="medium"
+                      sx={
                         rowData.online_status.includes('RSU Offline')
                           ? {
-                              color: '#B60202',
+                              color: theme.palette.error.dark,
                               fontWeight: 'bold',
                             }
                           : {
-                              color: '#2B6510',
+                              color: theme.palette.success.dark,
                               fontWeight: 'bold',
                             }
                       }
                     >
                       {rowData.online_status}
-                    </p>
+                    </Typography>
                   ),
                 },
                 {
                   title: 'SCMS Status',
                   field: 'scms_status',
                   render: (rowData) => (
-                    <p
-                      style={
-                        rowData.scms_status.includes('SCMS Healthy')
-                          ? {
-                              color: '#2B6510',
-                              fontWeight: 'bold',
-                            }
-                          : {
-                              color: '#B60202',
-                              fontWeight: 'bold',
-                            }
-                      }
-                    >
-                      {rowData.scms_status}
-                    </p>
+                    <>
+                      <Typography
+                        fontSize="medium"
+                        sx={{
+                          color: rowData.scms_status == '1' ? theme.palette.success.dark : theme.palette.error.dark,
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        {rowData.scms_status == '1' ? 'Healthy' : 'Unhealthy'}
+                      </Typography>
+                      <Typography fontSize="small" sx={{ color: 'black' }}>
+                        {rowData.cert_expiration}
+                      </Typography>
+                    </>
                   ),
                 },
               ].map((column) => ({
@@ -503,9 +503,7 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
               actions={[]}
               data={
                 rsuTableData !== undefined
-                  ? rsuTableData.filter(
-                      (row) => row.online_status.includes('RSU Offline') || row.scms_status.includes('SCMS Unhealthy')
-                    )
+                  ? rsuTableData.filter((row) => row.online_status.includes('Offline') || row.scms_status.includes('0'))
                   : []
               }
               title=""

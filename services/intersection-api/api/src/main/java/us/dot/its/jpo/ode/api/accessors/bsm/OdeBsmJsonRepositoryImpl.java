@@ -25,7 +25,7 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
     private final MongoTemplate mongoTemplate;
 
     private final String collectionName = "OdeBsmJson";
-    private final String DATE_FIELD = "recordGeneratedAt";
+    private final String DATE_FIELD = "metadata.odeReceivedAt";
     private final String ORIGIN_IP_FIELD = "metadata.originIp";
     private final String VEHICLE_ID_FIELD = "payload.data.coreData.id";
 

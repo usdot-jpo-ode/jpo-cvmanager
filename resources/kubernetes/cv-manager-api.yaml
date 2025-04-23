@@ -168,6 +168,10 @@ spec:
               value: ""
             - name: MAX_GEO_QUERY_RECORDS
               value: ""
+            - name: ENVIRONMENT_NAME
+              value: ""
+            - name: LOGS_LINK
+              value: ""
           volumeMounts:
             - name: cv-manager-service-key
               mountPath: /home/secret

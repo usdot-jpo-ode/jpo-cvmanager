@@ -26,16 +26,15 @@ public class IntersectionCriteria extends Criteria {
             @Nullable boolean formatAsString) {
         if (startEpochMillis != null && endEpochMillis != null) {
             this.and(fieldName)
-                    .gte(formatAsString == true ? Instant.ofEpochMilli(startEpochMillis).toString()
+                    .gte(formatAsString ? Instant.ofEpochMilli(startEpochMillis).toString()
                             : Date.from(Instant.ofEpochMilli(startEpochMillis)))
-                    .lte(formatAsString == true ? Instant.ofEpochMilli(endEpochMillis).toString()
+                    .lte(formatAsString ? Instant.ofEpochMilli(endEpochMillis).toString()
                             : Date.from(Instant.ofEpochMilli(endEpochMillis)));
-            return this;
         } else if (startEpochMillis != null) {
-            this.and(fieldName).gte(formatAsString == true ? Instant.ofEpochMilli(startEpochMillis).toString()
+            this.and(fieldName).gte(formatAsString ? Instant.ofEpochMilli(startEpochMillis).toString()
                     : Date.from(Instant.ofEpochMilli(startEpochMillis)));
         } else if (endEpochMillis != null) {
-            this.and(fieldName).lte(formatAsString == true ? Instant.ofEpochMilli(endEpochMillis).toString()
+            this.and(fieldName).lte(formatAsString ? Instant.ofEpochMilli(endEpochMillis).toString()
                     : Date.from(Instant.ofEpochMilli(endEpochMillis)));
         }
         return this;

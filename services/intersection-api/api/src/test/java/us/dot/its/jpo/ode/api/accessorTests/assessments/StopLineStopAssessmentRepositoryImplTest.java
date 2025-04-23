@@ -26,9 +26,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
-import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
+import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLineStopAssessment;
 import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.StopLineStopAssessmentRepositoryImpl;
-import us.dot.its.jpo.ode.api.accessors.notifications.ConnectionOfTravelNotification.ConnectionOfTravelNotificationRepositoryImpl;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -72,7 +71,7 @@ public class StopLineStopAssessmentRepositoryImplTest {
 
         @SuppressWarnings("rawtypes")
         Page expected = Mockito.mock(Page.class);
-        ConnectionOfTravelNotificationRepositoryImpl repo = mock(ConnectionOfTravelNotificationRepositoryImpl.class);
+        StopLineStopAssessmentRepositoryImpl repo = mock(StopLineStopAssessmentRepositoryImpl.class);
 
         when(repo.findPage(
                 any(),
@@ -85,7 +84,7 @@ public class StopLineStopAssessmentRepositoryImplTest {
         PageRequest pageRequest = PageRequest.of(0, 1);
         doCallRealMethod().when(repo).find(1, null, null, pageRequest);
 
-        Page<ConnectionOfTravelNotification> results = repo.find(1, null, null, pageRequest);
+        Page<StopLineStopAssessment> results = repo.find(1, null, null, pageRequest);
 
         assertThat(results).isEqualTo(expected);
     }

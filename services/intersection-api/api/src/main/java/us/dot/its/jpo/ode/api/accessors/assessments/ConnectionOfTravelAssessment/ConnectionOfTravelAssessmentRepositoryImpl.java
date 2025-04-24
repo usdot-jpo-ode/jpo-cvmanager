@@ -12,6 +12,9 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTra
 import us.dot.its.jpo.ode.api.accessors.IntersectionCriteria;
 import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 
+import java.util.Collections;
+import java.util.List;
+
 @Component
 public class ConnectionOfTravelAssessmentRepositoryImpl
         implements ConnectionOfTravelAssessmentRepository, PageableQuery {
@@ -94,7 +97,7 @@ public class ConnectionOfTravelAssessmentRepositoryImpl
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null,
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, Collections.emptyList(),
                 ConnectionOfTravelAssessment.class);
     }
 

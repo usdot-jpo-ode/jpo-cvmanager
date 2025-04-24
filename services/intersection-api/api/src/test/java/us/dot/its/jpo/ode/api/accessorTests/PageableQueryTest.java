@@ -9,17 +9,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.convert.DbRefResolver;
-import org.springframework.data.mongodb.core.mapping.MongoPersistentEntity;
-import org.springframework.data.mongodb.core.mapping.MongoPersistentProperty;
 import org.springframework.data.mongodb.core.query.Criteria;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
 import us.dot.its.jpo.ode.api.accessors.PageableQuery;
-import us.dot.its.jpo.ode.api.models.AggregationResult2;
+import us.dot.its.jpo.ode.api.models.AggregationResult;
 import us.dot.its.jpo.ode.api.models.AggregationResultCount;
 
 import java.util.Arrays;
@@ -38,10 +34,6 @@ public class PageableQueryTest {
     private MongoTemplate mongoTemplate;
     @Mock(answer = Answers.CALLS_REAL_METHODS)
     private PageableQuery paginatedQueryInterface;
-    @Mock
-    DbRefResolver dbRefResolver;
-    @Mock
-    MappingContext<? extends MongoPersistentEntity<?>, MongoPersistentProperty> mappingContext;
 
     @Test
     void testFindPaginatedData() {
@@ -51,7 +43,7 @@ public class PageableQueryTest {
 
         List<ConnectionOfTravelNotification> expectedData = Arrays.asList(new ConnectionOfTravelNotification(),
                 new ConnectionOfTravelNotification());
-        AggregationResult2 aggregationResult = new AggregationResult2();
+        AggregationResult aggregationResult = new AggregationResult();
         Document dataDoc = new Document();
         dataDoc.put("results", expectedData);
         aggregationResult.setResults(List.of(dataDoc));
@@ -59,14 +51,14 @@ public class PageableQueryTest {
         count.setCount(2L);
         aggregationResult.setMetadata(List.of(count));
 
-        AggregationResults<AggregationResult2> aggregationResults = new AggregationResults<>(
+        AggregationResults<AggregationResult> aggregationResults = new AggregationResults<>(
                 List.of(aggregationResult), new Document());
 
-        when(mongoTemplate.aggregate(any(Aggregation.class), eq("collectionName"), eq(AggregationResult2.class)))
+        when(mongoTemplate.aggregate(any(Aggregation.class), eq("collectionName"), eq(AggregationResult.class)))
                 .thenReturn(aggregationResults);
 
-        Page<ConnectionOfTravelNotification> result = paginatedQueryInterface.findPage2(mongoTemplate,
-                "collectionName", pageable, criteria, sort, null, ConnectionOfTravelNotification.class);
+        Page<ConnectionOfTravelNotification> result = paginatedQueryInterface.findPage(mongoTemplate,
+                "collectionName", pageable, criteria, sort, Collections.emptyList(), ConnectionOfTravelNotification.class);
 
         assertThat(result.getContent()).isEqualTo(expectedData);
         assertThat(result.getTotalElements()).isEqualTo(2);
@@ -78,15 +70,14 @@ public class PageableQueryTest {
         Criteria criteria = new Criteria();
         Sort sort = Sort.by(Sort.Direction.DESC, "dateField");
 
-        @SuppressWarnings("rawtypes")
-        AggregationResults<AggregationResult2> aggregationResults = new AggregationResults<>(Collections.emptyList(),
+        AggregationResults<AggregationResult> aggregationResults = new AggregationResults<>(Collections.emptyList(),
                 new Document());
 
-        when(mongoTemplate.aggregate(any(Aggregation.class), eq("collectionName"), eq(AggregationResult2.class)))
+        when(mongoTemplate.aggregate(any(Aggregation.class), eq("collectionName"), eq(AggregationResult.class)))
                 .thenReturn(aggregationResults);
 
-        Page<ConnectionOfTravelNotification> result = paginatedQueryInterface.findPage2(mongoTemplate,
-                "collectionName", pageable, criteria, sort, null, ConnectionOfTravelNotification.class);
+        Page<ConnectionOfTravelNotification> result = paginatedQueryInterface.findPage(mongoTemplate,
+                "collectionName", pageable, criteria, sort, Collections.emptyList(), ConnectionOfTravelNotification.class);
 
         assertThat(result.getContent()).isEmpty();
         assertThat(result.getTotalElements()).isEqualTo(0);
@@ -98,14 +89,14 @@ public class PageableQueryTest {
         Criteria criteria = new Criteria();
         Sort sort = Sort.by(Sort.Direction.DESC, "dateField");
 
-        AggregationResults<AggregationResult2> aggregationResults = new AggregationResults<>(
+        AggregationResults<AggregationResult> aggregationResults = new AggregationResults<>(
                 Collections.emptyList(), new Document());
 
-        when(mongoTemplate.aggregate(any(Aggregation.class), eq("collectionName"), eq(AggregationResult2.class)))
+        when(mongoTemplate.aggregate(any(Aggregation.class), eq("collectionName"), eq(AggregationResult.class)))
                 .thenReturn(aggregationResults);
 
-        Page<ConnectionOfTravelNotification> result = paginatedQueryInterface.findPage2(mongoTemplate,
-                "collectionName", pageable, criteria, sort, null, ConnectionOfTravelNotification.class);
+        Page<ConnectionOfTravelNotification> result = paginatedQueryInterface.findPage(mongoTemplate,
+                "collectionName", pageable, criteria, sort, Collections.emptyList(), ConnectionOfTravelNotification.class);
 
         assertThat(result.getContent()).isEmpty();
         assertThat(result.getTotalElements()).isEqualTo(0);

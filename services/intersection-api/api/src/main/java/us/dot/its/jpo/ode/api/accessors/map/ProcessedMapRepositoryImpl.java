@@ -3,7 +3,6 @@ package us.dot.its.jpo.ode.api.accessors.map;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -141,7 +140,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
             excludedFields.add(VALIDATION_MESSAGES_FIELD);
         }
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        Page<LinkedHashMap<String, Object>> hashMap = findPageAsHashMap(mongoTemplate, collectionName, pageable,
+        Page<Document> hashMap = findDocumentsWithPagination(mongoTemplate, collectionName, pageable,
                 criteria, sort, excludedFields);
         List<ProcessedMap<LineString>> processedMaps = hashMap.getContent().stream()
                 .map(document -> mapper.convertValue(document, processedMapTypeReference)).toList();

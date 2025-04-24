@@ -1,7 +1,7 @@
 package us.dot.its.jpo.ode.api.accessors.notifications.ActiveNotification;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.Collections;
 import java.util.List;
 
 import org.bson.Document;
@@ -56,9 +56,6 @@ public class ActiveNotificationRepositoryImpl
      *
      * @param intersectionID the intersection ID to query by, if null will not be
      *                       applied
-     * @param startTime      the start time to query by, if null will not be applied
-     * @param endTime        the end time to query by, if null will not be applied
-     * @param pageable       the pageable object to use for pagination
      * @return the paginated data that matches the given criteria
      */
     public long count(
@@ -79,8 +76,6 @@ public class ActiveNotificationRepositoryImpl
      *
      * @param intersectionID the intersection ID to query by, if null will not be
      *                       applied
-     * @param startTime      the start time to query by, if null will not be applied
-     * @param endTime        the end time to query by, if null will not be applied
      * @return the paginated data that matches the given criteria
      */
     public Page<Notification> findLatest(
@@ -107,8 +102,6 @@ public class ActiveNotificationRepositoryImpl
      *
      * @param intersectionID the intersection ID to query by, if null will not be
      *                       applied
-     * @param startTime      the start time to query by, if null will not be applied
-     * @param endTime        the end time to query by, if null will not be applied
      * @param pageable       the pageable object to use for pagination
      * @return the paginated data that matches the given criteria
      */
@@ -122,39 +115,39 @@ public class ActiveNotificationRepositoryImpl
                 .whereOptional(NOTIFICATION_TYPE_FIELD, notificationType)
                 .whereOptional(KEY_FIELD, key);
         Sort sort = Sort.by(Sort.Direction.DESC, NOTIFICATION_TYPE_FIELD);
-        Page<LinkedHashMap<String, Object>> dbObjects = findPageAsHashMap(mongoTemplate, collectionName, pageable,
-                criteria, sort, null);
+        Page<Document> dbObjects = findDocumentsWithPagination(mongoTemplate, collectionName, pageable,
+                criteria, sort, Collections.emptyList());
 
         List<Notification> notifications = new ArrayList<>();
-        for (LinkedHashMap<String, Object> dbObject : dbObjects.getContent()) {
+        for (Document dbObject : dbObjects.getContent()) {
             String type = (String) dbObject.get("notificationType");
             switch (type) {
                 case "ConnectionOfTravelNotification" ->
                     notifications
                             .add(mongoTemplate.getConverter().read(ConnectionOfTravelNotification.class,
-                                    new Document(dbObject)));
+                                    dbObject));
                 case "IntersectionReferenceAlignmentNotification" -> notifications.add(
                         mongoTemplate.getConverter().read(IntersectionReferenceAlignmentNotification.class,
-                                new Document(dbObject)));
+                                dbObject));
                 case "LaneDirectionOfTravelAssessmentNotification" ->
                     notifications
                             .add(mongoTemplate.getConverter().read(LaneDirectionOfTravelNotification.class,
-                                    new Document(dbObject)));
+                                    dbObject));
                 case "SignalGroupAlignmentNotification" ->
                     notifications
                             .add(mongoTemplate.getConverter().read(SignalGroupAlignmentNotification.class,
-                                    new Document(dbObject)));
+                                    dbObject));
                 case "SignalStateConflictNotification" ->
                     notifications
                             .add(mongoTemplate.getConverter().read(SignalStateConflictNotification.class,
-                                    new Document(dbObject)));
+                                    dbObject));
                 case "TimeChangeDetailsNotification" ->
                     notifications.add(mongoTemplate.getConverter().read(TimeChangeDetailsNotification.class,
-                            new Document(dbObject)));
+                            dbObject));
                 case "AppHealthNotification" ->
                     notifications
                             .add(mongoTemplate.getConverter().read(KafkaStreamsAnomalyNotification.class,
-                                    new Document(dbObject)));
+                                    dbObject));
                 default ->
                     log.warn("Attempted to find unknown notificationType: {}", type);
             }

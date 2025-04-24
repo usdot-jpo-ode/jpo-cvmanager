@@ -3,7 +3,6 @@ package us.dot.its.jpo.ode.api.accessors;
 import org.bson.Document;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -11,7 +10,6 @@ import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 
 import us.dot.its.jpo.ode.api.models.AggregationResult;
-import us.dot.its.jpo.ode.api.models.AggregationResultCount;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -43,18 +41,21 @@ public interface PageableQuery {
             @Nonnull Sort sort,
             @Nullable List<String> excludedFields,
             @Nonnull Class<T> outputType) {
+        List<String> fieldsToExclude = excludedFields != null ? excludedFields : Collections.emptyList();
 
         AggregationResult aggregationResult = getAggregationResult(mongoTemplate, collectionName, pageable, criteria,
-                sort, excludedFields);
+                sort, fieldsToExclude);
         if (aggregationResult == null || aggregationResult.getMetadata().isEmpty()) {
             return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }
 
         // Convert Documents to our target type
         List<T> data = new ArrayList<>();
-        for (var result : aggregationResult.getResults()) {
+        for (Document result : aggregationResult.getResults()) {
             List<T> results = result.getList("results", outputType);
-            data.addAll(results);
+            if (results != null) {
+                data.addAll(results);
+            }
         }
 
         return new PageImpl<>(data, pageable, aggregationResult.getMetadata().getFirst().getCount());
@@ -77,8 +78,10 @@ public interface PageableQuery {
             @Nonnull Criteria criteria,
             @Nonnull Sort sort,
             @Nullable List<String> excludedFields) {
+        List<String> fieldsToExclude = excludedFields != null ? excludedFields : Collections.emptyList();
+
         AggregationResult result = getAggregationResult(mongoTemplate, collectionName, pageable, criteria, sort,
-                excludedFields);
+                fieldsToExclude);
         if (result == null || result.getMetadata().isEmpty()) {
             return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }

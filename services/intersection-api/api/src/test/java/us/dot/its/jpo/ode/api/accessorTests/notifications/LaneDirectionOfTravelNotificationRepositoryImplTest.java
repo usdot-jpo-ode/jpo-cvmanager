@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -38,6 +39,9 @@ public class LaneDirectionOfTravelNotificationRepositoryImplTest {
 
     @Mock
     private MongoTemplate mongoTemplate;
+
+    @Mock
+    private Page<LaneDirectionOfTravelNotification> mockPage;
 
     @InjectMocks
     private LaneDirectionOfTravelNotificationRepositoryImpl repository;
@@ -68,8 +72,6 @@ public class LaneDirectionOfTravelNotificationRepositoryImplTest {
 
     @Test
     public void testFind() {
-        @SuppressWarnings("rawtypes")
-        Page expected = Mockito.mock(Page.class);
         LaneDirectionOfTravelNotificationRepositoryImpl repo = mock(
                 LaneDirectionOfTravelNotificationRepositoryImpl.class);
 
@@ -80,13 +82,13 @@ public class LaneDirectionOfTravelNotificationRepositoryImplTest {
                 any(Criteria.class),
                 any(Sort.class),
                 any(),
-                any())).thenReturn(expected);
+                eq(LaneDirectionOfTravelNotification.class))).thenReturn(mockPage);
         PageRequest pageRequest = PageRequest.of(0, 1);
         doCallRealMethod().when(repo).find(1, null, null, pageRequest);
 
         Page<LaneDirectionOfTravelNotification> results = repo.find(1, null, null, pageRequest);
 
-        assertThat(results).isEqualTo(expected);
+        assertThat(results).isEqualTo(mockPage);
     }
 
 }

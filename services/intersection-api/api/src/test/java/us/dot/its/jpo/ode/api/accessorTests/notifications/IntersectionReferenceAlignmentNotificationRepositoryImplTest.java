@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -38,6 +39,9 @@ public class IntersectionReferenceAlignmentNotificationRepositoryImplTest {
 
     @Mock
     private MongoTemplate mongoTemplate;
+
+    @Mock
+    private Page<IntersectionReferenceAlignmentNotification> mockPage;
 
     @InjectMocks
     private IntersectionReferenceAlignmentNotificationRepositoryImpl repository;
@@ -68,8 +72,6 @@ public class IntersectionReferenceAlignmentNotificationRepositoryImplTest {
 
     @Test
     public void testFind() {
-        @SuppressWarnings("rawtypes")
-        Page expected = Mockito.mock(Page.class);
         IntersectionReferenceAlignmentNotificationRepositoryImpl repo = mock(
                 IntersectionReferenceAlignmentNotificationRepositoryImpl.class);
 
@@ -80,13 +82,13 @@ public class IntersectionReferenceAlignmentNotificationRepositoryImplTest {
                 any(Criteria.class),
                 any(Sort.class),
                 any(),
-                any())).thenReturn(expected);
+                eq(IntersectionReferenceAlignmentNotification.class))).thenReturn(mockPage);
         PageRequest pageRequest = PageRequest.of(0, 1);
         doCallRealMethod().when(repo).find(1, null, null, pageRequest);
 
         Page<IntersectionReferenceAlignmentNotification> results = repo.find(1, null, null, pageRequest);
 
-        assertThat(results).isEqualTo(expected);
+        assertThat(results).isEqualTo(mockPage);
     }
 
 }

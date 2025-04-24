@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -37,6 +38,9 @@ public class StopLineStopNotificationRepositoryImplTest {
 
     @Mock
     private MongoTemplate mongoTemplate;
+
+    @Mock
+    private Page<StopLineStopNotification> mockPage;
 
     @InjectMocks
     private StopLineStopNotificationRepositoryImpl repository;
@@ -67,8 +71,6 @@ public class StopLineStopNotificationRepositoryImplTest {
 
     @Test
     public void testFind() {
-        @SuppressWarnings("rawtypes")
-        Page expected = Mockito.mock(Page.class);
         StopLineStopNotificationRepositoryImpl repo = mock(StopLineStopNotificationRepositoryImpl.class);
 
         when(repo.findPage(
@@ -78,13 +80,13 @@ public class StopLineStopNotificationRepositoryImplTest {
                 any(Criteria.class),
                 any(Sort.class),
                 any(),
-                any())).thenReturn(expected);
+                eq(StopLineStopNotification.class))).thenReturn(mockPage);
         PageRequest pageRequest = PageRequest.of(0, 1);
         doCallRealMethod().when(repo).find(1, null, null, pageRequest);
 
         Page<StopLineStopNotification> results = repo.find(1, null, null, pageRequest);
 
-        assertThat(results).isEqualTo(expected);
+        assertThat(results).isEqualTo(mockPage);
     }
 
 }

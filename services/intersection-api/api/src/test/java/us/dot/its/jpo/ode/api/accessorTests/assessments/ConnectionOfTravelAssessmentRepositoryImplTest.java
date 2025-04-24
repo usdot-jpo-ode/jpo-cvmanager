@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.api.accessorTests.assessments;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
@@ -24,6 +23,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -32,7 +32,6 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.bson.Document;
@@ -55,128 +54,132 @@ import us.dot.its.jpo.ode.api.models.AggregationResultCount;
 @AutoConfigureEmbeddedDatabase
 public class ConnectionOfTravelAssessmentRepositoryImplTest {
 
-    @Mock
-    private MongoTemplate mongoTemplate;
+        @Mock
+        private MongoTemplate mongoTemplate;
 
-    @InjectMocks
-    private ConnectionOfTravelAssessmentRepositoryImpl repository;
+        @Mock
+        private AggregationResults<AggregationResult> mockAggregationResult;
 
-    Integer intersectionID = 123;
-    Long startTime = 1724170658205L;
-    String startTimeString = "2024-08-20T16:17:38.205Z";
-    Long endTime = 1724170778205L;
-    String endTimeString = "2024-08-20T16:19:38.205Z";
-    boolean latest = true;
+        @Mock
+        private Page<Document> mockDocumentPage;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        repository = new ConnectionOfTravelAssessmentRepositoryImpl(mongoTemplate);
-    }
+        @Mock
+        private Page<ConnectionOfTravelAssessment> mockPage;
 
-    @Test
-    public void testCount() {
-        long expectedCount = 10;
+        @InjectMocks
+        private ConnectionOfTravelAssessmentRepositoryImpl repository;
 
-        when(mongoTemplate.count(any(),
-                Mockito.<String>any())).thenReturn(expectedCount);
+        Integer intersectionID = 123;
+        Long startTime = 1724170658205L;
+        String startTimeString = "2024-08-20T16:17:38.205Z";
+        Long endTime = 1724170778205L;
+        String endTimeString = "2024-08-20T16:19:38.205Z";
+        boolean latest = true;
 
-        long resultCount = repository.count(1, null, null);
+        @BeforeEach
+        void setUp() {
+                MockitoAnnotations.openMocks(this);
+                repository = new ConnectionOfTravelAssessmentRepositoryImpl(mongoTemplate);
+        }
 
-        assertThat(resultCount).isEqualTo(expectedCount);
-        verify(mongoTemplate).count(any(Query.class), anyString());
-    }
+        @Test
+        public void testCount() {
+                long expectedCount = 10;
 
-    @Test
-    public void testFind() {
+                when(mongoTemplate.count(any(),
+                                Mockito.<String>any())).thenReturn(expectedCount);
 
-        @SuppressWarnings("rawtypes")
-        Page expected = Mockito.mock(Page.class);
-        ConnectionOfTravelAssessmentRepositoryImpl repo = mock(ConnectionOfTravelAssessmentRepositoryImpl.class);
+                long resultCount = repository.count(1, null, null);
 
-        when(repo.findPage(
-                any(),
-                any(),
-                any(PageRequest.class),
-                any(Criteria.class),
-                any(Sort.class),
-                any(),
-                any())).thenReturn(expected);
-        PageRequest pageRequest = PageRequest.of(0, 1);
-        doCallRealMethod().when(repo).find(1, null, null, pageRequest);
+                assertThat(resultCount).isEqualTo(expectedCount);
+                verify(mongoTemplate).count(any(Query.class), anyString());
+        }
 
-        Page<ConnectionOfTravelAssessment> results = repo.find(1, null, null, pageRequest);
+        @Test
+        public void testFind() {
+                ConnectionOfTravelAssessmentRepositoryImpl repo = mock(
+                                ConnectionOfTravelAssessmentRepositoryImpl.class);
 
-        assertThat(results).isEqualTo(expected);
-    }
+                when(repo.findPage(
+                                any(),
+                                any(),
+                                any(PageRequest.class),
+                                any(Criteria.class),
+                                any(Sort.class),
+                                any(),
+                                eq(ConnectionOfTravelAssessment.class))).thenReturn(mockPage);
+                PageRequest pageRequest = PageRequest.of(0, 1);
+                doCallRealMethod().when(repo).find(1, null, null, pageRequest);
 
-    @Test
-    @Disabled("TODO: Update for use with typesafe implementation")
-    public void testFindWithData() throws IOException {
-        // Load sample JSON data
-        TypeReference<List<Document>> documentList = new TypeReference<>() {
-        };
-        String json = new String(
-                Files.readAllBytes(
-                        Paths.get("src/test/resources/json/ConflictMonitor.CmConnectionOfTravelAssessment.json")));
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule()); // Register
-                                                                                                 // JavaTimeModule
+                Page<ConnectionOfTravelAssessment> results = repo.find(1, null, null, pageRequest);
 
-        List<Document> sampleDocuments = objectMapper.readValue(json, documentList);
+                assertThat(results).isEqualTo(mockPage);
+        }
 
-        // Mock dependencies
-        Page<Document> mockHashMapPage = Mockito.mock(Page.class);
-        when(mockHashMapPage.getContent()).thenReturn(sampleDocuments);
-        when(mockHashMapPage.getTotalElements()).thenReturn(1L);
+        @Test
+        public void testFindWithData() throws IOException {
+                // Load sample JSON data
+                TypeReference<List<Document>> documentList = new TypeReference<>() {
+                };
+                String json = new String(
+                                Files.readAllBytes(
+                                                Paths.get("src/test/resources/json/ConflictMonitor.CmConnectionOfTravelAssessment.json")));
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule()); // Register
+                                                                                                         // JavaTimeModule
 
-        AggregationResult aggregationResult = new AggregationResult();
-        aggregationResult.setResults(sampleDocuments);
-        AggregationResultCount aggregationResultCount = new AggregationResultCount();
-        aggregationResultCount.setCount(1L);
-        aggregationResult.setMetadata(List.of(aggregationResultCount));
+                List<Document> sampleDocuments = objectMapper.readValue(json, documentList);
 
-        @SuppressWarnings("rawtypes")
-        AggregationResults<AggregationResult> mockAggregationResult = Mockito.mock(AggregationResults.class);
-        when(mockAggregationResult.getUniqueMappedResult()).thenReturn(aggregationResult);
+                // Mock dependencies
+                when(mockDocumentPage.getContent()).thenReturn(sampleDocuments);
+                when(mockDocumentPage.getTotalElements()).thenReturn(1L);
 
-        ArgumentCaptor<Aggregation> aggregationCaptor = ArgumentCaptor.forClass(Aggregation.class);
-        when(mongoTemplate.aggregate(aggregationCaptor.capture(), Mockito.<String>any(), AggregationResult.class))
-                .thenReturn(mockAggregationResult);
+                AggregationResult aggregationResult = new AggregationResult();
+                aggregationResult.setResults(sampleDocuments);
+                AggregationResultCount aggregationResultCount = new AggregationResultCount();
+                aggregationResultCount.setCount(1L);
+                aggregationResult.setMetadata(List.of(aggregationResultCount));
 
-        // Call the repository find method
-        PageRequest pageRequest = PageRequest.of(0, 1);
-        Page<ConnectionOfTravelAssessment> findResponse = repository.find(intersectionID, startTime, endTime,
-                pageRequest);
+                when(mockAggregationResult.getUniqueMappedResult()).thenReturn(aggregationResult);
 
-        // Extract the captured Aggregation
-        Aggregation capturedAggregation = aggregationCaptor.getValue();
+                ArgumentCaptor<Aggregation> aggregationCaptor = ArgumentCaptor.forClass(Aggregation.class);
+                when(mongoTemplate.aggregate(aggregationCaptor.capture(), Mockito.<String>any(),
+                                eq(AggregationResult.class)))
+                                .thenReturn(mockAggregationResult);
 
-        // Extract the MatchOperation from the Aggregation pipeline
-        Document pipeline = capturedAggregation.toPipeline(Aggregation.DEFAULT_CONTEXT).get(0);
+                // Call the repository find method
+                PageRequest pageRequest = PageRequest.of(0, 1);
+                Page<ConnectionOfTravelAssessment> findResponse = repository.find(intersectionID, startTime, endTime,
+                                pageRequest);
 
-        // Assert the Match operation Criteria
-        assertThat(pipeline.toJson())
-                .isEqualTo(String.format(
-                        "{\"$match\": {\"intersectionID\": %s, \"assessmentGeneratedAt\": {\"$gte\": {\"$date\": \"%s\"}, \"$lte\": {\"$date\": \"%s\"}}}}",
-                        intersectionID, startTimeString, endTimeString));
+                // Extract the captured Aggregation
+                Aggregation capturedAggregation = aggregationCaptor.getValue();
 
-        // Serialize results to JSON and compare with the original JSON
-        String resultJson = objectMapper.writeValueAsString(findResponse.getContent().get(0));
+                // Extract the MatchOperation from the Aggregation pipeline
+                Document pipeline = capturedAggregation.toPipeline(Aggregation.DEFAULT_CONTEXT).get(0);
 
-        // Remove unused fields from each entry
-        List<Document> expectedResult = sampleDocuments.stream().map(doc -> {
-            doc.remove("_id");
-            doc.remove("recordGeneratedAt");
-            return doc;
-        }).toList();
-        String expectedJson = objectMapper.writeValueAsString(expectedResult.get(0));
+                // Assert the Match operation Criteria
+                assertThat(pipeline.toJson())
+                                .isEqualTo(String.format(
+                                                "{\"$match\": {\"intersectionID\": %s, \"assessmentGeneratedAt\": {\"$gte\": {\"$date\": \"%s\"}, \"$lte\": {\"$date\": \"%s\"}}}}",
+                                                intersectionID, startTimeString, endTimeString));
 
-        // Compare JSON with ignored fields
-        JSONAssert.assertEquals(expectedJson, resultJson, new CustomComparator(
-                JSONCompareMode.LENIENT, // Allows different key orders
-                new Customization("properties.timeStamp", (o1, o2) -> true),
-                new Customization("properties.odeReceivedAt", (o1, o2) -> true)));
-    }
+                // Serialize results to JSON and compare with the original JSON
+                String resultJson = objectMapper.writeValueAsString(findResponse.getContent().get(0));
+
+                // Remove unused fields from each entry
+                List<Document> expectedResult = sampleDocuments.stream().map(doc -> {
+                        doc.remove("_id");
+                        doc.remove("recordGeneratedAt");
+                        return doc;
+                }).toList();
+                String expectedJson = objectMapper.writeValueAsString(expectedResult.get(0));
+
+                // Compare JSON with ignored fields
+                JSONAssert.assertEquals(expectedJson, resultJson, new CustomComparator(
+                                JSONCompareMode.LENIENT, // Allows different key orders
+                                new Customization("properties.timeStamp", (o1, o2) -> true),
+                                new Customization("properties.odeReceivedAt", (o1, o2) -> true)));
+        }
 
 }

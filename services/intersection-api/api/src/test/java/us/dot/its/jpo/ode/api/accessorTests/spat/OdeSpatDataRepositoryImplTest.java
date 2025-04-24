@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.api.accessorTests.spat;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
@@ -24,6 +23,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -32,12 +32,12 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.bson.Document;
 
 import us.dot.its.jpo.ode.api.accessors.spat.OdeSpatDataRepositoryImpl;
+import us.dot.its.jpo.ode.api.models.AggregationResult;
 import us.dot.its.jpo.ode.api.models.AggregationResultCount;
 import us.dot.its.jpo.ode.model.OdeSpatData;
 
@@ -58,6 +58,15 @@ public class OdeSpatDataRepositoryImplTest {
 
     @Mock
     private MongoTemplate mongoTemplate;
+
+    @Mock
+    private AggregationResults<AggregationResult> mockAggregationResult;
+
+    @Mock
+    private Page<Document> mockDocumentPage;
+
+    @Mock
+    private Page<OdeSpatData> mockPage;
 
     @InjectMocks
     private OdeSpatDataRepositoryImpl repository;
@@ -89,8 +98,6 @@ public class OdeSpatDataRepositoryImplTest {
 
     @Test
     public void testFind() {
-        @SuppressWarnings("rawtypes")
-        Page expected = Mockito.mock(Page.class);
         OdeSpatDataRepositoryImpl repo = mock(OdeSpatDataRepositoryImpl.class);
 
         when(repo.findPage(
@@ -100,81 +107,76 @@ public class OdeSpatDataRepositoryImplTest {
                 any(Criteria.class),
                 any(Sort.class),
                 any(),
-                any())).thenReturn(expected);
+                eq(OdeSpatData.class))).thenReturn(mockPage);
         PageRequest pageRequest = PageRequest.of(0, 1);
         doCallRealMethod().when(repo).find(1, null, null, pageRequest);
 
         Page<OdeSpatData> results = repo.find(1, null, null, pageRequest);
 
-        assertThat(results).isEqualTo(expected);
+        assertThat(results).isEqualTo(mockPage);
     }
 
     @Test
-    @Disabled("TODO: Update for use with typesafe implementation")
     public void testFindWithData() throws IOException {
-//        // Load sample JSON data
-//        TypeReference<List<LinkedHashMap<String, Object>>> hashMapList = new TypeReference<>() {
-//        };
-//        String json = new String(
-//                Files.readAllBytes(
-//                        Paths.get("src/test/resources/json/ConflictMonitor.OdeSpatJson.json")));
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        objectMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule()); // Register
-//                                                                                                 // JavaTimeModule
-//
-//        List<LinkedHashMap<String, Object>> sampleDocuments = objectMapper.readValue(json, hashMapList);
-//
-//        // Mock dependencies
-//        Page<LinkedHashMap<String, Object>> mockHashMapPage = Mockito.mock(Page.class);
-//        when(mockHashMapPage.getContent()).thenReturn(sampleDocuments);
-//        when(mockHashMapPage.getTotalElements()).thenReturn(1L);
-//
-//        AggregationResult<LinkedHashMap<String, Object>> aggregationResult = new AggregationResult<>();
-//        aggregationResult.setResults(sampleDocuments);
-//        AggregationResultCount aggregationResultCount = new AggregationResultCount();
-//        aggregationResultCount.setCount(1L);
-//        aggregationResult.setMetadata(List.of(aggregationResultCount));
-//
-//        @SuppressWarnings("rawtypes")
-//        AggregationResults mockAggregationResult = Mockito.mock(AggregationResults.class);
-//        when(mockAggregationResult.getUniqueMappedResult()).thenReturn(aggregationResult);
-//
-//        ArgumentCaptor<Aggregation> aggregationCaptor = ArgumentCaptor.forClass(Aggregation.class);
-//        when(mongoTemplate.aggregate(aggregationCaptor.capture(), Mockito.<String>any(), any()))
-//                .thenReturn(mockAggregationResult);
-//
-//        // Call the repository find method
-//        PageRequest pageRequest = PageRequest.of(0, 1);
-//        Page<OdeSpatData> findResponse = repository.find(intersectionID, startTime, endTime,
-//                pageRequest);
-//
-//        // Extract the captured Aggregation
-//        Aggregation capturedAggregation = aggregationCaptor.getValue();
-//
-//        // Extract the MatchOperation from the Aggregation pipeline
-//        Document pipeline = capturedAggregation.toPipeline(Aggregation.DEFAULT_CONTEXT).get(0);
-//
-//        // Assert the Match operation Criteria
-//        assertThat(pipeline.toJson())
-//                .isEqualTo(String.format(
-//                        "{\"$match\": {\"properties.intersectionId\": %s, \"properties.timeStamp\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}}}",
-//                        intersectionID, startTimeString, endTimeString));
-//
-//        // Serialize results to JSON and compare with the original JSON
-//        String resultJson = objectMapper.writeValueAsString(findResponse.getContent().get(0));
-//
-//        // Remove unused fields from each entry
-//        List<LinkedHashMap<String, Object>> expectedResult = sampleDocuments.stream().map(doc -> {
-//            doc.remove("_id");
-//            doc.remove("recordGeneratedAt");
-//            return doc;
-//        }).toList();
-//        String expectedJson = objectMapper.writeValueAsString(expectedResult.get(0));
-//
-//        // Compare JSON with ignored fields
-//        JSONAssert.assertEquals(expectedJson, resultJson, new CustomComparator(
-//                JSONCompareMode.LENIENT, // Allows different key orders
-//                new Customization("properties.timeStamp", (o1, o2) -> true),
-//                new Customization("properties.odeReceivedAt", (o1, o2) -> true)));
+        // Load sample JSON data
+        TypeReference<List<Document>> hashMapList = new TypeReference<>() {
+        };
+        String json = new String(
+                Files.readAllBytes(
+                        Paths.get("src/test/resources/json/ConflictMonitor.OdeSpatJson.json")));
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule()); // Register
+                                                                                                 // JavaTimeModule
+
+        List<Document> sampleDocuments = objectMapper.readValue(json, hashMapList);
+
+        // Mock dependencies
+        when(mockDocumentPage.getTotalElements()).thenReturn(1L);
+
+        AggregationResult aggregationResult = new AggregationResult();
+        aggregationResult.setResults(sampleDocuments);
+        AggregationResultCount aggregationResultCount = new AggregationResultCount();
+        aggregationResultCount.setCount(1L);
+        aggregationResult.setMetadata(List.of(aggregationResultCount));
+
+        when(mockAggregationResult.getUniqueMappedResult()).thenReturn(aggregationResult);
+
+        ArgumentCaptor<Aggregation> aggregationCaptor = ArgumentCaptor.forClass(Aggregation.class);
+        when(mongoTemplate.aggregate(aggregationCaptor.capture(), Mockito.<String>any(), eq(AggregationResult.class)))
+                .thenReturn(mockAggregationResult);
+
+        // Call the repository find method
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        Page<OdeSpatData> findResponse = repository.find(intersectionID, startTime, endTime,
+                pageRequest);
+
+        // Extract the captured Aggregation
+        Aggregation capturedAggregation = aggregationCaptor.getValue();
+
+        // Extract the MatchOperation from the Aggregation pipeline
+        Document pipeline = capturedAggregation.toPipeline(Aggregation.DEFAULT_CONTEXT).get(0);
+
+        // Assert the Match operation Criteria
+        assertThat(pipeline.toJson())
+                .isEqualTo(String.format(
+                        "{\"$match\": {\"properties.intersectionId\": %s, \"properties.timeStamp\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}}}",
+                        intersectionID, startTimeString, endTimeString));
+
+        // Serialize results to JSON and compare with the original JSON
+        String resultJson = objectMapper.writeValueAsString(findResponse.getContent().get(0));
+
+        // Remove unused fields from each entry
+        List<Document> expectedResult = sampleDocuments.stream().map(doc -> {
+            doc.remove("_id");
+            doc.remove("recordGeneratedAt");
+            return doc;
+        }).toList();
+        String expectedJson = objectMapper.writeValueAsString(expectedResult.get(0));
+
+        // Compare JSON with ignored fields
+        JSONAssert.assertEquals(expectedJson, resultJson, new CustomComparator(
+                JSONCompareMode.LENIENT, // Allows different key orders
+                new Customization("properties.timeStamp", (o1, o2) -> true),
+                new Customization("properties.odeReceivedAt", (o1, o2) -> true)));
     }
 }

@@ -44,27 +44,80 @@ public interface PageableQuery {
             @Nullable List<String> excludedFields,
             @Nonnull Class<T> outputType) {
 
-        AggregationResult result = getAggregationResult(mongoTemplate, collectionName, pageable, criteria, sort, excludedFields);
-        if (result == null || result.getMetadata().isEmpty()) {
+        AggregationResult aggregationResult = getAggregationResult(mongoTemplate, collectionName, pageable, criteria, sort, excludedFields);
+        if (aggregationResult == null || aggregationResult.getMetadata().isEmpty()) {
             return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }
 
         // Convert Documents to our target type
         List<T> data = new ArrayList<>();
-        for (var thing : result.getResults()) {
-            // thing has results: List<T>
-            List<T> results1 = thing.getList("results", outputType);
-            data.addAll(results1);
+        for (var result : aggregationResult.getResults()) {
+            List<T> results = result.getList("results", outputType);
+            data.addAll(results);
         }
 
-        // Get total count
-        long totalElements = 0;
-        if (!result.getMetadata().isEmpty()) {
-            AggregationResultCount countDoc = result.getMetadata().getFirst();
-            totalElements = countDoc.getCount();
+        return new PageImpl<>(data, pageable, aggregationResult.getMetadata().getFirst().getCount());
+    }
+
+    /**
+     * Find paginated data based on the given criteria and pageable object
+     *
+     * @param mongoTemplate  the mongo template object to query with
+     * @param collectionName the collection name to query
+     * @param pageable       the pageable object to use for pagination
+     * @param criteria       the criteria object to use for querying
+     * @param sort           the sort object to use for sorting
+     * @return the paginated data that matches the given criteria
+     */
+    default Page<Document> findDocumentsWithPagination(
+            @Nonnull MongoTemplate mongoTemplate,
+            @Nonnull String collectionName,
+            @Nonnull Pageable pageable,
+            @Nonnull Criteria criteria,
+            @Nonnull Sort sort,
+            @Nullable List<String> excludedFields) {
+        AggregationResult result = getAggregationResult(mongoTemplate, collectionName, pageable, criteria, sort, excludedFields);
+        if (result == null || result.getMetadata().isEmpty()) {
+            return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }
+
+        List<Document> data = result.getResults();
+        long totalElements = result.getMetadata().getFirst().getCount();
 
         return new PageImpl<>(data, pageable, totalElements);
+    }
+
+    /**
+     * Wrap the given object in a page object. Intended to be used when applying a
+     * limit of 1 to a query, while attempting to return a Paged response
+     *
+     * @param <T>    the type of the object to wrap
+     * @param latest the object to wrap
+     * @return a page object containing the given object
+     */
+    default <T> Page<T> wrapSingleResultWithPage(T latest) {
+        List<T> resultList = new ArrayList<>();
+        if (latest != null) {
+            resultList.add(latest);
+        }
+        return new PageImpl<>(resultList);
+    }
+
+    /**
+     * Create a pageable object based on the given page and size. If size is null,
+     * return null.
+     *
+     * @param page the page number to use, nullable
+     * @param size the size of the page to use, nullable. If null, no pageable
+     *             object is returned
+     * @return a pageable object based on the given page and size, or null if either
+     *         is null
+     */
+    default Pageable createNullablePage(@Nullable Integer page, @Nullable Integer size) {
+        if (size == null) {
+            return null;
+        }
+        return PageRequest.of(page == null ? 0 : page, size);
     }
 
     private static AggregationResult getAggregationResult(@Nonnull MongoTemplate mongoTemplate,
@@ -112,66 +165,5 @@ public interface PageableQuery {
                 .aggregate(aggregation, collectionName, AggregationResult.class);
 
         return results.getUniqueMappedResult();
-    }
-
-    /**
-     * Find paginated data based on the given criteria and pageable object
-     *
-     * @param mongoTemplate  the mongo template object to query with
-     * @param collectionName the collection name to query
-     * @param pageable       the pageable object to use for pagination
-     * @param criteria       the criteria object to use for querying
-     * @param sort           the sort object to use for sorting
-     * @return the paginated data that matches the given criteria
-     */
-    default Page<Document> findDocumentsWithPagination(
-            @Nonnull MongoTemplate mongoTemplate,
-            @Nonnull String collectionName,
-            @Nonnull Pageable pageable,
-            @Nonnull Criteria criteria,
-            @Nonnull Sort sort,
-            @Nullable List<String> excludedFields) {
-        AggregationResult result = getAggregationResult(mongoTemplate, collectionName, pageable, criteria, sort, excludedFields);
-        if (result == null || result.getMetadata().isEmpty()) {
-            return new PageImpl<>(Collections.emptyList(), pageable, 0);
-        }
-
-        List<Document> data = result.getResults();
-        long totalElements = result.getMetadata().getFirst().getCount();
-
-        return new PageImpl<>(data, pageable, totalElements);
-    }
-
-    /**
-     * Wrap the given object in a page object. Intended to be used when applying a
-     * limit of 1 to a query, while attempting to return a Paged response
-     * 
-     * @param <T>    the type of the object to wrap
-     * @param latest the object to wrap
-     * @return a page object containing the given object
-     */
-    default <T> Page<T> wrapSingleResultWithPage(T latest) {
-        List<T> resultList = new ArrayList<>();
-        if (latest != null) {
-            resultList.add(latest);
-        }
-        return new PageImpl<>(resultList);
-    }
-
-    /**
-     * Create a pageable object based on the given page and size. If size is null,
-     * return null.
-     * 
-     * @param page the page number to use, nullable
-     * @param size the size of the page to use, nullable. If null, no pageable
-     *             object is returned
-     * @return a pageable object based on the given page and size, or null if either
-     *         is null
-     */
-    default Pageable createNullablePage(@Nullable Integer page, @Nullable Integer size) {
-        if (size == null) {
-            return null;
-        }
-        return PageRequest.of(page == null ? 0 : page, size);
     }
 }

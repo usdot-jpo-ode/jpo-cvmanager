@@ -40,8 +40,8 @@ const EVENT_TYPES: Item[] = [
   { label: 'LaneDirectionOfTravelEvent', value: 'lane_direction_of_travel' },
   { label: 'SignalGroupAlignmentEvent', value: 'signal_group_alignment' },
   { label: 'SignalStateConflictEvent', value: 'signal_state_conflict' },
-  { label: 'SignalStateEvent', value: 'signal_state' },
-  { label: 'SignalStateStopEvent', value: 'signal_state_stop' },
+  { label: 'StopLinePassageEvent', value: 'stop_line_passage' },
+  { label: 'StopLineStopEvent', value: 'stop_line_stop' },
   { label: 'TimeChangeDetailsEvent', value: 'time_change_details' },
   { label: 'MapMinimumDataEvent', value: 'map_minimum_data' },
   { label: 'SpatMinimumDataEvent', value: 'spat_minimum_data' },
@@ -51,8 +51,8 @@ const EVENT_TYPES: Item[] = [
 
 const ASSESSMENT_TYPES: Item[] = [
   { label: 'All', value: 'All' },
-  { label: 'SignalStateEventAssessment', value: 'signal_state_event_assessment' },
-  { label: 'StopLineStopAssessment', value: 'signal_state_assessment' },
+  { label: 'StopLinePassageAssessment', value: 'stop_line_passage_assessment' },
+  { label: 'StopLineStopAssessment', value: 'stop_line_stop_assessment' },
   { label: 'LaneDirectionOfTravelAssessment', value: 'lane_direction_of_travel' },
   { label: 'ConnectionOfTravelAssessment', value: 'connection_of_travel' },
 ]

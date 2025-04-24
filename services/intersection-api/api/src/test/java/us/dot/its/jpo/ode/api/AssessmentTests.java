@@ -25,8 +25,8 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLinePassage
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLineStopAssessment;
 import us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment.ConnectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment.LaneDirectionOfTravelAssessmentRepository;
-import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.StopLineStopAssessmentRepository;
-import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateEventAssessment.SignalStateEventAssessmentRepository;
+import us.dot.its.jpo.ode.api.accessors.assessments.StopLinePassageAssessment.StopLinePassageAssessmentRepository;
+import us.dot.its.jpo.ode.api.accessors.assessments.StopLineStopAssessment.StopLineStopAssessmentRepository;
 import us.dot.its.jpo.ode.api.controllers.AssessmentController;
 import us.dot.its.jpo.ode.api.services.PermissionService;
 import us.dot.its.jpo.ode.mockdata.MockAssessmentGenerator;
@@ -37,121 +37,121 @@ import us.dot.its.jpo.ode.mockdata.MockAssessmentGenerator;
 @AutoConfigureEmbeddedDatabase
 public class AssessmentTests {
 
-    private final AssessmentController controller;
+        private final AssessmentController controller;
 
-    @MockBean
-    LaneDirectionOfTravelAssessmentRepository laneDirectionOfTravelAssessmentRepo;
+        @MockBean
+        LaneDirectionOfTravelAssessmentRepository laneDirectionOfTravelAssessmentRepo;
 
-    @MockBean
-    ConnectionOfTravelAssessmentRepository connectionOfTravelAssessmentRepo;
+        @MockBean
+        ConnectionOfTravelAssessmentRepository connectionOfTravelAssessmentRepo;
 
-    @MockBean
-    StopLineStopAssessmentRepository stopLineStopAssessmentRepo;
+        @MockBean
+        StopLineStopAssessmentRepository stopLineStopAssessmentRepo;
 
-    @MockBean
-    SignalStateEventAssessmentRepository signalStateEventAssessmentRepo;
+        @MockBean
+        StopLinePassageAssessmentRepository stopLinePassageAssessmentRepo;
 
-    @MockBean
-    PermissionService permissionService;
+        @MockBean
+        PermissionService permissionService;
 
-    @Autowired
-    public AssessmentTests(AssessmentController controller) {
-        this.controller = controller;
-    }
+        @Autowired
+        public AssessmentTests(AssessmentController controller) {
+                this.controller = controller;
+        }
 
-    @Test
-    public void testLaneDirectionOfTravelAssessment() {
+        @Test
+        public void testLaneDirectionOfTravelAssessment() {
 
-        LaneDirectionOfTravelAssessment assessment = MockAssessmentGenerator
-                .getLaneDirectionOfTravelAssessment();
+                LaneDirectionOfTravelAssessment assessment = MockAssessmentGenerator
+                                .getLaneDirectionOfTravelAssessment();
 
-        List<LaneDirectionOfTravelAssessment> assessments = new ArrayList<>();
-        assessments.add(assessment);
+                List<LaneDirectionOfTravelAssessment> assessments = new ArrayList<>();
+                assessments.add(assessment);
 
-        when(permissionService.hasIntersection(assessment.getIntersectionID(), "USER")).thenReturn(true);
-        when(permissionService.hasRole("USER")).thenReturn(true);
+                when(permissionService.hasIntersection(assessment.getIntersectionID(), "USER")).thenReturn(true);
+                when(permissionService.hasRole("USER")).thenReturn(true);
 
-        Query query = laneDirectionOfTravelAssessmentRepo.getQuery(assessment.getIntersectionID(),
-                assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1,
-                false);
+                Query query = laneDirectionOfTravelAssessmentRepo.getQuery(assessment.getIntersectionID(),
+                                assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1,
+                                false);
 
-        when(laneDirectionOfTravelAssessmentRepo.find(query)).thenReturn(assessments);
+                when(laneDirectionOfTravelAssessmentRepo.find(query)).thenReturn(assessments);
 
-        ResponseEntity<List<LaneDirectionOfTravelAssessment>> result = controller
-                .findLaneDirectionOfTravelAssessment(
-                        assessment.getIntersectionID(),
-                        assessment.getAssessmentGeneratedAt() - 1,
-                        assessment.getAssessmentGeneratedAt() + 1, false, false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody()).isEqualTo(assessments);
-    }
+                ResponseEntity<List<LaneDirectionOfTravelAssessment>> result = controller
+                                .findLaneDirectionOfTravelAssessment(
+                                                assessment.getIntersectionID(),
+                                                assessment.getAssessmentGeneratedAt() - 1,
+                                                assessment.getAssessmentGeneratedAt() + 1, false, false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                assertThat(result.getBody()).isEqualTo(assessments);
+        }
 
-    @Test
-    public void testConnectionOfTravelAssessment() {
+        @Test
+        public void testConnectionOfTravelAssessment() {
 
-        ConnectionOfTravelAssessment assessment = MockAssessmentGenerator.getConnectionOfTravelAssessment();
+                ConnectionOfTravelAssessment assessment = MockAssessmentGenerator.getConnectionOfTravelAssessment();
 
-        List<ConnectionOfTravelAssessment> assessments = new ArrayList<>();
-        assessments.add(assessment);
+                List<ConnectionOfTravelAssessment> assessments = new ArrayList<>();
+                assessments.add(assessment);
 
-        when(permissionService.hasIntersection(assessment.getIntersectionID(), "USER")).thenReturn(true);
-        when(permissionService.hasRole("USER")).thenReturn(true);
+                when(permissionService.hasIntersection(assessment.getIntersectionID(), "USER")).thenReturn(true);
+                when(permissionService.hasRole("USER")).thenReturn(true);
 
-        Query query = connectionOfTravelAssessmentRepo.getQuery(assessment.getIntersectionID(),
-                assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1,
-                false);
-        when(connectionOfTravelAssessmentRepo.find(query)).thenReturn(assessments);
+                Query query = connectionOfTravelAssessmentRepo.getQuery(assessment.getIntersectionID(),
+                                assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1,
+                                false);
+                when(connectionOfTravelAssessmentRepo.find(query)).thenReturn(assessments);
 
-        ResponseEntity<List<ConnectionOfTravelAssessment>> result = controller.findConnectionOfTravelAssessment(
-                assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1,
-                assessment.getAssessmentGeneratedAt() + 1, false, false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody()).isEqualTo(assessments);
-    }
+                ResponseEntity<List<ConnectionOfTravelAssessment>> result = controller.findConnectionOfTravelAssessment(
+                                assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1,
+                                assessment.getAssessmentGeneratedAt() + 1, false, false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                assertThat(result.getBody()).isEqualTo(assessments);
+        }
 
-    @Test
-    public void testStopLineStopAssessment() {
+        @Test
+        public void testStopLineStopAssessment() {
 
-        StopLineStopAssessment assessment = MockAssessmentGenerator.getStopLineStopAssessment();
+                StopLineStopAssessment assessment = MockAssessmentGenerator.getStopLineStopAssessment();
 
-        List<StopLineStopAssessment> assessments = new ArrayList<>();
-        assessments.add(assessment);
+                List<StopLineStopAssessment> assessments = new ArrayList<>();
+                assessments.add(assessment);
 
-        when(permissionService.hasIntersection(assessment.getIntersectionID(), "USER")).thenReturn(true);
-        when(permissionService.hasRole("USER")).thenReturn(true);
+                when(permissionService.hasIntersection(assessment.getIntersectionID(), "USER")).thenReturn(true);
+                when(permissionService.hasRole("USER")).thenReturn(true);
 
-        Query query = stopLineStopAssessmentRepo.getQuery(assessment.getIntersectionID(),
-                assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1,
-                false);
-        when(stopLineStopAssessmentRepo.find(query)).thenReturn(assessments);
+                Query query = stopLineStopAssessmentRepo.getQuery(assessment.getIntersectionID(),
+                                assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1,
+                                false);
+                when(stopLineStopAssessmentRepo.find(query)).thenReturn(assessments);
 
-        ResponseEntity<List<StopLineStopAssessment>> result = controller.findSignalStateAssessment(
-                assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1,
-                assessment.getAssessmentGeneratedAt() + 1, false, false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody()).isEqualTo(assessments);
-    }
+                ResponseEntity<List<StopLineStopAssessment>> result = controller.findStopLineStopAssessment(
+                                assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1,
+                                assessment.getAssessmentGeneratedAt() + 1, false, false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                assertThat(result.getBody()).isEqualTo(assessments);
+        }
 
-    @Test
-    public void testSignalStateEventAssessment() {
+        @Test
+        public void testStopLinePassageAssessmentRepo() {
 
-        StopLinePassageAssessment assessment = MockAssessmentGenerator.getStopLinePassageAssessment();
+                StopLinePassageAssessment assessment = MockAssessmentGenerator.getStopLinePassageAssessment();
 
-        List<StopLinePassageAssessment> assessments = new ArrayList<>();
-        assessments.add(assessment);
+                List<StopLinePassageAssessment> assessments = new ArrayList<>();
+                assessments.add(assessment);
 
-        when(permissionService.hasIntersection(assessment.getIntersectionID(), "USER")).thenReturn(true);
-        when(permissionService.hasRole("USER")).thenReturn(true);
+                when(permissionService.hasIntersection(assessment.getIntersectionID(), "USER")).thenReturn(true);
+                when(permissionService.hasRole("USER")).thenReturn(true);
 
-        Query query = signalStateEventAssessmentRepo.getQuery(assessment.getIntersectionID(),
-                assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1,
-                false);
-        when(signalStateEventAssessmentRepo.find(query)).thenReturn(assessments);
+                Query query = stopLinePassageAssessmentRepo.getQuery(assessment.getIntersectionID(),
+                                assessment.getAssessmentGeneratedAt() - 1, assessment.getAssessmentGeneratedAt() + 1,
+                                false);
+                when(stopLinePassageAssessmentRepo.find(query)).thenReturn(assessments);
 
-        ResponseEntity<List<StopLinePassageAssessment>> result = controller.findSignalStateEventAssessment(
-                assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1,
-                assessment.getAssessmentGeneratedAt() + 1, false, false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody()).isEqualTo(assessments);
-    }
+                ResponseEntity<List<StopLinePassageAssessment>> result = controller.findStopLinePassageAssessment(
+                                assessment.getIntersectionID(), assessment.getAssessmentGeneratedAt() - 1,
+                                assessment.getAssessmentGeneratedAt() + 1, false, false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                assertThat(result.getBody()).isEqualTo(assessments);
+        }
 }

@@ -1,5 +1,5 @@
 
-package us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment;
+package us.dot.its.jpo.ode.api.accessors.assessments.StopLineStopAssessment;
 
 import java.util.Date;
 import java.util.List;
@@ -20,7 +20,7 @@ public class StopLineStopAssessmentRepositoryImpl implements StopLineStopAssessm
     private final MongoTemplate mongoTemplate;
     private final ConflictMonitorApiProperties props;
 
-    private String collectionName = "CmStopLineStopAssessment";
+    private String collectionName = "StopLineStopAssessment";
 
     @Autowired
     public StopLineStopAssessmentRepositoryImpl(MongoTemplate mongoTemplate,

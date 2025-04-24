@@ -1,5 +1,5 @@
 
-package us.dot.its.jpo.ode.api.accessors.events.SignalStateEvent;
+package us.dot.its.jpo.ode.api.accessors.events.StopLinePassageEvent;
 
 import java.util.Date;
 import java.util.List;
@@ -21,15 +21,15 @@ import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
 @Component
-public class SignalStateEventRepositoryImpl implements SignalStateEventRepository {
+public class StopLinePassageEventRepositoryImpl implements StopLinePassageEventRepository {
 
     private final MongoTemplate mongoTemplate;
     private final ConflictMonitorApiProperties props;
 
-    private final String collectionName = "CmSignalStateEvent";
+    private final String collectionName = "StopLinePassageEvent";
 
     @Autowired
-    public SignalStateEventRepositoryImpl(MongoTemplate mongoTemplate,
+    public StopLinePassageEventRepositoryImpl(MongoTemplate mongoTemplate,
             ConflictMonitorApiProperties props) {
         this.mongoTemplate = mongoTemplate;
         this.props = props;
@@ -77,7 +77,8 @@ public class SignalStateEventRepositoryImpl implements SignalStateEventRepositor
         return mongoTemplate.find(query, StopLinePassageEvent.class, collectionName);
     }
 
-    public List<IDCount> getAggregatedDailySignalStateEventCounts(int intersectionID, Long startTime, Long endTime) {
+    public List<IDCount> getAggregatedDailyStopLinePassageEventCounts(int intersectionID, Long startTime,
+            Long endTime) {
         Date startTimeDate = new Date(0);
         Date endTimeDate = new Date();
 

@@ -3,7 +3,7 @@ import { NotificationsTable } from '../../features/intersections/notifications/n
 import { ConnectionOfTravelAssessmentCard } from '../../features/intersections/assessments/connection-of-travel-assessment'
 import { LaneDirectionOfTravelAssessmentCard } from '../../features/intersections/assessments/lane-direction-of-travel-assessment'
 import { StopLineStopAssessmentCard } from '../../features/intersections/assessments/stop-line-stop-assessment'
-import { SignalStateEventAssessmentCard } from '../../features/intersections/assessments/signal-state-event-assessment'
+import { StopLinePassageAssessmentCard } from '../../features/intersections/assessments/stop-line-passage-assessment'
 import React, { useEffect, useState } from 'react'
 import AssessmentsApi from '../../apis/intersections/assessments-api'
 import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../generalSlices/intersectionSlice'
@@ -18,7 +18,7 @@ const Page = () => {
   // create hooks, and methods for each assessment type:
   const [stopLineStopAssessment, setStopLineStopAssessment] = useState<StopLineStopAssessment | undefined>(undefined)
   // create hooks, and methods for each assessment type:
-  const [signalStateEventAssessment, setSignalStateEventAssessment] = useState<SignalStateEventAssessment | undefined>(
+  const [stopLinePassageAssessment, setStopLinePassageAssessment] = useState<StopLinePassageAssessment | undefined>(
     undefined
   )
   const [connectionOfTravelAssessment, setConnectionOfTravelAssessment] = useState<
@@ -33,18 +33,18 @@ const Page = () => {
       setStopLineStopAssessment(
         (await AssessmentsApi.getLatestAssessment(
           token,
-          'signal_state_assessment',
+          'stop_line_stop_assessment',
           intersectionId,
           roadRegulatorId
         )) as StopLineStopAssessment
       )
-      setSignalStateEventAssessment(
+      setStopLinePassageAssessment(
         (await AssessmentsApi.getLatestAssessment(
           token,
-          'signal_state_event_assessment',
+          'stop_line_passage_assessment',
           intersectionId,
           roadRegulatorId
-        )) as SignalStateEventAssessment
+        )) as StopLinePassageAssessment
       )
       setConnectionOfTravelAssessment(
         (await AssessmentsApi.getLatestAssessment(
@@ -83,7 +83,7 @@ const Page = () => {
         <Grid2 container spacing={3} alignItems="flex-start">
           <ConnectionOfTravelAssessmentCard assessment={connectionOfTravelAssessment} />
           <StopLineStopAssessmentCard assessment={stopLineStopAssessment} />
-          <SignalStateEventAssessmentCard assessment={signalStateEventAssessment} />
+          <StopLinePassageAssessmentCard assessment={stopLinePassageAssessment} />
           <LaneDirectionOfTravelAssessmentCard assessment={laneDirectionOfTravelAssessment} />
           <Grid2 size={12}>
             <NotificationsTable simple={true} />

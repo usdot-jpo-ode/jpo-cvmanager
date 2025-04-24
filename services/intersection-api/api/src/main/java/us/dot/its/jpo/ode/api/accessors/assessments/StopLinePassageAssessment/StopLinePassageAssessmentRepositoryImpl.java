@@ -1,5 +1,5 @@
 
-package us.dot.its.jpo.ode.api.accessors.assessments.SignalStateEventAssessment;
+package us.dot.its.jpo.ode.api.accessors.assessments.StopLinePassageAssessment;
 
 import java.util.Date;
 import java.util.List;
@@ -15,15 +15,15 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLinePassage
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 
 @Component
-public class SignalStateEventAssessmentRepositoryImpl implements SignalStateEventAssessmentRepository {
+public class StopLinePassageAssessmentRepositoryImpl implements StopLinePassageAssessmentRepository {
 
     private final MongoTemplate mongoTemplate;
     private final ConflictMonitorApiProperties props;
 
-    private String collectionName = "CmSignalStateEventAssessment";
+    private String collectionName = "StopLinePassageAssessment";
 
     @Autowired
-    public SignalStateEventAssessmentRepositoryImpl(MongoTemplate mongoTemplate,
+    public StopLinePassageAssessmentRepositoryImpl(MongoTemplate mongoTemplate,
             ConflictMonitorApiProperties props) {
         this.mongoTemplate = mongoTemplate;
         this.props = props;

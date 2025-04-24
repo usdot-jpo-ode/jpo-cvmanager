@@ -1,5 +1,5 @@
 
-package us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment;
+package us.dot.its.jpo.ode.api.accessors.assessments.StopLineStopAssessment;
 
 import java.util.List;
 

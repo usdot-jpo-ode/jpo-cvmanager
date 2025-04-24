@@ -48,15 +48,15 @@ echo 'Creating kafka topics'
 /opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.CmSignalGroupAlignmentNotification" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
 /opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.CmSignalStateConflictEvents" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
 /opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.CmSignalStateConflictNotification" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
-/opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.CmSignalStateEventAssessment" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
+/opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.Cm51,83: /opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.StopLinePassageAssessment" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
 /opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.CmSpatBroadcastRateEvents" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
 /opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.CmSpatMinimumDataEvents" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
 /opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.CmSpatTimeChangeDetailsEvent" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
 /opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.CmSpatTimeChangeDetailsNotification" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
-/opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.CmSignalStateEvent" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
+/opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.StopLinePassageEvent" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
 /opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.CmStopLinePassageNotification" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
-/opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.CmStopLineStopAssessment" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
-/opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.CmSignalStateStopEvent" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
+/opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.StopLineStopAssessment" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
+/opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.StopLineStopEvent" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
 /opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.CmStopLineStopNotification" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
 /opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.DeduplicatedOdeMapJson" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1
 /opt/bitnami/kafka/bin/kafka-topics.sh --create --if-not-exists  --topic "topic.DeduplicatedOdeTimJson" --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1

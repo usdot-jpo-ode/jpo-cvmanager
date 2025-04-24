@@ -19,9 +19,8 @@ import java.util.List;
 
 import org.bson.Document;
 
-import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLinePassageEvent;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
-import us.dot.its.jpo.ode.api.accessors.events.SignalStateEvent.SignalStateEventRepositoryImpl;
+import us.dot.its.jpo.ode.api.accessors.events.StopLineStopEvent.StopLineStopEventRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,12 +28,13 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLineStopEvent;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
 @AutoConfigureEmbeddedDatabase
-public class SignalStateEventRepositoryImplTest {
+public class StopLineStopEventRepositoryImplTest {
 
     @Mock
     private MongoTemplate mongoTemplate;
@@ -43,7 +43,7 @@ public class SignalStateEventRepositoryImplTest {
     private ConflictMonitorApiProperties props;
 
     @InjectMocks
-    private SignalStateEventRepositoryImpl repository;
+    private StopLineStopEventRepositoryImpl repository;
 
     Integer intersectionID = 123;
     Long startTime = 1624640400000L; // June 26, 2021 00:00:00 GMT
@@ -53,7 +53,7 @@ public class SignalStateEventRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        repository = new SignalStateEventRepositoryImpl(mongoTemplate, props);
+        repository = new StopLineStopEventRepositoryImpl(mongoTemplate, props);
     }
 
     @Test
@@ -91,19 +91,19 @@ public class SignalStateEventRepositoryImplTest {
     }
 
     @Test
-    public void testFindSignalStateEvents() {
+    public void testFindStopLineStopEventEvents() {
         Query query = new Query();
-        List<StopLinePassageEvent> expected = new ArrayList<>();
+        List<StopLineStopEvent> expected = new ArrayList<>();
 
-        Mockito.doReturn(expected).when(mongoTemplate).find(query, StopLinePassageEvent.class, "CmSignalStateEvents");
+        Mockito.doReturn(expected).when(mongoTemplate).find(query, StopLineStopEvent.class, "StopLineStopEvents");
 
-        List<StopLinePassageEvent> results = repository.find(query);
+        List<StopLineStopEvent> results = repository.find(query);
 
         assertThat(results).isEqualTo(expected);
     }
 
     @Test
-    public void testGetSignalStateEventsByDay() {
+    public void testGetStopLineStopEventEventsByDay() {
 
         List<IDCount> aggregatedResults = new ArrayList<>();
         IDCount result1 = new IDCount();
@@ -120,7 +120,7 @@ public class SignalStateEventRepositoryImplTest {
                 mongoTemplate.aggregate(Mockito.any(Aggregation.class), Mockito.anyString(), Mockito.eq(IDCount.class)))
                 .thenReturn(aggregationResults);
 
-        List<IDCount> actualResults = repository.getAggregatedDailySignalStateEventCounts(intersectionID, startTime,
+        List<IDCount> actualResults = repository.getAggregatedDailyStopLineStopEventCounts(intersectionID, startTime,
                 endTime);
 
         assertThat(actualResults.size()).isEqualTo(2);

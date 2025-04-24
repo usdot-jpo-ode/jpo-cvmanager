@@ -14,7 +14,7 @@ import java.util.List;
 @EqualsAndHashCode
 @Getter
 public class ReportDocument {
-    
+
     @Id
     private String reportName;
     private int intersectionID;
@@ -22,7 +22,7 @@ public class ReportDocument {
     private long reportGeneratedAt;
     private long reportStartTime;
     private long reportStopTime;
-    private byte[] reportContents; 
+    private byte[] reportContents;
     private List<IDCount> laneDirectionOfTravelEventCounts;
     private List<IDCount> laneDirectionOfTravelMedianDistanceDistribution;
     private List<IDCount> laneDirectionOfTravelMedianHeadingDistribution;
@@ -33,8 +33,8 @@ public class ReportDocument {
     private List<ConnectionData> invalidConnectionOfTravelData; // Updated type
     private List<IDCount> connectionOfTravelEventCounts;
     private List<IDCount> signalStateConflictEventCount;
-    private List<IDCount> signalStateEventCounts;
-    private List<IDCount> signalStateStopEventCounts;
+    private List<IDCount> stopLinePassageEventCounts;
+    private List<IDCount> stopLineStopEventCounts;
     private List<IDCount> timeChangeDetailsEventCount;
     private List<IDCount> intersectionReferenceAlignmentEventCounts;
     private List<IDCount> mapBroadcastRateEventCount;

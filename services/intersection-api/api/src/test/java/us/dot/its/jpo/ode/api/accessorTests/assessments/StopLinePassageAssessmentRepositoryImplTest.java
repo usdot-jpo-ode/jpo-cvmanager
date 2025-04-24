@@ -24,13 +24,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLinePassageAssessment;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
-import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateEventAssessment.SignalStateEventAssessmentRepositoryImpl;
+import us.dot.its.jpo.ode.api.accessors.assessments.StopLinePassageAssessment.StopLinePassageAssessmentRepositoryImpl;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
 @AutoConfigureEmbeddedDatabase
-public class SignalStateEventAssessmentRepositoryImplTest {
+public class StopLinePassageAssessmentRepositoryImplTest {
 
     @Mock
     private MongoTemplate mongoTemplate;
@@ -39,7 +39,7 @@ public class SignalStateEventAssessmentRepositoryImplTest {
     private ConflictMonitorApiProperties props;
 
     @InjectMocks
-    private SignalStateEventAssessmentRepositoryImpl repository;
+    private StopLinePassageAssessmentRepositoryImpl repository;
 
     Integer intersectionID = 123;
     Long startTime = 1624640400000L; // June 26, 2021 00:00:00 GMT
@@ -49,7 +49,7 @@ public class SignalStateEventAssessmentRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        repository = new SignalStateEventAssessmentRepositoryImpl(mongoTemplate, props);
+        repository = new StopLinePassageAssessmentRepositoryImpl(mongoTemplate, props);
     }
 
     @Test
@@ -87,12 +87,12 @@ public class SignalStateEventAssessmentRepositoryImplTest {
     }
 
     @Test
-    public void testFindSignalStateEventAssessments() {
+    public void testStopLinePassageAssessments() {
         Query query = new Query();
         List<StopLinePassageAssessment> expected = new ArrayList<>();
 
         Mockito.doReturn(expected).when(mongoTemplate).find(query, StopLinePassageAssessment.class,
-                "CmSignalStateEventAssessments");
+                "StopLinePassageAssessment");
 
         List<StopLinePassageAssessment> results = repository.find(query);
 

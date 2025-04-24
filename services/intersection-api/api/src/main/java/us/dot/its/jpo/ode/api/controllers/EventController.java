@@ -51,11 +51,11 @@ import us.dot.its.jpo.ode.api.accessors.events.MapMessageCountProgressionEventRe
 import us.dot.its.jpo.ode.api.accessors.events.MapMinimumDataEvent.MapMinimumDataEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SignalGroupAlignmentEvent.SignalGroupAlignmentEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SignalStateConflictEvent.SignalStateConflictEventRepository;
-import us.dot.its.jpo.ode.api.accessors.events.SignalStateEvent.SignalStateEventRepository;
-import us.dot.its.jpo.ode.api.accessors.events.SignalStateStopEvent.SignalStateStopEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SpatBroadcastRateEvent.SpatBroadcastRateEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SpatMessageCountProgressionEvent.SpatMessageCountProgressionEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SpatMinimumDataEvent.SpatMinimumDataEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.StopLinePassageEvent.StopLinePassageEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.StopLineStopEvent.StopLineStopEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.TimeChangeDetailsEvent.TimeChangeDetailsEventRepository;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.MinuteCount;
@@ -77,8 +77,8 @@ public class EventController {
     private final LaneDirectionOfTravelEventRepository laneDirectionOfTravelEventRepo;
     private final SignalGroupAlignmentEventRepository signalGroupAlignmentEventRepo;
     private final SignalStateConflictEventRepository signalStateConflictEventRepo;
-    private final SignalStateStopEventRepository signalStateStopEventRepo;
-    private final SignalStateEventRepository signalStateEventRepo;
+    private final StopLineStopEventRepository stopLineStopEventRepo;
+    private final StopLinePassageEventRepository stopLinePassageEventRepo;
     private final TimeChangeDetailsEventRepository timeChangeDetailsEventRepo;
     private final SpatMinimumDataEventRepository spatMinimumDataEventRepo;
     private final MapMinimumDataEventRepository mapMinimumDataEventRepo;
@@ -99,8 +99,8 @@ public class EventController {
             LaneDirectionOfTravelEventRepository laneDirectionOfTravelEventRepo,
             SignalGroupAlignmentEventRepository signalGroupAlignmentEventRepo,
             SignalStateConflictEventRepository signalStateConflictEventRepo,
-            SignalStateStopEventRepository signalStateStopEventRepo,
-            SignalStateEventRepository signalStateEventRepo,
+            StopLineStopEventRepository stopLineStopEventRepo,
+            StopLinePassageEventRepository stopLinePassageEventRepo,
             TimeChangeDetailsEventRepository timeChangeDetailsEventRepo,
             SpatMinimumDataEventRepository spatMinimumDataEventRepo,
             MapMinimumDataEventRepository mapMinimumDataEventRepo,
@@ -115,8 +115,8 @@ public class EventController {
         this.laneDirectionOfTravelEventRepo = laneDirectionOfTravelEventRepo;
         this.signalGroupAlignmentEventRepo = signalGroupAlignmentEventRepo;
         this.signalStateConflictEventRepo = signalStateConflictEventRepo;
-        this.signalStateStopEventRepo = signalStateStopEventRepo;
-        this.signalStateEventRepo = signalStateEventRepo;
+        this.stopLineStopEventRepo = stopLineStopEventRepo;
+        this.stopLinePassageEventRepo = stopLinePassageEventRepo;
         this.timeChangeDetailsEventRepo = timeChangeDetailsEventRepo;
         this.spatMinimumDataEventRepo = spatMinimumDataEventRepo;
         this.mapMinimumDataEventRepo = mapMinimumDataEventRepo;
@@ -491,14 +491,14 @@ public class EventController {
         }
     }
 
-    @Operation(summary = "Retrieve Signal State Events", description = "Get Signal State Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
-    @RequestMapping(value = "/events/signal_state", method = RequestMethod.GET, produces = "application/json")
+    @Operation(summary = "Retrieve Stop Line Passage Events", description = "Get Stop Line Passage Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
+    @RequestMapping(value = "/events/stop_line_passage", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<List<StopLinePassageEvent>> findSignalStateEvent(
+    public ResponseEntity<List<StopLinePassageEvent>> findStopLinePassageEvent(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -510,19 +510,19 @@ public class EventController {
             list.add(MockEventGenerator.getStopLinePassageEvent());
             return ResponseEntity.ok(list);
         } else {
-            Query query = signalStateEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            return ResponseEntity.ok(signalStateEventRepo.find(query));
+            Query query = stopLinePassageEventRepo.getQuery(intersectionID, startTime, endTime, latest);
+            return ResponseEntity.ok(stopLinePassageEventRepo.find(query));
         }
     }
 
-    @Operation(summary = "Count Signal State Events", description = "Get the count of Signal State Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
-    @RequestMapping(value = "/events/signal_state/count", method = RequestMethod.GET, produces = "application/json")
+    @Operation(summary = "Count Stop Line Passage Events", description = "Get the count of Stop Line Passage Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
+    @RequestMapping(value = "/events/stop_line_passage/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<Long> countSignalStateEvent(
+    public ResponseEntity<Long> countStopLinePassageEvent(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -532,28 +532,28 @@ public class EventController {
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = signalStateEventRepo.getQuery(intersectionID, startTime, endTime, false);
+            Query query = stopLinePassageEventRepo.getQuery(intersectionID, startTime, endTime, false);
 
             long count;
             if (fullCount) {
-                count = signalStateEventRepo.getQueryFullCount(query);
+                count = stopLinePassageEventRepo.getQueryFullCount(query);
             } else {
-                count = signalStateEventRepo.getQueryResultCount(query);
+                count = stopLinePassageEventRepo.getQueryResultCount(query);
             }
 
-            log.debug("Found: {} SignalStateEvents", count);
+            log.debug("Found: {} StopLinePassageEvents", count);
             return ResponseEntity.ok(count);
         }
     }
 
-    @Operation(summary = "Retrieve Aggregated Daily Counts of Signal State Events", description = "Get the aggregated daily counts of Signal State Events, filtered by intersection ID, start time, and end time.")
-    @RequestMapping(value = "/events/signal_state/daily_counts", method = RequestMethod.GET, produces = "application/json")
+    @Operation(summary = "Retrieve Aggregated Daily Counts of Stop Line Passage Events", description = "Get the aggregated daily counts of Stop Line Passage Events, filtered by intersection ID, start time, and end time.")
+    @RequestMapping(value = "/events/stop_line_passage/daily_counts", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<List<IDCount>> getDailySignalStateEventCounts(
+    public ResponseEntity<List<IDCount>> getDailyStopLinePassageEventCounts(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis") Long startTime,
             @RequestParam(name = "end_time_utc_millis") Long endTime,
@@ -563,19 +563,19 @@ public class EventController {
             return ResponseEntity.ok(MockIDCountGenerator.getDateIDCounts());
         } else {
             return ResponseEntity
-                    .ok(signalStateEventRepo.getAggregatedDailySignalStateEventCounts(intersectionID, startTime,
+                    .ok(stopLinePassageEventRepo.getAggregatedDailyStopLinePassageEventCounts(intersectionID, startTime,
                             endTime));
         }
     }
 
-    @Operation(summary = "Retrieve Signal State Stop Events", description = "Get Signal State Stop Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
-    @RequestMapping(value = "/events/signal_state_stop", method = RequestMethod.GET, produces = "application/json")
+    @Operation(summary = "Retrieve Stop Line Stop Events", description = "Get Stop Line Stop Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
+    @RequestMapping(value = "/events/stop_line_stop", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<List<StopLineStopEvent>> findSignalStateStopEvent(
+    public ResponseEntity<List<StopLineStopEvent>> findStopLineStopEvent(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -587,19 +587,19 @@ public class EventController {
             list.add(MockEventGenerator.getStopLineStopEvent());
             return ResponseEntity.ok(list);
         } else {
-            Query query = signalStateStopEventRepo.getQuery(intersectionID, startTime, endTime, latest);
-            return ResponseEntity.ok(signalStateStopEventRepo.find(query));
+            Query query = stopLineStopEventRepo.getQuery(intersectionID, startTime, endTime, latest);
+            return ResponseEntity.ok(stopLineStopEventRepo.find(query));
         }
     }
 
-    @Operation(summary = "Count Signal State Stop Events", description = "Get the count of Signal State Stop Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
-    @RequestMapping(value = "/events/signal_state_stop/count", method = RequestMethod.GET, produces = "application/json")
+    @Operation(summary = "Count Stop Line Stop Events", description = "Get the count of Stop Line Stop Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
+    @RequestMapping(value = "/events/stop_line_stop/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<Long> countSignalStateStopEvent(
+    public ResponseEntity<Long> countStopLineStopEvent(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -609,28 +609,28 @@ public class EventController {
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = signalStateStopEventRepo.getQuery(intersectionID, startTime, endTime, false);
+            Query query = stopLineStopEventRepo.getQuery(intersectionID, startTime, endTime, false);
 
             long count;
             if (fullCount) {
-                count = signalStateStopEventRepo.getQueryFullCount(query);
+                count = stopLineStopEventRepo.getQueryFullCount(query);
             } else {
-                count = signalStateStopEventRepo.getQueryResultCount(query);
+                count = stopLineStopEventRepo.getQueryResultCount(query);
             }
 
-            log.debug("Found: {} SignalStateStopEvents", count);
+            log.debug("Found: {} StopLineStopEvents", count);
             return ResponseEntity.ok(count);
         }
     }
 
-    @Operation(summary = "Retrieve Aggregated Daily Counts of Signal State Stop Events", description = "Get the aggregated daily counts of Signal State Stop Events, filtered by intersection ID, start time, and end time.")
-    @RequestMapping(value = "/events/signal_state_stop/daily_counts", method = RequestMethod.GET, produces = "application/json")
+    @Operation(summary = "Retrieve Aggregated Daily Counts of Stop Line Stop Events", description = "Get the aggregated daily counts of Stop Line Stop Events, filtered by intersection ID, start time, and end time.")
+    @RequestMapping(value = "/events/stop_line_stop/daily_counts", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<List<IDCount>> getDailySignalStateStopEventCounts(
+    public ResponseEntity<List<IDCount>> getDailyStopLineStopEventCounts(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis") Long startTime,
             @RequestParam(name = "end_time_utc_millis") Long endTime,
@@ -640,7 +640,7 @@ public class EventController {
             return ResponseEntity.ok(MockIDCountGenerator.getDateIDCounts());
         } else {
             return ResponseEntity
-                    .ok(signalStateStopEventRepo.getAggregatedDailySignalStateStopEventCounts(intersectionID, startTime,
+                    .ok(stopLineStopEventRepo.getAggregatedDailyStopLineStopEventCounts(intersectionID, startTime,
                             endTime));
         }
     }

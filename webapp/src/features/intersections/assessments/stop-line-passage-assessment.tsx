@@ -3,7 +3,7 @@ import React from 'react'
 import { BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar, Tooltip, TooltipProps } from 'recharts'
 import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent'
 
-export const SignalStateEventAssessmentCard = (props: { assessment: SignalStateEventAssessment | undefined }) => {
+export const StopLinePassageAssessmentCard = (props: { assessment: StopLinePassageAssessment | undefined }) => {
   const { assessment } = props
   const theme = useTheme()
 
@@ -14,7 +14,7 @@ export const SignalStateEventAssessmentCard = (props: { assessment: SignalStateE
     return 0.1 + Math.min(maxFactor, data.length / numRowsForMax)
   }
 
-  const widthFactor = getWidthFactorFromData(assessment?.signalStateEventAssessmentGroup)
+  const widthFactor = getWidthFactorFromData(assessment?.stopLinePassageAssessmentGroup)
 
   const CustomTooltip = ({ active, payload }: TooltipProps<ValueType, NameType>) => {
     if (active && payload) {
@@ -90,7 +90,7 @@ export const SignalStateEventAssessmentCard = (props: { assessment: SignalStateE
     return 0
   }
 
-  const data = assessment?.signalStateEventAssessmentGroup
+  const data = assessment?.stopLinePassageAssessmentGroup
     .map((group) => {
       const total = Math.max(group.redEvents + group.yellowEvents + group.greenEvents + group.darkEvents, 1) / 100
       return {
@@ -118,7 +118,7 @@ export const SignalStateEventAssessmentCard = (props: { assessment: SignalStateE
           <Grid2 container spacing={3} sx={{ justifyContent: 'space-between' }}>
             <Grid2>
               <Typography color="textSecondary" gutterBottom variant="overline">
-                Signal State Passage Assessment
+                Stop Line Passage Assessment
               </Typography>
               {assessment === undefined ? (
                 <Typography color="textPrimary" variant="h5" key={''}>

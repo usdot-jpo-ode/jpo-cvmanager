@@ -40,10 +40,10 @@ import us.dot.its.jpo.ode.api.accessors.events.MapBroadcastRateEvents.MapBroadca
 import us.dot.its.jpo.ode.api.accessors.events.MapMinimumDataEvent.MapMinimumDataEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SignalGroupAlignmentEvent.SignalGroupAlignmentEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SignalStateConflictEvent.SignalStateConflictEventRepository;
-import us.dot.its.jpo.ode.api.accessors.events.SignalStateEvent.SignalStateEventRepository;
-import us.dot.its.jpo.ode.api.accessors.events.SignalStateStopEvent.SignalStateStopEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SpatBroadcastRateEvent.SpatBroadcastRateEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SpatMinimumDataEvent.SpatMinimumDataEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.StopLinePassageEvent.StopLinePassageEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.StopLineStopEvent.StopLineStopEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.TimeChangeDetailsEvent.TimeChangeDetailsEventRepository;
 import us.dot.its.jpo.ode.api.controllers.EventController;
 import us.dot.its.jpo.ode.api.models.postgres.derived.UserOrgRole;
@@ -56,512 +56,513 @@ import us.dot.its.jpo.ode.mockdata.MockEventGenerator;
 @AutoConfigureEmbeddedDatabase
 public class EventTests {
 
-    private final EventController controller;
+        private final EventController controller;
 
-    @MockBean
-    ConnectionOfTravelEventRepository connectionOfTravelEventRepo;
+        @MockBean
+        ConnectionOfTravelEventRepository connectionOfTravelEventRepo;
 
-    @MockBean
-    IntersectionReferenceAlignmentEventRepository intersectionReferenceAlignmentEventRepo;
+        @MockBean
+        IntersectionReferenceAlignmentEventRepository intersectionReferenceAlignmentEventRepo;
 
-    @MockBean
-    LaneDirectionOfTravelEventRepository laneDirectionOfTravelEventRepo;
+        @MockBean
+        LaneDirectionOfTravelEventRepository laneDirectionOfTravelEventRepo;
 
-    @MockBean
-    SignalGroupAlignmentEventRepository signalGroupAlignmentEventRepo;
+        @MockBean
+        SignalGroupAlignmentEventRepository signalGroupAlignmentEventRepo;
 
-    @MockBean
-    SignalStateConflictEventRepository signalStateConflictEventRepo;
+        @MockBean
+        SignalStateConflictEventRepository signalStateConflictEventRepo;
 
-    @MockBean
-    SignalStateStopEventRepository signalStateStopEventRepo;
+        @MockBean
+        StopLineStopEventRepository stopLineStopEventRepo;
 
-    @MockBean
-    SignalStateEventRepository signalStateEventRepo;
+        @MockBean
+        StopLinePassageEventRepository stopLinePassageEventRepo;
 
-    @MockBean
-    TimeChangeDetailsEventRepository timeChangeDetailsEventRepo;
+        @MockBean
+        TimeChangeDetailsEventRepository timeChangeDetailsEventRepo;
 
-    @MockBean
-    SpatMinimumDataEventRepository spatMinimumDataEventRepo;
+        @MockBean
+        SpatMinimumDataEventRepository spatMinimumDataEventRepo;
 
-    @MockBean
-    MapMinimumDataEventRepository mapMinimumDataEventRepo;
+        @MockBean
+        MapMinimumDataEventRepository mapMinimumDataEventRepo;
 
-    @MockBean
-    SpatBroadcastRateEventRepository spatBroadcastRateEventRepo;
+        @MockBean
+        SpatBroadcastRateEventRepository spatBroadcastRateEventRepo;
 
-    @MockBean
-    MapBroadcastRateEventRepository mapBroadcastRateEventRepo;
+        @MockBean
+        MapBroadcastRateEventRepository mapBroadcastRateEventRepo;
 
-    @MockBean
-    BsmEventRepository bsmEventRepo;
+        @MockBean
+        BsmEventRepository bsmEventRepo;
 
-    @MockBean
-    PostgresService postgresService;
+        @MockBean
+        PostgresService postgresService;
 
-    @Autowired
-    public EventTests(EventController controller) {
-        this.controller = controller;
-    }
+        @Autowired
+        public EventTests(EventController controller) {
+                this.controller = controller;
+        }
 
-    @Test
-    public void testIntersectionReferenceAlignmentEvents() {
+        @Test
+        public void testIntersectionReferenceAlignmentEvents() {
 
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
+                MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List<UserOrgRole> roles = new ArrayList<>();
-        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
+                List<UserOrgRole> roles = new ArrayList<>();
+                UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
-        roles.add(userOrgRole);
-        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
+                roles.add(userOrgRole);
+                when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
 
-        IntersectionReferenceAlignmentEvent event = MockEventGenerator.getIntersectionReferenceAlignmentEvent();
+                IntersectionReferenceAlignmentEvent event = MockEventGenerator.getIntersectionReferenceAlignmentEvent();
 
-        List<IntersectionReferenceAlignmentEvent> events = new ArrayList<>();
-        events.add(event);
+                List<IntersectionReferenceAlignmentEvent> events = new ArrayList<>();
+                events.add(event);
 
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(event.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com"))
-                .thenReturn(allowedInteresections);
+                List<Integer> allowedInteresections = new ArrayList<>();
+                allowedInteresections.add(event.getIntersectionID());
+                when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com"))
+                                .thenReturn(allowedInteresections);
 
-        Query query = intersectionReferenceAlignmentEventRepo.getQuery(event.getIntersectionID(),
-                event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false);
+                Query query = intersectionReferenceAlignmentEventRepo.getQuery(event.getIntersectionID(),
+                                event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false);
 
-        when(intersectionReferenceAlignmentEventRepo.find(query)).thenReturn(events);
+                when(intersectionReferenceAlignmentEventRepo.find(query)).thenReturn(events);
 
-        ResponseEntity<List<IntersectionReferenceAlignmentEvent>> result = controller
-                .findIntersectionReferenceAlignmentEvents(event.getIntersectionID(),
-                        event.getEventGeneratedAt() - 1,
-                        event.getEventGeneratedAt() + 1, false, false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
-        assertThat(result.getBody()).isEqualTo(events);
-    }
+                ResponseEntity<List<IntersectionReferenceAlignmentEvent>> result = controller
+                                .findIntersectionReferenceAlignmentEvents(event.getIntersectionID(),
+                                                event.getEventGeneratedAt() - 1,
+                                                event.getEventGeneratedAt() + 1, false, false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+                assertThat(result.getBody()).isEqualTo(events);
+        }
 
-    @Test
-    public void testConnectionOfTravelEvents() {
+        @Test
+        public void testConnectionOfTravelEvents() {
 
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
+                MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List<UserOrgRole> roles = new ArrayList<>();
-        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
+                List<UserOrgRole> roles = new ArrayList<>();
+                UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
-        roles.add(userOrgRole);
-        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
+                roles.add(userOrgRole);
+                when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
 
-        ConnectionOfTravelEvent event = MockEventGenerator.getConnectionOfTravelEvent();
+                ConnectionOfTravelEvent event = MockEventGenerator.getConnectionOfTravelEvent();
 
-        List<ConnectionOfTravelEvent> events = new ArrayList<>();
-        events.add(event);
+                List<ConnectionOfTravelEvent> events = new ArrayList<>();
+                events.add(event);
 
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(event.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com"))
-                .thenReturn(allowedInteresections);
+                List<Integer> allowedInteresections = new ArrayList<>();
+                allowedInteresections.add(event.getIntersectionID());
+                when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com"))
+                                .thenReturn(allowedInteresections);
 
-        Query query = connectionOfTravelEventRepo.getQuery(event.getIntersectionID(),
-                event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, false);
+                Query query = connectionOfTravelEventRepo.getQuery(event.getIntersectionID(),
+                                event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, false);
 
-        when(connectionOfTravelEventRepo.find(query)).thenReturn(events);
+                when(connectionOfTravelEventRepo.find(query)).thenReturn(events);
 
-        ResponseEntity<List<ConnectionOfTravelEvent>> result = controller.findConnectionOfTravelEvents(
-                event.getIntersectionID(), event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, false,
-                false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
-        assertThat(result.getBody()).isEqualTo(events);
-    }
+                ResponseEntity<List<ConnectionOfTravelEvent>> result = controller.findConnectionOfTravelEvents(
+                                event.getIntersectionID(), event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, false,
+                                false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+                assertThat(result.getBody()).isEqualTo(events);
+        }
 
-    @Test
-    public void testLaneDirectionOfTravelEvents() {
+        @Test
+        public void testLaneDirectionOfTravelEvents() {
 
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
+                MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List<UserOrgRole> roles = new ArrayList<>();
-        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
+                List<UserOrgRole> roles = new ArrayList<>();
+                UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
-        roles.add(userOrgRole);
-        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
+                roles.add(userOrgRole);
+                when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
 
-        LaneDirectionOfTravelEvent event = MockEventGenerator.getLaneDirectionOfTravelEvent();
+                LaneDirectionOfTravelEvent event = MockEventGenerator.getLaneDirectionOfTravelEvent();
 
-        List<LaneDirectionOfTravelEvent> events = new ArrayList<>();
-        events.add(event);
+                List<LaneDirectionOfTravelEvent> events = new ArrayList<>();
+                events.add(event);
 
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(event.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com"))
-                .thenReturn(allowedInteresections);
+                List<Integer> allowedInteresections = new ArrayList<>();
+                allowedInteresections.add(event.getIntersectionID());
+                when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com"))
+                                .thenReturn(allowedInteresections);
 
-        Query query = laneDirectionOfTravelEventRepo.getQuery(event.getIntersectionID(),
-                event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false);
+                Query query = laneDirectionOfTravelEventRepo.getQuery(event.getIntersectionID(),
+                                event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false);
 
-        when(laneDirectionOfTravelEventRepo.find(query)).thenReturn(events);
+                when(laneDirectionOfTravelEventRepo.find(query)).thenReturn(events);
 
-        ResponseEntity<List<LaneDirectionOfTravelEvent>> result = controller.findLaneDirectionOfTravelEvent(
-                event.getIntersectionID(), event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, false,
-                false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
-        assertThat(result.getBody()).isEqualTo(events);
-    }
+                ResponseEntity<List<LaneDirectionOfTravelEvent>> result = controller.findLaneDirectionOfTravelEvent(
+                                event.getIntersectionID(), event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, false,
+                                false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+                assertThat(result.getBody()).isEqualTo(events);
+        }
 
-    @Test
-    public void testSignalGroupAlignmentEvents() {
+        @Test
+        public void testSignalGroupAlignmentEvents() {
 
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
+                MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List<UserOrgRole> roles = new ArrayList<>();
-        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
+                List<UserOrgRole> roles = new ArrayList<>();
+                UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
-        roles.add(userOrgRole);
-        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
+                roles.add(userOrgRole);
+                when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
 
-        SignalGroupAlignmentEvent event = MockEventGenerator.getSignalGroupAlignmentEvent();
+                SignalGroupAlignmentEvent event = MockEventGenerator.getSignalGroupAlignmentEvent();
 
-        List<SignalGroupAlignmentEvent> events = new ArrayList<>();
-        events.add(event);
+                List<SignalGroupAlignmentEvent> events = new ArrayList<>();
+                events.add(event);
 
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(event.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com"))
-                .thenReturn(allowedInteresections);
+                List<Integer> allowedInteresections = new ArrayList<>();
+                allowedInteresections.add(event.getIntersectionID());
+                when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com"))
+                                .thenReturn(allowedInteresections);
 
-        Query query = signalGroupAlignmentEventRepo.getQuery(event.getIntersectionID(),
-                event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, false);
+                Query query = signalGroupAlignmentEventRepo.getQuery(event.getIntersectionID(),
+                                event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, false);
 
-        when(signalGroupAlignmentEventRepo.find(query)).thenReturn(events);
+                when(signalGroupAlignmentEventRepo.find(query)).thenReturn(events);
 
-        ResponseEntity<List<SignalGroupAlignmentEvent>> result = controller.findSignalGroupAlignmentEvent(
-                event.getIntersectionID(), event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, false,
-                false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
-        assertThat(result.getBody()).isEqualTo(events);
-    }
+                ResponseEntity<List<SignalGroupAlignmentEvent>> result = controller.findSignalGroupAlignmentEvent(
+                                event.getIntersectionID(), event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, false,
+                                false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+                assertThat(result.getBody()).isEqualTo(events);
+        }
 
-    @Test
-    public void testSignalStateConflictEvents() {
+        @Test
+        public void testSignalStateConflictEvents() {
 
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
+                MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List<UserOrgRole> roles = new ArrayList<>();
-        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
+                List<UserOrgRole> roles = new ArrayList<>();
+                UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
-        roles.add(userOrgRole);
-        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
+                roles.add(userOrgRole);
+                when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
 
-        SignalStateConflictEvent event = MockEventGenerator.getSignalStateConflictEvent();
+                SignalStateConflictEvent event = MockEventGenerator.getSignalStateConflictEvent();
 
-        List<SignalStateConflictEvent> events = new ArrayList<>();
-        events.add(event);
+                List<SignalStateConflictEvent> events = new ArrayList<>();
+                events.add(event);
 
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(event.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com"))
-                .thenReturn(allowedInteresections);
+                List<Integer> allowedInteresections = new ArrayList<>();
+                allowedInteresections.add(event.getIntersectionID());
+                when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com"))
+                                .thenReturn(allowedInteresections);
 
-        Query query = signalStateConflictEventRepo.getQuery(event.getIntersectionID(),
-                event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, false);
+                Query query = signalStateConflictEventRepo.getQuery(event.getIntersectionID(),
+                                event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, false);
 
-        when(signalStateConflictEventRepo.find(query)).thenReturn(events);
+                when(signalStateConflictEventRepo.find(query)).thenReturn(events);
 
-        ResponseEntity<List<SignalStateConflictEvent>> result = controller.findSignalStateConflictEvent(
-                event.getIntersectionID(), event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, false,
-                false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
-        assertThat(result.getBody()).isEqualTo(events);
-    }
+                ResponseEntity<List<SignalStateConflictEvent>> result = controller.findSignalStateConflictEvent(
+                                event.getIntersectionID(), event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, false,
+                                false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+                assertThat(result.getBody()).isEqualTo(events);
+        }
 
-    @Test
-    public void testSignalStateStopEvents() {
+        @Test
+        public void testStopLineStopEvents() {
 
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
+                MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List<UserOrgRole> roles = new ArrayList<>();
-        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
+                List<UserOrgRole> roles = new ArrayList<>();
+                UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
-        roles.add(userOrgRole);
-        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
+                roles.add(userOrgRole);
+                when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
 
-        StopLineStopEvent event = MockEventGenerator.getStopLineStopEvent();
+                StopLineStopEvent event = MockEventGenerator.getStopLineStopEvent();
 
-        List<StopLineStopEvent> events = new ArrayList<>();
-        events.add(event);
+                List<StopLineStopEvent> events = new ArrayList<>();
+                events.add(event);
 
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(event.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com"))
-                .thenReturn(allowedInteresections);
+                List<Integer> allowedInteresections = new ArrayList<>();
+                allowedInteresections.add(event.getIntersectionID());
+                when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com"))
+                                .thenReturn(allowedInteresections);
 
-        Query query = signalStateStopEventRepo.getQuery(event.getIntersectionID(),
-                event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, false);
+                Query query = stopLineStopEventRepo.getQuery(event.getIntersectionID(),
+                                event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, false);
 
-        when(signalStateStopEventRepo.find(query)).thenReturn(events);
+                when(stopLineStopEventRepo.find(query)).thenReturn(events);
 
-        ResponseEntity<List<StopLineStopEvent>> result = controller.findSignalStateStopEvent(
-                event.getIntersectionID(),
-                event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false, false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
-        assertThat(result.getBody()).isEqualTo(events);
-    }
+                ResponseEntity<List<StopLineStopEvent>> result = controller.findStopLineStopEvent(
+                                event.getIntersectionID(),
+                                event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false, false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+                assertThat(result.getBody()).isEqualTo(events);
+        }
 
-    @Test
-    public void testSignalStateEvents() {
+        @Test
+        public void testStopLinePassageEvents() {
 
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
+                MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List<UserOrgRole> roles = new ArrayList<>();
-        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
+                List<UserOrgRole> roles = new ArrayList<>();
+                UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
-        roles.add(userOrgRole);
-        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
+                roles.add(userOrgRole);
+                when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
 
-        StopLinePassageEvent event = MockEventGenerator.getStopLinePassageEvent();
+                StopLinePassageEvent event = MockEventGenerator.getStopLinePassageEvent();
 
-        List<StopLinePassageEvent> events = new ArrayList<>();
-        events.add(event);
+                List<StopLinePassageEvent> events = new ArrayList<>();
+                events.add(event);
 
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(event.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com"))
-                .thenReturn(allowedInteresections);
+                List<Integer> allowedInteresections = new ArrayList<>();
+                allowedInteresections.add(event.getIntersectionID());
+                when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com"))
+                                .thenReturn(allowedInteresections);
 
-        Query query = signalStateEventRepo.getQuery(event.getIntersectionID(), event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, false);
+                Query query = stopLinePassageEventRepo.getQuery(event.getIntersectionID(),
+                                event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, false);
 
-        when(signalStateEventRepo.find(query)).thenReturn(events);
+                when(stopLinePassageEventRepo.find(query)).thenReturn(events);
 
-        ResponseEntity<List<StopLinePassageEvent>> result = controller.findSignalStateEvent(
-                event.getIntersectionID(),
-                event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false, false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
-        assertThat(result.getBody()).isEqualTo(events);
-    }
+                ResponseEntity<List<StopLinePassageEvent>> result = controller.findStopLinePassageEvent(
+                                event.getIntersectionID(),
+                                event.getEventGeneratedAt() - 1, event.getEventGeneratedAt() + 1, false, false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+                assertThat(result.getBody()).isEqualTo(events);
+        }
 
-    @Test
-    public void testTimeChangeDetailsEvents() {
+        @Test
+        public void testTimeChangeDetailsEvents() {
 
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
+                MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List<UserOrgRole> roles = new ArrayList<>();
-        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
+                List<UserOrgRole> roles = new ArrayList<>();
+                UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
-        roles.add(userOrgRole);
-        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
+                roles.add(userOrgRole);
+                when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
 
-        TimeChangeDetailsEvent event = MockEventGenerator.getTimeChangeDetailsEvent();
+                TimeChangeDetailsEvent event = MockEventGenerator.getTimeChangeDetailsEvent();
 
-        List<TimeChangeDetailsEvent> events = new ArrayList<>();
-        events.add(event);
+                List<TimeChangeDetailsEvent> events = new ArrayList<>();
+                events.add(event);
 
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(event.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com"))
-                .thenReturn(allowedInteresections);
+                List<Integer> allowedInteresections = new ArrayList<>();
+                allowedInteresections.add(event.getIntersectionID());
+                when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com"))
+                                .thenReturn(allowedInteresections);
 
-        Query query = timeChangeDetailsEventRepo.getQuery(event.getIntersectionID(),
-                event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, false);
+                Query query = timeChangeDetailsEventRepo.getQuery(event.getIntersectionID(),
+                                event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, false);
 
-        when(timeChangeDetailsEventRepo.find(query)).thenReturn(events);
+                when(timeChangeDetailsEventRepo.find(query)).thenReturn(events);
 
-        ResponseEntity<List<TimeChangeDetailsEvent>> result = controller.findTimeChangeDetailsEvent(
-                event.getIntersectionID(), event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, false,
-                false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
-        assertThat(result.getBody()).isEqualTo(events);
-    }
+                ResponseEntity<List<TimeChangeDetailsEvent>> result = controller.findTimeChangeDetailsEvent(
+                                event.getIntersectionID(), event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, false,
+                                false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+                assertThat(result.getBody()).isEqualTo(events);
+        }
 
-    @Test
-    public void testSpatMinimumDataEvents() {
+        @Test
+        public void testSpatMinimumDataEvents() {
 
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
+                MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List<UserOrgRole> roles = new ArrayList<>();
-        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
+                List<UserOrgRole> roles = new ArrayList<>();
+                UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
-        roles.add(userOrgRole);
-        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
+                roles.add(userOrgRole);
+                when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
 
-        SpatMinimumDataEvent event = MockEventGenerator.getSpatMinimumDataEvent();
+                SpatMinimumDataEvent event = MockEventGenerator.getSpatMinimumDataEvent();
 
-        List<SpatMinimumDataEvent> events = new ArrayList<>();
-        events.add(event);
+                List<SpatMinimumDataEvent> events = new ArrayList<>();
+                events.add(event);
 
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(event.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com"))
-                .thenReturn(allowedInteresections);
+                List<Integer> allowedInteresections = new ArrayList<>();
+                allowedInteresections.add(event.getIntersectionID());
+                when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com"))
+                                .thenReturn(allowedInteresections);
 
-        Query query = spatMinimumDataEventRepo.getQuery(event.getIntersectionID(),
-                event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, false);
+                Query query = spatMinimumDataEventRepo.getQuery(event.getIntersectionID(),
+                                event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, false);
 
-        when(spatMinimumDataEventRepo.find(query)).thenReturn(events);
+                when(spatMinimumDataEventRepo.find(query)).thenReturn(events);
 
-        ResponseEntity<List<SpatMinimumDataEvent>> result = controller.findSpatMinimumDataEvents(
-                event.getIntersectionID(), event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, false,
-                false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
-        assertThat(result.getBody()).isEqualTo(events);
-    }
+                ResponseEntity<List<SpatMinimumDataEvent>> result = controller.findSpatMinimumDataEvents(
+                                event.getIntersectionID(), event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, false,
+                                false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+                assertThat(result.getBody()).isEqualTo(events);
+        }
 
-    @Test
-    public void testMapMinimumDataEvents() {
+        @Test
+        public void testMapMinimumDataEvents() {
 
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
+                MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List<UserOrgRole> roles = new ArrayList<>();
-        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
+                List<UserOrgRole> roles = new ArrayList<>();
+                UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
-        roles.add(userOrgRole);
-        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
+                roles.add(userOrgRole);
+                when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
 
-        MapMinimumDataEvent event = MockEventGenerator.getMapMinimumDataEvent();
+                MapMinimumDataEvent event = MockEventGenerator.getMapMinimumDataEvent();
 
-        List<MapMinimumDataEvent> events = new ArrayList<>();
-        events.add(event);
+                List<MapMinimumDataEvent> events = new ArrayList<>();
+                events.add(event);
 
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(event.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com"))
-                .thenReturn(allowedInteresections);
+                List<Integer> allowedInteresections = new ArrayList<>();
+                allowedInteresections.add(event.getIntersectionID());
+                when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com"))
+                                .thenReturn(allowedInteresections);
 
-        Query query = mapMinimumDataEventRepo.getQuery(event.getIntersectionID(),
-                event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, false);
+                Query query = mapMinimumDataEventRepo.getQuery(event.getIntersectionID(),
+                                event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, false);
 
-        when(mapMinimumDataEventRepo.find(query)).thenReturn(events);
+                when(mapMinimumDataEventRepo.find(query)).thenReturn(events);
 
-        ResponseEntity<List<MapMinimumDataEvent>> result = controller.findMapMinimumDataEvents(
-                event.getIntersectionID(), event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, false,
-                false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
-        assertThat(result.getBody()).isEqualTo(events);
-    }
+                ResponseEntity<List<MapMinimumDataEvent>> result = controller.findMapMinimumDataEvents(
+                                event.getIntersectionID(), event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, false,
+                                false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+                assertThat(result.getBody()).isEqualTo(events);
+        }
 
-    @Test
-    public void testSpatBroadcastRateEvents() {
+        @Test
+        public void testSpatBroadcastRateEvents() {
 
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
+                MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List<UserOrgRole> roles = new ArrayList<>();
-        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
+                List<UserOrgRole> roles = new ArrayList<>();
+                UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
-        roles.add(userOrgRole);
-        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
+                roles.add(userOrgRole);
+                when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
 
-        SpatBroadcastRateEvent event = MockEventGenerator.getSpatBroadcastRateEvent();
+                SpatBroadcastRateEvent event = MockEventGenerator.getSpatBroadcastRateEvent();
 
-        List<SpatBroadcastRateEvent> events = new ArrayList<>();
-        events.add(event);
+                List<SpatBroadcastRateEvent> events = new ArrayList<>();
+                events.add(event);
 
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(event.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com"))
-                .thenReturn(allowedInteresections);
+                List<Integer> allowedInteresections = new ArrayList<>();
+                allowedInteresections.add(event.getIntersectionID());
+                when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com"))
+                                .thenReturn(allowedInteresections);
 
-        Query query = spatBroadcastRateEventRepo.getQuery(event.getIntersectionID(),
-                event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, false);
+                Query query = spatBroadcastRateEventRepo.getQuery(event.getIntersectionID(),
+                                event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, false);
 
-        when(spatBroadcastRateEventRepo.find(query)).thenReturn(events);
+                when(spatBroadcastRateEventRepo.find(query)).thenReturn(events);
 
-        ResponseEntity<List<SpatBroadcastRateEvent>> result = controller.findSpatBroadcastRateEvents(
-                event.getIntersectionID(), event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, false,
-                false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
-        assertThat(result.getBody()).isEqualTo(events);
-    }
+                ResponseEntity<List<SpatBroadcastRateEvent>> result = controller.findSpatBroadcastRateEvents(
+                                event.getIntersectionID(), event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, false,
+                                false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+                assertThat(result.getBody()).isEqualTo(events);
+        }
 
-    @Test
-    public void testMapBroadcastRateEvents() {
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
+        @Test
+        public void testMapBroadcastRateEvents() {
+                MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List<UserOrgRole> roles = new ArrayList<>();
-        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
+                List<UserOrgRole> roles = new ArrayList<>();
+                UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
-        roles.add(userOrgRole);
-        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
+                roles.add(userOrgRole);
+                when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
 
-        MapBroadcastRateEvent event = MockEventGenerator.getMapBroadcastRateEvent();
+                MapBroadcastRateEvent event = MockEventGenerator.getMapBroadcastRateEvent();
 
-        List<MapBroadcastRateEvent> events = new ArrayList<>();
-        events.add(event);
+                List<MapBroadcastRateEvent> events = new ArrayList<>();
+                events.add(event);
 
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(event.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com"))
-                .thenReturn(allowedInteresections);
+                List<Integer> allowedInteresections = new ArrayList<>();
+                allowedInteresections.add(event.getIntersectionID());
+                when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com"))
+                                .thenReturn(allowedInteresections);
 
-        Query query = mapBroadcastRateEventRepo.getQuery(event.getIntersectionID(),
-                event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, false);
+                Query query = mapBroadcastRateEventRepo.getQuery(event.getIntersectionID(),
+                                event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, false);
 
-        when(mapBroadcastRateEventRepo.find(query)).thenReturn(events);
+                when(mapBroadcastRateEventRepo.find(query)).thenReturn(events);
 
-        ResponseEntity<List<MapBroadcastRateEvent>> result = controller.findMapBroadcastRateEvents(
-                event.getIntersectionID(), event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, false,
-                false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
-        assertThat(result.getBody()).isEqualTo(events);
-    }
+                ResponseEntity<List<MapBroadcastRateEvent>> result = controller.findMapBroadcastRateEvents(
+                                event.getIntersectionID(), event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, false,
+                                false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+                assertThat(result.getBody()).isEqualTo(events);
+        }
 
-    @Test
-    public void testBsmEvents() {
+        @Test
+        public void testBsmEvents() {
 
-        MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
+                MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com", Set.of("USER"));
 
-        List<UserOrgRole> roles = new ArrayList<>();
-        UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
+                List<UserOrgRole> roles = new ArrayList<>();
+                UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test", "USER");
 
-        roles.add(userOrgRole);
-        when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
+                roles.add(userOrgRole);
+                when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
 
-        BsmEvent event = MockEventGenerator.getBsmEvent();
+                BsmEvent event = MockEventGenerator.getBsmEvent();
 
-        List<BsmEvent> events = new ArrayList<>();
-        events.add(event);
+                List<BsmEvent> events = new ArrayList<>();
+                events.add(event);
 
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(event.getIntersectionID());
-        when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com"))
-                .thenReturn(allowedInteresections);
+                List<Integer> allowedInteresections = new ArrayList<>();
+                allowedInteresections.add(event.getIntersectionID());
+                when(postgresService.getAllowedIntersectionIdsByEmail("cm_user@cimms.com"))
+                                .thenReturn(allowedInteresections);
 
-        Query query = bsmEventRepo.getQuery(event.getIntersectionID(), event.getStartingBsmTimestamp() - 1,
-                event.getEndingBsmTimestamp() + 1, false);
+                Query query = bsmEventRepo.getQuery(event.getIntersectionID(), event.getStartingBsmTimestamp() - 1,
+                                event.getEndingBsmTimestamp() + 1, false);
 
-        when(bsmEventRepo.find(query)).thenReturn(events);
+                when(bsmEventRepo.find(query)).thenReturn(events);
 
-        ResponseEntity<List<BsmEvent>> result = controller.findBsmEvents(event.getIntersectionID(),
-                event.getStartingBsmTimestamp() - 1, event.getEndingBsmTimestamp() + 1, false, false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
-        assertThat(result.getBody()).isEqualTo(events);
-    }
+                ResponseEntity<List<BsmEvent>> result = controller.findBsmEvents(event.getIntersectionID(),
+                                event.getStartingBsmTimestamp() - 1, event.getEndingBsmTimestamp() + 1, false, false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                // assertThat(result.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+                assertThat(result.getBody()).isEqualTo(events);
+        }
 
 }

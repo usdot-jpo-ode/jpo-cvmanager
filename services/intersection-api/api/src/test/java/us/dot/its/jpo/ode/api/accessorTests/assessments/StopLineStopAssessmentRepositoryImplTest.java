@@ -22,10 +22,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
-import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLineStopAssessment;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
-import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.StopLineStopAssessmentRepositoryImpl;
+import us.dot.its.jpo.ode.api.accessors.assessments.StopLineStopAssessment.StopLineStopAssessmentRepositoryImpl;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -88,12 +87,12 @@ public class StopLineStopAssessmentRepositoryImplTest {
     }
 
     @Test
-    public void testFindSignalStateAssessments() {
+    public void testFindStopLineStopAssessment() {
         Query query = new Query();
         List<StopLineStopAssessment> expected = new ArrayList<>();
 
-        Mockito.doReturn(expected).when(mongoTemplate).find(query, SignalStateAssessment.class,
-                "CmStopLineStopAssessments");
+        Mockito.doReturn(expected).when(mongoTemplate).find(query, StopLineStopAssessment.class,
+                "StopLineStopAssessments");
 
         List<StopLineStopAssessment> results = repository.find(query);
 

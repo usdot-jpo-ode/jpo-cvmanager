@@ -44,7 +44,8 @@ public interface PageableQuery {
             @Nullable List<String> excludedFields,
             @Nonnull Class<T> outputType) {
 
-        AggregationResult aggregationResult = getAggregationResult(mongoTemplate, collectionName, pageable, criteria, sort, excludedFields);
+        AggregationResult aggregationResult = getAggregationResult(mongoTemplate, collectionName, pageable, criteria,
+                sort, excludedFields);
         if (aggregationResult == null || aggregationResult.getMetadata().isEmpty()) {
             return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }
@@ -76,7 +77,8 @@ public interface PageableQuery {
             @Nonnull Criteria criteria,
             @Nonnull Sort sort,
             @Nullable List<String> excludedFields) {
-        AggregationResult result = getAggregationResult(mongoTemplate, collectionName, pageable, criteria, sort, excludedFields);
+        AggregationResult result = getAggregationResult(mongoTemplate, collectionName, pageable, criteria, sort,
+                excludedFields);
         if (result == null || result.getMetadata().isEmpty()) {
             return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }
@@ -103,29 +105,12 @@ public interface PageableQuery {
         return new PageImpl<>(resultList);
     }
 
-    /**
-     * Create a pageable object based on the given page and size. If size is null,
-     * return null.
-     *
-     * @param page the page number to use, nullable
-     * @param size the size of the page to use, nullable. If null, no pageable
-     *             object is returned
-     * @return a pageable object based on the given page and size, or null if either
-     *         is null
-     */
-    default Pageable createNullablePage(@Nullable Integer page, @Nullable Integer size) {
-        if (size == null) {
-            return null;
-        }
-        return PageRequest.of(page == null ? 0 : page, size);
-    }
-
     private static AggregationResult getAggregationResult(@Nonnull MongoTemplate mongoTemplate,
-                                                          @Nonnull String collectionName,
-                                                          @Nonnull Pageable pageable,
-                                                          @Nonnull Criteria criteria,
-                                                          @Nonnull Sort sort,
-                                                          @Nonnull List<String> excludedFields) {
+            @Nonnull String collectionName,
+            @Nonnull Pageable pageable,
+            @Nonnull Criteria criteria,
+            @Nonnull Sort sort,
+            @Nonnull List<String> excludedFields) {
 
         MatchOperation matchOperation = Aggregation.match(criteria);
         SortOperation sortOperation = Aggregation.sort(sort);

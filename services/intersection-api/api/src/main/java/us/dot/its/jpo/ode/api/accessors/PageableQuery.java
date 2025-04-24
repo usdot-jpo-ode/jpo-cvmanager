@@ -174,21 +174,4 @@ public interface PageableQuery {
         }
         return new PageImpl<>(resultList);
     }
-
-    /**
-     * Create a pageable object based on the given page and size. If size is null,
-     * return null.
-     * 
-     * @param page the page number to use, nullable
-     * @param size the size of the page to use, nullable. If null, no pageable
-     *             object is returned
-     * @return a pageable object based on the given page and size, or null if either
-     *         is null
-     */
-    default Pageable createNullablePage(@Nullable Integer page, @Nullable Integer size) {
-        if (size == null) {
-            return null;
-        }
-        return PageRequest.of(page == null ? 0 : page, size);
-    }
 }

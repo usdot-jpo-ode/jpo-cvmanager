@@ -8,8 +8,6 @@ import { selectToken } from '../../../generalSlices/userSlice'
 import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
 import { useSelector } from 'react-redux'
 
-const FIFTEEN_MINUTES_IN_MILLISECONDS = 7 * 60 * 1000
-
 type ReportGenerationDialogProps = {
   onClose: () => void
   open: boolean
@@ -54,11 +52,10 @@ export const ReportGenerationDialog = (props: ReportGenerationDialogProps) => {
       endTime,
     })
 
-    const refreshTime = new Date(Date.now() + FIFTEEN_MINUTES_IN_MILLISECONDS)
     toast.promise(promise, {
-      loading: 'Submitting Performance Report Request',
-      success: `Successfully Submitted Performance Report Request!\nReports usually take 10-15 minutes to generate - please refresh the page at ${refreshTime.toLocaleTimeString()} to see the new report.`,
-      error: 'Error Submitting Performance Report Request',
+      loading: `Generating Performance Report - this may take up to 15 minutes (started at ${new Date().toLocaleTimeString()})`,
+      success: `Successfully Generated Performance Report!`,
+      error: 'Error Generating Performance Report',
     })
     await promise
     onReportGenerated()

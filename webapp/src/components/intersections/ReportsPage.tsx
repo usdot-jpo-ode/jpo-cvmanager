@@ -60,12 +60,13 @@ const Page = () => {
   })
   const [openReportGenerationDialog, setOpenReportGenerationDialog] = useState(false)
 
+  // Sort reports by age, newest first
   function sortReportByAge(a: ReportMetadata, b: ReportMetadata) {
     if (a.reportGeneratedAt < b.reportGeneratedAt) {
-      return -1
+      return 1
     }
     if (a.reportGeneratedAt > b.reportGeneratedAt) {
-      return 1
+      return -1
     }
     return 0
   }
@@ -125,6 +126,14 @@ const Page = () => {
     setRowsPerPage(parseInt(event.target.value, 10))
   }
 
+  const refreshReportData = () => {
+    setFilters({
+      ...filters,
+      startDate: new Date(new Date().getTime() - WEEK_IN_MILLISECONDS),
+      endDate: new Date(),
+    })
+  }
+
   // Usually query is done on backend with indexing solutions
   const paginatedLogs = applyPagination(logs, page, rowsPerPage)
 
@@ -144,6 +153,7 @@ const Page = () => {
 
   const handleReportGenerated = () => {
     setOpenReportGenerationDialog(false)
+    refreshReportData()
   }
 
   return (
@@ -185,13 +195,7 @@ const Page = () => {
                 </Button>
                 <Button
                   endIcon={<RefreshIcon fontSize="small" />}
-                  onClick={() =>
-                    setFilters({
-                      ...filters,
-                      startDate: new Date(new Date().getTime() - WEEK_IN_MILLISECONDS),
-                      endDate: new Date(),
-                    })
-                  }
+                  onClick={refreshReportData}
                   variant="outlined"
                   fullWidth={false}
                   size="small"

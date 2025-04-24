@@ -10,6 +10,7 @@ import {
   updateJson,
 
   // reducers
+  clear,
   updateSelectedRoute,
   setSelectedRoute,
   setSelectedModel,
@@ -538,23 +539,37 @@ describe('reducers', () => {
   const initialState: RootState['adminEditRsu'] = {
     loading: null,
     value: {
-      apiData: null,
-      primaryRoutes: null,
-      selectedRoute: null,
-      otherRouteDisabled: null,
-      rsuModels: null,
-      selectedModel: null,
-      sshCredentialGroups: null,
-      selectedSshGroup: null,
-      snmpCredentialGroups: null,
-      selectedSnmpGroup: null,
-      snmpVersions: null,
-      selectedSnmpVersion: null,
-      organizations: null,
-      selectedOrganizations: null,
-      submitAttempt: null,
+      apiData: {} as undefined,
+      primaryRoutes: [] as { name: string }[],
+      selectedRoute: '',
+      otherRouteDisabled: true,
+      rsuModels: [] as { name: string }[],
+      selectedModel: '',
+      sshCredentialGroups: [] as { name: string }[],
+      selectedSshGroup: '',
+      snmpCredentialGroups: [] as { name: string }[],
+      selectedSnmpGroup: '',
+      snmpVersions: [] as { name: string }[],
+      selectedSnmpVersion: '',
+      organizations: [] as { name: string }[],
+      selectedOrganizations: [] as { name: string }[],
+      submitAttempt: false,
     },
   }
+
+  it('clear reducer updates state correctly', async () => {
+    let selectedRoute = 'selectedRoute'
+    let otherRouteDisabled = false
+
+    expect(
+      reducer({ ...initialState, value: { ...initialState.value, selectedRoute, otherRouteDisabled } }, clear())
+    ).toEqual({
+      ...initialState,
+      value: {
+        ...initialState.value,
+      },
+    })
+  })
 
   it('updateSelectedRoute reducer updates state correctly', async () => {
     let selectedRoute = 'selectedRoute'

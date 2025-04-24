@@ -9,6 +9,7 @@ import {
   organizationParser,
 
   // reducers
+  clear,
   updateOrganizations,
   updateStates,
   setSelectedRole,
@@ -351,14 +352,35 @@ describe('reducers', () => {
   const initialState: RootState['adminEditUser'] = {
     loading: null,
     value: {
-      selectedOrganizationNames: null,
-      selectedOrganizations: null,
-      organizationNames: null,
-      availableRoles: null,
-      apiData: null,
-      submitAttempt: null,
+      selectedOrganizationNames: [] as { name: string; id: number }[],
+      selectedOrganizations: [] as { name: string; role: string; id: number }[],
+      organizationNames: [] as { name: string; id: number }[],
+      availableRoles: [] as { role: string }[],
+      apiData: undefined,
+      submitAttempt: false,
     },
   }
+
+  it('clear reducer updates state correctly', async () => {
+    const availableRoles = [{ role: 'role1' }]
+    const selectedOrganizations = [
+      { id: 0, name: 'org1', role: 'role3' },
+      { id: 1, name: 'org2', role: 'role4' },
+    ]
+    const payload = [
+      { id: 0, name: 'org1' },
+      { id: 0, name: 'org3' },
+    ]
+
+    expect(
+      reducer({ ...initialState, value: { ...initialState.value, selectedOrganizations, availableRoles } }, clear())
+    ).toEqual({
+      ...initialState,
+      value: {
+        ...initialState.value,
+      },
+    })
+  })
 
   it('updateOrganizations reducer updates state correctly', async () => {
     const availableRoles = [{ role: 'role1' }]

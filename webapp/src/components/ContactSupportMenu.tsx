@@ -8,10 +8,8 @@ import RsuApi from '../apis/rsu-api'
 import './css/ContactSupportMenu.css'
 import toast from 'react-hot-toast'
 import Dialog from '@mui/material/Dialog'
-import { DialogActions, DialogContent, DialogTitle } from '@mui/material'
+import { Button, DialogActions, DialogContent, DialogTitle } from '@mui/material'
 import { AdminButton } from '../styles/components/AdminButton'
-import { LightButton } from '../styles/components/LightButton'
-import ContactSupportIcon from '@mui/icons-material/ContactSupport'
 import '../styles/fonts/museo-slab.css'
 
 const ContactSupportMenu = () => {
@@ -41,17 +39,15 @@ const ContactSupportMenu = () => {
 
   if (hidden) {
     return (
-      <div>
-        <LightButton
+      <div className="contactWrapper">
+        <Button
           variant="contained"
-          startIcon={<ContactSupportIcon />}
           onClick={() => {
             setHidden(!hidden)
           }}
-          sx={{ padding: 2, margin: 1, top: 5 }}
         >
           Contact Support
-        </LightButton>
+        </Button>
       </div>
     )
   }

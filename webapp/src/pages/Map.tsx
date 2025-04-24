@@ -18,12 +18,10 @@ import {
   selectSelectedRsu,
   selectMsgType,
   selectRsuIpv4,
-  selectDisplayMap,
   selectHeatMapData,
   selectAddGeoMsgPoint,
   selectGeoMsgStart,
   selectGeoMsgEnd,
-  selectGeoMsgDateError,
   selectGeoMsgData,
   selectGeoMsgCoordinates,
   selectGeoMsgFilter,
@@ -70,7 +68,6 @@ import {
   clearConfig,
   clearFirmware,
 } from '../generalSlices/configSlice'
-import { useSelector, useDispatch } from 'react-redux'
 import ClearIcon from '@mui/icons-material/Clear'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
@@ -105,18 +102,19 @@ import 'rc-slider/assets/index.css'
 import './css/MsgMap.css'
 import './css/Map.css'
 import { WZDxFeature, WZDxWorkZoneFeed } from '../models/wzdx/WzdxWorkZoneFeed42'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../store'
 import {
   intersectionMapLabelsLayer,
   selectIntersections,
   selectSelectedIntersection,
   setSelectedIntersectionId,
 } from '../generalSlices/intersectionSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../store'
+import { headerTabHeight } from '../styles/index'
 import { selectActiveLayers, selectViewState, setMapViewState, toggleLayerActive } from './mapSlice'
 import { selectMenuSelection, toggleMapMenuSelection } from '../features/menu/menuSlice'
 import { MapLayer } from '../models/MapLayer'
-import { headerTabHeight } from '../styles'
 import { toast } from 'react-hot-toast'
 import { RoomOutlined } from '@mui/icons-material'
 import MooveAiHardBrakingLegend from '../components/MooveAiHardBrakingLegend'
@@ -134,7 +132,6 @@ function MapPage() {
   const theme = useTheme()
 
   const mapRef = React.useRef(null)
-
   const organization = useSelector(selectOrganizationName)
   const rsuData = useSelector(selectRsuData)
   const rsuCounts = useSelector(selectRsuCounts)
@@ -245,6 +242,7 @@ function MapPage() {
   }
 
   // WZDx layer local state variables
+  // The marker index is necessary because the marker callback becomes disconnected from the curernt state
   const [selectedWZDxMarkerIndex, setSelectedWZDxMarkerIndex] = useState(null)
   const [selectedWZDxMarker, setSelectedWZDxMarker] = useState(null)
   const [wzdxMarkers, setWzdxMarkers] = useState([])
@@ -259,6 +257,11 @@ function MapPage() {
     setSelectedVendor(newVal)
   }
 
+  // TODO: Remove??
+  if (!wzdxMarkers) {
+    setSelectedWZDxMarkerIndex(null)
+    setSelectedWZDxMarker(null)
+  }
   const mbStyle = require(`../styles/${theme.palette.custom.mapStyleFilePath}`)
 
   // useEffects for Mapbox
@@ -268,6 +271,7 @@ function MapPage() {
         dispatch(selectRsu(null))
         dispatch(clearFirmware())
         setSelectedWZDxMarkerIndex(null)
+        setSelectedWZDxMarker(null)
       }
     }
     window.addEventListener('keydown', listener)
@@ -275,7 +279,7 @@ function MapPage() {
     return () => {
       window.removeEventListener('keydown', listener)
     }
-  }, [selectedRsu, dispatch, setSelectedWZDxMarkerIndex])
+  }, [selectedRsu, dispatch, setSelectedWZDxMarkerIndex, setSelectedWZDxMarker])
 
   // useEffects for RSU layer
   useEffect(() => {
@@ -301,7 +305,10 @@ function MapPage() {
     if (!endGeoMsgDate) {
       dateChanged(new Date(), 'end')
     }
-  }, [])
+    if (wzdxData?.features?.length === 0) {
+      dispatch(getWzdxData())
+    }
+  }, [dispatch])
 
   const createPointFeature = (point: number[]): GeoJSON.Feature<GeoJSON.Geometry> => {
     return {
@@ -532,8 +539,8 @@ function MapPage() {
 
   // useEffects for WZDx layers
   useEffect(() => {
+    // This is to handle the fact that the marker callback is disconnected from the current state
     if (selectedWZDxMarkerIndex !== null) setSelectedWZDxMarker(wzdxMarkers[selectedWZDxMarkerIndex])
-    else setSelectedWZDxMarker(null)
   }, [selectedWZDxMarkerIndex, wzdxMarkers])
 
   useEffect(() => {
@@ -659,6 +666,7 @@ function MapPage() {
   }
 
   function closePopup() {
+    setSelectedWZDxMarker(null)
     setSelectedWZDxMarkerIndex(null)
   }
 
@@ -824,6 +832,7 @@ function MapPage() {
             break
           case 'wzdx-layer':
             setSelectedWZDxMarkerIndex(null)
+            setSelectedWZDxMarker(null)
             break
           case 'moove-ai-layer':
             dispatch(clearMooveAiData())
@@ -1177,6 +1186,7 @@ function MapPage() {
                     e.originalEvent.stopPropagation()
                     dispatch(selectRsu(rsu))
                     setSelectedWZDxMarkerIndex(null)
+                    setSelectedWZDxMarker(null)
                     dispatch(clearFirmware()) // TODO: Should remove??
                     dispatch(getRsuLastOnline(rsu.properties.ipv4_address))
                     dispatch(getIssScmsStatus())
@@ -1192,6 +1202,7 @@ function MapPage() {
                       dispatch(selectRsu(rsu))
                       dispatch(clearFirmware()) // TODO: Should remove??
                       setSelectedWZDxMarkerIndex(null)
+                      setSelectedWZDxMarker(null)
                       dispatch(getRsuLastOnline(rsu.properties.ipv4_address))
                       dispatch(getIssScmsStatus())
                       if (rsuCounts.hasOwnProperty(rsu.properties.ipv4_address))
@@ -1244,10 +1255,10 @@ function MapPage() {
           )}
           {activeLayers.includes('wzdx-layer') && (
             <div>
-              {wzdxMarkers}
               <Source id={layers[3].id} type="geojson" data={wzdxData}>
                 <Layer {...layers[3]} />
               </Source>
+              {wzdxMarkers}
             </div>
           )}
           {selectedWZDxMarker ? (

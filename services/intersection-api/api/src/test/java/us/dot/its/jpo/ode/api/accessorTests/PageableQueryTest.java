@@ -12,6 +12,9 @@ import java.util.List;
 import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
@@ -28,11 +31,12 @@ import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 import us.dot.its.jpo.ode.api.models.AggregationResult;
 import us.dot.its.jpo.ode.api.models.AggregationResultCount;
 
+@ExtendWith( org.mockito.junit.jupiter.MockitoExtension.class)
 public class PageableQueryTest {
 
     @Mock
     private MongoTemplate mongoTemplate;
-
+    @Mock(answer = Answers.CALLS_REAL_METHODS)
     private PageableQuery paginatedQueryInterface;
 
     @BeforeEach

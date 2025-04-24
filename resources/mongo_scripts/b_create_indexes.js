@@ -176,13 +176,13 @@ const collections = [
 
   // Conflict Monitor Events
   {
-    name: 'StopLineStopEvent',
+    name: 'CmStopLineStopEvent',
     ttlField: 'eventGeneratedAt',
     timeField: 'eventGeneratedAt',
     intersectionField: 'intersectionID',
   },
   {
-    name: 'StopLinePassageEvent',
+    name: 'CmStopLinePassageEvent',
     ttlField: 'eventGeneratedAt',
     timeField: 'eventGeneratedAt',
     intersectionField: 'intersectionID',
@@ -268,13 +268,13 @@ const collections = [
     intersectionField: 'intersectionID',
   },
   {
-    name: 'StopLinePassageAssessment',
+    name: 'CmStopLinePassageAssessment',
     ttlField: 'assessmentGeneratedAt',
     timeField: 'assessmentGeneratedAt',
     intersectionField: 'intersectionID',
   },
   {
-    name: 'StopLineStopAssessment',
+    name: 'CmStopLineStopAssessment',
     ttlField: 'assessmentGeneratedAt',
     timeField: 'assessmentGeneratedAt',
     intersectionField: 'intersectionID',

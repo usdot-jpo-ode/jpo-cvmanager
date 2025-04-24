@@ -26,7 +26,7 @@ public class StopLineStopEventRepositoryImpl implements StopLineStopEventReposit
     private final MongoTemplate mongoTemplate;
     private final ConflictMonitorApiProperties props;
 
-    private final String collectionName = "StopLineStopEvent";
+    private final String collectionName = "CmStopLineStopEvent";
 
     @Autowired
     public StopLineStopEventRepositoryImpl(MongoTemplate mongoTemplate,

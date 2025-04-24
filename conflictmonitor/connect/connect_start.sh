@@ -65,9 +65,9 @@ declare -A OdeRawEncodedTIMJson=([name]="topic.OdeRawEncodedTIMJson" [collection
 ############################################################################################### 
 
 # Record Events
-declare -A StopLinePassageEvent=([name]="topic.StopLinePassageEvent" [collection]="StopLinePassageEvent"
+declare -A CmStopLinePassageEvent=([name]="topic.CmStopLinePassageEvent" [collection]="CmStopLinePassageEvent"
     [convert_timestamp]=true [timefield]="eventGeneratedAt" [use_key]=false [key]="" [add_timestamp]=false)
-declare -A StopLineStopEvent=([name]="topic.StopLineStopEvent" [collection]="StopLineStopEvent"
+declare -A CmStopLineStopEvent=([name]="topic.CmStopLineStopEvent" [collection]="CmStopLineStopEvent"
     [convert_timestamp]=true [timefield]="eventGeneratedAt" [use_key]=false [key]="" [add_timestamp]=false)
 declare -A CmSignalStateConflictEvents=([name]="topic.CmSignalStateConflictEvents" [collection]="CmSignalStateConflictEvents"
     [convert_timestamp]=true [timefield]="eventGeneratedAt" [use_key]=false [key]="" [add_timestamp]=false)
@@ -100,9 +100,9 @@ declare -A CmLaneDirectionOfTravelAssessment=([name]="topic.CmLaneDirectionOfTra
     [convert_timestamp]=true [timefield]="assessmentGeneratedAt" [use_key]=false [key]="" [add_timestamp]=false)
 declare -A CmConnectionOfTravelAssessment=([name]="topic.CmConnectionOfTravelAssessment" [collection]="CmConnectionOfTravelAssessment"
     [convert_timestamp]=true [timefield]="assessmentGeneratedAt" [use_key]=false [key]="" [add_timestamp]=false)
-declare -A StopLinePassageAssessment=([name]="topic.StopLinePassageAssessment" [collection]="StopLinePassageAssessment"
+declare -A CmStopLinePassageAssessment=([name]="topic.CmStopLinePassageAssessment" [collection]="CmStopLinePassageAssessment"
     [convert_timestamp]=true [timefield]="assessmentGeneratedAt" [use_key]=false [key]="" [add_timestamp]=false)
-declare -A StopLineStopAssessment=([name]="topic.StopLineStopAssessment" [collection]="StopLineStopAssessment"
+declare -A CmStopLineStopAssessment=([name]="topic.CmStopLineStopAssessment" [collection]="CmStopLineStopAssessment"
     [convert_timestamp]=true [timefield]="assessmentGeneratedAt" [use_key]=false [key]="" [add_timestamp]=false)
 
 
@@ -232,8 +232,8 @@ createSink OdeTimBroadcastJson
 createSink OdeTIMCertExpirationTimeJson
 createSink OdeRawEncodedTIMJson
 
-createSink StopLinePassageEvent
-createSink StopLineStopEvent
+createSink CmStopLinePassageEvent
+createSink CmStopLineStopEvent
 createSink CmSignalStateConflictEvents
 createSink CmIntersectionReferenceAlignmentEvents
 createSink CmSignalGroupAlignmentEvents
@@ -249,8 +249,8 @@ createSink CmBsmEvents
 
 createSink CmLaneDirectionOfTravelAssessment
 createSink CmConnectionOfTravelAssessment
-createSink StopLinePassageAssessment
-createSink StopLineStopAssessment
+createSink CmStopLinePassageAssessment
+createSink CmStopLineStopAssessment
 
 createSink CmSpatTimeChangeDetailsNotification
 createSink CmLaneDirectionOfTravelNotification

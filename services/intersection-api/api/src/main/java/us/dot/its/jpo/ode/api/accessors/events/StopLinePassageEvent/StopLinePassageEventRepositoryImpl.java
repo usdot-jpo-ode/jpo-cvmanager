@@ -26,7 +26,7 @@ public class StopLinePassageEventRepositoryImpl implements StopLinePassageEventR
     private final MongoTemplate mongoTemplate;
     private final ConflictMonitorApiProperties props;
 
-    private final String collectionName = "StopLinePassageEvent";
+    private final String collectionName = "CmStopLinePassageEvent";
 
     @Autowired
     public StopLinePassageEventRepositoryImpl(MongoTemplate mongoTemplate,

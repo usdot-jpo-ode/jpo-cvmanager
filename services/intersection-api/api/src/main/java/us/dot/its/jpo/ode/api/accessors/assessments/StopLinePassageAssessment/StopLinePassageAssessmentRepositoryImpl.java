@@ -20,7 +20,7 @@ public class StopLinePassageAssessmentRepositoryImpl implements StopLinePassageA
     private final MongoTemplate mongoTemplate;
     private final ConflictMonitorApiProperties props;
 
-    private String collectionName = "StopLinePassageAssessment";
+    private String collectionName = "CmStopLinePassageAssessment";
 
     @Autowired
     public StopLinePassageAssessmentRepositoryImpl(MongoTemplate mongoTemplate,

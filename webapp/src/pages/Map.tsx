@@ -96,6 +96,7 @@ import {
   Box,
   Divider,
   Grid2,
+  Stack,
 } from '@mui/material'
 
 import 'rc-slider/assets/index.css'
@@ -1352,133 +1353,139 @@ function MapPage() {
                   setSelectedRsuCount(null)
                 }
               }}
-              style={{ width: '250px', color: theme.palette.text.primary }}
+              maxWidth="350px"
             >
-              <Grid2
-                container
-                columnSpacing={0.5}
-                rowSpacing={0}
+              <Stack
                 sx={{
-                  color: theme.palette.text.secondary,
-                  backgroundColor: theme.palette.background.paper,
-                  width: '100%',
+                  height: '230px',
+                  width: '350px',
                 }}
               >
-                <Grid2 size={1}>
-                  <RoomOutlined color="info" fontSize="medium" />
+                <Grid2
+                  container
+                  columnSpacing={0.5}
+                  rowSpacing={0}
+                  sx={{
+                    color: theme.palette.text.secondary,
+                    backgroundColor: theme.palette.background.paper,
+                  }}
+                >
+                  <Grid2 size={1} display="flex" justifyContent="flex-start" sx={{ ml: '16px' }}>
+                    <RoomOutlined color="info" fontSize="medium" />
+                  </Grid2>
+                  <Grid2 size={5}>
+                    <Typography fontSize="Medium" color={theme.palette.text.primary} className="museo-slab">
+                      {selectedRsu.properties.primary_route} Milepost {selectedRsu.properties.milepost}
+                    </Typography>
+                  </Grid2>
+                  <Grid2 size={5} justifyContent="flex-start">
+                    <Box
+                      style={{
+                        color: theme.palette.text.primary,
+                        backgroundColor:
+                          getStatus() === 'Offline' ? theme.palette.error.dark : theme.palette.success.dark,
+                        width: '4rem',
+                        height: '1.5rem',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        borderRadius: '1rem',
+                      }}
+                    >
+                      <Typography fontSize="medium">{getStatus()}</Typography>
+                    </Box>
+                  </Grid2>
+                  <Grid2 size={4} justifyContent="flex-start" sx={{ ml: '16px' }}>
+                    <Typography fontSize="small">{rsuIpv4}</Typography>
+                  </Grid2>
                 </Grid2>
-                <Grid2 size={5}>
-                  <Typography fontSize="Medium" color={theme.palette.text.primary} className="museo-slab">
-                    {selectedRsu.properties.primary_route} Milepost {selectedRsu.properties.milepost}
-                  </Typography>
-                </Grid2>
-                <Grid2 size={6} justifyContent="flex-start">
-                  <Box
-                    style={{
-                      color: theme.palette.text.primary,
-                      backgroundColor:
-                        getStatus() === 'Offline' ? theme.palette.error.dark : theme.palette.success.dark,
-                      width: '4rem',
-                      height: '1.5rem',
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      borderRadius: '1rem',
-                    }}
-                  >
-                    <Typography fontSize="medium">{getStatus()}</Typography>
-                  </Box>
-                </Grid2>
-                <Grid2 size={4} justifyContent="flex-start" sx={{ ml: '25px' }}>
-                  <Typography fontSize="small">{rsuIpv4}</Typography>
-                </Grid2>
-              </Grid2>
 
-              <Grid2
-                id="popup-body"
-                container
-                columnSpacing={1}
-                rowSpacing={0}
-                sx={{
-                  color: theme.palette.text.secondary,
-                  backgroundColor: theme.palette.background.default,
-                  width: '350px',
-                  height: '140px',
-                  position: 'absolute',
-                  left: '0px',
-                  bottom: '40px',
-                  paddingTop: '10px',
-                }}
-              >
-                <Grid2 size={5} justifyContent="flex-start">
-                  <Typography fontSize="medium" sx={{ ml: '16px' }}>
-                    {countsMsgType} Counts:
-                  </Typography>
-                </Grid2>
-                <Grid2 size={6} justifyContent="flex-start">
-                  <Typography fontSize="medium">{selectedRsuCount}</Typography>
-                </Grid2>
-                <Grid2 size={5} justifyContent="flex-start">
-                  <Typography fontSize="medium" sx={{ ml: '16px' }}>
-                    Last Online:
-                  </Typography>
-                </Grid2>
-                <Grid2 size={6} justifyContent="flex-start">
-                  <Typography fontSize="medium">{isOnline()}</Typography>
-                </Grid2>
-                <Grid2 size={5} justifyContent="flex-start">
-                  <Typography fontSize="medium" sx={{ ml: '16px' }}>
-                    SCMS Health:
-                  </Typography>
-                </Grid2>
-                <Grid2 size={6} justifyContent="flex-start">
-                  {rsuIpv4 in issScmsStatusData && issScmsStatusData[rsuIpv4] ? (
-                    <Grid2 container>
-                      <Grid2 size={12} justifyContent="flex-start">
-                        <Typography
-                          sx={{
-                            color:
-                              issScmsStatusData[rsuIpv4].health === '1'
-                                ? theme.palette.success.light
-                                : theme.palette.error.light,
-                          }}
-                        >
-                          {issScmsStatusData[rsuIpv4].health === '1' ? 'Healthy' : 'Unhealthy'}
-                        </Typography>
+                <Grid2
+                  id="popup-body"
+                  container
+                  columnSpacing={1}
+                  rowSpacing={0}
+                  sx={{
+                    color: theme.palette.text.secondary,
+                    backgroundColor: theme.palette.background.default,
+                    width: '350px',
+                    height: '140px',
+                    position: 'absolute',
+                    left: '0px',
+                    bottom: '40px',
+                    paddingTop: '10px',
+                  }}
+                >
+                  <Grid2 size={5} justifyContent="flex-start">
+                    <Typography fontSize="medium" sx={{ ml: '16px' }}>
+                      {countsMsgType} Counts:
+                    </Typography>
+                  </Grid2>
+                  <Grid2 size={6} justifyContent="flex-start">
+                    <Typography fontSize="medium">{selectedRsuCount}</Typography>
+                  </Grid2>
+                  <Grid2 size={5} justifyContent="flex-start">
+                    <Typography fontSize="medium" sx={{ ml: '16px' }}>
+                      Last Online:
+                    </Typography>
+                  </Grid2>
+                  <Grid2 size={6} justifyContent="flex-start">
+                    <Typography fontSize="medium">{isOnline()}</Typography>
+                  </Grid2>
+                  <Grid2 size={5} justifyContent="flex-start">
+                    <Typography fontSize="medium" sx={{ ml: '16px' }}>
+                      SCMS Health:
+                    </Typography>
+                  </Grid2>
+                  <Grid2 size={6} justifyContent="flex-start">
+                    {rsuIpv4 in issScmsStatusData && issScmsStatusData[rsuIpv4] ? (
+                      <Grid2 container>
+                        <Grid2 size={12} justifyContent="flex-start">
+                          <Typography
+                            sx={{
+                              color:
+                                issScmsStatusData[rsuIpv4].health === '1'
+                                  ? theme.palette.success.light
+                                  : theme.palette.error.light,
+                            }}
+                          >
+                            {issScmsStatusData[rsuIpv4].health === '1' ? 'Healthy' : 'Unhealthy'}
+                          </Typography>
+                        </Grid2>
+                        <Grid2 size={12}>
+                          <Typography fontSize="small">
+                            {issScmsStatusData[rsuIpv4].expiration
+                              ? issScmsStatusData[rsuIpv4].expiration
+                              : 'Never downloaded certificates'}
+                          </Typography>
+                        </Grid2>
                       </Grid2>
-                      <Grid2 size={12}>
-                        <Typography fontSize="small">
-                          {issScmsStatusData[rsuIpv4].expiration
-                            ? issScmsStatusData[rsuIpv4].expiration
-                            : 'Never downloaded certificates'}
-                        </Typography>
-                      </Grid2>
-                    </Grid2>
-                  ) : (
-                    <>
-                      <Typography fontSize="medium">RSU is not enrolled with ISS SCMS</Typography>
-                    </>
-                  )}
+                    ) : (
+                      <>
+                        <Typography fontSize="medium">RSU is not enrolled with ISS SCMS</Typography>
+                      </>
+                    )}
+                  </Grid2>
                 </Grid2>
-              </Grid2>
-              <Box
-                sx={{
-                  position: 'absolute',
-                  bottom: '0px',
-                  left: '0px',
-                  width: '350px',
-                  height: '40px',
-                  color: theme.palette.text.secondary,
-                  backgroundColor: theme.palette.background.default,
-                  borderRadius: '4px',
-                }}
-              >
-                <Divider />
-                <Typography fontSize="small" sx={{ margin: '10px 0px 0px 16px' }}>
-                  {selectedRsu.properties.manufacturer_name} #
-                  {selectedRsu.properties.serial_number ? selectedRsu.properties.serial_number : 'Unknown'}
-                </Typography>
-              </Box>
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    bottom: '0px',
+                    left: '0px',
+                    width: '350px',
+                    height: '40px',
+                    color: theme.palette.text.secondary,
+                    backgroundColor: theme.palette.background.default,
+                    borderRadius: '4px',
+                  }}
+                >
+                  <Divider />
+                  <Typography fontSize="small" sx={{ margin: '10px 0px 0px 16px' }}>
+                    {selectedRsu.properties.manufacturer_name} #
+                    {selectedRsu.properties.serial_number ? selectedRsu.properties.serial_number : 'Unknown'}
+                  </Typography>
+                </Box>
+              </Stack>
             </Popup>
           ) : null}
         </Map>

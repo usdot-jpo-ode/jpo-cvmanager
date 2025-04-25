@@ -21,7 +21,7 @@
         "up": {
           "detached": true,
           "build": true,
-          "profiles": ["basic", "intersection"]
+          "profiles": ["cvmanager_postgres", "cvmanager_keycloak", "intersection"]
         },
         "files": ["${workspaceFolder}/docker-compose.yml"],
         "envFile": "${workspaceFolder}/.env"

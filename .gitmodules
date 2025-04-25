@@ -3,4 +3,4 @@
 	url = https://github.com/usdot-jpo-ode/asn1_codec
 [submodule "jpo-utils"]
 	path = jpo-utils
-	url = https://github.com/usdot-jpo-ode/jpo-utils
+	url = https://github.com/CDOT-CV/jpo-utils

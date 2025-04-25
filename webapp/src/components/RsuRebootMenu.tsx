@@ -15,10 +15,11 @@ import {
 import { selectRsuIpv4 } from '../generalSlices/rsuSlice'
 
 import './css/SnmpwalkMenu.css'
-import { Button, Typography } from '@mui/material'
+import { Button, Typography, useTheme } from '@mui/material'
 import RefreshIcon from '@mui/icons-material/Refresh'
 
 const RsuRebootMenu = () => {
+  const theme = useTheme()
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const changeSuccess = useSelector(selectRebootChangeSuccess)
 
@@ -51,7 +52,7 @@ const RsuRebootMenu = () => {
     <div>
       {changeSuccess ? (
         <div>
-          <Typography color="success" role="status">
+          <Typography color={theme.palette.success.light} role="status">
             Successful reboot, the RSU will now be offline for a brief time
           </Typography>
         </div>

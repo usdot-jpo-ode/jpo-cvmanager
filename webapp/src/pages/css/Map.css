@@ -39,8 +39,9 @@
 
 .mapboxgl-popup-content {
   background-color: var(--mui-palette-background-paper);
-  width: 350px;
-  height: 250px;
+  width: fit-content;
+  height: fit-content;
+  padding: 10px 0px;
   border-radius: 4px;
 }
 
@@ -72,4 +73,8 @@
 
 .accordion-header {
   font-size: 20px;
+}
+
+#simple-board {
+  padding: 0px 10px;
 }

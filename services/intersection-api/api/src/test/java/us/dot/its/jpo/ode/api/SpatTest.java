@@ -56,12 +56,16 @@ public class SpatTest {
         when(permissionService.hasRole("USER")).thenReturn(true);
 
         PageRequest page = PageRequest.of(1, 1);
-        when(processedSpatRepo.find(spat.getIntersectionId(), null, null, false, PageRequest.of(1, 1)))
+        when(processedSpatRepo.find(spat.getIntersectionId(),
+                spat.getUtcTimeStamp().toEpochSecond() - 1,
+                spat.getUtcTimeStamp().toEpochSecond() + 1, false, PageRequest.of(1, 1)))
                 .thenReturn(new PageImpl<>(spats, page, 1L));
 
         ResponseEntity<Page<ProcessedSpat>> result = controller
                 .findSpats(
-                        spat.getIntersectionId(), null, null, false, false, 1, 1, false);
+                        spat.getIntersectionId(),
+                        spat.getUtcTimeStamp().toEpochSecond() - 1,
+                        spat.getUtcTimeStamp().toEpochSecond() + 1, false, false, 1, 1, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody().getContent()).isEqualTo(spats);
     }

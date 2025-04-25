@@ -6,7 +6,7 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalStateCo
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
 public interface SignalStateConflictNotificationRepository extends DataLoader<SignalStateConflictNotification> {
-    long count(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
+    long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<SignalStateConflictNotification> findLatest(Integer intersectionID, Long startTime, Long endTime);
 

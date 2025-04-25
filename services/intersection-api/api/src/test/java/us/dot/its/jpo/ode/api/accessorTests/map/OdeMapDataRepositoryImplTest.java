@@ -1,28 +1,51 @@
 package us.dot.its.jpo.ode.api.accessorTests.map;
 
 import org.junit.jupiter.api.Test;
+import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.skyscreamer.jsonassert.Customization;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
+import org.skyscreamer.jsonassert.comparator.CustomComparator;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import java.time.Instant;
-import java.util.ArrayList;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
-import org.bson.Document;
-
 import us.dot.its.jpo.ode.api.accessors.map.OdeMapDataRepositoryImpl;
+import us.dot.its.jpo.ode.api.models.AggregationResult;
+import us.dot.its.jpo.ode.api.models.AggregationResultCount;
 import us.dot.its.jpo.ode.model.OdeMapData;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 
@@ -35,12 +58,23 @@ public class OdeMapDataRepositoryImplTest {
     @Mock
     private MongoTemplate mongoTemplate;
 
+    @Mock
+    private AggregationResults<AggregationResult> mockAggregationResult;
+
+    @Mock
+    private Page<Document> mockDocumentPage;
+
+    @Mock
+    private Page<OdeMapData> mockPage;
+
     @InjectMocks
     private OdeMapDataRepositoryImpl repository;
 
     Integer intersectionID = 123;
-    Long startTime = 1624640400000L; // June 26, 2021 00:00:00 GMT
-    Long endTime = 1624726799000L; // June 26, 2021 23:59:59 GMT
+    Long startTime = 1724170658205L;
+    String startTimeString = "2024-08-20T16:17:38.205Z";
+    Long endTime = 1724170778205L;
+    String endTimeString = "2024-08-20T16:19:38.205Z";
 
     @BeforeEach
     void setUp() {
@@ -49,49 +83,99 @@ public class OdeMapDataRepositoryImplTest {
     }
 
     @Test
-    public void testGetQuery() {
-
-        boolean latest = true;
-
-        Query query = repository.getQuery(intersectionID, startTime, endTime, latest);
-
-        // Assert IntersectionID
-        assertThat(query.getQueryObject().get("properties.intersectionId")).isEqualTo(intersectionID);
-
-        // Assert Start and End Time
-        Document queryTimeDocument = (Document) query.getQueryObject().get("properties.timeStamp");
-        assertThat(queryTimeDocument.getString("$gte")).isEqualTo(Instant.ofEpochMilli(startTime).toString());
-        assertThat(queryTimeDocument.getString("$lte")).isEqualTo(Instant.ofEpochMilli(endTime).toString());
-
-        // Assert sorting and limit
-        assertThat(query.getSortObject().keySet().contains("properties.timeStamp")).isTrue();
-        assertThat(query.getSortObject().get("properties.timeStamp")).isEqualTo(-1);
-        assertThat(query.getLimit()).isEqualTo(1);
-    }
-
-    @Test
-    public void testGetQueryResultCount() {
-        Query query = new Query();
+    public void testCount() {
         long expectedCount = 10;
 
-        Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString()))
-                .thenReturn(expectedCount);
+        when(mongoTemplate.count(any(),
+                Mockito.<String>any())).thenReturn(expectedCount);
 
-        long resultCount = repository.getQueryResultCount(query);
+        long resultCount = repository.count(1, null, null);
 
         assertThat(resultCount).isEqualTo(expectedCount);
-        Mockito.verify(mongoTemplate).count(Mockito.eq(query), Mockito.any(), Mockito.anyString());
+        verify(mongoTemplate).count(any(Query.class), anyString());
     }
 
     @Test
-    public void testFindMaps() {
-        Query query = new Query();
-        List<OdeMapData> expectedMaps = new ArrayList<>();
+    public void testFind() {
+        OdeMapDataRepositoryImpl repo = mock(OdeMapDataRepositoryImpl.class);
 
-        Mockito.doReturn(expectedMaps).when(mongoTemplate).find(query, OdeMapData.class, "OdeMapJson");
+        when(repo.findPage(
+                any(),
+                any(),
+                any(PageRequest.class),
+                any(Criteria.class),
+                any(Sort.class),
+                any(),
+                eq(OdeMapData.class))).thenReturn(mockPage);
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        doCallRealMethod().when(repo).find(1, null, null, false, pageRequest);
 
-        List<OdeMapData> resultMaps = repository.findMaps(query);
+        Page<OdeMapData> results = repo.find(1, null, null, false, pageRequest);
 
-        assertThat(resultMaps).isEqualTo(expectedMaps);
+        assertThat(results).isEqualTo(mockPage);
+    }
+
+    @Test
+    public void testFindWithData() throws IOException {
+        // Load sample JSON data
+        TypeReference<List<Document>> hashMapList = new TypeReference<>() {
+        };
+        String json = new String(
+                Files.readAllBytes(Paths.get("src/test/resources/json/ConflictMonitor.OdeMapJson.json")));
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule()); // Register
+                                                                                                 // JavaTimeModule
+
+        List<Document> sampleDocuments = objectMapper.readValue(json, hashMapList);
+
+        // Mock dependencies
+        when(mockDocumentPage.getContent()).thenReturn(sampleDocuments);
+        when(mockDocumentPage.getTotalElements()).thenReturn(1L);
+
+        AggregationResult aggregationResult = new AggregationResult();
+        aggregationResult.setResults(sampleDocuments);
+        AggregationResultCount aggregationResultCount = new AggregationResultCount();
+        aggregationResultCount.setCount(1L);
+        aggregationResult.setMetadata(List.of(aggregationResultCount));
+
+        when(mockAggregationResult.getUniqueMappedResult()).thenReturn(aggregationResult);
+
+        ArgumentCaptor<Aggregation> aggregationCaptor = ArgumentCaptor.forClass(Aggregation.class);
+        when(mongoTemplate.aggregate(aggregationCaptor.capture(), Mockito.<String>any(), eq(AggregationResult.class)))
+                .thenReturn(mockAggregationResult);
+
+        // Call the repository find method
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        Page<OdeMapData> findResponse = repository.find(intersectionID, startTime, endTime,
+                false, pageRequest);
+
+        // Extract the captured Aggregation
+        Aggregation capturedAggregation = aggregationCaptor.getValue();
+
+        // Extract the MatchOperation from the Aggregation pipeline
+        Document pipeline = capturedAggregation.toPipeline(Aggregation.DEFAULT_CONTEXT).get(0);
+
+        // Assert the Match operation Criteria
+        assertThat(pipeline.toJson())
+                .isEqualTo(String.format(
+                        "{\"$match\": {\"properties.intersectionId\": %s, \"properties.timeStamp\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}}}",
+                        intersectionID, startTimeString, endTimeString));
+
+        // Serialize results to JSON and compare with the original JSON
+        String resultJson = objectMapper.writeValueAsString(findResponse.getContent().get(0));
+
+        // Remove unused fields from each entry
+        List<Document> expectedResult = sampleDocuments.stream().map(doc -> {
+            doc.remove("_id");
+            doc.remove("recordGeneratedAt");
+            return doc;
+        }).toList();
+        String expectedJson = objectMapper.writeValueAsString(expectedResult.get(0));
+
+        // Compare JSON with ignored fields
+        JSONAssert.assertEquals(expectedJson, resultJson, new CustomComparator(
+                JSONCompareMode.LENIENT, // Allows different key orders
+                new Customization("properties.timeStamp", (o1, o2) -> true),
+                new Customization("properties.odeReceivedAt", (o1, o2) -> true)));
     }
 }

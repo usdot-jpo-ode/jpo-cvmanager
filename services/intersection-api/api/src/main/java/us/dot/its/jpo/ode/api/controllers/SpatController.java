@@ -1,8 +1,8 @@
 package us.dot.its.jpo.ode.api.controllers;
 
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -13,10 +13,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
-import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 import us.dot.its.jpo.ode.api.accessors.spat.ProcessedSpatRepository;
+import us.dot.its.jpo.ode.mockdata.MockSpatGenerator;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,12 +29,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
-public class SpatController implements PageableQuery {
+public class SpatController {
 
     private final ProcessedSpatRepository processedSpatRepo;
-
-    @Value("${maximumResponseSize}")
-    int maximumResponseSize;
 
     @Autowired
     public SpatController(ProcessedSpatRepository processedSpatRepo) {
@@ -57,6 +55,11 @@ public class SpatController implements PageableQuery {
             @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
+        if (testData) {
+            List<ProcessedSpat> list = MockSpatGenerator.getProcessedSpats();
+            return ResponseEntity.ok(new PageImpl<>(list, PageRequest.of(page, size), list.size()));
+        }
+
         if (latest) {
             return ResponseEntity.ok(processedSpatRepo.findLatest(intersectionID, startTime, endTime, compact));
         } else {
@@ -64,6 +67,7 @@ public class SpatController implements PageableQuery {
             PageRequest pageable = PageRequest.of(page, size);
             Page<ProcessedSpat> response = processedSpatRepo.find(intersectionID, startTime, endTime, compact,
                     pageable);
+
             return ResponseEntity.ok(response);
         }
     }
@@ -79,15 +83,12 @@ public class SpatController implements PageableQuery {
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
             return ResponseEntity.ok(80L);
         } else {
-            long count = processedSpatRepo.count(intersectionID, startTime, endTime,
-                    createNullablePage(page, size));
+            long count = processedSpatRepo.count(intersectionID, startTime, endTime);
             return ResponseEntity.ok(count);
         }
     }

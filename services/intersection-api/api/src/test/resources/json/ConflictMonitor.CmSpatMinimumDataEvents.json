@@ -1,0 +1,27 @@
+[
+  {
+    "_id": {
+      "$oid": "66c4c16dbc6a472adb01a176"
+    },
+    "missingDataElements": [
+      "$.payload.data.intersectionStateList.intersectionStatelist[0].id.region: null found, integer expected (#/$defs/J2735RoadRegulatorID/type)",
+      "DE_TimeMark is missing (#/$defs/J2735TimeMark/type)",
+      "DE_TimeMark is missing (#/$defs/J2735TimeMark/type)",
+      "DE_TimeMark is missing (#/$defs/J2735TimeMark/type)",
+      "DE_TimeMark is missing (#/$defs/J2735TimeMark/type)",
+      "DE_TimeMark is missing (#/$defs/J2735TimeMark/type)",
+      "DE_TimeMark is missing (#/$defs/J2735TimeMark/type)"
+    ],
+    "eventGeneratedAt": {
+      "$date": "2024-08-20T16:16:45.027Z"
+    },
+    "roadRegulatorID": -1,
+    "timePeriod": {
+      "beginTimestamp": 1724170600000,
+      "endTimestamp": 1724170610000
+    },
+    "intersectionID": 12109,
+    "eventType": "SpatMinimumData",
+    "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}"
+  }
+]

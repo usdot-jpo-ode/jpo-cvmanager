@@ -11,7 +11,7 @@ import us.dot.its.jpo.ode.api.models.DataLoader;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
 public interface IntersectionReferenceAlignmentEventRepository extends DataLoader<IntersectionReferenceAlignmentEvent> {
-    long count(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
+    long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<IntersectionReferenceAlignmentEvent> findLatest(Integer intersectionID, Long startTime, Long endTime);
 

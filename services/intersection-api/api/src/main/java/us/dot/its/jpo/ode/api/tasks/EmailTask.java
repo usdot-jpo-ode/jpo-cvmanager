@@ -6,6 +6,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.keycloak.representations.idm.UserRepresentation;
@@ -13,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -158,7 +160,21 @@ public class EmailTask {
     }
 
     public List<Notification> getActiveNotifications() {
-        return activeNotificationRepo.find(null, null, null, PageRequest.of(0, maximumResponseSize)).getContent();
+        List<LinkedHashMap<String, Object>> notificationsHashMap = new ArrayList<>();
+        Page<Notification> notifications = activeNotificationRepo
+                .find(null, null, null, PageRequest.of(0, maximumResponseSize));
+        for (Notification notification : notifications) {
+            LinkedHashMap<String, Object> notificationMap = new LinkedHashMap<>();
+            notificationMap.put("notificationType", notification.getNotificationType());
+            notificationMap.put("key", notification.getKey());
+            notificationMap.put("intersectionID", notification.getIntersectionID());
+            notificationMap.put("notificationText", notification.getNotificationText());
+            notificationMap.put("notificationHeading", notification.getNotificationHeading());
+            notificationMap.put("notificationGeneratedAt",
+                    formatter.format(Instant.ofEpochMilli(notification.getNotificationGeneratedAt())));
+            notificationsHashMap.add(notificationMap);
+        }
+        return notifications.getContent();
     }
 
     public List<Notification> getNewNotifications(List<Notification> newList, List<Notification> oldList) {

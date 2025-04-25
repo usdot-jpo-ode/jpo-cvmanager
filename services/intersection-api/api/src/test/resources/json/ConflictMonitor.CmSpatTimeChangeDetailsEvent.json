@@ -1,0 +1,25 @@
+[
+  {
+    "_id": {
+      "$oid": "66c4c171bc6a472adb01a295"
+    },
+    "firstState": "PROTECTED_CLEARANCE",
+    "secondSpatTimestamp": 1724170603802,
+    "firstTimeMarkType": "minEndTime",
+    "roadRegulatorID": -1,
+    "eventType": "TimeChangeDetails",
+    "source": "{\"rsuId\":\"10.11.81.12\",\"intersectionId\":12109,\"region\":-1}",
+    "secondTimeMarkType": "minEndTime",
+    "firstConflictingTimemark": 1970,
+    "secondState": "PROTECTED_CLEARANCE",
+    "secondConflictingUtcTimestamp": 1724169799000,
+    "eventGeneratedAt": {
+      "$date": "2024-08-20T16:16:49.074Z"
+    },
+    "firstConflictingUtcTimestamp": 1724169797000,
+    "firstSpatTimestamp": 1724170603696,
+    "intersectionID": 12109,
+    "signalGroup": 2,
+    "secondConflictingTimemark": 1990
+  }
+]

@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -38,6 +39,9 @@ public class SpatBroadcastRateNotificationRepositoryImplTest {
     @Mock
     private MongoTemplate mongoTemplate;
 
+    @Mock
+    private Page<SpatBroadcastRateNotification> mockPage;
+
     @InjectMocks
     private SpatBroadcastRateNotificationRepositoryImpl repository;
 
@@ -59,8 +63,7 @@ public class SpatBroadcastRateNotificationRepositoryImplTest {
         when(mongoTemplate.count(any(),
                 Mockito.<String>any())).thenReturn(expectedCount);
 
-        PageRequest pageRequest = PageRequest.of(0, 1);
-        long resultCount = repository.count(1, null, null, pageRequest);
+        long resultCount = repository.count(1, null, null);
 
         assertThat(resultCount).isEqualTo(expectedCount);
         verify(mongoTemplate).count(any(Query.class), anyString());
@@ -68,7 +71,6 @@ public class SpatBroadcastRateNotificationRepositoryImplTest {
 
     @Test
     public void testFind() {
-        Page expected = Mockito.mock(Page.class);
         SpatBroadcastRateNotificationRepositoryImpl repo = mock(SpatBroadcastRateNotificationRepositoryImpl.class);
 
         when(repo.findPage(
@@ -76,13 +78,15 @@ public class SpatBroadcastRateNotificationRepositoryImplTest {
                 any(),
                 any(PageRequest.class),
                 any(Criteria.class),
-                any(Sort.class))).thenReturn(expected);
+                any(Sort.class),
+                any(),
+                eq(SpatBroadcastRateNotification.class))).thenReturn(mockPage);
         PageRequest pageRequest = PageRequest.of(0, 1);
         doCallRealMethod().when(repo).find(1, null, null, pageRequest);
 
         Page<SpatBroadcastRateNotification> results = repo.find(1, null, null, pageRequest);
 
-        assertThat(results).isEqualTo(expected);
+        assertThat(results).isEqualTo(mockPage);
     }
 
 }

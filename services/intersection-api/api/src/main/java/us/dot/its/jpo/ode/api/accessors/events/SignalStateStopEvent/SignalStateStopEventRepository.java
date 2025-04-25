@@ -10,7 +10,7 @@ import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
 public interface SignalStateStopEventRepository extends DataLoader<StopLineStopEvent> {
-    long count(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
+    long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<StopLineStopEvent> findLatest(Integer intersectionID, Long startTime, Long endTime);
 

@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -38,6 +39,9 @@ public class SignalGroupAlignmentNotificationRepositoryImplTest {
     @Mock
     private MongoTemplate mongoTemplate;
 
+    @Mock
+    private Page<SignalGroupAlignmentNotification> mockPage;
+
     @InjectMocks
     private SignalGroupAlignmentNotificationRepositoryImpl repository;
 
@@ -59,8 +63,7 @@ public class SignalGroupAlignmentNotificationRepositoryImplTest {
         when(mongoTemplate.count(any(),
                 Mockito.<String>any())).thenReturn(expectedCount);
 
-        PageRequest pageRequest = PageRequest.of(0, 1);
-        long resultCount = repository.count(1, null, null, pageRequest);
+        long resultCount = repository.count(1, null, null);
 
         assertThat(resultCount).isEqualTo(expectedCount);
         verify(mongoTemplate).count(any(Query.class), anyString());
@@ -68,7 +71,6 @@ public class SignalGroupAlignmentNotificationRepositoryImplTest {
 
     @Test
     public void testFind() {
-        Page expected = Mockito.mock(Page.class);
         SignalGroupAlignmentNotificationRepositoryImpl repo = mock(
                 SignalGroupAlignmentNotificationRepositoryImpl.class);
 
@@ -77,13 +79,15 @@ public class SignalGroupAlignmentNotificationRepositoryImplTest {
                 any(),
                 any(PageRequest.class),
                 any(Criteria.class),
-                any(Sort.class))).thenReturn(expected);
+                any(Sort.class),
+                any(),
+                eq(SignalGroupAlignmentNotification.class))).thenReturn(mockPage);
         PageRequest pageRequest = PageRequest.of(0, 1);
         doCallRealMethod().when(repo).find(1, null, null, pageRequest);
 
         Page<SignalGroupAlignmentNotification> results = repo.find(1, null, null, pageRequest);
 
-        assertThat(results).isEqualTo(expected);
+        assertThat(results).isEqualTo(mockPage);
     }
 
 }

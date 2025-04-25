@@ -3,8 +3,6 @@ package us.dot.its.jpo.ode.api.accessors.events.MapMinimumDataEvent;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -54,15 +52,11 @@ public class MapMinimumDataEventRepositoryImpl
     public long count(
             Integer intersectionID,
             Long startTime,
-            Long endTime,
-            @Nullable Pageable pageable) {
+            Long endTime) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
         Query query = Query.query(criteria);
-        if (pageable != null) {
-            query = query.with(pageable);
-        }
         return mongoTemplate.count(query, collectionName);
     }
 
@@ -111,7 +105,7 @@ public class MapMinimumDataEventRepositoryImpl
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null, MapMinimumDataEvent.class);
     }
 
     public List<IDCount> getAggregatedDailyMapMinimumDataEventCounts(int intersectionID, Long startTime, Long endTime) {

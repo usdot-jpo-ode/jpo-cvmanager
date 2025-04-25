@@ -12,7 +12,7 @@ import us.dot.its.jpo.ode.api.models.LaneConnectionCount;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
 public interface ConnectionOfTravelEventRepository extends DataLoader<ConnectionOfTravelEvent> {
-    long count(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
+    long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<ConnectionOfTravelEvent> findLatest(Integer intersectionID, Long startTime, Long endTime);
 

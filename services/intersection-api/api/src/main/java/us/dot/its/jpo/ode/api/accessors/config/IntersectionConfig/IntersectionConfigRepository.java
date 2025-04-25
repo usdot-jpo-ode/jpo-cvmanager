@@ -11,6 +11,7 @@ public interface IntersectionConfigRepository {
 
     long getQueryResultCount(Query query);
 
+    @SuppressWarnings("rawtypes")
     List<IntersectionConfig> find(Query query);
 
     void delete(Query query);

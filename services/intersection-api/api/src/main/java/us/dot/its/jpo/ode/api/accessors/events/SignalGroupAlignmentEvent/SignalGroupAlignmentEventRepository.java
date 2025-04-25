@@ -10,7 +10,7 @@ import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
 public interface SignalGroupAlignmentEventRepository extends DataLoader<SignalGroupAlignmentEvent> {
-    long count(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
+    long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<SignalGroupAlignmentEvent> findLatest(Integer intersectionID, Long startTime, Long endTime);
 

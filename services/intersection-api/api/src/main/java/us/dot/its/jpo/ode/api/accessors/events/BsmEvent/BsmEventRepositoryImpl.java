@@ -3,8 +3,6 @@ package us.dot.its.jpo.ode.api.accessors.events.BsmEvent;
 import java.time.Instant;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -56,15 +54,11 @@ public class BsmEventRepositoryImpl
     public long count(
             Integer intersectionID,
             Long startTime,
-            Long endTime,
-            @Nullable Pageable pageable) {
+            Long endTime) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
         Query query = Query.query(criteria);
-        if (pageable != null) {
-            query = query.with(pageable);
-        }
         return mongoTemplate.count(query, collectionName);
     }
 
@@ -113,8 +107,9 @@ public class BsmEventRepositoryImpl
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        // TODO: Exclude "recordGeneratedAt"
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort);
+
+        List<String> excludedFields = List.of("recordGeneratedAt");
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, excludedFields, BsmEvent.class);
     }
 
     @Override

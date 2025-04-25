@@ -1,8 +1,7 @@
 package us.dot.its.jpo.ode.api.accessors.bsm;
 
+import java.util.List;
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 import org.geotools.referencing.GeodeticCalculator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,7 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
     private final MongoTemplate mongoTemplate;
 
     private final String collectionName = "OdeBsmJson";
-    private final String DATE_FIELD = "recordGeneratedAt";
+    private final String DATE_FIELD = "metadata.odeReceivedAt";
     private final String ORIGIN_IP_FIELD = "metadata.originIp";
     private final String VEHICLE_ID_FIELD = "payload.data.coreData.id";
 
@@ -105,9 +104,10 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
                     .gte(Math.min(longitudes[0], longitudes[1])).lte(Math.max(longitudes[0], longitudes[1]));
         }
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
+        List<String> excludedFields = List.of("recordGeneratedAt");
 
         // TODO: Consider mapping with jackson ObjectMapper
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, excludedFields, OdeBsmData.class);
     }
 
     /**
@@ -130,13 +130,12 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
             Long endTime,
             Double centerLng,
             Double centerLat,
-            Double distance,
-            @Nullable Pageable pageable) {
+            Double distance) {
 
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(ORIGIN_IP_FIELD, originIp)
                 .whereOptional(VEHICLE_ID_FIELD, vehicleId)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
 
         if (centerLng != null && centerLat != null && distance != null) {
             double[] latitudes = calculateLatitudes(centerLng, centerLat, distance);
@@ -147,10 +146,6 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
                     .gte(Math.min(longitudes[0], longitudes[1])).lte(Math.max(longitudes[0], longitudes[1]));
         }
         Query query = Query.query(criteria);
-        if (pageable != null) {
-            query = query.with(pageable);
-        }
-
         return mongoTemplate.count(query, Map.class, collectionName);
     }
 

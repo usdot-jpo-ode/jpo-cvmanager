@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.api.accessors.reports;
 
-import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,16 +48,12 @@ public class ReportRepositoryImpl
             String reportName,
             Integer intersectionID,
             Long startTime,
-            Long endTime,
-            @Nullable Pageable pageable) {
+            Long endTime) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(REPORT_NAME_FIELD, reportName)
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
         Query query = Query.query(criteria);
-        if (pageable != null) {
-            query = query.with(pageable);
-        }
         return mongoTemplate.count(query, collectionName);
     }
 
@@ -82,7 +79,6 @@ public class ReportRepositoryImpl
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
         Query query = Query.query(criteria);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        // TODO: Add exclusion for reportContents if !includeReportContents
         return wrapSingleResultWithPage(
                 mongoTemplate.findOne(
                         query.with(sort),
@@ -112,8 +108,11 @@ public class ReportRepositoryImpl
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        // TODO: Add exclusion for reportContents if !includeReportContents
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort);
+        List<String> excludedFields = new ArrayList<>();
+        if (!includeReportContents) {
+            excludedFields.add("reportContents");
+        }
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, excludedFields, ReportDocument.class);
     }
 
     @Override

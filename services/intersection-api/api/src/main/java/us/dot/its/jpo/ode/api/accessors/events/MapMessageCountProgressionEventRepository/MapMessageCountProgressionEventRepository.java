@@ -6,7 +6,7 @@ import us.dot.its.jpo.ode.api.models.DataLoader;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.MapMessageCountProgressionEvent;
 
 public interface MapMessageCountProgressionEventRepository extends DataLoader<MapMessageCountProgressionEvent> {
-    long count(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
+    long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<MapMessageCountProgressionEvent> findLatest(Integer intersectionID, Long startTime, Long endTime);
 

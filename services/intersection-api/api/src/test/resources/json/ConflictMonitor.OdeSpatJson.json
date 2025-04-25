@@ -1,0 +1,145 @@
+[
+  {
+    "_id": {
+      "$oid": "66c4c16bbc6a472adb01a140"
+    },
+    "metadata": {
+      "securityResultCode": "success",
+      "recordGeneratedBy": null,
+      "schemaVersion": 6,
+      "spatSource": "V2X",
+      "odePacketID": "",
+      "sanitized": false,
+      "recordType": "spatTx",
+      "encodings": null,
+      "recordGeneratedAt": "",
+      "maxDurationTime": 0,
+      "odeTimStartDateTime": "",
+      "isCertPresent": false,
+      "receivedMessageDetails": {
+        "locationData": null,
+        "rxSource": "NA"
+      },
+      "payloadType": "us.dot.its.jpo.ode.model.OdeSpatPayload",
+      "serialId": {
+        "recordId": 0,
+        "serialNumber": 0,
+        "streamId": "84ee2b4a-5e15-46a4-925a-57267fd7293f",
+        "bundleSize": 1,
+        "bundleId": 0
+      },
+      "logFileName": "",
+      "odeReceivedAt": "2024-08-20T16:16:43.051Z",
+      "originIp": "10.11.81.12"
+    },
+    "payload": {
+      "data": {
+        "timeStamp": 335056,
+        "name": null,
+        "intersectionStateList": {
+          "intersectionStatelist": [
+            {
+              "timeStamp": 43051,
+              "enabledLanes": null,
+              "maneuverAssistList": null,
+              "moy": 335056,
+              "name": null,
+              "id": {
+                "id": 12109,
+                "region": null
+              },
+              "revision": 0,
+              "status": {
+                "failureFlash": false,
+                "noValidSPATisAvailableAtThisTime": false,
+                "fixedTimeOperation": false,
+                "standbyOperation": false,
+                "trafficDependentOperation": false,
+                "manualControlIsEnabled": false,
+                "off": false,
+                "stopTimeIsActivated": false,
+                "recentChangeInMAPassignedLanesIDsUsed": false,
+                "recentMAPmessageUpdate": false,
+                "failureMode": false,
+                "noValidMAPisAvailableAtThisTime": false,
+                "signalPriorityIsActive": false,
+                "preemptIsActive": false
+              },
+              "states": {
+                "movementList": [
+                  {
+                    "state_time_speed": {
+                      "movementEventList": [
+                        {
+                          "eventState": "PROTECTED_CLEARANCE",
+                          "timing": {
+                            "minEndTime": 1970,
+                            "nextTime": null,
+                            "confidence": null,
+                            "maxEndTime": 1970,
+                            "startTime": null,
+                            "likelyTime": null
+                          },
+                          "speeds": null
+                        }
+                      ]
+                    },
+                    "movementName": null,
+                    "maneuverAssistList": null,
+                    "signalGroup": 2
+                  },
+                  {
+                    "state_time_speed": {
+                      "movementEventList": [
+                        {
+                          "eventState": "STOP_AND_REMAIN",
+                          "timing": {
+                            "minEndTime": 2001,
+                            "nextTime": null,
+                            "confidence": null,
+                            "maxEndTime": 2001,
+                            "startTime": null,
+                            "likelyTime": null
+                          },
+                          "speeds": null
+                        }
+                      ]
+                    },
+                    "movementName": null,
+                    "maneuverAssistList": null,
+                    "signalGroup": 4
+                  },
+                  {
+                    "state_time_speed": {
+                      "movementEventList": [
+                        {
+                          "eventState": "PROTECTED_CLEARANCE",
+                          "timing": {
+                            "minEndTime": 1970,
+                            "nextTime": null,
+                            "confidence": null,
+                            "maxEndTime": 1970,
+                            "startTime": null,
+                            "likelyTime": null
+                          },
+                          "speeds": null
+                        }
+                      ]
+                    },
+                    "movementName": null,
+                    "maneuverAssistList": null,
+                    "signalGroup": 6
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "dataType": "us.dot.its.jpo.ode.plugin.j2735.J2735SPAT"
+    },
+    "recordGeneratedAt": {
+      "$date": "2024-08-20T16:16:43.369Z"
+    }
+  }
+]

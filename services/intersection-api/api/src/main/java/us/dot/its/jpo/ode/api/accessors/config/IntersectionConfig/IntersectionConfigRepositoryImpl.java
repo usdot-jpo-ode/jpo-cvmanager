@@ -43,6 +43,7 @@ public class IntersectionConfigRepositoryImpl implements IntersectionConfigRepos
         return mongoTemplate.count(query, IntersectionConfig.class, collectionName);
     }
 
+    @SuppressWarnings("rawtypes")
     public List<IntersectionConfig> find(Query query) {
         return mongoTemplate.find(query, IntersectionConfig.class, collectionName);
     }

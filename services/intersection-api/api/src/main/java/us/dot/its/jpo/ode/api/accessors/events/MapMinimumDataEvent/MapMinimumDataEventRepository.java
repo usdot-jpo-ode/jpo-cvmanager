@@ -9,7 +9,7 @@ import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
 public interface MapMinimumDataEventRepository extends DataLoader<MapMinimumDataEvent> {
-    long count(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
+    long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<MapMinimumDataEvent> findLatest(Integer intersectionID, Long startTime, Long endTime);
 

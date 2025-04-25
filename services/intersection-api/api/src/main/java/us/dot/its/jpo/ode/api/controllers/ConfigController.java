@@ -65,7 +65,7 @@ public class ConfigController {
     private final RestTemplate restTemplate = new RestTemplate();
 
     private final String defaultConfigTemplate = "%s/config/default/%s";
-    private final String intersectionConfigTemplate = "%s/config/intersection/%s/%s/%s";
+    private final String intersectionConfigTemplate = "%s/config/intersection/%s/%s";
     private final String defaultConfigAllTemplate = "%s/config/defaults";
     private final String intersectionConfigAllTemplate = "%s/config/intersections";
 
@@ -97,6 +97,7 @@ public class ConfigController {
 
             // Request does not require authentication, ConflictMonitor API is only
             // accessible internally
+            @SuppressWarnings("rawtypes")
             ResponseEntity<DefaultConfig> response = restTemplate.getForEntity(resourceURL, DefaultConfig.class);
 
             if (response.getStatusCode().is2xxSuccessful()) {
@@ -139,6 +140,7 @@ public class ConfigController {
         try {
             String resourceURL = String.format(intersectionConfigTemplate, props.getCmServerURL(),
                     config.getIntersectionID(), config.getKey());
+            @SuppressWarnings("rawtypes")
             ResponseEntity<IntersectionConfig> response = restTemplate.getForEntity(resourceURL,
                     IntersectionConfig.class);
 

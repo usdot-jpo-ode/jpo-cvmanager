@@ -133,7 +133,7 @@ class MessageMonitorApi {
       failureMessage: 'Failed to retrieve MAP messages',
       tag: 'intersection',
     })
-    return response ?? ([] as ProcessedMap[])
+    return response?.content ?? ([] as ProcessedMap[])
   }
 
   async getBsmMessages({

@@ -6,7 +6,7 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalGroupAl
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
 public interface SignalGroupAlignmentNotificationRepository extends DataLoader<SignalGroupAlignmentNotification> {
-    long count(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
+    long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<SignalGroupAlignmentNotification> findLatest(Integer intersectionID, Long startTime, Long endTime);
 

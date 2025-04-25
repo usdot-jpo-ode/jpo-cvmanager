@@ -59,7 +59,6 @@ describe('generatePdf', () => {
     mockReport = {
       reportName: 'Test Report',
       intersectionID: 123,
-      roadRegulatorID: '456',
       reportGeneratedAt: new Date('2023-01-01T00:00:00Z'),
       reportStartTime: new Date('2023-01-01T00:00:00Z'),
       reportStopTime: new Date('2023-01-01T01:00:00Z'),

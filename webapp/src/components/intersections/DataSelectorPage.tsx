@@ -257,10 +257,10 @@ const DataSelectorPage = () => {
             </div>
           </Box>
           <Box mt={3}>
-            <DataSelectorEditForm onQuery={query} onVisualize={onVisualize} dbIntersectionId={intersectionId} />
+            <DataSelectorEditForm onQuery={query} onVisualize={onVisualize} />
           </Box>
         </Container>
-        <Container sx={{ mt: 5, alignItems: 'center', display: 'flex' }}>
+        <Container maxWidth={false} sx={{ mt: 5, alignItems: 'center', display: 'flex' }}>
           {type == 'events' && (
             <EventDataTable
               events={events}

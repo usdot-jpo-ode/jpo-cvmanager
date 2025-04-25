@@ -36,7 +36,20 @@
       "dependsOn": ["run-keycloak-and-postgres"]
     },
     {
-      "label": "run-keycloak-and-postgres",
+      "label": "run-docker-compose-intersection-no-api",
+      "type": "docker-compose",
+      "dockerCompose": {
+        "up": {
+          "detached": true,
+          "build": true,
+          "profiles": ["intersection_no_api"]
+        },
+        "files": ["${workspaceFolder}/docker-compose.yml", "${workspaceFolder}/docker-compose-intersection.yml"],
+        "envFile": "${workspaceFolder}/.env"
+      }
+    },
+    {
+      "label": "run-keycloak-postgres-mongodb-kafka",
       "type": "docker-compose",
       "dockerCompose": {
         "up": {

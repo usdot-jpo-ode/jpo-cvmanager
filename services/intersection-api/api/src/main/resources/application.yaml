@@ -19,7 +19,7 @@ spring.security.oauth2.resourceserver.jwt:
 
 spring.kafka.bootstrap-servers: ${KAFKA_BROKER_IP:localhost}:${KAFKA_BROKER_PORT:9092}
 logging.level.org.apache.kafka: INFO
-logging.level: INFO
+logging.level: DEBUG
 
 schema.bsm: classpath:schemas/bsm.schema.json
 schema.map: classpath:schemas/map.schema.json
@@ -80,6 +80,7 @@ enable:
   api: ${INTERSECTION_API_ENABLE_API:true}
   email: ${INTERSECTION_API_ENABLE_EMAILER:true}
   report: ${INTERSECTION_API_ENABLE_REPORTS:true}
+  haas: ${INTERSECTION_API_ENABLE_HAAS:true}
 
 cmServerURL: ${CM_SERVER_URL:http://localhost:8082}
 mongoTimeoutMs: ${CM_MONGO_TIMEOUT_MS:5000}

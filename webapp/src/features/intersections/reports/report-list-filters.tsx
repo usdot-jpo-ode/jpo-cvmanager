@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { Box, Button, CircularProgress, Drawer, IconButton, Stack, TextField, Typography } from '@mui/material'
+import { Box, Button, CircularProgress, Drawer, IconButton, Stack, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import { Close } from '@mui/icons-material'
@@ -14,17 +14,6 @@ const FiltersDrawerDesktop = styled(Drawer)({
   width: 380,
   '& .MuiDrawer-paper': {
     position: 'relative',
-    width: 380,
-  },
-})
-
-const FiltersDrawerMobile = styled(Drawer)({
-  maxWidth: '100%',
-  width: 380,
-  '& .MuiDrawer-paper': {
-    height: 'calc(100% - 64px)',
-    maxWidth: '100%',
-    top: 64,
     width: 380,
   },
 })
@@ -50,6 +39,10 @@ export const ReportListFilters = (props: ReportListFiltersProps) => {
   const [filtersValid, setFiltersValid] = useState([true, ''])
 
   useEffect(() => {
+    setCurrentFilters(filters)
+  }, [filters])
+
+  useEffect(() => {
     updateFiltersValid()
   }, [currentFilters])
 
@@ -59,10 +52,6 @@ export const ReportListFilters = (props: ReportListFiltersProps) => {
 
   const endDateChange = (date: Date | null) => {
     setCurrentFilters({ ...currentFilters, endDate: date })
-  }
-
-  const updateFilters = () => {
-    onChange?.(currentFilters)
   }
 
   const updateFiltersValid = () => {
@@ -85,14 +74,16 @@ export const ReportListFilters = (props: ReportListFiltersProps) => {
   const content = (
     <Box
       sx={{
-        pb: 1,
-        pt: 1,
+        pb: 3,
         px: 3,
       }}
     >
       <Box
         sx={{
           mb: 2,
+          position: 'absolute',
+          right: 10,
+          top: 10,
         }}
       >
         <IconButton onClick={onClose}>
@@ -103,6 +94,7 @@ export const ReportListFilters = (props: ReportListFiltersProps) => {
         Issue date
       </Typography>
       <Stack spacing={2} sx={{ mt: 2 }}>
+        {' '}
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DateTimePicker
             label="From"

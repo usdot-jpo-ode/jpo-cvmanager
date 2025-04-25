@@ -189,7 +189,7 @@ const themeMainDark = createTheme({
     MuiDivider: {
       styleOverrides: {
         root: {
-          borderColor: alpha('#FFFFFF', 0.2),
+          borderColor: '#c7c7c7',
         },
       },
     },

@@ -1,3 +1,8 @@
+import {
+  LaneDirectionOfTravelReportData,
+  StopLinePassageReportData,
+  StopLineStopReportData,
+} from '../../models/ReportData'
 import { authApiHelper } from './api-helper-cviz'
 
 export type ReportMetadata = {
@@ -8,6 +13,38 @@ export type ReportMetadata = {
   reportStartTime: Date
   reportStopTime: Date
   reportContents: string[]
+  laneDirectionOfTravelEventCounts: CountWithId[]
+  laneDirectionOfTravelMedianDistanceDistribution: CountWithId[]
+  laneDirectionOfTravelMedianHeadingDistribution: CountWithId[]
+  laneDirectionOfTravelReportData: LaneDirectionOfTravelReportData[]
+  connectionOfTravelEventCounts: CountWithId[]
+  signalStateConflictEventCount: CountWithId[]
+  signalStateEventCounts: CountWithId[]
+  signalStateStopEventCounts: CountWithId[]
+  timeChangeDetailsEventCount: CountWithId[]
+  intersectionReferenceAlignmentEventCounts: CountWithId[]
+  mapBroadcastRateEventCount: CountWithId[]
+  mapMinimumDataEventCount: CountWithId[]
+  spatMinimumDataEventCount: CountWithId[]
+  spatBroadcastRateEventCount: CountWithId[]
+  latestMapMinimumDataEventMissingElements: string[]
+  latestSpatMinimumDataEventMissingElements: string[]
+  validConnectionOfTravelData: {
+    connectionID: number
+    ingressLaneID: number
+    egressLaneID: number
+    eventCount: number
+  }[]
+  invalidConnectionOfTravelData: {
+    connectionID: number
+    ingressLaneID: number
+    egressLaneID: number
+    eventCount: number
+  }[]
+  headingTolerance: number
+  distanceTolerance: number
+  stopLineStopReportData: StopLineStopReportData[]
+  stopLinePassageReportData: StopLinePassageReportData[]
 }
 
 class ReportsApi {
@@ -29,8 +66,17 @@ class ReportsApi {
     const queryParams: Record<string, string> = {}
     queryParams['intersection_id'] = intersectionId.toString()
     queryParams['road_regulator_id'] = roadRegulatorId.toString()
-    if (startTime) queryParams['start_time_utc_millis'] = startTime.getTime().toString()
-    if (endTime) queryParams['end_time_utc_millis'] = endTime.getTime().toString()
+
+    if (startTime) {
+      const startTimeUTC = new Date(startTime.getTime() - startTime.getTimezoneOffset() * 60000)
+      startTimeUTC.setSeconds(0, 0)
+      queryParams['start_time_utc_millis'] = startTimeUTC.getTime().toString()
+    }
+    if (endTime) {
+      const endTimeUTC = new Date(endTime.getTime() - endTime.getTimezoneOffset() * 60000)
+      endTimeUTC.setSeconds(0, 0)
+      queryParams['end_time_utc_millis'] = endTimeUTC.getTime().toString()
+    }
 
     const pdfReport = await authApiHelper.invokeApi({
       path: `/reports/generate`,
@@ -76,7 +122,20 @@ class ReportsApi {
       tag: 'intersection',
     })
 
-    return pdfReport?.content?.[0]
+    const reportList = pdfReport?.content?.[0]
+
+    if (reportList) {
+      reportList.forEach((report: ReportMetadata) => {
+        report.reportStartTime = new Date(
+          new Date(report.reportStartTime).getTime() + new Date(report.reportStartTime).getTimezoneOffset() * 60000
+        )
+        report.reportStopTime = new Date(
+          new Date(report.reportStopTime).getTime() + new Date(report.reportStopTime).getTimezoneOffset() * 60000
+        )
+      })
+    }
+
+    return reportList
   }
 
   async downloadReport({

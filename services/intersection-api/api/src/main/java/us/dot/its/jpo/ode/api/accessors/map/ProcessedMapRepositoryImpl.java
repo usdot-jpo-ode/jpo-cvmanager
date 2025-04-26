@@ -70,7 +70,6 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
      *                       applied
      * @param startTime      the start time to query by, if null will not be applied
      * @param endTime        the end time to query by, if null will not be applied
-     * @param pageable       the pageable object to use for pagination
      * @return the paginated data that matches the given criteria
      */
     public long count(

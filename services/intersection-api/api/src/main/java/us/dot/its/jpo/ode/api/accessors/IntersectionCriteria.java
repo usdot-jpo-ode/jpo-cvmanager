@@ -26,18 +26,30 @@ public class IntersectionCriteria extends Criteria {
             boolean formatAsString) {
         if (startEpochMillis != null && endEpochMillis != null) {
             this.and(fieldName)
-                    .gte(formatAsString ? Instant.ofEpochMilli(startEpochMillis).toString()
-                            : Date.from(Instant.ofEpochMilli(startEpochMillis)))
-                    .lte(formatAsString ? Instant.ofEpochMilli(endEpochMillis).toString()
-                            : Date.from(Instant.ofEpochMilli(endEpochMillis)));
+                    .gte(formatDate(startEpochMillis, formatAsString))
+                    .lte(formatDate(endEpochMillis, formatAsString));
+            return this;
         } else if (startEpochMillis != null) {
-            this.and(fieldName).gte(formatAsString ? Instant.ofEpochMilli(startEpochMillis).toString()
-                    : Date.from(Instant.ofEpochMilli(startEpochMillis)));
+            this.and(fieldName).gte(formatDate(startEpochMillis, formatAsString));
+            return this;
         } else if (endEpochMillis != null) {
-            this.and(fieldName).lte(formatAsString ? Instant.ofEpochMilli(endEpochMillis).toString()
-                    : Date.from(Instant.ofEpochMilli(endEpochMillis)));
+            this.and(fieldName).lte(formatDate(endEpochMillis, formatAsString));
+            return this;
         }
         return this;
+    }
+
+    /**
+     * Build a query criteria object based on a time window
+     *
+     * @param fieldName      the db field to apply criteria to
+     * @param epochMillis    the time of the window, in milliseconds since epoch
+     * @param formatAsString whether to format the date as a string or not
+     * @return the criteria object to use for querying
+     */
+    private Object formatDate(Long epochMillis, boolean formatAsString) {
+        return formatAsString ? Instant.ofEpochMilli(epochMillis).toString()
+                : Date.from(Instant.ofEpochMilli(epochMillis));
     }
 
     /**

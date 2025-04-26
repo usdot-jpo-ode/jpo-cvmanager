@@ -1,120 +1,118 @@
-[
-  {
-    "_id": {
-      "$oid": "66c4c16cbc6a472adb01a14f"
-    },
-    "metadata": {
-      "securityResultCode": "success",
-      "bsmSource": "RV",
-      "schemaVersion": 6,
-      "odePacketID": "",
-      "sanitized": false,
-      "recordType": "bsmTx",
-      "recordGeneratedAt": "",
-      "maxDurationTime": 0,
-      "odeTimStartDateTime": "",
-      "receivedMessageDetails": {
-        "locationData": {
-          "elevation": "",
-          "heading": "",
-          "latitude": "",
-          "speed": "",
-          "longitude": ""
-        },
-        "rxSource": "RV"
+{
+  "_id": {
+    "$oid": "66c4c16cbc6a472adb01a14f"
+  },
+  "metadata": {
+    "securityResultCode": "success",
+    "bsmSource": "RV",
+    "schemaVersion": 6,
+    "odePacketID": "",
+    "sanitized": false,
+    "recordType": "bsmTx",
+    "recordGeneratedAt": "",
+    "maxDurationTime": 0,
+    "odeTimStartDateTime": "",
+    "receivedMessageDetails": {
+      "locationData": {
+        "elevation": "",
+        "heading": "",
+        "latitude": "",
+        "speed": "",
+        "longitude": ""
       },
-      "payloadType": "us.dot.its.jpo.ode.model.OdeBsmPayload",
-      "serialId": {
-        "recordId": 0,
-        "serialNumber": 0,
-        "streamId": "849c3ac6-4747-426f-ae5e-28ac8531b32c",
-        "bundleSize": 1,
-        "bundleId": 0
-      },
-      "logFileName": "",
-      "odeReceivedAt": "2024-08-20T16:16:44.424Z",
-      "originIp": "10.11.81.12"
+      "rxSource": "RV"
     },
-    "payload": {
-      "data": {
-        "partII": [
-          {
-            "id": "VehicleSafetyExtensions",
-            "value": {
-              "pathHistory": {
-                "crumbData": [
-                  {
-                    "elevationOffset": 0.6,
-                    "lonOffset": 0.0000387,
-                    "timeOffset": 0.8,
-                    "latOffset": -0.0001604
-                  },
-                  {
-                    "elevationOffset": 4.3,
-                    "lonOffset": 0.000231,
-                    "timeOffset": 5.6,
-                    "latOffset": -0.0011603
-                  },
-                  {
-                    "elevationOffset": 9.1,
-                    "lonOffset": 0.0003834,
-                    "timeOffset": 11,
-                    "latOffset": -0.0023425
-                  }
-                ]
-              },
-              "pathPrediction": {
-                "confidence": 80,
-                "radiusOfCurve": -1622.5
-              }
+    "payloadType": "us.dot.its.jpo.ode.model.OdeBsmPayload",
+    "serialId": {
+      "recordId": 0,
+      "serialNumber": 0,
+      "streamId": "849c3ac6-4747-426f-ae5e-28ac8531b32c",
+      "bundleSize": 1,
+      "bundleId": 0
+    },
+    "logFileName": "",
+    "odeReceivedAt": "2024-08-20T16:16:44.424Z",
+    "originIp": "10.11.81.12"
+  },
+  "payload": {
+    "data": {
+      "partII": [
+        {
+          "id": "VehicleSafetyExtensions",
+          "value": {
+            "pathHistory": {
+              "crumbData": [
+                {
+                  "elevationOffset": 0.6,
+                  "lonOffset": 0.0000387,
+                  "timeOffset": 0.8,
+                  "latOffset": -0.0001604
+                },
+                {
+                  "elevationOffset": 4.3,
+                  "lonOffset": 0.000231,
+                  "timeOffset": 5.6,
+                  "latOffset": -0.0011603
+                },
+                {
+                  "elevationOffset": 9.1,
+                  "lonOffset": 0.0003834,
+                  "timeOffset": 11,
+                  "latOffset": -0.0023425
+                }
+              ]
+            },
+            "pathPrediction": {
+              "confidence": 80,
+              "radiusOfCurve": -1622.5
             }
           }
-        ],
-        "coreData": {
-          "secMark": 44424,
-          "transmission": "UNAVAILABLE",
-          "size": {
-            "width": 180,
-            "length": 480
-          },
-          "heading": 169.2,
-          "accelSet": {
-            "accelYaw": -0.65,
-            "accelLong": -0.05
-          },
-          "brakes": {
-            "scs": "unavailable",
-            "wheelBrakes": {
-              "leftFront": false,
-              "rightFront": false,
-              "unavailable": true,
-              "leftRear": false,
-              "rightRear": false
-            },
-            "abs": "off",
-            "traction": "unavailable",
-            "brakeBoost": "unavailable",
-            "auxBrakes": "unavailable"
-          },
-          "accuracy": {
-            "semiMinor": 2,
-            "orientation": 0,
-            "semiMajor": 2
-          },
-          "id": "B28991AB",
-          "position": {
-            "elevation": 1691.9,
-            "latitude": 39.587279346902015,
-            "longitude": -105.09059802750382
-          },
-          "msgCnt": 1,
-          "speed": 22.62
         }
-      },
-      "dataType": "us.dot.its.jpo.ode.plugin.j2735.J2735Bsm"
+      ],
+      "coreData": {
+        "secMark": 44424,
+        "transmission": "UNAVAILABLE",
+        "size": {
+          "width": 180,
+          "length": 480
+        },
+        "heading": 169.2,
+        "accelSet": {
+          "accelYaw": -0.65,
+          "accelLong": -0.05
+        },
+        "brakes": {
+          "scs": "unavailable",
+          "wheelBrakes": {
+            "leftFront": false,
+            "rightFront": false,
+            "unavailable": true,
+            "leftRear": false,
+            "rightRear": false
+          },
+          "abs": "off",
+          "traction": "unavailable",
+          "brakeBoost": "unavailable",
+          "auxBrakes": "unavailable"
+        },
+        "accuracy": {
+          "semiMinor": 2,
+          "orientation": 0,
+          "semiMajor": 2
+        },
+        "id": "B28991AB",
+        "position": {
+          "elevation": 1691.9,
+          "latitude": 39.587279346902015,
+          "longitude": -105.09059802750382
+        },
+        "msgCnt": 1,
+        "speed": 22.62
+      }
     },
-    "recordGeneratedAt": {
-      "$date": "2024-08-20T16:16:44.433Z"
-    }
+    "dataType": "us.dot.its.jpo.ode.plugin.j2735.J2735Bsm"
+  },
+  "recordGeneratedAt": {
+    "$date": "2024-08-20T16:16:44.433Z"
   }
-]
+}

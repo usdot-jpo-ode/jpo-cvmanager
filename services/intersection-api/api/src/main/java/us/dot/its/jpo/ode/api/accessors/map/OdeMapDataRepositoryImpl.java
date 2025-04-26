@@ -62,8 +62,7 @@ public class OdeMapDataRepositoryImpl implements OdeMapDataRepository, PageableQ
     public Page<OdeMapData> findLatest(
             Integer intersectionID,
             Long startTime,
-            Long endTime,
-            boolean compact) {
+            Long endTime) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
@@ -90,7 +89,6 @@ public class OdeMapDataRepositoryImpl implements OdeMapDataRepository, PageableQ
             Integer intersectionID,
             Long startTime,
             Long endTime,
-            boolean compact,
             Pageable pageable) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)

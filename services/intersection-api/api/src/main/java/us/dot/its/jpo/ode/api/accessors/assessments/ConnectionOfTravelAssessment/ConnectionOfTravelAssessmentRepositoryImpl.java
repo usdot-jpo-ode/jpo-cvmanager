@@ -13,7 +13,6 @@ import us.dot.its.jpo.ode.api.accessors.IntersectionCriteria;
 import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 
 import java.util.Collections;
-import java.util.List;
 
 @Component
 public class ConnectionOfTravelAssessmentRepositoryImpl

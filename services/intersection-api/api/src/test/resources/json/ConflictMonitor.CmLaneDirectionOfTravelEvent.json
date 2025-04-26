@@ -1,25 +1,23 @@
-[
-  {
-    "_id": {
-      "$oid": "66c4c17ebc6a472adb01a4db"
-    },
-    "laneSegmentFinalLatitude": 39.58772452933479,
-    "laneSegmentFinalLongitude": -105.09074745723153,
-    "roadRegulatorID": -1,
-    "eventType": "LaneDirectionOfTravel",
-    "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='0'}",
-    "medianDistanceFromCenterline": 7.458828740322419,
-    "laneID": 3,
-    "laneSegmentInitialLatitude": 39.58788782340084,
-    "laneSegmentNumber": 1,
-    "expectedHeading": 348.16231825699515,
-    "eventGeneratedAt": {
-      "$date": "2024-08-20T16:17:02.786Z"
-    },
-    "intersectionID": 12109,
-    "aggregateBSMCount": 10,
-    "medianVehicleHeading": 347.4,
-    "timestamp": 1724170606627,
-    "laneSegmentInitialLongitude": -105.0907916918234
-  }
-]
+{
+  "_id": {
+    "$oid": "66c4c17ebc6a472adb01a4db"
+  },
+  "laneSegmentFinalLatitude": 39.58772452933479,
+  "laneSegmentFinalLongitude": -105.09074745723153,
+  "roadRegulatorID": -1,
+  "eventType": "LaneDirectionOfTravel",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='0'}",
+  "medianDistanceFromCenterline": 7.458828740322419,
+  "laneID": 3,
+  "laneSegmentInitialLatitude": 39.58788782340084,
+  "laneSegmentNumber": 1,
+  "expectedHeading": 348.16231825699515,
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:17:02.786Z"
+  },
+  "intersectionID": 12109,
+  "aggregateBSMCount": 10,
+  "medianVehicleHeading": 347.4,
+  "timestamp": 1724170606627,
+  "laneSegmentInitialLongitude": -105.0907916918234
+}

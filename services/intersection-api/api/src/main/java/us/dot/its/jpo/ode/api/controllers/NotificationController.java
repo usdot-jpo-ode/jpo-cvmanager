@@ -157,7 +157,7 @@ public class NotificationController {
     })
     public @ResponseBody ResponseEntity<String> deleteActiveNotification(@RequestBody String key) {
         try {
-            long count = activeNotificationRepo.delete(null, null, key.replace("\"", ""));
+            long count = activeNotificationRepo.delete(key.replace("\"", ""));
             if (count == 0) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body("Active Notification with key " + key + " not found");

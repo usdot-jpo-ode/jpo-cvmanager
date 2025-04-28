@@ -11,5 +11,5 @@ public interface ActiveNotificationRepository extends DataLoader<Notification> {
     Page<Notification> find(Integer intersectionID, String notificationType, String key,
             Pageable pageable);
 
-    long delete(Integer intersectionID, String notificationType, String key);
+    long delete(String key);
 }

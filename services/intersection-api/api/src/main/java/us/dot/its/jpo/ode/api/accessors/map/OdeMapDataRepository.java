@@ -8,8 +8,7 @@ import us.dot.its.jpo.ode.model.OdeMapData;
 public interface OdeMapDataRepository extends DataLoader<OdeMapData> {
     long count(Integer intersectionID, Long startTime, Long endTime);
 
-    Page<OdeMapData> findLatest(Integer intersectionID, Long startTime, Long endTime, boolean compact);
+    Page<OdeMapData> findLatest(Integer intersectionID, Long startTime, Long endTime);
 
-    Page<OdeMapData> find(Integer intersectionID, Long startTime, Long endTime, boolean compact,
-            Pageable pageable);
+    Page<OdeMapData> find(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
 }

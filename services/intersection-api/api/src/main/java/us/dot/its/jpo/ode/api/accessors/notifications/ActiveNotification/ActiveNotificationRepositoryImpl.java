@@ -155,16 +155,12 @@ public class ActiveNotificationRepositoryImpl
         return new PageImpl<>(notifications, pageable, dbObjects.getTotalElements());
     }
 
-    public long delete(Integer intersectionID,
-            String notificationType,
-            String key) {
+    public long delete(String key) {
         if (key == null) {
             log.error("No key provided for delete");
             return 0;
         }
         Criteria criteria = new IntersectionCriteria()
-                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .whereOptional(NOTIFICATION_TYPE_FIELD, notificationType)
                 .whereOptional(KEY_FIELD, key);
         Query query = Query.query(criteria);
 

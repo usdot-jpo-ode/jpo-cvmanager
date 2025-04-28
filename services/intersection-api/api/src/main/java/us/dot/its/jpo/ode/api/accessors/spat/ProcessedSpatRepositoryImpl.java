@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.api.accessors.spat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -38,7 +39,6 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository, Pag
      *                       applied
      * @param startTime      the start time to query by, if null will not be applied
      * @param endTime        the end time to query by, if null will not be applied
-     * @param pageable       the pageable object to use for pagination
      * @return the paginated data that matches the given criteria
      */
     public long count(
@@ -71,7 +71,8 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository, Pag
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
         Query query = Query.query(criteria);
-        List<String> excludedFields = List.of(RECORD_GENERATED_AT_FIELD);
+        List<String> excludedFields = new ArrayList<>();
+        excludedFields.add(RECORD_GENERATED_AT_FIELD);
         if (compact) {
             excludedFields.add(VALIDATION_MESSAGES_FIELD);
         }
@@ -102,7 +103,8 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository, Pag
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
-        List<String> excludedFields = List.of(RECORD_GENERATED_AT_FIELD);
+        List<String> excludedFields = new ArrayList<>();
+        excludedFields.add(RECORD_GENERATED_AT_FIELD);
         if (compact) {
             excludedFields.add(VALIDATION_MESSAGES_FIELD);
         }

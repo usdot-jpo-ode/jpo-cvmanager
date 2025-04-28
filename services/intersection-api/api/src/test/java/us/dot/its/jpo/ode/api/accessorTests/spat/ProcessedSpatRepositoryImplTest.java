@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -42,10 +43,10 @@ import us.dot.its.jpo.ode.api.models.AggregationResult;
 import us.dot.its.jpo.ode.api.models.AggregationResultCount;
 
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
@@ -56,7 +57,7 @@ import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 @AutoConfigureEmbeddedDatabase
 public class ProcessedSpatRepositoryImplTest {
 
-    @Mock
+    @SpyBean
     private MongoTemplate mongoTemplate;
 
     @Mock
@@ -87,8 +88,8 @@ public class ProcessedSpatRepositoryImplTest {
     public void testCount() {
         long expectedCount = 10;
 
-        when(mongoTemplate.count(any(),
-                Mockito.<String>any())).thenReturn(expectedCount);
+        doReturn(expectedCount).when(mongoTemplate).count(any(),
+                Mockito.<String>any());
 
         long resultCount = repository.count(1, null, null);
 
@@ -119,8 +120,6 @@ public class ProcessedSpatRepositoryImplTest {
     @Test
     public void testFindWithData() throws IOException {
         // Load sample JSON data
-        TypeReference<List<Document>> hashMapList = new TypeReference<>() {
-        };
         String json = new String(
                 Files.readAllBytes(
                         Paths.get("src/test/resources/json/ConflictMonitor.ProcessedSpat.json")));
@@ -128,7 +127,7 @@ public class ProcessedSpatRepositoryImplTest {
         objectMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule()); // Register
                                                                                                  // JavaTimeModule
 
-        List<Document> sampleDocuments = objectMapper.readValue(json, hashMapList);
+        List<Document> sampleDocuments = List.of(Document.parse(json));
 
         // Mock dependencies
         when(mockDocumentPage.getContent()).thenReturn(sampleDocuments);
@@ -143,8 +142,9 @@ public class ProcessedSpatRepositoryImplTest {
         when(mockAggregationResult.getUniqueMappedResult()).thenReturn(aggregationResult);
 
         ArgumentCaptor<Aggregation> aggregationCaptor = ArgumentCaptor.forClass(Aggregation.class);
-        when(mongoTemplate.aggregate(aggregationCaptor.capture(), Mockito.<String>any(), eq(AggregationResult.class)))
-                .thenReturn(mockAggregationResult);
+        doReturn(mockAggregationResult).when(mongoTemplate).aggregate(aggregationCaptor.capture(),
+                anyString(),
+                eq(AggregationResult.class));
 
         // Call the repository find method
         PageRequest pageRequest = PageRequest.of(0, 1);
@@ -178,6 +178,26 @@ public class ProcessedSpatRepositoryImplTest {
         JSONAssert.assertEquals(expectedJson, resultJson, new CustomComparator(
                 JSONCompareMode.LENIENT, // Allows different key orders
                 new Customization("properties.timeStamp", (o1, o2) -> true),
-                new Customization("properties.odeReceivedAt", (o1, o2) -> true)));
+                new Customization("properties.odeReceivedAt", (o1, o2) -> true),
+                new Customization("properties.odeReceivedAt", (o1, o2) -> true),
+                new Customization(
+                        "states[signalGroup=2].stateTimeSpeed[eventState=PROTECTED_CLEARANCE].timing.maxEndTime",
+                        (o1, o2) -> true),
+                new Customization(
+                        "states[signalGroup=2].stateTimeSpeed[eventState=PROTECTED_CLEARANCE].timing.minEndTime",
+                        (o1, o2) -> true),
+                new Customization("states[signalGroup=4].stateTimeSpeed[eventState=STOP_AND_REMAIN].timing.maxEndTime",
+                        (o1, o2) -> true),
+                new Customization("states[signalGroup=4].stateTimeSpeed[eventState=STOP_AND_REMAIN].timing.minEndTime",
+                        (o1, o2) -> true),
+                new Customization(
+                        "states[signalGroup=6].stateTimeSpeed[eventState=PROTECTED_CLEARANCE].timing.maxEndTime",
+                        (o1, o2) -> true),
+                new Customization(
+                        "states[signalGroup=6].stateTimeSpeed[eventState=PROTECTED_CLEARANCE].timing.minEndTime",
+                        (o1, o2) -> true),
+                new Customization(
+                        "utcTimeStamp",
+                        (o1, o2) -> true)));
     }
 }

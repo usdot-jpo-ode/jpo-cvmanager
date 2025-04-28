@@ -35,7 +35,6 @@ public class OdeMapDataRepositoryImpl implements OdeMapDataRepository, PageableQ
      *                       applied
      * @param startTime      the start time to query by, if null will not be applied
      * @param endTime        the end time to query by, if null will not be applied
-     * @param pageable       the pageable object to use for pagination
      * @return the paginated data that matches the given criteria
      */
     public long count(
@@ -62,8 +61,7 @@ public class OdeMapDataRepositoryImpl implements OdeMapDataRepository, PageableQ
     public Page<OdeMapData> findLatest(
             Integer intersectionID,
             Long startTime,
-            Long endTime,
-            boolean compact) {
+            Long endTime) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
@@ -90,7 +88,6 @@ public class OdeMapDataRepositoryImpl implements OdeMapDataRepository, PageableQ
             Integer intersectionID,
             Long startTime,
             Long endTime,
-            boolean compact,
             Pageable pageable) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)

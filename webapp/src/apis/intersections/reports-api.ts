@@ -122,7 +122,7 @@ class ReportsApi {
       tag: 'intersection',
     })
 
-    const reportList = pdfReport?.content?.[0]
+    const reportList = pdfReport?.content
 
     if (reportList) {
       reportList.forEach((report: ReportMetadata) => {

@@ -102,10 +102,6 @@
   margin-bottom: 10px;
 }
 
-.accordion-header {
-  font-weight: bold;
-}
-
 .scroll-div {
   height: calc(100vh - 275px);
   overflow-y: auto;

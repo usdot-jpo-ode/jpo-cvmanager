@@ -2,15 +2,13 @@ FROM python:3.12.2-slim
 
 WORKDIR /home
 
-ADD addons/images/firmware_manager/requirements.txt .
-ADD addons/images/firmware_manager/resources/xfer_yunex.jar ./tools/
-ADD addons/images/firmware_manager/upgrade_runner/*.py .
-ADD common/*.py ./common/
+COPY addons/images/firmware_manager/requirements.txt .
+COPY addons/images/firmware_manager/resources/xfer_yunex.jar ./tools/
+COPY addons/images/firmware_manager/upgrade_runner/*.py .
+COPY common/*.py ./common/
 
-RUN pip3 install -r requirements.txt
-RUN apt-get update
-RUN apt-get install -y default-jdk
-RUN apt-get install -y iputils-ping
+RUN pip3 install -r requirements.txt 
+RUN apt-get update && apt-get install -y default-jdk && apt-get install -y iputils-ping
 
 CMD ["/home/upgrade_runner.py"]
 ENTRYPOINT ["python3"]

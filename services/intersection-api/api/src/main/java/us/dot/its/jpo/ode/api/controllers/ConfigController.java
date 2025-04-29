@@ -143,7 +143,6 @@ public class ConfigController {
                     IntersectionConfig.class);
 
             if (response.getStatusCode().is2xxSuccessful()) {
-                response.getBody().getType();
                 IntersectionConfig<T> previousConfig = response.getBody();
 
                 if (previousConfig == null) {

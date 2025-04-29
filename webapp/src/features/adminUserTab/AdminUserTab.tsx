@@ -15,6 +15,7 @@ import {
   setActiveDiv,
   setEditUserRowData,
 } from './adminUserTabSlice'
+import { clear, getUserData } from './../adminEditUser/adminEditUserSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
@@ -142,6 +143,10 @@ const AdminUserTab = () => {
   }, [activeTab, dispatch])
 
   const onEdit = (row: AdminUserWithId) => {
+    // Fetch user info before navigating to ensure updated menu state
+    dispatch(clear())
+    dispatch(getUserData(row.email))
+
     dispatch(setEditUserRowData(row))
     navigate('editUser/' + row.email)
   }

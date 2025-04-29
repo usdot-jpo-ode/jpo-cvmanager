@@ -145,6 +145,9 @@ export const adminEditUserSlice = createSlice({
     value: initialState,
   },
   reducers: {
+    clear: (state) => {
+      state.value = initialState
+    },
     updateOrganizations: (state, action) => {
       let newOrganizations = []
       for (const name of action.payload) {
@@ -221,7 +224,7 @@ export const adminEditUserSlice = createSlice({
   },
 })
 
-export const { updateOrganizations, updateStates, setSelectedRole } = adminEditUserSlice.actions
+export const { clear, updateOrganizations, updateStates, setSelectedRole } = adminEditUserSlice.actions
 
 export const selectLoading = (state: RootState) => state.adminEditUser.loading
 export const selectSelectedOrganizationNames = (state: RootState) => state.adminEditUser.value.selectedOrganizationNames

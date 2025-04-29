@@ -1,4 +1,4 @@
-import { createTheme, Theme } from '@mui/material'
+import { alpha, createTheme, Theme } from '@mui/material'
 import './fonts/museo-slab.css'
 import '../App.css'
 
@@ -33,7 +33,7 @@ declare module '@mui/material/styles' {
   }
 }
 
-export const headerTabHeight = 141
+export const headerTabHeight = 119
 
 export const testTheme = createTheme({
   palette: {
@@ -138,9 +138,24 @@ const themeMainLight = createTheme({
 const themeMainDark = createTheme({
   cssVariables: true,
   typography: {
-    fontFamily: '"museo-slab", Arial, Helvetica, sans-serif',
-    body2: {
-      fontFamily: '"Trebuchet MS", Arial, Helvetica, sans-serif',
+    fontFamily: '"Trebuchet MS", Arial, Helvetica, sans-serif',
+    h1: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h2: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h3: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h4: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h5: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h6: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
     },
   },
   components: {
@@ -168,6 +183,13 @@ const themeMainDark = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: 'unset',
+        },
+      },
+    },
+    MuiDivider: {
+      styleOverrides: {
+        root: {
+          borderColor: '#c7c7c7',
         },
       },
     },
@@ -216,7 +238,6 @@ const themeMainDark = createTheme({
       mapMenuItemHoverSelected: '#333333',
       mapMenuItemHoverUnselected: '#575757',
     },
-    divider: '#333333',
     background: {
       paper: '#1b1d1f',
       default: '#333333',

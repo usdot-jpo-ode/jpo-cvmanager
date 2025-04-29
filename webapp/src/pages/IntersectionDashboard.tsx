@@ -4,8 +4,6 @@ import { updateTableData as updateRsuTableData } from '../features/adminRsuTab/a
 import { getAvailableUsers } from '../features/adminUserTab/adminUserTabSlice'
 
 import './css/NoTableWidth.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../store'
 import { NotFound } from './404'
 import VerticalTabs from '../components/VerticalTabs'
 import DashboardPage from '../components/intersections/DashboardPage'
@@ -20,7 +18,10 @@ import {
 } from '../generalSlices/intersectionSlice'
 import MapIconRounded from '@mui/icons-material/Map'
 import MapDialog from '../features/intersections/intersection-selector/intersection-selector-dialog'
+import ConfigurationPage from '../components/intersections/ConfigurationPage'
 import { headerTabHeight } from '../styles/index'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../store'
 
 function IntersectionDashboard() {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -58,6 +59,7 @@ function IntersectionDashboard() {
             onClick={() => {
               setOpenMapDialog(true)
             }}
+            sx={{ mt: 1, ml: 1 }}
           >
             <MapIconRounded fontSize="large" />
           </IconButton>
@@ -93,12 +95,11 @@ function IntersectionDashboard() {
               title: 'Reports',
               child: <ReportsPage />,
             },
-            // The configuration page is still under development
-            // {
-            //   path: 'configuration',
-            //   title: 'Configuration',
-            //   child: <ConfigurationPage />,
-            // },
+            {
+              path: 'configuration',
+              title: 'Configuration',
+              child: <ConfigurationPage />,
+            },
           ]}
         />
       </div>

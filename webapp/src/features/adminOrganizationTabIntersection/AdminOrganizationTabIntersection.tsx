@@ -142,6 +142,10 @@ const AdminOrganizationTabIntersection = (props: AdminOrganizationTabIntersectio
   }
 
   const intersectionMultiAdd = async (intersectionList: AdminOrgIntersection[]) => {
+    if (intersectionList.length === 0) {
+      toast.error('Please select intersections to add')
+      return
+    }
     dispatch(intersectionAddMultiple({ intersectionList, selectedOrg, selectedOrgEmail, updateTableData })).then(
       (data) => {
         if (!(data.payload as any).success) {

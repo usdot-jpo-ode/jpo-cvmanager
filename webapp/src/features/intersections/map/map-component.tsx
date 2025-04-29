@@ -8,7 +8,6 @@ import { Paper, Box } from '@mui/material'
 import ControlPanel from './control-panel'
 import { SidePanel } from './side-panel'
 import { CustomPopup } from './popup'
-import { useDispatch, useSelector } from 'react-redux'
 import { selectToken } from '../../../generalSlices/userSlice'
 import {
   selectBsmLayerStyle,
@@ -63,7 +62,7 @@ import {
   selectSpatSignalGroups,
   selectTimeWindowSeconds,
   selectViewState,
-  setLoadInitialdataTimeoutId,
+  setLoadInitialDataTimeoutId,
   setMapProps,
   setMapRef,
   setRawData,
@@ -81,6 +80,7 @@ import { selectSelectedSrm } from '../../../generalSlices/rsuSlice'
 import mbStyle from '../../../styles/intersectionMapStyle.json'
 import DecoderEntryDialog from '../decoder/decoder-entry-dialog'
 import { useLocation } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 
 export const getTimestamp = (dt: any): number => {
   try {
@@ -220,7 +220,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
       clearTimeout(loadInitialDataTimeoutId)
     }
     const timeoutId = setTimeout(() => dispatch(pullInitialData()), 500)
-    dispatch(setLoadInitialdataTimeoutId(timeoutId))
+    dispatch(setLoadInitialDataTimeoutId(timeoutId))
   }, [queryParams])
 
   useEffect(() => {
@@ -308,8 +308,6 @@ const IntersectionMap = (props: MAP_PROPS) => {
             zIndex: 10,
             top: 0,
             left: 0,
-            width: 1200,
-            // width: 'calc(100% - 500px)',
             borderRadius: '4px',
             fontSize: '16px',
             maxHeight: 'calc(100vh - 120px)',

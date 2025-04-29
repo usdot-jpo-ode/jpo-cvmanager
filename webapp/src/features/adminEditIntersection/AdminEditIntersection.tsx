@@ -96,16 +96,6 @@ const AdminEditIntersection = () => {
   const { intersectionId } = useParams<{ intersectionId: string }>()
 
   useEffect(() => {
-    if (
-      (intersectionTableData ?? []).find(
-        (intersection: AdminIntersection) => intersection.intersection_id === intersectionId
-      )
-    ) {
-      dispatch(getIntersectionInfo(intersectionId))
-    }
-  }, [dispatch, intersectionId, intersectionTableData])
-
-  useEffect(() => {
     const currIntersection = (intersectionTableData ?? []).find(
       (intersection: AdminIntersection) => intersection.intersection_id === intersectionId
     )

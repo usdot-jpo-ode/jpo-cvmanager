@@ -32,8 +32,8 @@ import {
 import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
-import { RootState } from '../../store'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../../store'
 import { Action, Column } from '@material-table/core'
 import { AdminOrgUser } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import toast from 'react-hot-toast'
@@ -256,6 +256,10 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
   }
 
   const userMultiAdd = async (userList: AdminOrgUser[]) => {
+    if (userList.length === 0) {
+      toast.error('Please select users to add')
+      return
+    }
     dispatch(
       userAddMultiple({
         userList,

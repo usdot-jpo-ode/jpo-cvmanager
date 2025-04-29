@@ -79,6 +79,10 @@ const AdminUserTab = () => {
       tooltip: 'Remove All Selected Users',
       icon: 'delete',
       position: 'toolbarOnSelect',
+      iconProps: {
+        color: 'info',
+        itemType: 'outlined',
+      },
       onClick: (event, rowData: AdminUserWithId[]) => {
         const buttons = [
           {
@@ -99,25 +103,25 @@ const AdminUserTab = () => {
       },
     },
     {
-      tooltip: 'Refresh Data',
-      icon: () => (
-        <Button variant="outlined" color="info" startIcon={<Refresh />}>
-          Refresh
-        </Button>
-      ),
+      icon: () => <Refresh />,
       position: 'toolbar',
+      iconProps: {
+        title: 'Refresh Data',
+        color: 'info',
+        itemType: 'outlined',
+      },
       onClick: () => {
         updateTableData()
       },
     },
     {
-      tooltip: 'Add New User',
-      icon: () => (
-        <Button variant="contained" startIcon={<AddCircleOutline />}>
-          New
-        </Button>
-      ),
+      icon: () => <AddCircleOutline />,
       position: 'toolbar',
+      iconProps: {
+        title: 'Add New User',
+        color: 'info',
+        itemType: 'outlined',
+      },
       onClick: () => {
         navigate('addUser')
       },

@@ -80,89 +80,51 @@ exports[`should take a snapshot 1`] = `
                   </div>
                 </div>
               </div>
-            </div>
-            <div
-              class="MuiBox-root css-15k1nh5"
-            />
-            <div
-              class="MuiBox-root css-p9qzma"
-            >
-              <div>
-                <div
-                  style="display: flex;"
-                >
-                  <span>
-                    <div
-                      style="display: flex;"
-                    >
-                      <button
-                        aria-label="Refresh Data"
-                        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorInherit MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
-                        data-mui-internal-clone-element="true"
-                        tabindex="0"
-                        type="button"
+              <div
+                class="MuiBox-root css-15k1nh5"
+              />
+              <div
+                class="MuiBox-root css-p9qzma"
+              >
+                <div>
+                  <div
+                    style="display: flex;"
+                  >
+                    <span>
+                      <div
+                        style="display: flex;"
                       >
                         <button
-                          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedInfo MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorInfo MuiButton-root MuiButton-outlined MuiButton-outlinedInfo MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorInfo css-mocked-MuiButtonBase-root-MuiButton-root"
+                          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedInfo MuiButton-sizeSmall MuiButton-outlinedSizeSmall MuiButton-colorInfo MuiButton-root MuiButton-outlined MuiButton-outlinedInfo MuiButton-sizeSmall MuiButton-outlinedSizeSmall MuiButton-colorInfo css-mocked-MuiButtonBase-root-MuiButton-root"
                           tabindex="0"
                           type="button"
                         >
                           <span
-                            class="MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-mocked-MuiButton-startIcon"
+                            class="MuiButton-icon MuiButton-startIcon MuiButton-iconSizeSmall css-mocked-MuiButton-startIcon"
+                          />
+                          <p
+                            class="MuiTypography-root MuiTypography-body1 capital-case museo-slab css-mocked-MuiTypography-root"
                           >
-                            <svg
-                              aria-hidden="true"
-                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
-                              data-testid="RefreshIcon"
-                              focusable="false"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4z"
-                              />
-                            </svg>
-                          </span>
-                          Refresh
+                            Refresh Data
+                          </p>
                         </button>
-                        <span
-                          class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
-                        />
-                      </button>
-                      <button
-                        aria-label="Add New User"
-                        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorInherit MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
-                        data-mui-internal-clone-element="true"
-                        tabindex="0"
-                        type="button"
-                      >
                         <button
-                          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
+                          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedInfo MuiButton-sizeSmall MuiButton-outlinedSizeSmall MuiButton-colorInfo MuiButton-root MuiButton-outlined MuiButton-outlinedInfo MuiButton-sizeSmall MuiButton-outlinedSizeSmall MuiButton-colorInfo css-mocked-MuiButtonBase-root-MuiButton-root"
                           tabindex="0"
                           type="button"
                         >
                           <span
-                            class="MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-mocked-MuiButton-startIcon"
+                            class="MuiButton-icon MuiButton-startIcon MuiButton-iconSizeSmall css-mocked-MuiButton-startIcon"
+                          />
+                          <p
+                            class="MuiTypography-root MuiTypography-body1 capital-case museo-slab css-mocked-MuiTypography-root"
                           >
-                            <svg
-                              aria-hidden="true"
-                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
-                              data-testid="AddCircleOutlineIcon"
-                              focusable="false"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4zm-1-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8"
-                              />
-                            </svg>
-                          </span>
-                          New
+                            Add New User
+                          </p>
                         </button>
-                        <span
-                          class="MuiTouchRipple-root css-mocked-MuiTouchRipple-root"
-                        />
-                      </button>
-                    </div>
-                  </span>
+                      </div>
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -442,7 +404,7 @@ exports[`should take a snapshot 1`] = `
                     />
                     <p
                       class="MuiTablePagination-selectLabel css-mocked-MuiTablePagination-selectLabel"
-                      id="mui-11"
+                      id="mui-9"
                     >
                       Rows per page:
                     </p>
@@ -450,12 +412,12 @@ exports[`should take a snapshot 1`] = `
                       class="MuiInputBase-root MuiInputBase-colorPrimary MuiTablePagination-input css-mocked-MuiInputBase-root-MuiTablePagination-select"
                     >
                       <div
-                        aria-controls="mui-5"
+                        aria-controls="mui-3"
                         aria-expanded="false"
                         aria-haspopup="listbox"
-                        aria-labelledby="mui-11 mui-10"
+                        aria-labelledby="mui-9 mui-8"
                         class="MuiSelect-select MuiTablePagination-select MuiSelect-standard MuiInputBase-input css-mocked-MuiSelect-select-MuiInputBase-input"
-                        id="mui-10"
+                        id="mui-8"
                         role="combobox"
                         tabindex="0"
                       >

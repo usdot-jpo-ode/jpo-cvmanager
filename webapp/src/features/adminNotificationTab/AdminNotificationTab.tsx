@@ -92,12 +92,12 @@ const AdminNotificationTab = () => {
       },
     },
     {
-      tooltip: 'Refresh Data',
-      icon: () => (
-        <Button variant="outlined" color="info" startIcon={<Refresh />} sx={{ boxShadow: 'none' }}>
-          Refresh
-        </Button>
-      ),
+      icon: () => <Refresh />,
+      iconProps: {
+        title: 'Refresh Data',
+        color: 'info',
+        itemType: 'outlined',
+      },
       position: 'toolbar',
       onClick: () => {
         updateTableData()
@@ -105,12 +105,13 @@ const AdminNotificationTab = () => {
     },
     {
       tooltip: 'Add New Notification',
-      icon: () => (
-        <Button variant="contained" startIcon={<AddCircleOutline />} sx={{ boxShadow: 'none' }}>
-          New
-        </Button>
-      ),
+      icon: () => <AddCircleOutline />,
       position: 'toolbar',
+      iconProps: {
+        title: 'Add New Notification',
+        color: 'info',
+        itemType: 'outlined',
+      },
       onClick: () => {
         navigate('addNotification')
       },

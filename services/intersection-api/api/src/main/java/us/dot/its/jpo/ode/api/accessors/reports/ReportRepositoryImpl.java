@@ -33,6 +33,17 @@ public class ReportRepositoryImpl
         this.mongoTemplate = mongoTemplate;
     }
 
+    private Criteria applyDateCriteria(Criteria criteria, Long startDate, Long endDate) {
+        if (startDate != null && endDate != null) {
+            criteria.and(DATE_FIELD).gte(startDate).lte(endDate);
+        } else if (startDate != null) {
+            criteria.and(DATE_FIELD).gte(startDate);
+        } else if (endDate != null) {
+            criteria.and(DATE_FIELD).lte(endDate);
+        }
+        return criteria;
+    }
+
     /**
      * Get a page representing the count of data for a given intersectionID,
      * startTime, and endTime
@@ -50,8 +61,8 @@ public class ReportRepositoryImpl
             Long endTime) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(REPORT_NAME_FIELD, reportName)
-                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
+                .whereOptional(INTERSECTION_ID_FIELD, intersectionID);
+        criteria = applyDateCriteria(criteria, startTime, endTime);
         Query query = Query.query(criteria);
         return mongoTemplate.count(query, collectionName);
     }
@@ -74,8 +85,8 @@ public class ReportRepositoryImpl
             boolean includeReportContents) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(REPORT_NAME_FIELD, reportName)
-                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
+                .whereOptional(INTERSECTION_ID_FIELD, intersectionID);
+        criteria = applyDateCriteria(criteria, startTime, endTime);
         Query query = Query.query(criteria);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
         return wrapSingleResultWithPage(
@@ -104,8 +115,8 @@ public class ReportRepositoryImpl
             Pageable pageable) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(REPORT_NAME_FIELD, reportName)
-                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
+                .whereOptional(INTERSECTION_ID_FIELD, intersectionID);
+        criteria = applyDateCriteria(criteria, startTime, endTime);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
         List<String> excludedFields = new ArrayList<>();
         if (!includeReportContents) {

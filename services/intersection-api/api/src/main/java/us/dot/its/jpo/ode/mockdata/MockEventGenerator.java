@@ -40,11 +40,14 @@ public class MockEventGenerator {
 
         RegulatorIntersectionId mapId = new RegulatorIntersectionId();
         mapId.setIntersectionId(12109);
+        mapId.setRoadRegulatorId(0);
 
         RegulatorIntersectionId spatId = new RegulatorIntersectionId();
         mapId.setIntersectionId(12109);
+        mapId.setRoadRegulatorId(-1);
 
         event.setIntersectionID(12109);
+        event.setRoadRegulatorID(-1);
 
         mapIds.add(mapId);
         spatIds.add(spatId);
@@ -155,7 +158,7 @@ public class MockEventGenerator {
         event.setSecondTimeMarkType("maxEndTime");
         event.setFirstConflictingUtcTimestamp(ZonedDateTime.now().toInstant().toEpochMilli() + 100);
         event.setSecondConflictingUtcTimestamp(ZonedDateTime.now().toInstant().toEpochMilli());
-        event.setSource("{\"intersectionID\": 12109, \"originIp\": \"1.1.1.1\"}");
+        event.setSource("{\"intersectionID\": 12109, \"roadRegulatorID\": 104, \"originIp\": \"1.1.1.1\"}");
         return event;
     }
 

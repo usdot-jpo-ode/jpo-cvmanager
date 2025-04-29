@@ -38,6 +38,7 @@ public class MockNotificationGenerator {
         IntersectionReferenceAlignmentNotification notification = new IntersectionReferenceAlignmentNotification();
         IntersectionReferenceAlignmentEvent event = MockEventGenerator.getIntersectionReferenceAlignmentEvent();
         notification.setIntersectionID(event.getIntersectionID());
+        notification.setRoadRegulatorID(event.getRoadRegulatorID());
         notification.setEvent(event);
         notification.setNotificationHeading("Intersection Reference Alignment Notification");
         notification.setNotificationText(

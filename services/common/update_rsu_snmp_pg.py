@@ -149,7 +149,7 @@ def update_postgresql(rsu_snmp_configs_obj, subset=False):
         insert_config_list(configs_to_add)
 
 
-def get_snmp_configs(rsu_list):
+def get_snmp_msgfwding_configs(rsu_list):
     config_obj = {}
 
     for rsu in rsu_list:

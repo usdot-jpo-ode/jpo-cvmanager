@@ -509,9 +509,6 @@ def config_init(
     elif snmp_version == "1218":
         # Based on message type, choose the right port
         # rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, security, tx
-        logging.info(f"Security mode: {security}")
-        logging.info(f"Type of object: {type(security)}")
-
         if msg_type.lower() == "bsm":
             return config_txrxmsg(
                 rsu_ip, snmp_creds, dest_ip, "46800", index, "20", security, False

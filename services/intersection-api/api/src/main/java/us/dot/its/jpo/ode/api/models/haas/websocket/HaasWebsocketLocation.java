@@ -6,13 +6,20 @@ import lombok.AllArgsConstructor;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import org.springframework.data.mongodb.core.mapping.Field;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class HaasWebsocketLocation {
-    private String type;
+    @JsonProperty("id")
+    @Field("id")
     private String id;
+
+    @JsonProperty("type")
+    @Field("type")
+    private String type;
 
     @JsonProperty("detailed_type")
     @Field("detailed_type")
@@ -30,8 +37,16 @@ public class HaasWebsocketLocation {
     @Field("end_time")
     private String endTime;
 
+    @JsonProperty("lat")
+    @Field("lat")
     private double lat;
+
+    @JsonProperty("lon")
+    @Field("lon")
     private double lon;
+
+    @JsonProperty("alt")
+    @Field("alt")
     private double alt;
 
     @JsonProperty("street_name")
@@ -58,10 +73,13 @@ public class HaasWebsocketLocation {
     @Field("features")
     private List<Feature> features;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ThingReference {
+        @JsonProperty("id")
+        @Field("id")
         private String id;
 
         @JsonProperty("external_id")
@@ -77,19 +95,31 @@ public class HaasWebsocketLocation {
         private String endTime;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Feature {
+        @JsonProperty("type")
+        @Field("type")
         private String type;
+
+        @JsonProperty("geometry")
+        @Field("geometry")
         private List<Geometry> geometry;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Geometry {
+        @JsonProperty("lat")
+        @Field("lat")
         private double lat;
+
+        @JsonProperty("lon")
+        @Field("lon")
         private double lon;
     }
 }

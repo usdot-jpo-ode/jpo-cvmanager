@@ -19,6 +19,10 @@ import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.bson.Document;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 
 @Component
 public class HaasWebsocketLocationDataRepositoryImpl
@@ -74,17 +78,57 @@ public class HaasWebsocketLocationDataRepositoryImpl
                         Long startTime,
                         Long endTime,
                         Pageable pageable) {
-                Criteria criteria = new IntersectionCriteria()
-                                .whereOptional(IS_ACTIVE_FIELD, activeOnly)
+                Criteria timeCriteria = new IntersectionCriteria()
                                 .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
-                Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-                List<String> excludedFields = new ArrayList<>();
-                excludedFields.add("recordGeneratedAt");
-                excludedFields.add("_id");
 
-                return findPage(mongoTemplate, collectionName, pageable, criteria,
-                                sort,
-                                excludedFields, HaasWebsocketLocation.class);
+                // Create base aggregation pipeline
+                List<AggregationOperation> pipeline = new ArrayList<>();
+
+                // Match documents within time window
+                pipeline.add(Aggregation.match(timeCriteria));
+
+                if (activeOnly) {
+                        // For activeOnly, exclude IDs that have any inactive records
+                        pipeline.add(Aggregation.match(
+                                        Criteria.where(ID_FIELD).not().in(
+                                                        mongoTemplate.aggregate(
+                                                                        Aggregation.newAggregation(
+                                                                                        Aggregation.match(new Criteria()
+                                                                                                        .andOperator(
+                                                                                                                        timeCriteria,
+                                                                                                                        Criteria.where(IS_ACTIVE_FIELD)
+                                                                                                                                        .is(false))),
+                                                                                        Aggregation.group(ID_FIELD)),
+                                                                        collectionName,
+                                                                        Document.class).getMappedResults().stream()
+                                                                        .map(doc -> doc.get("_id")).toList())));
+                        pipeline.add(Aggregation.match(Criteria.where(IS_ACTIVE_FIELD).is(true)));
+                }
+
+                // Group by ID and get the latest record for each ID
+                pipeline.add(Aggregation.sort(Sort.Direction.DESC, DATE_FIELD));
+                pipeline.add(Aggregation.group(ID_FIELD).first("$$ROOT").as("latest"));
+                pipeline.add(Aggregation.replaceRoot("latest"));
+
+                // Skip and limit for pagination
+                pipeline.add(Aggregation.skip((long) pageable.getPageNumber() * pageable.getPageSize()));
+                pipeline.add(Aggregation.limit(pageable.getPageSize()));
+
+                // Execute aggregation
+                Aggregation aggregation = Aggregation.newAggregation(pipeline);
+                AggregationResults<HaasWebsocketLocation> results = mongoTemplate.aggregate(
+                                aggregation, collectionName, HaasWebsocketLocation.class);
+
+                // Count total documents for pagination
+                long total = mongoTemplate.aggregate(
+                                Aggregation.newAggregation(
+                                                pipeline.subList(0, pipeline.size() - 2) // Remove skip and limit
+                                                                .toArray(new AggregationOperation[0])),
+                                collectionName,
+                                HaasWebsocketLocation.class).getMappedResults().size();
+
+                List<HaasWebsocketLocation> content = results.getMappedResults();
+                return new PageImpl<>(content, pageable, total);
         }
 
         @Override

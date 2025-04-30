@@ -42,7 +42,7 @@
         "up": {
           "detached": true,
           "build": true,
-          "profiles": ["intersection_no_api"]
+          "profiles": ["intersection_no_api", "cvmanager_api"]
         },
         "files": ["${workspaceFolder}/docker-compose.yml", "${workspaceFolder}/docker-compose-intersection.yml"],
         "envFile": "${workspaceFolder}/.env"

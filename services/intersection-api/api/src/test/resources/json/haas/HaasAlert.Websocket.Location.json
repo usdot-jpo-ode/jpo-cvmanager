@@ -3,17 +3,17 @@
     "alt": 1483.67,
     "end_time": "2025-02-25T20:48:58.01Z",
     "external_id": "000000000000000000000000-2025-02-25T20:35:26.155Z",
-    "lon": -100,
+    "lon": -100.00,
     "type": "location",
     "location_type": "emergency",
     "detailed_type": "emergency",
-    "street_name": "10, -100",
+    "street_name": "10, -100.00",
     "features": [
         {
             "geometry": [
                 {
-                    "lon": -100,
-                    "lat": 10
+                    "lon": -100.00,
+                    "lat": 10.00
                 }
             ],
             "type": "point"
@@ -37,5 +37,5 @@
             "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
         }
     ],
-    "lat": 10
+    "lat": 10.00
 }

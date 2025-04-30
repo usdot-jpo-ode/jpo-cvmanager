@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 public interface PageableQuery {
 
@@ -64,11 +65,10 @@ public interface PageableQuery {
             return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }
 
-        // Convert Documents to our target type using ObjectMapper
-        ObjectMapper mapper = new ObjectMapper();
+        // Use Spring's built-in conversion service
         List<T> data = new ArrayList<>();
         for (Document result : aggregationResult.getResults()) {
-            T converted = mapper.convertValue(result, outputType);
+            T converted = mongoTemplate.getConverter().read(outputType, result);
             data.add(converted);
             // List<T> results = result.getList("results", outputType);
             // if (results != null) {

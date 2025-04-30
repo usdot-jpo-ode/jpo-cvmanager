@@ -6,7 +6,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.keycloak.representations.idm.UserRepresentation;
@@ -160,20 +159,8 @@ public class EmailTask {
     }
 
     public List<Notification> getActiveNotifications() {
-        List<LinkedHashMap<String, Object>> notificationsHashMap = new ArrayList<>();
         Page<Notification> notifications = activeNotificationRepo
                 .find(null, null, null, PageRequest.of(0, maximumResponseSize));
-        for (Notification notification : notifications) {
-            LinkedHashMap<String, Object> notificationMap = new LinkedHashMap<>();
-            notificationMap.put("notificationType", notification.getNotificationType());
-            notificationMap.put("key", notification.getKey());
-            notificationMap.put("intersectionID", notification.getIntersectionID());
-            notificationMap.put("notificationText", notification.getNotificationText());
-            notificationMap.put("notificationHeading", notification.getNotificationHeading());
-            notificationMap.put("notificationGeneratedAt",
-                    formatter.format(Instant.ofEpochMilli(notification.getNotificationGeneratedAt())));
-            notificationsHashMap.add(notificationMap);
-        }
         return notifications.getContent();
     }
 

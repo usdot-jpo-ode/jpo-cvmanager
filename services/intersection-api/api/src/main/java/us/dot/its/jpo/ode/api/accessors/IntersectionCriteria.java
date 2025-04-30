@@ -42,7 +42,6 @@ public class IntersectionCriteria extends Criteria {
     /**
      * Build a query criteria object based on a time window
      *
-     * @param fieldName      the db field to apply criteria to
      * @param epochMillis    the time of the window, in milliseconds since epoch
      * @param formatAsString whether to format the date as a string or not
      * @return the criteria object to use for querying

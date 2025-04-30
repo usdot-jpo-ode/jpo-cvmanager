@@ -9,7 +9,13 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+
+import us.dot.its.jpo.ode.api.accessors.IntersectionCriteria;
+import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLineStopEvent;
 
@@ -17,64 +23,90 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
 
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
 @Component
-public class SignalStateStopEventRepositoryImpl implements SignalStateStopEventRepository {
+public class SignalStateStopEventRepositoryImpl
+        implements SignalStateStopEventRepository, PageableQuery {
 
     private final MongoTemplate mongoTemplate;
-    private final ConflictMonitorApiProperties props;
 
     private final String collectionName = "CmStopLineStopEvent";
+    private final String DATE_FIELD = "eventGeneratedAt";
+    private final String INTERSECTION_ID_FIELD = "intersectionID";
 
     @Autowired
-    public SignalStateStopEventRepositoryImpl(MongoTemplate mongoTemplate,
-            ConflictMonitorApiProperties props) {
+    public SignalStateStopEventRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
-        this.props = props;
     }
 
-    public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
-        Query query = new Query();
-
-        if (intersectionID != null) {
-            query.addCriteria(Criteria.where("intersectionID").is(intersectionID));
-        }
-        Date startTimeDate = new Date(0);
-        Date endTimeDate = new Date();
-
-        if (startTime != null) {
-            startTimeDate = new Date(startTime);
-        }
-        if (endTime != null) {
-            endTimeDate = new Date(endTime);
-        }
-
-        query.addCriteria(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate));
-        if (latest) {
-            query.with(Sort.by(Sort.Direction.DESC, "eventGeneratedAt"));
-            query.limit(1);
-        } else {
-            query.limit(props.getMaximumResponseSize());
-        }
-        return query;
+    /**
+     * Get a page representing the count of data for a given intersectionID,
+     * startTime, and endTime
+     *
+     * @param intersectionID the intersection ID to query by, if null will not be
+     *                       applied
+     * @param startTime      the start time to query by, if null will not be applied
+     * @param endTime        the end time to query by, if null will not be applied
+     * @return the paginated data that matches the given criteria
+     */
+    public long count(
+            Integer intersectionID,
+            Long startTime,
+            Long endTime) {
+        Criteria criteria = new IntersectionCriteria()
+                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
+        Query query = Query.query(criteria);
+        return mongoTemplate.count(query, collectionName);
     }
 
-    public long getQueryResultCount(Query query) {
-        return mongoTemplate.count(query, StopLineStopEvent.class, collectionName);
+    /**
+     * Get a page containing the single most recent record for a given
+     * intersectionID, startTime, and endTime
+     *
+     * @param intersectionID the intersection ID to query by, if null will not be
+     *                       applied
+     * @param startTime      the start time to query by, if null will not be applied
+     * @param endTime        the end time to query by, if null will not be applied
+     * @return the paginated data that matches the given criteria
+     */
+    public Page<StopLineStopEvent> findLatest(
+            Integer intersectionID,
+            Long startTime,
+            Long endTime) {
+        Criteria criteria = new IntersectionCriteria()
+                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
+        Query query = Query.query(criteria);
+        Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
+        return wrapSingleResultWithPage(
+                mongoTemplate.findOne(
+                        query.with(sort),
+                        StopLineStopEvent.class,
+                        collectionName));
     }
 
-    public long getQueryFullCount(Query query) {
-        int limit = query.getLimit();
-        query.limit(-1);
-        long count = mongoTemplate.count(query, StopLineStopEvent.class, collectionName);
-        query.limit(limit);
-        return count;
-    }
-
-    public List<StopLineStopEvent> find(Query query) {
-        return mongoTemplate.find(query, StopLineStopEvent.class, collectionName);
+    /**
+     * Get paginated data from a given intersectionID, startTime, and endTime
+     *
+     * @param intersectionID the intersection ID to query by, if null will not be
+     *                       applied
+     * @param startTime      the start time to query by, if null will not be applied
+     * @param endTime        the end time to query by, if null will not be applied
+     * @param pageable       the pageable object to use for pagination
+     * @return the paginated data that matches the given criteria
+     */
+    public Page<StopLineStopEvent> find(
+            Integer intersectionID,
+            Long startTime,
+            Long endTime,
+            Pageable pageable) {
+        Criteria criteria = new IntersectionCriteria()
+                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
+        Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null, StopLineStopEvent.class);
     }
 
     public List<IDCount> getAggregatedDailySignalStateStopEventCounts(int intersectionID, Long startTime,

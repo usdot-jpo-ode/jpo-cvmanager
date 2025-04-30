@@ -1,18 +1,15 @@
 package us.dot.its.jpo.ode.api.accessors.notifications.SpatBroadcastRateNotification;
 
-import java.util.List;
-
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.SpatBroadcastRateNotification;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
-public interface SpatBroadcastRateNotificationRepository extends DataLoader<SpatBroadcastRateNotification>{
-    Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
+public interface SpatBroadcastRateNotificationRepository extends DataLoader<SpatBroadcastRateNotification> {
+    long count(Integer intersectionID, Long startTime, Long endTime);
 
-    long getQueryResultCount(Query query);
+    Page<SpatBroadcastRateNotification> findLatest(Integer intersectionID, Long startTime, Long endTime);
 
-    long getQueryFullCount(Query query);
-    
-    List<SpatBroadcastRateNotification> find(Query query);  
+    Page<SpatBroadcastRateNotification> find(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
 }

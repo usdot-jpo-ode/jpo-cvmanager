@@ -45,7 +45,7 @@ class NotificationApi {
       tag: 'intersection',
     })
 
-    return notifications ?? []
+    return notifications?.content ?? []
   }
 
   async dismissNotifications({
@@ -61,15 +61,17 @@ class NotificationApi {
     for (const id of ids) {
       success =
         success &&
-        (await authApiHelper.invokeApi({
-          path: `/notifications/active`,
-          method: 'DELETE',
-          abortController,
-          token: token,
-          body: id.toString(),
-          booleanResponse: true,
-          tag: 'intersection',
-        }))
+        (
+          await authApiHelper.invokeApi({
+            path: `/notifications/active`,
+            method: 'DELETE',
+            abortController,
+            token: token,
+            body: id.toString(),
+            booleanResponse: true,
+            tag: 'intersection',
+          })
+        )?.content?.[0]
     }
     if (success) {
       toast.success(`Successfully Dismissed ${ids.length} Notifications`)
@@ -103,14 +105,16 @@ class NotificationApi {
     const notifications: MessageMonitor.Notification[] = []
     for (const notificationType of NOTIFICATION_TYPES) {
       const resp: MessageMonitor.Notification[] =
-        (await authApiHelper.invokeApi({
-          path: `/notifications/${notificationType}`,
-          token: token,
-          abortController,
-          queryParams,
-          failureMessage: `Failed to retrieve notifications of type ${notificationType}`,
-          tag: 'intersection',
-        })) ?? []
+        (
+          await authApiHelper.invokeApi({
+            path: `/notifications/${notificationType}`,
+            token: token,
+            abortController,
+            queryParams,
+            failureMessage: `Failed to retrieve notifications of type ${notificationType}`,
+            tag: 'intersection',
+          })
+        )?.content ?? []
       notifications.push(...resp)
     }
 

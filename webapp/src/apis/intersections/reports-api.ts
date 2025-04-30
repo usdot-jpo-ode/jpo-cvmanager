@@ -88,7 +88,7 @@ class ReportsApi {
       tag: 'intersection',
     })
 
-    return pdfReport
+    return pdfReport?.content?.[0]
   }
 
   async listReports({
@@ -122,8 +122,10 @@ class ReportsApi {
       tag: 'intersection',
     })
 
-    if (pdfReport) {
-      pdfReport.forEach((report: ReportMetadata) => {
+    const reportList = pdfReport?.content
+
+    if (reportList) {
+      reportList.forEach((report: ReportMetadata) => {
         report.reportStartTime = new Date(
           new Date(report.reportStartTime).getTime() + new Date(report.reportStartTime).getTimezoneOffset() * 60000
         )
@@ -133,7 +135,7 @@ class ReportsApi {
       })
     }
 
-    return pdfReport
+    return reportList
   }
 
   async downloadReport({
@@ -158,7 +160,7 @@ class ReportsApi {
       tag: 'intersection',
     })
 
-    return pdfReport
+    return pdfReport?.content?.[0]
   }
 }
 

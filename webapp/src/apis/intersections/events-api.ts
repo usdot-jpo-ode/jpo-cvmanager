@@ -39,7 +39,7 @@ class EventsApi {
       latest: latest.toString(),
     }
 
-    const response = await authApiHelper.invokeApi({
+    const response: PagedResponse<MessageMonitor.Event> = await authApiHelper.invokeApi({
       path: `/events/${eventType}`,
       token: token,
       queryParams: queryParams,
@@ -47,7 +47,7 @@ class EventsApi {
       failureMessage: `Failed to retrieve events of type ${eventType}`,
       tag: 'intersection',
     })
-    return response ?? ([] as MessageMonitor.Event[])
+    return response?.content ?? ([] as MessageMonitor.Event[])
   }
 
   async getAllEvents(
@@ -68,15 +68,17 @@ class EventsApi {
     const events: MessageMonitor.Event[] = []
     for (const eventTypeObj of EVENT_TYPES) {
       const response: MessageMonitor.Event[] =
-        (await authApiHelper.invokeApi({
-          path: `/events/${eventTypeObj.value}`,
-          token: token,
-          queryParams: queryParams,
-          abortController,
-          toastOnFailure: false,
-          failureMessage: `Failed to retrieve events of type ${eventTypeObj.value}`,
-          tag: 'intersection',
-        })) ?? []
+        (
+          (await authApiHelper.invokeApi({
+            path: `/events/${eventTypeObj.value}`,
+            token: token,
+            queryParams: queryParams,
+            abortController,
+            toastOnFailure: false,
+            failureMessage: `Failed to retrieve events of type ${eventTypeObj.value}`,
+            tag: 'intersection',
+          })) as PagedResponse<MessageMonitor.Event>
+        )?.content ?? []
       events.push(...response)
     }
     return events
@@ -104,7 +106,7 @@ class EventsApi {
       test: test.toString(),
     }
 
-    const response = await authApiHelper.invokeApi({
+    const response: PagedResponse<MessageMonitor.MinuteCount> = await authApiHelper.invokeApi({
       path: `/events/bsm_events_by_minute`,
       token: token,
       queryParams: queryParams,
@@ -112,7 +114,7 @@ class EventsApi {
       failureMessage: `Failed to retrieve bsm events by minute`,
       tag: 'intersection',
     })
-    return response ?? ([] as MessageMonitor.MinuteCount[])
+    return response?.content ?? ([] as MessageMonitor.MinuteCount[])
   }
 }
 

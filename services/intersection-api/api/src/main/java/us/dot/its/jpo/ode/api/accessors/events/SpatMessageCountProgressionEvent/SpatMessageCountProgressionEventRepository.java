@@ -1,18 +1,15 @@
 package us.dot.its.jpo.ode.api.accessors.events.SpatMessageCountProgressionEvent;
 
-
-import java.util.List;
-
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SpatMessageCountProgressionEvent;
 
-public interface SpatMessageCountProgressionEventRepository extends DataLoader<SpatMessageCountProgressionEvent>{
-    Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
+public interface SpatMessageCountProgressionEventRepository extends DataLoader<SpatMessageCountProgressionEvent> {
+    long count(Integer intersectionID, Long startTime, Long endTime);
 
-    long getQueryResultCount(Query query);
+    Page<SpatMessageCountProgressionEvent> findLatest(Integer intersectionID, Long startTime, Long endTime);
 
-    long getQueryFullCount(Query query);
-    
-    List<SpatMessageCountProgressionEvent> find(Query query);
+    Page<SpatMessageCountProgressionEvent> find(Integer intersectionID, Long startTime, Long endTime,
+            Pageable pageable);
 }

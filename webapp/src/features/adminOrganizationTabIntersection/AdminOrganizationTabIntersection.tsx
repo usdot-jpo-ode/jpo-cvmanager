@@ -27,7 +27,7 @@ import { RootState } from '../../store'
 import { Action, Column } from '@material-table/core'
 import { AdminOrgIntersection } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import toast from 'react-hot-toast'
-import { Button } from '@mui/material'
+import { Button, useTheme } from '@mui/material'
 import { AddCircleOutline, DeleteOutline } from '@mui/icons-material'
 
 interface AdminOrganizationTabIntersectionProps {
@@ -40,6 +40,7 @@ interface AdminOrganizationTabIntersectionProps {
 const AdminOrganizationTabIntersection = (props: AdminOrganizationTabIntersectionProps) => {
   const { selectedOrg, selectedOrgEmail, updateTableData } = props
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const theme = useTheme()
 
   const availableIntersectionList = useSelector(selectAvailableIntersectionList)
   const selectedIntersectionList = useSelector(selectSelectedIntersectionList)
@@ -51,8 +52,10 @@ const AdminOrganizationTabIntersection = (props: AdminOrganizationTabIntersectio
 
   let intersectionActions: Action<AdminOrgIntersection>[] = [
     {
-      icon: () => <DeleteOutline />,
-      tooltip: 'Remove From Organization',
+      icon: () => <DeleteOutline sx={{ color: theme.palette.custom.rowActionIcon }} />,
+      iconProps: {
+        itemType: 'rowAction',
+      },
       position: 'row',
       onClick: (event, rowData: AdminOrgIntersection) => {
         const buttons = [
@@ -70,6 +73,10 @@ const AdminOrganizationTabIntersection = (props: AdminOrganizationTabIntersectio
     {
       tooltip: 'Remove All Selected From Organization',
       icon: 'delete',
+      position: 'toolbarOnSelect',
+      iconProps: {
+        itemType: 'rowAction',
+      },
       onClick: (event, rowData: AdminOrgIntersection[]) => {
         const buttons = [
           { label: 'Yes', onClick: () => intersectionMultiDelete(rowData) },
@@ -85,6 +92,9 @@ const AdminOrganizationTabIntersection = (props: AdminOrganizationTabIntersectio
     },
     {
       position: 'toolbar',
+      iconProps: {
+        itemType: 'displayIcon',
+      },
       icon: () => (
         <Multiselect
           dataKey="id"
@@ -105,11 +115,12 @@ const AdminOrganizationTabIntersection = (props: AdminOrganizationTabIntersectio
     {
       tooltip: 'Add Intersections To Organization',
       position: 'toolbar',
-      icon: () => (
-        <Button variant="contained" startIcon={<AddCircleOutline />}>
-          Add Intersection
-        </Button>
-      ),
+      iconProps: {
+        title: 'Add Intersection',
+        color: 'primary',
+        itemType: 'contained',
+      },
+      icon: () => <AddCircleOutline />,
       onClick: () => intersectionMultiAdd(selectedIntersectionList),
     },
   ]

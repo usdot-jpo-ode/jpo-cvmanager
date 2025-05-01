@@ -54,8 +54,10 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
 
   let rsuActions: Action<AdminOrgRsu>[] = [
     {
-      icon: () => <DeleteOutline />,
-      tooltip: 'Remove From Organization',
+      icon: () => <DeleteOutline sx={{ color: theme.palette.custom.rowActionIcon }} />,
+      iconProps: {
+        itemType: 'rowAction',
+      },
       position: 'row',
       onClick: (event, rowData: AdminOrgRsu) => {
         const buttons = [
@@ -73,6 +75,10 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
     {
       tooltip: 'Remove All Selected From Organization',
       icon: 'delete',
+      iconProps: {
+        itemType: 'rowAction',
+      },
+      position: 'toolbarOnSelect',
       onClick: (event, rowData: AdminOrgRsu[]) => {
         const buttons = [
           { label: 'Yes', onClick: () => rsuMultiDelete(rowData) },
@@ -88,6 +94,9 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
     },
     {
       position: 'toolbar',
+      iconProps: {
+        itemType: 'displayIcon',
+      },
       icon: () => (
         <Multiselect
           dataKey="id"
@@ -106,13 +115,13 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
       onClick: () => {},
     },
     {
-      tooltip: 'Add RSUs To Organization',
       position: 'toolbar',
-      icon: () => (
-        <Button variant="contained" startIcon={<AddCircleOutline />}>
-          Add RSU
-        </Button>
-      ),
+      iconProps: {
+        title: 'Add RSU',
+        color: 'primary',
+        itemType: 'contained',
+      },
+      icon: () => <AddCircleOutline />,
       onClick: () => rsuMultiAdd(selectedRsuList),
     },
   ]

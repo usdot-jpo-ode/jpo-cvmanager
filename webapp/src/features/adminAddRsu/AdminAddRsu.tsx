@@ -36,21 +36,19 @@ import { RootState } from '../../store'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import Dialog from '@mui/material/Dialog'
-import CloseIcon from '@mui/icons-material/Close'
 import {
   Button,
   DialogActions,
   DialogContent,
-  DialogTitle,
   FormControl,
   Grid2,
-  IconButton,
   InputLabel,
   MenuItem,
-  OutlinedInput,
   Select,
+  TextField,
 } from '@mui/material'
 import { ErrorMessageText } from '../../styles/components/Messages'
+import { SideBarHeader } from '../../styles/components/SideBarHeader'
 
 export type AdminAddRsuForm = {
   ip: string
@@ -114,36 +112,27 @@ const AdminAddRsu = () => {
 
   return (
     <Dialog open={open}>
-      <DialogTitle>Add RSU</DialogTitle>
-      <IconButton
-        aria-label="close"
-        onClick={() => {
-          setOpen(false)
-          navigate('..')
-        }}
-        sx={(theme) => ({
-          position: 'absolute',
-          right: 8,
-          top: 8,
-          color: theme.palette.text.primary,
-        })}
-      >
-        <CloseIcon />
-      </IconButton>
-      <DialogContent sx={{ minWidth: '450px', maxWidth: '750px' }}>
+      <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
+        <SideBarHeader
+          onClick={() => {
+            setOpen(false)
+            navigate('..')
+          }}
+          title="Add RSU"
+        />
         <Form
           id="add-rsu-form"
           onSubmit={handleSubmit((data) => handleFormSubmit(data))}
           style={{ fontFamily: '"museo-slab", Arial, Helvetica, sans-serif' }}
         >
-          <Form.Group className="mb-3" controlId="ip">
+          <Form.Group controlId="ip">
             <FormControl fullWidth margin="normal">
-              <InputLabel htmlFor="rsu-ip">RSU IP</InputLabel>
-              <OutlinedInput
-                id="rsu-ip"
-                type="text"
-                placeholder="Enter RSU IP (Required)"
+              <TextField
                 label="RSU IP"
+                placeholder="Enter RSU IP"
+                color="info"
+                variant="outlined"
+                required
                 {...register('ip', {
                   required: "Please enter the RSU's IP address",
                   pattern: {
@@ -152,19 +141,25 @@ const AdminAddRsu = () => {
                     message: 'Please enter a valid IP address',
                   },
                 })}
+                slotProps={{
+                  inputLabel: {
+                    shrink: true,
+                  },
+                }}
               />
               {errors.ip && <p className="errorMsg">{errors.ip.message}</p>}
             </FormControl>
           </Form.Group>
           <Grid2 container spacing={1}>
             <Grid2 size={6}>
-              <Form.Group className="mb-3" controlId="latitude">
+              <Form.Group controlId="latitude">
                 <FormControl fullWidth margin="normal">
-                  <InputLabel htmlFor="rsu-lat">Latitude</InputLabel>
-                  <OutlinedInput
-                    id="rsu-lat"
-                    type="text"
+                  <TextField
                     label="Latitude"
+                    placeholder="Enter RSU Latitude"
+                    color="info"
+                    variant="outlined"
+                    required
                     {...register('latitude', {
                       required: 'Please enter the RSU latitude',
                       pattern: {
@@ -172,19 +167,25 @@ const AdminAddRsu = () => {
                         message: 'Please enter a valid latitude',
                       },
                     })}
+                    slotProps={{
+                      inputLabel: {
+                        shrink: true,
+                      },
+                    }}
                   />
                   {errors.latitude && <p className="errorMsg">{errors.latitude.message}</p>}
                 </FormControl>
               </Form.Group>
             </Grid2>
             <Grid2 size={6}>
-              <Form.Group className="mb-3" controlId="longitude">
+              <Form.Group controlId="longitude">
                 <FormControl fullWidth margin="normal">
-                  <InputLabel htmlFor="rsu-long">Longitude</InputLabel>
-                  <OutlinedInput
-                    id="rsu-long"
-                    type="text"
+                  <TextField
                     label="Longitude"
+                    placeholder="Enter RSU Longitude"
+                    color="info"
+                    variant="outlined"
+                    required
                     {...register('longitude', {
                       required: 'Please enter the RSU longitude',
                       pattern: {
@@ -193,19 +194,25 @@ const AdminAddRsu = () => {
                         message: 'Please enter a valid longitude',
                       },
                     })}
+                    slotProps={{
+                      inputLabel: {
+                        shrink: true,
+                      },
+                    }}
                   />
                   {errors.longitude && <p className="errorMsg">{errors.longitude.message}</p>}
                 </FormControl>
               </Form.Group>
             </Grid2>
             <Grid2 size={6}>
-              <Form.Group className="mb-3" controlId="milepost">
+              <Form.Group controlId="milepost">
                 <FormControl fullWidth margin="normal">
-                  <InputLabel htmlFor="rsu-milepost">Milepost</InputLabel>
-                  <OutlinedInput
-                    id="rsu-milepost"
-                    type="text"
+                  <TextField
                     label="Milepost"
+                    placeholder="Enter RSU Milepost"
+                    color="info"
+                    variant="outlined"
+                    required
                     {...register('milepost', {
                       required: 'Please enter the RSU milepost',
                       pattern: {
@@ -213,13 +220,18 @@ const AdminAddRsu = () => {
                         message: 'Please enter a valid number',
                       },
                     })}
+                    slotProps={{
+                      inputLabel: {
+                        shrink: true,
+                      },
+                    }}
                   />
                   {errors.milepost && <p className="errorMsg">{errors.milepost.message}</p>}
                 </FormControl>
               </Form.Group>
             </Grid2>
             <Grid2 size={6}>
-              <Form.Group className="mb-3" controlId="primary_route">
+              <Form.Group controlId="primary_route">
                 <FormControl fullWidth margin="normal">
                   <InputLabel htmlFor="primary_route">Primary Route</InputLabel>
                   <Select
@@ -227,6 +239,7 @@ const AdminAddRsu = () => {
                     label="Primary Route"
                     value={selectedRoute}
                     defaultValue={selectedRoute}
+                    required
                     onChange={(event) => {
                       const route = event.target.value as String
                       dispatch(updateSelectedRoute(route))
@@ -260,23 +273,29 @@ const AdminAddRsu = () => {
               </Form.Group>
             </Grid2>
             <Grid2 size={7}>
-              <Form.Group className="mb-3" controlId="serial_number">
+              <Form.Group controlId="serial_number">
                 <FormControl fullWidth margin="normal">
-                  <InputLabel htmlFor="rsu-serial-number">Serial Number</InputLabel>
-                  <OutlinedInput
-                    id="rsu-serial-number"
-                    type="text"
-                    label="RSU Serial Number"
+                  <TextField
+                    label="Serial Number"
+                    placeholder="Enter RSU Serial Number"
+                    color="info"
+                    variant="outlined"
+                    required
                     {...register('serial_number', {
                       required: 'Please enter the RSU serial number',
                     })}
+                    slotProps={{
+                      inputLabel: {
+                        shrink: true,
+                      },
+                    }}
                   />
                   {errors.serial_number && <p className="errorMsg">{errors.serial_number.message}</p>}
                 </FormControl>
               </Form.Group>
             </Grid2>
             <Grid2 size={5}>
-              <Form.Group className="mb-3" controlId="model">
+              <Form.Group controlId="model">
                 <FormControl fullWidth margin="normal">
                   <InputLabel htmlFor="model">RSU Model</InputLabel>
                   <Select
@@ -284,6 +303,7 @@ const AdminAddRsu = () => {
                     label="RSU Model"
                     value={selectedModel}
                     defaultValue={selectedModel}
+                    required
                     onChange={(event) => {
                       const selectedRSUModel = event.target.value as String
                       dispatch(updateSelectedModel(selectedRSUModel))
@@ -304,22 +324,28 @@ const AdminAddRsu = () => {
             </Grid2>
           </Grid2>
 
-          <Form.Group className="mb-3" controlId="scms_id">
+          <Form.Group controlId="scms_id">
             <FormControl fullWidth margin="normal">
-              <InputLabel htmlFor="rsu-scms-id">SCMS ID</InputLabel>
-              <OutlinedInput
-                id="rsu-scms-id"
-                type="text"
+              <TextField
                 label="SCMS ID"
+                placeholder="Enter RSU SCMS ID"
+                color="info"
+                variant="outlined"
+                required
                 {...register('scms_id', {
                   required: 'Please enter the SCMS ID',
                 })}
+                slotProps={{
+                  inputLabel: {
+                    shrink: true,
+                  },
+                }}
               />
               {errors.scms_id && <p className="errorMsg">{errors.scms_id.message}</p>}
             </FormControl>
           </Form.Group>
 
-          <Form.Group className="mb-3" controlId="ssh_credential_group">
+          <Form.Group controlId="ssh_credential_group">
             <FormControl fullWidth margin="normal">
               <InputLabel htmlFor="ssh_credential_group">SSH Credential Group</InputLabel>
               <Select
@@ -327,12 +353,13 @@ const AdminAddRsu = () => {
                 label="SSH Credential Group"
                 value={selectedSshGroup}
                 defaultValue={selectedSshGroup}
+                required
                 onChange={(event) => {
                   const selectedSSHGroup = event.target.value as String
                   dispatch(updateSelectedSshGroup(selectedSSHGroup))
                 }}
               >
-                <MenuItem value="Select SSH Group (Required)">Select SSH Credential Group (Required)</MenuItem>
+                <MenuItem value="Select SSH Group (Required)">Select SSH Group (Required)</MenuItem>
                 {sshCredentialGroups.map((group) => (
                   <MenuItem key={group.id} value={group.name}>
                     {group.name}
@@ -347,7 +374,7 @@ const AdminAddRsu = () => {
 
           <Grid2 container spacing={1}>
             <Grid2 size={6}>
-              <Form.Group className="mb-3" controlId="snmp_credential_group">
+              <Form.Group controlId="snmp_credential_group">
                 <FormControl fullWidth margin="normal">
                   <InputLabel htmlFor="snmp_credential_group">SNMP Credential Group</InputLabel>
                   <Select
@@ -374,7 +401,7 @@ const AdminAddRsu = () => {
               </Form.Group>
             </Grid2>
             <Grid2 size={6}>
-              <Form.Group className="mb-3" controlId="snmp_version_group">
+              <Form.Group controlId="snmp_version_group">
                 <FormControl fullWidth margin="normal">
                   <InputLabel htmlFor="snmp_version_group">SNMP Protocol</InputLabel>
                   <Select
@@ -382,6 +409,7 @@ const AdminAddRsu = () => {
                     label="SNMP Protocol"
                     value={selectedSnmpVersion}
                     defaultValue={selectedSnmpVersion}
+                    required
                     onChange={(event) => {
                       const selectedVersion = event.target.value as String
                       dispatch(updateSelectedSnmpVersion(selectedVersion))
@@ -401,13 +429,14 @@ const AdminAddRsu = () => {
               </Form.Group>
             </Grid2>
           </Grid2>
-          <Form.Group className="mb-3" controlId="organizations">
+          <Form.Group controlId="organizations">
             <FormControl fullWidth margin="normal">
               <InputLabel htmlFor="organizations">Organizations</InputLabel>
               <Select
                 id="organizations"
                 label="Organizations"
                 multiple
+                required
                 value={selectedOrganizations.map((org) => org.name)}
                 onChange={(event) => {
                   const selectedOrgs = event.target.value as String[]
@@ -436,14 +465,16 @@ const AdminAddRsu = () => {
           variant="outlined"
           color="info"
           style={{ position: 'absolute', bottom: 10, left: 10 }}
+          className="museo-slab capital-case"
         >
-          Close
+          Cancel
         </Button>
         <Button
           form="add-rsu-form"
           type="submit"
           variant="contained"
           style={{ position: 'absolute', bottom: 10, right: 10 }}
+          className="museo-slab capital-case"
         >
           Add RSU
         </Button>

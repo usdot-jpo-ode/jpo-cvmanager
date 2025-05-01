@@ -11,7 +11,6 @@ import {
   selectSubmitAttempt,
 
   // actions
-  getIntersectionInfo,
   submitForm,
   setSelectedOrganizations,
   setSelectedRsus,
@@ -28,13 +27,11 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
   FormControl,
-  IconButton,
   InputLabel,
   MenuItem,
-  OutlinedInput,
   Select,
+  TextField,
   Typography,
 } from '@mui/material'
 import toast from 'react-hot-toast'
@@ -42,6 +39,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import { AdminButton } from '../../styles/components/AdminButton'
 import { ErrorMessageText } from '../../styles/components/Messages'
 import '../../styles/fonts/museo-slab.css'
+import { SideBarHeader } from '../../styles/components/SideBarHeader'
 
 export type AdminEditIntersectionFormType = AdminIntersection & {
   orig_intersection_id: string
@@ -131,37 +129,29 @@ const AdminEditIntersection = () => {
 
   return (
     <Dialog open={open}>
-      <DialogTitle>Edit Intersection</DialogTitle>
-      <IconButton
-        aria-label="close"
-        onClick={() => {
-          setOpen(false)
-          navigate('..')
-        }}
-        sx={(theme) => ({
-          position: 'absolute',
-          right: 8,
-          top: 8,
-          color: theme.palette.text.primary,
-        })}
-      >
-        <CloseIcon />
-      </IconButton>
       {Object.keys(apiData ?? {}).length != 0 ? (
         <>
-          <DialogContent sx={{ minWidth: '450px', maxWidth: '750px' }}>
+          <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
+            <SideBarHeader
+              onClick={() => {
+                setOpen(false)
+                navigate('..')
+              }}
+              title="Edit Intersection"
+            />
             <Form
               id="edit-intersection-form"
               onSubmit={handleSubmit(onSubmit)}
               style={{ fontFamily: '"museo-slab", Arial, Helvetica, sans-serif' }}
             >
-              <Form.Group className="mb-3" controlId="intersection_id">
+              <Form.Group controlId="intersection_id">
                 <FormControl fullWidth margin="normal">
-                  <InputLabel>Intersection ID</InputLabel>
-                  <OutlinedInput
-                    id="int_id"
-                    type="text"
-                    placeholder="Intersection ID"
+                  <TextField
+                    label="Intersection ID"
+                    placeholder="Enter Intersection ID"
+                    color="info"
+                    variant="outlined"
+                    required
                     {...register('intersection_id', {
                       required: "Please enter the Intersection's numerical ID",
                       pattern: {
@@ -169,6 +159,11 @@ const AdminEditIntersection = () => {
                         message: 'Please enter a valid number',
                       },
                     })}
+                    slotProps={{
+                      inputLabel: {
+                        shrink: true,
+                      },
+                    }}
                   />
                   <ErrorMessage
                     errors={errors}
@@ -183,13 +178,14 @@ const AdminEditIntersection = () => {
                 </FormControl>
               </Form.Group>
 
-              <Form.Group className="mb-3" controlId="ref_pt.latitude">
+              <Form.Group controlId="ref_pt.latitude">
                 <FormControl fullWidth margin="normal">
-                  <InputLabel htmlFor="latitude-id">Reference Point Latitude</InputLabel>
-                  <OutlinedInput
-                    id="latitude-id"
-                    type="text"
-                    label="Reference Point Latitude"
+                  <TextField
+                    label="Latitude"
+                    placeholder="Enter Reference Point Latitude"
+                    color="info"
+                    variant="outlined"
+                    required
                     {...register('ref_pt.latitude', {
                       required: "Please enter the Intersection's reference point Latitude",
                       pattern: {
@@ -197,6 +193,11 @@ const AdminEditIntersection = () => {
                         message: 'Please enter a valid latitude, in degrees',
                       },
                     })}
+                    slotProps={{
+                      inputLabel: {
+                        shrink: true,
+                      },
+                    }}
                   />
                   <ErrorMessage
                     errors={errors}
@@ -211,13 +212,14 @@ const AdminEditIntersection = () => {
                 </FormControl>
               </Form.Group>
 
-              <Form.Group className="mb-3" controlId="ref_pt.longitude">
+              <Form.Group controlId="ref_pt.longitude">
                 <FormControl fullWidth margin="normal">
-                  <InputLabel htmlFor="longitude-id">Reference Point Longitude</InputLabel>
-                  <OutlinedInput
-                    id="longitude-id"
-                    type="text"
-                    label="Reference Point Longitude"
+                  <TextField
+                    label="Longitude"
+                    placeholder="Enter Reference Point Longitude"
+                    color="info"
+                    variant="outlined"
+                    required
                     {...register('ref_pt.longitude', {
                       required: "Please enter the Intersection's IP address",
                       pattern: {
@@ -226,6 +228,11 @@ const AdminEditIntersection = () => {
                         message: 'Please enter a valid longitude, in degrees',
                       },
                     })}
+                    slotProps={{
+                      inputLabel: {
+                        shrink: true,
+                      },
+                    }}
                   />
                   <ErrorMessage
                     errors={errors}
@@ -240,26 +247,33 @@ const AdminEditIntersection = () => {
                 </FormControl>
               </Form.Group>
 
-              <Form.Group className="mb-3" controlId="intersection_name">
+              <Form.Group controlId="intersection_name">
                 <FormControl fullWidth margin="normal">
-                  <InputLabel htmlFor="int-name">Intersection Name</InputLabel>
-                  <OutlinedInput
-                    id="int-name"
-                    type="text"
-                    label="Intersection Name"
+                  <TextField
+                    label="Name"
+                    placeholder="Enter Intersection Name"
+                    color="info"
+                    variant="outlined"
+                    required
                     {...register('intersection_name')}
+                    slotProps={{
+                      inputLabel: {
+                        shrink: true,
+                      },
+                    }}
                   />
                   {errors.intersection_name && <p className="errorMsg">{errors.intersection_name.message}</p>}
                 </FormControl>
               </Form.Group>
 
-              <Form.Group className="mb-3" controlId="origin_ip">
+              <Form.Group controlId="origin_ip">
                 <FormControl fullWidth margin="normal">
-                  <InputLabel htmlFor="int-origin-ip">Origin IP</InputLabel>
-                  <OutlinedInput
-                    id="int-origin-ip"
-                    type="text"
+                  <TextField
                     label="Origin IP"
+                    placeholder="Enter Origin IP"
+                    color="info"
+                    variant="outlined"
+                    required
                     {...register('origin_ip', {
                       pattern: {
                         value:
@@ -267,6 +281,11 @@ const AdminEditIntersection = () => {
                         message: 'Please enter a valid IP address',
                       },
                     })}
+                    slotProps={{
+                      inputLabel: {
+                        shrink: true,
+                      },
+                    }}
                   />
                   <ErrorMessage
                     errors={errors}
@@ -281,12 +300,11 @@ const AdminEditIntersection = () => {
                 </FormControl>
               </Form.Group>
 
-              <Form.Group className="mb-3" controlId="organizations">
+              <Form.Group controlId="organizations">
                 <FormControl fullWidth margin="normal">
                   <InputLabel>Organizations</InputLabel>
                   <Select
                     id="organizations"
-                    className="form-dropdown"
                     label="Organizations"
                     multiple
                     value={selectedOrganizations.map((org) => org.name)}
@@ -308,12 +326,11 @@ const AdminEditIntersection = () => {
                 </FormControl>
               </Form.Group>
 
-              <Form.Group className="mb-3" controlId="rsus">
+              <Form.Group controlId="rsus">
                 <FormControl fullWidth margin="normal">
                   <InputLabel>RSUs</InputLabel>
                   <Select
                     id="rsus"
-                    className="form-dropdown"
                     label="RSUs"
                     multiple
                     value={selectedRsus.map((rsu) => rsu.name)}
@@ -345,14 +362,16 @@ const AdminEditIntersection = () => {
               variant="outlined"
               color="info"
               style={{ position: 'absolute', bottom: 10, left: 10 }}
+              className="museo-slab capital-case"
             >
-              Close
+              Cancel
             </Button>
             <Button
               form="edit-intersection-form"
               type="submit"
               variant="contained"
               style={{ position: 'absolute', bottom: 10, right: 10 }}
+              className="museo-slab capital-case"
             >
               Apply Changes
             </Button>

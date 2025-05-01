@@ -40,6 +40,7 @@ import {
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import { useNavigate } from 'react-router-dom'
+import { SideBarHeader } from '../../styles/components/SideBarHeader'
 
 const AdminAddNotification = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -80,34 +81,25 @@ const AdminAddNotification = () => {
         navigate('..')
       }}
     >
-      <DialogTitle>Add Email Notification</DialogTitle>
-      <IconButton
-        aria-label="close"
-        onClick={() => {
-          setOpen(false)
-          navigate('..')
-        }}
-        sx={(theme) => ({
-          position: 'absolute',
-          right: 8,
-          top: 8,
-          color: theme.palette.text.primary,
-        })}
-      >
-        <CloseIcon />
-      </IconButton>
-      <DialogContent sx={{ minWidth: '500px', maxWidth: '750px' }}>
+      <DialogContent sx={{ width: '600px' }}>
+        <SideBarHeader
+          onClick={() => {
+            setOpen(false)
+            navigate('..')
+          }}
+          title="Add Email Notification"
+        />
         <Form
           id="add-notification-form"
           onSubmit={handleSubmit(onSubmit)}
           style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
         >
-          <Form.Group className="mb-3" controlId="email">
+          <Form.Group controlId="email">
             <InputLabel>Email</InputLabel>
             <Typography fontSize="small">{userEmail}</Typography>
           </Form.Group>
 
-          <Form.Group className="mb-3" controlId="email_type">
+          <Form.Group controlId="email_type">
             <FormControl fullWidth margin="normal">
               <InputLabel>Notification Type</InputLabel>
               <Select
@@ -145,6 +137,7 @@ const AdminAddNotification = () => {
           variant="outlined"
           color="info"
           style={{ position: 'absolute', bottom: 10, left: 10 }}
+          className="museo-slab capital-case"
         >
           Cancel
         </Button>
@@ -153,6 +146,7 @@ const AdminAddNotification = () => {
           type="submit"
           variant="contained"
           style={{ position: 'absolute', bottom: 10, right: 10 }}
+          className="museo-slab capital-case"
         >
           Add Email Notification
         </Button>

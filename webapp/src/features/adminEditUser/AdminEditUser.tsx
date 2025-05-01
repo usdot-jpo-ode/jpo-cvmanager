@@ -19,7 +19,6 @@ import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
-import '../../styles/fonts/museo-slab.css'
 import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { Link, useNavigate, useParams } from 'react-router-dom'
@@ -113,11 +112,7 @@ const AdminEditUser = () => {
           title="Edit User"
         />
         {Object.keys(apiData ?? {}).length != 0 ? (
-          <Form
-            id="edit-user-form"
-            onSubmit={handleSubmit(onSubmit)}
-            style={{ fontFamily: '"museo-slab", Arial, Helvetica, sans-serif' }}
-          >
+          <Form id="edit-user-form" onSubmit={handleSubmit(onSubmit)}>
             <Form.Group controlId="email">
               <FormControl fullWidth margin="normal">
                 <TextField
@@ -198,7 +193,7 @@ const AdminEditUser = () => {
             </Form.Group>
 
             <Form.Group controlId="super_user">
-              <Form.Check label=" Super User" type="switch" {...register('super_user')} />
+              <Form.Check label=" Super User" className="trebuchet" type="switch" {...register('super_user')} />
             </Form.Group>
 
             <Form.Group controlId="organizations">
@@ -226,7 +221,7 @@ const AdminEditUser = () => {
 
             {selectedOrganizations.length > 0 && (
               <Form.Group controlId="roles">
-                <Form.Label>Roles</Form.Label>
+                <Form.Label className="trebuchet">Roles</Form.Label>
                 <p className="spacer" />
                 {selectedOrganizations.map((organization) => {
                   let role = { role: organization.role }

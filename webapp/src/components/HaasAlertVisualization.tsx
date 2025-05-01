@@ -12,7 +12,6 @@ import dayjs from 'dayjs'
 import { getHaasLocationData } from '../generalSlices/haasAlertSlice'
 import { HaasLocationProperties, HaasWebsocketLocationParams } from '../models/haas/HaasWebsocketLocation'
 import { Feature, Point } from 'geojson'
-import './css/HaasAlert.css'
 
 interface HaasAlertVisualizationProps {
   menuSelection: string[]
@@ -60,24 +59,30 @@ export const HaasAlertVisualization: React.FC<HaasAlertVisualizationProps> = ({
     }
   }, [map])
 
-  const getControlClassName = () => {
-    let className = 'haas-control'
-    if (menuSelection.includes('V2x Message Viewer') && menuSelection.includes('Configure RSUs')) {
-      className += ' with-v2x-and-rsu'
-    } else if (menuSelection.includes('V2x Message Viewer')) {
-      className += ' with-v2x'
-    } else if (menuSelection.includes('Configure RSUs')) {
-      className += ' with-rsu'
-    } else {
-      className += ' default'
-    }
-    return className
-  }
-
   return (
     <>
-      <Paper className={getControlClassName()} style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}>
-        <Typography className="haas-title">HAAS Alert Query Options</Typography>
+      <Paper
+        className={menuSelection.includes('Configure RSUs') ? 'expandedControl' : 'control'}
+        style={{
+          backgroundColor: theme.palette.custom.mapLegendBackground,
+          padding: '10px',
+          position: 'absolute',
+          right: '10px',
+          top:
+            menuSelection.includes('V2x Message Viewer') && menuSelection.includes('Configure RSUs')
+              ? '540px'
+              : menuSelection.includes('V2x Message Viewer')
+              ? '380px'
+              : menuSelection.includes('Configure RSUs')
+              ? '180px'
+              : '30px',
+          width: '250px',
+          zIndex: 1,
+        }}
+      >
+        <Typography variant="h6" sx={{ fontSize: '1rem', mb: 1 }}>
+          HAAS Alert Query Options
+        </Typography>
 
         <FormGroup>
           <FormControlLabel
@@ -87,14 +92,24 @@ export const HaasAlertVisualization: React.FC<HaasAlertVisualizationProps> = ({
             label={<Typography variant="body2">Active Incidents Only</Typography>}
           />
 
-          <div className="haas-datetime-container">
+          <div style={{ marginTop: '10px' }}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
                 label="Start Date/Time"
                 value={haasStartDate}
                 maxDateTime={haasEndDate}
                 onChange={(newValue) => setHaasStartDate(newValue)}
-                className="haas-datetime-picker"
+                sx={{
+                  width: '100%',
+                  marginBottom: '8px',
+                  '& .MuiInputLabel-root': {
+                    fontSize: '0.875rem',
+                  },
+                  '& .MuiInputBase-input': {
+                    fontSize: '0.875rem',
+                    padding: '8px',
+                  },
+                }}
               />
 
               <DateTimePicker
@@ -103,7 +118,17 @@ export const HaasAlertVisualization: React.FC<HaasAlertVisualizationProps> = ({
                 minDateTime={haasStartDate}
                 maxDateTime={dayjs()}
                 onChange={(newValue) => setHaasEndDate(newValue)}
-                className="haas-datetime-picker-end"
+                sx={{
+                  width: '100%',
+                  marginBottom: '10px',
+                  '& .MuiInputLabel-root': {
+                    fontSize: '0.875rem',
+                  },
+                  '& .MuiInputBase-input': {
+                    fontSize: '0.875rem',
+                    padding: '8px',
+                  },
+                }}
               />
             </LocalizationProvider>
           </div>
@@ -123,6 +148,12 @@ export const HaasAlertVisualization: React.FC<HaasAlertVisualizationProps> = ({
             Search
           </Button>
         </FormGroup>
+
+        {haasLocationData.data?.features?.length > 0 && (
+          <div style={{ marginTop: '10px' }}>
+            <Typography variant="body2">Found {haasLocationData.data.features.length} incidents</Typography>
+          </div>
+        )}
       </Paper>
 
       <Source id="haas-alert-source" type="geojson" data={haasLocationData.data}>

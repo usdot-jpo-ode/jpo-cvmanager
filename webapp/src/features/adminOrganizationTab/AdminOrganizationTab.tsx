@@ -142,7 +142,6 @@ const AdminOrganizationTab = () => {
                   <Grid2 size={{ xs: 0 }} sx={{ marginLeft: '10px' }}>
                     <DropdownList
                       style={{ width: '250px' }}
-                      className="form-dropdown"
                       dataKey="name"
                       textField="name"
                       data={orgData}

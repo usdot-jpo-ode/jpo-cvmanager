@@ -25,13 +25,14 @@ import { Action } from '@material-table/core'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
 import toast from 'react-hot-toast'
-import { AddCircleOutline, DeleteOutline, ModeEditOutline, Refresh } from '@mui/icons-material'
-import { Button } from '@mui/material'
+import { DeleteOutline, ModeEditOutline, Refresh } from '@mui/icons-material'
+import { useTheme } from '@mui/material'
 
 const AdminUserTab = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const navigate = useNavigate()
   const location = useLocation()
+  const theme = useTheme()
 
   const activeTab = location.pathname.split('/')[4]
 
@@ -51,14 +52,18 @@ const AdminUserTab = () => {
 
   let tableActions: Action<AdminUserWithId>[] = [
     {
-      icon: () => <ModeEditOutline />,
-      tooltip: 'Edit User',
+      icon: () => <ModeEditOutline sx={{ color: theme.palette.custom.rowActionIcon }} />,
+      iconProps: {
+        itemType: 'rowAction',
+      },
       position: 'row',
       onClick: (event, rowData: AdminUserWithId) => onEdit(rowData),
     },
     {
-      icon: () => <DeleteOutline />,
-      tooltip: 'Delete User',
+      icon: () => <DeleteOutline sx={{ color: theme.palette.custom.rowActionIcon }} />,
+      iconProps: {
+        itemType: 'rowAction',
+      },
       position: 'row',
       onClick: (event, rowData: AdminUserWithId) => {
         const buttons = [
@@ -80,8 +85,7 @@ const AdminUserTab = () => {
       icon: 'delete',
       position: 'toolbarOnSelect',
       iconProps: {
-        color: 'info',
-        itemType: 'outlined',
+        itemType: 'rowAction',
       },
       onClick: (event, rowData: AdminUserWithId[]) => {
         const buttons = [
@@ -103,10 +107,10 @@ const AdminUserTab = () => {
       },
     },
     {
-      icon: () => <Refresh />,
+      icon: () => null,
       position: 'toolbar',
       iconProps: {
-        title: 'Refresh Data',
+        title: 'Refresh',
         color: 'info',
         itemType: 'outlined',
       },
@@ -115,12 +119,12 @@ const AdminUserTab = () => {
       },
     },
     {
-      icon: () => <AddCircleOutline />,
+      icon: () => null,
       position: 'toolbar',
       iconProps: {
-        title: 'Add New User',
-        color: 'info',
-        itemType: 'outlined',
+        title: 'New',
+        color: 'primary',
+        itemType: 'contained',
       },
       onClick: () => {
         navigate('addUser')

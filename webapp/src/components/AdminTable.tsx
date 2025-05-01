@@ -139,37 +139,38 @@ const AdminTable = (props: AdminTableProps) => {
               )
             }
 
-            if (iconProps?.itemType === 'rowAction') {
+            if (iconProps?.title !== null && iconProps?.title !== undefined) {
               return (
-                <Box
-                  sx={{
-                    '&:hover': {
-                      backgroundColor: alpha(theme.palette.custom.rowActionIcon, 0.1),
-                      borderRadius: '4px',
-                    },
-                    '& .MuiButtonBase-root': {
-                      borderRadius: '4px',
-                    },
-                  }}
+                <Button
+                  variant={iconProps?.itemType}
+                  color={iconProps?.color}
+                  size="small"
+                  startIcon={getActionIcon(iconProps?.title)}
+                  sx={{ padding: '4px 8px', margin: '0px 4px' }}
+                  onClick={action?.onClick}
                 >
-                  <MTableAction {...props} />
-                </Box>
+                  <Typography className="capital-case museo-slab" fontSize="12px">
+                    {iconProps?.title}
+                  </Typography>
+                </Button>
               )
             }
 
             return (
-              <Button
-                variant={iconProps?.itemType}
-                color={iconProps?.color}
-                size="small"
-                startIcon={getActionIcon(iconProps?.title)}
-                sx={{ padding: '4px 8px', margin: '0px 4px' }}
-                onClick={action?.onClick}
+              <Box
+                sx={{
+                  '&:hover': {
+                    backgroundColor: alpha(theme.palette.custom.rowActionIcon, 0.1),
+                    borderRadius: '4px',
+                  },
+                  '& .MuiButtonBase-root': {
+                    borderRadius: '4px',
+                    color: theme.palette.custom.rowActionIcon,
+                  },
+                }}
               >
-                <Typography className="capital-case museo-slab" fontSize="12px">
-                  {iconProps?.title}
-                </Typography>
-              </Button>
+                <MTableAction {...props} />
+              </Box>
             )
           },
           Toolbar: (props) => {

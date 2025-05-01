@@ -1,13 +1,14 @@
 package us.dot.its.jpo.ode.api.converters;
 
-import us.dot.its.jpo.ode.api.models.haas.websocket.HaasWebsocketLocation;
 import us.dot.its.jpo.ode.api.models.geojson.*;
+import us.dot.its.jpo.ode.api.models.haas.HaasLocation;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class HaasLocationConverter {
-    public static GeoJsonFeatureCollection toGeoJson(List<HaasWebsocketLocation> locations) {
+    public static GeoJsonFeatureCollection toGeoJson(List<HaasLocation> locations) {
         List<GeoJsonFeature> features = locations.stream()
                 .flatMap(location -> {
                     List<GeoJsonFeature> allFeatures = new ArrayList<>();

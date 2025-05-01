@@ -3,7 +3,7 @@ package us.dot.its.jpo.ode.api.models;
 import lombok.Data;
 import org.springframework.data.domain.Page;
 import us.dot.its.jpo.ode.api.models.geojson.GeoJsonFeatureCollection;
-import us.dot.its.jpo.ode.api.models.haas.websocket.HaasWebsocketLocation;
+import us.dot.its.jpo.ode.api.models.haas.HaasLocation;
 import us.dot.its.jpo.ode.api.converters.HaasLocationConverter;
 
 @Data
@@ -19,7 +19,7 @@ public class PaginatedGeoJsonResponse {
         private int totalPages;
     }
 
-    public static PaginatedGeoJsonResponse from(Page<HaasWebsocketLocation> page) {
+    public static PaginatedGeoJsonResponse from(Page<HaasLocation> page) {
         PaginatedGeoJsonResponse response = new PaginatedGeoJsonResponse();
         response.setData(HaasLocationConverter.toGeoJson(page.getContent()));
 

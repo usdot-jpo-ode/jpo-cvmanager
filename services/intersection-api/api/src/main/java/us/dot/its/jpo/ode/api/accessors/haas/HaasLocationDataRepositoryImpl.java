@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.accessors.haas.websocket;
+package us.dot.its.jpo.ode.api.accessors.haas;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -6,7 +6,7 @@ import org.springframework.data.domain.Sort;
 
 import us.dot.its.jpo.ode.api.accessors.IntersectionCriteria;
 import us.dot.its.jpo.ode.api.accessors.PageableQuery;
-import us.dot.its.jpo.ode.api.models.haas.websocket.HaasWebsocketLocation;
+import us.dot.its.jpo.ode.api.models.haas.HaasLocation;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,8 +25,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 
 @Component
-public class HaasWebsocketLocationDataRepositoryImpl
-                implements HaasWebsocketLocationDataRepository, PageableQuery {
+public class HaasLocationDataRepositoryImpl
+                implements HaasLocationDataRepository, PageableQuery {
 
         private final MongoTemplate mongoTemplate;
 
@@ -36,7 +36,7 @@ public class HaasWebsocketLocationDataRepositoryImpl
         private final String ID_FIELD = "id";
 
         @Autowired
-        public HaasWebsocketLocationDataRepositoryImpl(MongoTemplate mongoTemplate) {
+        public HaasLocationDataRepositoryImpl(MongoTemplate mongoTemplate) {
                 this.mongoTemplate = mongoTemplate;
         }
 
@@ -73,7 +73,7 @@ public class HaasWebsocketLocationDataRepositoryImpl
          * @param endTime        the end time to query by, if null will not be applied
          * @return the paginated data that matches the given criteria
          */
-        public Page<HaasWebsocketLocation> findLatest(
+        public Page<HaasLocation> find(
                         boolean activeOnly,
                         Long startTime,
                         Long endTime,
@@ -116,8 +116,8 @@ public class HaasWebsocketLocationDataRepositoryImpl
 
                 // Execute aggregation
                 Aggregation aggregation = Aggregation.newAggregation(pipeline);
-                AggregationResults<HaasWebsocketLocation> results = mongoTemplate.aggregate(
-                                aggregation, collectionName, HaasWebsocketLocation.class);
+                AggregationResults<HaasLocation> results = mongoTemplate.aggregate(
+                                aggregation, collectionName, HaasLocation.class);
 
                 // Count total documents for pagination
                 long total = mongoTemplate.aggregate(
@@ -125,14 +125,14 @@ public class HaasWebsocketLocationDataRepositoryImpl
                                                 pipeline.subList(0, pipeline.size() - 2) // Remove skip and limit
                                                                 .toArray(new AggregationOperation[0])),
                                 collectionName,
-                                HaasWebsocketLocation.class).getMappedResults().size();
+                                HaasLocation.class).getMappedResults().size();
 
-                List<HaasWebsocketLocation> content = results.getMappedResults();
+                List<HaasLocation> content = results.getMappedResults();
                 return new PageImpl<>(content, pageable, total);
         }
 
         @Override
-        public void add(HaasWebsocketLocation item) {
+        public void add(HaasLocation item) {
                 mongoTemplate.insert(item, collectionName);
         }
 

@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.models.haas.websocket;
+package us.dot.its.jpo.ode.api.models.haas;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class HaasWebsocketLocation {
+public class HaasLocation {
     @JsonProperty("id")
     @Field("id")
     private String id;

@@ -148,12 +148,6 @@ export const HaasAlertVisualization: React.FC<HaasAlertVisualizationProps> = ({
             Search
           </Button>
         </FormGroup>
-
-        {haasLocationData.data?.features?.length > 0 && (
-          <div style={{ marginTop: '10px' }}>
-            <Typography variant="body2">Found {haasLocationData.data.features.length} incidents</Typography>
-          </div>
-        )}
       </Paper>
 
       <Source id="haas-alert-source" type="geojson" data={haasLocationData.data}>

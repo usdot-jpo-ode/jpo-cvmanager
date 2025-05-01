@@ -15,6 +15,7 @@ declare module '@mui/material/styles' {
       mapMenuItemHoverSelected: string
       mapMenuItemHoverUnselected: string
       mapMenuBackground: string
+      rowActionIcon: string
     }
   }
   interface Palette {
@@ -29,6 +30,7 @@ declare module '@mui/material/styles' {
       mapMenuItemHoverSelected: string
       mapMenuItemHoverUnselected: string
       mapMenuBackground: string
+      rowActionIcon: string
     }
   }
 }
@@ -48,6 +50,7 @@ export const testTheme = createTheme({
       mapMenuItemHoverSelected: '#000000',
       mapMenuItemHoverUnselected: '#000000',
       mapMenuBackground: '#000000',
+      rowActionIcon: '#000000',
     },
   },
 })
@@ -126,6 +129,7 @@ const themeMainLight = createTheme({
       mapMenuItemBorderSelected: '1px solid black',
       mapMenuItemHoverSelected: '#a19f9f',
       mapMenuItemHoverUnselected: '#ffffff',
+      rowActionIcon: '#9DBDD3',
     },
   },
 })
@@ -237,6 +241,7 @@ const themeMainDark = createTheme({
       mapMenuItemBorderSelected: '1px solid black',
       mapMenuItemHoverSelected: '#333333',
       mapMenuItemHoverUnselected: '#575757',
+      rowActionIcon: '#9DBDD3',
     },
     background: {
       paper: '#1b1d1f',

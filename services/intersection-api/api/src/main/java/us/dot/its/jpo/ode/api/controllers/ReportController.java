@@ -49,18 +49,11 @@ public class ReportController {
     })
     public byte[] generateReport(
             @RequestParam(name = "intersection_id") int intersectionID,
-            @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
             @RequestParam(name = "start_time_utc_millis") long startTime,
             @RequestParam(name = "end_time_utc_millis") long endTime) {
         log.debug("Generating Report");
 
-        if (roadRegulatorID == null) {
-            roadRegulatorID = -1;
-        }
-
-        ReportDocument document = reportService.buildReport(intersectionID, roadRegulatorID.toString(),
-                startTime,
-                endTime);
+        ReportDocument document = reportService.buildReport(intersectionID, startTime, endTime);
 
         return document.getReportContents();
     }

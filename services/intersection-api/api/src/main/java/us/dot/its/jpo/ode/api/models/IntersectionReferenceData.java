@@ -8,14 +8,12 @@ import lombok.Setter;
 
 public class IntersectionReferenceData {
     int intersectionID;
-    String roadRegulatorID = "-1";
     String rsuIP;
     double longitude;
     double latitude;
     String intersectionName;
 
     public String toString() {
-        return "Intersection ID: " + intersectionID + "rsuIP: " + rsuIP + "Road Regulator ID: " + roadRegulatorID
-                + " Name: " + intersectionName;
+        return "IntersectionID: " + intersectionID + "rsuIP: " + rsuIP + " Name: " + intersectionName;
     }
 }

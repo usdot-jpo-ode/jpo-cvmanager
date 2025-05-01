@@ -103,9 +103,9 @@ public class ReportService {
                 .collect(Collectors.toList());
     }
 
-    public ReportDocument buildReport(int intersectionID, String roadRegulatorID, long startTime, long endTime) {
+    public ReportDocument buildReport(int intersectionID, long startTime, long endTime) {
         // ####### 1. Name Report #######
-        String reportName = "CmReport_" + intersectionID + "_" + roadRegulatorID + "_" + startTime + "_" + endTime;
+        String reportName = "CmReport_" + intersectionID + "_" + startTime + "_" + endTime;
 
         // ####### 2. Collect Report Data By Category #######
         // Lane Direction of Travel Info
@@ -222,7 +222,6 @@ public class ReportService {
         // ####### 3. Create Report Document #######
         ReportDocument doc = new ReportDocument();
         doc.setIntersectionID(intersectionID);
-        doc.setRoadRegulatorID(roadRegulatorID);
         doc.setReportGeneratedAt(Instant.now().toEpochMilli());
         doc.setReportStartTime(startTime);
         doc.setReportStopTime(endTime);

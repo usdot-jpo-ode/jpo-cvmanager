@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import us.dot.its.jpo.conflictmonitor.monitor.models.config.IntersectionConfig;
 
 public interface IntersectionConfigRepository {
-    Query getQuery(String key, Integer roadRegulatorID, Integer intersectionID);
+    Query getQuery(String key, Integer intersectionID);
 
     long getQueryResultCount(Query query);
 

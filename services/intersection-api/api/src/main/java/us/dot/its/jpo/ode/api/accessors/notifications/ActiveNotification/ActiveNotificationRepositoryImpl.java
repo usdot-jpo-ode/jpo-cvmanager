@@ -170,8 +170,7 @@ public class ActiveNotificationRepositoryImpl
 
     @Override
     public void add(Notification item) {
-        item.setId(item.getNotificationType()
-                + "_" + item.getIntersectionID() + "_" + item.getRoadRegulatorID());
+        item.setId(item.getNotificationType() + "_" + item.getIntersectionID());
         mongoTemplate.insert(item, collectionName);
     }
 

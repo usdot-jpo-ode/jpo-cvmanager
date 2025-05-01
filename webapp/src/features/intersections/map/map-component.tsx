@@ -181,32 +181,29 @@ const IntersectionMap = (props: MAP_PROPS) => {
   }, [playbackModeActive])
 
   useEffect(() => {
-    if (props.intersectionId != queryParams.intersectionId || props.roadRegulatorId != queryParams.roadRegulatorId) {
+    if (props.intersectionId != queryParams.intersectionId) {
       dispatch(
         updateQueryParams({
           intersectionId: props.intersectionId,
-          roadRegulatorId: props.roadRegulatorId,
         })
       )
-      if (liveDataActive && authToken && props.roadRegulatorId && props.intersectionId) {
+      if (liveDataActive && authToken && props.intersectionId) {
         cleanUpLiveStreaming()
         dispatch(
           initializeLiveStreaming({
             token: authToken,
-            roadRegulatorId: props.roadRegulatorId,
             intersectionId: props.intersectionId,
           })
         )
       }
     }
-  }, [props.intersectionId, props.roadRegulatorId])
+  }, [props.intersectionId])
 
   useEffect(() => {
     dispatch(
       updateQueryParams({
         ...generateQueryParams(props.sourceData, props.sourceDataType, decoderModeEnabled),
         intersectionId: props.intersectionId,
-        roadRegulatorId: props.roadRegulatorId,
         resetTimeWindow: true,
       })
     )
@@ -233,11 +230,10 @@ const IntersectionMap = (props: MAP_PROPS) => {
 
   useEffect(() => {
     if (liveDataActive) {
-      if (authToken && props.roadRegulatorId && props.intersectionId) {
+      if (authToken && props.intersectionId) {
         dispatch(
           initializeLiveStreaming({
             token: authToken,
-            roadRegulatorId: props.roadRegulatorId,
             intersectionId: props.intersectionId,
           })
         )
@@ -248,9 +244,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
           'Did not attempt to update notifications. Access token missing:',
           authToken == null || authToken == undefined,
           'Intersection ID:',
-          props.intersectionId,
-          'Road Regulator ID:',
-          props.roadRegulatorId
+          props.intersectionId
         )
       }
     } else {
@@ -261,11 +255,10 @@ const IntersectionMap = (props: MAP_PROPS) => {
 
   useEffect(() => {
     if (liveDataRestart != -1 && liveDataRestart < 5 && liveDataActive) {
-      if (authToken && props.roadRegulatorId && props.intersectionId) {
+      if (authToken && props.intersectionId) {
         dispatch(
           initializeLiveStreaming({
             token: authToken,
-            roadRegulatorId: props.roadRegulatorId,
             intersectionId: props.intersectionId,
             numRestarts: liveDataRestart,
           })

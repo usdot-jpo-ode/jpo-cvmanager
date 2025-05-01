@@ -65,7 +65,7 @@ public class ConfigController {
     private final RestTemplate restTemplate = new RestTemplate();
 
     private final String defaultConfigTemplate = "%s/config/default/%s";
-    private final String intersectionConfigTemplate = "%s/config/intersection/%s/%s/%s";
+    private final String intersectionConfigTemplate = "%s/config/intersection/%s/%s";
     private final String defaultConfigAllTemplate = "%s/config/defaults";
     private final String intersectionConfigAllTemplate = "%s/config/intersections";
 
@@ -139,7 +139,7 @@ public class ConfigController {
         }
         try {
             String resourceURL = String.format(intersectionConfigTemplate, props.getCmServerURL(),
-                    config.getRoadRegulatorID(), config.getIntersectionID(), config.getKey());
+                    config.getIntersectionID(), config.getKey());
             @SuppressWarnings("rawtypes")
             ResponseEntity<IntersectionConfig> response = restTemplate.getForEntity(resourceURL,
                     IntersectionConfig.class);
@@ -191,12 +191,11 @@ public class ConfigController {
                     "User does not have permission to delete intersection configuration parameters");
         }
 
-        Query query = intersectionConfigRepository.getQuery(config.getKey(), config.getRoadRegulatorID(),
-                config.getIntersectionID());
+        Query query = intersectionConfigRepository.getQuery(config.getKey(), config.getIntersectionID());
 
         try {
             String resourceURL = String.format(intersectionConfigTemplate, props.getCmServerURL(),
-                    config.getRoadRegulatorID(), config.getIntersectionID(), config.getKey());
+                    config.getIntersectionID(), config.getKey());
             restTemplate.delete(resourceURL);
             intersectionConfigRepository.delete(query);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -280,7 +279,6 @@ public class ConfigController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role"),
     })
     public @ResponseBody ResponseEntity<List<Config<?>>> intersection_config_unique(
-            @RequestParam(name = "road_regulator_id", required = true) int roadRegulatorID,
             @RequestParam(name = "intersection_id", required = true) int intersectionID) {
 
         // Query Default Configuration
@@ -303,7 +301,7 @@ public class ConfigController {
             ArrayList<IntersectionConfig<?>> results = new ArrayList<>(configMap.listConfigs());
 
             for (IntersectionConfig<?> config : results) {
-                if (config.getRoadRegulatorID() == roadRegulatorID && config.getIntersectionID() == intersectionID) {
+                if (config.getIntersectionID() == intersectionID) {
                     intersectionList.add(config);
                 }
             }

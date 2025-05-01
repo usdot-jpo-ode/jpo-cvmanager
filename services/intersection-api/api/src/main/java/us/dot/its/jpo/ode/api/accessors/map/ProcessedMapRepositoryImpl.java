@@ -207,7 +207,6 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
             ProcessedMap<LineString> map = mapLookup.get(box.getIntersectionId());
             IntersectionReferenceData data = new IntersectionReferenceData();
             data.setIntersectionID(map.getProperties().getIntersectionId());
-            data.setRoadRegulatorID("-1");
             data.setRsuIP(map.getProperties().getOriginIp());
 
             if (map.getProperties().getIntersectionName() != null

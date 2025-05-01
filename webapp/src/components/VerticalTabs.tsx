@@ -9,12 +9,7 @@ import { RootState } from '../store'
 import { alpha, Box, Tab, Tabs, useTheme } from '@mui/material'
 import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { evaluateFeatureFlags } from '../feature-flags'
-import {
-  FiberManualRecordOutlined,
-  PersonOutlined,
-  SignalCellularAltOutlined,
-  TrafficOutlined,
-} from '@mui/icons-material'
+import { CellTowerOutlined, GroupOutlined, TrafficOutlined, WorkspacesOutlined } from '@mui/icons-material'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -62,13 +57,13 @@ function VerticalTabs(props: VerticalTabProps) {
   const getIcon = (tabName: string) => {
     switch (tabName) {
       case 'RSUs':
-        return <SignalCellularAltOutlined sx={{ marginRight: '40px' }} />
+        return <CellTowerOutlined />
       case 'Intersections':
-        return <TrafficOutlined sx={{ marginRight: '40px' }} />
+        return <TrafficOutlined />
       case 'Users':
-        return <PersonOutlined sx={{ marginRight: '40px' }} />
+        return <GroupOutlined />
       case 'Organizations':
-        return <FiberManualRecordOutlined sx={{ marginRight: '40px' }} />
+        return <WorkspacesOutlined />
     }
   }
 
@@ -111,7 +106,7 @@ function VerticalTabs(props: VerticalTabProps) {
           indicatorColor="secondary"
           textColor="inherit"
           orientation="vertical"
-          sx={{ width: 250 }}
+          sx={{ width: 250, '& .MuiTabs-indicator': { display: 'none' } }}
         >
           {filteredTabs.map((tab) => {
             const index = filteredTabs.indexOf(tab)
@@ -123,20 +118,21 @@ function VerticalTabs(props: VerticalTabProps) {
                 component={Link}
                 to={tab.path}
                 icon={getIcon(tab.title)}
+                iconPosition="start"
+                className="capital-case"
                 sx={{
-                  fontSize: 20,
-                  height: '60px',
-                  alignItems: 'center',
                   display: 'flex',
                   flexDirection: 'row',
                   justifyContent: 'flex-start',
-                  textTransform: 'none',
-                  borderRadius: 1,
+                  alignItems: 'center',
+                  fontSize: '16px',
+                  minHeight: '48px',
                   fontWeight: value === tab.path || value === index ? 'bold' : 'normal',
-                  color: theme.palette.text.primary,
-                  backgroundColor: 'transparent',
+                  color:
+                    value === tab.path || value === index ? theme.palette.text.primary : theme.palette.text.secondary,
+                  padding: '8px 16px',
                   '&:hover': {
-                    backgroundColor: alpha(theme.palette.primary.main, 0.2),
+                    backgroundColor: alpha(theme.palette.text.primary, 0.1),
                   },
                 }}
               />

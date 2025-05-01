@@ -40,14 +40,13 @@ const AdminOrganizationDeleteMenu = (props: AdminOrganizationDeleteMenuProps) =>
         onClick={handleDelete}
         sx={{
           backgroundColor: 'transparent',
-          color: theme.palette.text.primary,
           borderRadius: '2px',
           '&:hover': {
             backgroundColor: alpha(theme.palette.text.primary, 0.1),
           },
         }}
       >
-        <DeleteOutline component={undefined} size={20} />
+        <DeleteOutline sx={{ color: theme.palette.custom.rowActionIcon }} component={undefined} size={20} />
       </ContainedIconButton>
     </div>
   )

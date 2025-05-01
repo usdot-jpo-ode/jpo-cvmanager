@@ -174,7 +174,7 @@ const AdminOrganizationTabIntersection = (props: AdminOrganizationTabIntersectio
         <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
           <Typography variant="h6">Intersections</Typography>
         </AccordionSummary>
-        <AccordionDetails>
+        <AccordionDetails sx={{ padding: '8px 0px' }}>
           {loadingGlobal === false && [
             <div key="adminTable">
               <AdminTable

@@ -171,7 +171,7 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
         <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
           <Typography variant="h6">RSUs</Typography>
         </AccordionSummary>
-        <AccordionDetails>
+        <AccordionDetails sx={{ padding: '8px 0px' }}>
           {loadingGlobal === false && [
             <div key="adminTable">
               <AdminTable title={''} data={props.tableData} columns={rsuColumns} actions={rsuActions} />

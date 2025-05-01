@@ -38,7 +38,7 @@ import { Action, Column } from '@material-table/core'
 import { AdminOrgUser } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import toast from 'react-hot-toast'
 
-import { Button } from '@mui/material'
+import { useTheme } from '@mui/material'
 import { AddCircleOutline, DeleteOutline } from '@mui/icons-material'
 
 interface AdminOrganizationTabUserProps {
@@ -50,6 +50,7 @@ interface AdminOrganizationTabUserProps {
 
 const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const theme = useTheme()
   const { selectedOrg, selectedOrgEmail } = props
   const availableUserList = useSelector(selectAvailableUserList)
   const selectedUserList = useSelector(selectSelectedUserList)
@@ -63,29 +64,28 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
       field: 'first_name',
       editable: 'never',
       id: 0,
-      width: '23%',
     },
     {
       title: 'Last Name',
       field: 'last_name',
       editable: 'never',
       id: 1,
-      width: '23%',
     },
-    { title: 'Email', field: 'email', editable: 'never', id: 2, width: '24%' },
+    { title: 'Email', field: 'email', editable: 'never', id: 2 },
     {
       title: 'Role',
       field: 'role',
       id: 3,
-      width: '23%',
       lookup: { user: 'User', operator: 'Operator', admin: 'Admin' },
     },
   ])
 
   let userActions: Action<AdminOrgUser>[] = [
     {
-      icon: () => <DeleteOutline />,
-      tooltip: 'Remove From Organization',
+      icon: () => <DeleteOutline sx={{ color: theme.palette.custom.rowActionIcon }} />,
+      iconProps: {
+        itemType: 'rowAction',
+      },
       position: 'row',
       onClick: (event, rowData: AdminOrgUser) => {
         const buttons = [
@@ -109,6 +109,10 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
     {
       tooltip: 'Remove All Selected From Organization',
       icon: 'delete',
+      position: 'toolbarOnSelect',
+      iconProps: {
+        itemType: 'rowAction',
+      },
       onClick: (event, rowData: AdminOrgUser[]) => {
         const buttons = [
           {
@@ -130,6 +134,9 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
     },
     {
       position: 'toolbar',
+      iconProps: {
+        itemType: 'displayIcon',
+      },
       icon: () => (
         <Multiselect
           className="org-multiselect"
@@ -148,38 +155,12 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
     },
     {
       position: 'toolbar',
-      icon: () => (
-        <>
-          {selectedUserList.length > 0 &&
-            selectedUserList.map((user) => (
-              <div key={user.email}>
-                <DropdownList
-                  dataKey="role"
-                  textField="role"
-                  data={availableRoles}
-                  value={user}
-                  placeholder="Select Role"
-                  onChange={(value) => {
-                    dispatch(setSelectedUserRole({ email: user.email, role: value.role }))
-                  }}
-                  style={{
-                    fontSize: '1rem',
-                  }}
-                />
-              </div>
-            ))}
-        </>
-      ),
-      onClick: () => {},
-    },
-    {
-      tooltip: 'Add Users To Organization',
-      position: 'toolbar',
-      icon: () => (
-        <Button variant="contained" startIcon={<AddCircleOutline />}>
-          Add User
-        </Button>
-      ),
+      iconProps: {
+        title: 'Add User',
+        color: 'primary',
+        itemType: 'contained',
+      },
+      icon: () => <AddCircleOutline />,
       onClick: () => userMultiAdd(selectedUserList),
     },
   ]
@@ -314,18 +295,34 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
         <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
           <Typography variant="h6">Users</Typography>
         </AccordionSummary>
-        <AccordionDetails>
-          {loadingGlobal === false && [
-            <div key="adminTable">
+        <AccordionDetails sx={{ padding: '8px 0px' }}>
+          {loadingGlobal === false && (
+            <>
+              {selectedUserList.length > 0 &&
+                selectedUserList.map((user) => (
+                  <div key={user.email}>
+                    <p>{user.email}</p>
+                    <DropdownList
+                      className="org-form-dropdown"
+                      dataKey="role"
+                      textField="role"
+                      data={availableRoles}
+                      value={user}
+                      onChange={(value) => {
+                        dispatch(setSelectedUserRole({ email: user.email, role: value.role }))
+                      }}
+                    />
+                  </div>
+                ))}
               <AdminTable
-                title={''}
+                title=""
                 data={props.tableData}
                 columns={userColumns}
                 actions={userActions}
                 editable={userTableEditable}
               />
-            </div>,
-          ]}
+            </>
+          )}
         </AccordionDetails>
       </Accordion>
     </div>

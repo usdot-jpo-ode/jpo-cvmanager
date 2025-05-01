@@ -1,11 +1,15 @@
 package us.dot.its.jpo.ode.api.accessors.bsm;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
+import org.bson.Document;
 import org.geotools.referencing.GeodeticCalculator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -15,24 +19,25 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
+import us.dot.its.jpo.ode.api.accessors.IntersectionCriteria;
+import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 
 @Component
-public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository {
+public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQuery {
 
     private final MongoTemplate mongoTemplate;
-    private final ConflictMonitorApiProperties props;
-
     private final ObjectMapper mapper = DateJsonMapper.getInstance()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
     private final String collectionName = "OdeBsmJson";
+    private final String DATE_FIELD = "metadata.odeReceivedAt";
+    private final String ORIGIN_IP_FIELD = "metadata.originIp";
+    private final String VEHICLE_ID_FIELD = "payload.data.coreData.id";
 
     @Autowired
-    public OdeBsmJsonRepositoryImpl(MongoTemplate mongoTemplate,
-            ConflictMonitorApiProperties props) {
+    public OdeBsmJsonRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
-        this.props = props;
     }
 
     /**
@@ -90,44 +95,32 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository {
      * @param distance  the "radius" of the bounding box, in meters (total width is
      *                  2x distance)
      */
-    public List<OdeBsmData> findOdeBsmDataGeo(String originIp, String vehicleId, Long startTime, Long endTime,
-            Double centerLng, Double centerLat, Double distance) {
-        Query query = new Query();
+    public Page<OdeBsmData> find(String originIp, String vehicleId, Long startTime, Long endTime,
+            Double centerLng, Double centerLat, Double distance, Pageable pageable) {
 
-        if (originIp != null) {
-            query.addCriteria(Criteria.where("metadata.originIp").is(originIp));
-        }
-
-        if (vehicleId != null) {
-            query.addCriteria(Criteria.where("payload.data.coreData.id").is(vehicleId));
-        }
-
-        String startTimeString = Instant.ofEpochMilli(0).toString();
-        String endTimeString = Instant.now().toString();
-
-        if (startTime != null) {
-            startTimeString = Instant.ofEpochMilli(startTime).toString();
-        }
-        if (endTime != null) {
-            endTimeString = Instant.ofEpochMilli(endTime).toString();
-        }
-        query.limit(props.getMaximumResponseSize());
-        query.addCriteria(Criteria.where("metadata.odeReceivedAt").gte(startTimeString).lte(endTimeString));
-        query.fields().exclude("recordGeneratedAt");
+        Criteria criteria = new IntersectionCriteria()
+                .whereOptional(ORIGIN_IP_FIELD, originIp)
+                .whereOptional(VEHICLE_ID_FIELD, vehicleId)
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
 
         if (centerLng != null && centerLat != null && distance != null) {
             double[] latitudes = calculateLatitudes(centerLng, centerLat, distance);
             double[] longitudes = calculateLongitudes(centerLng, centerLat, distance);
-
-            query.addCriteria(Criteria.where("payload.data.coreData.position.latitude")
-                    .gte(Math.min(latitudes[0], latitudes[1])).lte(Math.max(latitudes[0], latitudes[1])));
-            query.addCriteria(Criteria.where("payload.data.coreData.position.longitude")
-                    .gte(Math.min(longitudes[0], longitudes[1])).lte(Math.max(longitudes[0], longitudes[1])));
+            criteria = criteria.and("payload.data.coreData.position.latitude")
+                    .gte(Math.min(latitudes[0], latitudes[1])).lte(Math.max(latitudes[0], latitudes[1]))
+                    .and("payload.data.coreData.position.longitude")
+                    .gte(Math.min(longitudes[0], longitudes[1])).lte(Math.max(longitudes[0], longitudes[1]));
         }
+        Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
+        List<String> excludedFields = List.of("recordGeneratedAt");
 
-        List<Map> documents = mongoTemplate.find(query, Map.class, collectionName);
-        return documents.stream()
+        Page<Document> aggregationResult = findDocumentsWithPagination(mongoTemplate, collectionName, pageable,
+                criteria, sort, excludedFields);
+
+        List<OdeBsmData> bsms = aggregationResult.getContent().stream()
                 .map(document -> mapper.convertValue(document, OdeBsmData.class)).toList();
+
+        return new PageImpl<>(bsms, pageable, aggregationResult.getTotalElements());
     }
 
     /**
@@ -143,41 +136,29 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository {
      * @param distance  the "radius" of the bounding box, in meters (total width is
      *                  2x distance)
      */
-    public long countOdeBsmDataGeo(String originIp, String vehicleId, Long startTime, Long endTime, Double centerLng,
-            Double centerLat, Double distance) {
-        Query query = new Query();
+    public long count(
+            String originIp,
+            String vehicleId,
+            Long startTime,
+            Long endTime,
+            Double centerLng,
+            Double centerLat,
+            Double distance) {
 
-        if (originIp != null) {
-            query.addCriteria(Criteria.where("metadata.originIp").is(originIp));
-        }
-
-        if (vehicleId != null) {
-            query.addCriteria(Criteria.where("payload.data.coreData.id").is(vehicleId));
-        }
-
-        String startTimeString = Instant.ofEpochMilli(0).toString();
-        String endTimeString = Instant.now().toString();
-
-        if (startTime != null) {
-            startTimeString = Instant.ofEpochMilli(startTime).toString();
-        }
-        if (endTime != null) {
-            endTimeString = Instant.ofEpochMilli(endTime).toString();
-        }
-        query.addCriteria(Criteria.where("metadata.odeReceivedAt").gte(startTimeString).lte(endTimeString));
-        query.fields().exclude("recordGeneratedAt");
-        query.limit(-1);
+        Criteria criteria = new IntersectionCriteria()
+                .whereOptional(ORIGIN_IP_FIELD, originIp)
+                .whereOptional(VEHICLE_ID_FIELD, vehicleId)
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
 
         if (centerLng != null && centerLat != null && distance != null) {
             double[] latitudes = calculateLatitudes(centerLng, centerLat, distance);
             double[] longitudes = calculateLongitudes(centerLng, centerLat, distance);
-
-            query.addCriteria(Criteria.where("payload.data.coreData.position.latitude")
-                    .gte(Math.min(latitudes[0], latitudes[1])).lte(Math.max(latitudes[0], latitudes[1])));
-            query.addCriteria(Criteria.where("payload.data.coreData.position.longitude")
-                    .gte(Math.min(longitudes[0], longitudes[1])).lte(Math.max(longitudes[0], longitudes[1])));
+            criteria = criteria.and("payload.data.coreData.position.latitude")
+                    .gte(Math.min(latitudes[0], latitudes[1])).lte(Math.max(latitudes[0], latitudes[1]))
+                    .and("payload.data.coreData.position.longitude")
+                    .gte(Math.min(longitudes[0], longitudes[1])).lte(Math.max(longitudes[0], longitudes[1]));
         }
-
+        Query query = Query.query(criteria);
         return mongoTemplate.count(query, Map.class, collectionName);
     }
 

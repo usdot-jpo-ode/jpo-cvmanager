@@ -176,28 +176,8 @@ function MapPage() {
   const [selectedRsuCount, setSelectedRsuCount] = useState(null)
   const [displayType, setDisplayType] = useState('none')
 
-  // Menu local state variable
-  const [displayMenu, setDisplayMenu] = useState(false)
-
   // Add these new state variables near the other source states
   const [previewPoint, setPreviewPoint] = useState<GeoJSON.Feature<GeoJSON.Point> | null>(null)
-
-  // BSM layer local state variables
-  const [geoMsgPolygonSource, setGeoMsgPolygonSource] = useState<GeoJSON.Feature<GeoJSON.Geometry>>({
-    type: 'Feature',
-    geometry: {
-      type: 'Polygon',
-      coordinates: [],
-    },
-    properties: {},
-  })
-
-  const [geoMsgPolygonPointSource, setGeoMsgPolygonPointSource] = useState<GeoJSON.FeatureCollection<GeoJSON.Geometry>>(
-    {
-      type: 'FeatureCollection',
-      features: [],
-    }
-  )
 
   const [geoMsgPointSource, setGeoMsgPointSource] = useState<GeoJSON.FeatureCollection<GeoJSON.Geometry>>({
     type: 'FeatureCollection',
@@ -316,13 +296,18 @@ function MapPage() {
   }
 
   // Effect for handling polygon updates msg-viewer-layer
-  useEffect(() => {
-    if (!activeLayers.includes('msg-viewer-layer')) return
 
-    setGeoMsgPolygonPointSource((prevPointSource) => ({
-      ...prevPointSource,
+  const geoMsgPolygonPointSource = useMemo(() => {
+    if (!activeLayers.includes('msg-viewer-layer')) return null
+
+    return {
+      type: 'FeatureCollection',
       features: geoMsgCoordinates.map((point) => createPointFeature(point)),
-    }))
+    } as GeoJSON.FeatureCollection<GeoJSON.Geometry>
+  }, [geoMsgCoordinates, activeLayers])
+
+  const geoMsgPolygonSource = useMemo(() => {
+    if (!activeLayers.includes('msg-viewer-layer')) return null
 
     // Get coordinates including preview point if it exists
     let polygonCoords = [...geoMsgCoordinates]
@@ -347,16 +332,16 @@ function MapPage() {
       polygonCoords.push(polygonCoords[0])
     }
 
-    setGeoMsgPolygonSource(
-      (prevPolygonSource) =>
-        ({
-          ...prevPolygonSource,
-          geometry: {
-            type: polygonCoords.length === 2 ? 'LineString' : 'Polygon', // Use LineString for 2 points
-            coordinates: polygonCoords.length === 2 ? polygonCoords : [polygonCoords],
-          },
-        } as GeoJSON.Feature<GeoJSON.Geometry>)
-    )
+    const polygonSource = {
+      type: 'Feature',
+      geometry: {
+        type: polygonCoords.length === 2 ? 'LineString' : 'Polygon', // Use LineString for 2 points
+        coordinates: polygonCoords.length === 2 ? polygonCoords : [polygonCoords],
+      },
+      properties: {},
+    } as GeoJSON.Feature<GeoJSON.Geometry>
+
+    return polygonSource
   }, [geoMsgCoordinates, activeLayers, addGeoMsgPoint, previewPoint])
 
   const mooveAiPolygonPointSource = useMemo(

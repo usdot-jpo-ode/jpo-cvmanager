@@ -12,11 +12,7 @@ import toast from 'react-hot-toast'
 import MapDialog from '../../features/intersections/intersection-selector/intersection-selector-dialog'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
-import {
-  selectIntersections,
-  selectSelectedIntersectionId,
-  selectSelectedRoadRegulatorId,
-} from '../../generalSlices/intersectionSlice'
+import { selectSelectedIntersectionId } from '../../generalSlices/intersectionSlice'
 import { selectToken } from '../../generalSlices/userSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -25,13 +21,11 @@ import {
   selectAssessments,
   selectGraphData,
   selectOpenMapDialog,
-  selectRoadRegulatorIntersectionIds,
   setType,
   setEvents,
   setAssessments,
   setGraphData,
   setOpenMapDialog,
-  setRoadRegulatorIntersectionIds,
 } from '../../features/intersections/data-selector/dataSelectorSlice'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
@@ -56,15 +50,12 @@ const DataSelectorPage = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
   const intersectionId = useSelector(selectSelectedIntersectionId)
-  const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
   const token = useSelector(selectToken)
   const type = useSelector(selectType)
   const events = useSelector(selectEvents)
   const assessments = useSelector(selectAssessments)
   const graphData = useSelector(selectGraphData)
   const openMapDialog = useSelector(selectOpenMapDialog)
-  const intersections = useSelector(selectIntersections)
-  const roadRegulatorIntersectionIds = useSelector(selectRoadRegulatorIntersectionIds)
 
   const getPaddedTimestamp = () => {
     const date = new Date()
@@ -87,27 +78,7 @@ const DataSelectorPage = () => {
     element.click()
   }
 
-  useEffect(() => {
-    const localRoadRegulatorIntersectionIds: { [roadRegulatorId: number | string]: number[] } = {}
-    for (const intersection of intersections) {
-      if (!localRoadRegulatorIntersectionIds[intersection.roadRegulatorID]) {
-        localRoadRegulatorIntersectionIds[intersection.roadRegulatorID] = []
-      }
-      localRoadRegulatorIntersectionIds[intersection.roadRegulatorID].push(intersection.intersectionID)
-    }
-    dispatch(setRoadRegulatorIntersectionIds(localRoadRegulatorIntersectionIds))
-  }, [intersections])
-
-  const query = async ({
-    type,
-    intersectionId,
-    roadRegulatorId,
-    startDate,
-    endTime,
-    eventTypes,
-    assessmentTypes,
-    bsmVehicleId,
-  }) => {
+  const query = async ({ type, intersectionId, startDate, endTime, eventTypes, assessmentTypes, bsmVehicleId }) => {
     dispatch(setType(type))
     dispatch(setGraphData([]))
     switch (type) {
@@ -117,7 +88,7 @@ const DataSelectorPage = () => {
         const eventPromises: Promise<MessageMonitor.Event[]>[] = []
         for (let i = 0; i < eventTypes.length; i++) {
           const eventType = eventTypes[i]
-          const promise = EventsApi.getEvents(token, eventType, intersectionId, roadRegulatorId, startDate, endTime)
+          const promise = EventsApi.getEvents(token, eventType, intersectionId, startDate, endTime)
           eventPromises.push(promise)
         }
         const allEventsPromise = Promise.all(eventPromises)
@@ -145,14 +116,7 @@ const DataSelectorPage = () => {
         // iterate through each event type in a for loop and add the events to events array
         for (let i = 0; i < assessmentTypes.length; i++) {
           const assessmentType = assessmentTypes[i]
-          const promise = AssessmentsApi.getAssessments(
-            token,
-            assessmentType,
-            intersectionId,
-            roadRegulatorId,
-            startDate,
-            endTime
-          )
+          const promise = AssessmentsApi.getAssessments(token, assessmentType, intersectionId, startDate, endTime)
           assessmentPromises.push(promise)
         }
 
@@ -180,13 +144,11 @@ const DataSelectorPage = () => {
 
   const onVisualize = async ({
     intersectionId,
-    roadRegulatorId,
     startDate,
     endTime,
     eventTypes,
   }: {
     intersectionId: number
-    roadRegulatorId: number
     startDate: Date
     endTime: Date
     eventTypes: string[]
@@ -196,7 +158,6 @@ const DataSelectorPage = () => {
         await GraphsApi.getGraphData({
           token: token,
           intersectionId: intersectionId,
-          roadRegulatorId: roadRegulatorId,
           startTime: startDate,
           endTime: endTime,
           event_types: eventTypes.filter((e) => valid_counts_event_types.includes(e)),
@@ -296,15 +257,10 @@ const DataSelectorPage = () => {
             </div>
           </Box>
           <Box mt={3}>
-            <DataSelectorEditForm
-              onQuery={query}
-              onVisualize={onVisualize}
-              roadRegulatorIntersectionIds={roadRegulatorIntersectionIds}
-              dbIntersectionId={intersectionId}
-            />
+            <DataSelectorEditForm onQuery={query} onVisualize={onVisualize} />
           </Box>
         </Container>
-        <Container sx={{ mt: 5, alignItems: 'center', display: 'flex' }}>
+        <Container maxWidth={false} sx={{ mt: 5, alignItems: 'center', display: 'flex' }}>
           {type == 'events' && (
             <EventDataTable
               events={events}

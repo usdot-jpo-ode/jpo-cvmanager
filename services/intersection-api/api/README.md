@@ -66,7 +66,7 @@ Install and run the intersection API using the following commands:
 2. **Run the application with the `dev` profile**:
 
    ```sh
-   mvn -Dspring-boot.run.profiles=dev spring-boot:run
+   mvn -Dspring-boot:run.profiles=dev spring-boot:run
    ```
 
 ## Running Tests

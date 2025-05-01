@@ -1,0 +1,28 @@
+{
+  "_id": {
+    "$oid": "66c4c17ebc6a472adb01a4dc"
+  },
+  "assessmentGeneratedAt": {
+    "$date": "2024-08-20T16:17:02.860Z"
+  },
+  "assessmentType": "LaneDirectionOfTravel",
+  "roadRegulatorID": -1,
+  "intersectionID": 12109,
+  "source": "{\"rsuId\":\"10.11.81.12\",\"intersectionId\":12109,\"region\":0}",
+  "laneDirectionOfTravelAssessmentGroup": [
+    {
+      "medianInToleranceCenterlineDistance": 7.458828740322419,
+      "laneID": 3,
+      "medianInToleranceHeading": 347.4,
+      "medianCenterlineDistance": 7.458828740322419,
+      "expectedHeading": 348.16231825699515,
+      "segmentID": 1,
+      "inToleranceEvents": 1,
+      "distanceFromCenterlineTolerance": 100.0,
+      "medianHeading": 347.4,
+      "tolerance": 20,
+      "outOfToleranceEvents": 0
+    }
+  ],
+  "timestamp": 1724170622861
+}

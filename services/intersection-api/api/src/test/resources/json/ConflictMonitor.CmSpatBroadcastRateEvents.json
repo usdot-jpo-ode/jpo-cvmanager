@@ -1,0 +1,18 @@
+{
+  "_id": {
+    "$oid": "66c4c172bc6a472adb01a2e3"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:16:50.318Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170595000,
+    "endTimestamp": 1724170605000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedSpat",
+  "eventType": "SpatBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 20
+}

@@ -2,7 +2,6 @@ import reducer, {
   refreshSnmpFwdConfig,
   submitSnmpSet,
   deleteSnmpSet,
-  filterSnmp,
   rebootRsu,
   checkFirmwareUpgrade,
   startFirmwareUpgrade,
@@ -30,8 +29,7 @@ describe('config reducer', () => {
         firmwareUpgradeErr: false,
         destIp: '',
         snmpMsgType: 'bsm',
-        snmpFilterMsg: '',
-        snmpFilterErr: false,
+        includeSecurityHeader: false,
         addConfigPoint: false,
         configCoordinates: [],
         configList: [],
@@ -42,7 +40,7 @@ describe('config reducer', () => {
 
 describe('async thunks', () => {
   const initialState: RootState['config'] = {
-    loading: null,
+    loading: false,
     value: {
       msgFwdConfig: null,
       errorState: null,
@@ -54,8 +52,7 @@ describe('async thunks', () => {
       firmwareUpgradeErr: false,
       destIp: '',
       snmpMsgType: 'bsm',
-      snmpFilterMsg: '',
-      snmpFilterErr: false,
+      includeSecurityHeader: false,
       addConfigPoint: false,
       configCoordinates: null,
       configList: null,
@@ -140,6 +137,7 @@ describe('async thunks', () => {
           value: {
             destIp: '1.1.1.1',
             snmpMsgType: 'bsm',
+            security: 0,
           },
         },
       })
@@ -159,6 +157,7 @@ describe('async thunks', () => {
           args: {
             dest_ip: '1.1.1.1',
             msg_type: 'bsm',
+            security: 0,
           },
         },
         ''
@@ -266,71 +265,6 @@ describe('async thunks', () => {
       let loading = false
       const state = reducer(initialState, {
         type: 'config/deleteSnmpSet/rejected',
-      })
-      expect(state).toEqual({ loading, value: { ...initialState.value } })
-    })
-  })
-
-  describe('filterSnmp', () => {
-    it('returns and calls the api correctly', async () => {
-      const dispatch = jest.fn()
-      const getState = jest.fn().mockReturnValue({
-        user: {
-          value: {
-            authLoginData: { token: 'token' },
-            organization: { name: 'name' },
-          },
-        },
-      })
-      RsuApi.postRsuData = jest.fn().mockReturnValue({ status: 200 })
-
-      const arg = ['1.2.3.4', '2.3.4.5']
-
-      const action = filterSnmp(arg)
-
-      let resp = await action(dispatch, getState, undefined)
-      expect(RsuApi.postRsuData).toHaveBeenCalledWith(
-        'token',
-        'name',
-        {
-          command: 'snmpFilter',
-          rsu_ip: arg,
-          args: {},
-        },
-        ''
-      )
-      expect(resp.payload).toEqual({ snmpFilterErr: false, snmpFilterMsg: 'Filter applied' })
-
-      RsuApi.postRsuData = jest.fn().mockReturnValue({ status: 400 })
-      resp = await action(dispatch, getState, undefined)
-      expect(resp.payload).toEqual({ snmpFilterErr: true, snmpFilterMsg: 'Filter failed to be applied' })
-    })
-
-    it('Updates the state correctly pending', async () => {
-      let loading = true
-      let snmpFilterErr = false
-      let snmpFilterMsg = ''
-      const state = reducer(initialState, {
-        type: 'config/filterSnmp/pending',
-      })
-      expect(state).toEqual({ loading, value: { ...initialState.value, snmpFilterErr, snmpFilterMsg } })
-    })
-
-    it('Updates the state correctly fulfilled', async () => {
-      let loading = false
-      let snmpFilterErr = false
-      let snmpFilterMsg = ''
-      const state = reducer(initialState, {
-        type: 'config/filterSnmp/fulfilled',
-        payload: { snmpFilterErr, snmpFilterMsg },
-      })
-      expect(state).toEqual({ loading, value: { ...initialState.value, snmpFilterErr, snmpFilterMsg } })
-    })
-
-    it('Updates the state correctly rejected', async () => {
-      let loading = false
-      const state = reducer(initialState, {
-        type: 'config/filterSnmp/rejected',
       })
       expect(state).toEqual({ loading, value: { ...initialState.value } })
     })
@@ -453,17 +387,6 @@ describe('async thunks', () => {
         loading,
         value: { ...initialState.value, firmwareUpgradeAvailable, firmwareUpgradeName, firmwareUpgradeMsg },
       })
-    })
-
-    it('Updates the state correctly fulfilled', async () => {
-      let loading = false
-      let snmpFilterErr = false
-      let snmpFilterMsg = ''
-      const state = reducer(initialState, {
-        type: 'config/filterSnmp/fulfilled',
-        payload: { snmpFilterErr, snmpFilterMsg },
-      })
-      expect(state).toEqual({ loading, value: { ...initialState.value, snmpFilterErr, snmpFilterMsg } })
     })
 
     it('Updates the state correctly rejected', async () => {
@@ -591,8 +514,7 @@ describe('reducers', () => {
       firmwareUpgradeErr: false,
       destIp: '',
       snmpMsgType: 'bsm',
-      snmpFilterMsg: '',
-      snmpFilterErr: false,
+      includeSecurityHeader: false,
       addConfigPoint: false,
       configCoordinates: null,
       configList: null,

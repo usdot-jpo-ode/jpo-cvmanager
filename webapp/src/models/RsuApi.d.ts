@@ -83,14 +83,7 @@ export type GeoMsgDataPostBody = {
 }
 
 export type RsuCommandPostBody = {
-  command:
-    | 'rsufwdsnmpwalk'
-    | 'rsufwdsnmpset'
-    | 'rsufwdsnmpset-del'
-    | 'snmpFilter'
-    | 'reboot'
-    | 'upgrade-rsu'
-    | 'upgrade-check'
+  command: 'rsufwdsnmpwalk' | 'rsufwdsnmpset' | 'rsufwdsnmpset-del' | 'reboot' | 'upgrade-rsu' | 'upgrade-check'
   rsu_ip: string[]
   args: Object
 }

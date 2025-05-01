@@ -2,7 +2,7 @@ import React from 'react'
 import toast from 'react-hot-toast'
 import * as Yup from 'yup'
 import { useFormik } from 'formik'
-import { LocalizationProvider } from '@mui/x-date-pickers'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import { Button, Card, CardActions, CardContent, Divider, Grid2, TextField } from '@mui/material'
@@ -11,27 +11,26 @@ import dayjs from 'dayjs'
 type Props = {
   onGenerateReport: ({
     intersectionId,
-    roadRegulatorId,
     startTime,
     endTime,
   }: {
     intersectionId?: number
-    roadRegulatorId?: number
     startTime: Date
     endTime: Date
   }) => void
   dbIntersectionId?: number
 }
 
+const DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000
+
 // TODO: Consider adding a road regulator dropdown
 export const ReportRequestEditForm = (props: Props) => {
   const { onGenerateReport, dbIntersectionId } = props
   const formik = useFormik({
     initialValues: {
-      startDate: new Date(Date.now() - 86400000), //yesterday
+      startDate: new Date(Date.now() - DAY_IN_MILLISECONDS), //yesterday
       endDate: new Date(),
       intersectionId: dbIntersectionId,
-      roadRegulatorId: -1,
       submit: null,
     },
     validationSchema: Yup.object({
@@ -47,7 +46,6 @@ export const ReportRequestEditForm = (props: Props) => {
         helpers.setSubmitting(false)
         onGenerateReport({
           intersectionId: values.intersectionId,
-          roadRegulatorId: values.roadRegulatorId,
           startTime: values.startDate,
           endTime: values.endDate,
         })
@@ -67,7 +65,7 @@ export const ReportRequestEditForm = (props: Props) => {
         <Divider />
         <CardContent>
           <Grid2 container spacing={3}>
-            <Grid2 size={{ md: 6, xs: 12 }}>
+            <Grid2 size={{ md: 4, xs: 12 }}>
               <TextField
                 error={Boolean(formik.touched.intersectionId && formik.errors.intersectionId)}
                 fullWidth
@@ -75,24 +73,43 @@ export const ReportRequestEditForm = (props: Props) => {
                 name="intersectionId"
                 onChange={formik.handleChange}
                 value={formik.values.intersectionId}
+                helperText={formik.touched.intersectionId && formik.errors.intersectionId}
               />
             </Grid2>
             <Grid2 size={{ md: 4, xs: 12 }}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
                   value={dayjs(formik.values.startDate)}
+                  label="Start Date"
                   onChange={(e) => formik.setFieldValue('startDate', e?.toDate() as Date | null, true)}
                   disableFuture
-                />
+                  slotProps={{
+                    textField: {
+                      variant: 'outlined',
+                      fullWidth: true,
+                      error: Boolean(formik.touched.startDate && formik.errors.startDate),
+                      helperText: formik.touched.startDate && formik.errors.startDate,
+                    },
+                  }}
+                ></DateTimePicker>
               </LocalizationProvider>
             </Grid2>
             <Grid2 size={{ md: 4, xs: 12 }}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
                   value={dayjs(formik.values.endDate)}
+                  label="End Date"
                   onChange={(e) => formik.setFieldValue('endDate', e?.toDate() as Date | null, true)}
                   disableFuture
-                />
+                  slotProps={{
+                    textField: {
+                      variant: 'outlined',
+                      fullWidth: true,
+                      error: Boolean(formik.touched.endDate && formik.errors.endDate),
+                      helperText: formik.touched.endDate && formik.errors.endDate,
+                    },
+                  }}
+                ></DateTimePicker>
               </LocalizationProvider>
             </Grid2>
           </Grid2>

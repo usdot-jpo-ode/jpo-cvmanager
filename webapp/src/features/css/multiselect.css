@@ -1,12 +1,12 @@
 .rw-widget-input {
   background-color: transparent !important;
-  color: var(--mui-palette-text-primary) !important;
-  border: 1px solid var(--mui-palette-text-primary) !important;
+  color: var(--mui-palette-text-secondary) !important;
+  border: 1px solid var(--mui-palette-text-secondary) !important;
 }
 
 .rw-picker-btn,
 .rw-picker-caret {
-  color: var(--mui-palette-text-primary) !important;
+  color: var(--mui-palette-text-secondary) !important;
 }
 
 .rw-multiselect-tag {
@@ -15,12 +15,12 @@
 
 .rw-popup {
   background-color: var(--mui-palette-background-paper) !important;
-  color: var(--mui-palette-text-primary) !important;
-  border: 1px solid var(--mui-palette-text-primary) !important;
+  color: var(--mui-palette-text-secondary) !important;
+  border: 1px solid var(--mui-palette-text-secondary) !important;
 }
 
 .rw-list-option {
-  color: var(--mui-palette-text-primary) !important;
+  color: var(--mui-palette-text-secondary) !important;
 }
 
 .rw-list-option:hover {
@@ -31,5 +31,5 @@
 
 .rw-state-selected {
   background-color: var(--mui-palette-primary-main) !important;
-  color: var(--mui-palette-text-primary) !important;
+  color: var(--mui-palette-text-secondary) !important;
 }

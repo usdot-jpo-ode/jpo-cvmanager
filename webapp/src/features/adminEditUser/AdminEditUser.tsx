@@ -35,12 +35,14 @@ import {
   MenuItem,
   OutlinedInput,
   Select,
+  TextField,
   Typography,
 } from '@mui/material'
 import Dialog from '@mui/material/Dialog'
 import toast from 'react-hot-toast'
 import CloseIcon from '@mui/icons-material/Close'
 import { ErrorMessageText } from '../../styles/components/Messages'
+import { SideBarHeader } from '../../styles/components/SideBarHeader'
 
 const AdminEditUser = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -102,36 +104,28 @@ const AdminEditUser = () => {
 
   return (
     <Dialog open={open}>
-      <DialogTitle>Edit User</DialogTitle>
-      <IconButton
-        aria-label="close"
-        onClick={() => {
-          setOpen(false)
-          navigate('..')
-        }}
-        sx={(theme) => ({
-          position: 'absolute',
-          right: 8,
-          top: 8,
-          color: theme.palette.text.primary,
-        })}
-      >
-        <CloseIcon />
-      </IconButton>
-      <DialogContent sx={{ minWidth: '450px', maxWidth: '750px' }}>
+      <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
+        <SideBarHeader
+          onClick={() => {
+            setOpen(false)
+            navigate('..')
+          }}
+          title="Edit User"
+        />
         {Object.keys(apiData ?? {}).length != 0 ? (
           <Form
             id="edit-user-form"
             onSubmit={handleSubmit(onSubmit)}
             style={{ fontFamily: '"museo-slab", Arial, Helvetica, sans-serif' }}
           >
-            <Form.Group className="mb-3" controlId="email">
+            <Form.Group controlId="email">
               <FormControl fullWidth margin="normal">
-                <InputLabel htmlFor="user-email">User Email</InputLabel>
-                <OutlinedInput
-                  id="user-email"
-                  type="email"
-                  label="User Email"
+                <TextField
+                  label="Email"
+                  placeholder="Enter User Email"
+                  color="info"
+                  variant="outlined"
+                  required
                   {...register('email', {
                     required: 'Please enter user email',
                     pattern: {
@@ -139,6 +133,11 @@ const AdminEditUser = () => {
                       message: 'Please enter a valid email',
                     },
                   })}
+                  slotProps={{
+                    inputLabel: {
+                      shrink: true,
+                    },
+                  }}
                 />
                 {errors.email && (
                   <p className="errorMsg" role="alert">
@@ -148,16 +147,22 @@ const AdminEditUser = () => {
               </FormControl>
             </Form.Group>
 
-            <Form.Group className="mb-3" controlId="first_name">
+            <Form.Group controlId="first_name">
               <FormControl fullWidth margin="normal">
-                <InputLabel htmlFor="user-first-name">First Name</InputLabel>
-                <OutlinedInput
-                  id="user-first-name"
-                  type="text"
+                <TextField
                   label="First Name"
+                  placeholder="Enter First Name"
+                  color="info"
+                  variant="outlined"
+                  required
                   {...register('first_name', {
                     required: "Please enter user's first name",
                   })}
+                  slotProps={{
+                    inputLabel: {
+                      shrink: true,
+                    },
+                  }}
                 />
                 {errors.first_name && (
                   <p className="errorMsg" role="alert">
@@ -167,16 +172,22 @@ const AdminEditUser = () => {
               </FormControl>
             </Form.Group>
 
-            <Form.Group className="mb-3" controlId="last_name">
+            <Form.Group controlId="last_name">
               <FormControl fullWidth margin="normal">
-                <InputLabel htmlFor="user-last-name">Last Name</InputLabel>
-                <OutlinedInput
-                  id="user-last-name"
-                  type="text"
+                <TextField
                   label="Last Name"
+                  placeholder="Enter Last Name"
+                  color="info"
+                  variant="outlined"
+                  required
                   {...register('last_name', {
                     required: "Please enter user's last name",
                   })}
+                  slotProps={{
+                    inputLabel: {
+                      shrink: true,
+                    },
+                  }}
                 />
                 {errors.last_name && (
                   <p className="errorMsg" role="alert">
@@ -186,16 +197,15 @@ const AdminEditUser = () => {
               </FormControl>
             </Form.Group>
 
-            <Form.Group className="mb-3" controlId="super_user">
+            <Form.Group controlId="super_user">
               <Form.Check label=" Super User" type="switch" {...register('super_user')} />
             </Form.Group>
 
-            <Form.Group className="mb-3" controlId="organizations">
+            <Form.Group controlId="organizations">
               <FormControl fullWidth margin="normal">
                 <InputLabel>Organizations</InputLabel>
                 <Select
                   id="organizations"
-                  className="form-dropdown"
                   label="Organizations"
                   multiple
                   value={selectedOrganizations.map((org) => org.name)}
@@ -215,14 +225,14 @@ const AdminEditUser = () => {
             </Form.Group>
 
             {selectedOrganizations.length > 0 && (
-              <Form.Group className="mb-3" controlId="roles">
+              <Form.Group controlId="roles">
                 <Form.Label>Roles</Form.Label>
                 <p className="spacer" />
                 {selectedOrganizations.map((organization) => {
                   let role = { role: organization.role }
 
                   return (
-                    <Form.Group className="mb-3" controlId={organization.id.toString()}>
+                    <Form.Group controlId={organization.id.toString()}>
                       <FormControl fullWidth margin="normal">
                         <InputLabel>{organization.name}</InputLabel>
                         <Select
@@ -268,14 +278,16 @@ const AdminEditUser = () => {
           variant="outlined"
           color="info"
           style={{ position: 'absolute', bottom: 10, left: 10 }}
+          className="museo-slab capital-case"
         >
-          Close
+          Cancel
         </Button>
         <Button
           form="edit-user-form"
           type="submit"
           variant="contained"
           style={{ position: 'absolute', bottom: 10, right: 10 }}
+          className="museo-slab capital-case"
         >
           Apply Changes
         </Button>

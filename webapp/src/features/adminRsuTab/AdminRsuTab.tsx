@@ -7,7 +7,6 @@ import { Options } from '../../components/AdminDeletionOptions'
 import {
   selectLoading,
   selectTableData,
-  selectEditRsuRowData,
 
   // actions
   updateTableData,
@@ -22,18 +21,16 @@ import './Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { Action } from '@material-table/core'
-import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { Route, Routes, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
 import toast from 'react-hot-toast'
-import { Button } from '@mui/material'
-import { AddCircleOutline, DeleteOutline, ModeEditOutline, Refresh } from '@mui/icons-material'
+import { useTheme } from '@mui/material'
+import { DeleteOutline, ModeEditOutline } from '@mui/icons-material'
 
 const AdminRsuTab = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const navigate = useNavigate()
-  const location = useLocation()
-
-  const activeTab = location.pathname.split('/')[4]
+  const theme = useTheme()
 
   const tableData = useSelector(selectTableData)
   const [columns] = useState([
@@ -48,15 +45,23 @@ const AdminRsuTab = () => {
 
   const tableActions: Action<AdminEditRsuFormType>[] = [
     {
-      icon: () => <ModeEditOutline />,
+      icon: () => <ModeEditOutline sx={{ color: theme.palette.custom.rowActionIcon }} />,
       tooltip: 'Edit RSU',
       position: 'row',
-      onClick: (event, rowData: AdminEditRsuFormType) => onEdit(rowData),
+      iconProps: {
+        itemType: 'rowAction',
+      },
+      onClick: (event, rowData: AdminEditRsuFormType) => {
+        onEdit(rowData)
+      },
     },
     {
-      icon: () => <DeleteOutline />,
+      icon: () => <DeleteOutline sx={{ color: theme.palette.custom.rowActionIcon }} />,
       tooltip: 'Delete RSU',
       position: 'row',
+      iconProps: {
+        itemType: 'rowAction',
+      },
       onClick: (event, rowData: AdminEditRsuFormType) => {
         const buttons = [
           { label: 'Yes', onClick: () => onDelete(rowData) },
@@ -70,8 +75,7 @@ const AdminRsuTab = () => {
       tooltip: 'Remove All Selected From Organization',
       icon: 'delete',
       iconProps: {
-        color: 'info',
-        itemType: 'outlined',
+        itemType: 'rowAction',
       },
       position: 'toolbarOnSelect',
       onClick: (event, rowData: AdminEditRsuFormType[]) => {
@@ -88,9 +92,9 @@ const AdminRsuTab = () => {
       },
     },
     {
-      icon: () => <Refresh />,
+      icon: () => null,
       iconProps: {
-        title: 'Refresh Data',
+        title: 'Refresh',
         color: 'info',
         itemType: 'outlined',
       },
@@ -100,12 +104,12 @@ const AdminRsuTab = () => {
       },
     },
     {
-      icon: () => <AddCircleOutline />,
+      icon: () => null,
       position: 'toolbar',
       iconProps: {
-        title: 'Add New RSU',
-        color: 'info',
-        itemType: 'outlined',
+        title: 'New',
+        color: 'primary',
+        itemType: 'contained',
       },
       onClick: () => {
         navigate('addRsu')

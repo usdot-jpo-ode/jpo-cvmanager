@@ -123,7 +123,7 @@ const AdminOrganizationTab = () => {
   }
 
   return (
-    <div style={{ backgroundColor: theme.palette.background.paper, height: 'fit-content', padding: '10px' }}>
+    <div style={{ backgroundColor: theme.palette.background.paper, height: 'fit-content', padding: '10px 0px' }}>
       <Routes>
         <Route
           path="/"
@@ -157,14 +157,17 @@ const AdminOrganizationTab = () => {
                       onClick={() => navigate('editOrganization/' + selectedOrg?.name)}
                       sx={{
                         backgroundColor: 'transparent',
-                        color: theme.palette.text.primary,
                         borderRadius: '2px',
                         '&:hover': {
                           backgroundColor: alpha(theme.palette.text.primary, 0.1),
                         },
                       }}
                     >
-                      <EditOutlined size={20} component={undefined} />
+                      <EditOutlined
+                        size={20}
+                        sx={{ color: theme.palette.custom.rowActionIcon }}
+                        component={undefined}
+                      />
                     </ContainedIconButton>
                   </Grid2>
                   <Grid2 size={{ xs: 0 }} sx={{ marginLeft: '10px' }}>
@@ -191,6 +194,8 @@ const AdminOrganizationTab = () => {
                         onClick={() => refresh()}
                         variant="outlined"
                         color="info"
+                        size="small"
+                        className="museo-slab capital-case"
                         startIcon={<Refresh />}
                       >
                         Refresh
@@ -203,6 +208,8 @@ const AdminOrganizationTab = () => {
                         onClick={() => navigate('addOrganization')}
                         startIcon={<AddCircleOutline />}
                         variant="contained"
+                        size="small"
+                        className="museo-slab capital-case"
                       >
                         New
                       </Button>

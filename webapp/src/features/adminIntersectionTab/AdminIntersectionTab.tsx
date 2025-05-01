@@ -24,12 +24,13 @@ import { Action } from '@material-table/core'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
 import toast from 'react-hot-toast'
-import { Button } from '@mui/material'
-import { AddCircleOutline, DeleteOutline, ModeEditOutline, Refresh } from '@mui/icons-material'
+import { DeleteOutline, ModeEditOutline } from '@mui/icons-material'
+import { useTheme } from '@mui/material'
 
 const AdminIntersectionTab = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const navigate = useNavigate()
+  const theme = useTheme()
 
   const tableData = useSelector(selectTableData)
   const columns = useSelector(selectColumns)
@@ -38,14 +39,18 @@ const AdminIntersectionTab = () => {
 
   const tableActions: Action<AdminEditIntersectionFormType>[] = [
     {
-      icon: () => <ModeEditOutline />,
-      tooltip: 'Edit Intersection',
+      icon: () => <ModeEditOutline sx={{ color: theme.palette.custom.rowActionIcon }} />,
       position: 'row',
+      iconProps: {
+        itemType: 'rowAction',
+      },
       onClick: (_, rowData: AdminEditIntersectionFormType) => onEdit(rowData),
     },
     {
-      icon: () => <DeleteOutline />,
-      tooltip: 'Delete Intersection',
+      icon: () => <DeleteOutline sx={{ color: theme.palette.custom.rowActionIcon }} />,
+      iconProps: {
+        itemType: 'rowAction',
+      },
       position: 'row',
       onClick: (_, rowData: AdminEditIntersectionFormType) => {
         const buttons = [
@@ -64,6 +69,9 @@ const AdminIntersectionTab = () => {
       tooltip: 'Remove All Selected From Organization',
       icon: 'delete',
       position: 'toolbarOnSelect',
+      iconProps: {
+        itemType: 'rowAction',
+      },
       onClick: (_, rowData: AdminEditIntersectionFormType[]) => {
         const buttons = [
           { label: 'Yes', onClick: () => multiDelete(rowData) },
@@ -78,10 +86,10 @@ const AdminIntersectionTab = () => {
       },
     },
     {
-      icon: () => <Refresh />,
+      icon: () => null,
       position: 'toolbar',
       iconProps: {
-        title: 'Refresh Data',
+        title: 'Refresh',
         color: 'info',
         itemType: 'outlined',
       },
@@ -90,12 +98,12 @@ const AdminIntersectionTab = () => {
       },
     },
     {
-      icon: () => <AddCircleOutline />,
+      icon: () => null,
       position: 'toolbar',
       iconProps: {
-        title: 'Add New Intersection',
-        color: 'info',
-        itemType: 'outlined',
+        title: 'New',
+        color: 'primary',
+        itemType: 'contained',
       },
       onClick: () => {
         navigate('addIntersection')

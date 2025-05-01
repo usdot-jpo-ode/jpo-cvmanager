@@ -40,14 +40,18 @@ const AdminNotificationTab = () => {
 
   let tableActions: Action<AdminEmailNotification>[] = [
     {
-      icon: () => <ModeEditOutline />,
-      tooltip: 'Edit Notification',
+      icon: () => <ModeEditOutline sx={{ color: theme.palette.custom.rowActionIcon }} />,
+      iconProps: {
+        itemType: 'rowAction',
+      },
       position: 'row',
       onClick: (event, rowData: AdminEmailNotification) => onEdit(rowData),
     },
     {
-      icon: () => <DeleteOutline />,
-      tooltip: 'Delete Email Notification',
+      icon: () => <DeleteOutline sx={{ color: theme.palette.custom.rowActionIcon }} />,
+      iconProps: {
+        itemType: 'rowAction',
+      },
       position: 'row',
       onClick: (event, rowData: AdminEmailNotification) => {
         const buttons = [
@@ -72,6 +76,9 @@ const AdminNotificationTab = () => {
       tooltip: 'Remove All Selected Notifications',
       icon: 'delete',
       position: 'toolbarOnSelect',
+      iconProps: {
+        itemType: 'rowAction',
+      },
       onClick: (event, rowData: AdminEmailNotification[]) => {
         const buttons = [
           {
@@ -92,9 +99,9 @@ const AdminNotificationTab = () => {
       },
     },
     {
-      icon: () => <Refresh />,
+      icon: () => null,
       iconProps: {
-        title: 'Refresh Data',
+        title: 'Refresh',
         color: 'info',
         itemType: 'outlined',
       },
@@ -104,13 +111,12 @@ const AdminNotificationTab = () => {
       },
     },
     {
-      tooltip: 'Add New Notification',
-      icon: () => <AddCircleOutline />,
+      icon: () => null,
       position: 'toolbar',
       iconProps: {
-        title: 'Add New Notification',
-        color: 'info',
-        itemType: 'outlined',
+        title: 'New',
+        color: 'primary',
+        itemType: 'contained',
       },
       onClick: () => {
         navigate('addNotification')
@@ -143,7 +149,6 @@ const AdminNotificationTab = () => {
 
   const notificationStyle = {
     width: '95%',
-    fontFamily: '"museo-slab", Arial, Helvetica, sans-serif',
     overflow: 'auto',
     height: `calc(100vh - ${headerTabHeight + 76 + 59}px)`, // 76 = page header height, 59 = button div height
     marginTop: '25px',

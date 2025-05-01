@@ -14,19 +14,10 @@ import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 
 import Dialog from '@mui/material/Dialog'
-import CloseIcon from '@mui/icons-material/Close'
-import {
-  Button,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  IconButton,
-  InputLabel,
-  OutlinedInput,
-} from '@mui/material'
+import { Button, DialogActions, DialogContent, FormControl, TextField } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import '../../styles/fonts/museo-slab.css'
+import { SideBarHeader } from '../../styles/components/SideBarHeader'
 
 export type AdminAddOrgForm = {
   name: string
@@ -57,38 +48,31 @@ const AdminAddOrganization = () => {
 
   return (
     <Dialog open={open}>
-      <DialogTitle>Add Organization</DialogTitle>
-      <IconButton
-        aria-label="close"
-        onClick={() => {
-          setOpen(false)
-          navigate('..')
-        }}
-        sx={(theme) => ({
-          position: 'absolute',
-          right: 8,
-          top: 8,
-          color: theme.palette.text.primary,
-        })}
-      >
-        <CloseIcon />
-      </IconButton>
-      <DialogContent>
-        <Form
-          id="add-organization-form"
-          onSubmit={handleSubmit(onSubmit)}
-          style={{ fontFamily: '"museo-slab", Arial, Helvetica, sans-serif' }}
-        >
-          <Form.Group className="mb-3" controlId="name">
+      <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
+        <SideBarHeader
+          onClick={() => {
+            setOpen(false)
+            navigate('..')
+          }}
+          title="Add Organization"
+        />
+        <Form id="add-organization-form" onSubmit={handleSubmit(onSubmit)}>
+          <Form.Group controlId="name">
             <FormControl fullWidth margin="normal">
-              <InputLabel htmlFor="org-name">Organization Name</InputLabel>
-              <OutlinedInput
-                id="org-name"
-                type="text"
+              <TextField
+                label="Organization Name"
+                placeholder="Enter Organization Name"
+                color="info"
+                variant="outlined"
+                required
                 {...register('name', {
                   required: 'Please enter the organization name',
                 })}
-                label="Organization Name"
+                slotProps={{
+                  inputLabel: {
+                    shrink: true,
+                  },
+                }}
               />
               {errors.name && (
                 <p className="errorMsg" role="alert">
@@ -97,8 +81,19 @@ const AdminAddOrganization = () => {
               )}
             </FormControl>
             <FormControl fullWidth margin="normal">
-              <InputLabel htmlFor="org-email">Organization Email</InputLabel>
-              <OutlinedInput id="org-email" type="text" label="Organization Email" {...register('email')} />
+              <TextField
+                label="Organization Email"
+                placeholder="Enter Organization Email"
+                color="info"
+                variant="outlined"
+                required
+                {...register('email')}
+                slotProps={{
+                  inputLabel: {
+                    shrink: true,
+                  },
+                }}
+              />
             </FormControl>
           </Form.Group>
         </Form>
@@ -112,6 +107,7 @@ const AdminAddOrganization = () => {
           variant="outlined"
           color="info"
           style={{ position: 'absolute', bottom: 10, left: 10 }}
+          className="museo-slab capital-case"
         >
           Cancel
         </Button>
@@ -120,6 +116,7 @@ const AdminAddOrganization = () => {
           type="submit"
           variant="contained"
           style={{ position: 'absolute', bottom: 10, right: 10 }}
+          className="museo-slab capital-case"
         >
           Add Organization
         </Button>

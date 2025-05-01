@@ -26,19 +26,9 @@ import {
   setSelectedOrg,
 } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import { Link, useParams, useNavigate } from 'react-router-dom'
-import {
-  Button,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  IconButton,
-  InputLabel,
-  OutlinedInput,
-  Typography,
-} from '@mui/material'
-import CloseIcon from '@mui/icons-material/Close'
+import { Button, DialogActions, DialogContent, FormControl, TextField, Typography } from '@mui/material'
 import Dialog from '@mui/material/Dialog'
+import { SideBarHeader } from '../../styles/components/SideBarHeader'
 
 const AdminEditOrganization = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -96,44 +86,48 @@ const AdminEditOrganization = () => {
 
   return (
     <Dialog open={open}>
-      <DialogTitle>Edit Organization</DialogTitle>
-      <IconButton
-        aria-label="close"
-        onClick={() => {
-          setOpen(false)
-          navigate('..')
-        }}
-        sx={(theme) => ({
-          position: 'absolute',
-          right: 8,
-          top: 8,
-          color: theme.palette.text.primary,
-        })}
-      >
-        <CloseIcon />
-      </IconButton>
-      <DialogContent>
+      <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
+        <SideBarHeader
+          onClick={() => {
+            setOpen(false)
+            navigate('..')
+          }}
+          title="Edit Organization"
+        />
         {Object.keys(selectedOrg ?? {}).length != 0 ? (
-          <Form
-            id="admin-edit-org"
-            onSubmit={handleSubmit((data) => onSubmit(data))}
-            style={{ fontFamily: '"museo-slab", Arial, Helvetica, sans-serif' }}
-          >
-            <Form.Group className="mb-3" controlId="name">
+          <Form id="admin-edit-org" onSubmit={handleSubmit((data) => onSubmit(data))}>
+            <Form.Group controlId="name">
               <FormControl fullWidth margin="normal">
-                <InputLabel htmlFor="org-name">Organization Name</InputLabel>
-                <OutlinedInput
-                  id="org-name"
-                  type="text"
+                <TextField
+                  label="Organization Name"
+                  placeholder="Enter Organization Name"
+                  color="info"
+                  variant="outlined"
+                  required
                   {...register('name', {
                     required: 'Please enter the organization name',
                   })}
-                  label="Organization Name"
+                  slotProps={{
+                    inputLabel: {
+                      shrink: true,
+                    },
+                  }}
                 />
               </FormControl>
               <FormControl fullWidth margin="normal">
-                <InputLabel htmlFor="org-email">Organization Email</InputLabel>
-                <OutlinedInput id="org-email" type="text" label="Organization Email" {...register('email')} />
+                <TextField
+                  label="Organization Email"
+                  placeholder="Enter Organization Email"
+                  color="info"
+                  variant="outlined"
+                  required
+                  {...register('email')}
+                  slotProps={{
+                    inputLabel: {
+                      shrink: true,
+                    },
+                  }}
+                />
               </FormControl>
               {errors.name && (
                 <p className="errorMsg" role="alert">
@@ -158,6 +152,7 @@ const AdminEditOrganization = () => {
           variant="outlined"
           color="info"
           style={{ position: 'absolute', bottom: 10, left: 10 }}
+          className="museo-slab capital-case"
         >
           Cancel
         </Button>
@@ -166,6 +161,7 @@ const AdminEditOrganization = () => {
           type="submit"
           variant="contained"
           style={{ position: 'absolute', bottom: 10, right: 10 }}
+          className="museo-slab capital-case"
         >
           Apply Changes
         </Button>

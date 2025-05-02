@@ -136,12 +136,15 @@ export const SidePanel = (props: SidePanelProps) => {
   return (
     <>
       <Fab
-        style={{
+        sx={{
           position: 'absolute',
           zIndex: 10,
           top: theme.spacing(3),
           right: theme.spacing(3),
           backgroundColor: theme.palette.background.paper,
+          '&:hover': {
+            backgroundColor: theme.palette.custom.intersectionMapButtonHover,
+          },
         }}
         size="small"
         onClick={() => {
@@ -161,6 +164,7 @@ export const SidePanel = (props: SidePanelProps) => {
           fontSize: '16px',
           overflow: 'auto',
           scrollBehavior: 'auto',
+          borderRadius: '4px',
         }}
       >
         {props.openPanel !== 'map-info' ? null : (
@@ -172,11 +176,10 @@ export const SidePanel = (props: SidePanelProps) => {
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    mb: 2,
-                    px: 1,
+                    padding: '8px 16px',
                   }}
                 >
-                  <Typography variant="h6">Information</Typography>
+                  <Typography fontSize="16px">Information</Typography>
                   <IconButton
                     onClick={() => {
                       toggleOpen()
@@ -192,9 +195,16 @@ export const SidePanel = (props: SidePanelProps) => {
                     scrollbarColor: `${theme.palette.text.primary} ${theme.palette.background.paper}`,
                   }}
                 >
-                  <Accordion disableGutters>
+                  <Accordion
+                    disableGutters
+                    sx={{
+                      '& .Mui-expanded': {
+                        backgroundColor: theme.palette.custom.intersectionMapAccordionExpanded,
+                      },
+                    }}
+                  >
                     <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
-                      <Typography fontSize="small">Lanes</Typography>
+                      <Typography fontSize="16px">Lanes</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
                       <Box sx={{ mt: 1 }}>
@@ -212,9 +222,16 @@ export const SidePanel = (props: SidePanelProps) => {
                       </Box>
                     </AccordionDetails>
                   </Accordion>
-                  <Accordion disableGutters>
+                  <Accordion
+                    sx={{
+                      '& .Mui-expanded': {
+                        backgroundColor: theme.palette.custom.intersectionMapAccordionExpanded,
+                      },
+                    }}
+                    disableGutters
+                  >
                     <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
-                      <Typography fontSize="small">BSMs</Typography>
+                      <Typography fontSize="16px">BSMs</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
                       <Box sx={{ mt: 1 }}>
@@ -232,9 +249,16 @@ export const SidePanel = (props: SidePanelProps) => {
                       </Box>
                     </AccordionDetails>
                   </Accordion>
-                  <Accordion disableGutters>
+                  <Accordion
+                    sx={{
+                      '& .Mui-expanded': {
+                        backgroundColor: theme.palette.custom.intersectionMapAccordionExpanded,
+                      },
+                    }}
+                    disableGutters
+                  >
                     <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
-                      <Typography fontSize="small">Events</Typography>
+                      <Typography fontSize="16px">Events</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
                       <Box sx={{ mt: 1 }}>
@@ -251,9 +275,16 @@ export const SidePanel = (props: SidePanelProps) => {
                       </Box>
                     </AccordionDetails>
                   </Accordion>
-                  <Accordion disableGutters>
+                  <Accordion
+                    sx={{
+                      '& .Mui-expanded': {
+                        backgroundColor: theme.palette.custom.intersectionMapAccordionExpanded,
+                      },
+                    }}
+                    disableGutters
+                  >
                     <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
-                      <Typography fontSize="small">Notifications</Typography>
+                      <Typography fontSize="16px">Notifications</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
                       <Box sx={{ mt: 1 }}>
@@ -270,9 +301,16 @@ export const SidePanel = (props: SidePanelProps) => {
                       </Box>
                     </AccordionDetails>
                   </Accordion>
-                  <Accordion disableGutters>
+                  <Accordion
+                    sx={{
+                      '& .Mui-expanded': {
+                        backgroundColor: theme.palette.custom.intersectionMapAccordionExpanded,
+                      },
+                    }}
+                    disableGutters
+                  >
                     <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
-                      <Typography fontSize="small">Ssm Srm Data</Typography>
+                      <Typography fontSize="16px">Ssm Srm Data</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
                       <Box sx={{ mt: 1 }}>
@@ -281,9 +319,16 @@ export const SidePanel = (props: SidePanelProps) => {
                     </AccordionDetails>
                   </Accordion>
                   {sourceDataType && (
-                    <Accordion disableGutters>
+                    <Accordion
+                      sx={{
+                        '& .Mui-expanded': {
+                          backgroundColor: theme.palette.custom.intersectionMapAccordionExpanded,
+                        },
+                      }}
+                      disableGutters
+                    >
                       <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
-                        <Typography fontSize="small">Source Data: {sourceDataType}</Typography>
+                        <Typography fontSize="16px">Source Data: {sourceDataType}</Typography>
                       </AccordionSummary>
                       <AccordionDetails>{getDataTable(sourceData, sourceDataType)}</AccordionDetails>
                     </Accordion>

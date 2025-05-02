@@ -5,7 +5,7 @@ import * as Yup from 'yup'
 import { useFormik } from 'formik'
 import { Button, Card, CardActions, CardContent, CardHeader, Divider, Grid2, TextField } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
-import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../../generalSlices/intersectionSlice'
+import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
 import { useSelector } from 'react-redux'
 import { useUpdateIntersectionParameterMutation } from '../../api/intersectionApiSlice'
 
@@ -13,7 +13,6 @@ export const ConfigParamCreateForm = (props) => {
   const navigate = useNavigate()
   const { parameter }: { parameter: Config } = props
   const intersectionId = useSelector(selectSelectedIntersectionId)
-  const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
 
   const [updateIntersectionParameter, {}] = useUpdateIntersectionParameterMutation()
 
@@ -35,7 +34,6 @@ export const ConfigParamCreateForm = (props) => {
           ...parameter,
           value: values.value,
           intersectionID: intersectionId,
-          roadRegulatorID: roadRegulatorId,
           rsuID: '',
         }
         await updateIntersectionParameter(updatedConfig)
@@ -93,7 +91,7 @@ export const ConfigParamCreateForm = (props) => {
           }}
         >
           <Button disabled={formik.isSubmitting} type="submit" sx={{ m: 1 }} variant="contained">
-            Overrride
+            Override
           </Button>
           <Button
             onClick={() => navigate(`/dashboard/intersectionDashboard/configuration`)}

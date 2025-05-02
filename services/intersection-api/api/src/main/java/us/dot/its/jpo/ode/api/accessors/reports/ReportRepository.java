@@ -1,19 +1,17 @@
 package us.dot.its.jpo.ode.api.accessors.reports;
 
-import java.util.List;
-
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 import us.dot.its.jpo.ode.api.models.ReportDocument;
 
 public interface ReportRepository extends DataLoader<ReportDocument> {
-    Query getQuery(String reportName, Integer intersectionID, Long startTime, Long endTime,
-            boolean includeReportContents, boolean latest);
+    long count(String reportName, Integer intersectionID, Long startTime, Long endTime);
 
-    long getQueryResultCount(Query query);
+    Page<ReportDocument> findLatest(String reportName, Integer intersectionID, Long startTime, Long endTime,
+            boolean includeReportContents);
 
-    long getQueryFullCount(Query query);
-
-    List<ReportDocument> find(Query query);
+    Page<ReportDocument> find(String reportName, Integer intersectionID, Long startTime, Long endTime,
+            boolean includeReportContents, Pageable pageable);
 
 }

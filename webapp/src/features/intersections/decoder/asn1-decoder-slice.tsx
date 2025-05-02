@@ -10,8 +10,6 @@ import {
   selectInitialSourceDataType,
   selectIntersectionId,
   selectLoadOnNull,
-  selectRoadRegulatorId,
-  selectSourceDataType,
   setDecoderModeEnabled,
   setMapProps,
 } from '../map/map-slice'
@@ -172,7 +170,6 @@ export const updateAllDataOnMap = createAsyncThunk(
     const selectedMapMessage = selectSelectedMapMessage(getState() as RootState)
     const currentBsms = selectCurrentBsms(getState() as RootState)
     const intersectionId = selectIntersectionId(getState() as RootState)
-    const roadRegulatorId = selectRoadRegulatorId(getState() as RootState)
     const loadOnNull = selectLoadOnNull(getState() as RootState)
     dispatch(
       setMapProps({
@@ -192,7 +189,6 @@ export const updateAllDataOnMap = createAsyncThunk(
         },
         sourceDataType: null,
         intersectionId,
-        roadRegulatorId,
         loadOnNull,
       })
     )
@@ -204,7 +200,6 @@ export const decoderModeToggled = createAsyncThunk(
   async (enabled: boolean, { getState, dispatch }) => {
     const initialSourceDataType = selectInitialSourceDataType(getState() as RootState)
     const intersectionId = selectIntersectionId(getState() as RootState)
-    const roadRegulatorId = selectRoadRegulatorId(getState() as RootState)
     const loadOnNull = selectLoadOnNull(getState() as RootState)
 
     if (enabled) {
@@ -222,7 +217,6 @@ export const decoderModeToggled = createAsyncThunk(
           },
           sourceDataType: initialSourceDataType,
           intersectionId,
-          roadRegulatorId,
           loadOnNull,
         })
       )

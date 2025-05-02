@@ -22,7 +22,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../../generalSlices/intersectionSlice'
+import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
 
 export const NotificationsTableResults = ({
   customers,
@@ -38,7 +38,6 @@ export const NotificationsTableResults = ({
   rowsPerPage,
 }) => {
   const intersectionId = useSelector(selectSelectedIntersectionId)
-  const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
 
   const navigate = useNavigate()
   const handleSelectAll = (event) => {
@@ -94,10 +93,6 @@ export const NotificationsTableResults = ({
           <Typography>
             {`- Intersection IDs, MAP: ${mapArr.map((v) => v.intersectionId)}, SPAT: ${spatArr.map(
               (v) => v.intersectionId
-            )}`}
-            <br />
-            {`- Road Regulator IDs, MAP: ${mapArr.map((v) => v.roadRegulatorId)}, SPAT: ${spatArr.map(
-              (v) => v.roadRegulatorId
             )}`}
           </Typography>
         )
@@ -244,9 +239,7 @@ export const NotificationsTableResults = ({
                         <IconButton
                           component="a"
                           onClick={() =>
-                            navigate(
-                              `/dashboard/intersectionMap/notification/${intersectionId}/${roadRegulatorId}/${notification.key}`
-                            )
+                            navigate(`/dashboard/intersectionMap/notification/${intersectionId}/${notification.key}`)
                           }
                         >
                           <MapRoundedIcon fontSize="medium" />

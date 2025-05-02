@@ -98,6 +98,22 @@ exports[`should take a snapshot 1`] = `
         <span
           class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
         >
+          Security:
+        </span>
+        <span
+          class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+        />
+      </p>
+    </div>
+    <div
+      style="display: flex; flex-direction: row; align-items: center; margin-top: -2px;"
+    >
+      <p
+        class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+      >
+        <span
+          class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+        >
           Active:
         </span>
         <span

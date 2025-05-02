@@ -27,13 +27,13 @@ export const EventListResults = ({ events, eventsCount, onPageChange, onRowsPerP
   return (
     <Card>
       <PerfectScrollbar>
-        <Box sx={{ minWidth: 1050, overflowX: 'scroll' }}>
+        <Box sx={{ minWidth: 1050, overflowX: 'auto' }}>
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell>Event Type</TableCell>
                 <TableCell>Date</TableCell>
-                <TableCell>Open Map</TableCell>
+                <TableCell>View On Map</TableCell>
                 <TableCell>Message</TableCell>
               </TableRow>
             </TableHead>
@@ -59,9 +59,7 @@ export const EventListResults = ({ events, eventsCount, onPageChange, onRowsPerP
                         component="a"
                         onClick={() =>
                           navigate(
-                            `/dashboard/intersectionMap/timestamp/${event.intersectionID}/${
-                              event.roadRegulatorID ?? -1
-                            }/${event.eventGeneratedAt}`
+                            `/dashboard/intersectionMap/timestamp/${event.intersectionID}/${event.eventGeneratedAt}`
                           )
                         }
                       >

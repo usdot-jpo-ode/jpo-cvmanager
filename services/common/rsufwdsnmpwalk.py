@@ -248,4 +248,7 @@ def get(request):
     elif request["snmp_version"] == "1218":
         return snmpwalk_txrxmsg(request["snmp_creds"], request["rsu_ip"])
     else:
-        return "Supported SNMP protocol versions are currently only RSU 4.1 and NTCIP 1218", 501
+        return (
+            "Supported SNMP protocol versions are currently only RSU 4.1 and NTCIP 1218",
+            501,
+        )

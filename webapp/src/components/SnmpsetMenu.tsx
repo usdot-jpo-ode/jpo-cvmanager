@@ -9,17 +9,28 @@ import {
   // Actions
   submitSnmpSet,
   deleteSnmpSet,
-  filterSnmp,
   setDestIp,
   setMsgType,
+  setIncludeSecurityHeader,
 } from '../generalSlices/configSlice'
 
-import { selectRsuIpv4, selectRsuManufacturer } from '../generalSlices/rsuSlice'
 import { RootState } from '../store'
 
 import './css/SnmpwalkMenu.css'
 import toast from 'react-hot-toast'
-import { Button, FormControl, Grid2, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material'
+import {
+  Button,
+  Checkbox,
+  FormControl,
+  FormControlLabel,
+  Grid2,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material'
 import { ControlPointOutlined, DeleteOutline } from '@mui/icons-material'
 
 export type SnmpsetMenuProps = {
@@ -33,9 +44,6 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
 
   const destIp = useSelector(selectDestIp)
   const snmpMsgType = useSelector(selectSnmpMsgType)
-
-  const rsuIp = useSelector(selectRsuIpv4)
-  const rsuManufacturer = useSelector(selectRsuManufacturer)
 
   return (
     <div>
@@ -83,10 +91,20 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
             </FormControl>
           </Grid2>
         </Grid2>
+        <FormControlLabel
+          control={
+            <Checkbox
+              onChange={(e) => {
+                dispatch(setIncludeSecurityHeader(e.target.checked))
+              }}
+            />
+          }
+          label="Security Header"
+        />
       </form>
       <Stack spacing={2} direction="column">
         <Button
-          className="museo-slab"
+          className="museo-slab capital-case"
           variant="contained"
           size="medium"
           startIcon={<ControlPointOutlined />}
@@ -103,9 +121,10 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
         >
           Add Forwarding
         </Button>
+
         {type !== 'single_rsu' && (
           <Button
-            className="museo-slab"
+            className="museo-slab capital-case"
             variant="contained"
             size="medium"
             startIcon={<DeleteOutline />}
@@ -126,52 +145,16 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
             Delete Forwarding
           </Button>
         )}
-
-        {type !== 'single_rsu' ? (
-          <div>
-            <Typography variant="body1">
-              By specifying a destination IP address along with a message type, you can add message forwarding to any of
-              the selected RSUs or delete message forwarding from any RSUs that already have that configuration.
-            </Typography>
-          </div>
-        ) : null}
-
-        {rsuManufacturer === 'Yunex' ? (
-          <div>
-            <Typography variant="body1">
-              Yunex RSUs use different SNMP tables for message TX and RX forwarding. <br /> BSM and SSM are on the RX
-              table. MAP, SPaT and SRM are on the TX table. <br /> Start over from the 1 index for each table.
-            </Typography>
-          </div>
-        ) : null}
-
-        {rsuManufacturer === 'Commsignia' ? (
-          <div>
-            <Typography variant="body1">
-              If you are configuring SPaT or MAP forwarding, apply the TX message filter after your configuration has
-              been applied
-            </Typography>
-            <Button
-              className="museo-slab"
-              variant="contained"
-              size="medium"
-              startIcon={<ControlPointOutlined />}
-              sx={{
-                mt: 2,
-              }}
-              onClick={() =>
-                dispatch(filterSnmp([rsuIp])).then((data: any) => {
-                  data.snmpFilterErr
-                    ? toast.error('Failed to apply TX filter: ', data.snmpFilterMsg)
-                    : toast.success('TX Filter Applied Successfully')
-                })
-              }
-            >
-              Apply TX Filter
-            </Button>
-          </div>
-        ) : null}
       </Stack>
+
+      {type !== 'single_rsu' ? (
+        <div style={{ marginTop: '16px' }}>
+          <Typography variant="body1">
+            By specifying a destination IP address along with a message type, you can add message forwarding to any of
+            the selected RSUs or delete message forwarding from any RSUs that already have that configuration.
+          </Typography>
+        </div>
+      ) : null}
     </div>
   )
 }

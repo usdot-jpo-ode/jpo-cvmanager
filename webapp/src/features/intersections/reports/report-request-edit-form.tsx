@@ -11,12 +11,10 @@ import dayjs from 'dayjs'
 type Props = {
   onGenerateReport: ({
     intersectionId,
-    roadRegulatorId,
     startTime,
     endTime,
   }: {
     intersectionId?: number
-    roadRegulatorId?: number
     startTime: Date
     endTime: Date
   }) => void
@@ -33,7 +31,6 @@ export const ReportRequestEditForm = (props: Props) => {
       startDate: new Date(Date.now() - DAY_IN_MILLISECONDS), //yesterday
       endDate: new Date(),
       intersectionId: dbIntersectionId,
-      roadRegulatorId: -1,
       submit: null,
     },
     validationSchema: Yup.object({
@@ -49,7 +46,6 @@ export const ReportRequestEditForm = (props: Props) => {
         helpers.setSubmitting(false)
         onGenerateReport({
           intersectionId: values.intersectionId,
-          roadRegulatorId: values.roadRegulatorId,
           startTime: values.startDate,
           endTime: values.endDate,
         })

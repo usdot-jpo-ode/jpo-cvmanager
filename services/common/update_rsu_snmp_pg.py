@@ -8,7 +8,7 @@ from datetime import datetime
 def insert_config_list(snmp_config_list):
     query = (
         "INSERT INTO public.snmp_msgfwd_config("
-        "rsu_id, msgfwd_type, snmp_index, message_type, dest_ipv4, dest_port, start_datetime, end_datetime, active) "
+        "rsu_id, msgfwd_type, snmp_index, message_type, dest_ipv4, dest_port, start_datetime, end_datetime, active, security) "
         "VALUES"
     )
 
@@ -16,7 +16,8 @@ def insert_config_list(snmp_config_list):
         query += (
             f" ({snmp_config['rsu_id']}, {snmp_config['msgfwd_type']}, {snmp_config['snmp_index']}, "
             f"'{snmp_config['message_type']}', '{snmp_config['dest_ipv4']}', {snmp_config['dest_port']}, "
-            f"'{snmp_config['start_datetime']}', '{snmp_config['end_datetime']}', '{snmp_config['active']}'),"
+            f"'{snmp_config['start_datetime']}', '{snmp_config['end_datetime']}', '{snmp_config['active']}', "
+            f"'{snmp_config['security']}'),"
         )
 
     pgquery.write_db(query[:-1])
@@ -56,7 +57,7 @@ def get_config_list(rsu_obj={}):
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
-        "SELECT rsu_id, smt.name msgfwd_type, snmp_index, message_type, dest_ipv4, dest_port, start_datetime, end_datetime, active "
+        "SELECT rsu_id, smt.name msgfwd_type, snmp_index, message_type, dest_ipv4, dest_port, start_datetime, end_datetime, active, security "
         "FROM public.snmp_msgfwd_config smc "
         "JOIN public.snmp_msgfwd_type smt ON smc.msgfwd_type = smt.snmp_msgfwd_type_id"
     )
@@ -181,6 +182,7 @@ def get_snmp_configs(rsu_list):
                     "start_datetime": value["Start DateTime"],
                     "end_datetime": value["End DateTime"],
                     "active": "1" if value["Config Active"] == "Enabled" else "0",
+                    "security": "0",  # RSU 4.1 spec does not support security configuration
                 }
                 config_list.append(config)
         elif rsu["snmp_version"] == "1218":
@@ -196,6 +198,7 @@ def get_snmp_configs(rsu_list):
                     "start_datetime": value["Start DateTime"],
                     "end_datetime": value["End DateTime"],
                     "active": "1" if value["Config Active"] == "Enabled" else "0",
+                    "security": "1" if value["Full WSMP"] == "Enabled" else "0",
                 }
                 config_list.append(config)
 
@@ -213,6 +216,7 @@ def get_snmp_configs(rsu_list):
                     "start_datetime": value["Start DateTime"],
                     "end_datetime": value["End DateTime"],
                     "active": "1" if value["Config Active"] == "Enabled" else "0",
+                    "security": "1" if value["Full WSMP"] == "Enabled" else "0",
                 }
                 logging.info(config)
                 config_list.append(config)

@@ -15,8 +15,7 @@ const initialState = {
   firmwareUpgradeErr: false,
   destIp: '',
   snmpMsgType: 'bsm',
-  snmpFilterMsg: '',
-  snmpFilterErr: false,
+  includeSecurityHeader: false,
   addConfigPoint: false,
   configCoordinates: [] as number[][],
   configList: [] as number[],
@@ -70,6 +69,7 @@ export const submitSnmpSet = createAsyncThunk('config/submitSnmpSet', async (ipL
   const organization = selectOrganizationName(currentState)
   const destIp = selectDestIp(currentState)
   const snmpMsgType = selectSnmpMsgType(currentState)
+  const securityHeader = selectIncludeSecurityHeader(currentState) ? 1 : 0
 
   const body: RsuCommandPostBody = {
     command: 'rsufwdsnmpset',
@@ -77,6 +77,7 @@ export const submitSnmpSet = createAsyncThunk('config/submitSnmpSet', async (ipL
     args: {
       dest_ip: destIp,
       msg_type: snmpMsgType,
+      security: securityHeader,
     },
   }
 
@@ -117,27 +118,6 @@ export const deleteSnmpSet = createAsyncThunk(
       : { changeSuccess: false, errorState: response.body.RsuFwdSnmpset }
   }
 )
-
-export const filterSnmp = createAsyncThunk('config/filterSnmp', async (ipList: string[], { getState }) => {
-  const currentState = getState() as RootState
-  const token = selectToken(currentState)
-  const organization = selectOrganizationName(currentState)
-
-  const body: RsuCommandPostBody = {
-    command: 'snmpFilter',
-    rsu_ip: ipList,
-    args: {},
-  }
-
-  const response = await RsuApi.postRsuData(token, organization, body, '')
-
-  return response.status === 200
-    ? { snmpFilterErr: false, snmpFilterMsg: 'Filter applied' }
-    : {
-        snmpFilterErr: true,
-        snmpFilterMsg: 'Filter failed to be applied',
-      }
-})
 
 export const rebootRsu = createAsyncThunk('config/rebootRsu', async (ipList: string[], { getState }) => {
   const currentState = getState() as RootState
@@ -247,6 +227,9 @@ export const configSlice = createSlice({
     setMsgType: (state, action) => {
       state.value.snmpMsgType = action.payload
     },
+    setIncludeSecurityHeader: (state, action) => {
+      state.value.includeSecurityHeader = action.payload
+    },
     toggleConfigPointSelect: (state) => {
       state.value.addConfigPoint = !state.value.addConfigPoint
     },
@@ -271,11 +254,9 @@ export const configSlice = createSlice({
         state.loading = true
         state.value.msgFwdConfig = {} as RsuDsrcFwdConfigs | RsuRxTxMsgFwdConfigs
         state.value.errorState = ''
-        state.value.snmpFilterMsg = ''
         state.value.destIp = ''
         state.value.snmpMsgType = 'bsm'
         state.value.changeSuccess = false
-        state.value.snmpFilterErr = false
         state.value.rebootChangeSuccess = false
       })
       .addCase(refreshSnmpFwdConfig.fulfilled, (state, action) => {
@@ -302,15 +283,6 @@ export const configSlice = createSlice({
         state.loading = false
       })
       .addCase(deleteSnmpSet.rejected, (state) => {
-        state.loading = false
-      })
-      .addCase(filterSnmp.pending, (state) => {
-        state.loading = true
-      })
-      .addCase(filterSnmp.fulfilled, (state, action) => {
-        state.loading = false
-      })
-      .addCase(filterSnmp.rejected, (state) => {
         state.loading = false
       })
       .addCase(rebootRsu.pending, (state) => {
@@ -366,11 +338,9 @@ export const configSlice = createSlice({
       .addCase(geoRsuQuery.pending, (state) => {
         state.loading = true
         state.value.errorState = ''
-        state.value.snmpFilterMsg = ''
         state.value.destIp = ''
         state.value.snmpMsgType = 'bsm'
         state.value.changeSuccess = false
-        state.value.snmpFilterErr = false
         state.value.rebootChangeSuccess = false
       })
       .addCase(geoRsuQuery.fulfilled, (state, action) => {
@@ -394,14 +364,20 @@ export const selectFirmwareUpgradeMsg = (state: RootState) => state.config.value
 export const selectFirmwareUpgradeErr = (state: RootState) => state.config.value.firmwareUpgradeErr
 export const selectDestIp = (state: RootState) => state.config.value.destIp
 export const selectSnmpMsgType = (state: RootState) => state.config.value.snmpMsgType
-export const selectSnmpFilterMsg = (state: RootState) => state.config.value.snmpFilterMsg
-export const selectSnmpFilterErr = (state: RootState) => state.config.value.snmpFilterErr
+export const selectIncludeSecurityHeader = (state: RootState) => state.config.value.includeSecurityHeader
 export const selectLoading = (state: RootState) => state.config.loading
 export const selectAddConfigPoint = (state: RootState) => state.config.value.addConfigPoint
 export const selectConfigCoordinates = (state: RootState) => state.config.value.configCoordinates
 export const selectConfigList = (state: RootState) => state.config.value.configList
 
-export const { setDestIp, setMsgType, toggleConfigPointSelect, updateConfigPoints, clearConfig, clearFirmware } =
-  configSlice.actions
+export const {
+  setDestIp,
+  setMsgType,
+  setIncludeSecurityHeader,
+  toggleConfigPointSelect,
+  updateConfigPoints,
+  clearConfig,
+  clearFirmware,
+} = configSlice.actions
 
 export default configSlice.reducer

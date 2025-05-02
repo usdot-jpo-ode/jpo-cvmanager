@@ -1,17 +1,15 @@
 package us.dot.its.jpo.ode.api.accessors.notifications.LaneDirectionOfTravelNotificationRepo;
 
-import java.util.List;
-
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.LaneDirectionOfTravelNotification;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
-public interface LaneDirectionOfTravelNotificationRepository extends DataLoader<LaneDirectionOfTravelNotification>{
-    Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
+public interface LaneDirectionOfTravelNotificationRepository extends DataLoader<LaneDirectionOfTravelNotification> {
+    long count(Integer intersectionID, Long startTime, Long endTime);
 
-    long getQueryResultCount(Query query);
+    Page<LaneDirectionOfTravelNotification> findLatest(Integer intersectionID, Long startTime, Long endTime);
 
-    long getQueryFullCount(Query query);
-    
-    List<LaneDirectionOfTravelNotification> find(Query query);  
+    Page<LaneDirectionOfTravelNotification> find(Integer intersectionID, Long startTime, Long endTime,
+            Pageable pageable);
 }

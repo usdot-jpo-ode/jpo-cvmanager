@@ -18,7 +18,7 @@ The JPO Connected Vehicle Manager is a web-based application that helps an organ
 - jpo-ode supported message counts, sorted by RSU IP (BSM, MAP, SPaT, SRM, SSM, TIM)
 - Visualize an RSU's currently active MAP message
 - Visualize Basic Safety Messages (BSMs) relative to a specified geofence and time period
-- Device configuration over SNMP (v3) for message forwarding
+- Device configuration over SNMP (v3) for message forwarding including an option to include security headers for NTCIP-1218 devices
 - Device firmware upgrade support for Kapsch, Commsignia and Yunex devices
 - Admin controls for adding, modifying and removing devices and users
 - Fully customizable theming with Material UI - [cvmanager theming documentation](webapp/src/styles/README.md)

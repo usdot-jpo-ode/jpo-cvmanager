@@ -4,7 +4,6 @@ declare namespace MessageMonitor {
     eventGeneratedAt: number
     eventType: string
     intersectionID: number
-    roadRegulatorID: number
     source: string
   }
 }

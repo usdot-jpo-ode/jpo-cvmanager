@@ -70,6 +70,7 @@ export const ReportTheme = createTheme({
       mapMenuItemHoverUnselected: '#ffffff',
       intersectionMapAccordionExpanded: '#ffffff',
       intersectionMapButtonHover: '#ffffff',
+      rowActionIcon: '#9DBDD3',
     },
   },
 })

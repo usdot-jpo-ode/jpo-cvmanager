@@ -5,6 +5,9 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,7 +45,7 @@ public class BsmController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role"),
     })
-    public ResponseEntity<List<OdeBsmData>> findBSMs(
+    public ResponseEntity<Page<OdeBsmData>> findBSMs(
             @RequestParam(name = "origin_ip", required = false) String originIp,
             @RequestParam(name = "vehicle_id", required = false) String vehicleId,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -50,15 +53,19 @@ public class BsmController {
             @RequestParam(name = "latitude", required = false) Double latitude,
             @RequestParam(name = "longitude", required = false) Double longitude,
             @RequestParam(name = "distance", required = false) Double distanceInMeters,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
-            return ResponseEntity.ok(MockBsmGenerator.getJsonBsms());
+            List<OdeBsmData> list = MockBsmGenerator.getJsonBsms();
+            return ResponseEntity
+                    .ok(new PageImpl<>(list, PageRequest.of(page, size), list.size()));
         } else {
-            List<OdeBsmData> geoData = odeBsmJsonRepo.findOdeBsmDataGeo(originIp, vehicleId, startTime, endTime,
-                    longitude, latitude, distanceInMeters);
-            log.debug("Found {} BSMs", geoData.size());
-            return ResponseEntity.ok(geoData);
+            PageRequest pageable = PageRequest.of(page, size);
+            Page<OdeBsmData> response = odeBsmJsonRepo.find(originIp, vehicleId, startTime, endTime,
+                    longitude, latitude, distanceInMeters, pageable);
+            return ResponseEntity.ok(response);
         }
     }
 
@@ -82,7 +89,7 @@ public class BsmController {
         if (testData) {
             return ResponseEntity.ok(10L);
         } else {
-            long counts = odeBsmJsonRepo.countOdeBsmDataGeo(originIp, vehicleId, startTime, endTime, longitude,
+            long counts = odeBsmJsonRepo.count(originIp, vehicleId, startTime, endTime, longitude,
                     latitude, distanceInMeters);
             log.debug("Found {} BSM counts", counts);
             return ResponseEntity.ok(counts);

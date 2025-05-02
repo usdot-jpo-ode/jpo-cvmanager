@@ -5,7 +5,9 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,20 +47,29 @@ public class MapController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<List<ProcessedMap<LineString>>> findMaps(
+    public ResponseEntity<Page<ProcessedMap<LineString>>> findMaps(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
-            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData,
-            @RequestParam(name = "compact", required = false, defaultValue = "false") boolean compact) {
+            @RequestParam(name = "compact", required = false, defaultValue = "false") boolean compact,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
+            @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
-            return ResponseEntity.ok(MockMapGenerator.getProcessedMaps());
-        } else {
-            Query query = processedMapRepo.getQuery(intersectionID, startTime, endTime, latest, compact);
-            return ResponseEntity.ok(processedMapRepo.findProcessedMaps(query));
+            List<ProcessedMap<LineString>> list = MockMapGenerator.getProcessedMaps();
+            return ResponseEntity.ok(new PageImpl<>(list, PageRequest.of(page, size), list.size()));
+        }
 
+        if (latest) {
+            return ResponseEntity.ok(processedMapRepo.findLatest(intersectionID, startTime, endTime, compact));
+        } else {
+            // Retrieve a paginated result from the repository
+            PageRequest pageable = PageRequest.of(page, size);
+            Page<ProcessedMap<LineString>> response = processedMapRepo.find(intersectionID, startTime, endTime, compact,
+                    pageable);
+            return ResponseEntity.ok(response);
         }
     }
 
@@ -78,10 +89,7 @@ public class MapController {
         if (testData) {
             return ResponseEntity.ok(5L);
         } else {
-            Query query = processedMapRepo.getQuery(intersectionID, startTime, endTime, false, true);
-            long count = processedMapRepo.getQueryResultCount(query);
-
-            log.debug("Found: {} ProcessedMap Messages", count);
+            long count = processedMapRepo.count(intersectionID, startTime, endTime);
             return ResponseEntity.ok(count);
 
         }

@@ -14,15 +14,14 @@ import java.util.List;
 @EqualsAndHashCode
 @Getter
 public class ReportDocument {
-    
+
     @Id
     private String reportName;
     private int intersectionID;
-    private String roadRegulatorID;
     private long reportGeneratedAt;
     private long reportStartTime;
     private long reportStopTime;
-    private byte[] reportContents; 
+    private byte[] reportContents;
     private List<IDCount> laneDirectionOfTravelEventCounts;
     private List<IDCount> laneDirectionOfTravelMedianDistanceDistribution;
     private List<IDCount> laneDirectionOfTravelMedianHeadingDistribution;

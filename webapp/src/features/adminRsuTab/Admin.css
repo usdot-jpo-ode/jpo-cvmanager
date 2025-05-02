@@ -55,25 +55,8 @@
   width: 150px;
 }
 
-.org-form-dropdown {
-  width: 400px;
-  max-width: 400px;
-  margin-top: 5px;
-  margin-bottom: 15px;
-}
-
-.form-multiselect,
-.form-dropdown {
-  width: 400px;
-  max-width: 400px;
-  margin-top: 3px;
-  margin-bottom: 15px;
-}
-
 .org-multiselect {
-  min-width: 300px;
-  max-width: 95%;
-  margin-right: 10px;
+  min-width: 200px;
 }
 
 .spacer {
@@ -99,7 +82,7 @@
 }
 
 .accordion {
-  margin-bottom: 10px;
+  border-radius: 0px;
 }
 
 .scroll-div {
@@ -110,11 +93,6 @@
 
 .scroll-div-tab {
   height: calc(100vh - 340px);
-  overflow-y: auto;
-}
-
-.scroll-div-org-tab {
-  height: calc(100vh - 390px);
   overflow-y: auto;
 }
 

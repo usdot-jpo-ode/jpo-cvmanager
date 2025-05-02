@@ -1,9 +1,10 @@
 import React from 'react'
-import MaterialTable, { Action, Column, MTableCell, MTableToolbar } from '@material-table/core'
+import MaterialTable, { Action, Column, MTableAction, MTableCell, MTableToolbar } from '@material-table/core'
 import { makeStyles } from '@mui/styles'
 
 import '../features/adminRsuTab/Admin.css'
-import { alpha, Tooltip, useTheme, Button, Typography } from '@mui/material'
+import { alpha, Tooltip, useTheme, Button, Typography, Box } from '@mui/material'
+import { AddCircleOutline, DeleteOutline, Margin, ModeEditOutline, Refresh } from '@mui/icons-material'
 
 interface AdminTableProps {
   actions: Action<any>[]
@@ -19,28 +20,44 @@ interface AdminTableProps {
 const useStyles = makeStyles({
   toolbarWrapper: {
     '& .MuiToolbar-gutters': {
-      paddingLeft: 0,
-      paddingRight: 0,
+      paddingLeft: '0px',
+      paddingRight: '16px',
+      display: 'flex',
+      justifyContent: 'space-between',
     },
     '& .MuiTextField-root': {
       paddingLeft: 16,
-      width: '50%',
+      width: '260px',
     },
     '& .MuiBox-root:empty': {
       display: 'none',
     },
-    '& .MuiBox-root': {
-      width: '50%',
-      display: 'flex',
-      justifyContent: 'flex-end',
-    },
-  },
-  tableWrapper: {
-    '& .MuiTableCell-root': {
-      textTransform: 'capitalize',
+    '& .MuiTypography-h6': {
+      paddingLeft: '16px',
     },
   },
 })
+
+const getActionIcon = (title: string) => {
+  switch (title) {
+    case 'New':
+      return <AddCircleOutline />
+    case 'Add RSU':
+      return <AddCircleOutline />
+    case 'Add User':
+      return <AddCircleOutline />
+    case 'Add Intersection':
+      return <AddCircleOutline />
+    case 'Refresh':
+      return <Refresh />
+    case 'Delete':
+      return <DeleteOutline color="primary" />
+    case 'Edit':
+      return <ModeEditOutline color="primary" />
+    default:
+      return null
+  }
+}
 
 const AdminTable = (props: AdminTableProps) => {
   const theme = useTheme()
@@ -56,14 +73,25 @@ const AdminTable = (props: AdminTableProps) => {
   }
 
   return (
-    <div>
+    <Box
+      sx={{
+        '& .MuiTableSortLabel-root': { textTransform: 'capitalize' },
+        '& .MuiTableCell-footer': {
+          borderBottom: 'none',
+        },
+        '& .MuiPaper-root': {
+          boxShadow: 'none',
+        },
+        '& .MuiTableRow-root:empty': {
+          display: 'none',
+        },
+      }}
+      className="admin-table"
+    >
       <MaterialTable
         actions={props.actions}
         columns={props.columns?.map((column) => ({
           ...column,
-          cellStyle: {
-            borderRight: `1px solid ${alpha(theme.palette.divider, 0.1)}`, // Add column lines
-          },
         }))}
         data={props.data}
         title={props.title}
@@ -79,7 +107,7 @@ const AdminTable = (props: AdminTableProps) => {
             backgroundColor: isMissingOrganizations(rowData) ? theme.palette.custom.tableErrorBackground : 'inherit', // Highlight row if missing organizations
           }),
           headerStyle: {
-            backgroundColor: theme.palette.custom.tableHeaderBackground,
+            backgroundColor: theme.palette.background.paper,
           },
           pageSize: 5,
           pageSizeOptions: props.pageSizeOptions === undefined ? [5, 10, 20] : props.pageSizeOptions,
@@ -89,27 +117,66 @@ const AdminTable = (props: AdminTableProps) => {
             const rowData = props.data
             return (
               <Tooltip title={isMissingOrganizations(rowData) ? 'Missing organizations' : ''}>
-                <MTableCell {...props} />
+                <MTableCell
+                  sx={{
+                    padding: '6px 16px',
+                    textTransform: 'none !important',
+                    '&.MuiTableCell-body': {
+                      color: theme.palette.text.secondary + ' !important',
+                    },
+                    '& .MuiButtonBase-root': {
+                      borderRadius: '4px !important',
+                    },
+                  }}
+                  {...props}
+                />
               </Tooltip>
             )
           },
-          Action: (props) => {
+          Action: (props: any) => {
             const { action } = props
-            const icon = action.icon
-            const iconProps = action.iconProps
+            const iconProps = action?.iconProps
+
+            if (iconProps?.itemType === 'displayIcon') {
+              return (
+                <Box>
+                  <action.icon />
+                </Box>
+              )
+            }
+
+            if (iconProps?.title !== null && iconProps?.title !== undefined) {
+              return (
+                <Button
+                  variant={iconProps?.itemType}
+                  color={iconProps?.color}
+                  size="small"
+                  startIcon={getActionIcon(iconProps?.title)}
+                  sx={{ padding: '4px 8px', margin: '0px 4px' }}
+                  onClick={action?.onClick}
+                >
+                  <Typography className="capital-case museo-slab" fontSize="12px">
+                    {iconProps?.title}
+                  </Typography>
+                </Button>
+              )
+            }
+
             return (
-              <Button
-                variant={iconProps.itemType}
-                color={iconProps.color}
-                size="small"
-                startIcon={icon}
-                sx={{ padding: '4px 8px', margin: '0px 4px' }}
-                onClick={() => action.onClick()}
+              <Box
+                sx={{
+                  '&:hover': {
+                    backgroundColor: alpha(theme.palette.custom.rowActionIcon, 0.1),
+                    borderRadius: '4px',
+                  },
+                  '& .MuiButtonBase-root': {
+                    borderRadius: '4px',
+                    color: theme.palette.custom.rowActionIcon,
+                  },
+                }}
               >
-                <Typography className="capital-case museo-slab" fontSize="12px">
-                  {iconProps.title}
-                </Typography>
-              </Button>
+                <MTableAction {...props} />
+              </Box>
             )
           },
           Toolbar: (props) => {
@@ -121,7 +188,7 @@ const AdminTable = (props: AdminTableProps) => {
           },
         }}
       />
-    </div>
+    </Box>
   )
 }
 export default AdminTable

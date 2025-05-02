@@ -6,7 +6,7 @@ import { ReportListFilters } from '../../features/intersections/reports/report-l
 import { ReportListTable } from '../../features/intersections/reports/report-list-table'
 import ReportsApi, { ReportMetadata } from '../../apis/intersections/reports-api'
 import { ReportGenerationDialog } from '../../features/intersections/reports/report-generation-dialog'
-import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../generalSlices/intersectionSlice'
+import { selectSelectedIntersectionId } from '../../generalSlices/intersectionSlice'
 import { selectToken } from '../../generalSlices/userSlice'
 import { useSelector } from 'react-redux'
 import ReportDetailsModal from '../../features/intersections/reports/report-details-modal'
@@ -43,7 +43,6 @@ const LogsListInner = styled('div', { shouldForwardProp: (prop) => prop !== 'ope
 const Page = () => {
   const rootRef = useRef(null)
   const intersectionId = useSelector(selectSelectedIntersectionId)
-  const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
   const token = useSelector(selectToken)
 
   const [logs, setLogs] = useState<ReportMetadata[]>([])
@@ -71,19 +70,13 @@ const Page = () => {
     return 0
   }
 
-  const listReports = async (
-    start_timestamp: Date,
-    end_timestamp: Date,
-    intersectionId: number,
-    roadRegulatorId: number
-  ) => {
+  const listReports = async (start_timestamp: Date, end_timestamp: Date, intersectionId: number) => {
     try {
       setLoading(true)
       let data =
         (await ReportsApi.listReports({
           token: token,
           intersectionId,
-          roadRegulatorId,
           startTime: start_timestamp,
           endTime: end_timestamp,
         })) ?? []
@@ -99,7 +92,7 @@ const Page = () => {
   useEffect(
     () => {
       setLoading(true)
-      setTimeout(() => listReports(filters.startDate, filters.endDate, intersectionId, roadRegulatorId), 300)
+      setTimeout(() => listReports(filters.startDate, filters.endDate, intersectionId), 300)
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [filters, intersectionId]

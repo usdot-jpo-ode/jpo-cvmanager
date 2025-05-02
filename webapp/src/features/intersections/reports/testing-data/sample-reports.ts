@@ -4,7 +4,6 @@ export const sampleReports: ReportMetadata[] = [
   {
     reportName: 'Intersection_1234_Weekly_Assessment',
     intersectionID: 1234,
-    roadRegulatorID: 'RR-789',
     reportGeneratedAt: new Date('2025-03-15T14:30:00Z'),
     reportStartTime: new Date('2025-03-08T12:00:00Z'),
     reportStopTime: new Date('2025-03-15T12:00:00Z'),
@@ -110,7 +109,6 @@ export const sampleReports: ReportMetadata[] = [
   {
     reportName: 'Intersection_5678_Daily_Assessment',
     intersectionID: 5678,
-    roadRegulatorID: 'RR-456',
     reportGeneratedAt: new Date('2025-04-01T08:15:00Z'),
     reportStartTime: new Date('2025-03-31T00:00:00Z'),
     reportStopTime: new Date('2025-04-01T00:00:00Z'),
@@ -212,7 +210,6 @@ export const sampleReports: ReportMetadata[] = [
   {
     reportName: 'Intersection_9012_Monthly_Assessment',
     intersectionID: 9012,
-    roadRegulatorID: 'RR-123',
     reportGeneratedAt: new Date('2025-03-31T23:45:00Z'),
     reportStartTime: new Date('2025-03-01T12:00:00Z'),
     reportStopTime: new Date('2025-04-01T12:00:00Z'),

@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -45,19 +47,26 @@ public class SpatTest {
 
     @Test
     public void testProcessedSpat() {
-        List<ProcessedSpat> list = MockSpatGenerator.getProcessedSpats();
+        ProcessedSpat spat = MockSpatGenerator.getProcessedSpats().getFirst();
 
-        List<Integer> allowedInteresections = new ArrayList<>();
-        allowedInteresections.add(null);
+        List<ProcessedSpat> spats = new ArrayList<>();
+        spats.add(spat);
 
-        when(permissionService.hasIntersection(null, "USER")).thenReturn(true);
+        when(permissionService.hasIntersection(spat.getIntersectionId(), "USER")).thenReturn(true);
         when(permissionService.hasRole("USER")).thenReturn(true);
 
-        Query query = processedSpatRepo.getQuery(null, null, null, false, false);
-        when(processedSpatRepo.findProcessedSpats(query)).thenReturn(list);
+        PageRequest page = PageRequest.of(1, 1);
+        when(processedSpatRepo.find(spat.getIntersectionId(),
+                spat.getUtcTimeStamp().toEpochSecond() - 1,
+                spat.getUtcTimeStamp().toEpochSecond() + 1, false, PageRequest.of(1, 1)))
+                .thenReturn(new PageImpl<>(spats, page, 1L));
 
-        ResponseEntity<List<ProcessedSpat>> result = controller.findSpats(null, null, null, false, false, false);
+        ResponseEntity<Page<ProcessedSpat>> result = controller
+                .findSpats(
+                        spat.getIntersectionId(),
+                        spat.getUtcTimeStamp().toEpochSecond() - 1,
+                        spat.getUtcTimeStamp().toEpochSecond() + 1, false, false, 1, 1, false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody()).isEqualTo(list);
+        assertThat(result.getBody().getContent()).isEqualTo(spats);
     }
 }

@@ -80,3 +80,11 @@ p {
 .museo-slab {
   font-family: 'museo-slab', Arial, Helvetica, sans-serif;
 }
+
+.capitalize {
+  text-transform: uppercase;
+}
+
+.trebuchet {
+  font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;
+}

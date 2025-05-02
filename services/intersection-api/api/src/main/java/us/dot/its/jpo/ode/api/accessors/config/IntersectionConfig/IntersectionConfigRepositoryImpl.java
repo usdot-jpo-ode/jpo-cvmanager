@@ -25,7 +25,7 @@ public class IntersectionConfigRepositoryImpl implements IntersectionConfigRepos
         this.mongoTemplate = mongoTemplate;
     }
 
-    public Query getQuery(String key, Integer roadRegulatorID, Integer intersectionID) {
+    public Query getQuery(String key, Integer intersectionID) {
         Query query = new Query();
 
         if (key != null) {
@@ -43,6 +43,7 @@ public class IntersectionConfigRepositoryImpl implements IntersectionConfigRepos
         return mongoTemplate.count(query, IntersectionConfig.class, collectionName);
     }
 
+    @SuppressWarnings("rawtypes")
     public List<IntersectionConfig> find(Query query) {
         return mongoTemplate.find(query, IntersectionConfig.class, collectionName);
     }
@@ -53,7 +54,7 @@ public class IntersectionConfigRepositoryImpl implements IntersectionConfigRepos
 
     @Override
     public void save(IntersectionConfig<?> config) {
-        Query query = getQuery(config.getKey(), config.getRoadRegulatorID(), config.getIntersectionID());
+        Query query = getQuery(config.getKey(), config.getIntersectionID());
         query.addCriteria(Criteria.where("updateType").is(UpdateType.INTERSECTION));
         Update update = new Update();
         update.set("key", config.getKey());
@@ -65,7 +66,6 @@ public class IntersectionConfigRepositoryImpl implements IntersectionConfigRepos
         update.set("updateType", config.getUpdateType());
         update.set("value", config.getValue());
         update.set("intersectionID", config.getIntersectionID());
-        update.set("roadRegulatorID", config.getRoadRegulatorID());
         update.set("category", config.getCategory());
         mongoTemplate.upsert(query, update, collectionName);
     }

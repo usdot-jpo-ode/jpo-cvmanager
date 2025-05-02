@@ -84,7 +84,6 @@ class GraphsApi {
   async getGraphData({
     token,
     intersectionId,
-    roadRegulatorId,
     event_types,
     startTime,
     endTime,
@@ -92,7 +91,6 @@ class GraphsApi {
   }: {
     token: string
     intersectionId: number
-    roadRegulatorId: number
     event_types: string[]
     startTime: Date
     endTime: Date
@@ -100,7 +98,6 @@ class GraphsApi {
   }): Promise<Array<GraphArrayDataType>> {
     const queryParams: Record<string, string> = {}
     queryParams['intersection_id'] = intersectionId.toString()
-    queryParams['road_regulator_id'] = roadRegulatorId.toString()
     queryParams['start_time_utc_millis'] = startTime.getTime().toString()
     queryParams['end_time_utc_millis'] = endTime.getTime().toString()
 

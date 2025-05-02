@@ -68,6 +68,9 @@ export const ReportTheme = createTheme({
       mapMenuItemBorderSelected: '1px solid black',
       mapMenuItemHoverSelected: '#a19f9f',
       mapMenuItemHoverUnselected: '#ffffff',
+      intersectionMapAccordionExpanded: '#ffffff',
+      intersectionMapButtonHover: '#ffffff',
+      rowActionIcon: '#9DBDD3',
     },
   },
 })

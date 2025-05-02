@@ -6,6 +6,7 @@ import 'react-widgets/styles.css'
 import RsuApi from '../apis/rsu-api'
 
 import './css/ContactSupportMenu.css'
+import '../styles/fonts/museo-slab.css'
 import toast from 'react-hot-toast'
 import Dialog from '@mui/material/Dialog'
 import { DialogActions, DialogContent, DialogTitle } from '@mui/material'
@@ -72,7 +73,7 @@ const RsuErrorSummary = (props: RsuErrorSummaryType) => {
         <Form
           id="rsu-error-summary-form"
           onSubmit={handleSubmit(onSubmit)}
-          style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
+          style={{ fontFamily: '"museo-slab", Arial, Helvetica, sans-serif' }}
         >
           <Form.Group className="mb-3" controlId="email">
             <Form.Label className="label">Send To</Form.Label>

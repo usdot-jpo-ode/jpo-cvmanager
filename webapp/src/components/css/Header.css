@@ -1,13 +1,14 @@
+@import 'https://use.typekit.net/ioz0eth.css';
+
 #header {
   text-align: left;
   z-index: 100;
   width: 100%;
-  height: 100px;
+  padding: 8px 24px;
 }
 
 #frontpagelogo {
-  height: 100px;
-  width: 250px;
+  height: 90px;
 }
 
 #frontgrid {
@@ -15,16 +16,11 @@
 }
 
 #frontpage {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
   font-size: 30px;
   position: absolute;
   min-width: 100%;
   min-height: 100%;
-}
-
-#logo {
-  padding: 5px;
-  align-items: center;
 }
 
 #header-text {
@@ -35,13 +31,13 @@
 
 #keycloakbtndiv {
   margin-top: 40px;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
   cursor: pointer;
   border-radius: 3px;
 }
 
 #login {
-  padding: 10px 32px;
+  padding: 10px 0px;
   margin-left: 100px;
   position: absolute;
   right: 10px;
@@ -52,28 +48,6 @@
   padding: 30px;
 }
 
-#userInfoGrid {
-  padding-right: 30px;
-  height: 100px;
-}
-
-#nameText {
-  font-size: 25px;
+.user-info-btn {
   text-align: right;
-  margin-top: 5px;
-}
-
-#emailText {
-  font-size: 18px;
-  text-align: right;
-}
-
-#roleText {
-  font-size: 18px;
-  text-align: right;
-}
-
-#helpLink {
-  margin-left: 1.5em;
-  margin-top: 0.5em;
 }

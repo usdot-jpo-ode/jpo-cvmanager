@@ -1048,7 +1048,7 @@ function MapPage() {
           top: `${headerTabHeight + 25}px`,
           right: '25px',
         }}
-        className="museo-slab"
+        className="museo-slab capital-case"
         onClick={() => dispatch(toggleMapMenuSelection('Display Message Counts'))}
       >
         Message Counts
@@ -1060,7 +1060,7 @@ function MapPage() {
           top: `${headerTabHeight + 25}px`,
           right: '215px',
         }}
-        className="museo-slab"
+        className="museo-slab capital-case"
         onClick={() => dispatch(toggleMapMenuSelection('Display RSU Status'))}
       >
         Display RSU Status
@@ -1561,7 +1561,7 @@ function MapPage() {
                   top: '10px',
                   left: '10px',
                 }}
-                className="museo-slab"
+                className="museo-slab capital-case"
               >
                 Add Point
               </Button>
@@ -1577,7 +1577,7 @@ function MapPage() {
                 onClick={(e) => {
                   dispatch(clearGeoMsg())
                 }}
-                className="museo-slab"
+                className="museo-slab capital-case"
               >
                 Clear
               </Button>
@@ -1646,7 +1646,7 @@ function MapPage() {
                     toast.error('Please complete the polygon (double click to close) before submitting')
                   }
                 }}
-                className="museo-slab"
+                className="museo-slab capital-case"
               >
                 Submit
               </Button>
@@ -1686,7 +1686,7 @@ function MapPage() {
           >
             <div className="buttonContainer" style={{ marginBottom: 15 }}>
               <Button
-                className="museo-slab"
+                className="museo-slab capital-case"
                 variant="contained"
                 size="small"
                 onClick={(e) => handleButtonToggle(e, 'mooveai')}
@@ -1694,7 +1694,7 @@ function MapPage() {
                 Add Point
               </Button>
               <Button
-                className="museo-slab"
+                className="museo-slab capital-case"
                 variant="contained"
                 size="small"
                 onClick={(e) => {
@@ -1711,7 +1711,7 @@ function MapPage() {
             </div>
             <div style={{ marginBottom: 5 }} className="submitContainer">
               <Button
-                className="museo-slab"
+                className="museo-slab capital-case"
                 variant="contained"
                 size="small"
                 onClick={(e) => {

@@ -26,9 +26,9 @@ import {
   setSelectedOrg,
 } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import { Link, useParams, useNavigate } from 'react-router-dom'
-import { DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
+import { Button, DialogActions, DialogContent, FormControl, TextField, Typography } from '@mui/material'
 import Dialog from '@mui/material/Dialog'
-import { AdminButton } from '../../styles/components/AdminButton'
+import { SideBarHeader } from '../../styles/components/SideBarHeader'
 
 const AdminEditOrganization = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -86,25 +86,49 @@ const AdminEditOrganization = () => {
 
   return (
     <Dialog open={open}>
-      <DialogTitle>Edit Organization</DialogTitle>
-      <DialogContent>
+      <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
+        <SideBarHeader
+          onClick={() => {
+            setOpen(false)
+            navigate('..')
+          }}
+          title="Edit Organization"
+        />
         {Object.keys(selectedOrg ?? {}).length != 0 ? (
-          <Form
-            id="admin-edit-org"
-            onSubmit={handleSubmit((data) => onSubmit(data))}
-            style={{ fontFamily: '"museo-slab", Arial, Helvetica, sans-serif' }}
-          >
-            <Form.Group className="mb-3" controlId="name">
-              <Form.Label>Organization Name *</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter organization name"
-                {...register('name', {
-                  required: 'Please enter the organization name',
-                })}
-              />
-              <Form.Label>Organization Email</Form.Label>
-              <Form.Control type="text" placeholder="Enter organization email" {...register('email')} />
+          <Form id="admin-edit-org" onSubmit={handleSubmit((data) => onSubmit(data))}>
+            <Form.Group controlId="name">
+              <FormControl fullWidth margin="normal">
+                <TextField
+                  label="Organization Name"
+                  placeholder="Enter Organization Name"
+                  color="info"
+                  variant="outlined"
+                  required
+                  {...register('name', {
+                    required: 'Please enter the organization name',
+                  })}
+                  slotProps={{
+                    inputLabel: {
+                      shrink: true,
+                    },
+                  }}
+                />
+              </FormControl>
+              <FormControl fullWidth margin="normal">
+                <TextField
+                  label="Organization Email"
+                  placeholder="Enter Organization Email"
+                  color="info"
+                  variant="outlined"
+                  required
+                  {...register('email')}
+                  slotProps={{
+                    inputLabel: {
+                      shrink: true,
+                    },
+                  }}
+                />
+              </FormControl>
               {errors.name && (
                 <p className="errorMsg" role="alert">
                   {errors.name.message}
@@ -119,18 +143,28 @@ const AdminEditOrganization = () => {
           </Typography>
         )}
       </DialogContent>
-      <DialogActions>
-        <AdminButton
+      <DialogActions sx={{ padding: '20px' }}>
+        <Button
           onClick={() => {
             setOpen(false)
-            navigate('..')
+            navigate('/dashboard/admin/organizations')
           }}
+          variant="outlined"
+          color="info"
+          style={{ position: 'absolute', bottom: 10, left: 10 }}
+          className="museo-slab capital-case"
         >
-          Close
-        </AdminButton>
-        <AdminButton form="admin-edit-org" type="submit">
+          Cancel
+        </Button>
+        <Button
+          form="admin-edit-org"
+          type="submit"
+          variant="contained"
+          style={{ position: 'absolute', bottom: 10, right: 10 }}
+          className="museo-slab capital-case"
+        >
           Apply Changes
-        </AdminButton>
+        </Button>
       </DialogActions>
     </Dialog>
   )

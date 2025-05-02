@@ -48,18 +48,6 @@
   padding: 30px;
 }
 
-.capital-case {
-  text-transform: capitalize;
-}
-
-.capitalize {
-  text-transform: uppercase;
-}
-
-.trebuchet {
-  font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;
-}
-
 .user-info-btn {
   text-align: right;
 }

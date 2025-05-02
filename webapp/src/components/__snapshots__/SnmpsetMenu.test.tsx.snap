@@ -191,7 +191,9 @@ exports[`should take a snapshot 1`] = `
         Delete Forwarding
       </button>
     </div>
-    <div>
+    <div
+      style="margin-top: 16px;"
+    >
       <p
         class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
       >

@@ -32,6 +32,9 @@ const useStyles = makeStyles({
     '& .MuiBox-root:empty': {
       display: 'none',
     },
+    '& .MuiTypography-h6': {
+      paddingLeft: '16px',
+    },
   },
 })
 
@@ -78,6 +81,9 @@ const AdminTable = (props: AdminTableProps) => {
         },
         '& .MuiPaper-root': {
           boxShadow: 'none',
+        },
+        '& .MuiTableRow-root:empty': {
+          display: 'none',
         },
       }}
       className="admin-table"

@@ -3,7 +3,7 @@
 exports[`should take a snapshot 1`] = `
 <div>
   <div
-    class="admin-table MuiBox-root css-i5q79k"
+    class="admin-table MuiBox-root css-1971fya"
   >
     <div
       class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation2 css-mocked-MuiPaper-root"

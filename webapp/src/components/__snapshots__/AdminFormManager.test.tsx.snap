@@ -116,7 +116,6 @@ exports[`snapshot organization 1`] = `
                     class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
                     data-testid="DeleteOutlineIcon"
                     focusable="false"
-                    size="20"
                     viewBox="0 0 24 24"
                   >
                     <path

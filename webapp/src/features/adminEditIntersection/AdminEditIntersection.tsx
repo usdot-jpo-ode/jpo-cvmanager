@@ -221,7 +221,7 @@ const AdminEditIntersection = () => {
                     variant="outlined"
                     required
                     {...register('ref_pt.longitude', {
-                      required: "Please enter the Intersection's IP address",
+                      required: "Please enter the Intersection's reference point Longitude",
                       pattern: {
                         value:
                           /^(\+|-)?(?:180(?:(?:\.0{1,8})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,8})?))$/,

@@ -41,16 +41,19 @@ function VisualSettings(props: VisualSettingsProps) {
   return (
     <>
       <Fab
-        style={{
+        size="small"
+        onClick={() => {
+          toggleOpen()
+        }}
+        sx={{
           position: 'absolute',
           zIndex: 10,
           top: theme.spacing(3),
           right: theme.spacing(17),
           backgroundColor: theme.palette.background.paper,
-        }}
-        size="small"
-        onClick={() => {
-          toggleOpen()
+          '&:hover': {
+            backgroundColor: theme.palette.custom.intersectionMapButtonHover,
+          },
         }}
       >
         <SettingsOutlined />
@@ -66,6 +69,7 @@ function VisualSettings(props: VisualSettingsProps) {
           fontSize: '16px',
           overflow: 'auto',
           scrollBehavior: 'auto',
+          borderRadius: '4px',
         }}
       >
         <Box style={{ position: 'relative', height: '100%', width: '100%' }}>
@@ -78,11 +82,10 @@ function VisualSettings(props: VisualSettingsProps) {
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
-                      mb: 2,
-                      px: 1,
+                      padding: '8px 16px',
                     }}
                   >
-                    <Typography variant="h6">Visual Settings</Typography>
+                    <Typography fontSize="16px">Visual Settings</Typography>
                     <IconButton
                       onClick={() => {
                         toggleOpen()
@@ -106,28 +109,28 @@ function VisualSettings(props: VisualSettingsProps) {
                             )
                           }
                         />
-                        <Typography fontSize="small">Rotate Signal Head Icons With Map </Typography>
+                        <Typography fontSize="16px">Rotate Signal Head Icons With Map </Typography>
                       </Grid2>
                       <Grid2 size={6} display="flex" flexDirection="row" alignItems="center">
                         <Checkbox
                           checked={laneLabelsVisible}
                           onChange={(event) => dispatch(setLaneLabelsVisible(event.target.checked))}
                         />
-                        <Typography fontSize="small">Show Lane IDs </Typography>
+                        <Typography fontSize="16px">Show Lane IDs </Typography>
                       </Grid2>
                       <Grid2 size={6} display="flex" flexDirection="row" alignItems="center">
                         <Checkbox
                           checked={sigGroupLabelsVisible}
                           onChange={(event) => dispatch(setSigGroupLabelsVisible(event.target.checked))}
                         />
-                        <Typography fontSize="small">Show Signal Group IDs </Typography>
+                        <Typography fontSize="16px">Show Signal Group IDs </Typography>
                       </Grid2>
                       <Grid2 size={6} display="flex" flexDirection="row" alignItems="center">
                         <Checkbox
                           checked={showPopupOnHover}
                           onChange={(event) => dispatch(setShowPopupOnHover(event.target.checked))}
                         />
-                        <Typography fontSize="small">Show Popup on Hover </Typography>
+                        <Typography fontSize="16px">Show Popup on Hover </Typography>
                       </Grid2>
                       <Grid2 size={12} display="flex" flexDirection="row">
                         <TextField

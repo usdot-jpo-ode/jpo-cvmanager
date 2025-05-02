@@ -38,8 +38,8 @@ export const MapLegend = (props: MapLegendProps) => {
           }}
         >
           <div style={{ height: 20, width: 20, backgroundColor: value }} />
-          <Typography fontSize="small" sx={{ ml: 1 }}>
-            {key}
+          <Typography fontSize="14px" sx={{ ml: 1, textTransform: 'capitalize' }}>
+            {key.toLowerCase()}
           </Typography>
         </div>
       </React.Fragment>
@@ -69,8 +69,8 @@ export const MapLegend = (props: MapLegendProps) => {
             <div style={{ height: heightColored, width: 10, backgroundColor: value[0] }} />
             <div style={{ height: heightWhite, width: 10, backgroundColor: '#ffffff' }} />
           </div>
-          <Typography fontSize="small" sx={{ ml: 1 }}>
-            {key}
+          <Typography fontSize="14px" sx={{ ml: 1, textTransform: 'capitalize' }}>
+            {key.toLowerCase()}
           </Typography>
         </div>
       </React.Fragment>
@@ -90,8 +90,8 @@ export const MapLegend = (props: MapLegendProps) => {
           }}
         >
           <div style={{ height: 20, width: 20, backgroundColor: value }} />
-          <Typography fontSize="small" sx={{ ml: 1 }}>
-            {key}
+          <Typography fontSize="14px" sx={{ ml: 1, textTransform: 'capitalize' }}>
+            {key.toLowerCase()}
           </Typography>
         </div>
       </React.Fragment>
@@ -111,8 +111,8 @@ export const MapLegend = (props: MapLegendProps) => {
           }}
         >
           <img src={value} style={{ height: 40, width: 30 }} />
-          <Typography fontSize="small" sx={{ ml: 1 }}>
-            {key}
+          <Typography fontSize="14px" sx={{ ml: 1, textTransform: 'capitalize' }}>
+            {key.toLowerCase()}
           </Typography>
         </div>
       </React.Fragment>
@@ -123,12 +123,15 @@ export const MapLegend = (props: MapLegendProps) => {
     <>
       <Fab
         id="map-legend-button"
-        style={{
+        sx={{
           position: 'absolute',
           zIndex: 10,
           top: theme.spacing(3),
           right: theme.spacing(10),
           backgroundColor: theme.palette.background.paper,
+          '&:hover': {
+            backgroundColor: theme.palette.custom.intersectionMapButtonHover,
+          },
         }}
         size="small"
         onClick={() => {
@@ -150,18 +153,17 @@ export const MapLegend = (props: MapLegendProps) => {
       >
         {props.openPanel !== 'map-legend' ? null : (
           <Box style={{ position: 'relative', height: '100%', width: '100%' }}>
-            <Paper sx={{ height: '100%', width: '100%' }} id="legend-paper" square>
+            <Paper sx={{ height: '100%', width: '100%', borderRadius: '4px' }} id="legend-paper" square>
               <Box>
                 <Box
                   sx={{
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    mb: 2,
-                    px: 1,
+                    padding: '8px 16px',
                   }}
                 >
-                  <Typography variant="h6">Legend</Typography>
+                  <Typography fontSize="16px">Legend</Typography>
                   <IconButton
                     onClick={() => {
                       toggleOpen()
@@ -175,11 +177,19 @@ export const MapLegend = (props: MapLegendProps) => {
                     maxHeight: '600px',
                     overflow: 'auto',
                     scrollbarColor: `${theme.palette.text.primary} ${theme.palette.background.paper}`,
+                    borderRadius: '4px',
                   }}
                 >
-                  <Accordion disableGutters>
+                  <Accordion
+                    sx={{
+                      '& .Mui-expanded': {
+                        backgroundColor: theme.palette.custom.intersectionMapAccordionExpanded,
+                      },
+                    }}
+                    disableGutters
+                  >
                     <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
-                      <Typography fontSize="small">Signal Heads</Typography>
+                      <Typography fontSize="16px">Signal Heads</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
                       <div
@@ -195,11 +205,16 @@ export const MapLegend = (props: MapLegendProps) => {
                     </AccordionDetails>
                   </Accordion>
 
-                  <Divider sx={{ borderRadius: 1 }} />
-
-                  <Accordion disableGutters>
+                  <Accordion
+                    sx={{
+                      '& .Mui-expanded': {
+                        backgroundColor: theme.palette.custom.intersectionMapAccordionExpanded,
+                      },
+                    }}
+                    disableGutters
+                  >
                     <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
-                      <Typography fontSize="small">Lane Lines</Typography>
+                      <Typography fontSize="16px">Lane Lines</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
                       <div
@@ -215,11 +230,16 @@ export const MapLegend = (props: MapLegendProps) => {
                     </AccordionDetails>
                   </Accordion>
 
-                  <Divider sx={{ borderRadius: 1 }} />
-
-                  <Accordion disableGutters>
+                  <Accordion
+                    sx={{
+                      '& .Mui-expanded': {
+                        backgroundColor: theme.palette.custom.intersectionMapAccordionExpanded,
+                      },
+                    }}
+                    disableGutters
+                  >
                     <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
-                      <Typography fontSize="small">Lane Connections</Typography>
+                      <Typography fontSize="16px">Lane Connections</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
                       <div
@@ -235,9 +255,16 @@ export const MapLegend = (props: MapLegendProps) => {
                     </AccordionDetails>
                   </Accordion>
 
-                  <Accordion disableGutters>
+                  <Accordion
+                    sx={{
+                      '& .Mui-expanded': {
+                        backgroundColor: theme.palette.custom.intersectionMapAccordionExpanded,
+                      },
+                    }}
+                    disableGutters
+                  >
                     <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
-                      <Typography fontSize="small">BSM Colors</Typography>
+                      <Typography fontSize="16px">BSM Colors</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
                       <div

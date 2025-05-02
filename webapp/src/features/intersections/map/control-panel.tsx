@@ -61,7 +61,6 @@ import { RootState } from '../../../store'
 import { decoderModeToggled, setAsn1DecoderDialogOpen } from '../decoder/asn1-decoder-slice'
 import toast from 'react-hot-toast'
 import { ExpandMoreOutlined, Pause, PlayArrowOutlined, UploadFile } from '@mui/icons-material'
-import PerfectScrollbar from 'react-perfect-scrollbar'
 
 const getNumber = (value: string | undefined): number | undefined => {
   if (value == null) return undefined
@@ -356,25 +355,21 @@ function ControlPanel() {
           sx={{
             py: 0.5,
             borderRadius: '4px',
+            '& .Mui-expanded': {
+              backgroundColor: theme.palette.custom.intersectionMapAccordionExpanded,
+            },
           }}
         >
           <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
-            <Typography variant="h6">
+            <Typography fontSize="16px">
               Time Query
-              {liveDataActive && (
-                <Chip
-                  label="Live Data Active"
-                  className="blink_me"
-                  sx={{ ml: 2, borderRadius: '4px' }}
-                  color="success"
-                />
-              )}
+              {liveDataActive && <Chip label="Live Data Active" sx={{ ml: 2 }} color="success" size="small" />}
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Box sx={{ mt: 1 }}>
-              <Grid2 container columnSpacing={1} rowSpacing={2} sx={{ mt: 1 }}>
-                <Grid2 size={{ xs: 12, md: 4 }}>
+              <Grid2 container columnSpacing={2} rowSpacing={2} sx={{ mt: 1 }}>
+                <Grid2 size={{ xs: 12, md: 5 }}>
                   <FormControl fullWidth sx={{ mt: 1 }}>
                     <InputLabel id="intersection-label">Intersection ID</InputLabel>
                     <Select
@@ -394,7 +389,7 @@ function ControlPanel() {
                     </Select>
                   </FormControl>
                 </Grid2>
-                <Grid2 size={{ xs: 12, md: 4 }}>
+                <Grid2 size={{ xs: 12, md: 5 }}>
                   <FormControl fullWidth>
                     <TextField
                       label="Time Before Event"
@@ -413,7 +408,7 @@ function ControlPanel() {
                     />
                   </FormControl>
                 </Grid2>
-                <Grid2 size={{ xs: 12, md: 7 }}>
+                <Grid2 size={{ xs: 12, md: 10 }}>
                   <FormControl fullWidth>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DateTimePicker
@@ -427,8 +422,7 @@ function ControlPanel() {
                     </LocalizationProvider>
                   </FormControl>
                 </Grid2>
-                <Grid2 size={{ xs: 0, md: 5 }} />
-                <Grid2 size={{ xs: 12, md: 4 }}>
+                <Grid2 size={{ xs: 12, md: 5 }}>
                   <FormControl fullWidth>
                     <TextField
                       label="Time After Event"
@@ -447,7 +441,7 @@ function ControlPanel() {
                     />
                   </FormControl>
                 </Grid2>
-                <Grid2 size={{ xs: 12, md: 4 }}>
+                <Grid2 size={{ xs: 12, md: 5 }}>
                   <FormControl fullWidth>
                     <TextField
                       label="Time Render Window"
@@ -476,6 +470,7 @@ function ControlPanel() {
                 }}
                 color="info"
                 variant="outlined"
+                className="capital-case"
               >
                 {liveDataActive ? 'Stop Live Data' : 'Render Live Data'}
               </Button>
@@ -490,41 +485,36 @@ function ControlPanel() {
           onChange={() => setIsExpandedDownload(!isExpandedDownload)}
           sx={{
             py: 0.5,
+            '& .Mui-expanded': {
+              backgroundColor: theme.palette.custom.intersectionMapAccordionExpanded,
+            },
           }}
         >
           <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
-            <Typography variant="h6">Message Times & Download</Typography>
+            <Typography fontSize="16px">Message Times & Download</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <div
-              className="control-panel"
-              style={{
-                padding: '10px 30px 0px 20px',
-              }}
-            >
-              <Typography variant="h6">
+            <div>
+              <Typography fontSize="16px">
                 Visualization Time: {format(sliderTimeValue.start, 'MM/dd/yyyy HH:mm:ss')} -{' '}
                 {format(sliderTimeValue.end, 'MM/dd/yyyy HH:mm:ss')}
               </Typography>
-              <Typography fontSize="small">
+              <Typography fontSize="16px">
                 MAP Message Time:{' '}
                 {mapSpatTimes.mapTime === 0 ? 'No Data' : format(mapSpatTimes.mapTime * 1000, 'MM/dd/yyyy HH:mm:ss')}
               </Typography>
 
-              <Typography fontSize="small">
+              <Typography fontSize="16px">
                 SPAT Message Time:{' '}
                 {mapSpatTimes.spatTime === 0 ? 'No Data' : format(mapSpatTimes.spatTime * 1000, 'MM/dd/yyyy HH:mm:ss')}
               </Typography>
-              <Typography fontSize="small">
-                Activity Chart for {format(sliderTimeValue.start, 'MM/dd/yyyy')}:
-              </Typography>
+              <Typography fontSize="16px">Activity Chart for {format(sliderTimeValue.start, 'MM/dd/yyyy')}:</Typography>
 
               <ResponsiveContainer
                 width="100%"
                 height={80}
                 style={{
                   borderRadius: '4px',
-                  margin: theme.spacing(1),
                 }}
               >
                 <BarChart
@@ -556,7 +546,13 @@ function ControlPanel() {
                   />
                 </BarChart>
               </ResponsiveContainer>
-              <Button sx={{ m: 1 }} variant="outlined" color="info" onClick={() => dispatch(downloadMapData())}>
+              <Button
+                sx={{ m: 1 }}
+                variant="outlined"
+                color="info"
+                className="capital-case"
+                onClick={() => dispatch(downloadMapData())}
+              >
                 Download All Message Data
               </Button>
               <Box sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
@@ -588,45 +584,28 @@ function ControlPanel() {
           sx={{
             py: 0.5,
             borderRadius: '4px',
+            '& .Mui-expanded': {
+              backgroundColor: theme.palette.custom.intersectionMapAccordionExpanded,
+            },
           }}
         >
           <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
-            <Typography variant="h6">
-              ASN.1 Decoding{' '}
-              {decoderModeEnabled && (
-                <Chip
-                  label="Decoder Mode Active"
-                  className="blink_me"
-                  sx={{ ml: 2, borderRadius: '4px' }}
-                  color="warning"
-                />
-              )}
+            <Typography fontSize="16px">
+              ASN.1 Decoding {decoderModeEnabled && <Chip label="Decoder Mode Active" sx={{ ml: 2 }} color="warning" />}
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <div
-              className="control-panel"
-              style={{
-                padding: '10px 30px 0px 20px',
-              }}
-            >
+            <div>
               <div>
-                <Typography sx={{ m: 1 }} color="white">
-                  <Typography sx={{ textIndent: '0px each-line' }} color="white">
-                    This tool allows you to decode and render ASN.1 encoded data. To use this tool:
-                  </Typography>
-                  <br />
-                  <Typography sx={{ textIndent: '-15px' }} color="white">
-                    1. Enable Decoder Mode. This will disable all other map data until Decoder Mode is disabled.
-                  </Typography>
-                  <br />
-                  <Typography sx={{ textIndent: '-15px' }} color="white">
-                    2. Hit "Decoder + Render Data" to open the decoder dialog, where you can enter/upload asn.1 encoded
-                  </Typography>
-                  <br />
-                  <Typography sx={{ textIndent: '-15px' }} color="white">
-                    3. Return to the map to render your data. Data can be toggled on/off in the dialog menu.
-                  </Typography>
+                <Typography>To decode and render ASN.1 encoded data:</Typography>
+                <Typography>
+                  1. Enable Decoder Mode. This will disable all other map data until Decoder Mode is disabled.
+                </Typography>
+                <Typography>
+                  2. Hit "Decode + Render Data" to open the decoder dialog, where you can enter/upload asn.1 encoded
+                </Typography>
+                <Typography>
+                  3. Return to the map to render your data. Data can be toggled on/off in the dialog menu.
                 </Typography>
               </div>
               <Box
@@ -665,6 +644,7 @@ function ControlPanel() {
                   variant="contained"
                   disabled={!decoderModeEnabled}
                   onClick={() => dispatch(setAsn1DecoderDialogOpen(true))}
+                  className="capital-case"
                 >
                   Decode + Render Data
                 </Button>

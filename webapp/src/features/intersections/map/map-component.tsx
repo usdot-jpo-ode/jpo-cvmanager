@@ -3,10 +3,11 @@ import Map, { Source, Layer, MapRef } from 'react-map-gl'
 
 import { Container, Col } from 'reactstrap'
 
-import { Paper, Box } from '@mui/material'
+import { Paper, Box, Fab, useTheme, Button } from '@mui/material'
+import AddIcon from '@mui/icons-material/Add'
 
 import ControlPanel from './control-panel'
-import { SidePanel } from './side-panel'
+import { SidePanel } from './map-info'
 import { CustomPopup } from './popup'
 import { selectToken } from '../../../generalSlices/userSlice'
 import {
@@ -32,7 +33,6 @@ import {
   onMapMouseLeave,
   onMapMouseMove,
   pullInitialData,
-  renderRsuData,
   resetInitialDataAbortControllers,
   selectAllInteractiveLayerIds,
   selectBsmData,
@@ -47,7 +47,6 @@ import {
   selectLaneLabelsVisible,
   selectLiveDataActive,
   selectLiveDataRestart,
-  selectLiveDataRestartTimeoutId,
   selectLoadInitialDataTimeoutId,
   selectMapData,
   selectMapSignalGroups,
@@ -80,6 +79,8 @@ import { selectSelectedSrm } from '../../../generalSlices/rsuSlice'
 import mbStyle from '../../../styles/intersectionMapStyle.json'
 import DecoderEntryDialog from '../decoder/decoder-entry-dialog'
 import { useLocation } from 'react-router-dom'
+import { Remove } from '@mui/icons-material'
+import VisualSettings from './visual-settings'
 import { useDispatch, useSelector } from 'react-redux'
 
 export const getTimestamp = (dt: any): number => {
@@ -107,6 +108,7 @@ type timestamp = {
 const IntersectionMap = (props: MAP_PROPS) => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const location = useLocation()
+  const theme = useTheme()
 
   // userSlice
   const authToken = useSelector(selectToken)
@@ -147,12 +149,13 @@ const IntersectionMap = (props: MAP_PROPS) => {
   const loadInitialDataTimeoutId = useSelector(selectLoadInitialDataTimeoutId)
   const liveDataActive = useSelector(selectLiveDataActive)
   const playbackModeActive = useSelector(selectPlaybackModeActive)
-  const liveDataRestartTimeoutId = useSelector(selectLiveDataRestartTimeoutId)
   const liveDataRestart = useSelector(selectLiveDataRestart)
   const decoderModeEnabled = useSelector(selectDecoderModeEnabled)
 
   const mapRef = React.useRef<MapRef>(null)
   const [bsmTrailLength, setBsmTrailLength] = useState<number>(5)
+
+  const [openPanel, setOpenPanel] = useState<string>('')
 
   useEffect(() => {
     return () => {
@@ -294,43 +297,66 @@ const IntersectionMap = (props: MAP_PROPS) => {
       <Col className="mapContainer" style={{ overflow: 'hidden', width: '100%', height: '100%', position: 'relative' }}>
         <div
           style={{
-            padding: '0px 0px 6px 12px',
-            marginTop: '6px',
-            marginLeft: '35px',
             position: 'absolute',
             zIndex: 10,
-            top: 0,
-            left: 0,
-            borderRadius: '4px',
-            fontSize: '16px',
-            maxHeight: 'calc(100vh - 120px)',
+            top: theme.spacing(3),
+            left: theme.spacing(3),
+            width: '600px',
+            maxHeight: 'calc(100vh - 240px)',
             overflow: 'auto',
             scrollBehavior: 'auto',
           }}
         >
           <Box style={{ position: 'relative' }}>
-            <Paper sx={{ pt: 1, pb: 1, opacity: 0.85 }}>
+            <Paper sx={{ py: 1, backgroundColor: 'transparent' }}>
               <ControlPanel />
             </Paper>
           </Box>
         </div>
-        <div
-          style={{
-            padding: '0px 0px 6px 12px',
+        <Fab
+          color="primary"
+          id="plus-button"
+          sx={{
             position: 'absolute',
-            zIndex: 9,
-            bottom: 0,
-            left: 0,
-            fontSize: '16px',
-            overflow: 'auto',
-            scrollBehavior: 'auto',
-            width: '100%',
+            zIndex: 10,
+            top: theme.spacing(10),
+            right: theme.spacing(3),
+            '&:hover': {
+              backgroundColor: theme.palette.custom.intersectionMapButtonHover,
+            },
+          }}
+          size="small"
+          onClick={() => {
+            if (mapRef.current) {
+              const map = mapRef.current.getMap()
+              map.zoomIn()
+            }
           }}
         >
-          <Box style={{ position: 'relative' }}>
-            <MapLegend />
-          </Box>
-        </div>
+          <AddIcon />
+        </Fab>
+        <Fab
+          color="primary"
+          id="minus-button"
+          sx={{
+            position: 'absolute',
+            zIndex: 10,
+            top: theme.spacing(17),
+            right: theme.spacing(3),
+            '&:hover': {
+              backgroundColor: theme.palette.custom.intersectionMapButtonHover,
+            },
+          }}
+          size="small"
+          onClick={() => {
+            if (mapRef.current) {
+              const map = mapRef.current.getMap()
+              map.zoomOut()
+            }
+          }}
+        >
+          <Remove />
+        </Fab>
 
         <Map
           {...viewState}
@@ -475,7 +501,11 @@ const IntersectionMap = (props: MAP_PROPS) => {
           notifications={filteredSurroundingNotifications}
           sourceData={props.sourceData}
           sourceDataType={props.sourceDataType}
+          openPanel={openPanel}
+          setOpenPanel={(panel) => setOpenPanel(panel)}
         />
+        <MapLegend openPanel={openPanel} setOpenPanel={(panel) => setOpenPanel(panel)} />
+        <VisualSettings openPanel={openPanel} setOpenPanel={(panel) => setOpenPanel(panel)} />
       </Col>
       <DecoderEntryDialog />
     </Container>

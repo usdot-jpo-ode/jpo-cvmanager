@@ -123,147 +123,141 @@ const AdminOrganizationTab = () => {
   }
 
   return (
-    <div style={{ backgroundColor: theme.palette.background.paper, height: 'fit-content', padding: '10px 0px' }}>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <div>
-              <div style={{ display: 'flex', flexDirection: 'row', margin: '10px' }}>
-                <Grid2
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    width: '70%',
-                    justifyContent: 'flex-start',
-                    alignItems: 'center',
-                  }}
-                >
-                  <Grid2 size={{ xs: 0 }} sx={{ marginLeft: '10px' }}>
-                    <DropdownList
-                      style={{ width: '250px' }}
-                      dataKey="name"
-                      textField="name"
-                      data={orgData}
-                      value={selectedOrg}
-                      onChange={(value) => dispatch(setSelectedOrg(value))}
-                    />
-                  </Grid2>
-                  <Grid2 size={{ xs: 0 }} sx={{ marginLeft: '10px' }}>
-                    <ContainedIconButton
-                      key="delete_button"
-                      title="Edit Organization"
-                      onClick={() => navigate('editOrganization/' + selectedOrg?.name)}
-                      sx={{
-                        backgroundColor: 'transparent',
-                        borderRadius: '2px',
-                        '&:hover': {
-                          backgroundColor: alpha(theme.palette.text.primary, 0.1),
-                        },
-                      }}
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <div style={{ backgroundColor: theme.palette.background.paper, height: 'fit-content', padding: '10px 0px' }}>
+            <div style={{ display: 'flex', flexDirection: 'row', margin: '10px' }}>
+              <Grid2
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  width: '70%',
+                  justifyContent: 'flex-start',
+                  alignItems: 'center',
+                }}
+              >
+                <Grid2 size={{ xs: 0 }} sx={{ marginLeft: '10px' }}>
+                  <DropdownList
+                    style={{ width: '250px' }}
+                    dataKey="name"
+                    textField="name"
+                    data={orgData}
+                    value={selectedOrg}
+                    onChange={(value) => dispatch(setSelectedOrg(value))}
+                  />
+                </Grid2>
+                <Grid2 size={{ xs: 0 }} sx={{ marginLeft: '10px' }}>
+                  <ContainedIconButton
+                    key="delete_button"
+                    title="Edit Organization"
+                    onClick={() => navigate('editOrganization/' + selectedOrg?.name)}
+                    sx={{
+                      backgroundColor: 'transparent',
+                      borderRadius: '2px',
+                      '&:hover': {
+                        backgroundColor: alpha(theme.palette.text.primary, 0.1),
+                      },
+                    }}
+                  >
+                    <EditOutlined size={20} sx={{ color: theme.palette.custom.rowActionIcon }} component={undefined} />
+                  </ContainedIconButton>
+                </Grid2>
+                <Grid2 size={{ xs: 0 }} sx={{ marginLeft: '10px' }}>
+                  <AdminOrganizationDeleteMenu
+                    deleteOrganization={() => handleOrgDelete(selectedOrgName)}
+                    selectedOrganization={selectedOrgName}
+                  />
+                </Grid2>
+              </Grid2>
+              <Grid2
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  width: '30%',
+                  justifyContent: 'flex-end',
+                  alignItems: 'center',
+                }}
+              >
+                {activeTab === undefined && [
+                  <Grid2 size={{ xs: 0 }} sx={{ marginRight: '10px' }}>
+                    <Button
+                      key="refresh_button"
+                      title="Refresh Organizations"
+                      onClick={() => refresh()}
+                      variant="outlined"
+                      color="info"
+                      size="small"
+                      className="museo-slab capital-case"
+                      startIcon={<Refresh />}
                     >
-                      <EditOutlined
-                        size={20}
-                        sx={{ color: theme.palette.custom.rowActionIcon }}
-                        component={undefined}
-                      />
-                    </ContainedIconButton>
-                  </Grid2>
-                  <Grid2 size={{ xs: 0 }} sx={{ marginLeft: '10px' }}>
-                    <AdminOrganizationDeleteMenu
-                      deleteOrganization={() => handleOrgDelete(selectedOrgName)}
-                      selectedOrganization={selectedOrgName}
-                    />
-                  </Grid2>
-                </Grid2>
-                <Grid2
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    width: '30%',
-                    justifyContent: 'flex-end',
-                    alignItems: 'center',
-                  }}
-                >
-                  {activeTab === undefined && [
-                    <Grid2 size={{ xs: 0 }} sx={{ marginRight: '10px' }}>
-                      <Button
-                        key="refresh_button"
-                        title="Refresh Organizations"
-                        onClick={() => refresh()}
-                        variant="outlined"
-                        color="info"
-                        size="small"
-                        className="museo-slab capital-case"
-                        startIcon={<Refresh />}
-                      >
-                        Refresh
-                      </Button>
-                    </Grid2>,
-                    <Grid2 size={{ xs: 0 }} sx={{ marginRight: '10px' }}>
-                      <Button
-                        key="plus_button"
-                        title="Add Organization"
-                        onClick={() => navigate('addOrganization')}
-                        startIcon={<AddCircleOutline />}
-                        variant="contained"
-                        size="small"
-                        className="museo-slab capital-case"
-                      >
-                        New
-                      </Button>
-                    </Grid2>,
-                  ]}
-                </Grid2>
-              </div>
+                      Refresh
+                    </Button>
+                  </Grid2>,
+                  <Grid2 size={{ xs: 0 }} sx={{ marginRight: '10px' }}>
+                    <Button
+                      key="plus_button"
+                      title="Add Organization"
+                      onClick={() => navigate('addOrganization')}
+                      startIcon={<AddCircleOutline />}
+                      variant="contained"
+                      size="small"
+                      className="museo-slab capital-case"
+                    >
+                      New
+                    </Button>
+                  </Grid2>,
+                ]}
+              </Grid2>
+            </div>
 
-              <div className="scroll-div-org-tab">
-                <>
-                  <ConditionalRenderRsu>
-                    <AdminOrganizationTabRsu
-                      selectedOrg={selectedOrgName}
-                      selectedOrgEmail={selectedOrgEmail}
-                      updateTableData={updateTableData}
-                      tableData={rsuTableData}
-                      key="rsu"
-                    />
-                  </ConditionalRenderRsu>
-                  <ConditionalRenderIntersection>
-                    <AdminOrganizationTabIntersection
-                      selectedOrg={selectedOrgName}
-                      selectedOrgEmail={selectedOrgEmail}
-                      updateTableData={updateTableData}
-                      tableData={intersectionTableData}
-                      key="intersection"
-                    />
-                  </ConditionalRenderIntersection>
-                  <AdminOrganizationTabUser
+            <div className="scroll-div-org-tab">
+              <>
+                <ConditionalRenderRsu>
+                  <AdminOrganizationTabRsu
                     selectedOrg={selectedOrgName}
                     selectedOrgEmail={selectedOrgEmail}
                     updateTableData={updateTableData}
-                    tableData={userTableData}
-                    key="user"
+                    tableData={rsuTableData}
+                    key="rsu"
                   />
-                </>
-              </div>
+                </ConditionalRenderRsu>
+                <ConditionalRenderIntersection>
+                  <AdminOrganizationTabIntersection
+                    selectedOrg={selectedOrgName}
+                    selectedOrgEmail={selectedOrgEmail}
+                    updateTableData={updateTableData}
+                    tableData={intersectionTableData}
+                    key="intersection"
+                  />
+                </ConditionalRenderIntersection>
+                <AdminOrganizationTabUser
+                  selectedOrg={selectedOrgName}
+                  selectedOrgEmail={selectedOrgEmail}
+                  updateTableData={updateTableData}
+                  tableData={userTableData}
+                  key="user"
+                />
+              </>
             </div>
-          }
-        />
-        <Route path="addOrganization" element={<AdminAddOrganization />} />
-        <Route path="editOrganization/:orgName" element={<AdminEditOrganization />} />
-        <Route
-          path="*"
-          element={
-            <NotFound
-              redirectRoute="/dashboard/admin/organization"
-              redirectRouteName="Admin Organization Page"
-              offsetHeight={319}
-              description="This page does not exist. Please return to the admin organization page."
-            />
-          }
-        />
-      </Routes>
-    </div>
+          </div>
+        }
+      />
+      <Route path="addOrganization" element={<AdminAddOrganization />} />
+      <Route path="editOrganization/:orgName" element={<AdminEditOrganization />} />
+      <Route
+        path="*"
+        element={
+          <NotFound
+            redirectRoute="/dashboard/admin/organization"
+            redirectRouteName="Admin Organization Page"
+            offsetHeight={319}
+            description="This page does not exist. Please return to the admin organization page."
+          />
+        }
+      />
+    </Routes>
   )
 }
 

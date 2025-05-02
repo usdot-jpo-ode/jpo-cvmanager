@@ -46,7 +46,7 @@ const AdminOrganizationDeleteMenu = (props: AdminOrganizationDeleteMenuProps) =>
           },
         }}
       >
-        <DeleteOutline sx={{ color: theme.palette.custom.rowActionIcon }} component={undefined} size={20} />
+        <DeleteOutline sx={{ color: theme.palette.custom.rowActionIcon, fontSize: '1.5rem' }} component={undefined} />
       </ContainedIconButton>
     </div>
   )

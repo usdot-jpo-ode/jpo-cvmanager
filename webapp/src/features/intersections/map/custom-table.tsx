@@ -43,7 +43,14 @@ export const CustomTable = (props: CustomTableProps) => {
         <TableHead>
           <TableRow>
             {headers.map((head) => (
-              <TableCell key={head} sx={{ minWidth: 0 }}>
+              <TableCell
+                key={head}
+                sx={{
+                  minWidth: 0,
+                  fontSize: '16px !important',
+                  textTransform: 'capitalize !important',
+                }}
+              >
                 {head}
               </TableCell>
             ))}

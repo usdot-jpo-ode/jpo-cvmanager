@@ -31,7 +31,7 @@ export const ExpandableTable = (props) => {
   }
 
   return (
-    <TableContainer component={Paper} sx={{ pt: 0, pb: 0, px: 4 }}>
+    <TableContainer component={Paper} elevation={0} sx={{ pt: 0, pb: 0, px: 4 }}>
       <Table
         stickyHeader
         size="small"
@@ -44,7 +44,13 @@ export const ExpandableTable = (props) => {
         <TableHead>
           <TableRow>
             {headers.map((head) => (
-              <TableCell key={head}>{head}</TableCell>
+              <TableCell
+                className="capital-case"
+                sx={{ fontSize: '16px !important', textTransform: 'capitalize !important' }}
+                key={head}
+              >
+                {head}
+              </TableCell>
             ))}
           </TableRow>
         </TableHead>

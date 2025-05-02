@@ -226,6 +226,9 @@ export const adminEditIntersectionSlice = createSlice({
     value: initialState,
   },
   reducers: {
+    clear: (state) => {
+      state.value = initialState
+    },
     setSelectedOrganizations: (state, action) => {
       state.value.selectedOrganizations = action.payload
     },
@@ -282,7 +285,7 @@ export const adminEditIntersectionSlice = createSlice({
   },
 })
 
-export const { setSelectedOrganizations, setSelectedRsus, updateStates } = adminEditIntersectionSlice.actions
+export const { clear, setSelectedOrganizations, setSelectedRsus, updateStates } = adminEditIntersectionSlice.actions
 
 export const selectLoading = (state: RootState) => state.adminEditIntersection.loading
 export const selectApiData = (state: RootState) => state.adminEditIntersection.value.apiData

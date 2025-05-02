@@ -33,7 +33,9 @@ class UpgraderAbstractClass(abc.ABC):
                 shutil.rmtree(path)
 
     # Downloads firmware install package blob to /home/rsu_ip/
-    def download_blob(self, blob_name=None, local_file_name=None, firmware_extension=None):
+    def download_blob(
+        self, blob_name=None, local_file_name=None, firmware_extension=None
+    ):
         # Create parent rsu_ip directory
         path = self.local_file_name[: self.local_file_name.rfind("/")]
         Path(path).mkdir(exist_ok=True)
@@ -47,7 +49,15 @@ class UpgraderAbstractClass(abc.ABC):
             "BLOB_STORAGE_PROVIDER", "DOCKER"
         ).casefold()
         if bspCaseInsensitive == "gcp":
-            return gcs_utils.download_gcp_blob(blob_name, local_file_name, self.firmware_extension) if firmware_extension is None else gcs_utils.download_gcp_blob(blob_name, local_file_name, firmware_extension)
+            return (
+                gcs_utils.download_gcp_blob(
+                    blob_name, local_file_name, self.firmware_extension
+                )
+                if firmware_extension is None
+                else gcs_utils.download_gcp_blob(
+                    blob_name, local_file_name, firmware_extension
+                )
+            )
         elif bspCaseInsensitive == "docker":
             return download_blob.download_docker_blob(blob_name, local_file_name)
         else:
@@ -58,9 +68,20 @@ class UpgraderAbstractClass(abc.ABC):
     # success is a boolean
     def notify_firmware_manager(self, success):
         status = "success" if success else "fail"
-        logging.info(f"Firmware upgrade script completed for {self.rsu_ip} with status: {status}")
+        logging.info(
+            f"Firmware upgrade script completed for {self.rsu_ip} with status: {status}"
+        )
 
-        url = "http://127.0.0.1:8080/firmware_upgrade_completed"
+        # Obtain the upgrade scheduler endpoint
+        upgrade_scheduler_endpoint = os.environ.get(
+            "UPGRADE_SCHEDULER_ENDPOINT", "127.0.0.1"
+        )
+        if upgrade_scheduler_endpoint == "UNDEFINED":
+            raise Exception(
+                "The UPGRADE_SCHEDULER_ENDPOINT environment variable is undefined!"
+            )
+
+        url = f"{upgrade_scheduler_endpoint}/firmware_upgrade_completed"
         body = {"rsu_ip": self.rsu_ip, "status": status}
         try:
             requests.post(url, json=body)

@@ -10,6 +10,69 @@ class MessageMonitorApi {
     })
     return response ?? []
   }
+  /**
+   * Retrieves SPAT (Signal Phase and Timing) messages for a specific intersection,
+   * including the latest SPAT message before the specified start time and all SPAT messages
+   * within the specified time range
+   *
+   * @param {Object} params - The parameters for the API request.
+   * @param {string} params.token - The authentication token for the API request.
+   * @param {number} params.intersectionId - The ID of the intersection to filter SPAT messages.
+   * @param {number} params.roadRegulatorId - The ID of the road regulator associated with the intersection.
+   * @param {Date} [params.startTime] - The start time of the time range (optional).
+   * @param {Date} [params.endTime] - The end time of the time range (optional).
+   * @param {boolean} [params.compact] - Whether to request a compact version of the SPAT messages (optional).
+   * @param {AbortController} [params.abortController] - Optional AbortController to cancel the API request.
+   * @returns {Promise<ProcessedSpat[]>} - A promise that resolves to an array of processed SPAT messages.
+   *
+   * @throws {Error} - Throws an error if the API request fails.
+   *
+   * @description
+   * This function retrieves SPAT messages for a specific intersection, including the latest SPAT message
+   * before the specified start time and all SPAT messages within the specified time range.
+   * This is intended to account for querying de-duplicated data, in which data within a specified time range may be sparse.
+   * This function queries for data within the time range, as well as retrieving the latest SPaT message before the time range.
+   * This ensures that there is data available for the start of the time range.
+   */
+  async getSpatMessagesWithLatest({
+    token,
+    intersectionId,
+    roadRegulatorId,
+    startTime,
+    endTime,
+    compact,
+    abortController,
+  }: {
+    token: string
+    intersectionId: number
+    roadRegulatorId: number
+    startTime?: Date
+    endTime?: Date
+    compact?: boolean
+    abortController?: AbortController
+  }): Promise<ProcessedSpat[]> {
+    // Retrieve latest data before time interval
+    const latestSpats = await this.getSpatMessages({
+      token,
+      intersectionId,
+      roadRegulatorId,
+      endTime: startTime,
+      latest: true,
+      compact,
+      abortController,
+    })
+    // Retrieve data within time interval
+    const allSpats = await this.getSpatMessages({
+      token,
+      intersectionId,
+      roadRegulatorId,
+      startTime,
+      endTime,
+      compact,
+      abortController,
+    })
+    return [...allSpats, ...latestSpats].filter((spat) => spat != null)
+  }
 
   async getSpatMessages({
     token,

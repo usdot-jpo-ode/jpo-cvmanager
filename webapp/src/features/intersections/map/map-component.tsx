@@ -9,7 +9,6 @@ import AddIcon from '@mui/icons-material/Add'
 import ControlPanel from './control-panel'
 import { SidePanel } from './map-info'
 import { CustomPopup } from './popup'
-import { useDispatch, useSelector } from 'react-redux'
 import { selectToken } from '../../../generalSlices/userSlice'
 import {
   selectBsmLayerStyle,
@@ -62,7 +61,7 @@ import {
   selectSpatSignalGroups,
   selectTimeWindowSeconds,
   selectViewState,
-  setLoadInitialdataTimeoutId,
+  setLoadInitialDataTimeoutId,
   setMapProps,
   setMapRef,
   setRawData,
@@ -82,6 +81,7 @@ import DecoderEntryDialog from '../decoder/decoder-entry-dialog'
 import { useLocation } from 'react-router-dom'
 import { Remove } from '@mui/icons-material'
 import VisualSettings from './visual-settings'
+import { useDispatch, useSelector } from 'react-redux'
 
 export const getTimestamp = (dt: any): number => {
   try {
@@ -223,7 +223,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
       clearTimeout(loadInitialDataTimeoutId)
     }
     const timeoutId = setTimeout(() => dispatch(pullInitialData()), 500)
-    dispatch(setLoadInitialdataTimeoutId(timeoutId))
+    dispatch(setLoadInitialDataTimeoutId(timeoutId))
   }, [queryParams])
 
   useEffect(() => {

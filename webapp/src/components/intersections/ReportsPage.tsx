@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Box, Button, Stack, Typography } from '@mui/material'
-import { styled } from '@mui/material/styles'
+import { styled, StyledEngineProvider, ThemeProvider } from '@mui/material/styles'
 import { FilterAlt } from '@mui/icons-material'
 import { ReportListFilters } from '../../features/intersections/reports/report-list-filters'
 import { ReportListTable } from '../../features/intersections/reports/report-list-table'
@@ -9,8 +9,12 @@ import { ReportGenerationDialog } from '../../features/intersections/reports/rep
 import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../generalSlices/intersectionSlice'
 import { selectToken } from '../../generalSlices/userSlice'
 import { useSelector } from 'react-redux'
+import ReportDetailsModal from '../../features/intersections/reports/report-details-modal'
+import { ReportTheme } from '../../styles/report-theme'
+import RefreshIcon from '@mui/icons-material/Refresh'
 
 const applyPagination = (logs, page, rowsPerPage) => logs.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+const WEEK_IN_MILLISECONDS = 7 * 24 * 60 * 60 * 1000
 
 const LogsListInner = styled('div', { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }: { theme: any; open: boolean }) => ({
@@ -42,7 +46,6 @@ const Page = () => {
   const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
   const token = useSelector(selectToken)
 
-  const [group, setGroup] = useState(true)
   const [logs, setLogs] = useState<ReportMetadata[]>([])
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
@@ -51,18 +54,19 @@ const Page = () => {
   const [filters, setFilters] = useState({
     query: '',
     endDate: new Date(),
-    startDate: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
+    startDate: new Date(new Date().getTime() - WEEK_IN_MILLISECONDS),
     logLevel: 'ERROR',
     customer: [],
   })
   const [openReportGenerationDialog, setOpenReportGenerationDialog] = useState(false)
 
+  // Sort reports by age, newest first
   function sortReportByAge(a: ReportMetadata, b: ReportMetadata) {
     if (a.reportGeneratedAt < b.reportGeneratedAt) {
-      return -1
+      return 1
     }
     if (a.reportGeneratedAt > b.reportGeneratedAt) {
-      return 1
+      return -1
     }
     return 0
   }
@@ -101,10 +105,6 @@ const Page = () => {
     [filters, intersectionId]
   )
 
-  const handleChangeGroup = (event) => {
-    setGroup(event.target.checked)
-  }
-
   const handleToggleFilters = () => {
     setOpenFilters((prevState) => !prevState)
   }
@@ -118,7 +118,7 @@ const Page = () => {
     setOpenFilters(false)
   }
 
-  const handlePageChange = (event, newPage) => {
+  const handlePageChange = (_, newPage) => {
     setPage(newPage)
   }
 
@@ -126,8 +126,35 @@ const Page = () => {
     setRowsPerPage(parseInt(event.target.value, 10))
   }
 
+  const refreshReportData = () => {
+    setFilters({
+      ...filters,
+      startDate: new Date(new Date().getTime() - WEEK_IN_MILLISECONDS),
+      endDate: new Date(),
+    })
+  }
+
   // Usually query is done on backend with indexing solutions
   const paginatedLogs = applyPagination(logs, page, rowsPerPage)
+
+  // Inside the parent component
+  const [selectedReport, setSelectedReport] = useState<ReportMetadata | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const handleViewReport = (report: ReportMetadata) => {
+    setSelectedReport(report)
+    setIsModalOpen(true)
+  }
+
+  const handleCloseReportModal = () => {
+    setIsModalOpen(false)
+    setSelectedReport(null)
+  }
+
+  const handleReportGenerated = () => {
+    setOpenReportGenerationDialog(false)
+    refreshReportData()
+  }
 
   return (
     <>
@@ -166,6 +193,16 @@ const Page = () => {
                 >
                   Filters
                 </Button>
+                <Button
+                  endIcon={<RefreshIcon fontSize="small" />}
+                  onClick={refreshReportData}
+                  variant="outlined"
+                  fullWidth={false}
+                  size="small"
+                  sx={{ m: 1 }}
+                >
+                  Pull latest (1 week)
+                </Button>
               </Box>
             </Stack>
             <Box
@@ -177,13 +214,13 @@ const Page = () => {
             ></Box>
           </Box>
           <ReportListTable
-            group={group}
             reports={paginatedLogs}
             reportsCount={logs.length}
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleRowsPerPageChange}
             page={page}
             rowsPerPage={rowsPerPage}
+            onViewReport={handleViewReport}
           />
         </LogsListInner>
       </Box>
@@ -192,7 +229,13 @@ const Page = () => {
         onClose={() => {
           setOpenReportGenerationDialog(false)
         }}
+        onReportGenerated={handleReportGenerated}
       />
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={ReportTheme}>
+          <ReportDetailsModal open={isModalOpen} onClose={handleCloseReportModal} report={selectedReport} />
+        </ThemeProvider>
+      </StyledEngineProvider>
     </>
   )
 }

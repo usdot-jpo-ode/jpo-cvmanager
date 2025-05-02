@@ -1,8 +1,9 @@
 import React from 'react'
-import MaterialTable, { Action, Column, MTableBodyRow, MTableCell } from '@material-table/core'
+import MaterialTable, { Action, Column, MTableCell, MTableToolbar } from '@material-table/core'
+import { makeStyles } from '@mui/styles'
 
 import '../features/adminRsuTab/Admin.css'
-import { alpha, Tooltip, useTheme } from '@mui/material'
+import { alpha, Tooltip, useTheme, Button, Typography } from '@mui/material'
 
 interface AdminTableProps {
   actions: Action<any>[]
@@ -15,8 +16,35 @@ interface AdminTableProps {
   pageSizeOptions?: any
 }
 
+const useStyles = makeStyles({
+  toolbarWrapper: {
+    '& .MuiToolbar-gutters': {
+      paddingLeft: 0,
+      paddingRight: 0,
+    },
+    '& .MuiTextField-root': {
+      paddingLeft: 16,
+      width: '50%',
+    },
+    '& .MuiBox-root:empty': {
+      display: 'none',
+    },
+    '& .MuiBox-root': {
+      width: '50%',
+      display: 'flex',
+      justifyContent: 'flex-end',
+    },
+  },
+  tableWrapper: {
+    '& .MuiTableCell-root': {
+      textTransform: 'capitalize',
+    },
+  },
+})
+
 const AdminTable = (props: AdminTableProps) => {
   const theme = useTheme()
+  const classes = useStyles()
   // Function to check if a row is missing organizations
   const isMissingOrganizations = (rowData: any) => {
     try {
@@ -42,6 +70,7 @@ const AdminTable = (props: AdminTableProps) => {
         editable={props.editable}
         options={{
           selection: props.selection === undefined ? true : props.selection,
+          searchFieldAlignment: 'left',
           actionsColumnIndex: -1,
           tableLayout: props.tableLayout === undefined ? 'fixed' : props.tableLayout,
           rowStyle: (rowData) => ({
@@ -64,9 +93,32 @@ const AdminTable = (props: AdminTableProps) => {
               </Tooltip>
             )
           },
-        }}
-        style={{
-          fontFamily: 'sans-serif',
+          Action: (props) => {
+            const { action } = props
+            const icon = action.icon
+            const iconProps = action.iconProps
+            return (
+              <Button
+                variant={iconProps.itemType}
+                color={iconProps.color}
+                size="small"
+                startIcon={icon}
+                sx={{ padding: '4px 8px', margin: '0px 4px' }}
+                onClick={() => action.onClick()}
+              >
+                <Typography className="capital-case museo-slab" fontSize="12px">
+                  {iconProps.title}
+                </Typography>
+              </Button>
+            )
+          },
+          Toolbar: (props) => {
+            return (
+              <div className={classes.toolbarWrapper}>
+                <MTableToolbar {...props} />
+              </div>
+            )
+          },
         }}
       />
     </div>

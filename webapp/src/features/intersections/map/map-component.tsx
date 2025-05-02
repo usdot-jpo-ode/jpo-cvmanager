@@ -308,7 +308,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
             zIndex: 10,
             top: theme.spacing(3),
             left: theme.spacing(3),
-            width: '40%',
+            width: '600px',
             maxHeight: 'calc(100vh - 240px)',
             overflow: 'auto',
             scrollBehavior: 'auto',
@@ -323,11 +323,14 @@ const IntersectionMap = (props: MAP_PROPS) => {
         <Fab
           color="primary"
           id="plus-button"
-          style={{
+          sx={{
             position: 'absolute',
             zIndex: 10,
             top: theme.spacing(10),
             right: theme.spacing(3),
+            '&:hover': {
+              backgroundColor: theme.palette.custom.intersectionMapButtonHover,
+            },
           }}
           size="small"
           onClick={() => {
@@ -342,11 +345,14 @@ const IntersectionMap = (props: MAP_PROPS) => {
         <Fab
           color="primary"
           id="minus-button"
-          style={{
+          sx={{
             position: 'absolute',
             zIndex: 10,
             top: theme.spacing(17),
             right: theme.spacing(3),
+            '&:hover': {
+              backgroundColor: theme.palette.custom.intersectionMapButtonHover,
+            },
           }}
           size="small"
           onClick={() => {

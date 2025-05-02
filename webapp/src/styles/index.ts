@@ -15,6 +15,8 @@ declare module '@mui/material/styles' {
       mapMenuItemHoverSelected: string
       mapMenuItemHoverUnselected: string
       mapMenuBackground: string
+      intersectionMapAccordionExpanded: string
+      intersectionMapButtonHover: string
     }
   }
   interface Palette {
@@ -29,6 +31,8 @@ declare module '@mui/material/styles' {
       mapMenuItemHoverSelected: string
       mapMenuItemHoverUnselected: string
       mapMenuBackground: string
+      intersectionMapAccordionExpanded: string
+      intersectionMapButtonHover: string
     }
   }
 }
@@ -48,6 +52,8 @@ export const testTheme = createTheme({
       mapMenuItemHoverSelected: '#000000',
       mapMenuItemHoverUnselected: '#000000',
       mapMenuBackground: '#000000',
+      intersectionMapAccordionExpanded: '#000000',
+      intersectionMapButtonHover: '#000000',
     },
   },
 })
@@ -126,6 +132,8 @@ const themeMainLight = createTheme({
       mapMenuItemBorderSelected: '1px solid black',
       mapMenuItemHoverSelected: '#a19f9f',
       mapMenuItemHoverUnselected: '#ffffff',
+      intersectionMapAccordionExpanded: '#d7d7d7',
+      intersectionMapButtonHover: '#d7d7d7',
     },
   },
 })
@@ -237,6 +245,8 @@ const themeMainDark = createTheme({
       mapMenuItemBorderSelected: '1px solid black',
       mapMenuItemHoverSelected: '#333333',
       mapMenuItemHoverUnselected: '#575757',
+      intersectionMapAccordionExpanded: '#2E2F31',
+      intersectionMapButtonHover: '#2D5F7F',
     },
     background: {
       paper: '#1b1d1f',

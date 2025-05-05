@@ -23,6 +23,7 @@ export const ConnectionOfTravelAssessmentCard = (props: { assessment: Connection
           key={obj.laneId}
           style={{
             padding: '6px',
+            backgroundColor: theme.palette.background.paper,
             border: '1px solid grey',
           }}
         >

@@ -5,7 +5,6 @@ import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipCont
 
 export const StopLineStopAssessmentCard = (props: { assessment: StopLineStopAssessment | undefined }) => {
   const { assessment } = props
-
   const theme = useTheme()
 
   function getWidthFactorFromData(data?: any[] | undefined): number {
@@ -25,7 +24,7 @@ export const StopLineStopAssessmentCard = (props: { assessment: StopLineStopAsse
           key={obj.laneId}
           style={{
             padding: '6px',
-            backgroundColor: '#333',
+            backgroundColor: theme.palette.background.paper,
             border: '1px solid grey',
           }}
         >

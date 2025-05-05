@@ -33,6 +33,10 @@
   padding: 0;
 }
 
+body {
+  overflow-y: hidden;
+}
+
 #masterdiv {
   width: 100%;
   height: 100%;
@@ -67,4 +71,20 @@ p {
 
 #unauthMap {
   width: 100%;
+}
+
+.capital-case {
+  text-transform: capitalize;
+}
+
+.museo-slab {
+  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
+}
+
+.capitalize {
+  text-transform: uppercase;
+}
+
+.trebuchet {
+  font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;
 }

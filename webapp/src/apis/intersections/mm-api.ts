@@ -10,11 +10,68 @@ class MessageMonitorApi {
     })
     return response ?? []
   }
+  /**
+   * Retrieves SPAT (Signal Phase and Timing) messages for a specific intersection,
+   * including the latest SPAT message before the specified start time and all SPAT messages
+   * within the specified time range
+   *
+   * @param {Object} params - The parameters for the API request.
+   * @param {string} params.token - The authentication token for the API request.
+   * @param {number} params.intersectionId - The ID of the intersection to filter SPAT messages.
+   * @param {Date} [params.startTime] - The start time of the time range (optional).
+   * @param {Date} [params.endTime] - The end time of the time range (optional).
+   * @param {boolean} [params.compact] - Whether to request a compact version of the SPAT messages (optional).
+   * @param {AbortController} [params.abortController] - Optional AbortController to cancel the API request.
+   * @returns {Promise<ProcessedSpat[]>} - A promise that resolves to an array of processed SPAT messages.
+   *
+   * @throws {Error} - Throws an error if the API request fails.
+   *
+   * @description
+   * This function retrieves SPAT messages for a specific intersection, including the latest SPAT message
+   * before the specified start time and all SPAT messages within the specified time range.
+   * This is intended to account for querying de-duplicated data, in which data within a specified time range may be sparse.
+   * This function queries for data within the time range, as well as retrieving the latest SPaT message before the time range.
+   * This ensures that there is data available for the start of the time range.
+   */
+  async getSpatMessagesWithLatest({
+    token,
+    intersectionId,
+    startTime,
+    endTime,
+    compact,
+    abortController,
+  }: {
+    token: string
+    intersectionId: number
+    startTime?: Date
+    endTime?: Date
+    compact?: boolean
+    abortController?: AbortController
+  }): Promise<ProcessedSpat[]> {
+    // Retrieve latest data before time interval
+    const latestSpats = await this.getSpatMessages({
+      token,
+      intersectionId,
+      endTime: startTime,
+      latest: true,
+      compact,
+      abortController,
+    })
+    // Retrieve data within time interval
+    const allSpats = await this.getSpatMessages({
+      token,
+      intersectionId,
+      startTime,
+      endTime,
+      compact,
+      abortController,
+    })
+    return [...allSpats, ...latestSpats].filter((spat) => spat != null)
+  }
 
   async getSpatMessages({
     token,
     intersectionId,
-    roadRegulatorId,
     startTime,
     endTime,
     latest,
@@ -23,7 +80,6 @@ class MessageMonitorApi {
   }: {
     token: string
     intersectionId: number
-    roadRegulatorId: number
     startTime?: Date
     endTime?: Date
     latest?: boolean
@@ -32,13 +88,12 @@ class MessageMonitorApi {
   }): Promise<ProcessedSpat[]> {
     const queryParams: Record<string, string> = {}
     queryParams['intersection_id'] = intersectionId.toString()
-    queryParams['road_regulator_id'] = roadRegulatorId.toString()
     if (startTime) queryParams['start_time_utc_millis'] = startTime.getTime().toString()
     if (endTime) queryParams['end_time_utc_millis'] = endTime.getTime().toString()
     if (latest) queryParams['latest'] = latest.toString()
     if (compact) queryParams['compact'] = compact.toString()
 
-    var response = await authApiHelper.invokeApi({
+    var response: PagedResponse<ProcessedSpat> = await authApiHelper.invokeApi({
       path: '/spat/json',
       token: token,
       queryParams,
@@ -46,13 +101,12 @@ class MessageMonitorApi {
       failureMessage: 'Failed to retrieve SPAT messages',
       tag: 'intersection',
     })
-    return response ?? ([] as ProcessedSpat[])
+    return response?.content ?? ([] as ProcessedSpat[])
   }
 
   async getMapMessages({
     token,
     intersectionId,
-    roadRegulatorId,
     startTime,
     endTime,
     latest,
@@ -60,7 +114,6 @@ class MessageMonitorApi {
   }: {
     token: string
     intersectionId: number
-    roadRegulatorId?: number
     startTime?: Date
     endTime?: Date
     latest?: boolean
@@ -68,9 +121,6 @@ class MessageMonitorApi {
   }): Promise<ProcessedMap[]> {
     const queryParams: Record<string, string> = {}
     queryParams['intersection_id'] = intersectionId.toString()
-    if (roadRegulatorId !== undefined) {
-      queryParams['road_regulator_id'] = roadRegulatorId.toString()
-    }
     if (startTime) queryParams['start_time_utc_millis'] = startTime.getTime().toString()
     if (endTime) queryParams['end_time_utc_millis'] = endTime.getTime().toString()
     if (latest !== undefined) queryParams['latest'] = latest.toString()
@@ -83,7 +133,7 @@ class MessageMonitorApi {
       failureMessage: 'Failed to retrieve MAP messages',
       tag: 'intersection',
     })
-    return response ?? ([] as ProcessedMap[])
+    return response?.content ?? ([] as ProcessedMap[])
   }
 
   async getBsmMessages({
@@ -113,7 +163,7 @@ class MessageMonitorApi {
     if (lat) queryParams['latitude'] = lat.toString()
     if (distance) queryParams['distance'] = distance.toString()
 
-    var response = await authApiHelper.invokeApi({
+    var response: PagedResponse<OdeBsmData> = await authApiHelper.invokeApi({
       path: '/bsm/json',
       token: token,
       queryParams,
@@ -121,7 +171,7 @@ class MessageMonitorApi {
       failureMessage: 'Failed to retrieve BSM messages',
       tag: 'intersection',
     })
-    return response ?? ([] as OdeBsmData[])
+    return response?.content ?? ([] as OdeBsmData[])
   }
 
   async getMessageCount(
@@ -158,7 +208,7 @@ class MessageMonitorApi {
       queryParams['intersection_id'] = intersectionId.toString()
     }
 
-    const response = await authApiHelper.invokeApi({
+    const response: PagedResponse<number> = await authApiHelper.invokeApi({
       path: `/${messageType}/count`,
       token: token,
       queryParams: queryParams,
@@ -166,7 +216,7 @@ class MessageMonitorApi {
       failureMessage: `Failed to retrieve message count for type ${messageType}`,
       tag: 'intersection',
     })
-    return response
+    return response?.content?.[0]
   }
 }
 

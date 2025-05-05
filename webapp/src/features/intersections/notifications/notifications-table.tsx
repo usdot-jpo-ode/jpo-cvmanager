@@ -3,16 +3,13 @@ import {
   Button,
   Card,
   Container,
-  Divider,
   Grid2,
   InputAdornment,
-  Stack,
   Tab,
   Tabs,
   TextField,
   TextFieldProps,
   Typography,
-  CardHeader,
   useTheme,
 } from '@mui/material'
 import { NotificationsTableResults } from './notifications-table-results'
@@ -21,7 +18,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import NotificationApi from '../../../apis/intersections/notification-api'
 import React, { useEffect, useState, useRef } from 'react'
 import { selectToken } from '../../../generalSlices/userSlice'
-import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../../generalSlices/intersectionSlice'
+import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
 import { useSelector } from 'react-redux'
 import { Close } from '@mui/icons-material'
 
@@ -80,7 +77,6 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
   })
   const token = useSelector(selectToken)
   const dbIntersectionId = useSelector(selectSelectedIntersectionId)
-  const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
   const theme = useTheme()
 
   const updateNotifications = () => {
@@ -88,7 +84,6 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
       NotificationApi.getActiveNotifications({
         token: token,
         intersectionId: dbIntersectionId,
-        roadRegulatorId: roadRegulatorId,
       }).then((notifs) => setNotifications(notifs))
     } else {
       console.error('Did not attempt to update notifications. Intersection ID:', dbIntersectionId)
@@ -159,7 +154,51 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
         }}
         disableGutters
       >
-        <Card>
+        {!simple && (
+          <>
+            <Box
+              sx={{
+                alignItems: 'center',
+                display: 'flex',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                m: -1,
+              }}
+            >
+              <Grid2 container justifyContent="space-between" spacing={3}>
+                <Grid2>
+                  <Typography sx={{ m: 1 }} variant="h4" color="text.secondary">
+                    Notifications
+                  </Typography>
+                </Grid2>
+              </Grid2>
+              <Box
+                sx={{
+                  m: -1,
+                  mt: 3,
+                }}
+              ></Box>
+            </Box>
+            <Box
+              sx={{
+                m: -1,
+                mt: 3,
+                mb: 3,
+              }}
+            >
+              <Button
+                color="primary"
+                variant="contained"
+                onClick={updateNotifications}
+                startIcon={<RefreshIcon fontSize="small" />}
+                sx={{ m: 1 }}
+              >
+                Refresh
+              </Button>
+            </Box>
+          </>
+        )}
+        <Card sx={{ overflowY: 'auto' }}>
           {!simple && (
             <Box>
               <Tabs

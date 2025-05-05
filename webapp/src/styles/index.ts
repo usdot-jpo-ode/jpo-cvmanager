@@ -1,4 +1,4 @@
-import { createTheme, Theme } from '@mui/material'
+import { alpha, createTheme, Theme } from '@mui/material'
 import './fonts/museo-slab.css'
 import '../App.css'
 
@@ -15,6 +15,9 @@ declare module '@mui/material/styles' {
       mapMenuItemHoverSelected: string
       mapMenuItemHoverUnselected: string
       mapMenuBackground: string
+      intersectionMapAccordionExpanded: string
+      intersectionMapButtonHover: string
+      rowActionIcon: string
     }
   }
   interface Palette {
@@ -29,11 +32,14 @@ declare module '@mui/material/styles' {
       mapMenuItemHoverSelected: string
       mapMenuItemHoverUnselected: string
       mapMenuBackground: string
+      intersectionMapAccordionExpanded: string
+      intersectionMapButtonHover: string
+      rowActionIcon: string
     }
   }
 }
 
-export const headerTabHeight = 141
+export const headerTabHeight = 119
 
 export const testTheme = createTheme({
   palette: {
@@ -48,6 +54,9 @@ export const testTheme = createTheme({
       mapMenuItemHoverSelected: '#000000',
       mapMenuItemHoverUnselected: '#000000',
       mapMenuBackground: '#000000',
+      intersectionMapAccordionExpanded: '#000000',
+      intersectionMapButtonHover: '#000000',
+      rowActionIcon: '#000000',
     },
   },
 })
@@ -126,6 +135,9 @@ const themeMainLight = createTheme({
       mapMenuItemBorderSelected: '1px solid black',
       mapMenuItemHoverSelected: '#a19f9f',
       mapMenuItemHoverUnselected: '#ffffff',
+      intersectionMapAccordionExpanded: '#d7d7d7',
+      intersectionMapButtonHover: '#d7d7d7',
+      rowActionIcon: '#9DBDD3',
     },
   },
 })
@@ -138,9 +150,24 @@ const themeMainLight = createTheme({
 const themeMainDark = createTheme({
   cssVariables: true,
   typography: {
-    fontFamily: '"museo-slab", Arial, Helvetica, sans-serif',
-    body2: {
-      fontFamily: '"Trebuchet MS", Arial, Helvetica, sans-serif',
+    fontFamily: '"Trebuchet MS", Arial, Helvetica, sans-serif',
+    h1: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h2: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h3: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h4: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h5: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h6: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
     },
   },
   components: {
@@ -168,6 +195,13 @@ const themeMainDark = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: 'unset',
+        },
+      },
+    },
+    MuiDivider: {
+      styleOverrides: {
+        root: {
+          borderColor: '#c7c7c7',
         },
       },
     },
@@ -215,8 +249,10 @@ const themeMainDark = createTheme({
       mapMenuItemBorderSelected: '1px solid black',
       mapMenuItemHoverSelected: '#333333',
       mapMenuItemHoverUnselected: '#575757',
+      intersectionMapAccordionExpanded: '#2E2F31',
+      intersectionMapButtonHover: '#2D5F7F',
+      rowActionIcon: '#9DBDD3',
     },
-    divider: '#333333',
     background: {
       paper: '#1b1d1f',
       default: '#333333',

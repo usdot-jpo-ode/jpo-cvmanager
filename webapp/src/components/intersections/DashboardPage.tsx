@@ -6,13 +6,12 @@ import { StopLineStopAssessmentCard } from '../../features/intersections/assessm
 import { SignalStateEventAssessmentCard } from '../../features/intersections/assessments/signal-state-event-assessment'
 import React, { useEffect, useState } from 'react'
 import AssessmentsApi from '../../apis/intersections/assessments-api'
-import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../generalSlices/intersectionSlice'
+import { selectSelectedIntersectionId } from '../../generalSlices/intersectionSlice'
 import { selectToken } from '../../generalSlices/userSlice'
 import { useSelector } from 'react-redux'
 
 const Page = () => {
   const intersectionId = useSelector(selectSelectedIntersectionId)
-  const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
   const token = useSelector(selectToken)
   const theme = useTheme()
 
@@ -35,32 +34,28 @@ const Page = () => {
         (await AssessmentsApi.getLatestAssessment(
           token,
           'signal_state_assessment',
-          intersectionId,
-          roadRegulatorId
+          intersectionId
         )) as StopLineStopAssessment
       )
       setSignalStateEventAssessment(
         (await AssessmentsApi.getLatestAssessment(
           token,
           'signal_state_event_assessment',
-          intersectionId,
-          roadRegulatorId
+          intersectionId
         )) as SignalStateEventAssessment
       )
       setConnectionOfTravelAssessment(
         (await AssessmentsApi.getLatestAssessment(
           token,
           'connection_of_travel',
-          intersectionId,
-          roadRegulatorId
+          intersectionId
         )) as ConnectionOfTravelAssessment
       )
       setLaneDirectionOfTravelAssessment(
         (await AssessmentsApi.getLatestAssessment(
           token,
           'lane_direction_of_travel',
-          intersectionId,
-          roadRegulatorId
+          intersectionId
         )) as LaneDirectionOfTravelAssessment
       )
     } else {

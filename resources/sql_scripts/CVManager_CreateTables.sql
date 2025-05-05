@@ -381,6 +381,7 @@ CREATE TABLE IF NOT EXISTS public.snmp_msgfwd_config
    start_datetime timestamp without time zone NOT NULL,
    end_datetime timestamp without time zone NOT NULL,
    active bit(1) NOT NULL,
+   security bit(1) NOT NULL,
    CONSTRAINT snmp_msgfwd_config_pkey PRIMARY KEY (rsu_id, msgfwd_type, snmp_index),
    CONSTRAINT fk_rsu_id FOREIGN KEY (rsu_id)
 		REFERENCES public.rsus (rsu_id) MATCH SIMPLE

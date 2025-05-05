@@ -1,35 +1,20 @@
-import React, { useState, useCallback, useEffect } from 'react'
+import React from 'react'
 import { Box, Container, Typography } from '@mui/material'
-import { configParamApi } from '../../../apis/intersections/configuration-param-api'
 import { ConfigParamRemoveForm } from '../../../features/intersections/configuration/configuration-remove-form'
-import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../../generalSlices/intersectionSlice'
-import { selectToken } from '../../../generalSlices/userSlice'
-import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { selectParameter } from '../../../features/api/intersectionApiSlice'
+import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
 
 const ConfigParamRemove = () => {
-  const [parameter, setParameter] = useState<Config | undefined>(undefined)
   const intersectionId = useSelector(selectSelectedIntersectionId)
-  const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
-  const token = useSelector(selectToken)
 
   const { key } = useParams<{ key: string }>()
 
-  const getParameter = async (key: string) => {
-    try {
-      const data = await configParamApi.getParameter(token, key, intersectionId, roadRegulatorId)
+  const parameter = useSelector(selectParameter(key))
+  const formattedKey = parameter?.key.replace(/\./g, '.\u200B') // Replace periods with period and zero-width space, to help with line breaks
 
-      setParameter(data)
-    } catch (err) {
-      console.error(err)
-    }
-  }
-
-  useEffect(() => {
-    getParameter(key as string)
-  }, [intersectionId])
-
-  if (!parameter) {
+  if (!parameter || intersectionId === -1) {
     return (
       <>
         <Box
@@ -40,7 +25,7 @@ const ConfigParamRemove = () => {
             py: 8,
           }}
         >
-          <Container maxWidth="md">
+          <Container maxWidth="lg">
             <Box
               sx={{
                 alignItems: 'center',
@@ -49,8 +34,12 @@ const ConfigParamRemove = () => {
               }}
             >
               <div>
-                <Typography noWrap variant="h4">
-                  Unable to find parameter {key}
+                <Typography variant="h6">
+                  Unable to find parameter:
+                  <br />
+                  {formattedKey}
+                  <br />
+                  Do you have the right intersection ID selected?
                 </Typography>
               </div>
             </Box>
@@ -78,9 +67,7 @@ const ConfigParamRemove = () => {
               }}
             >
               <div>
-                <Typography noWrap variant="h4">
-                  {parameter.category}/{parameter.key}
-                </Typography>
+                <Typography variant="h5">{formattedKey}</Typography>
               </div>
             </Box>
             <Box mt={3}>

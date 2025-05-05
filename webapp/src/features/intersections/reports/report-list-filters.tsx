@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { Box, Button, CircularProgress, Drawer, IconButton, Stack, TextField, Typography } from '@mui/material'
+import { Box, Button, CircularProgress, Drawer, IconButton, Stack, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import { Close } from '@mui/icons-material'
@@ -26,6 +26,10 @@ export const ReportListFilters = (props: ReportListFiltersProps) => {
   const { containerRef, filters, onChange, loading, setOpenReportGenerationDialog, ...other } = props
   const [currentFilters, setCurrentFilters] = useState(filters)
   const [filtersValid, setFiltersValid] = useState([true, ''])
+
+  useEffect(() => {
+    setCurrentFilters(filters)
+  }, [filters])
 
   useEffect(() => {
     updateFiltersValid()
@@ -59,8 +63,7 @@ export const ReportListFilters = (props: ReportListFiltersProps) => {
   return (
     <Box
       sx={{
-        pb: 1,
-        pt: 1,
+        pb: 3,
         px: 3,
       }}
     >

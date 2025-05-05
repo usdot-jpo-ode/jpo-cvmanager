@@ -164,6 +164,9 @@ export const adminEditRsuSlice = createSlice({
     value: initialState,
   },
   reducers: {
+    clear: (state) => {
+      state.value = initialState
+    },
     updateSelectedRoute: (state, action) => {
       state.value.selectedRoute = action.payload
       state.value.otherRouteDisabled = action.payload === 'Other'
@@ -252,6 +255,7 @@ export const adminEditRsuSlice = createSlice({
 })
 
 export const {
+  clear,
   updateSelectedRoute,
   setSelectedRoute,
   setSelectedModel,

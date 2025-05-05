@@ -1,17 +1,14 @@
 package us.dot.its.jpo.ode.api.accessors.notifications.TimeChangeDetailsNotification;
 
-import java.util.List;
-
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.TimeChangeDetailsNotification;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
-public interface TimeChangeDetailsNotificationRepository extends DataLoader<TimeChangeDetailsNotification>{
-    Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
+public interface TimeChangeDetailsNotificationRepository extends DataLoader<TimeChangeDetailsNotification> {
+    long count(Integer intersectionID, Long startTime, Long endTime);
 
-    long getQueryResultCount(Query query);
+    Page<TimeChangeDetailsNotification> findLatest(Integer intersectionID, Long startTime, Long endTime);
 
-    long getQueryFullCount(Query query);
-    
-    List<TimeChangeDetailsNotification> find(Query query);  
+    Page<TimeChangeDetailsNotification> find(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
 }

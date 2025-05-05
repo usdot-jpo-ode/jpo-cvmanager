@@ -15,7 +15,6 @@ class NotificationApi {
   async getActiveNotifications({
     token,
     intersectionId,
-    roadRegulatorId,
     startTime,
     endTime,
     key,
@@ -23,7 +22,6 @@ class NotificationApi {
   }: {
     token: string
     intersectionId: number
-    roadRegulatorId: number
     startTime?: Date
     endTime?: Date
     key?: string
@@ -31,7 +29,6 @@ class NotificationApi {
   }): Promise<MessageMonitor.Notification[]> {
     const queryParams: Record<string, string> = {}
     queryParams['intersection_id'] = intersectionId.toString()
-    queryParams['road_regulator_id'] = roadRegulatorId.toString()
     if (startTime) queryParams['start_time_utc_millis'] = startTime.getTime().toString()
     if (endTime) queryParams['end_time_utc_millis'] = endTime.getTime().toString()
     if (key) queryParams['key'] = key
@@ -45,7 +42,7 @@ class NotificationApi {
       tag: 'intersection',
     })
 
-    return notifications ?? []
+    return notifications?.content ?? []
   }
 
   async dismissNotifications({
@@ -61,15 +58,17 @@ class NotificationApi {
     for (const id of ids) {
       success =
         success &&
-        (await authApiHelper.invokeApi({
-          path: `/notifications/active`,
-          method: 'DELETE',
-          abortController,
-          token: token,
-          body: id.toString(),
-          booleanResponse: true,
-          tag: 'intersection',
-        }))
+        (
+          await authApiHelper.invokeApi({
+            path: `/notifications/active`,
+            method: 'DELETE',
+            abortController,
+            token: token,
+            body: id.toString(),
+            booleanResponse: true,
+            tag: 'intersection',
+          })
+        )?.content?.[0]
     }
     if (success) {
       toast.success(`Successfully Dismissed ${ids.length} Notifications`)
@@ -82,35 +81,34 @@ class NotificationApi {
   async getAllNotifications({
     token,
     intersectionId,
-    roadRegulatorId,
     startTime,
     endTime,
     abortController,
   }: {
     token: string
     intersectionId: number
-    roadRegulatorId: number
     startTime?: Date
     endTime?: Date
     abortController?: AbortController
   }): Promise<MessageMonitor.Notification[]> {
     const queryParams: Record<string, string> = {}
     queryParams['intersection_id'] = intersectionId.toString()
-    queryParams['road_regulator_id'] = roadRegulatorId.toString()
     if (startTime) queryParams['start_time_utc_millis'] = startTime.getTime().toString()
     if (endTime) queryParams['end_time_utc_millis'] = endTime.getTime().toString()
 
     const notifications: MessageMonitor.Notification[] = []
     for (const notificationType of NOTIFICATION_TYPES) {
       const resp: MessageMonitor.Notification[] =
-        (await authApiHelper.invokeApi({
-          path: `/notifications/${notificationType}`,
-          token: token,
-          abortController,
-          queryParams,
-          failureMessage: `Failed to retrieve notifications of type ${notificationType}`,
-          tag: 'intersection',
-        })) ?? []
+        (
+          await authApiHelper.invokeApi({
+            path: `/notifications/${notificationType}`,
+            token: token,
+            abortController,
+            queryParams,
+            failureMessage: `Failed to retrieve notifications of type ${notificationType}`,
+            tag: 'intersection',
+          })
+        )?.content ?? []
       notifications.push(...resp)
     }
 

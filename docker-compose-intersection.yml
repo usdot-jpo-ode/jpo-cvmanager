@@ -75,6 +75,7 @@ services:
       CM_MONGO_API_USERNAME: ${CM_MONGO_API_USERNAME}
       CM_MONGO_API_PASSWORD: ${CM_MONGO_API_PASSWORD}
       CM_MONGO_AUTH_DB: ${CM_MONGO_AUTH_DB}
+      CM_MAXIMUM_RESPONSE_SIZE: ${CM_MAXIMUM_RESPONSE_SIZE}
 
       KEYCLOAK_CLIENT_API_ID: ${KEYCLOAK_API_CLIENT_ID}
       KEYCLOAK_CLIENT_API_SECRET: ${KEYCLOAK_API_CLIENT_SECRET_KEY}
@@ -93,7 +94,6 @@ services:
       - sh
       - -c
       - |
-        sleep ${CM_STARTUP_DELAY_SECONDS:-90}
         java -Djava.rmi.server.hostname=$DOCKER_HOST_IP -Dcom.sun.management.jmxremote.port=9090 -Dcom.sun.management.jmxremote.rmi.port=9090 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=true -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dlogback.configurationFile=/home/logback.xml -jar /home/intersection-api.jar
     logging:
       options:

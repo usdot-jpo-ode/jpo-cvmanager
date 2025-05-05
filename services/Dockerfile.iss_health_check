@@ -2,15 +2,13 @@ FROM python:3.12.2-alpine3.18
 
 WORKDIR /home
 
-ADD addons/images/iss_health_check/crontab .
-ADD addons/images/iss_health_check/requirements.txt .
-ADD addons/images/iss_health_check/*.py .
-ADD common/*.py ./common/
+COPY addons/images/iss_health_check/crontab .
+COPY addons/images/iss_health_check/requirements.txt .
+COPY addons/images/iss_health_check/*.py .
+COPY common/*.py ./common/
 
 RUN pip3 install -r /home/requirements.txt
 # fix the line endings from windows
-RUN dos2unix /home/crontab
-
-RUN crontab /home/crontab
+RUN dos2unix /home/crontab && crontab /home/crontab
 
 CMD ["crond", "-f"]

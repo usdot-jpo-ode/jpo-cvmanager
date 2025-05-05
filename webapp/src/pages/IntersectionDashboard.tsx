@@ -4,21 +4,20 @@ import { updateTableData as updateRsuTableData } from '../features/adminRsuTab/a
 import { getAvailableUsers } from '../features/adminUserTab/adminUserTabSlice'
 
 import './css/NoTableWidth.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../store'
 import { NotFound } from './404'
 import VerticalTabs from '../components/VerticalTabs'
 import DashboardPage from '../components/intersections/DashboardPage'
 import NotificationPage from '../components/intersections/NotificationPage'
 import DataSelectorPage from '../components/intersections/DataSelectorPage'
 import ReportsPage from '../components/intersections/ReportsPage'
-import { InputLabel, Select, MenuItem, FormControl, Tooltip, Button, useTheme, Grid2 } from '@mui/material'
+import { InputLabel, Select, MenuItem, FormControl, Tooltip, Button, useTheme, Grid2, IconButton } from '@mui/material'
 import {
   selectIntersections,
   selectSelectedIntersectionId,
   setSelectedIntersection,
 } from '../generalSlices/intersectionSlice'
 import MapDialog from '../features/intersections/intersection-selector/intersection-selector-dialog'
+import ConfigurationPage from '../components/intersections/ConfigurationPage'
 import { headerTabHeight } from '../styles/index'
 import {
   ArticleOutlined,
@@ -27,6 +26,9 @@ import {
   NotificationsNoneOutlined,
   TrafficOutlined,
 } from '@mui/icons-material'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../store'
+import { MapRounded as MapIconRounded } from '@mui/icons-material'
 
 function IntersectionDashboard() {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -131,12 +133,11 @@ function IntersectionDashboard() {
               child: <ReportsPage />,
               icon: <ArticleOutlined sx={{ marginRight: '40px' }} />,
             },
-            // The configuration page is still under development
-            // {
-            //   path: 'configuration',
-            //   title: 'Configuration',
-            //   child: <ConfigurationPage />,
-            // },
+            {
+              path: 'configuration',
+              title: 'Configuration',
+              child: <ConfigurationPage />,
+            },
           ]}
         />
       </div>

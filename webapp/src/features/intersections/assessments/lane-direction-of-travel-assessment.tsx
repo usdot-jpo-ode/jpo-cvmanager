@@ -7,7 +7,6 @@ export const LaneDirectionOfTravelAssessmentCard = (props: {
   assessment: LaneDirectionOfTravelAssessment | undefined
 }) => {
   const { assessment } = props
-
   const theme = useTheme()
 
   function getWidthFactorFromData(data: any[] | undefined): number {
@@ -79,7 +78,7 @@ export const LaneDirectionOfTravelAssessmentCard = (props: {
           key={obj.laneId}
           style={{
             padding: '6px',
-            backgroundColor: '#333',
+            backgroundColor: theme.palette.background.paper,
             border: '1px solid grey',
           }}
         >

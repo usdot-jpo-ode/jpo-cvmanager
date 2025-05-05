@@ -161,8 +161,7 @@ The following steps are intended to help get a new user up and running the JPO C
 3. Create a copy of the sample.env named ".env" and refer to the Environmental variables section below for more information on each variable.
     1.  Make sure at least the DOCKER_HOST_IP, KEYCLOAK_ADMIN_PASSWORD, KEYCLOAK_API_CLIENT_SECRET_KEY, and MAPBOX_TOKEN are set for this.
     2.  Some of these variables, delineated by sections, pertain to the [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor), [jpo-geojsonconverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter), and [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode). Please see the documentation provided for these projects when setting these variables.
-4. Create a copy of the jpo-utils/sample.env file named "jpo-utils/.env" and set the DOCKER_HOST_IP environment variable. 
-5. The CV Manager has four components that need to be containerized and deployed: the API, the PostgreSQL database, Keycloak, and the webapp.
+4. The CV Manager has four components that need to be containerized and deployed: the API, the PostgreSQL database, Keycloak, and the webapp.
 
     - If you are looking to deploy the CV Manager locally, you can simply run the docker-compose, make sure to fill out the .env file to ensure it launches properly. Also, edit your host file ([How to edit the host file](<[resources/kubernetes](https://docs.rackspace.com/support/how-to/modify-your-hosts-file/)>)) and add IP address of your docker host to these custom domains (remove the carrot brackets and just put the IP address):
 
@@ -171,7 +170,7 @@ The following steps are intended to help get a new user up and running the JPO C
          <DOCKER_HOST_IP> cvmanager.local.com
          <DOCKER_HOST_IP> cvmanager.auth.com
 
-6. Apply the docker compose to start the required components:
+5. Apply the docker compose to start the required components:
 
     ```sh
     docker compose up -d
@@ -183,7 +182,7 @@ The following steps are intended to help get a new user up and running the JPO C
     docker compose up --build -d
     ```
 
-7. Access the website by going to:
+6. Access the website by going to:
 
     ```
       http://cvmanager.local.com
@@ -191,7 +190,7 @@ The following steps are intended to help get a new user up and running the JPO C
       Default Password: tester
     ```
 
-8. To access keycloak go to:
+7. To access keycloak go to:
 
     ```
       http://cvmanager.auth.com:8084/

@@ -10,12 +10,14 @@ import {
   setSigGroupLabelsVisible,
   setShowPopupOnHover,
   selectBsmTrailLength,
+  setBsmTrailLength,
 } from './map-slice'
 import { selectSignalStateLayerStyle, setSignalLayerLayout } from './map-layer-style-slice'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import React from 'react'
 import { Close, SettingsOutlined } from '@mui/icons-material'
+import { getNumber } from './control-panel'
 
 type VisualSettingsProps = {
   openPanel: string
@@ -37,6 +39,16 @@ function VisualSettings(props: VisualSettingsProps) {
     props.openPanel === 'visual-settings' ? props.setOpenPanel('') : props.setOpenPanel('visual-settings')
   }
   const [bsmTrailLengthLocal, setBsmTrailLengthLocal] = useState<string | undefined>(bsmTrailLength.toString())
+
+  useEffect(() => {
+    setBsmTrailLengthLocal(bsmTrailLength.toString())
+  }, [bsmTrailLength])
+
+  useEffect(() => {
+    if (getNumber(bsmTrailLengthLocal) !== null && getNumber(bsmTrailLengthLocal) !== bsmTrailLength) {
+      dispatch(setBsmTrailLength(getNumber(bsmTrailLengthLocal)!))
+    }
+  }, [bsmTrailLengthLocal])
 
   return (
     <>

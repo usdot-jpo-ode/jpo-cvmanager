@@ -1019,15 +1019,11 @@ function MapPage() {
                 </FormGroup>
                 <FormGroup row sx={{ justifyContent: 'center', alignItems: 'center' }}>
                   <Button
-                    variant="outlined"
-                    color="info"
+                    variant="contained"
                     sx={{
-                      '&.Mui-disabled': {
-                        backgroundColor: alpha(theme.palette.primary.light, 0.5),
-                      },
                       width: '100%',
                     }}
-                    disabled={!(configCoordinates.length > 2 && addConfigPoint)}
+                    disabled={!(configCoordinates.length > 2)}
                     onClick={() => {
                       dispatch(geoRsuQuery(selectedVendor))
                     }}

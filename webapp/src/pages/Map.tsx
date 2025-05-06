@@ -1019,8 +1019,12 @@ function MapPage() {
                 </FormGroup>
                 <FormGroup row sx={{ justifyContent: 'center', alignItems: 'center' }}>
                   <Button
-                    variant="contained"
+                    variant="outlined"
+                    color="info"
                     sx={{
+                      '&.Mui-disabled': {
+                        backgroundColor: alpha(theme.palette.primary.light, 0.5),
+                      },
                       width: '100%',
                     }}
                     disabled={!(configCoordinates.length > 2)}

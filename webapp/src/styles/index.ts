@@ -228,7 +228,7 @@ const themeMainDark = createTheme({
     success: {
       light: '#75BD27',
       main: '#A0D36466',
-      dark: '#9e0e0e',
+      dark: '#5B7737',
     },
     text: {
       primary: '#FFFFFF',

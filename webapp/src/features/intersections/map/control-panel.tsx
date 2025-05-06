@@ -439,8 +439,8 @@ function ControlPanel() {
                       type="number"
                       sx={{ mt: 1 }}
                       onChange={(e) => {
-                        if (e.target.value === '' || Number.isInteger(Number(e.target.value))) {
-                          setTimeWindowSeconds(parseInt(e.target.value))
+                        if (Number.isInteger(Number(e.target.value))) {
+                          dispatch(setTimeWindowSeconds(parseInt(e.target.value)))
                         }
                       }}
                       slotProps={{

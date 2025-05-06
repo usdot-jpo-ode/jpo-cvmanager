@@ -9,7 +9,17 @@ import { RootState } from '../store'
 import { alpha, Box, Tab, Tabs, useTheme } from '@mui/material'
 import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { evaluateFeatureFlags } from '../feature-flags'
-import { CellTowerOutlined, GroupOutlined, TrafficOutlined, WorkspacesOutlined } from '@mui/icons-material'
+import {
+  ArticleOutlined,
+  CellTowerOutlined,
+  GroupOutlined,
+  HighlightAlt,
+  HomeOutlined,
+  NotificationsNoneOutlined,
+  TrafficOutlined,
+  TuneOutlined,
+  WorkspacesOutlined,
+} from '@mui/icons-material'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -65,6 +75,16 @@ function VerticalTabs(props: VerticalTabProps) {
         return <GroupOutlined />
       case 'Organizations':
         return <WorkspacesOutlined />
+      case 'Dashboard':
+        return <HomeOutlined />
+      case 'Notifications':
+        return <NotificationsNoneOutlined />
+      case 'Data Selector':
+        return <HighlightAlt />
+      case 'Reports':
+        return <ArticleOutlined />
+      case 'Configuration':
+        return <TuneOutlined />
     }
   }
 

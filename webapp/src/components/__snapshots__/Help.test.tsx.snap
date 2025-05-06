@@ -21,7 +21,7 @@ exports[`should take a snapshot 1`] = `
       </p>
       <img
         alt="RSU Statuses Shown on Map"
-        class="css-1qjvnec"
+        class="css-2ttpiu"
         src="rsu_status.PNG"
       />
       <p>
@@ -29,7 +29,7 @@ exports[`should take a snapshot 1`] = `
       </p>
       <img
         alt="RSU Popup with Data"
-        class="css-1qjvnec"
+        class="css-2ttpiu"
         src="rsu_popup.PNG"
       />
       <p>
@@ -37,7 +37,7 @@ exports[`should take a snapshot 1`] = `
       </p>
       <img
         alt="RSU Menu"
-        class="css-1qjvnec"
+        class="css-2ttpiu"
         src="rsu_menu.PNG"
       />
       <p>
@@ -45,7 +45,7 @@ exports[`should take a snapshot 1`] = `
       </p>
       <img
         alt="RSU Message Count Table"
-        class="css-1qjvnec"
+        class="css-2ttpiu"
         src="rsu_count.PNG"
       />
       <p>
@@ -53,7 +53,7 @@ exports[`should take a snapshot 1`] = `
       </p>
       <img
         alt="CV Manager Heat Map"
-        class="css-1qjvnec"
+        class="css-2ttpiu"
         src="rsu_heatmap.PNG"
       />
       <p>
@@ -61,7 +61,7 @@ exports[`should take a snapshot 1`] = `
       </p>
       <img
         alt="CV Manager Configuration Page"
-        class="css-1qjvnec"
+        class="css-2ttpiu"
         src="rsu_configure.PNG"
       />
     </div>

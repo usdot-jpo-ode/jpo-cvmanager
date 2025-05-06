@@ -211,6 +211,7 @@ export const DataSelectorEditForm = (props: { onQuery: (query: any) => void; onV
                             formik.setFieldValue('timeUnit', e.target.value)
                           }}
                           onBlur={formik.handleBlur}
+                          variant="standard"
                         >
                           <MenuItem value={'minutes'}>minutes</MenuItem>
                           <MenuItem value={'hours'}>hours</MenuItem>

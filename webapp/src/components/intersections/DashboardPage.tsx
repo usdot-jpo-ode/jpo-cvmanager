@@ -76,24 +76,17 @@ const Page = () => {
           py: 8,
         }}
       >
-        <Grid2
-          container
-          spacing={0.5}
-          sx={{
-            marginTop: theme.spacing(3),
-          }}
-          justifyContent="center"
-        >
-          <Grid2 size={{ xs: 12, md: 6, lg: 3 }}>
+        <Grid2 container spacing={0.5} justifyContent="center">
+          <Grid2 size={{ xs: 12, md: 6, xl: 3 }}>
             <ConnectionOfTravelAssessmentCard assessment={connectionOfTravelAssessment} />
           </Grid2>
-          <Grid2 size={{ xs: 12, md: 6, lg: 3 }}>
+          <Grid2 size={{ xs: 12, md: 6, xl: 3 }}>
             <StopLineStopAssessmentCard assessment={stopLineStopAssessment} />
           </Grid2>
-          <Grid2 size={{ xs: 12, md: 6, lg: 3 }}>
+          <Grid2 size={{ xs: 12, md: 6, xl: 3 }}>
             <SignalStateEventAssessmentCard assessment={signalStateEventAssessment} />
           </Grid2>
-          <Grid2 size={{ xs: 12, md: 6, lg: 3 }}>
+          <Grid2 size={{ xs: 12, md: 6, xl: 3 }}>
             <LaneDirectionOfTravelAssessmentCard assessment={laneDirectionOfTravelAssessment} />
           </Grid2>
           <Grid2 size={12}>

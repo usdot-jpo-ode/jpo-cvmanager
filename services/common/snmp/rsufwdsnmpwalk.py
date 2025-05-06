@@ -1,68 +1,104 @@
 import subprocess
 import logging
-import common.snmpcredential as snmpcredential
-import common.snmperrorcheck as snmperrorcheck
-import common.snmpwalk_helpers as snmpwalk_helpers
+import common.snmp.snmpcredential as snmpcredential
+import common.snmp.snmperrorcheck as snmperrorcheck
+import services.common.snmp.rsu_message_forwarding_helpers as rsu_message_forwarding_helpers
 
 
 # SNMP property to string name and processing function
 # Supports SNMP RSU 4.1 Spec and NTCIP 1218 SNMP tables
 prop_namevalue = {
     # These values are based off the RSU 4.1 Spec
-    "iso.0.15628.4.1.7.1.2": ("Message Type", snmpwalk_helpers.message_type_rsu41),
-    "iso.0.15628.4.1.7.1.3": ("IP", snmpwalk_helpers.ip_rsu41),
+    "iso.0.15628.4.1.7.1.2": (
+        "Message Type",
+        rsu_message_forwarding_helpers.message_type_rsu41,
+    ),
+    "iso.0.15628.4.1.7.1.3": ("IP", rsu_message_forwarding_helpers.ip_rsu41),
     "iso.0.15628.4.1.7.1.4": ("Port", int),
-    "iso.0.15628.4.1.7.1.5": ("Protocol", snmpwalk_helpers.protocol),
+    "iso.0.15628.4.1.7.1.5": ("Protocol", rsu_message_forwarding_helpers.protocol),
     "iso.0.15628.4.1.7.1.6": ("RSSI", int),
     "iso.0.15628.4.1.7.1.7": ("Frequency", int),
-    "iso.0.15628.4.1.7.1.8": ("Start DateTime", snmpwalk_helpers.startend_rsu41),
-    "iso.0.15628.4.1.7.1.9": ("End DateTime", snmpwalk_helpers.startend_rsu41),
-    "iso.0.15628.4.1.7.1.10": ("Forwarding", snmpwalk_helpers.fwdon),
-    "iso.0.15628.4.1.7.1.11": ("Config Active", snmpwalk_helpers.active),
+    "iso.0.15628.4.1.7.1.8": (
+        "Start DateTime",
+        rsu_message_forwarding_helpers.startend_rsu41,
+    ),
+    "iso.0.15628.4.1.7.1.9": (
+        "End DateTime",
+        rsu_message_forwarding_helpers.startend_rsu41,
+    ),
+    "iso.0.15628.4.1.7.1.10": ("Forwarding", rsu_message_forwarding_helpers.fwdon),
+    "iso.0.15628.4.1.7.1.11": ("Config Active", rsu_message_forwarding_helpers.active),
     # -----
     # These values are based off the NTCIP 1218 rsuReceivedMsgTable table
     "NTCIP1218-v01::rsuReceivedMsgPsid": (
         "Message Type",
-        snmpwalk_helpers.message_type_ntcip1218,
+        rsu_message_forwarding_helpers.message_type_ntcip1218,
     ),
-    "NTCIP1218-v01::rsuReceivedMsgDestIpAddr": ("IP", snmpwalk_helpers.ip_ntcip1218),
+    "NTCIP1218-v01::rsuReceivedMsgDestIpAddr": (
+        "IP",
+        rsu_message_forwarding_helpers.ip_ntcip1218,
+    ),
     "NTCIP1218-v01::rsuReceivedMsgDestPort": ("Port", int),
-    "NTCIP1218-v01::rsuReceivedMsgProtocol": ("Protocol", snmpwalk_helpers.protocol),
-    "NTCIP1218-v01::rsuReceivedMsgRssi": ("RSSI", snmpwalk_helpers.rssi_ntcip1218),
+    "NTCIP1218-v01::rsuReceivedMsgProtocol": (
+        "Protocol",
+        rsu_message_forwarding_helpers.protocol,
+    ),
+    "NTCIP1218-v01::rsuReceivedMsgRssi": (
+        "RSSI",
+        rsu_message_forwarding_helpers.rssi_ntcip1218,
+    ),
     "NTCIP1218-v01::rsuReceivedMsgInterval": ("Frequency", int),
     "NTCIP1218-v01::rsuReceivedMsgDeliveryStart": (
         "Start DateTime",
-        snmpwalk_helpers.startend_ntcip1218,
+        rsu_message_forwarding_helpers.startend_ntcip1218,
     ),
     "NTCIP1218-v01::rsuReceivedMsgDeliveryStop": (
         "End DateTime",
-        snmpwalk_helpers.startend_ntcip1218,
+        rsu_message_forwarding_helpers.startend_ntcip1218,
     ),
-    "NTCIP1218-v01::rsuReceivedMsgStatus": ("Config Active", snmpwalk_helpers.active),
-    "NTCIP1218-v01::rsuReceivedMsgSecure": ("Full WSMP", snmpwalk_helpers.active),
+    "NTCIP1218-v01::rsuReceivedMsgStatus": (
+        "Config Active",
+        rsu_message_forwarding_helpers.active,
+    ),
+    "NTCIP1218-v01::rsuReceivedMsgSecure": (
+        "Full WSMP",
+        rsu_message_forwarding_helpers.active,
+    ),
     "NTCIP1218-v01::rsuReceivedMsgAuthMsgInterval": (
         "Security Filter",
-        snmpwalk_helpers.active,
+        rsu_message_forwarding_helpers.active,
     ),
     # -----
     # These values are based off the NTCIP 1218 rsuXmitMsgFwdingTable table
     "NTCIP1218-v01::rsuXmitMsgFwdingPsid": (
         "Message Type",
-        snmpwalk_helpers.message_type_ntcip1218,
+        rsu_message_forwarding_helpers.message_type_ntcip1218,
     ),
-    "NTCIP1218-v01::rsuXmitMsgFwdingDestIpAddr": ("IP", snmpwalk_helpers.ip_ntcip1218),
+    "NTCIP1218-v01::rsuXmitMsgFwdingDestIpAddr": (
+        "IP",
+        rsu_message_forwarding_helpers.ip_ntcip1218,
+    ),
     "NTCIP1218-v01::rsuXmitMsgFwdingDestPort": ("Port", int),
-    "NTCIP1218-v01::rsuXmitMsgFwdingProtocol": ("Protocol", snmpwalk_helpers.protocol),
+    "NTCIP1218-v01::rsuXmitMsgFwdingProtocol": (
+        "Protocol",
+        rsu_message_forwarding_helpers.protocol,
+    ),
     "NTCIP1218-v01::rsuXmitMsgFwdingDeliveryStart": (
         "Start DateTime",
-        snmpwalk_helpers.startend_ntcip1218,
+        rsu_message_forwarding_helpers.startend_ntcip1218,
     ),
     "NTCIP1218-v01::rsuXmitMsgFwdingDeliveryStop": (
         "End DateTime",
-        snmpwalk_helpers.startend_ntcip1218,
+        rsu_message_forwarding_helpers.startend_ntcip1218,
     ),
-    "NTCIP1218-v01::rsuXmitMsgFwdingSecure": ("Full WSMP", snmpwalk_helpers.active),
-    "NTCIP1218-v01::rsuXmitMsgFwdingStatus": ("Config Active", snmpwalk_helpers.active),
+    "NTCIP1218-v01::rsuXmitMsgFwdingSecure": (
+        "Full WSMP",
+        rsu_message_forwarding_helpers.active,
+    ),
+    "NTCIP1218-v01::rsuXmitMsgFwdingStatus": (
+        "Config Active",
+        rsu_message_forwarding_helpers.active,
+    ),
 }
 
 
@@ -248,4 +284,7 @@ def get(request):
     elif request["snmp_version"] == "1218":
         return snmpwalk_txrxmsg(request["snmp_creds"], request["rsu_ip"])
     else:
-        return "Supported SNMP protocol versions are currently only RSU 4.1 and NTCIP 1218", 501
+        return (
+            "Supported SNMP protocol versions are currently only RSU 4.1 and NTCIP 1218",
+            501,
+        )

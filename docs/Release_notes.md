@@ -4,7 +4,7 @@
 
 ### **Summary**
 
-This release delivers a set of targeted enhancements and stability improvements across multiple components. Notable changes include the extension of the CV Manager webapp capabilities with the intersection API configuration page, the integration of the Moove.AI dataset as a visualizable map layer, and rework to the CV Manager webapp UX. The CV Manager webapp has undergone a UX refactor for improved usability and consistency. Performance optimizations and bug fixes have been implemented across the CV Manager, intersection API, and addons. The CV Manager now supports configuring RSU message forwarding with security headers included through SNMP using NTCIP-1218.
+This release delivers a set of targeted enhancements and stability improvements across multiple components. Notable changes include the extension of the CV Manager webapp capabilities with the intersection API configuration page, the integration of the Moove.AI dataset as a visualizable map layer, and rework to the CV Manager webapp UX. The CV Manager webapp has undergone a UX refactor for improved usability and consistency. Performance optimizations and bug fixes have been implemented across the CV Manager API, Intersection API, and addons, including implementing paging in the Intersection API. The CV Manager now supports configuring RSU message forwarding with security headers included through SNMP using NTCIP-1218.
 
 Enhancements in this release:
 

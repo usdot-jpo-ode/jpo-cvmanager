@@ -1,4 +1,4 @@
-import { Card, CardContent, Grid2, Typography, useTheme } from '@mui/material'
+import { Box, Card, CardContent, Grid2, Typography, useTheme } from '@mui/material'
 import React from 'react'
 import { BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar, Tooltip, TooltipProps } from 'recharts'
 import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent'
@@ -6,15 +6,6 @@ import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipCont
 export const SignalStateEventAssessmentCard = (props: { assessment: SignalStateEventAssessment | undefined }) => {
   const { assessment } = props
   const theme = useTheme()
-
-  function getWidthFactorFromData(data: any[] | undefined): number {
-    if (!data) return 0.1
-    const maxFactor = 0.9
-    const numRowsForMax = 40
-    return 0.1 + Math.min(maxFactor, data.length / numRowsForMax)
-  }
-
-  const widthFactor = getWidthFactorFromData(assessment?.signalStateEventAssessmentGroup)
 
   const CustomTooltip = ({ active, payload }: TooltipProps<ValueType, NameType>) => {
     if (active && payload) {
@@ -112,53 +103,54 @@ export const SignalStateEventAssessmentCard = (props: { assessment: SignalStateE
   const hasDark = data?.some((item) => item.darkCount > 0)
 
   return (
-    <Grid2 width={assessment === undefined ? '100%' : 80 + widthFactor * 1200}>
+    <Grid2 width="300px" height="500px">
       <Card sx={{ height: '100%', overflow: 'visible' }}>
         <CardContent>
           <Grid2 container spacing={3} sx={{ justifyContent: 'space-between' }}>
             <Grid2>
-              <Typography color="textSecondary" gutterBottom variant="h6">
+              <Typography color="textPrimary" gutterBottom variant="h6">
                 Signal State Passage Assessment
               </Typography>
               {assessment === undefined ? (
-                <Typography color="textPrimary" fontSize="small" key={''}>
+                <Typography color="textSecondary" fontSize="small" key={''}>
                   No Data
                 </Typography>
               ) : (
-                <BarChart
-                  width={widthFactor * 1200}
-                  height={350}
-                  data={data}
-                  margin={{
-                    top: 20,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
+                <Box
+                  sx={{
+                    width: '268px',
+                    height: 'fit-content',
+                    display: 'flex',
+                    justifyContent: 'center',
                   }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" label={{ value: 'Signal Group', position: 'insideBottomRight', offset: -5 }} />
-                  <YAxis unit="%" label={{ value: 'Event Count (%)', angle: -90, position: 'insideLeft' }} />
-                  <Tooltip content={CustomTooltip} />
-                  <Legend
-                    wrapperStyle={{
-                      paddingTop: '10px',
-                      height: '50px',
-                    }}
-                    payload={
-                      [
-                        { value: 'Red', type: 'square', id: 'red', color: '#e74b4b' },
-                        { value: 'Yellow', type: 'square', id: 'yellow', color: '#ffe600' },
-                        { value: 'Green', type: 'square', id: 'green', color: '#44db51' },
-                        hasDark ? { value: 'Dark', type: 'square', id: 'dark', color: '#505050' } : null,
-                      ].filter((item) => item !== null) as any[]
-                    }
-                  />
-                  <Bar dataKey="red" stackId="a" fill="#e74b4b" />
-                  <Bar dataKey="yellow" stackId="a" fill="#ffe600" />
-                  <Bar dataKey="green" stackId="a" fill="#44db51" />
-                  <Bar dataKey="dark" stackId="a" fill="#505050" />
-                </BarChart>
+                  <BarChart width={250} height={350} data={data}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" label={{ value: 'Signal Group', position: 'insideBottom', offset: -15 }} />
+                    <YAxis unit="%" label={{ value: 'Event Count (%)', angle: -90, position: 'insideLeft' }} />
+                    <Tooltip content={CustomTooltip} />
+                    <Legend
+                      layout="horizontal"
+                      verticalAlign="bottom"
+                      align="center"
+                      wrapperStyle={{
+                        position: 'relative',
+                      }}
+                      payload={
+                        [
+                          { value: 'Red', type: 'square', id: 'red', color: '#e74b4b' },
+                          { value: 'Yellow', type: 'square', id: 'yellow', color: '#ffe600' },
+                          { value: 'Green', type: 'square', id: 'green', color: '#44db51' },
+                          hasDark ? { value: 'Dark', type: 'square', id: 'dark', color: '#505050' } : null,
+                        ].filter((item) => item !== null) as any[]
+                      }
+                    />
+                    <Bar dataKey="red" stackId="a" fill="#e74b4b" />
+                    <Bar dataKey="yellow" stackId="a" fill="#ffe600" />
+                    <Bar dataKey="green" stackId="a" fill="#44db51" />
+                    <Bar dataKey="dark" stackId="a" fill="#505050" />
+                  </BarChart>
+                </Box>
               )}
             </Grid2>
           </Grid2>

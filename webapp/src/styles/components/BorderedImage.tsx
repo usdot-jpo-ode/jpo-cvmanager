@@ -4,4 +4,5 @@ export const BorderedImage = styled('img')(({ theme }) => ({
   display: 'block',
   marginLeft: 'auto',
   marginRight: 'auto',
+  maxWidth: '900px',
 }))

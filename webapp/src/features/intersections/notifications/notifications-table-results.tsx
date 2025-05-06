@@ -13,8 +13,8 @@ import {
   TableRow,
   Typography,
   IconButton,
-  TableContainer,
   Collapse,
+  useTheme,
 } from '@mui/material'
 import React, { ReactElement } from 'react'
 import MapRoundedIcon from '@mui/icons-material/MapRounded'
@@ -40,6 +40,7 @@ export const NotificationsTableResults = ({
   const intersectionId = useSelector(selectSelectedIntersectionId)
 
   const navigate = useNavigate()
+  const theme = useTheme()
   const handleSelectAll = (event) => {
     let newSelectedCustomerIds: string[] = []
     if (notificationsCount === 0) return
@@ -175,7 +176,12 @@ export const NotificationsTableResults = ({
       <PerfectScrollbar>
         <Box sx={{ minWidth: 1050 }}>
           <Table>
-            <TableHead>
+            <TableHead
+              sx={{
+                backgroundColor: theme.palette.background.paper,
+                '& .MuiTableCell-root': { textTransform: 'capitalize' },
+              }}
+            >
               <TableRow>
                 <TableCell></TableCell>
                 <TableCell padding="checkbox">

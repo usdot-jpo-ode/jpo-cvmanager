@@ -154,50 +154,6 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
         }}
         disableGutters
       >
-        {!simple && (
-          <>
-            <Box
-              sx={{
-                alignItems: 'center',
-                display: 'flex',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                m: -1,
-              }}
-            >
-              <Grid2 container justifyContent="space-between" spacing={3}>
-                <Grid2>
-                  <Typography sx={{ m: 1 }} variant="h4" color="text.secondary">
-                    Notifications
-                  </Typography>
-                </Grid2>
-              </Grid2>
-              <Box
-                sx={{
-                  m: -1,
-                  mt: 3,
-                }}
-              ></Box>
-            </Box>
-            <Box
-              sx={{
-                m: -1,
-                mt: 3,
-                mb: 3,
-              }}
-            >
-              <Button
-                color="primary"
-                variant="contained"
-                onClick={updateNotifications}
-                startIcon={<RefreshIcon fontSize="small" />}
-                sx={{ m: 1 }}
-              >
-                Refresh
-              </Button>
-            </Box>
-          </>
-        )}
         <Card sx={{ overflowY: 'auto' }}>
           {!simple && (
             <Box>
@@ -221,21 +177,19 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
                   justifyContent: 'flex-start',
                   flexWrap: 'wrap',
                   m: -1.5,
-                  p: 3,
+                  p: 2,
                 }}
               >
                 <Box
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center !important',
+                    justifyContent: 'center',
                     mb: 1,
                     width: '100%',
                   }}
                 >
-                  <Typography variant="body1" sx={{ my: 1 }}>
-                    {currentDescription}
-                  </Typography>
+                  <Typography variant="body1">{currentDescription}</Typography>
                 </Box>
                 <Box
                   component="form"
@@ -310,6 +264,7 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
                     dismissNotifications(acceptedNotifications)
                   }}
                   disabled={acceptedNotifications.length <= 0 ? true : false}
+                  className="museo-slab capital-case"
                 >
                   Dismiss Notifications
                 </Button>

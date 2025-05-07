@@ -158,12 +158,16 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
           {!simple && (
             <Box>
               <Tabs
-                indicatorColor="primary"
                 onChange={handleTabsChange}
-                sx={{ px: 3, mt: 1 }}
-                textColor="primary"
                 value={currentTab}
                 centered
+                sx={{
+                  px: 3,
+                  mt: 1,
+                  '& .MuiButtonBase-root': { textTransform: 'capitalize' },
+                  '& .MuiTabs-indicator': { backgroundColor: theme.palette.custom.rowActionIcon },
+                  '& .Mui-selected': { color: `${theme.palette.custom.rowActionIcon} !important` },
+                }}
               >
                 {tabs.map((tab) => (
                   <Tab key={tab.value} label={tab.label} value={tab.value} />
@@ -189,7 +193,7 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
                     width: '100%',
                   }}
                 >
-                  <Typography variant="body1">{currentDescription}</Typography>
+                  <Typography color={theme.palette.text.secondary}>{currentDescription}</Typography>
                 </Box>
                 <Box
                   component="form"
@@ -213,6 +217,11 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
                       },
                     }}
                     placeholder="Search..."
+                    sx={{
+                      '& .Mui-focused::after': {
+                        borderBottom: `2px solid ${theme.palette.custom.rowActionIcon}`,
+                      },
+                    }}
                   />
                 </Box>
                 <Button
@@ -221,6 +230,7 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
                   onClick={updateNotifications}
                   startIcon={<RefreshIcon fontSize="small" />}
                   sx={{ m: 1 }}
+                  className="museo-slab capital-case"
                 >
                   Refresh
                 </Button>

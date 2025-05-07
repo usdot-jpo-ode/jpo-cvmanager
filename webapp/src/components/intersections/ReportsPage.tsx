@@ -126,8 +126,6 @@ const Page = () => {
           display: 'flex',
           flexGrow: 1,
           overflow: 'hidden',
-          mt: 11,
-          mb: 1,
         }}
         justifyContent="flex-start"
       >

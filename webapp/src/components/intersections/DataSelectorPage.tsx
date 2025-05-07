@@ -240,7 +240,7 @@ const DataSelectorPage = () => {
         sx={{
           backgroundColor: 'background.default',
           flexGrow: 1,
-          py: 8,
+          py: 5,
           width: '100%',
         }}
       >
@@ -249,7 +249,7 @@ const DataSelectorPage = () => {
             <DataSelectorEditForm onQuery={query} onVisualize={onVisualize} />
           </Box>
         </Container>
-        <Container maxWidth={false} sx={{ mt: 5, alignItems: 'center', display: 'flex' }}>
+        <Container maxWidth={false} disableGutters sx={{ mt: 5, alignItems: 'center', display: 'flex' }}>
           {type == 'events' && (
             <EventDataTable
               events={events}

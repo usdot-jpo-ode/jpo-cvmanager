@@ -146,7 +146,11 @@ function IntersectionDashboard() {
             {
               path: 'configuration',
               title: 'Configuration',
-              child: <ConfigurationPage />,
+              child: (
+                <Box sx={{ paddingTop: theme.spacing(5) }}>
+                  <ConfigurationPage />
+                </Box>
+              ),
             },
           ]}
         />

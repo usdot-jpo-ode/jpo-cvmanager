@@ -63,7 +63,6 @@ export const ReportListFilters = (props: ReportListFiltersProps) => {
   return (
     <Box
       sx={{
-        pb: 3,
         px: 3,
       }}
     >
@@ -111,6 +110,7 @@ export const ReportListFilters = (props: ReportListFiltersProps) => {
         onClick={() => {
           setOpenReportGenerationDialog(true)
         }}
+        className="museo-slab capital-case"
       >
         Generate Manual Report
       </Button>

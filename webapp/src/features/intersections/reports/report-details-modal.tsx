@@ -532,6 +532,7 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
             color="primary"
             disabled={loading || !isWindowWideEnough}
             sx={{ mr: 2 }}
+            className="capital-case"
           >
             {loading ? <CircularProgress size={24} /> : 'Download PDF'}
           </Button>
@@ -549,7 +550,7 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
         </Box>
 
         {/* Right Section: Close Button */}
-        <Button onClick={handleClose} color="primary">
+        <Button onClick={handleClose} color="primary" className="capital-case">
           Close
         </Button>
       </DialogActions>

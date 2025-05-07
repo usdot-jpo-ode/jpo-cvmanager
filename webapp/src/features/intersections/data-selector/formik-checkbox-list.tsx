@@ -1,14 +1,18 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Checkbox, Grid2 } from '@mui/material'
+import { Checkbox, Grid2, Typography, useTheme } from '@mui/material'
 
 export const FormikCheckboxList = (props) => {
   const { values, selectedValues, setValues } = props
+  const theme = useTheme()
 
   return values.map((eventType) => (
     <Grid2 size={4}>
       <div key={eventType.label}>
         <Checkbox
+          sx={{
+            color: theme.palette.custom.rowActionIcon,
+          }}
           style={{ marginRight: 8 }}
           checked={selectedValues.indexOf(eventType) > -1}
           onChange={(e) => {
@@ -36,7 +40,7 @@ export const FormikCheckboxList = (props) => {
             setValues(newEventTypes)
           }}
         />
-        {eventType.label}
+        <Typography color={theme.palette.text.secondary}>{eventType.label}</Typography>
       </div>
     </Grid2>
   ))

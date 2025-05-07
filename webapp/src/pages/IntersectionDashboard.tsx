@@ -10,7 +10,18 @@ import DashboardPage from '../components/intersections/DashboardPage'
 import NotificationPage from '../components/intersections/NotificationPage'
 import DataSelectorPage from '../components/intersections/DataSelectorPage'
 import ReportsPage from '../components/intersections/ReportsPage'
-import { InputLabel, Select, MenuItem, FormControl, Tooltip, Button, useTheme, Grid2 } from '@mui/material'
+import {
+  InputLabel,
+  Select,
+  MenuItem,
+  FormControl,
+  Tooltip,
+  Button,
+  useTheme,
+  Grid2,
+  Box,
+  Typography,
+} from '@mui/material'
 import {
   selectIntersections,
   selectSelectedIntersectionId,
@@ -42,11 +53,11 @@ function IntersectionDashboard() {
           style={{
             width: `fit-content`,
             position: 'absolute',
-            top: `calc(${headerTabHeight}px + ${theme.spacing(3)})`,
             left: `calc(250px + ${theme.spacing(3)})`,
             backgroundColor: theme.palette.background.default,
             justifyContent: 'flex-start',
             display: 'flex',
+            zIndex: 100,
           }}
         >
           <FormControl
@@ -80,13 +91,14 @@ function IntersectionDashboard() {
                 onClick={() => {
                   setOpenMapDialog(true)
                 }}
-                startIcon={<TrafficOutlined fontSize="medium" />}
+                startIcon={<TrafficOutlined sx={{ fontSize: '16px' }} />}
                 sx={{
                   ml: 2,
                   height: '4em',
                 }}
+                className="museo-slab capital-case"
               >
-                Select Intersection
+                <Typography fontSize="16px">Select Intersection</Typography>
               </Button>
             </Tooltip>
           </Grid2>
@@ -110,7 +122,11 @@ function IntersectionDashboard() {
             {
               path: 'notifications',
               title: 'Notifications',
-              child: <NotificationPage />,
+              child: (
+                <Box sx={{ paddingTop: theme.spacing(5) }}>
+                  <NotificationPage />
+                </Box>
+              ),
             },
             {
               path: 'data-selector',
@@ -120,7 +136,11 @@ function IntersectionDashboard() {
             {
               path: 'reports',
               title: 'Reports',
-              child: <ReportsPage />,
+              child: (
+                <Box sx={{ paddingTop: theme.spacing(8) }}>
+                  <ReportsPage />
+                </Box>
+              ),
             },
             {
               path: 'configuration',

@@ -225,14 +225,13 @@ export const DataSelectorEditForm = (props: { onQuery: (query: any) => void; onV
               />
             </Grid2>
           </Grid2>
-          <Grid2 container spacing={3} sx={{ justifyContent: 'flex-start', flexWrap: 'wrap', marginTop: 3 }}>
+          <Grid2 container spacing={3} sx={{ justifyContent: 'flex-start', flexWrap: 'wrap' }}>
             {getTypeSpecificFilters(formik.values.type)}
           </Grid2>
         </CardContent>
         <CardActions
           sx={{
             flexWrap: 'wrap',
-            m: -1,
           }}
         >
           <Button
@@ -241,6 +240,7 @@ export const DataSelectorEditForm = (props: { onQuery: (query: any) => void; onV
             sx={{ m: 1 }}
             variant="contained"
             onClick={() => setVisualize(false)}
+            className="museo-slab capital-case"
           >
             Query Data
           </Button>
@@ -250,6 +250,7 @@ export const DataSelectorEditForm = (props: { onQuery: (query: any) => void; onV
             sx={{ m: 1 }}
             variant="contained"
             onClick={() => setVisualize(true)}
+            className="museo-slab capital-case"
           >
             View Counts
           </Button>

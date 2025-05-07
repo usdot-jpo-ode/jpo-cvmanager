@@ -61,6 +61,7 @@ function IntersectionDashboard() {
           }}
         >
           <FormControl
+            size="small"
             sx={{
               mt: 1,
               width: 200,
@@ -91,10 +92,10 @@ function IntersectionDashboard() {
                 onClick={() => {
                   setOpenMapDialog(true)
                 }}
-                startIcon={<TrafficOutlined sx={{ fontSize: '16px' }} />}
+                startIcon={<TrafficOutlined />}
                 sx={{
                   ml: 2,
-                  height: '4em',
+                  height: '40px',
                 }}
                 className="museo-slab capital-case"
               >

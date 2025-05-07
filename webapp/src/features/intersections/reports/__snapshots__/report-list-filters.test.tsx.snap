@@ -3,7 +3,7 @@
 exports[`should take a snapshot 1`] = `
 <div>
   <div
-    class="MuiBox-root css-ju4zfe"
+    class="MuiBox-root css-t0051x"
   >
     <div
       class="MuiBox-root css-1ebprri"
@@ -131,7 +131,7 @@ exports[`should take a snapshot 1`] = `
       class="MuiBox-root css-gjqw5t"
     />
     <a
-      class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
+      class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary museo-slab capital-case css-mocked-MuiButtonBase-root-MuiButton-root"
       role="button"
       tabindex="0"
     >

@@ -159,7 +159,8 @@ def fetch_index(command, rsu_ip, rsu_info, message_type=None, target_ip=None):
                     and walkResult[entry]["IP"] == target_ip
                 ):
                     index = int(entry)
-    return index
+
+    return index if index != 0 else 1
 
 
 msg_type_map = {

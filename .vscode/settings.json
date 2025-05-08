@@ -24,6 +24,7 @@
     "editor.formatOnSave": true
   },
   "cSpell.words": [
+    "assertj",
     "bbox",
     "BOOTSTRAPSERVERS",
     "Bsms",
@@ -38,6 +39,7 @@
     "cvmgr",
     "CVPEP",
     "deadletterqueue",
+    "decisecond",
     "dockerized",
     "dont",
     "formik",
@@ -68,6 +70,7 @@
     "pgdb",
     "postgis",
     "pytz",
+    "rawtypes",
     "reduxjs",
     "rsus",
     "SASL",

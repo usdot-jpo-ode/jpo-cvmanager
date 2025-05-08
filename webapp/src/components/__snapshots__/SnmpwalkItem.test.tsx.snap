@@ -3,7 +3,7 @@
 exports[`should take a snapshot 1`] = `
 <div>
   <div
-    class="MuiBox-root css-vlipj3"
+    class="MuiBox-root css-ppqe1x"
     id="snmpitemdiv"
   >
     <h3
@@ -83,6 +83,22 @@ exports[`should take a snapshot 1`] = `
           class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
         >
           End:
+        </span>
+        <span
+          class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+        />
+      </p>
+    </div>
+    <div
+      style="display: flex; flex-direction: row; align-items: center; margin-top: -2px;"
+    >
+      <p
+        class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+      >
+        <span
+          class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+        >
+          Security:
         </span>
         <span
           class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"

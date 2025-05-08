@@ -1,0 +1,32 @@
+{
+  "_id": {
+    "key": "StopLinePassageNotification_12109_-1_2"
+  },
+  "notificationGeneratedAt": {
+    "$date": "2024-08-20T16:18:52.775Z"
+  },
+  "assessment": {
+    "assessmentGeneratedAt": 1724170732775,
+    "assessmentType": "SignalStateEvent",
+    "roadRegulatorID": -1,
+    "intersectionID": 12109,
+    "source": "{\"rsuId\":\"10.11.81.12\",\"intersectionId\":12109,\"region\":0}",
+    "signalStateEventAssessmentGroup": [
+      {
+        "darkEvents": 0,
+        "greenEvents": 0,
+        "redEvents": 0,
+        "signalGroup": 2,
+        "yellowEvents": 11
+      }
+    ],
+    "timestamp": 1724170732775
+  },
+  "notificationText": "Stop Line Passage Notification, percent of passage events on red and yellow: 100% for signal group: 2 exceeds Maximum Allowable Percent.",
+  "notificationHeading": "Stop Line Passage Notification",
+  "roadRegulatorID": -1,
+  "intersectionID": 12109,
+  "notificationType": "StopLinePassageNotification",
+  "signalGroup": 2,
+  "key": "StopLinePassageNotification_12109_-1_2"
+}

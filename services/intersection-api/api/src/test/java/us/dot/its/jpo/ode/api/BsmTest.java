@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -48,8 +51,14 @@ public class BsmTest {
 
         List<OdeBsmData> list = new ArrayList<>();
 
-        ResponseEntity<List<OdeBsmData>> result = controller.findBSMs(null, null, null, null, null, null, null, false);
+        PageRequest page = PageRequest.of(0, 1);
+        when(odeBsmJsonRepository.find(null, null, null, null, null, null, null,
+                PageRequest.of(0, 1)))
+                .thenReturn(new PageImpl<>(list, page, 1L));
+
+        ResponseEntity<Page<OdeBsmData>> result = controller.findBSMs(null, null, null, null, null, null, null, 0, 1,
+                false);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody()).isEqualTo(list);
+        assertThat(result.getBody().getContent()).isEqualTo(list);
     }
 }

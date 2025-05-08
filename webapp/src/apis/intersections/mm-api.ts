@@ -18,7 +18,6 @@ class MessageMonitorApi {
    * @param {Object} params - The parameters for the API request.
    * @param {string} params.token - The authentication token for the API request.
    * @param {number} params.intersectionId - The ID of the intersection to filter SPAT messages.
-   * @param {number} params.roadRegulatorId - The ID of the road regulator associated with the intersection.
    * @param {Date} [params.startTime] - The start time of the time range (optional).
    * @param {Date} [params.endTime] - The end time of the time range (optional).
    * @param {boolean} [params.compact] - Whether to request a compact version of the SPAT messages (optional).
@@ -37,7 +36,6 @@ class MessageMonitorApi {
   async getSpatMessagesWithLatest({
     token,
     intersectionId,
-    roadRegulatorId,
     startTime,
     endTime,
     compact,
@@ -45,7 +43,6 @@ class MessageMonitorApi {
   }: {
     token: string
     intersectionId: number
-    roadRegulatorId: number
     startTime?: Date
     endTime?: Date
     compact?: boolean
@@ -55,7 +52,6 @@ class MessageMonitorApi {
     const latestSpats = await this.getSpatMessages({
       token,
       intersectionId,
-      roadRegulatorId,
       endTime: startTime,
       latest: true,
       compact,
@@ -65,7 +61,6 @@ class MessageMonitorApi {
     const allSpats = await this.getSpatMessages({
       token,
       intersectionId,
-      roadRegulatorId,
       startTime,
       endTime,
       compact,
@@ -77,7 +72,6 @@ class MessageMonitorApi {
   async getSpatMessages({
     token,
     intersectionId,
-    roadRegulatorId,
     startTime,
     endTime,
     latest,
@@ -86,7 +80,6 @@ class MessageMonitorApi {
   }: {
     token: string
     intersectionId: number
-    roadRegulatorId: number
     startTime?: Date
     endTime?: Date
     latest?: boolean
@@ -95,13 +88,12 @@ class MessageMonitorApi {
   }): Promise<ProcessedSpat[]> {
     const queryParams: Record<string, string> = {}
     queryParams['intersection_id'] = intersectionId.toString()
-    queryParams['road_regulator_id'] = roadRegulatorId.toString()
     if (startTime) queryParams['start_time_utc_millis'] = startTime.getTime().toString()
     if (endTime) queryParams['end_time_utc_millis'] = endTime.getTime().toString()
     if (latest) queryParams['latest'] = latest.toString()
     if (compact) queryParams['compact'] = compact.toString()
 
-    var response = await authApiHelper.invokeApi({
+    var response: PagedResponse<ProcessedSpat> = await authApiHelper.invokeApi({
       path: '/spat/json',
       token: token,
       queryParams,
@@ -109,13 +101,12 @@ class MessageMonitorApi {
       failureMessage: 'Failed to retrieve SPAT messages',
       tag: 'intersection',
     })
-    return response ?? ([] as ProcessedSpat[])
+    return response?.content ?? ([] as ProcessedSpat[])
   }
 
   async getMapMessages({
     token,
     intersectionId,
-    roadRegulatorId,
     startTime,
     endTime,
     latest,
@@ -123,7 +114,6 @@ class MessageMonitorApi {
   }: {
     token: string
     intersectionId: number
-    roadRegulatorId?: number
     startTime?: Date
     endTime?: Date
     latest?: boolean
@@ -131,9 +121,6 @@ class MessageMonitorApi {
   }): Promise<ProcessedMap[]> {
     const queryParams: Record<string, string> = {}
     queryParams['intersection_id'] = intersectionId.toString()
-    if (roadRegulatorId !== undefined) {
-      queryParams['road_regulator_id'] = roadRegulatorId.toString()
-    }
     if (startTime) queryParams['start_time_utc_millis'] = startTime.getTime().toString()
     if (endTime) queryParams['end_time_utc_millis'] = endTime.getTime().toString()
     if (latest !== undefined) queryParams['latest'] = latest.toString()
@@ -146,7 +133,7 @@ class MessageMonitorApi {
       failureMessage: 'Failed to retrieve MAP messages',
       tag: 'intersection',
     })
-    return response ?? ([] as ProcessedMap[])
+    return response?.content ?? ([] as ProcessedMap[])
   }
 
   async getBsmMessages({
@@ -176,7 +163,7 @@ class MessageMonitorApi {
     if (lat) queryParams['latitude'] = lat.toString()
     if (distance) queryParams['distance'] = distance.toString()
 
-    var response = await authApiHelper.invokeApi({
+    var response: PagedResponse<OdeBsmData> = await authApiHelper.invokeApi({
       path: '/bsm/json',
       token: token,
       queryParams,
@@ -184,7 +171,7 @@ class MessageMonitorApi {
       failureMessage: 'Failed to retrieve BSM messages',
       tag: 'intersection',
     })
-    return response ?? ([] as OdeBsmData[])
+    return response?.content ?? ([] as OdeBsmData[])
   }
 
   async getMessageCount(
@@ -221,7 +208,7 @@ class MessageMonitorApi {
       queryParams['intersection_id'] = intersectionId.toString()
     }
 
-    const response = await authApiHelper.invokeApi({
+    const response: PagedResponse<number> = await authApiHelper.invokeApi({
       path: `/${messageType}/count`,
       token: token,
       queryParams: queryParams,
@@ -229,7 +216,7 @@ class MessageMonitorApi {
       failureMessage: `Failed to retrieve message count for type ${messageType}`,
       tag: 'intersection',
     })
-    return response
+    return response?.content?.[0]
   }
 }
 

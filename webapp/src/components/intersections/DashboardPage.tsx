@@ -1,4 +1,4 @@
-import { Box, Grid2, useTheme } from '@mui/material'
+import { Box, Grid2 } from '@mui/material'
 import { NotificationsTable } from '../../features/intersections/notifications/notifications-table'
 import { ConnectionOfTravelAssessmentCard } from '../../features/intersections/assessments/connection-of-travel-assessment'
 import { LaneDirectionOfTravelAssessmentCard } from '../../features/intersections/assessments/lane-direction-of-travel-assessment'
@@ -13,7 +13,6 @@ import { useSelector } from 'react-redux'
 const Page = () => {
   const intersectionId = useSelector(selectSelectedIntersectionId)
   const token = useSelector(selectToken)
-  const theme = useTheme()
 
   // create hooks, and methods for each assessment type:
   const [stopLineStopAssessment, setStopLineStopAssessment] = useState<StopLineStopAssessment | undefined>(undefined)

@@ -14,19 +14,16 @@ import {
   CardContent,
   Grid2,
   TextField,
-  InputLabel,
   MenuItem,
   Select,
   InputAdornment,
-  FormControl,
-  Typography,
 } from '@mui/material'
 import { FormikCheckboxList } from './formik-checkbox-list'
 import { selectDataSelectorForm, setDataSelectorForm } from './dataSelectorSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../../store'
-import { selectIntersections, selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
+import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
 
 interface Item {
   label: string

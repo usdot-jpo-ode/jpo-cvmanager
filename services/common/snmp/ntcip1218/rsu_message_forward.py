@@ -217,7 +217,7 @@ def get(rsu_ip, snmp_creds):
     return {"RsuFwdSnmpwalk": snmpwalk_results}, 200
 
 
-def set(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, tx):
+def set(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, security, tx):
     try:
         logging.info("Running SNMP config on Yunex RSU {}".format(dest_ip))
 
@@ -271,8 +271,8 @@ def set(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, tx):
                     index=rsu_index, dt=end_hex
                 )
             )
-            snmp_mod += "NTCIP1218-v01:rsuXmitMsgFwdingSecure.{index} i 0 ".format(
-                index=rsu_index
+            snmp_mod += "NTCIP1218-v01:rsuXmitMsgFwdingSecure.{index} i {sec} ".format(
+                index=rsu_index, sec=security
             )
             snmp_mod += "NTCIP1218-v01:rsuXmitMsgFwdingStatus.{index} i 4".format(
                 index=rsu_index
@@ -334,8 +334,8 @@ def set(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, tx):
             snmp_mod += "NTCIP1218-v01:rsuReceivedMsgStatus.{index} i 4 ".format(
                 index=rsu_index
             )
-            snmp_mod += "NTCIP1218-v01:rsuReceivedMsgSecure.{index} i 0 ".format(
-                index=rsu_index
+            snmp_mod += "NTCIP1218-v01:rsuReceivedMsgSecure.{index} i {sec} ".format(
+                index=rsu_index, sec=security
             )
             snmp_mod += (
                 "NTCIP1218-v01:rsuReceivedMsgAuthMsgInterval.{index} i 0".format(

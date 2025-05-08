@@ -227,6 +227,7 @@ def execute_rsufwdsnmpset(command, organization, rsu_list, args):
                         udp_port=msg_type_map[args["msg_type"].lower()]["port"],
                         rsu_index=index,
                         psid=msg_type_map[args["msg_type"].lower()]["psid"],
+                        security=args["security"],
                         tx=msg_type_map[args["msg_type"].lower()]["tx"],
                     )
             elif rsu_info["snmp_version"] == "41":

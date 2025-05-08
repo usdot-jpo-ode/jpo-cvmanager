@@ -1,8 +1,7 @@
-from concurrent.futures import ThreadPoolExecutor
 import os
 import logging
 import common.pgquery as pgquery
-import services.common.snmp.update_rsu_snmp_pg as update_rsu_snmp_pg
+import common.snmp.update_rsu_snmp_pg as update_rsu_snmp_pg
 
 
 def get_rsu_list():
@@ -26,12 +25,6 @@ def get_rsu_list():
     return rsu_list
 
 
-def update_rsu_list_in_parallel(rsu_list):
-    with ThreadPoolExecutor() as executor:
-        configs = list(executor.map(process_rsu, rsu_list))
-    return configs
-
-
 if __name__ == "__main__":
     # Configure logging based on ENV var or use default if not set
     log_level = os.environ.get("LOGGING_LEVEL", "INFO")
@@ -44,5 +37,5 @@ if __name__ == "__main__":
         exit()
 
     rsu_list = get_rsu_list()
-    configs = update_rsu_snmp_pg.get_snmp_msgfwding_configs(rsu_list)
+    configs = update_rsu_snmp_pg.get_snmp_msgfwd_configs(rsu_list)
     update_rsu_snmp_pg.update_postgresql(configs)

@@ -1,32 +1,20 @@
 from marshmallow import Schema, fields
 import common.pgquery as pgquery
+import common.snmp.update_rsu_snmp_pg as update_rsu_snmp_pg
+import common.snmp.ntcip1218.rsu_message_forward as nticp1218_rsu_mf
+import common.snmp.rsu41.rsu_message_forward as rsu41_rsu_mf
 import logging
-import common.rsufwdsnmpwalk as rsufwdsnmpwalk
-import common.rsufwdsnmpset as rsufwdsnmpset
-import common.update_rsu_snmp_pg as update_rsu_snmp_pg
 import rsu_upgrade
 import ssh_commands
 import os
 
 # Dict of functions
 command_data = {
-    "rsufwdsnmpwalk": {
-        "function": rsufwdsnmpwalk.get,
-        "roles": ["user", "operator", "admin"],
-        "ssh_required": False,
-        "snmp_required": True,
-    },
     "rsufwdsnmpset": {
-        "function": rsufwdsnmpset.post,
         "roles": ["operator", "admin"],
-        "ssh_required": True,
-        "snmp_required": True,
     },
     "rsufwdsnmpset-del": {
-        "function": rsufwdsnmpset.delete,
         "roles": ["operator", "admin"],
-        "ssh_required": False,
-        "snmp_required": True,
     },
     "reboot": {
         "function": ssh_commands.reboot,
@@ -125,7 +113,21 @@ def fetch_rsu_info(rsu_ip, organization):
 # Returns the appropriate snmp_walk index given add/del command
 def fetch_index(command, rsu_ip, rsu_info, message_type=None, target_ip=None):
     index = 0
-    data, code = execute_command("rsufwdsnmpwalk", rsu_ip, {}, rsu_info)
+    snmp_creds = {
+        "username": rsu_info["snmp_username"],
+        "password": rsu_info["snmp_password"],
+        "encrypt_pw": rsu_info["snmp_encrypt_pw"],
+    }
+
+    if rsu_info["snmp_version"] == "1218":
+        data, code = nticp1218_rsu_mf.get(rsu_ip, snmp_creds)
+    elif rsu_info["snmp_version"] == "41":
+        data, code = rsu41_rsu_mf.get(rsu_ip, snmp_creds)
+    else:
+        # SNMP version not supported
+        logging.error("Requested SNMP standard version is not supported")
+        return -1
+
     if code == 200:
         walkResult = {}
         if rsu_info["snmp_version"] == "1218":
@@ -160,6 +162,16 @@ def fetch_index(command, rsu_ip, rsu_info, message_type=None, target_ip=None):
     return index
 
 
+msg_type_map = {
+    "bsm": {"port": "46800", "psid": "20", "tx": False, "raw": False},
+    "spat": {"port": "44910", "psid": "8002", "tx": True, "raw": False},
+    "map": {"port": "44920", "psid": "20", "tx": True, "raw": True},
+    "ssm": {"port": "44900", "psid": "E0000015", "tx": True, "raw": True},
+    "srm": {"port": "44930", "psid": "E0000016", "tx": False, "raw": True},
+    "tim": {"port": "47900", "psid": "8003", "tx": True, "raw": True},
+}
+
+
 def execute_rsufwdsnmpset(command, organization, rsu_list, args):
     return_dict = {}
     if command == "rsufwdsnmpset-del":
@@ -185,25 +197,60 @@ def execute_rsufwdsnmpset(command, organization, rsu_list, args):
                 "code": 400,
                 "data": f"Provided RSU IP does not have complete RSU data for organization: {organization}::{rsu}",
             }
-        else:
-            # Fetch the proper index based on the provided arguments
-            if command == "rsufwdsnmpset-del":
-                index = fetch_index("del", rsu, rsu_info, args["msg_type"], dest_ip)
-            else:
-                index = fetch_index("add", rsu, rsu_info, args["msg_type"])
+            continue
 
-            if index != -1:
-                args["rsu_index"] = index
-                data, code = execute_command(command, rsu, args, rsu_info)
-                return_dict[rsu] = {"code": code, "data": data}
-            else:
-                return_dict[rsu] = {
-                    "code": 400,
-                    "data": f"Invalid index for RSU: {rsu}",
-                }
+        # Fetch the proper index based on the provided arguments
+        if command == "rsufwdsnmpset-del":
+            index = fetch_index("del", rsu, rsu_info, args["msg_type"], dest_ip)
+        else:
+            index = fetch_index("add", rsu, rsu_info, args["msg_type"])
+
+        # Perform the snmpset operation based on the command and index
+        if index != -1:
+            snmp_creds = {
+                "username": rsu_info["snmp_username"],
+                "password": rsu_info["snmp_password"],
+                "encrypt_pw": rsu_info["snmp_encrypt_pw"],
+            }
+
+            if rsu_info["snmp_version"] == "1218":
+                if command == "rsufwdsnmpset-del":
+                    data, code = nticp1218_rsu_mf.delete(
+                        rsu, snmp_creds, args["msg_type"], index
+                    )
+                else:
+                    data, code = nticp1218_rsu_mf.set(
+                        rsu_ip=rsu,
+                        snmp_creds=snmp_creds,
+                        dest_ip=args["dest_ip"],
+                        udp_port=msg_type_map[args["msg_type"].lower()]["port"],
+                        rsu_index=index,
+                        psid=msg_type_map[args["msg_type"].lower()]["psid"],
+                        tx=msg_type_map[args["msg_type"].lower()]["tx"],
+                    )
+            elif rsu_info["snmp_version"] == "41":
+                if command == "rsufwdsnmpset-del":
+                    data, code = rsu41_rsu_mf.delete(rsu, snmp_creds, index)
+                else:
+                    data, code = rsu41_rsu_mf.set(
+                        rsu_ip=rsu,
+                        manufacturer=rsu_info["manufacturer"],
+                        snmp_creds=snmp_creds,
+                        dest_ip=args["dest_ip"],
+                        udp_port=msg_type_map[args["msg_type"].lower()]["port"],
+                        rsu_index=index,
+                        psid=msg_type_map[args["msg_type"].lower()]["psid"],
+                        raw=msg_type_map[args["msg_type"].lower()]["raw"],
+                    )
+            return_dict[rsu] = {"code": code, "data": data}
+        else:
+            return_dict[rsu] = {
+                "code": 400,
+                "data": f"Invalid index for RSU: {rsu}",
+            }
 
     # Regardless of what occurred, update PostgreSQL with latest SNMP configs
-    configs = update_rsu_snmp_pg.get_snmp_configs(rsu_info_list)
+    configs = update_rsu_snmp_pg.get_snmp_msgfwd_configs(rsu_info_list)
     update_rsu_snmp_pg.update_postgresql(configs, subset=True)
 
     return return_dict

@@ -2,7 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 import os
 import logging
 import common.pgquery as pgquery
-import common.update_rsu_snmp_pg as update_rsu_snmp_pg
+import services.common.snmp.update_rsu_snmp_pg as update_rsu_snmp_pg
 
 
 def get_rsu_list():

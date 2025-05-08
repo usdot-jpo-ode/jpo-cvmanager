@@ -29,19 +29,19 @@ def get(rsu_ip, snmp_creds):
         output = ""
 
         # Create the SNMPGet command
-        cmd = "snmpget -v 3 {auth} {rsuip} NTCIP1218-v01::rsuLocationLat.0".format(
+        cmd = "snmpget -v 3 {auth} {rsuip} NTCIP1218-v01::rsuGnssLat.0".format(
             auth=snmpcredential.get_authstring(snmp_creds), rsuip=rsu_ip
         )
 
         # Example console output for a functional RSU
-        # NTCIP1218-v01::rsuLocationLat.0 = INTEGER: 405672318 tenth of a microdegree
+        # NTCIP1218-v01::rsuGnssLat.0 = INTEGER: 405672318 tenth of a microdegree
         logging.info(f"Running snmpget: {cmd}")
         output = subprocess.run(cmd, shell=True, capture_output=True, check=True)
         output = output.stdout.decode("utf-8").split("\n")[:-1]
     except subprocess.CalledProcessError as e:
         output = e.stderr.decode("utf-8").split("\n")[:-1]
         logging.error(
-            f"Encountered error while running snmpget NTCIP1218-v01::rsuLocationLat: {output[-1]}"
+            f"Encountered error while running snmpget NTCIP1218-v01::rsuGnssLat: {output[-1]}"
         )
         err_message = snmperrorcheck.check_error_type(output[-1])
         return {"RsuLocation": err_message}, 500
@@ -61,19 +61,19 @@ def get(rsu_ip, snmp_creds):
         output = ""
 
         # Create the SNMPGet command
-        cmd = "snmpget -v 3 {auth} {rsuip} NTCIP1218-v01::rsuLocationLon.0".format(
+        cmd = "snmpget -v 3 {auth} {rsuip} NTCIP1218-v01::rsuGnssLon.0".format(
             auth=snmpcredential.get_authstring(snmp_creds), rsuip=rsu_ip
         )
 
         # Example console output for a functional RSU
-        # NTCIP1218-v01::rsuLocationLon.0 = INTEGER: -1050342786 tenth of a microdegree
+        # NTCIP1218-v01::rsuGnssLon.0 = INTEGER: -1050342786 tenth of a microdegree
         logging.info(f"Running snmpget: {cmd}")
         output = subprocess.run(cmd, shell=True, capture_output=True, check=True)
         output = output.stdout.decode("utf-8").split("\n")[:-1]
     except subprocess.CalledProcessError as e:
         output = e.stderr.decode("utf-8").split("\n")[:-1]
         logging.error(
-            f"Encountered error while running snmpget NTCIP1218-v01::rsuLocationLon: {output[-1]}"
+            f"Encountered error while running snmpget NTCIP1218-v01::rsuGnssLon: {output[-1]}"
         )
         err_message = snmperrorcheck.check_error_type(output[-1])
         return {"RsuLocation": err_message}, 500

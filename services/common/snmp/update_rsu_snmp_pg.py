@@ -1,7 +1,7 @@
-import os
 import logging
 import common.pgquery as pgquery
-import common.rsufwdsnmpwalk as rsufwdsnmpwalk
+import common.snmp.ntcip1218.rsu_message_forward as ntcip1218_rsumf
+import common.snmp.rsu41.rsu_message_forward as rsu41_rsumf
 from datetime import datetime
 
 
@@ -149,19 +149,22 @@ def update_postgresql(rsu_snmp_configs_obj, subset=False):
         insert_config_list(configs_to_add)
 
 
-def get_snmp_msgfwding_configs(rsu_list):
+def get_snmp_msgfwd_configs(rsu_list):
     config_obj = {}
 
     for rsu in rsu_list:
-        request = {
-            "rsu_ip": rsu["ipv4_address"],
-            "snmp_version": rsu["snmp_version"],
-            "snmp_creds": {
-                "username": rsu["snmp_username"],
-                "password": rsu["snmp_password"],
-            },
+        snmp_creds = {
+            "username": rsu["snmp_username"],
+            "password": rsu["snmp_password"],
         }
-        response, code = rsufwdsnmpwalk.get(request)
+
+        if rsu["snmp_version"] == "41":
+            response, code = rsu41_rsumf.get(rsu["ipv4_address"], snmp_creds)
+        elif rsu["snmp_version"] == "1218":
+            response, code = ntcip1218_rsumf.get(rsu["ipv4_address"], snmp_creds)
+        else:
+            config_obj[rsu["rsu_id"]] = "Unsupported SNMP version"
+            continue
 
         if code != 200:
             config_obj[rsu["rsu_id"]] = "Unable to retrieve latest SNMP config"

@@ -58,6 +58,7 @@ function IntersectionDashboard() {
             justifyContent: 'flex-start',
             display: 'flex',
             zIndex: 100,
+            marginTop: '15px',
           }}
         >
           <FormControl

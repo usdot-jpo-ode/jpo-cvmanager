@@ -7,7 +7,7 @@ export const FormikCheckboxList = (props) => {
   const theme = useTheme()
 
   return values.map((eventType) => (
-    <Grid2 size={4} sx={{ height: 'fit-content' }}>
+    <Grid2 sx={{ height: 'fit-content' }} size={{ xs: 12, md: 6, lg: 4 }}>
       <div key={eventType.label} style={{ display: 'flex', alignItems: 'center' }}>
         <Checkbox
           sx={{

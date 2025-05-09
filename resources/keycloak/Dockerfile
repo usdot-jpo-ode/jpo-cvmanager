@@ -18,7 +18,7 @@ WORKDIR /home/custom-user-provider
 RUN mvn clean package -DskipTests
 
 ################## Build custom user provider into keycloak ##################
-FROM quay.io/keycloak/keycloak:21.1 as builder
+FROM quay.io/keycloak/keycloak:26.0.5 as builder
 
 ENV KC_DB=postgres
 
@@ -29,7 +29,7 @@ COPY --from=jarbuilder /home/custom-user-provider/target/keycloak-custom-provide
 RUN /opt/keycloak/bin/kc.sh build
 
 ################## Integrate realm and theme ##################
-FROM quay.io/keycloak/keycloak:21.1
+FROM quay.io/keycloak/keycloak:26.0.5
 ARG KEYCLOAK_LOGIN_THEME_NAME
 COPY --from=ubi-micro-build /mnt/rootfs /
 COPY --from=builder /opt/keycloak/ /opt/keycloak/

@@ -120,7 +120,13 @@ export const ReportRequestEditForm = (props: Props) => {
             m: -1,
           }}
         >
-          <Button disabled={formik.isSubmitting} type="submit" sx={{ m: 1 }} variant="contained">
+          <Button
+            disabled={formik.isSubmitting}
+            type="submit"
+            sx={{ m: 1 }}
+            variant="contained"
+            className="capital-case museo-slab"
+          >
             Generate Performance Report
           </Button>
         </CardActions>

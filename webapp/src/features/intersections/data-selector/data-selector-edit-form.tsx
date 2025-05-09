@@ -12,21 +12,18 @@ import {
   Card,
   CardActions,
   CardContent,
-  Divider,
   Grid2,
   TextField,
-  InputLabel,
   MenuItem,
   Select,
   InputAdornment,
-  FormControl,
 } from '@mui/material'
 import { FormikCheckboxList } from './formik-checkbox-list'
 import { selectDataSelectorForm, setDataSelectorForm } from './dataSelectorSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../../store'
-import { selectIntersections, selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
+import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
 
 interface Item {
   label: string
@@ -129,29 +126,27 @@ export const DataSelectorEditForm = (props: { onQuery: (query: any) => void; onV
         )
       case 'events':
         return (
-          <Grid2 size={{ md: 6, xs: 12 }}>
-            <InputLabel variant="standard" htmlFor="uncontrolled-native">
-              Event Type
-            </InputLabel>
-            <FormikCheckboxList
-              values={EVENT_TYPES}
-              selectedValues={formik.values.eventTypes}
-              setValues={(val) => formik.setFieldValue('eventTypes', val)}
-            />
-          </Grid2>
+          <>
+            <Grid2 container>
+              <FormikCheckboxList
+                values={EVENT_TYPES}
+                selectedValues={formik.values.eventTypes}
+                setValues={(val) => formik.setFieldValue('eventTypes', val)}
+              />
+            </Grid2>
+          </>
         )
       case 'assessments':
         return (
-          <Grid2 size={{ md: 6, xs: 12 }}>
-            <InputLabel variant="standard" htmlFor="uncontrolled-native">
-              Assessment Type
-            </InputLabel>
-            <FormikCheckboxList
-              values={ASSESSMENT_TYPES}
-              selectedValues={formik.values.assessmentTypes}
-              setValues={(val) => formik.setFieldValue('assessmentTypes', val)}
-            />
-          </Grid2>
+          <>
+            <Grid2 container>
+              <FormikCheckboxList
+                values={ASSESSMENT_TYPES}
+                selectedValues={formik.values.assessmentTypes}
+                setValues={(val) => formik.setFieldValue('assessmentTypes', val)}
+              />
+            </Grid2>
+          </>
         )
       default:
         return <></>
@@ -161,8 +156,6 @@ export const DataSelectorEditForm = (props: { onQuery: (query: any) => void; onV
   return (
     <form onSubmit={formik.handleSubmit} {...other}>
       <Card>
-        {/* <CardHeader title="Edit Configuration Parameter" /> */}
-        <Divider />
         <CardContent>
           <Grid2 container spacing={3} sx={{ justifyContent: 'flex-start', flexWrap: 'wrap' }}>
             <Grid2 sx={{ width: '200px' }}>
@@ -215,6 +208,7 @@ export const DataSelectorEditForm = (props: { onQuery: (query: any) => void; onV
                             formik.setFieldValue('timeUnit', e.target.value)
                           }}
                           onBlur={formik.handleBlur}
+                          variant="standard"
                         >
                           <MenuItem value={'minutes'}>minutes</MenuItem>
                           <MenuItem value={'hours'}>hours</MenuItem>
@@ -228,14 +222,13 @@ export const DataSelectorEditForm = (props: { onQuery: (query: any) => void; onV
               />
             </Grid2>
           </Grid2>
-          <Grid2 container spacing={3} sx={{ justifyContent: 'flex-start', flexWrap: 'wrap', marginTop: 3 }}>
+          <Grid2 container spacing={3} sx={{ justifyContent: 'flex-start', flexWrap: 'wrap' }}>
             {getTypeSpecificFilters(formik.values.type)}
           </Grid2>
         </CardContent>
         <CardActions
           sx={{
             flexWrap: 'wrap',
-            m: -1,
           }}
         >
           <Button
@@ -244,6 +237,7 @@ export const DataSelectorEditForm = (props: { onQuery: (query: any) => void; onV
             sx={{ m: 1 }}
             variant="contained"
             onClick={() => setVisualize(false)}
+            className="museo-slab capital-case"
           >
             Query Data
           </Button>
@@ -253,6 +247,7 @@ export const DataSelectorEditForm = (props: { onQuery: (query: any) => void; onV
             sx={{ m: 1 }}
             variant="contained"
             onClick={() => setVisualize(true)}
+            className="museo-slab capital-case"
           >
             View Counts
           </Button>

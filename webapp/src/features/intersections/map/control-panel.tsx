@@ -62,7 +62,7 @@ import { decoderModeToggled, setAsn1DecoderDialogOpen } from '../decoder/asn1-de
 import toast from 'react-hot-toast'
 import { ExpandMoreOutlined, Pause, PlayArrowOutlined, UploadFile } from '@mui/icons-material'
 
-const getNumber = (value: string | undefined): number | undefined => {
+export const getNumber = (value: string | undefined): number | undefined => {
   if (value == null) return undefined
   const num = parseInt(value)
   if (isNaN(num)) {
@@ -246,20 +246,10 @@ function ControlPanel() {
   }, [timeWindowSeconds])
 
   useEffect(() => {
-    setBsmTrailLengthLocal(bsmTrailLength.toString())
-  }, [bsmTrailLength])
-
-  useEffect(() => {
     if (getNumber(timeWindowSecondsLocal) != null && getNumber(timeWindowSecondsLocal) !== timeWindowSeconds) {
       dispatch(setTimeWindowSeconds(getNumber(timeWindowSecondsLocal)))
     }
   }, [timeWindowSecondsLocal])
-
-  useEffect(() => {
-    if (getNumber(bsmTrailLengthLocal) !== null && getNumber(bsmTrailLengthLocal) !== bsmTrailLength) {
-      dispatch(setBsmTrailLength(getNumber(bsmTrailLengthLocal)!))
-    }
-  }, [bsmTrailLengthLocal])
 
   const timelineTicks = [120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320]
 
@@ -449,8 +439,8 @@ function ControlPanel() {
                       type="number"
                       sx={{ mt: 1 }}
                       onChange={(e) => {
-                        if (e.target.value === '' || Number.isInteger(Number(e.target.value))) {
-                          setTimeWindowSeconds(parseInt(e.target.value))
+                        if (Number.isInteger(Number(e.target.value))) {
+                          dispatch(setTimeWindowSeconds(parseInt(e.target.value)))
                         }
                       }}
                       slotProps={{

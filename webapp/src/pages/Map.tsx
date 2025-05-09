@@ -120,6 +120,7 @@ import { toast } from 'react-hot-toast'
 import { RoomOutlined } from '@mui/icons-material'
 import MooveAiHardBrakingLegend from '../components/MooveAiHardBrakingLegend'
 import { PrimaryButton } from '../styles/components/PrimaryButton'
+import { ConditionalRenderRsu, evaluateFeatureFlags } from '../feature-flags'
 
 // @ts-ignore: workerClass does not exist in typed mapboxgl
 // eslint-disable-next-line import/no-webpack-loader-syntax
@@ -751,6 +752,7 @@ function MapPage() {
       id: 'msg-viewer-layer',
       label: 'V2x Message Viewer',
       type: 'symbol',
+      tag: 'rsu',
     },
     {
       id: 'wzdx-layer',
@@ -842,28 +844,30 @@ function MapPage() {
 
     return (
       <FormGroup>
-        {layers.map((layer) => (
-          <div key={layer.id}>
-            <Typography fontSize="small" display="flex" alignItems="center">
-              {layer.control && (
-                <IconButton
-                  onClick={() => toggleExpandLayer(layer.id)}
-                  size="small"
-                  edge="end"
-                  aria-label={expandedLayers.includes(layer.id) ? 'Collapse' : 'Expand'}
-                >
-                  {expandedLayers.includes(layer.id) ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                </IconButton>
-              )}
-              <FormControlLabel
-                onClick={() => toggleLayer(layer.id)}
-                label={<Typography>{layer.label}</Typography>}
-                control={<Checkbox checked={activeLayers.includes(layer.id)} />}
-              />
-            </Typography>
-            {layer.control && <Collapse in={expandedLayers.includes(layer.id)}>{layer.control}</Collapse>}
-          </div>
-        ))}
+        {layers
+          .filter((layer) => evaluateFeatureFlags(layer.tag))
+          .map((layer) => (
+            <div key={layer.id}>
+              <Typography fontSize="small" display="flex" alignItems="center">
+                {layer.control && (
+                  <IconButton
+                    onClick={() => toggleExpandLayer(layer.id)}
+                    size="small"
+                    edge="end"
+                    aria-label={expandedLayers.includes(layer.id) ? 'Collapse' : 'Expand'}
+                  >
+                    {expandedLayers.includes(layer.id) ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                  </IconButton>
+                )}
+                <FormControlLabel
+                  onClick={() => toggleLayer(layer.id)}
+                  label={<Typography>{layer.label}</Typography>}
+                  control={<Checkbox checked={activeLayers.includes(layer.id)} />}
+                />
+              </Typography>
+              {layer.control && <Collapse in={expandedLayers.includes(layer.id)}>{layer.control}</Collapse>}
+            </div>
+          ))}
       </FormGroup>
     )
   }
@@ -913,158 +917,167 @@ function MapPage() {
             <Legend />
           </AccordionDetails>
         </Accordion>
-        <Divider />
-        <Accordion
-          style={{ backgroundColor: theme.palette.background.paper }}
-          disableGutters={true}
-          sx={{ '&.accordion': { marginBottom: 0 } }}
-          defaultExpanded
-          elevation={0}
-        >
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon style={{ color: theme.palette.text.primary }} />}
-            aria-controls="panel3-content"
-            id="panel3-header"
+        <ConditionalRenderRsu>
+          <Divider />
+          <Accordion
+            style={{ backgroundColor: theme.palette.background.paper }}
+            disableGutters={true}
+            sx={{ '&.accordion': { marginBottom: 0 } }}
+            defaultExpanded
+            elevation={0}
           >
-            <Typography className="accordion-header museo-slab" color={theme.palette.text.primary}>
-              Filter RSUs
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <FormControl fullWidth>
-              <InputLabel htmlFor="vendor">Vendor</InputLabel>
-              <Select
-                id="vendor"
-                label="Vendor"
-                value={selectedVendor}
-                defaultValue={selectedVendor}
-                onChange={(event) => {
-                  const vendor = event.target.value as string
-                  console.log(vendor)
-                  setVendor(vendor)
-                }}
-              >
-                {vendorArray.map((vendor) => (
-                  <MenuItem key={vendor} value={vendor}>
-                    <Typography>{vendor}</Typography>
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <Typography sx={{ marginTop: '12px' }}>RSU Status</Typography>
-            <FormControl sx={{ ml: 2, mt: 1 }}>
-              <RadioGroup value={displayType} onChange={handleRsuDisplayTypeChange}>
-                {[
-                  { key: 'online', label: <Typography>Online Status</Typography> },
-                  { key: 'scms', label: <Typography>SCMS Status</Typography> },
-                ].map((val) => (
-                  <FormControlLabel
-                    value={val.key}
-                    sx={{ mt: -1 }}
-                    control={
-                      <Radio
-                        sx={{
-                          color: theme.palette.text.primary,
-                          '&.Mui-checked': {
-                            color: theme.palette.primary.main,
-                          },
-                        }}
-                      />
-                    }
-                    label={val.label}
-                  />
-                ))}
-              </RadioGroup>
-            </FormControl>
-          </AccordionDetails>
-        </Accordion>
-        {SecureStorageManager.getUserRole() === 'admin' && (
-          <>
-            <Divider />
-            <Accordion
-              style={{ backgroundColor: theme.palette.background.paper }}
-              disableGutters={true}
-              sx={{ '&.accordion': { marginBottom: 0 } }}
-              defaultExpanded
-              elevation={0}
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon style={{ color: theme.palette.text.primary }} />}
+              aria-controls="panel3-content"
+              id="panel3-header"
             >
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon style={{ color: theme.palette.text.primary }} />}
-                aria-controls="panel3-content"
-                id="panel3-header"
+              <Typography className="accordion-header museo-slab" color={theme.palette.text.primary}>
+                Filter RSUs
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <FormControl fullWidth>
+                <InputLabel htmlFor="vendor">Vendor</InputLabel>
+                <Select
+                  id="vendor"
+                  label="Vendor"
+                  value={selectedVendor}
+                  defaultValue={selectedVendor}
+                  onChange={(event) => {
+                    const vendor = event.target.value as string
+                    console.log(vendor)
+                    setVendor(vendor)
+                  }}
+                >
+                  {vendorArray.map((vendor) => (
+                    <MenuItem key={vendor} value={vendor}>
+                      <Typography>{vendor}</Typography>
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <Typography sx={{ marginTop: '12px' }}>RSU Status</Typography>
+              <FormControl sx={{ ml: 2, mt: 1 }}>
+                <RadioGroup value={displayType} onChange={handleRsuDisplayTypeChange}>
+                  {[
+                    { key: 'online', label: <Typography>Online Status</Typography> },
+                    { key: 'scms', label: <Typography>SCMS Status</Typography> },
+                  ].map((val) => (
+                    <FormControlLabel
+                      value={val.key}
+                      sx={{ mt: -1 }}
+                      control={
+                        <Radio
+                          sx={{
+                            color: theme.palette.text.primary,
+                            '&.Mui-checked': {
+                              color: theme.palette.primary.main,
+                            },
+                          }}
+                        />
+                      }
+                      label={val.label}
+                    />
+                  ))}
+                </RadioGroup>
+              </FormControl>
+            </AccordionDetails>
+          </Accordion>
+        </ConditionalRenderRsu>
+
+        <ConditionalRenderRsu>
+          {SecureStorageManager.getUserRole() === 'admin' && (
+            <>
+              <Divider />
+              <Accordion
+                style={{ backgroundColor: theme.palette.background.paper }}
+                disableGutters={true}
+                sx={{ '&.accordion': { marginBottom: 0 } }}
+                defaultExpanded
+                elevation={0}
               >
-                <Typography className="accordion-header museo-slab" color={theme.palette.text.primary}>
-                  RSU Configuration
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <FormGroup row className="form-group-row">
-                  <FormControlLabel
-                    control={<Switch checked={addConfigPoint} />}
-                    label={<Typography>Add Points</Typography>}
-                    onChange={(e) => handleButtonToggle(e, 'config')}
-                    sx={{ ml: 1 }}
-                  />
-                  <Tooltip title="Clear Points">
-                    <IconButton
-                      disabled={configCoordinates.length == 0}
-                      onClick={() => {
-                        dispatch(clearConfig())
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon style={{ color: theme.palette.text.primary }} />}
+                  aria-controls="panel3-content"
+                  id="panel3-header"
+                >
+                  <Typography className="accordion-header museo-slab" color={theme.palette.text.primary}>
+                    RSU Configuration
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <FormGroup row className="form-group-row">
+                    <FormControlLabel
+                      control={<Switch checked={addConfigPoint} />}
+                      label={<Typography>Add Points</Typography>}
+                      onChange={(e) => handleButtonToggle(e, 'config')}
+                      sx={{ ml: 1 }}
+                    />
+                    <Tooltip title="Clear Points">
+                      <IconButton
+                        disabled={configCoordinates.length == 0}
+                        onClick={() => {
+                          dispatch(clearConfig())
+                        }}
+                        size="large"
+                      >
+                        <ClearIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </FormGroup>
+                  <FormGroup row sx={{ justifyContent: 'center', alignItems: 'center' }}>
+                    <Button
+                      variant="outlined"
+                      color="info"
+                      sx={{
+                        '&.Mui-disabled': {
+                          backgroundColor: alpha(theme.palette.primary.light, 0.5),
+                        },
+                        width: '100%',
                       }}
-                      size="large"
+                      disabled={!(configCoordinates.length > 2)}
+                      onClick={() => {
+                        dispatch(geoRsuQuery(selectedVendor))
+                      }}
+                      className="museo-slab capital-case"
                     >
-                      <ClearIcon />
-                    </IconButton>
-                  </Tooltip>
-                </FormGroup>
-                <FormGroup row sx={{ justifyContent: 'center', alignItems: 'center' }}>
-                  <Button
-                    variant="outlined"
-                    color="info"
-                    sx={{
-                      '&.Mui-disabled': {
-                        backgroundColor: alpha(theme.palette.primary.light, 0.5),
-                      },
-                      width: '100%',
-                    }}
-                    disabled={!(configCoordinates.length > 2 && addConfigPoint)}
-                    onClick={() => {
-                      dispatch(geoRsuQuery(selectedVendor))
-                    }}
-                    className="museo-slab capital-case"
-                  >
-                    Configure RSUs
-                  </Button>
-                </FormGroup>
-              </AccordionDetails>
-            </Accordion>
-          </>
-        )}
+                      Configure RSUs
+                    </Button>
+                  </FormGroup>
+                </AccordionDetails>
+              </Accordion>
+            </>
+          )}
+        </ConditionalRenderRsu>
       </div>
-      <PrimaryButton
-        sx={{
-          zIndex: 90,
-          position: 'absolute',
-          top: `${headerTabHeight + 25}px`,
-          right: '25px',
-        }}
-        className="museo-slab capital-case"
-        onClick={() => dispatch(toggleMapMenuSelection('Display Message Counts'))}
-      >
-        Message Counts
-      </PrimaryButton>
-      <PrimaryButton
-        sx={{
-          zIndex: 90,
-          position: 'absolute',
-          top: `${headerTabHeight + 25}px`,
-          right: '200px',
-        }}
-        className="museo-slab capital-case"
-        onClick={() => dispatch(toggleMapMenuSelection('Display RSU Status'))}
-      >
-        Display RSU Status
-      </PrimaryButton>
+      <ConditionalRenderRsu>
+        <PrimaryButton
+          sx={{
+            zIndex: 90,
+            position: 'absolute',
+            top: `${headerTabHeight + 25}px`,
+            right: '25px',
+          }}
+          className="museo-slab capital-case"
+          onClick={() => dispatch(toggleMapMenuSelection('Display Message Counts'))}
+        >
+          Message Counts
+        </PrimaryButton>
+      </ConditionalRenderRsu>
+      <ConditionalRenderRsu>
+        <PrimaryButton
+          sx={{
+            zIndex: 90,
+            position: 'absolute',
+            top: `${headerTabHeight + 25}px`,
+            right: '200px',
+          }}
+          className="museo-slab capital-case"
+          onClick={() => dispatch(toggleMapMenuSelection('Display RSU Status'))}
+        >
+          Display RSU Status
+        </PrimaryButton>
+      </ConditionalRenderRsu>
       <Container
         fluid={true}
         style={{

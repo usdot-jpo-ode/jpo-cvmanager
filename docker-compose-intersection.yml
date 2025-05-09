@@ -1,49 +1,7 @@
+include:
+  - ./jpo-utils/docker-compose-kafka.yml
+
 services:
-  kafka:
-    profiles:
-      - intersection
-      - intersection_no_api
-      - conflictmonitor
-      - kafka
-    image: bitnami/kafka:latest
-    hostname: kafka
-    ports:
-      - '9092:9092'
-    volumes:
-      - kafka:/bitnami
-    environment:
-      KAFKA_ENABLE_KRAFT: 'yes'
-      KAFKA_CFG_PROCESS_ROLES: 'broker,controller'
-      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
-      KAFKA_CFG_LISTENERS: 'PLAINTEXT://:9094,CONTROLLER://:9093,EXTERNAL://:9092'
-      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT'
-      KAFKA_CFG_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:9094,EXTERNAL://${DOCKER_HOST_IP}:9092'
-      KAFKA_BROKER_ID: '1'
-      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
-      ALLOW_PLAINTEXT_LISTENER: 'yes'
-      KAFKA_CFG_NODE_ID: '1'
-      KAFKA_CFG_DELETE_TOPIC_ENABLE: 'true'
-      KAFKA_CFG_LOG_RETENTION_HOURS: 2
-    logging:
-      options:
-        max-size: '10m'
-        max-file: '5'
-
-  kafka_init:
-    profiles:
-      - intersection
-      - intersection_no_api
-      - conflictmonitor
-      - kafka_init
-    image: bitnami/kafka:latest
-    depends_on:
-      kafka:
-        condition: service_started
-        required: false
-    volumes:
-      - ./resources/kafka/kafka_init.sh:/kafka_init.sh
-    entrypoint: ['/bin/sh', 'kafka_init.sh']
-
   intersection_api:
     profiles:
       - intersection
@@ -106,7 +64,7 @@ services:
       mongodb_container:
         condition: service_healthy
         required: false
-      kafka_init:
+      kafka-setup:
         condition: service_started
         required: false
 
@@ -189,4 +147,3 @@ services:
 
 volumes:
   mongodb_data_container:
-  kafka: {}

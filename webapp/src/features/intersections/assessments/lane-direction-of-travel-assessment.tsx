@@ -112,14 +112,16 @@ export const LaneDirectionOfTravelAssessmentCard = (props: {
   }
 
   return (
-    <Grid2 width="300px" height="500px">
+    <Grid2 height="500px">
       <Card sx={{ height: '100%', overflow: 'visible' }}>
         <CardContent>
-          <Grid2 container spacing={3} sx={{ justifyContent: 'space-between' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
+            <Typography gutterBottom variant="h6">
+              Lane Direction of Travel Assessment
+            </Typography>
+          </Box>
+          <Grid2 container spacing={1} sx={{ justifyContent: 'center' }}>
             <Grid2>
-              <Typography color="textPrimary" gutterBottom variant="h6">
-                Lane Direction of Travel Assessment
-              </Typography>
               {assessment === undefined ? (
                 <Typography color="textSecondary" fontSize="small" key={''}>
                   No Data

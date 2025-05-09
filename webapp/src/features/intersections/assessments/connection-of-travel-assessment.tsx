@@ -1,9 +1,22 @@
 import { Box, Card, CardContent, Grid2, Typography, useTheme } from '@mui/material'
 import React from 'react'
-import { BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar, Tooltip, TooltipProps } from 'recharts'
+import {
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Legend,
+  Bar,
+  Tooltip,
+  TooltipProps,
+  ResponsiveContainer,
+} from 'recharts'
 import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent'
 
-export const ConnectionOfTravelAssessmentCard = (props: { assessment: ConnectionOfTravelAssessment | undefined }) => {
+export const ConnectionOfTravelAssessmentCard = (props: {
+  assessment: ConnectionOfTravelAssessment | undefined
+  minWidth: number
+}) => {
   const { assessment } = props
   const theme = useTheme()
 
@@ -62,30 +75,21 @@ export const ConnectionOfTravelAssessmentCard = (props: { assessment: Connection
   const hasInvalidEvents = data?.some((item) => item.eventCountInvalid > 0)
 
   return (
-    <Grid2 height="500px">
-      <Card sx={{ height: '100%', overflow: 'visible' }}>
+    <Grid2 sx={{ height: '100%', minHeight: assessment === undefined ? 200 : 500 }}>
+      <Card sx={{ height: '100%', overflowX: 'auto' }}>
         <CardContent>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
-            <Typography gutterBottom variant="h6">
-              Connection of Travel Assessment
-            </Typography>
-          </Box>
           <Grid2 container spacing={1} sx={{ justifyContent: 'center' }}>
-            <Grid2>
+            <Grid2 sx={{ width: '100%', minWidth: `${props.minWidth}px`, height: '100%' }}>
+              <Typography gutterBottom variant="h6">
+                Connection of Travel Assessment
+              </Typography>
               {assessment === undefined ? (
                 <Typography color="textSecondary" fontSize="small" key={''}>
                   No Data
                 </Typography>
               ) : (
-                <Box
-                  sx={{
-                    width: '268px',
-                    height: 'fit-content',
-                    display: 'flex',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <BarChart width={250} height={350} data={data}>
+                <ResponsiveContainer width="100%" height={350}>
+                  <BarChart data={data}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis
                       dataKey="name"
@@ -108,7 +112,7 @@ export const ConnectionOfTravelAssessmentCard = (props: { assessment: Connection
                         ...(hasValidEvents
                           ? [
                               {
-                                value: `Event Count Valid Connection ID`,
+                                value: `Valid Connection ID`,
                                 id: 'eventCountValid',
                                 color: '#463af1',
                               },
@@ -117,7 +121,7 @@ export const ConnectionOfTravelAssessmentCard = (props: { assessment: Connection
                         ...(hasInvalidEvents
                           ? [
                               {
-                                value: `Event Count Invalid Connection ID`,
+                                value: `Invalid Connection ID`,
                                 id: 'eventCountInvalid',
                                 color: '#f35555',
                               },
@@ -128,7 +132,7 @@ export const ConnectionOfTravelAssessmentCard = (props: { assessment: Connection
                     <Bar dataKey="eventCountValid" stackId="a" fill="#463af1" />
                     <Bar dataKey="eventCountInvalid" stackId="a" fill="#f35555" />
                   </BarChart>
-                </Box>
+                </ResponsiveContainer>
               )}
             </Grid2>
           </Grid2>

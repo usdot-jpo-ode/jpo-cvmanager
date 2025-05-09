@@ -23,6 +23,6 @@ export const TabItemStyled = styled(Link)<TabItemStyledProps>(({ theme, isActive
   textDecoration: 'none',
   ...(isActive && {
     color: theme.palette.primary.contrastText,
-    borderBottom: '2px solid white',
+    borderBottom: `2px solid ${theme.palette.primary.contrastText}`,
   }),
 }))

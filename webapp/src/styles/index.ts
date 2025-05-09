@@ -69,6 +69,28 @@ export const testTheme = createTheme({
 // --secondary: #7978d9;
 // --accent: #4431af;
 const themeMainLight = createTheme({
+  cssVariables: true,
+  typography: {
+    fontFamily: '"Trebuchet MS", Arial, Helvetica, sans-serif',
+    h1: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h2: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h3: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h4: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h5: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h6: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+  },
   components: {
     MuiTableHead: {
       styleOverrides: {
@@ -93,20 +115,34 @@ const themeMainLight = createTheme({
         },
       },
     },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundImage: 'unset',
+        },
+      },
+    },
+    MuiDivider: {
+      styleOverrides: {
+        root: {
+          borderColor: '#061731',
+        },
+      },
+    },
   },
   palette: {
     mode: 'light',
     primary: {
-      main: '#5048E5',
-      light: '#a6aef4',
-      dark: '#413bbc',
-      contrastText: '#FFFFFF',
+      main: '#6f69e0',
+      light: '#2e3574',
+      dark: '#a7a3e7',
+      contrastText: '#0b041b',
     },
     secondary: {
       main: '#53aaf1',
-      light: '#91c6f2',
-      dark: '#071f32',
-      contrastText: '#FFFFFF',
+      light: '#114875',
+      dark: '#92bcde',
+      contrastText: '#121212',
     },
     error: {
       main: '#713737',

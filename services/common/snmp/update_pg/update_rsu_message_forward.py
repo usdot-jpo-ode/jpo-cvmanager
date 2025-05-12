@@ -5,8 +5,17 @@ import common.snmp.rsu41.rsu_message_forward as rsu41_rsumf
 from common.snmp.update_pg.update_pg_snmp import UpdatePostgresSnmpAbstractClass
 from datetime import datetime
 
+"""
+UpdatePostgresRsuMessageForward is a class that manages the synchronization of SNMP message forwarding configurations
+between the CV Manager PostgreSQL database and the RSUs. It provides methods to fetch configurations directly from
+RSUs in order to insert, delete, and update SNMP configurations stored in PostgreSQL.
+"""
+
 
 class UpdatePostgresRsuMessageForward(UpdatePostgresSnmpAbstractClass):
+    """
+    Retrieves the mapping of SNMP message forwarding types from the PostgreSQL database.
+    """
 
     def get_msgfwd_types(self):
         query = (
@@ -27,6 +36,10 @@ class UpdatePostgresRsuMessageForward(UpdatePostgresSnmpAbstractClass):
 
         return msgfwd_types
 
+    """
+    Inserts a list of SNMP message forwarding configurations into the PostgreSQL database.
+    """
+
     def insert_config_list(self, snmp_config_list):
         query = (
             "INSERT INTO public.snmp_msgfwd_config("
@@ -44,6 +57,10 @@ class UpdatePostgresRsuMessageForward(UpdatePostgresSnmpAbstractClass):
 
         pgquery.write_db(query[:-1])
 
+    """
+    Deletes a list of SNMP message forwarding configurations from the PostgreSQL database.
+    """
+
     def delete_config_list(self, snmp_config_list):
         for snmp_config in snmp_config_list:
             query = (
@@ -52,6 +69,11 @@ class UpdatePostgresRsuMessageForward(UpdatePostgresSnmpAbstractClass):
             )
 
             pgquery.write_db(query)
+
+    """
+    Retrieves the list of SNMP message forwarding configurations from the PostgreSQL database.
+    Optionally filters the configurations by a subset of RSUs.
+    """
 
     def get_config_list(self, rsu_obj={}):
         query = (
@@ -88,6 +110,11 @@ class UpdatePostgresRsuMessageForward(UpdatePostgresSnmpAbstractClass):
 
         return config_list
 
+    """
+    Synchronizes the SNMP message forwarding configurations between the PostgreSQL database and the provided RSU
+    configurations. Handles additions and deletions as necessary.
+    """
+
     def update_postgresql(self, rsu_snmp_configs_obj, subset=False):
         # Pull all recorded message forwarding configurations from PostgreSQL
         # If the rsu_snmp_configs_obj is only a subset of all of the RSUs in PostgreSQL, only get the relevant configs
@@ -105,7 +132,7 @@ class UpdatePostgresRsuMessageForward(UpdatePostgresSnmpAbstractClass):
         # Determine configurations to be deleted
         for recorded_config in recorded_config_list:
             if recorded_config["rsu_id"] not in rsu_snmp_configs_obj:
-                logging.warn(f"Unknown RSU with id of: {recorded_config['rsu_id']}")
+                logging.warning(f"Unknown RSU with id of: {recorded_config['rsu_id']}")
                 # Swap msgfwd_type string with PostgreSQL id
                 recorded_config["msgfwd_type"] = msgfwd_types[
                     recorded_config["msgfwd_type"]
@@ -149,6 +176,10 @@ class UpdatePostgresRsuMessageForward(UpdatePostgresSnmpAbstractClass):
         # Make additions
         if len(configs_to_add) > 0:
             self.insert_config_list(configs_to_add)
+
+    """
+    Directly fetches the latest SNMP message forwarding configurations from a list of RSUs. Supports multiple SNMP versions.
+    """
 
     def get_snmp_configs(self, rsu_list):
         config_obj = {}

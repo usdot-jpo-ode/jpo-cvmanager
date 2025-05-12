@@ -1,6 +1,5 @@
 import os
 import logging
-import common.pgquery as pgquery
 from common.snmp.update_pg.update_rsu_message_forward import (
     UpdatePostgresRsuMessageForward,
 )

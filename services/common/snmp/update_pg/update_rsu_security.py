@@ -9,6 +9,10 @@ from multiprocessing import Pool, cpu_count
 class UpdatePostgresRsuSecurity(UpdatePostgresSnmpAbstractClass):
 
     def insert_config_list(self, snmp_config_list):
+        if len(snmp_config_list) == 0:
+            logging.info("No RSU SCMS data to insert into PostgreSQL")
+            return
+
         query = (
             "INSERT INTO public.scms_health("
             "timestamp, health, expiration, rsu_id) "

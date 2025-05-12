@@ -45,6 +45,9 @@ The rsu_ping_fetch service expects the following environment variables to be set
 - DB_NAME - PostgreSQL database name.
 - DB_HOST - PostgreSQL hostname, make sure to include port number.
 - STALE_PERIOD - Number of hours a ping log needs to be around in the PostgreSQL database to be considered stale.
+- RSU_MSGFWD_FETCH - Feature flag for collecting active message forwarding configurations from all RSUs in the PostgreSQL database. Supports both NTCIP-1218 and RSU 4.1 supported devices.
+- RSU_SECURITY_FETCH - Feature flag for collecting SCMS certificate expiration and health data from all RSUs in the PostgreSQL database. Supports only NTCIP-1218 supported devices.
+- RSU_HEALTH_FETCH - Feature flag for collecting the RSU health status from all RSUs in the PostgreSQL database. Supports only NTCIP-1218 supported devices.
 - LOGGING_LEVEL (optional, defaults to 'info')
 
 ### rsu_pinger

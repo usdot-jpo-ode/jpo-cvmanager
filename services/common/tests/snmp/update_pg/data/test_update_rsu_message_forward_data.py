@@ -140,6 +140,7 @@ rsu_list = [
         "snmp_version": "1218",
         "snmp_username": "username",
         "snmp_password": "password",
+        "snmp_encrypt_pw": "password",
     },
     {
         "rsu_id": 2,
@@ -147,6 +148,7 @@ rsu_list = [
         "snmp_version": "1218",
         "snmp_username": "username",
         "snmp_password": "password",
+        "snmp_encrypt_pw": "password",
     },
     {
         "rsu_id": 3,
@@ -154,6 +156,7 @@ rsu_list = [
         "snmp_version": "41",
         "snmp_username": "username",
         "snmp_password": "password",
+        "snmp_encrypt_pw": "password",
     },
     {
         "rsu_id": 4,
@@ -161,6 +164,7 @@ rsu_list = [
         "snmp_version": "41",
         "snmp_username": "username",
         "snmp_password": "password",
+        "snmp_encrypt_pw": "password",
     },
 ]
 

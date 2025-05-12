@@ -219,7 +219,7 @@ def get(rsu_ip, snmp_creds):
 
 def set(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, security, tx):
     try:
-        logging.info("Running SNMP config on Yunex RSU {}".format(dest_ip))
+        logging.info("Running SNMP config on NTCIP-1218 RSU {}".format(dest_ip))
 
         snmp_mods = []
         authstring = snmpcredential.get_authstring(snmp_creds)
@@ -231,7 +231,7 @@ def set(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, security, tx):
         # rsuXmitMsgFwdingProtocol - int : protocol (1: tcp, 2: udp)
         # rsuXmitMsgFwdingDeliveryStart - hex : start datetime
         # rsuXmitMsgFwdingDeliveryStop - hex : end datetime
-        # rsuXmitMsgFwdingSecure - int : Yunex WSMP full message (0: only payload, 1: full message)
+        # rsuXmitMsgFwdingSecure - int : WSMP full message (0: only payload, 1: full message)
         # rsuXmitMsgFwdingStatus - int : SNMP row value (4: create, 6: delete)
         if tx:
             snmp_mod = "snmpset -v 3 -t 5 {auth} {rsuip} ".format(
@@ -256,7 +256,7 @@ def set(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, security, tx):
                 index=rsu_index
             )
 
-            # Yunex expects a hex value of 16 length for rsuXmitMsgFwdingTable
+            # NTCIP-1218 expects a hex value of 16 length for rsuXmitMsgFwdingTable
             now = util.utc2tz(datetime.now())
             start_hex = hex_datetime(now) + "0000"
             end_hex = hex_datetime(now, 10) + "0000"
@@ -289,7 +289,7 @@ def set(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, security, tx):
         # rsuReceivedMsgDeliveryStart - hex : start datetime
         # rsuReceivedMsgDeliveryStop - hex : end datetime
         # rsuReceivedMsgStatus - int : SNMP row value (4: create, 6: delete)
-        # rsuReceivedMsgSecure - int : Yunex WSMP full message (0: only payload, 1: full message)
+        # rsuReceivedMsgSecure - int : WSMP full message (0: only payload, 1: full message)
         # rsuReceivedMsgAuthMsgInterval - int : Do not turn on. (0: off, 1: on)
         else:
             snmp_mod = "snmpset -v 3 -t 5 {auth} {rsuip} ".format(
@@ -316,7 +316,7 @@ def set(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, security, tx):
                 index=rsu_index
             )
 
-            # Yunex expects a hex value of 16 length for rsuReceivedMsgTable
+            # NTCIP-1218 expects a hex value of 16 length for rsuReceivedMsgTable
             now = util.utc2tz(datetime.now())
             start_hex = hex_datetime(now) + "0000"
             end_hex = hex_datetime(now, 10) + "0000"
@@ -346,11 +346,13 @@ def set(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, security, tx):
             snmp_mods.append(snmp_mod)
 
         perform_snmp_mods(snmp_mods)
-        response = "Successfully completed the Yunex SNMPSET configuration"
+        response = "Successfully completed the NTCIP-1218 SNMPSET configuration"
         code = 200
     except subprocess.CalledProcessError as e:
         output = e.stderr.decode("utf-8").split("\n")[:-1]
-        logging.error(f"Encountered error while modifying Yunex RSU SNMP: {output[-1]}")
+        logging.error(
+            f"Encountered error while modifying NTCIP-1218 RSU SNMP: {output[-1]}"
+        )
         response = snmperrorcheck.check_error_type(output[-1])
         code = 500
 
@@ -394,21 +396,3 @@ def delete(rsu_ip, snmp_creds, msg_type, rsu_index):
         code = 500
 
     return response, code
-
-
-# if __name__ == "__main__":
-
-#     rsu_ip = "10.0.0.96"
-#     snmp_creds = {
-#         "username": "rwUser",
-#         "password": "KVZWtSun7c",
-#     }
-
-#     # Call the get function
-#     result, status_code = get(rsu_ip, snmp_creds)
-
-#     # Print the result
-#     if status_code == 200:
-#         print(f"RSU Security Expiration: {result['RsuFwdSnmpwalk']}")
-#     else:
-#         print(f"Error: {result['RsuFwdSnmpwalk']}")

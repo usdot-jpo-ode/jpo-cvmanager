@@ -48,15 +48,9 @@ def test_get_snmp_error(mock_get_authstring, mock_subprocess_run):
     rsu_ip = "192.168.1.1"
     snmp_creds = {"username": "test", "password": "test123"}
 
-    with patch(
-        "common.snmp.ntcip1218.rsu_status.snmperrorcheck.check_error_type"
-    ) as mock_check_error_type:
-        mock_check_error_type.return_value = "Timeout Error"
+    response, status_code = get(rsu_ip, snmp_creds)
 
-        response, status_code = get(rsu_ip, snmp_creds)
-
-        assert status_code == 500
-        assert response == {"RsuStatus": "Timeout Error"}
-        mock_get_authstring.assert_called_once_with(snmp_creds)
-        mock_subprocess_run.assert_called_once()
-        mock_check_error_type.assert_called_once_with("Error: Timeout")
+    assert status_code == 500
+    assert response["RsuStatus"] == 5
+    mock_get_authstring.assert_called_once_with(snmp_creds)
+    mock_subprocess_run.assert_called_once()

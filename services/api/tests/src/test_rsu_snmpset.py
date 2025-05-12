@@ -106,16 +106,13 @@ def test_execute_rsufwdsnmpset(mock_rsu_info, mock_args):
     ) as mock_fetch_index, patch(
         "api.src.rsu_snmpset.perform_snmp_operation"
     ) as mock_perform_snmp_operation, patch(
-        "api.src.rsu_snmpset.update_rsu_snmp_pg.get_snmp_msgfwd_configs"
-    ) as mock_get_configs, patch(
-        "api.src.rsu_snmpset.update_rsu_snmp_pg.update_postgresql"
+        "api.src.rsu_snmpset.UpdatePostgresRsuMessageForward"
     ) as mock_update_pg:
 
         mock_fetch_rsu_info.return_value = mock_rsu_info
         mock_fetch_index.return_value = 1
         mock_perform_snmp_operation.return_value = ({"result": "success"}, 200)
-        mock_get_configs.return_value = []
-        mock_update_pg.return_value = None
+        mock_update_pg.get_snmp_configs.return_value = []
 
         rsu_list = ["192.168.1.1"]
         result = execute_rsufwdsnmpset(

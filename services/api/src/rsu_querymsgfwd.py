@@ -1,5 +1,5 @@
 import common.pgquery as pgquery
-import common.snmpwalk_helpers as snmpwalk_helpers
+import common.snmp.rsu_message_forward_helpers as rsu_message_forward_helpers
 import common.util as util
 import os
 import logging
@@ -39,8 +39,8 @@ def query_snmp_msgfwd(rsu_ip, organization):
             "Port": row["dest_port"],
             "Start DateTime": util.format_date_denver_iso(row["start_datetime"]),
             "End DateTime": util.format_date_denver_iso(row["end_datetime"]),
-            "Config Active": snmpwalk_helpers.active(row["active"]),
-            "Full WSMP": snmpwalk_helpers.active(row["security"]),
+            "Config Active": rsu_message_forward_helpers.active(row["active"]),
+            "Full WSMP": rsu_message_forward_helpers.active(row["security"]),
         }
 
         # Based on the value of msgfwd_type, store the configuration data to match the response object of rsufwdsnmpwalk

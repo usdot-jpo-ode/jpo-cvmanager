@@ -11,7 +11,7 @@ def get(rsu_ip, snmp_creds):
         output = ""
 
         # Create the SNMPGet command
-        cmd = "snmpget -v 3 {auth} {rsuip} NTCIP1218-v01::rsuFirmwareVersion.0".format(
+        cmd = "snmpget -v 3 -t 5 {auth} {rsuip} NTCIP1218-v01::rsuFirmwareVersion.0".format(
             auth=snmpcredential.get_authstring(snmp_creds), rsuip=rsu_ip
         )
 

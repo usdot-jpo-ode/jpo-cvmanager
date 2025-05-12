@@ -1,5 +1,5 @@
 from unittest.mock import Mock, patch
-from services.common.snmp import rsu_message_forward_helpers
+from common.snmp import rsu_message_forward_helpers
 
 
 def test_message_type_rsu41():

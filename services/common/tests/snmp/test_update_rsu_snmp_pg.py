@@ -1,9 +1,9 @@
 from mock import MagicMock, call, patch
-from services.common.snmp import update_rsu_snmp_pg
+from common.snmp import update_rsu_snmp_pg
 from common.tests.data import test_update_rsu_snm_pg_data
 
 
-@patch("common.update_rsu_snmp_pg.pgquery.write_db")
+@patch("common.snmp.update_rsu_snmp_pg.pgquery.write_db")
 def test_insert_config_list(mock_write_db):
     # call
     update_rsu_snmp_pg.insert_config_list(test_update_rsu_snm_pg_data.snmp_config_data)
@@ -19,7 +19,7 @@ def test_insert_config_list(mock_write_db):
     mock_write_db.assert_called_with(expected_query)
 
 
-@patch("common.update_rsu_snmp_pg.pgquery.write_db")
+@patch("common.snmp.update_rsu_snmp_pg.pgquery.write_db")
 def test_delete_config_list(mock_write_db):
     # call
     update_rsu_snmp_pg.delete_config_list(test_update_rsu_snm_pg_data.snmp_config_data)
@@ -37,7 +37,7 @@ def test_delete_config_list(mock_write_db):
     )
 
 
-@patch("common.update_rsu_snmp_pg.pgquery.query_db")
+@patch("common.snmp.update_rsu_snmp_pg.pgquery.query_db")
 def test_get_msgfwd_types(mock_query_db):
     mock_query_db.return_value = [
         ({"snmp_msgfwd_type_id": 1, "name": "rsuDsrcFwd"},),
@@ -52,7 +52,7 @@ def test_get_msgfwd_types(mock_query_db):
     assert result == test_update_rsu_snm_pg_data.msgfwd_types
 
 
-@patch("common.update_rsu_snmp_pg.pgquery.query_db")
+@patch("common.snmp.update_rsu_snmp_pg.pgquery.query_db")
 def test_get_config_list(mock_query_db):
     mock_query_db.return_value = [
         (
@@ -92,10 +92,10 @@ def test_get_config_list(mock_query_db):
     assert result == test_update_rsu_snm_pg_data.snmp_config_data_msgfwd_type_str
 
 
-@patch("common.update_rsu_snmp_pg.get_config_list")
-@patch("common.update_rsu_snmp_pg.get_msgfwd_types")
-@patch("common.update_rsu_snmp_pg.delete_config_list")
-@patch("common.update_rsu_snmp_pg.insert_config_list")
+@patch("common.snmp.update_rsu_snmp_pg.get_config_list")
+@patch("common.snmp.update_rsu_snmp_pg.get_msgfwd_types")
+@patch("common.snmp.update_rsu_snmp_pg.delete_config_list")
+@patch("common.snmp.update_rsu_snmp_pg.insert_config_list")
 def test_update_postgresql_add(
     mock_insert_config_list,
     mock_delete_config_list,
@@ -117,10 +117,10 @@ def test_update_postgresql_add(
     )
 
 
-@patch("common.update_rsu_snmp_pg.get_config_list")
-@patch("common.update_rsu_snmp_pg.get_msgfwd_types")
-@patch("common.update_rsu_snmp_pg.delete_config_list")
-@patch("common.update_rsu_snmp_pg.insert_config_list")
+@patch("common.snmp.update_rsu_snmp_pg.get_config_list")
+@patch("common.snmp.update_rsu_snmp_pg.get_msgfwd_types")
+@patch("common.snmp.update_rsu_snmp_pg.delete_config_list")
+@patch("common.snmp.update_rsu_snmp_pg.insert_config_list")
 def test_update_postgresql_delete(
     mock_insert_config_list,
     mock_delete_config_list,
@@ -157,10 +157,10 @@ def test_update_postgresql_delete(
     assert mock_insert_config_list.call_count == 0
 
 
-@patch("common.update_rsu_snmp_pg.get_config_list")
-@patch("common.update_rsu_snmp_pg.get_msgfwd_types")
-@patch("common.update_rsu_snmp_pg.delete_config_list")
-@patch("common.update_rsu_snmp_pg.insert_config_list")
+@patch("common.snmp.update_rsu_snmp_pg.get_config_list")
+@patch("common.snmp.update_rsu_snmp_pg.get_msgfwd_types")
+@patch("common.snmp.update_rsu_snmp_pg.delete_config_list")
+@patch("common.snmp.update_rsu_snmp_pg.insert_config_list")
 def test_update_postgresql_nothing(
     mock_insert_config_list,
     mock_delete_config_list,
@@ -182,14 +182,20 @@ def test_update_postgresql_nothing(
     assert mock_insert_config_list.call_count == 0
 
 
-@patch("common.update_rsu_snmp_pg.rsufwdsnmpwalk.get")
-def test_get_snmp_configs(mock_rsufwdsnmpwalk_get):
-    mock_rsufwdsnmpwalk_get.side_effect = (
-        test_update_rsu_snm_pg_data.side_effect_return_values
+@patch("common.snmp.update_rsu_snmp_pg.ntcip1218_rsumf.get")
+@patch("common.snmp.update_rsu_snmp_pg.rsu41_rsumf.get")
+def test_get_snmp_msgfwd_configs(mock_rsu41_rsumf_get, mock_ntcip1218_rsumf_get):
+    mock_ntcip1218_rsumf_get.side_effect = (
+        test_update_rsu_snm_pg_data.side_effect_ntcip1218_return_values
+    )
+    mock_rsu41_rsumf_get.side_effect = (
+        test_update_rsu_snm_pg_data.side_effect_rsu41_return_values
     )
 
     # call
-    result = update_rsu_snmp_pg.get_snmp_configs(test_update_rsu_snm_pg_data.rsu_list)
+    result = update_rsu_snmp_pg.get_snmp_msgfwd_configs(
+        test_update_rsu_snm_pg_data.rsu_list
+    )
 
     # verify
     assert result == test_update_rsu_snm_pg_data.get_snmp_configs_expected

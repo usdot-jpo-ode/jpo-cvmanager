@@ -1,7 +1,6 @@
 import subprocess
 import logging
 import common.snmp.snmpcredential as snmpcredential
-import common.snmp.snmperrorcheck as snmperrorcheck
 
 
 def convert_status_value(val):
@@ -13,7 +12,7 @@ def convert_status_value(val):
         return 3
     elif val == "critical(4)":
         return 4
-    # Return the value for unknown status if it doesn't match any of the above
+    # Return the value for 'unknown' status if it doesn't match any of the above
     return 5
 
 
@@ -38,8 +37,8 @@ def get(rsu_ip, snmp_creds):
         logging.error(
             f"Encountered error while running snmpget NTCIP1218-v01::rsuStatus: {output[-1]}"
         )
-        err_message = snmperrorcheck.check_error_type(output[-1])
-        return {"RsuStatus": err_message}, 500
+        # Returns unknown status if the command fails
+        return {"RsuStatus": 5}, 500
 
     if len(output) == 1:
         # Parse each line of the output to build out readable SNMP configurations

@@ -9,7 +9,7 @@ WORKDIR /home
 COPY addons/images/rsu_status_check/crontab .
 COPY addons/images/rsu_status_check/requirements.txt .
 COPY addons/images/rsu_status_check/*.py .
-COPY common/*.py ./common/
+COPY common/ ./common/
 
 RUN pip3 install -r requirements.txt
 

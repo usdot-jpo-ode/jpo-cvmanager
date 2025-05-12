@@ -109,7 +109,7 @@ def get(rsu_ip, snmp_creds):
     output = ""
     try:
         # Create the SNMPWalk command based on the road
-        cmd = "snmpwalk -v 3 {auth} {rsuip} NTCIP1218-v01:rsuReceivedMsgTable".format(
+        cmd = "snmpwalk -v 3 -t 5 {auth} {rsuip} NTCIP1218-v01:rsuReceivedMsgTable".format(
             auth=snmpcredential.get_authstring(snmp_creds), rsuip=rsu_ip
         )
 
@@ -164,7 +164,7 @@ def get(rsu_ip, snmp_creds):
     output = ""
     try:
         # Create the SNMPWalk command based on the road
-        cmd = "snmpwalk -v 3 {auth} {rsuip} NTCIP1218-v01:rsuXmitMsgFwdingTable".format(
+        cmd = "snmpwalk -v 3 -t 5 {auth} {rsuip} NTCIP1218-v01:rsuXmitMsgFwdingTable".format(
             auth=snmpcredential.get_authstring(snmp_creds), rsuip=rsu_ip
         )
 
@@ -234,7 +234,7 @@ def set(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, security, tx):
         # rsuXmitMsgFwdingSecure - int : Yunex WSMP full message (0: only payload, 1: full message)
         # rsuXmitMsgFwdingStatus - int : SNMP row value (4: create, 6: delete)
         if tx:
-            snmp_mod = "snmpset -v 3 {auth} {rsuip} ".format(
+            snmp_mod = "snmpset -v 3 -t 5 {auth} {rsuip} ".format(
                 auth=authstring, rsuip=rsu_ip
             )
             snmp_mod += (
@@ -292,7 +292,7 @@ def set(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, security, tx):
         # rsuReceivedMsgSecure - int : Yunex WSMP full message (0: only payload, 1: full message)
         # rsuReceivedMsgAuthMsgInterval - int : Do not turn on. (0: off, 1: on)
         else:
-            snmp_mod = "snmpset -v 3 {auth} {rsuip} ".format(
+            snmp_mod = "snmpset -v 3 -t 5 {auth} {rsuip} ".format(
                 auth=authstring, rsuip=rsu_ip
             )
             snmp_mod += "NTCIP1218-v01:rsuReceivedMsgPsid.{index} x {msgpsid} ".format(
@@ -359,7 +359,7 @@ def set(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, security, tx):
 
 def delete(rsu_ip, snmp_creds, msg_type, rsu_index):
     try:
-        snmp_mods = "snmpset -v 3 {auth} {rsuip} ".format(
+        snmp_mods = "snmpset -v 3 -t 5 {auth} {rsuip} ".format(
             auth=snmpcredential.get_authstring(snmp_creds), rsuip=rsu_ip
         )
         msgtype_oid_mapping = {

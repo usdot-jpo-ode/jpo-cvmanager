@@ -17,8 +17,10 @@ def get(rsu_ip, snmp_creds):
         output = ""
 
         # Create the SNMPWalk command
-        cmd = "snmpwalk -v 3 {auth} {rsuip} NTCIP1218-v01::rsuSecAppCertReq".format(
-            auth=snmpcredential.get_authstring(snmp_creds), rsuip=rsu_ip
+        cmd = (
+            "snmpwalk -v 3 -t 5 {auth} {rsuip} NTCIP1218-v01::rsuSecAppCertReq".format(
+                auth=snmpcredential.get_authstring(snmp_creds), rsuip=rsu_ip
+            )
         )
 
         # Example console output for a functional RSU with 2 certificates
@@ -57,7 +59,7 @@ def get(rsu_ip, snmp_creds):
         output = ""
 
         # Create the SNMPWalk command
-        cmd = "snmpwalk -v 3 {auth} {rsuip} NTCIP1218-v01::rsuSecAppCertExpiration".format(
+        cmd = "snmpwalk -v 3 -t 5 {auth} {rsuip} NTCIP1218-v01::rsuSecAppCertExpiration".format(
             auth=snmpcredential.get_authstring(snmp_creds), rsuip=rsu_ip
         )
 

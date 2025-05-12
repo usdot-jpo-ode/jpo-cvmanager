@@ -164,7 +164,7 @@ rsu_list = [
     },
 ]
 
-side_effect_return_values = [
+side_effect_ntcip1218_return_values = [
     (
         {
             "RsuFwdSnmpwalk": {
@@ -213,6 +213,9 @@ side_effect_return_values = [
         },
         200,
     ),
+]
+
+side_effect_rsu41_return_values = [
     (
         {
             "RsuFwdSnmpwalk": {

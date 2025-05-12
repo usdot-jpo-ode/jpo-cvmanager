@@ -86,12 +86,12 @@ prop_namevalue = {
 def hex_datetime(now, delta=0):
     # Regex to convert int to hex and to ensure a leading 0 if less than specified length
     regex = "{0:0{1}x}"
-    hex = regex.format(now.year + delta, 4)
-    hex += regex.format(now.month, 2)
-    hex += regex.format(now.day, 2)
-    hex += regex.format(now.hour, 2)
-    hex += regex.format(now.minute, 2)
-    return hex
+    hex_string = regex.format(now.year + delta, 4)
+    hex_string += regex.format(now.month, 2)
+    hex_string += regex.format(now.day, 2)
+    hex_string += regex.format(now.hour, 2)
+    hex_string += regex.format(now.minute, 2)
+    return hex_string
 
 
 def perform_snmp_mods(snmp_mods):

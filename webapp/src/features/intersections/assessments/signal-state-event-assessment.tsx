@@ -1,4 +1,4 @@
-import { Box, Card, CardContent, Grid2, Typography, useTheme } from '@mui/material'
+import { Card, CardContent, Grid2, Typography, useTheme } from '@mui/material'
 import React from 'react'
 import {
   BarChart,
@@ -119,8 +119,8 @@ export const SignalStateEventAssessmentCard = (props: {
     <Grid2 sx={{ height: '100%', minHeight: assessment === undefined ? 200 : 500 }}>
       <Card sx={{ height: '100%', overflowX: 'auto' }}>
         <CardContent>
-          <Grid2 container spacing={1} sx={{ justifyContent: 'center' }}>
-            <Grid2 sx={{ width: '100%', minWidth: `${props.minWidth}px` }}>
+          <Grid2 container spacing={1} sx={{ justifyContent: 'left' }}>
+            <Grid2 sx={{ width: '100%' }}>
               <Typography gutterBottom variant="h6">
                 Signal State Passage Assessment
               </Typography>
@@ -129,7 +129,7 @@ export const SignalStateEventAssessmentCard = (props: {
                   No Data
                 </Typography>
               ) : (
-                <ResponsiveContainer width="100%" height={350}>
+                <ResponsiveContainer width="100%" minWidth={`${props.minWidth}px`} height={350}>
                   <BarChart height={350} data={data}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" label={{ value: 'Signal Group', position: 'insideBottom', offset: -15 }} />

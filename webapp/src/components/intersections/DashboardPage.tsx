@@ -68,7 +68,7 @@ const Page = () => {
 
   // The grid breakpoints are based on the full screen width of 1200px, and the padding offset is the difference
   // between the full screen width and rendered width of the grid area, measured 2025/05/09 as 838px.
-  const paddingOffset = 1200 - 838
+  const paddingOffset = 362 // 1200 - 838
   const chartCardPadding = 10 // extra padding around plots, make sure breakpoint triggers before scrolling cards
   const muiBreakpoints = {
     xs: 0,
@@ -149,37 +149,34 @@ const Page = () => {
         sx={{
           flexGrow: 1,
           py: 8,
-          width: '100%',
         }}
       >
-        <Container maxWidth={false} disableGutters>
-          <Grid2 container spacing={2} justifyContent="flex-start">
-            <Grid2 size={connectionOfTravelBreakpoints}>
-              <ConnectionOfTravelAssessmentCard
-                assessment={connectionOfTravelAssessment}
-                minWidth={connectionOfTravelMinWidth}
-              />
-            </Grid2>
-            <Grid2 size={stopLineStopBreakpoints}>
-              <StopLineStopAssessmentCard assessment={stopLineStopAssessment} minWidth={stopLineStopMinWidth} />
-            </Grid2>
-            <Grid2 size={signalStateEventBreakpoints}>
-              <SignalStateEventAssessmentCard
-                assessment={signalStateEventAssessment}
-                minWidth={signalStateEventMinWidth}
-              />
-            </Grid2>
-            <Grid2 size={laneDirectionOfTravelBreakpoints}>
-              <LaneDirectionOfTravelAssessmentCard
-                assessment={laneDirectionOfTravelAssessment}
-                minWidth={laneDirectionOfTravelMinWidth}
-              />
-            </Grid2>
-            <Grid2 size={12}>
-              <NotificationsTable simple={true} />
-            </Grid2>
+        <Grid2 container spacing={2} justifyContent="flex-start">
+          <Grid2 size={connectionOfTravelBreakpoints}>
+            <ConnectionOfTravelAssessmentCard
+              assessment={connectionOfTravelAssessment}
+              minWidth={connectionOfTravelMinWidth}
+            />
           </Grid2>
-        </Container>
+          <Grid2 size={stopLineStopBreakpoints}>
+            <StopLineStopAssessmentCard assessment={stopLineStopAssessment} minWidth={stopLineStopMinWidth} />
+          </Grid2>
+          <Grid2 size={signalStateEventBreakpoints}>
+            <SignalStateEventAssessmentCard
+              assessment={signalStateEventAssessment}
+              minWidth={signalStateEventMinWidth}
+            />
+          </Grid2>
+          <Grid2 size={laneDirectionOfTravelBreakpoints}>
+            <LaneDirectionOfTravelAssessmentCard
+              assessment={laneDirectionOfTravelAssessment}
+              minWidth={laneDirectionOfTravelMinWidth}
+            />
+          </Grid2>
+          <Grid2 size={12}>
+            <NotificationsTable simple={true} />
+          </Grid2>
+        </Grid2>
       </Box>
     </>
   )

@@ -1363,7 +1363,7 @@ function MapPage() {
             >
               <Stack
                 sx={{
-                  height: '230px',
+                  height: '240px',
                   width: '350px',
                 }}
               >
@@ -1389,7 +1389,9 @@ function MapPage() {
                       style={{
                         color: theme.palette.text.primary,
                         backgroundColor:
-                          getStatus() === 'Offline' ? theme.palette.error.dark : theme.palette.success.dark,
+                          getStatus().toLowerCase() === 'offline'
+                            ? theme.palette.error.dark
+                            : theme.palette.success.dark,
                         width: '4rem',
                         height: '1.5rem',
                         display: 'flex',

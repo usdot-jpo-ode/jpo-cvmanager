@@ -233,7 +233,17 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
   }
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="lg">
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      fullWidth
+      maxWidth="lg"
+      PaperProps={{
+        sx: {
+          backgroundColor: (theme) => theme.palette.background.paper, // TODO: Remove this when the theme can be fully successfully applied. For some reason, this is required to apply the background color...
+        },
+      }}
+    >
       {/* Dialog Title */}
       <DialogTitle>
         <Typography variant="h6">Report Details</Typography>
@@ -245,7 +255,6 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
           {/* Scrollable Content */}
           <Box
             sx={{
-              overflowY: 'auto', // Enable vertical scrolling
               flex: 1, // Allow the content to take up remaining space
             }}
           >
@@ -314,7 +323,12 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
                     </Typography>
                     <Box
                       id="distance-from-centerline-over-time-graphs"
-                      sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                      }}
                     >
                       <DistanceFromCenterlineGraphSet
                         data={laneDirectionOfTravelReportDataByLaneId}
@@ -330,7 +344,12 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
                     </Typography>
                     <Box
                       id="heading-error-over-time-graphs"
-                      sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                      }}
                     >
                       <HeadingErrorGraphSet
                         data={laneDirectionOfTravelReportDataByLaneId}
@@ -532,6 +551,7 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
             color="primary"
             disabled={loading || !isWindowWideEnough}
             sx={{ mr: 2 }}
+            className="capital-case"
           >
             {loading ? <CircularProgress size={24} /> : 'Download PDF'}
           </Button>
@@ -549,7 +569,7 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
         </Box>
 
         {/* Right Section: Close Button */}
-        <Button onClick={handleClose} color="primary">
+        <Button onClick={handleClose} color="primary" className="capital-case">
           Close
         </Button>
       </DialogActions>

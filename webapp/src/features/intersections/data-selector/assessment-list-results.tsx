@@ -12,6 +12,7 @@ import {
   TablePagination,
   TableRow,
   Typography,
+  useTheme,
 } from '@mui/material'
 import React from 'react'
 import MapRoundedIcon from '@mui/icons-material/MapRounded'
@@ -26,16 +27,22 @@ export const AssessmentListResults = ({
   rowsPerPage,
 }) => {
   const navigate = useNavigate()
+  const theme = useTheme()
   const getAssessmentDescription = (assessment: Assessment) => {
     return JSON.stringify(assessment).replace(/,/g, ', ')
   }
 
   return (
-    <Card>
+    <Card sx={{ py: 0 }}>
       <PerfectScrollbar>
-        <Box sx={{ minWidth: 1050, overflowX: 'scroll' }}>
+        <Box sx={{ minWidth: 1050, overflowX: 'auto' }}>
           <Table>
-            <TableHead>
+            <TableHead
+              sx={{
+                backgroundColor: theme.palette.background.paper,
+                '& .MuiTableCell-root': { textTransform: 'capitalize' },
+              }}
+            >
               <TableRow>
                 <TableCell>Assessment Type</TableCell>
                 <TableCell>Date</TableCell>

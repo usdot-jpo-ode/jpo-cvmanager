@@ -3,176 +3,140 @@
 exports[`should take a snapshot 1`] = `
 <div>
   <div
-    class="MuiDrawer-root MuiDrawer-docked css-mocked-MuiDrawer-docked"
+    class="MuiBox-root css-t0051x"
   >
     <div
-      class="MuiPaper-root MuiPaper-elevation MuiPaper-elevation0 MuiDrawer-paper MuiDrawer-paperAnchorLeft MuiDrawer-paperAnchorDockedLeft css-mocked-MuiPaper-root-MuiDrawer-paper"
-      style="--Paper-shadow: none;"
+      class="MuiBox-root css-1ebprri"
     >
       <div
-        class="MuiBox-root css-ju4zfe"
+        class="MuiFormControl-root MuiTextField-root css-mocked-MuiFormControl-root-MuiTextField-root"
       >
+        <label
+          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
+          data-shrink="true"
+          for="mui-1"
+          id="mui-1-label"
+        >
+          From
+        </label>
         <div
-          class="MuiBox-root css-2zgswz"
+          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MuiInputBase-adornedEnd css-mocked-MuiInputBase-root-MuiOutlinedInput-root"
         >
-          <button
-            class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
-            tabindex="0"
-            type="button"
-          >
-            <svg
-              aria-hidden="true"
-              class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-mocked-MuiSvgIcon-root"
-              data-testid="CloseIcon"
-              focusable="false"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-              />
-            </svg>
-          </button>
-        </div>
-        <h6
-          class="MuiTypography-root MuiTypography-subtitle2 css-mocked-MuiTypography-root"
-        >
-          Issue date
-        </h6>
-        <div
-          class="MuiStack-root css-mocked-MuiStack-root"
-        >
-           
+          <input
+            autocomplete="off"
+            class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
+            id="mui-1"
+            inputmode="text"
+            placeholder="MM/DD/YYYY hh:mm aa"
+            type="text"
+            value="04/06/2025 06:00 PM"
+          />
           <div
-            class="MuiFormControl-root MuiTextField-root css-mocked-MuiFormControl-root-MuiTextField-root"
+            class="MuiInputAdornment-root MuiInputAdornment-positionEnd MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-mocked-MuiInputAdornment-root"
           >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
-              data-shrink="true"
-              for="mui-1"
-              id="mui-1-label"
+            <button
+              aria-label="Choose date, selected date is Apr 6, 2025"
+              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
+              tabindex="0"
+              type="button"
             >
-              From
-            </label>
-            <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MuiInputBase-adornedEnd css-mocked-MuiInputBase-root-MuiOutlinedInput-root"
-            >
-              <input
-                autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
-                id="mui-1"
-                inputmode="text"
-                placeholder="MM/DD/YYYY hh:mm aa"
-                type="text"
-                value="04/06/2025 06:00 PM"
-              />
-              <div
-                class="MuiInputAdornment-root MuiInputAdornment-positionEnd MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-mocked-MuiInputAdornment-root"
-              >
-                <button
-                  aria-label="Choose date, selected date is Apr 6, 2025"
-                  class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
-                  tabindex="0"
-                  type="button"
-                >
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
-                    data-testid="CalendarIcon"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"
-                    />
-                  </svg>
-                </button>
-              </div>
-              <fieldset
+              <svg
                 aria-hidden="true"
-                class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                data-testid="CalendarIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
               >
-                <legend
-                  class="css-w1u3ce"
-                >
-                  <span>
-                    From
-                  </span>
-                </legend>
-              </fieldset>
-            </div>
+                <path
+                  d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"
+                />
+              </svg>
+            </button>
           </div>
-          <div
-            class="MuiFormControl-root MuiTextField-root css-mocked-MuiFormControl-root-MuiTextField-root"
+          <fieldset
+            aria-hidden="true"
+            class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
           >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
-              data-shrink="true"
-              for="mui-2"
-              id="mui-2-label"
+            <legend
+              class="css-w1u3ce"
             >
-              To
-            </label>
-            <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MuiInputBase-adornedEnd css-mocked-MuiInputBase-root-MuiOutlinedInput-root"
-            >
-              <input
-                autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
-                id="mui-2"
-                inputmode="text"
-                placeholder="MM/DD/YYYY hh:mm aa"
-                type="text"
-                value="04/07/2025 06:00 PM"
-              />
-              <div
-                class="MuiInputAdornment-root MuiInputAdornment-positionEnd MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-mocked-MuiInputAdornment-root"
-              >
-                <button
-                  aria-label="Choose date, selected date is Apr 7, 2025"
-                  class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
-                  tabindex="0"
-                  type="button"
-                >
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
-                    data-testid="CalendarIcon"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"
-                    />
-                  </svg>
-                </button>
-              </div>
-              <fieldset
-                aria-hidden="true"
-                class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
-              >
-                <legend
-                  class="css-w1u3ce"
-                >
-                  <span>
-                    To
-                  </span>
-                </legend>
-              </fieldset>
-            </div>
-          </div>
+              <span>
+                From
+              </span>
+            </legend>
+          </fieldset>
         </div>
-        <div
-          class="MuiBox-root css-gjqw5t"
-        />
-        <a
-          class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
-          role="button"
-          tabindex="0"
+      </div>
+      <div
+        class="MuiFormControl-root MuiTextField-root css-mocked-MuiFormControl-root-MuiTextField-root"
+      >
+        <label
+          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
+          data-shrink="true"
+          for="mui-2"
+          id="mui-2-label"
         >
-          Generate Manual Report
-        </a>
+          To
+        </label>
+        <div
+          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MuiInputBase-adornedEnd css-mocked-MuiInputBase-root-MuiOutlinedInput-root"
+        >
+          <input
+            autocomplete="off"
+            class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
+            id="mui-2"
+            inputmode="text"
+            placeholder="MM/DD/YYYY hh:mm aa"
+            type="text"
+            value="04/07/2025 06:00 PM"
+          />
+          <div
+            class="MuiInputAdornment-root MuiInputAdornment-positionEnd MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-mocked-MuiInputAdornment-root"
+          >
+            <button
+              aria-label="Choose date, selected date is Apr 7, 2025"
+              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
+              tabindex="0"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                data-testid="CalendarIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"
+                />
+              </svg>
+            </button>
+          </div>
+          <fieldset
+            aria-hidden="true"
+            class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
+          >
+            <legend
+              class="css-w1u3ce"
+            >
+              <span>
+                To
+              </span>
+            </legend>
+          </fieldset>
+        </div>
       </div>
     </div>
+    <div
+      class="MuiBox-root css-gjqw5t"
+    />
+    <a
+      class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary museo-slab capital-case css-mocked-MuiButtonBase-root-MuiButton-root"
+      role="button"
+      tabindex="0"
+    >
+      Generate Manual Report
+    </a>
   </div>
 </div>
 `;

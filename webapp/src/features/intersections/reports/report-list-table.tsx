@@ -1,6 +1,16 @@
 import React from 'react'
 import { format } from 'date-fns'
-import { Box, Button, Table, TableBody, TableCell, TablePagination, TableRow, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TablePagination,
+  TableRow,
+  Typography,
+  useTheme,
+} from '@mui/material'
 import PerfectScrollbar from 'react-perfect-scrollbar'
 import { ReportMetadata } from '../../../apis/intersections/reports-api'
 
@@ -10,6 +20,7 @@ interface ReportRowProps {
 }
 
 const ReportRow = (props: ReportRowProps) => {
+  const theme = useTheme()
   const { report, onViewReport } = props
 
   return (
@@ -75,7 +86,13 @@ const ReportRow = (props: ReportRowProps) => {
         </Box>
       </TableCell>
       <TableCell align="right">
-        <Button onClick={() => onViewReport(report)}>View</Button>
+        <Button
+          onClick={() => onViewReport(report)}
+          className="capital-case"
+          sx={{ color: theme.palette.custom.rowActionIcon }}
+        >
+          View
+        </Button>
       </TableCell>
     </TableRow>
   )
@@ -102,7 +119,6 @@ export const ReportListTable = (props: ReportListTableProps) => {
             borderCollapse: 'separate',
             borderSpacing: (theme) => `0 ${theme.spacing(3)}`,
             minWidth: 600,
-            marginTop: (theme) => `-${theme.spacing(3)}`,
             p: '1px',
           }}
         >

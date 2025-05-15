@@ -61,7 +61,7 @@ export const ReportGenerationDialog = (props: ReportGenerationDialogProps) => {
           <ReportRequestEditForm onGenerateReport={getReport} dbIntersectionId={intersectionId} />
         </Container>
         <DialogActions>
-          <Button autoFocus onClick={handleClose}>
+          <Button autoFocus onClick={handleClose} className="capital-case">
             Close
           </Button>
         </DialogActions>

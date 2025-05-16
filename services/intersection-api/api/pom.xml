@@ -18,6 +18,7 @@
 	<properties>
 		<java.version>21</java.version>
         <jacoco.version>0.8.12</jacoco.version>
+		<jpoode.version>4.1.1</jpoode.version>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <sonar.language>java</sonar.language>
@@ -94,7 +95,7 @@
 		<dependency>
 			<groupId>usdot.jpo.ode</groupId>
 			<artifactId>jpo-ode-core</artifactId>
-			<version>4.0.0</version>
+			<version>${jpoode.version}</version>
 			<!-- required exclusion to preserve keycloak versions -->
 			<exclusions>
 				<exclusion>
@@ -106,12 +107,12 @@
 		<dependency>
 			<groupId>usdot.jpo.ode</groupId>
 			<artifactId>jpo-ode-plugins</artifactId>
-			<version>4.0.0</version>
+			<version>${jpoode.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>usdot.jpo.ode</groupId>
 			<artifactId>jpo-ode-svcs</artifactId>
-			<version>4.0.0</version>
+			<version>${jpoode.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>usdot.jpo.ode</groupId>

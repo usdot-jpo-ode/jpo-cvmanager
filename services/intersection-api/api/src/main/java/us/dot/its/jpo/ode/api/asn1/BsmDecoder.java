@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import us.dot.its.jpo.ode.api.models.messages.BsmDecodedMessage;
 import us.dot.its.jpo.ode.api.models.messages.DecodedMessage;
 import us.dot.its.jpo.ode.api.models.messages.EncodedMessage;
-import us.dot.its.jpo.ode.context.AppContext;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.model.Asn1Encoding;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
@@ -31,14 +31,13 @@ import us.dot.its.jpo.ode.util.JsonUtils;
 import us.dot.its.jpo.ode.util.XmlUtils;
 import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 
-
 @Slf4j
 @Component
 public class BsmDecoder implements Decoder {
 
     @Override
     public DecodedMessage decode(EncodedMessage message) {
-        
+
         // Convert to Ode Data type and Add Metadata
         OdeData data = getAsOdeData(message.getAsn1Message());
 
@@ -51,13 +50,13 @@ public class BsmDecoder implements Decoder {
             // Send String through ASN.1 Decoder to get Decoded XML Data
             String decodedXml = DecoderManager.decodeXmlWithAcm(xml);
 
-            // Convert to Ode Json 
+            // Convert to Ode Json
             OdeBsmData bsm = getAsOdeJson(decodedXml);
 
             // build output data structure
             DecodedMessage decodedMessage = new BsmDecodedMessage(bsm, message.getAsn1Message(), "");
             return decodedMessage;
-            
+
         } catch (JsonProcessingException e) {
             log.error("JSON error decoding BSM", e);
             return new BsmDecodedMessage(null, message.getAsn1Message(), e.getMessage());
@@ -100,17 +99,17 @@ public class BsmDecoder implements Decoder {
     public OdeBsmData getAsOdeJson(String consumedData) throws XmlUtilsException {
         ObjectNode consumed = XmlUtils.toObjectNode(consumedData);
 
-        JsonNode metadataNode = consumed.findValue(AppContext.METADATA_STRING);
+        JsonNode metadataNode = consumed.findValue(OdeMsgMetadata.METADATA_STRING);
         if (metadataNode instanceof ObjectNode object) {
             // Removing encodings to match ODE behavior
-            object.remove(AppContext.ENCODINGS_STRING);
+            object.remove(OdeMsgMetadata.ENCODINGS_STRING);
         }
-        
+
         OdeBsmMetadata metadata = (OdeBsmMetadata) JsonUtils.fromJson(
-            metadataNode.toString(), OdeBsmMetadata.class);
-        
+                metadataNode.toString(), OdeBsmMetadata.class);
+
         OdeBsmPayload payload = new OdeBsmPayload(
-            BsmBuilder.genericBsm(consumed.findValue("BasicSafetyMessage")));
+                BsmBuilder.genericBsm(consumed.findValue("BasicSafetyMessage")));
         return new OdeBsmData(metadata, payload);
     }
 

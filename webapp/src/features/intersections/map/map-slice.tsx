@@ -21,6 +21,7 @@ import EnvironmentVars from '../../../EnvironmentVars'
 import { downloadAllData } from './utilities/file-utilities'
 import React from 'react'
 import { SsmSrmData } from '../../../models/RsuApi'
+import { getTimestamp } from './map-component'
 
 export type MAP_LAYERS =
   | 'map-message'
@@ -86,24 +87,6 @@ interface MinimalClient {
   connect: (headers: unknown, connectCallback: () => void, errorCallback?: (error: string) => void) => void
   subscribe: (destination: string, callback: (message: IMessage) => void) => void
   disconnect: (disconnectCallback: () => void) => void
-}
-
-const getTimestamp = (dt: any): number => {
-  try {
-    const dtFromString = Date.parse(dt as any as string)
-    if (isNaN(dtFromString)) {
-      if (dt > 1000000000000) {
-        return dt // already in milliseconds
-      } else {
-        return dt * 1000
-      }
-    } else {
-      return dtFromString
-    }
-  } catch (e) {
-    console.error('Failed to parse timestamp from value: ' + dt, e)
-    return 0
-  }
 }
 
 const initialState = {
@@ -641,10 +624,18 @@ export const renderIterative_Map = createAsyncThunk(
     const queryParams = selectQueryParams(currentState)
     const currentMapData: ProcessedMap[] = selectCurrentMapData(currentState)
 
-    const start = Date.now()
     const OLDEST_DATA_TO_KEEP = queryParams.eventDate.getTime() - queryParams.startDate.getTime() // milliseconds
 
-    const currTimestamp = getTimestamp(newMapData.at(-1)!.properties.odeReceivedAt) / 1000
+    // find latest timestamp from currentMapData
+    let latestTimestamp = 0
+    for (let i = 0; i < currentMapData.length; i++) {
+      const timestamp = currentMapData[i].properties.odeReceivedAt
+      if (timestamp > latestTimestamp) {
+        latestTimestamp = timestamp
+      }
+    }
+    const currTimestamp = getTimestamp(Math.max(newMapData.at(-1)!.properties.odeReceivedAt, latestTimestamp))
+
     let oldIndex = 0
     for (let i = 0; i < currentMapData.length; i++) {
       if ((currentMapData[i].properties.odeReceivedAt as unknown as number) < currTimestamp - OLDEST_DATA_TO_KEEP) {
@@ -696,33 +687,39 @@ export const renderIterative_Map = createAsyncThunk(
 
 export const renderIterative_Spat = createAsyncThunk(
   'intersectionMap/renderIterative_Spat',
-  async (newSpatData: ProcessedSpat[], { getState, dispatch }) => {
+  async (newSpatData: ProcessedSpat[], { getState }) => {
     const currentState = getState() as RootState
     const queryParams = selectQueryParams(currentState)
     const currentSpatSignalGroups: SpatSignalGroups = selectSpatSignalGroups(currentState) ?? {}
     const currentProcessedSpatData: ProcessedSpat[] = selectCurrentSpatData(currentState) ?? []
 
-    const start = Date.now()
     const OLDEST_DATA_TO_KEEP = queryParams.eventDate.getTime() - queryParams.startDate.getTime() // milliseconds
-    if (newSpatData.length == 0) {
-      console.warn('Did not attempt to render map (iterative SPAT), no new SPAT messages available:', newSpatData)
-      return { signalGroups: currentSpatSignalGroups, raw: currentProcessedSpatData }
-    }
     // Inject and filter spat data
     // 2024-01-09T00:24:28.354Z
     newSpatData = newSpatData.map((spat) => ({
       ...spat,
       utcTimeStamp: getTimestamp(spat.utcTimeStamp),
     }))
-    const currTimestamp = getTimestamp(newSpatData.at(-1)!.utcTimeStamp)
 
-    let oldIndex = 0
+    // Collect currentSpatSignalGroups dictionary (keyed by timestamp in milliseconds since epoch) into an array for simple iteration
     const currentSpatSignalGroupsArr = Object.keys(currentSpatSignalGroups).map((key) => ({
-      key,
+      timestamp: Number(key), // convert string key (timestamp) into timestamp number
       sigGroup: currentSpatSignalGroups[key],
     }))
+
+    // find latest timestamp from currentSpatSignalGroupsArr
+    let latestTimestamp = 0
     for (let i = 0; i < currentSpatSignalGroupsArr.length; i++) {
-      if (Number(currentSpatSignalGroupsArr[i].key) < currTimestamp - OLDEST_DATA_TO_KEEP) {
+      const timestamp = currentSpatSignalGroupsArr[i].timestamp
+      if (timestamp > latestTimestamp) {
+        latestTimestamp = timestamp
+      }
+    }
+    const currTimestamp = getTimestamp(Math.max(newSpatData.at(-1)!.utcTimeStamp, latestTimestamp))
+
+    let oldIndex = 0
+    for (let i = 0; i < currentSpatSignalGroupsArr.length; i++) {
+      if (currentSpatSignalGroupsArr[i].timestamp < currTimestamp - OLDEST_DATA_TO_KEEP) {
         oldIndex = i
       } else {
         break
@@ -730,14 +727,14 @@ export const renderIterative_Spat = createAsyncThunk(
     }
     const newSpatSignalGroups = parseSpatSignalGroups(newSpatData)
     const newSpatSignalGroupsArr = Object.keys(newSpatSignalGroups).map((key) => ({
-      key,
+      timestamp: Number(key),
       sigGroup: newSpatSignalGroups[key],
     }))
     const filteredSpatSignalGroupsArr = currentSpatSignalGroupsArr
       .slice(oldIndex, currentSpatSignalGroupsArr.length)
       .concat(newSpatSignalGroupsArr)
     const currentSpatSignalGroupsLocal = filteredSpatSignalGroupsArr.reduce((acc, curr) => {
-      acc[curr.key] = curr.sigGroup
+      acc[curr.timestamp] = curr.sigGroup
       return acc
     }, {} as SpatSignalGroups)
 
@@ -915,34 +912,31 @@ export const initializeLiveStreaming = createAsyncThunk(
     // Topics are in the format /live/{intersectionID}/{spat,map,bsm}
     let spatTopic = `/live/${intersectionId}/spat`
     let mapTopic = `/live/${intersectionId}/map`
-    let bsmTopic = `/live/${intersectionId}/bsm` // TODO: Filter by road regulator ID
-    let spatTime = Date.now()
-    let mapTime = Date.now()
-    let bsmTime = Date.now()
+    let bsmTopic = `/live/${intersectionId}/bsm`
     let connectionStartTime = Date.now()
     client.connect(
       {},
       () => {
         client.subscribe(spatTopic, function (mes: IMessage) {
           const spatMessage: ProcessedSpat = JSON.parse(mes.body)
-          console.debug('Received SPaT message ' + (Date.now() - spatTime) + ' ms')
-          spatTime = Date.now()
+          const messageTime = getTimestamp(spatMessage.utcTimeStamp)
+          console.debug('Received SPaT message with age of' + (Date.now() - messageTime) + ' ms')
           dispatch(renderIterative_Spat([spatMessage]))
           dispatch(maybeUpdateSliderValue())
         })
 
         client.subscribe(mapTopic, function (mes: IMessage) {
           const mapMessage: ProcessedMap = JSON.parse(mes.body)
-          console.debug('Received MAP message ' + (Date.now() - mapTime) + ' ms')
-          mapTime = Date.now()
+          const messageTime = getTimestamp(mapMessage.properties.odeReceivedAt)
+          console.debug('Received MAP message with age of' + (Date.now() - messageTime) + ' ms')
           dispatch(renderIterative_Map([mapMessage]))
           dispatch(maybeUpdateSliderValue())
         })
 
         client.subscribe(bsmTopic, function (mes: IMessage) {
           const bsmData: OdeBsmData = JSON.parse(mes.body)
-          console.debug('Received BSM message ' + (Date.now() - bsmTime) + ' ms')
-          bsmTime = Date.now()
+          const messageTime = getTimestamp(bsmData.metadata.odeReceivedAt)
+          console.debug('Received BSM message with age of' + (Date.now() - messageTime) + ' ms')
           dispatch(renderIterative_Bsm([bsmData]))
           dispatch(maybeUpdateSliderValue())
         })

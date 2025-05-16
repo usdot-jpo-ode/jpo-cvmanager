@@ -83,6 +83,11 @@ import { Remove } from '@mui/icons-material'
 import VisualSettings from './visual-settings'
 import { useDispatch, useSelector } from 'react-redux'
 
+/**
+ *  Converts a date string or timestamp to a timestamp in milliseconds since epoch.
+ * @param dt - Date or timestamp to be converted - can be a string, seconds since epoch, or milliseconds since epoch
+ * @returns timestamp in milliseconds since epoch
+ */
 export const getTimestamp = (dt: any): number => {
   try {
     const dtFromString = Date.parse(dt as any as string)

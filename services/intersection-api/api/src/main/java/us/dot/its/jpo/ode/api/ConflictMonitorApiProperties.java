@@ -31,7 +31,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import us.dot.its.jpo.ode.context.AppContext;
-import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.eventlog.EventLogger;
 import us.dot.its.jpo.ode.util.CommonUtils;
 

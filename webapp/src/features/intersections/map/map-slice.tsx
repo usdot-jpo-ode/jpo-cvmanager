@@ -676,18 +676,18 @@ export const renderIterative_Map = createAsyncThunk(
       currentMapData: currentMapDataLocal,
       connectingLanes: latestMapMessage.connectingLanesFeatureCollection,
       mapData: latestMapMessage,
-      mapTime: currTimestamp,
+      mapTime: currTimestamp / 1000,
       mapSignalGroups: mapSignalGroupsLocal,
     }
   },
   {
-    condition: (newMapData: ProcessedMap[], { getState }) => newMapData.length != 0,
+    condition: (newMapData: ProcessedMap[], { getState }) => newMapData && newMapData.length != 0,
   }
 )
 
 export const renderIterative_Spat = createAsyncThunk(
   'intersectionMap/renderIterative_Spat',
-  async (newSpatData: ProcessedSpat[], { getState }) => {
+  async (newSpatData: ProcessedSpat[], { getState, dispatch }) => {
     const currentState = getState() as RootState
     const queryParams = selectQueryParams(currentState)
     const currentSpatSignalGroups: SpatSignalGroups = selectSpatSignalGroups(currentState) ?? {}
@@ -716,6 +716,7 @@ export const renderIterative_Spat = createAsyncThunk(
       }
     }
     const currTimestamp = getTimestamp(Math.max(newSpatData.at(-1)!.utcTimeStamp, latestTimestamp))
+    dispatch(maybeUpdateSliderValue(currTimestamp))
 
     let oldIndex = 0
     for (let i = 0; i < currentSpatSignalGroupsArr.length; i++) {
@@ -753,7 +754,7 @@ export const renderIterative_Spat = createAsyncThunk(
     return { signalGroups: currentSpatSignalGroupsLocal, raw: currentProcessedSpatDataLocal }
   },
   {
-    condition: (newSpatData: ProcessedSpat[], { getState }) => newSpatData.length != 0,
+    condition: (newSpatData: ProcessedSpat[], { getState }) => newSpatData && newSpatData.length != 0,
   }
 )
 
@@ -786,7 +787,7 @@ export const renderIterative_Bsm = createAsyncThunk(
     return currentBsmGeojson
   },
   {
-    condition: (newBsmData: OdeBsmData[], { getState }) => newBsmData.length != 0,
+    condition: (newBsmData: OdeBsmData[], { getState }) => newBsmData && newBsmData.length != 0,
   }
 )
 
@@ -909,6 +910,22 @@ export const initializeLiveStreaming = createAsyncThunk(
     // Stomp Client Documentation: https://stomp-js.github.io/stomp-websocket/codo/extra/docs-src/Usage.md.html
     let client = Stomp.client(url, protocols)
 
+    // Get Current MAP Message
+    const currentState = getState() as RootState
+    const authToken = selectToken(currentState)!
+    const queryParams = selectQueryParams(currentState)
+    const rawMapPromise = MessageMonitorApi.getMapMessages({
+      token: authToken,
+      intersectionId: queryParams.intersectionId,
+      latest: true,
+    })
+    toast.promise(rawMapPromise, {
+      loading: `Loading MAP Data`,
+      success: `Successfully got MAP Data`,
+      error: `Failed to get MAP data. Please see console`,
+    })
+    dispatch(renderIterative_Map(await rawMapPromise))
+
     // Topics are in the format /live/{intersectionID}/{spat,map,bsm}
     let spatTopic = `/live/${intersectionId}/spat`
     let mapTopic = `/live/${intersectionId}/map`
@@ -920,25 +937,25 @@ export const initializeLiveStreaming = createAsyncThunk(
         client.subscribe(spatTopic, function (mes: IMessage) {
           const spatMessage: ProcessedSpat = JSON.parse(mes.body)
           const messageTime = getTimestamp(spatMessage.utcTimeStamp)
-          console.debug('Received SPaT message with age of' + (Date.now() - messageTime) + ' ms')
+          console.debug('Received SPaT message with age of ' + (Date.now() - messageTime) + 'ms')
           dispatch(renderIterative_Spat([spatMessage]))
-          dispatch(maybeUpdateSliderValue())
+          // dispatch(maybeUpdateSliderValue())
         })
 
         client.subscribe(mapTopic, function (mes: IMessage) {
           const mapMessage: ProcessedMap = JSON.parse(mes.body)
           const messageTime = getTimestamp(mapMessage.properties.odeReceivedAt)
-          console.debug('Received MAP message with age of' + (Date.now() - messageTime) + ' ms')
+          console.debug('Received MAP message with age of ' + (Date.now() - messageTime) + 'ms')
           dispatch(renderIterative_Map([mapMessage]))
-          dispatch(maybeUpdateSliderValue())
+          // dispatch(maybeUpdateSliderValue())
         })
 
         client.subscribe(bsmTopic, function (mes: IMessage) {
           const bsmData: OdeBsmData = JSON.parse(mes.body)
           const messageTime = getTimestamp(bsmData.metadata.odeReceivedAt)
-          console.debug('Received BSM message with age of' + (Date.now() - messageTime) + ' ms')
+          console.debug('Received BSM message with age of ' + (Date.now() - messageTime) + 'ms')
           dispatch(renderIterative_Bsm([bsmData]))
-          dispatch(maybeUpdateSliderValue())
+          // dispatch(maybeUpdateSliderValue())
         })
       },
       (error) => {
@@ -1182,52 +1199,48 @@ export const intersectionMapSlice = createSlice({
     setSurroundingEvents: (state, action: PayloadAction<MessageMonitor.Event[]>) => {
       state.value.surroundingEvents = action.payload
     },
-    maybeUpdateSliderValue: (state) => {
+    maybeUpdateSliderValue: (state, action: PayloadAction<number | undefined>) => {
       if (
         state.value.liveDataActive &&
-        (!state.value.lastSliderUpdate || Date.now() - state.value.lastSliderUpdate > 1 * 1000)
+        (!state.value.lastSliderUpdate || Date.now() - state.value.lastSliderUpdate > 1 * 1000 || action.payload)
       ) {
+        let sliderEndDate = new Date(state.value.queryParams.endDate.getTime() + state.value.lastSliderUpdate * 1000) // move slider forward by the elapsed time
+        if (action.payload) {
+          sliderEndDate = new Date(action.payload) // Time specified, move slider to specified end date
+        }
         const newQueryParams = {
           startDate: new Date(
-            Date.now() - (state.value.queryParams.endDate.getTime() - state.value.queryParams.startDate.getTime())
+            sliderEndDate.getTime() -
+              (state.value.queryParams.endDate.getTime() - state.value.queryParams.startDate.getTime())
           ),
-          endDate: new Date(Date.now()),
-          eventDate: new Date(Date.now()),
+          endDate: sliderEndDate,
+          eventDate: sliderEndDate,
           vehicleId: undefined,
           intersectionId: state.value.queryParams.intersectionId,
         }
-        if (compareQueryParams(state.value.queryParams, newQueryParams)) {
-          state.value.queryParams = newQueryParams
-          state.value.sliderTimeValue = getNewSliderTimeValue(
-            state.value.queryParams.startDate,
-            state.value.sliderValue,
-            state.value.timeWindowSeconds
-          )
-          state.value.sliderValue = getTimeRange(newQueryParams.startDate, newQueryParams.endDate)
+        state.value.queryParams = newQueryParams
+        state.value.renderTimeInterval = [
+          newQueryParams.endDate.getTime() / 1000 - state.value.timeWindowSeconds,
+          newQueryParams.endDate.getTime() / 1000,
+        ]
+        state.value.sliderTimeValue = {
+          start: new Date(newQueryParams.endDate.getTime() - state.value.timeWindowSeconds * 1000),
+          end: newQueryParams.endDate,
         }
+        state.value.sliderValue =
+          (newQueryParams.endDate.getTime() - state.value.timeWindowSeconds * 1000 - newQueryParams.endDate.getTime()) /
+          100
+        console.log(
+          'Received timestamp',
+          action.payload,
+          'newQueryParams',
+          newQueryParams,
+          'sliderTimeValue',
+          state.value.sliderTimeValue,
+          'sliderValue',
+          state.value.sliderValue
+        )
       }
-    },
-    updateLiveSliderValue: (state) => {
-      const newQueryParams = {
-        startDate: new Date(
-          Date.now() - (state.value.queryParams.endDate.getTime() - state.value.queryParams.startDate.getTime())
-        ),
-        endDate: new Date(Date.now()),
-        eventDate: new Date(Date.now()),
-        vehicleId: undefined,
-        intersectionId: state.value.queryParams.intersectionId,
-      }
-      state.value.queryParams = newQueryParams
-      state.value.sliderValue = getTimeRange(newQueryParams.startDate, newQueryParams.endDate)
-      state.value.renderTimeInterval = [
-        newQueryParams.startDate.getTime() / 1000,
-        newQueryParams.endDate.getTime() / 1000,
-      ]
-      state.value.sliderTimeValue = getNewSliderTimeValue(
-        state.value.queryParams.startDate,
-        state.value.sliderValue,
-        state.value.timeWindowSeconds
-      )
     },
     setViewState: (state, action: PayloadAction<Partial<ViewState>>) => {
       state.value.viewState = action.payload

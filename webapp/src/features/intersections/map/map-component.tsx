@@ -233,7 +233,9 @@ const IntersectionMap = (props: MAP_PROPS) => {
   }, [bsmData, mapSignalGroups, renderTimeInterval, spatSignalGroups])
 
   useEffect(() => {
-    dispatch(updateRenderTimeInterval())
+    if (!liveDataActive) {
+      dispatch(updateRenderTimeInterval())
+    }
   }, [sliderValue, queryParams, timeWindowSeconds])
 
   useEffect(() => {

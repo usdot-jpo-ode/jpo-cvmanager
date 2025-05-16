@@ -69,7 +69,6 @@ public class ConflictMonitorApiProperties {
     private String confluentSecret = null;
 
     private String version;
-    public static final int OUTPUT_SCHEMA_VERSION = 6;
     private String kafkaBrokers = null;
     private static final String DEFAULT_KAFKA_PORT = "9092";
     private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
@@ -311,7 +310,6 @@ public class ConflictMonitorApiProperties {
         logger.info("groupId: {}", buildProperties.getGroup());
         logger.info("artifactId: {}", buildProperties.getArtifact());
         logger.info("version: {}", version);
-        OdeMsgMetadata.setStaticSchemaVersion(OUTPUT_SCHEMA_VERSION);
 
         uploadLocations.add(Paths.get(uploadLocationRoot));
 

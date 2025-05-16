@@ -1,9 +1,22 @@
-import { Box, Card, CardContent, Grid2, Typography, useTheme } from '@mui/material'
+import { Card, CardContent, Grid2, Typography, useTheme } from '@mui/material'
 import React from 'react'
-import { BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar, Tooltip, TooltipProps } from 'recharts'
+import {
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Legend,
+  Bar,
+  Tooltip,
+  TooltipProps,
+  ResponsiveContainer,
+} from 'recharts'
 import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent'
 
-export const SignalStateEventAssessmentCard = (props: { assessment: SignalStateEventAssessment | undefined }) => {
+export const SignalStateEventAssessmentCard = (props: {
+  assessment: SignalStateEventAssessment | undefined
+  minWidth: number
+}) => {
   const { assessment } = props
   const theme = useTheme()
 
@@ -103,30 +116,21 @@ export const SignalStateEventAssessmentCard = (props: { assessment: SignalStateE
   const hasDark = data?.some((item) => item.darkCount > 0)
 
   return (
-    <Grid2 height="500px">
-      <Card sx={{ height: '100%', overflow: 'visible' }}>
+    <Grid2 sx={{ height: '100%', minHeight: assessment === undefined ? 200 : 500 }}>
+      <Card sx={{ height: '100%', overflowX: 'auto' }}>
         <CardContent>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
-            <Typography gutterBottom variant="h6">
-              Signal State Passage Assessment
-            </Typography>
-          </Box>
-          <Grid2 container spacing={1} sx={{ justifyContent: 'center' }}>
-            <Grid2>
+          <Grid2 container spacing={1} sx={{ justifyContent: 'left' }}>
+            <Grid2 sx={{ width: '100%' }}>
+              <Typography gutterBottom variant="h6">
+                Signal State Passage Assessment
+              </Typography>
               {assessment === undefined ? (
                 <Typography color="textSecondary" fontSize="small" key={''}>
                   No Data
                 </Typography>
               ) : (
-                <Box
-                  sx={{
-                    width: '268px',
-                    height: 'fit-content',
-                    display: 'flex',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <BarChart width={250} height={350} data={data}>
+                <ResponsiveContainer width="100%" minWidth={`${props.minWidth}px`} height={350}>
+                  <BarChart height={350} data={data}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" label={{ value: 'Signal Group', position: 'insideBottom', offset: -15 }} />
                     <YAxis unit="%" label={{ value: 'Event Count (%)', angle: -90, position: 'insideLeft' }} />
@@ -152,7 +156,7 @@ export const SignalStateEventAssessmentCard = (props: { assessment: SignalStateE
                     <Bar dataKey="green" stackId="a" fill="#44db51" />
                     <Bar dataKey="dark" stackId="a" fill="#505050" />
                   </BarChart>
-                </Box>
+                </ResponsiveContainer>
               )}
             </Grid2>
           </Grid2>

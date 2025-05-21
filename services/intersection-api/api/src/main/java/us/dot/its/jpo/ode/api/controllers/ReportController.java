@@ -27,6 +27,7 @@ import us.dot.its.jpo.ode.api.services.ReportService;
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
+@RequestMapping("/reports")
 public class ReportController {
 
     private final ReportService reportService;
@@ -41,7 +42,7 @@ public class ReportController {
     }
 
     @Operation(summary = "Generate a Report", description = "Generates a new report for the intersection specified, within the start and end time. This can take upwards of 15 minutes to complete for longer reports")
-    @RequestMapping(value = "/reports/generate", method = RequestMethod.GET, produces = "application/octet-stream")
+    @RequestMapping(value = "/intersection/generate", method = RequestMethod.GET, produces = "application/octet-stream")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -58,8 +59,8 @@ public class ReportController {
         return document.getReportContents();
     }
 
-    @Operation(summary = "List Reports", description = "Returns a list of existing reports, as aggregated data, filtered by name, intersection ID, start time, and end time. The latest parameter will return the most recent report.")
-    @RequestMapping(value = "/reports/list", method = RequestMethod.GET, produces = "application/json")
+    @Operation(summary = "List Reports", description = "Returns a list of existing intersection reports, as aggregated data, filtered by name, intersection ID, start time, and end time. The latest parameter will return the most recent report.")
+    @RequestMapping(value = "/intersection", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),

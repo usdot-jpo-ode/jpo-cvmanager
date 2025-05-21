@@ -36,6 +36,7 @@ import us.dot.its.jpo.ode.mockdata.MockAssessmentGenerator;
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
+@RequestMapping("/data/cm-assessments")
 public class AssessmentController {
 
     private final LaneDirectionOfTravelAssessmentRepository laneDirectionOfTravelAssessmentRepo;
@@ -56,7 +57,7 @@ public class AssessmentController {
     }
 
     @Operation(summary = "Get Connection of Travel Assessments", description = "Get Connection of Travel Assessments, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
-    @RequestMapping(value = "/assessments/connection_of_travel", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/connection_of_travel", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -90,7 +91,7 @@ public class AssessmentController {
     }
 
     @Operation(summary = "Get Connection of Travel Assessments Count", description = "Get Connection of Travel Assessments count, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
-    @RequestMapping(value = "/assessments/connection_of_travel/count", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/connection_of_travel/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -112,7 +113,7 @@ public class AssessmentController {
     }
 
     @Operation(summary = "Get Lane Direction of Travel Assessments", description = "Get Lane Direction of Travel Assessments, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
-    @RequestMapping(value = "/assessments/lane_direction_of_travel", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/lane_direction_of_travel", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -147,7 +148,7 @@ public class AssessmentController {
     }
 
     @Operation(summary = "Get Lane Direction of Travel Assessment Counts", description = "Get Lane Direction of Travel Assessment counts, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
-    @RequestMapping(value = "/assessments/lane_direction_of_travel/count", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/lane_direction_of_travel/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -170,7 +171,7 @@ public class AssessmentController {
     }
 
     @Operation(summary = "Get Stop Line Stop Assessments", description = "Get Stop Line Stop Assessments, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
-    @RequestMapping(value = "/assessments/stop_line_stop_assessment", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/stop_line_stop_assessment", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -204,7 +205,7 @@ public class AssessmentController {
     }
 
     @Operation(summary = "Get Stop Line Stop Assessment Counts", description = "Get Stop Line Stop Assessment counts, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
-    @RequestMapping(value = "/assessments/stop_line_stop_assessment/count", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/stop_line_stop_assessment/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -226,7 +227,7 @@ public class AssessmentController {
     }
 
     @Operation(summary = "Get Stop Line Passage Assessments", description = "Get Stop Line Passage Assessments, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
-    @RequestMapping(value = "/assessments/stop_line_passage_assessment", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/stop_line_passage_assessment", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -261,7 +262,7 @@ public class AssessmentController {
     }
 
     @Operation(summary = "Get Stop Line Passage Assessment Counts", description = "Get Stop Line Passage Assessment counts, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
-    @RequestMapping(value = "/assessments/stop_line_passage_assessment/count", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/stop_line_passage_assessment/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),

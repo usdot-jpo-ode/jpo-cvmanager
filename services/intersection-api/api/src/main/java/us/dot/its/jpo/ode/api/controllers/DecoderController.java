@@ -32,6 +32,7 @@ import us.dot.its.jpo.ode.api.asn1.DecoderManager;
                 @ApiResponse(responseCode = "401", description = "Unauthorized"),
                 @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
+@RequestMapping("/asn1")
 public class DecoderController {
 
         private final DecoderManager decoderManager;
@@ -43,7 +44,7 @@ public class DecoderController {
         }
 
         @Operation(summary = "Decode an Uploaded ASN.1-Encoded Message", description = "Decodes an uploaded ASN.1 encoded message and returns the decoded message")
-        @RequestMapping(value = "/decoder/upload", method = RequestMethod.POST, produces = "application/json")
+        @RequestMapping(value = "/decoder/raw", method = RequestMethod.POST, produces = "application/json")
         @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "200", description = "Success"),

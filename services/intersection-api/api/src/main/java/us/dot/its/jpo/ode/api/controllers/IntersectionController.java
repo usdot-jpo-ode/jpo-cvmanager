@@ -30,6 +30,7 @@ import us.dot.its.jpo.ode.api.services.PostgresService;
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
+@RequestMapping("/intersections")
 public class IntersectionController {
 
     private final ProcessedMapRepository processedMapRepo;
@@ -44,7 +45,7 @@ public class IntersectionController {
     }
 
     @Operation(summary = "List Intersections", description = "Returns a list of intersections")
-    @RequestMapping(value = "/intersection/list", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -83,7 +84,7 @@ public class IntersectionController {
     }
 
     @Operation(summary = "List Intersections by Location", description = "Returns a list of intersections whose bounding box contains the request point, in latitude and longitude")
-    @RequestMapping(value = "/intersection/list/location", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/location", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),

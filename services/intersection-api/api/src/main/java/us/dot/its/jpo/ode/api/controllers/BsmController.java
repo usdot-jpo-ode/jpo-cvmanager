@@ -29,6 +29,7 @@ import us.dot.its.jpo.ode.model.OdeBsmData;
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
+@RequestMapping("/data/bsm")
 public class BsmController {
 
     private final OdeBsmJsonRepository odeBsmJsonRepo;
@@ -39,7 +40,7 @@ public class BsmController {
     }
 
     @Operation(summary = "Find BSMs", description = "Returns a list of BSMs based on the provided parameters. Use latitude, longitude, and distance to find BSMs within a certain \"radius\" of a point (rectangle)")
-    @RequestMapping(value = "/bsm/json", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -70,7 +71,7 @@ public class BsmController {
     }
 
     @Operation(summary = "Count BSMs", description = "Returns the count of BSMs based on the provided parameters. Use latitude, longitude, and distance to find BSMs within a certain \"radius\" of a point (rectangle)")
-    @RequestMapping(value = "/bsm/count", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),

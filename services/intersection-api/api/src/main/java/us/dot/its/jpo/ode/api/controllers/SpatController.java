@@ -29,6 +29,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
+@RequestMapping("/data/spat")
 public class SpatController {
 
     private final ProcessedSpatRepository processedSpatRepo;
@@ -39,7 +40,7 @@ public class SpatController {
     }
 
     @Operation(summary = "Find SPATs", description = "Returns a list of SPATs based on the provided parameters. The latest parameter will return the most recent SPAT message. The compact flag will omit the \"recordGeneratedAt\", \"validationMessages\" fields.")
-    @RequestMapping(value = "/spat/json", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -73,7 +74,7 @@ public class SpatController {
     }
 
     @Operation(summary = "Count SPATs", description = "Returns the count of SPATs based on the provided parameters.")
-    @RequestMapping(value = "/spat/count", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),

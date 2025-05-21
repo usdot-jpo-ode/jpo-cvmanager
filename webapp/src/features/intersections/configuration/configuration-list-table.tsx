@@ -82,7 +82,6 @@ export const ConfigParamListTable = (props) => {
           {param.value.toString()}
           {
             <Chip
-              color="secondary"
               sx={{ ml: 3 }}
               label={
                 <Typography

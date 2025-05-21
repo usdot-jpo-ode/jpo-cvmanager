@@ -7,7 +7,7 @@ export const sampleReports: ReportMetadata[] = [
     reportGeneratedAt: new Date('2025-03-15T14:30:00Z'),
     reportStartTime: new Date('2025-03-08T12:00:00Z'),
     reportStopTime: new Date('2025-03-15T12:00:00Z'),
-    reportContents: ['Lane Direction of Travel', 'Signal State Events', 'Connection of Travel'],
+    reportContents: ['Lane Direction of Travel', 'Stop Line Passage Events', 'Connection of Travel'],
     laneDirectionOfTravelEventCounts: [
       { id: '1', count: 347 },
       { id: '2', count: 289 },
@@ -36,12 +36,12 @@ export const sampleReports: ReportMetadata[] = [
       { id: 'invalid', count: 167 },
     ],
     signalStateConflictEventCount: [{ id: 'total', count: 24 }],
-    signalStateEventCounts: [
+    stopLinePassageEventCounts: [
       { id: 'red', count: 1024 },
       { id: 'yellow', count: 326 },
       { id: 'green', count: 1452 },
     ],
-    signalStateStopEventCounts: [
+    stopLineStopEventCounts: [
       { id: 'stopped', count: 957 },
       { id: 'no-stop', count: 214 },
     ],
@@ -139,12 +139,12 @@ export const sampleReports: ReportMetadata[] = [
       { id: 'invalid', count: 32 },
     ],
     signalStateConflictEventCount: [{ id: 'total', count: 4 }],
-    signalStateEventCounts: [
+    stopLinePassageEventCounts: [
       { id: 'red', count: 286 },
       { id: 'yellow', count: 68 },
       { id: 'green', count: 325 },
     ],
-    signalStateStopEventCounts: [
+    stopLineStopEventCounts: [
       { id: 'stopped', count: 243 },
       { id: 'no-stop', count: 43 },
     ],
@@ -243,12 +243,12 @@ export const sampleReports: ReportMetadata[] = [
       { id: 'invalid', count: 1842 },
     ],
     signalStateConflictEventCount: [{ id: 'total', count: 183 }],
-    signalStateEventCounts: [
+    stopLinePassageEventCounts: [
       { id: 'red', count: 10256 },
       { id: 'yellow', count: 3248 },
       { id: 'green', count: 17984 },
     ],
-    signalStateStopEventCounts: [
+    stopLineStopEventCounts: [
       { id: 'stopped', count: 9654 },
       { id: 'no-stop', count: 602 },
     ],

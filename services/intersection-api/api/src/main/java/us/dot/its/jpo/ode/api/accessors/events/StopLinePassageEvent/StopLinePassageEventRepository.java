@@ -1,5 +1,5 @@
 
-package us.dot.its.jpo.ode.api.accessors.events.SignalStateEvent;
+package us.dot.its.jpo.ode.api.accessors.events.StopLinePassageEvent;
 
 import java.util.List;
 
@@ -9,12 +9,12 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLinePassageEvent
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 
-public interface SignalStateEventRepository extends DataLoader<StopLinePassageEvent> {
+public interface StopLinePassageEventRepository extends DataLoader<StopLinePassageEvent> {
     long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<StopLinePassageEvent> findLatest(Integer intersectionID, Long startTime, Long endTime);
 
     Page<StopLinePassageEvent> find(Integer intersectionID, Long startTime, Long endTime, Pageable pageable);
 
-    List<IDCount> getAggregatedDailySignalStateEventCounts(int intersectionID, Long startTime, Long endTime);
+    List<IDCount> getAggregatedDailyStopLinePassageEventCounts(int intersectionID, Long startTime, Long endTime);
 }

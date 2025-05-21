@@ -305,9 +305,9 @@ export const generatePdf = async (
   )
   currentPage = addPageWithNumber(pdf, currentPage)
 
-  // Add Signal State Events section
+  // Add Stop Line Passage Events section
   setPdfSectionTitleFormatting(pdf)
-  pdf.text('Signal State Events', pdf.internal.pageSize.getWidth() / 2, 20, { align: 'center' })
+  pdf.text('Stop Line Passage Events', pdf.internal.pageSize.getWidth() / 2, 20, { align: 'center' })
   await captureGraph(pdf, 'stop-line-stacked-graph', { x: 0, y: 25 }, setProgress, totalGraphs, ++currentGraph, signal)
   setPdfDescriptionFormatting(pdf)
   pdf.text(

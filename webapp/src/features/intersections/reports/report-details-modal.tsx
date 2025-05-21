@@ -48,7 +48,7 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
   const [signalStateConflictEventCount, setSignalStateConflictEventCount] = useState<{ name: string; value: number }[]>(
     []
   )
-  const [signalStateEventCounts, setSignalStateEventCounts] = useState<{ name: string; value: number }[]>([])
+  const [stopLinePassageEventCounts, setStopLinePassageEventCounts] = useState<{ name: string; value: number }[]>([])
   const [stopLineStopEventCounts, setStopLineStopEventCounts] = useState<{ name: string; value: number }[]>([])
   const [signalGroupStopLineData, setSignalGroupStopLineData] = useState<StopLineStopReportData[]>([])
   const [signalGroupPassageData, setSignalGroupPassageData] = useState<StopLinePassageReportData[]>([])
@@ -96,8 +96,8 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
         { data: report.spatMinimumDataEventCount, setter: setSpatMinimumDataEventCount },
         { data: report.spatBroadcastRateEventCount, setter: setSpatBroadcastRateEventCount },
         { data: report.signalStateConflictEventCount, setter: setSignalStateConflictEventCount },
-        { data: report.signalStateEventCounts, setter: setSignalStateEventCounts },
-        { data: report.signalStateStopEventCounts, setter: setStopLineStopEventCounts },
+        { data: report.stopLinePassageEventCounts, setter: setStopLinePassageEventCounts },
+        { data: report.stopLineStopEventCounts, setter: setStopLineStopEventCounts },
         { data: report.connectionOfTravelEventCounts, setter: setConnectionOfTravelEventCounts },
         { data: report.laneDirectionOfTravelEventCounts, setter: setLaneDirectionOfTravelEventCounts },
         {
@@ -392,7 +392,7 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
                 </Typography>
 
                 <Typography variant="h4" align="center" sx={{ mt: 4 }}>
-                  Signal State Events
+                  Stop Line Passage Events
                 </Typography>
 
                 <Box id="signal-group-stop-line-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -412,7 +412,7 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
                 <Box id="stop-line-stacked-graph" sx={{ display: 'flex', justifyContent: 'center' }}>
                   <StopLineStackedGraph
                     stopData={stopLineStopEventCounts}
-                    passageData={signalStateEventCounts}
+                    passageData={stopLinePassageEventCounts}
                     getInterval={getInterval}
                   />
                 </Box>

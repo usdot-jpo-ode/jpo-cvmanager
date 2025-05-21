@@ -1,23 +1,6 @@
 import { authApiHelper } from './api-helper-cviz'
 
 class DecoderApi {
-  async getIntersections({
-    token,
-    abortController,
-  }: {
-    token: string
-    abortController?: AbortController
-  }): Promise<IntersectionReferenceData[]> {
-    var response = await authApiHelper.invokeApi({
-      path: '/intersection/list',
-      token: token,
-      abortController,
-      failureMessage: 'Failed to retrieve intersection list',
-      tag: 'intersection',
-    })
-    return response ?? []
-  }
-
   async submitDecodeRequest({
     token,
     data,
@@ -30,7 +13,7 @@ class DecoderApi {
     abortController?: AbortController
   }): Promise<DecoderApiResponseGeneric | undefined> {
     var response = await authApiHelper.invokeApi({
-      path: '/decoder/upload',
+      path: 'asn1/decoder/raw',
       token: token,
       method: 'POST',
       body: {

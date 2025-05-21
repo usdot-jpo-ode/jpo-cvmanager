@@ -34,7 +34,7 @@ class NotificationApi {
     if (key) queryParams['key'] = key
 
     const notifications = await authApiHelper.invokeApi({
-      path: `/notifications/active`,
+      path: `/intersections/active-notifications`,
       token: token,
       queryParams,
       abortController,
@@ -60,7 +60,7 @@ class NotificationApi {
         success &&
         (
           await authApiHelper.invokeApi({
-            path: `/notifications/active`,
+            path: `/intersections/active-notifications`,
             method: 'DELETE',
             abortController,
             token: token,
@@ -101,7 +101,7 @@ class NotificationApi {
       const resp: MessageMonitor.Notification[] =
         (
           await authApiHelper.invokeApi({
-            path: `/notifications/${notificationType}`,
+            path: `/data/cm-notifications/${notificationType}`,
             token: token,
             abortController,
             queryParams,

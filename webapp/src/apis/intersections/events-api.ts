@@ -38,7 +38,7 @@ class EventsApi {
     }
 
     const response: PagedResponse<MessageMonitor.Event> = await authApiHelper.invokeApi({
-      path: `/events/${eventType}`,
+      path: `/data/cm-events/${eventType}`,
       token: token,
       queryParams: queryParams,
       abortController,
@@ -66,7 +66,7 @@ class EventsApi {
       const response: MessageMonitor.Event[] =
         (
           (await authApiHelper.invokeApi({
-            path: `/events/${eventTypeObj.value}`,
+            path: `/data/cm-events/${eventTypeObj.value}`,
             token: token,
             queryParams: queryParams,
             abortController,
@@ -103,7 +103,7 @@ class EventsApi {
     }
 
     const response: PagedResponse<MessageMonitor.MinuteCount> = await authApiHelper.invokeApi({
-      path: `/events/bsm_events_by_minute`,
+      path: `/data/cm-events/bsm_events_by_minute`,
       token: token,
       queryParams: queryParams,
       abortController,

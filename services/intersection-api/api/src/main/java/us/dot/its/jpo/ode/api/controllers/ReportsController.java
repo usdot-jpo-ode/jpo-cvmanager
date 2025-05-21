@@ -87,7 +87,7 @@ public class ReportsController {
     }
 
     @Operation(summary = "Download a Report", description = "Returns the a report by name, as aggregated data")
-    @RequestMapping(value = "/reports/download", method = RequestMethod.GET, produces = "application/octet-stream")
+    @RequestMapping(value = "/intersection/download", method = RequestMethod.GET, produces = "application/octet-stream")
     @PreAuthorize("@PermissionService.hasRole('USER')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),

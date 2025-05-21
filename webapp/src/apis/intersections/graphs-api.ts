@@ -106,7 +106,7 @@ class GraphsApi {
     for (const event_type of event_types) {
       try {
         const graphData: Array<{ id: string; count: number }> = await authApiHelper.invokeApi({
-          path: `/events/${event_type}/daily_counts`,
+          path: `/data/cm-events/${event_type}/daily_counts`,
           token: token,
           queryParams,
           abortController,

@@ -766,8 +766,23 @@ export const renderIterative_Bsm = createAsyncThunk(
     const currentBsmData: BsmFeatureCollection = selectCurrentBsmData(currentState)
 
     const OLDEST_DATA_TO_KEEP = queryParams.eventDate.getTime() - queryParams.startDate.getTime() // milliseconds
-    // Inject and filter spat data
-    const currTimestamp = new Date(newBsmData.at(-1)!.metadata.odeReceivedAt as unknown as string).getTime() / 1000
+
+    // find latest timestamp from currentBsmData and newBsmData
+    let latestTimestamp = 0
+    for (let i = 0; i < currentBsmData.features.length; i++) {
+      const timestamp = Number(currentBsmData.features[i].properties.odeReceivedAt)
+      if (timestamp > latestTimestamp) {
+        latestTimestamp = timestamp
+      }
+    }
+    const currTimestamp = getTimestamp(
+      Math.max(
+        new Date(newBsmData.at(-1)!.metadata.odeReceivedAt as unknown as string).getTime() / 1000,
+        latestTimestamp
+      )
+    )
+
+    // Inject and filter BSM data
     let oldIndex = 0
     for (let i = 0; i < currentBsmData.features.length; i++) {
       if (Number(currentBsmData.features[i].properties.odeReceivedAt) < currTimestamp - OLDEST_DATA_TO_KEEP) {

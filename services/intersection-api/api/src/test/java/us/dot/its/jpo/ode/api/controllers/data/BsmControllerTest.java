@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api;
+package us.dot.its.jpo.ode.api.controllers.data;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -21,7 +21,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.ode.api.accessors.bsm.OdeBsmJsonRepository;
-import us.dot.its.jpo.ode.api.controllers.data.BsmController;
 import us.dot.its.jpo.ode.api.services.PermissionService;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 
@@ -29,7 +28,7 @@ import us.dot.its.jpo.ode.model.OdeBsmData;
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
 @AutoConfigureEmbeddedDatabase
-public class BsmTest {
+public class BsmControllerTest {
 
     private final BsmController controller;
 
@@ -40,7 +39,7 @@ public class BsmTest {
     PermissionService permissionService;
 
     @Autowired
-    public BsmTest(BsmController controller) {
+    public BsmControllerTest(BsmController controller) {
         this.controller = controller;
     }
 

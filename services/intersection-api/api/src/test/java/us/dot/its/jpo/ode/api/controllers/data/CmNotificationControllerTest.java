@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api;
+package us.dot.its.jpo.ode.api.controllers.data;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -36,7 +36,6 @@ import us.dot.its.jpo.ode.api.accessors.notifications.MapBroadcastRateNotificati
 import us.dot.its.jpo.ode.api.accessors.notifications.SignalGroupAlignmentNotificationRepo.SignalGroupAlignmentNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.SignalStateConflictNotification.SignalStateConflictNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.SpatBroadcastRateNotification.SpatBroadcastRateNotificationRepository;
-import us.dot.its.jpo.ode.api.controllers.data.NotificationController;
 import us.dot.its.jpo.ode.api.services.PermissionService;
 import us.dot.its.jpo.ode.mockdata.MockNotificationGenerator;
 
@@ -44,7 +43,7 @@ import us.dot.its.jpo.ode.mockdata.MockNotificationGenerator;
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
 @AutoConfigureEmbeddedDatabase
-public class NotificationTest {
+public class CmNotificationControllerTest {
 
         private final NotificationController controller;
 
@@ -76,7 +75,7 @@ public class NotificationTest {
         PermissionService permissionService;
 
         @Autowired
-        public NotificationTest(NotificationController controller) {
+        public CmNotificationControllerTest(NotificationController controller) {
                 this.controller = controller;
         }
 

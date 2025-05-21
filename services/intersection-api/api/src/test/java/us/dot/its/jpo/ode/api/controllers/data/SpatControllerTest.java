@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api;
+package us.dot.its.jpo.ode.api.controllers.data;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -22,7 +22,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
 import us.dot.its.jpo.ode.api.accessors.spat.ProcessedSpatRepository;
-import us.dot.its.jpo.ode.api.controllers.data.SpatController;
 import us.dot.its.jpo.ode.api.services.PermissionService;
 import us.dot.its.jpo.ode.mockdata.MockSpatGenerator;
 
@@ -30,7 +29,7 @@ import us.dot.its.jpo.ode.mockdata.MockSpatGenerator;
 @RunWith(SpringRunner.class)
 @AutoConfigureEmbeddedDatabase
 @ActiveProfiles("test")
-public class SpatTest {
+public class SpatControllerTest {
 
     private final SpatController controller;
 
@@ -41,7 +40,7 @@ public class SpatTest {
     PermissionService permissionService;
 
     @Autowired
-    public SpatTest(SpatController controller) {
+    public SpatControllerTest(SpatController controller) {
         this.controller = controller;
     }
 

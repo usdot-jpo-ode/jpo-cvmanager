@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api;
+package us.dot.its.jpo.ode.api.controllers.data;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -29,7 +29,6 @@ import us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment
 import us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment.LaneDirectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.StopLinePassageAssessment.StopLinePassageAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.StopLineStopAssessment.StopLineStopAssessmentRepository;
-import us.dot.its.jpo.ode.api.controllers.data.AssessmentController;
 import us.dot.its.jpo.ode.api.services.PermissionService;
 import us.dot.its.jpo.ode.mockdata.MockAssessmentGenerator;
 
@@ -37,7 +36,7 @@ import us.dot.its.jpo.ode.mockdata.MockAssessmentGenerator;
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
 @AutoConfigureEmbeddedDatabase
-public class AssessmentTests {
+public class CmAssessmentControllerTest {
 
         private final AssessmentController controller;
 
@@ -57,7 +56,7 @@ public class AssessmentTests {
         PermissionService permissionService;
 
         @Autowired
-        public AssessmentTests(AssessmentController controller) {
+        public CmAssessmentControllerTest(AssessmentController controller) {
                 this.controller = controller;
         }
 

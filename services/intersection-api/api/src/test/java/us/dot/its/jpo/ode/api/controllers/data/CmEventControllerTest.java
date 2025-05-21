@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api;
+package us.dot.its.jpo.ode.api.controllers.data;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -46,7 +46,6 @@ import us.dot.its.jpo.ode.api.accessors.events.SpatMinimumDataEvent.SpatMinimumD
 import us.dot.its.jpo.ode.api.accessors.events.StopLinePassageEvent.StopLinePassageEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.StopLineStopEvent.StopLineStopEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.TimeChangeDetailsEvent.TimeChangeDetailsEventRepository;
-import us.dot.its.jpo.ode.api.controllers.data.EventController;
 import us.dot.its.jpo.ode.api.services.PermissionService;
 import us.dot.its.jpo.ode.api.services.PostgresService;
 import us.dot.its.jpo.ode.mockdata.MockEventGenerator;
@@ -55,7 +54,7 @@ import us.dot.its.jpo.ode.mockdata.MockEventGenerator;
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
 @AutoConfigureEmbeddedDatabase
-public class EventTests {
+public class CmEventControllerTest {
 
         private final EventController controller;
 
@@ -105,7 +104,7 @@ public class EventTests {
         PermissionService permissionService;
 
         @Autowired
-        public EventTests(EventController controller) {
+        public CmEventControllerTest(EventController controller) {
                 this.controller = controller;
         }
 

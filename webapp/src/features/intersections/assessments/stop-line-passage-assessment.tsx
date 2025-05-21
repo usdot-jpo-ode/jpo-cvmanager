@@ -13,12 +13,21 @@ import {
 } from 'recharts'
 import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent'
 
-export const SignalStateEventAssessmentCard = (props: {
-  assessment: SignalStateEventAssessment | undefined
+export const StopLinePassageAssessmentCard = (props: {
+  assessment: StopLinePassageAssessment | undefined
   minWidth: number
 }) => {
   const { assessment } = props
   const theme = useTheme()
+
+  function getWidthFactorFromData(data: any[] | undefined): number {
+    if (!data) return 0.1
+    const maxFactor = 0.9
+    const numRowsForMax = 40
+    return 0.1 + Math.min(maxFactor, data.length / numRowsForMax)
+  }
+
+  const widthFactor = getWidthFactorFromData(assessment?.stopLinePassageAssessmentGroup)
 
   const CustomTooltip = ({ active, payload }: TooltipProps<ValueType, NameType>) => {
     if (active && payload) {
@@ -94,7 +103,7 @@ export const SignalStateEventAssessmentCard = (props: {
     return 0
   }
 
-  const data = assessment?.signalStateEventAssessmentGroup
+  const data = assessment?.stopLinePassageAssessmentGroup
     .map((group) => {
       const total = Math.max(group.redEvents + group.yellowEvents + group.greenEvents + group.darkEvents, 1) / 100
       return {
@@ -122,7 +131,7 @@ export const SignalStateEventAssessmentCard = (props: {
           <Grid2 container spacing={1} sx={{ justifyContent: 'left' }}>
             <Grid2 sx={{ width: '100%' }}>
               <Typography gutterBottom variant="h6">
-                Signal State Passage Assessment
+                Stop Line Passage Assessment
               </Typography>
               {assessment === undefined ? (
                 <Typography color="textSecondary" fontSize="small" key={''}>

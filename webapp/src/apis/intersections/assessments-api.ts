@@ -3,7 +3,7 @@ import { authApiHelper } from './api-helper-cviz'
 class AssessmentsApi {
   async getLatestAssessment(
     token: string,
-    eventType: string,
+    assessmentType: string,
     intersectionId: number,
     startTime?: Date,
     endTime?: Date,
@@ -18,11 +18,11 @@ class AssessmentsApi {
     var response =
       (
         (await authApiHelper.invokeApi({
-          path: `/assessments/${eventType}`,
+          path: `/assessments/${assessmentType}`,
           token: token,
           queryParams,
           abortController,
-          failureMessage: `Failed to retrieve assessments of type ${eventType}`,
+          failureMessage: `Failed to retrieve assessments of type ${assessmentType}`,
           tag: 'intersection',
         })) as PagedResponse<Assessment>
       )?.content ?? []
@@ -31,7 +31,7 @@ class AssessmentsApi {
 
   async getAssessments(
     token: string,
-    eventType: string,
+    assessmentType: string,
     intersectionId: number,
     startTime?: Date,
     endTime?: Date,
@@ -46,11 +46,11 @@ class AssessmentsApi {
     return (
       (
         (await authApiHelper.invokeApi({
-          path: `/assessments/${eventType}`,
+          path: `/assessments/${assessmentType}`,
           token: token,
           queryParams,
           abortController,
-          failureMessage: `Failed to retrieve assessments of type ${eventType}`,
+          failureMessage: `Failed to retrieve assessments of type ${assessmentType}`,
           tag: 'intersection',
         })) as PagedResponse<Assessment>
       )?.content ?? []

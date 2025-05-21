@@ -41,10 +41,10 @@ import us.dot.its.jpo.ode.api.accessors.events.MapBroadcastRateEvents.MapBroadca
 import us.dot.its.jpo.ode.api.accessors.events.MapMinimumDataEvent.MapMinimumDataEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SignalGroupAlignmentEvent.SignalGroupAlignmentEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SignalStateConflictEvent.SignalStateConflictEventRepository;
-import us.dot.its.jpo.ode.api.accessors.events.SignalStateEvent.SignalStateEventRepository;
-import us.dot.its.jpo.ode.api.accessors.events.SignalStateStopEvent.SignalStateStopEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SpatBroadcastRateEvent.SpatBroadcastRateEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.SpatMinimumDataEvent.SpatMinimumDataEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.StopLinePassageEvent.StopLinePassageEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.StopLineStopEvent.StopLineStopEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.TimeChangeDetailsEvent.TimeChangeDetailsEventRepository;
 import us.dot.its.jpo.ode.api.controllers.EventController;
 import us.dot.its.jpo.ode.api.services.PermissionService;
@@ -57,392 +57,382 @@ import us.dot.its.jpo.ode.mockdata.MockEventGenerator;
 @AutoConfigureEmbeddedDatabase
 public class EventTests {
 
-    private final EventController controller;
+        private final EventController controller;
 
-    @MockBean
-    ConnectionOfTravelEventRepository connectionOfTravelEventRepo;
+        @MockBean
+        ConnectionOfTravelEventRepository connectionOfTravelEventRepo;
 
-    @MockBean
-    IntersectionReferenceAlignmentEventRepository intersectionReferenceAlignmentEventRepo;
+        @MockBean
+        IntersectionReferenceAlignmentEventRepository intersectionReferenceAlignmentEventRepo;
 
-    @MockBean
-    LaneDirectionOfTravelEventRepository laneDirectionOfTravelEventRepo;
+        @MockBean
+        LaneDirectionOfTravelEventRepository laneDirectionOfTravelEventRepo;
 
-    @MockBean
-    SignalGroupAlignmentEventRepository signalGroupAlignmentEventRepo;
+        @MockBean
+        SignalGroupAlignmentEventRepository signalGroupAlignmentEventRepo;
 
-    @MockBean
-    SignalStateConflictEventRepository signalStateConflictEventRepo;
+        @MockBean
+        SignalStateConflictEventRepository signalStateConflictEventRepo;
 
-    @MockBean
-    SignalStateStopEventRepository signalStateStopEventRepo;
+        @MockBean
+        StopLineStopEventRepository stopLineStopEventRepo;
 
-    @MockBean
-    SignalStateEventRepository signalStateEventRepo;
+        @MockBean
+        StopLinePassageEventRepository stopLinePassageEventRepo;
 
-    @MockBean
-    TimeChangeDetailsEventRepository timeChangeDetailsEventRepo;
+        @MockBean
+        TimeChangeDetailsEventRepository timeChangeDetailsEventRepo;
 
-    @MockBean
-    SpatMinimumDataEventRepository spatMinimumDataEventRepo;
+        @MockBean
+        SpatMinimumDataEventRepository spatMinimumDataEventRepo;
 
-    @MockBean
-    MapMinimumDataEventRepository mapMinimumDataEventRepo;
+        @MockBean
+        MapMinimumDataEventRepository mapMinimumDataEventRepo;
 
-    @MockBean
-    SpatBroadcastRateEventRepository spatBroadcastRateEventRepo;
+        @MockBean
+        SpatBroadcastRateEventRepository spatBroadcastRateEventRepo;
 
-    @MockBean
-    MapBroadcastRateEventRepository mapBroadcastRateEventRepo;
+        @MockBean
+        MapBroadcastRateEventRepository mapBroadcastRateEventRepo;
 
-    @MockBean
-    BsmEventRepository bsmEventRepo;
+        @MockBean
+        BsmEventRepository bsmEventRepo;
 
-    @MockBean
-    PostgresService postgresService;
+        @MockBean
+        PostgresService postgresService;
 
-    @MockBean
-    PermissionService permissionService;
+        @MockBean
+        PermissionService permissionService;
 
-    @Autowired
-    public EventTests(EventController controller) {
-        this.controller = controller;
-    }
-
-    @Test
-    public void testIntersectionReferenceAlignmentEvents() {
-
-        // MockKeyCloakAuth.setSecurityContextHolder("cm_user@cimms.com",
-        // Set.of("USER"));
-
-        // List<UserOrgRole> roles = new ArrayList<>();
-        // UserOrgRole userOrgRole = new UserOrgRole("cm_user@cimms.com", "test",
-        // "USER");
-
-        // roles.add(userOrgRole);
-        // when(postgresService.findUserOrgRoles("cm_user@cimms.com")).thenReturn(roles);
-
-        IntersectionReferenceAlignmentEvent event = MockEventGenerator.getIntersectionReferenceAlignmentEvent();
-
-        List<IntersectionReferenceAlignmentEvent> events = new ArrayList<>();
-        events.add(event);
-
-        when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-        when(permissionService.hasRole("USER")).thenReturn(true);
-
-        PageRequest page = PageRequest.of(1, 1);
-        when(intersectionReferenceAlignmentEventRepo.find(event.getIntersectionID(),
-                event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, PageRequest.of(1, 1)))
-                .thenReturn(new PageImpl<>(events, page, 1L));
-
-        ResponseEntity<Page<IntersectionReferenceAlignmentEvent>> result = controller
-                .findIntersectionReferenceAlignmentEvents(
-                        event.getIntersectionID(),
-                        event.getEventGeneratedAt() - 1,
-                        event.getEventGeneratedAt() + 1, false, 1, 1, false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody().getContent()).isEqualTo(events);
-    }
-
-    @Test
-    public void testConnectionOfTravelEvents() {
-        ConnectionOfTravelEvent event = MockEventGenerator.getConnectionOfTravelEvent();
-
-        List<ConnectionOfTravelEvent> events = new ArrayList<>();
-        events.add(event);
-
-        when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-        when(permissionService.hasRole("USER")).thenReturn(true);
-
-        PageRequest page = PageRequest.of(1, 1);
-        when(connectionOfTravelEventRepo.find(event.getIntersectionID(),
-                event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, PageRequest.of(1, 1)))
-                .thenReturn(new PageImpl<>(events, page, 1L));
-
-        ResponseEntity<Page<ConnectionOfTravelEvent>> result = controller
-                .findConnectionOfTravelEvents(
-                        event.getIntersectionID(),
-                        event.getEventGeneratedAt() - 1,
-                        event.getEventGeneratedAt() + 1, false, 1, 1, false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody().getContent()).isEqualTo(events);
-    }
-
-    @Test
-    public void testLaneDirectionOfTravelEvents() {
-        LaneDirectionOfTravelEvent event = MockEventGenerator.getLaneDirectionOfTravelEvent();
-
-        List<LaneDirectionOfTravelEvent> events = new ArrayList<>();
-        events.add(event);
-
-        when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-        when(permissionService.hasRole("USER")).thenReturn(true);
-
-        PageRequest page = PageRequest.of(1, 1);
-        when(laneDirectionOfTravelEventRepo.find(event.getIntersectionID(),
-                event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, PageRequest.of(1, 1)))
-                .thenReturn(new PageImpl<>(events, page, 1L));
-
-        ResponseEntity<Page<LaneDirectionOfTravelEvent>> result = controller
-                .findLaneDirectionOfTravelEvent(
-                        event.getIntersectionID(),
-                        event.getEventGeneratedAt() - 1,
-                        event.getEventGeneratedAt() + 1, false, 1, 1, false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody().getContent()).isEqualTo(events);
-    }
-
-    @Test
-    public void testSignalGroupAlignmentEvents() {
-        SignalGroupAlignmentEvent event = MockEventGenerator.getSignalGroupAlignmentEvent();
-
-        List<SignalGroupAlignmentEvent> events = new ArrayList<>();
-        events.add(event);
-
-        when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-        when(permissionService.hasRole("USER")).thenReturn(true);
-
-        PageRequest page = PageRequest.of(1, 1);
-        when(signalGroupAlignmentEventRepo.find(event.getIntersectionID(),
-                event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, PageRequest.of(1, 1)))
-                .thenReturn(new PageImpl<>(events, page, 1L));
-
-        ResponseEntity<Page<SignalGroupAlignmentEvent>> result = controller
-                .findSignalGroupAlignmentEvent(
-                        event.getIntersectionID(),
-                        event.getEventGeneratedAt() - 1,
-                        event.getEventGeneratedAt() + 1, false, 1, 1, false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody().getContent()).isEqualTo(events);
-    }
-
-    @Test
-    public void testSignalStateConflictEvents() {
-        SignalStateConflictEvent event = MockEventGenerator.getSignalStateConflictEvent();
-
-        List<SignalStateConflictEvent> events = new ArrayList<>();
-        events.add(event);
-
-        when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-        when(permissionService.hasRole("USER")).thenReturn(true);
-
-        PageRequest page = PageRequest.of(1, 1);
-        when(signalStateConflictEventRepo.find(event.getIntersectionID(),
-                event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, PageRequest.of(1, 1)))
-                .thenReturn(new PageImpl<>(events, page, 1L));
-
-        ResponseEntity<Page<SignalStateConflictEvent>> result = controller
-                .findSignalStateConflictEvent(
-                        event.getIntersectionID(),
-                        event.getEventGeneratedAt() - 1,
-                        event.getEventGeneratedAt() + 1, false, 1, 1, false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody().getContent()).isEqualTo(events);
-    }
-
-    @Test
-    public void testSignalStateStopEvents() {
-        StopLineStopEvent event = MockEventGenerator.getStopLineStopEvent();
-
-        List<StopLineStopEvent> events = new ArrayList<>();
-        events.add(event);
-
-        when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-        when(permissionService.hasRole("USER")).thenReturn(true);
-
-        PageRequest page = PageRequest.of(1, 1);
-        when(signalStateStopEventRepo.find(event.getIntersectionID(),
-                event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, PageRequest.of(1, 1)))
-                .thenReturn(new PageImpl<>(events, page, 1L));
-
-        ResponseEntity<Page<StopLineStopEvent>> result = controller
-                .findSignalStateStopEvent(
-                        event.getIntersectionID(),
-                        event.getEventGeneratedAt() - 1,
-                        event.getEventGeneratedAt() + 1, false, 1, 1, false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody().getContent()).isEqualTo(events);
-    }
-
-    @Test
-    public void testSignalStateEvents() {
-        StopLinePassageEvent event = MockEventGenerator.getStopLinePassageEvent();
-
-        List<StopLinePassageEvent> events = new ArrayList<>();
-        events.add(event);
-
-        when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-        when(permissionService.hasRole("USER")).thenReturn(true);
-
-        PageRequest page = PageRequest.of(1, 1);
-        when(signalStateEventRepo.find(event.getIntersectionID(),
-                event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, PageRequest.of(1, 1)))
-                .thenReturn(new PageImpl<>(events, page, 1L));
-
-        ResponseEntity<Page<StopLinePassageEvent>> result = controller
-                .findSignalStateEvent(
-                        event.getIntersectionID(),
-                        event.getEventGeneratedAt() - 1,
-                        event.getEventGeneratedAt() + 1, false, 1, 1, false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody().getContent()).isEqualTo(events);
-    }
-
-    @Test
-    public void testTimeChangeDetailsEvents() {
-        TimeChangeDetailsEvent event = MockEventGenerator.getTimeChangeDetailsEvent();
-
-        List<TimeChangeDetailsEvent> events = new ArrayList<>();
-        events.add(event);
-
-        when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-        when(permissionService.hasRole("USER")).thenReturn(true);
-
-        PageRequest page = PageRequest.of(1, 1);
-        when(timeChangeDetailsEventRepo.find(event.getIntersectionID(),
-                event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, PageRequest.of(1, 1)))
-                .thenReturn(new PageImpl<>(events, page, 1L));
-
-        ResponseEntity<Page<TimeChangeDetailsEvent>> result = controller
-                .findTimeChangeDetailsEvent(
-                        event.getIntersectionID(),
-                        event.getEventGeneratedAt() - 1,
-                        event.getEventGeneratedAt() + 1, false, 1, 1, false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody().getContent()).isEqualTo(events);
-    }
-
-    @Test
-    public void testSpatMinimumDataEvents() {
-        SpatMinimumDataEvent event = MockEventGenerator.getSpatMinimumDataEvent();
-
-        List<SpatMinimumDataEvent> events = new ArrayList<>();
-        events.add(event);
-
-        when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-        when(permissionService.hasRole("USER")).thenReturn(true);
-
-        PageRequest page = PageRequest.of(1, 1);
-        when(spatMinimumDataEventRepo.find(event.getIntersectionID(),
-                event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, PageRequest.of(1, 1)))
-                .thenReturn(new PageImpl<>(events, page, 1L));
-
-        ResponseEntity<Page<SpatMinimumDataEvent>> result = controller
-                .findSpatMinimumDataEvents(
-                        event.getIntersectionID(),
-                        event.getEventGeneratedAt() - 1,
-                        event.getEventGeneratedAt() + 1, false, 1, 1, false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody().getContent()).isEqualTo(events);
-    }
-
-    @Test
-    public void testMapMinimumDataEvents() {
-        MapMinimumDataEvent event = MockEventGenerator.getMapMinimumDataEvent();
-
-        List<MapMinimumDataEvent> events = new ArrayList<>();
-        events.add(event);
-
-        when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-        when(permissionService.hasRole("USER")).thenReturn(true);
-
-        PageRequest page = PageRequest.of(1, 1);
-        when(mapMinimumDataEventRepo.find(event.getIntersectionID(),
-                event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, PageRequest.of(1, 1)))
-                .thenReturn(new PageImpl<>(events, page, 1L));
-
-        ResponseEntity<Page<MapMinimumDataEvent>> result = controller
-                .findMapMinimumDataEvents(
-                        event.getIntersectionID(),
-                        event.getEventGeneratedAt() - 1,
-                        event.getEventGeneratedAt() + 1, false, 1, 1, false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody().getContent()).isEqualTo(events);
-    }
-
-    @Test
-    public void testSpatBroadcastRateEvents() {
-        SpatBroadcastRateEvent event = MockEventGenerator.getSpatBroadcastRateEvent();
-
-        List<SpatBroadcastRateEvent> events = new ArrayList<>();
-        events.add(event);
-
-        when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-        when(permissionService.hasRole("USER")).thenReturn(true);
-
-        PageRequest page = PageRequest.of(1, 1);
-        when(spatBroadcastRateEventRepo.find(event.getIntersectionID(),
-                event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, PageRequest.of(1, 1)))
-                .thenReturn(new PageImpl<>(events, page, 1L));
-
-        ResponseEntity<Page<SpatBroadcastRateEvent>> result = controller
-                .findSpatBroadcastRateEvents(
-                        event.getIntersectionID(),
-                        event.getEventGeneratedAt() - 1,
-                        event.getEventGeneratedAt() + 1, false, 1, 1, false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody().getContent()).isEqualTo(events);
-    }
-
-    @Test
-    public void testMapBroadcastRateEvents() {
-        MapBroadcastRateEvent event = MockEventGenerator.getMapBroadcastRateEvent();
-
-        List<MapBroadcastRateEvent> events = new ArrayList<>();
-        events.add(event);
-
-        when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-        when(permissionService.hasRole("USER")).thenReturn(true);
-
-        PageRequest page = PageRequest.of(1, 1);
-        when(mapBroadcastRateEventRepo.find(event.getIntersectionID(),
-                event.getEventGeneratedAt() - 1,
-                event.getEventGeneratedAt() + 1, PageRequest.of(1, 1)))
-                .thenReturn(new PageImpl<>(events, page, 1L));
-
-        ResponseEntity<Page<MapBroadcastRateEvent>> result = controller
-                .findMapBroadcastRateEvents(
-                        event.getIntersectionID(),
-                        event.getEventGeneratedAt() - 1,
-                        event.getEventGeneratedAt() + 1, false, 1, 1, false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody().getContent()).isEqualTo(events);
-    }
-
-    @Test
-    public void testBsmEvents() {
-        BsmEvent event = MockEventGenerator.getBsmEvent();
-
-        List<BsmEvent> events = new ArrayList<>();
-        events.add(event);
-
-        when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-        when(permissionService.hasRole("USER")).thenReturn(true);
-
-        PageRequest page = PageRequest.of(1, 1);
-        when(bsmEventRepo.find(event.getIntersectionID(),
-                event.getStartingBsmTimestamp() - 1,
-                event.getStartingBsmTimestamp() + 1, PageRequest.of(1, 1)))
-                .thenReturn(new PageImpl<>(events, page, 1L));
-
-        ResponseEntity<Page<BsmEvent>> result = controller
-                .findBsmEvents(
-                        event.getIntersectionID(),
-                        event.getStartingBsmTimestamp() - 1,
-                        event.getStartingBsmTimestamp() + 1, false, 1, 1, false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody().getContent()).isEqualTo(events);
-    }
+        @Autowired
+        public EventTests(EventController controller) {
+                this.controller = controller;
+        }
+
+        @Test
+        public void testIntersectionReferenceAlignmentEvents() {
+
+                IntersectionReferenceAlignmentEvent event = MockEventGenerator.getIntersectionReferenceAlignmentEvent();
+
+                List<IntersectionReferenceAlignmentEvent> events = new ArrayList<>();
+                events.add(event);
+
+                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
+                when(permissionService.hasRole("USER")).thenReturn(true);
+
+                PageRequest page = PageRequest.of(1, 1);
+                when(intersectionReferenceAlignmentEventRepo.find(event.getIntersectionID(),
+                                event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, PageRequest.of(1, 1)))
+                                .thenReturn(new PageImpl<>(events, page, 1L));
+
+                ResponseEntity<Page<IntersectionReferenceAlignmentEvent>> result = controller
+                                .findIntersectionReferenceAlignmentEvents(
+                                                event.getIntersectionID(),
+                                                event.getEventGeneratedAt() - 1,
+                                                event.getEventGeneratedAt() + 1, false, 1, 1, false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                assertThat(result.getBody().getContent()).isEqualTo(events);
+        }
+
+        @Test
+        public void testConnectionOfTravelEvents() {
+                ConnectionOfTravelEvent event = MockEventGenerator.getConnectionOfTravelEvent();
+
+                List<ConnectionOfTravelEvent> events = new ArrayList<>();
+                events.add(event);
+
+                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
+                when(permissionService.hasRole("USER")).thenReturn(true);
+
+                PageRequest page = PageRequest.of(1, 1);
+                when(connectionOfTravelEventRepo.find(event.getIntersectionID(),
+                                event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, PageRequest.of(1, 1)))
+                                .thenReturn(new PageImpl<>(events, page, 1L));
+
+                ResponseEntity<Page<ConnectionOfTravelEvent>> result = controller
+                                .findConnectionOfTravelEvents(
+                                                event.getIntersectionID(),
+                                                event.getEventGeneratedAt() - 1,
+                                                event.getEventGeneratedAt() + 1, false, 1, 1, false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                assertThat(result.getBody().getContent()).isEqualTo(events);
+        }
+
+        @Test
+        public void testLaneDirectionOfTravelEvents() {
+                LaneDirectionOfTravelEvent event = MockEventGenerator.getLaneDirectionOfTravelEvent();
+
+                List<LaneDirectionOfTravelEvent> events = new ArrayList<>();
+                events.add(event);
+
+                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
+                when(permissionService.hasRole("USER")).thenReturn(true);
+
+                PageRequest page = PageRequest.of(1, 1);
+                when(laneDirectionOfTravelEventRepo.find(event.getIntersectionID(),
+                                event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, PageRequest.of(1, 1)))
+                                .thenReturn(new PageImpl<>(events, page, 1L));
+
+                ResponseEntity<Page<LaneDirectionOfTravelEvent>> result = controller
+                                .findLaneDirectionOfTravelEvent(
+                                                event.getIntersectionID(),
+                                                event.getEventGeneratedAt() - 1,
+                                                event.getEventGeneratedAt() + 1, false, 1, 1, false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                assertThat(result.getBody().getContent()).isEqualTo(events);
+        }
+
+        @Test
+        public void testSignalGroupAlignmentEvents() {
+                SignalGroupAlignmentEvent event = MockEventGenerator.getSignalGroupAlignmentEvent();
+
+                List<SignalGroupAlignmentEvent> events = new ArrayList<>();
+                events.add(event);
+
+                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
+                when(permissionService.hasRole("USER")).thenReturn(true);
+
+                PageRequest page = PageRequest.of(1, 1);
+                when(signalGroupAlignmentEventRepo.find(event.getIntersectionID(),
+                                event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, PageRequest.of(1, 1)))
+                                .thenReturn(new PageImpl<>(events, page, 1L));
+
+                ResponseEntity<Page<SignalGroupAlignmentEvent>> result = controller
+                                .findSignalGroupAlignmentEvent(
+                                                event.getIntersectionID(),
+                                                event.getEventGeneratedAt() - 1,
+                                                event.getEventGeneratedAt() + 1, false, 1, 1, false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                assertThat(result.getBody().getContent()).isEqualTo(events);
+        }
+
+        @Test
+        public void testSignalStateConflictEvents() {
+                SignalStateConflictEvent event = MockEventGenerator.getSignalStateConflictEvent();
+
+                List<SignalStateConflictEvent> events = new ArrayList<>();
+                events.add(event);
+
+                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
+                when(permissionService.hasRole("USER")).thenReturn(true);
+
+                PageRequest page = PageRequest.of(1, 1);
+                when(signalStateConflictEventRepo.find(event.getIntersectionID(),
+                                event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, PageRequest.of(1, 1)))
+                                .thenReturn(new PageImpl<>(events, page, 1L));
+
+                ResponseEntity<Page<SignalStateConflictEvent>> result = controller
+                                .findSignalStateConflictEvent(
+                                                event.getIntersectionID(),
+                                                event.getEventGeneratedAt() - 1,
+                                                event.getEventGeneratedAt() + 1, false, 1, 1, false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                assertThat(result.getBody().getContent()).isEqualTo(events);
+        }
+
+        @Test
+        public void testStopLineStopEvents() {
+                StopLineStopEvent event = MockEventGenerator.getStopLineStopEvent();
+
+                List<StopLineStopEvent> events = new ArrayList<>();
+                events.add(event);
+
+                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
+                when(permissionService.hasRole("USER")).thenReturn(true);
+
+                PageRequest page = PageRequest.of(1, 1);
+                when(stopLineStopEventRepo.find(event.getIntersectionID(),
+                                event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, PageRequest.of(1, 1)))
+                                .thenReturn(new PageImpl<>(events, page, 1L));
+
+                ResponseEntity<Page<StopLineStopEvent>> result = controller
+                                .findStopLineStopEvent(
+                                                event.getIntersectionID(),
+                                                event.getEventGeneratedAt() - 1,
+                                                event.getEventGeneratedAt() + 1, false, 1, 1, false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                assertThat(result.getBody().getContent()).isEqualTo(events);
+        }
+
+        @Test
+        public void testStopLinePassageEvents() {
+                StopLinePassageEvent event = MockEventGenerator.getStopLinePassageEvent();
+
+                List<StopLinePassageEvent> events = new ArrayList<>();
+                events.add(event);
+
+                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
+                when(permissionService.hasRole("USER")).thenReturn(true);
+
+                PageRequest page = PageRequest.of(1, 1);
+                when(stopLinePassageEventRepo.find(event.getIntersectionID(),
+                                event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, PageRequest.of(1, 1)))
+                                .thenReturn(new PageImpl<>(events, page, 1L));
+
+                ResponseEntity<Page<StopLinePassageEvent>> result = controller
+                                .findStopLinePassageEvent(
+                                                event.getIntersectionID(),
+                                                event.getEventGeneratedAt() - 1,
+                                                event.getEventGeneratedAt() + 1, false, 1, 1, false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                assertThat(result.getBody().getContent()).isEqualTo(events);
+        }
+
+        @Test
+        public void testTimeChangeDetailsEvents() {
+                TimeChangeDetailsEvent event = MockEventGenerator.getTimeChangeDetailsEvent();
+
+                List<TimeChangeDetailsEvent> events = new ArrayList<>();
+                events.add(event);
+
+                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
+                when(permissionService.hasRole("USER")).thenReturn(true);
+
+                PageRequest page = PageRequest.of(1, 1);
+                when(timeChangeDetailsEventRepo.find(event.getIntersectionID(),
+                                event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, PageRequest.of(1, 1)))
+                                .thenReturn(new PageImpl<>(events, page, 1L));
+
+                ResponseEntity<Page<TimeChangeDetailsEvent>> result = controller
+                                .findTimeChangeDetailsEvent(
+                                                event.getIntersectionID(),
+                                                event.getEventGeneratedAt() - 1,
+                                                event.getEventGeneratedAt() + 1, false, 1, 1, false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                assertThat(result.getBody().getContent()).isEqualTo(events);
+        }
+
+        @Test
+        public void testSpatMinimumDataEvents() {
+                SpatMinimumDataEvent event = MockEventGenerator.getSpatMinimumDataEvent();
+
+                List<SpatMinimumDataEvent> events = new ArrayList<>();
+                events.add(event);
+
+                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
+                when(permissionService.hasRole("USER")).thenReturn(true);
+
+                PageRequest page = PageRequest.of(1, 1);
+                when(spatMinimumDataEventRepo.find(event.getIntersectionID(),
+                                event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, PageRequest.of(1, 1)))
+                                .thenReturn(new PageImpl<>(events, page, 1L));
+
+                ResponseEntity<Page<SpatMinimumDataEvent>> result = controller
+                                .findSpatMinimumDataEvents(
+                                                event.getIntersectionID(),
+                                                event.getEventGeneratedAt() - 1,
+                                                event.getEventGeneratedAt() + 1, false, 1, 1, false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                assertThat(result.getBody().getContent()).isEqualTo(events);
+        }
+
+        @Test
+        public void testMapMinimumDataEvents() {
+                MapMinimumDataEvent event = MockEventGenerator.getMapMinimumDataEvent();
+
+                List<MapMinimumDataEvent> events = new ArrayList<>();
+                events.add(event);
+
+                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
+                when(permissionService.hasRole("USER")).thenReturn(true);
+
+                PageRequest page = PageRequest.of(1, 1);
+                when(mapMinimumDataEventRepo.find(event.getIntersectionID(),
+                                event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, PageRequest.of(1, 1)))
+                                .thenReturn(new PageImpl<>(events, page, 1L));
+
+                ResponseEntity<Page<MapMinimumDataEvent>> result = controller
+                                .findMapMinimumDataEvents(
+                                                event.getIntersectionID(),
+                                                event.getEventGeneratedAt() - 1,
+                                                event.getEventGeneratedAt() + 1, false, 1, 1, false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                assertThat(result.getBody().getContent()).isEqualTo(events);
+        }
+
+        @Test
+        public void testSpatBroadcastRateEvents() {
+                SpatBroadcastRateEvent event = MockEventGenerator.getSpatBroadcastRateEvent();
+
+                List<SpatBroadcastRateEvent> events = new ArrayList<>();
+                events.add(event);
+
+                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
+                when(permissionService.hasRole("USER")).thenReturn(true);
+
+                PageRequest page = PageRequest.of(1, 1);
+                when(spatBroadcastRateEventRepo.find(event.getIntersectionID(),
+                                event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, PageRequest.of(1, 1)))
+                                .thenReturn(new PageImpl<>(events, page, 1L));
+
+                ResponseEntity<Page<SpatBroadcastRateEvent>> result = controller
+                                .findSpatBroadcastRateEvents(
+                                                event.getIntersectionID(),
+                                                event.getEventGeneratedAt() - 1,
+                                                event.getEventGeneratedAt() + 1, false, 1, 1, false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                assertThat(result.getBody().getContent()).isEqualTo(events);
+        }
+
+        @Test
+        public void testMapBroadcastRateEvents() {
+                MapBroadcastRateEvent event = MockEventGenerator.getMapBroadcastRateEvent();
+
+                List<MapBroadcastRateEvent> events = new ArrayList<>();
+                events.add(event);
+
+                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
+                when(permissionService.hasRole("USER")).thenReturn(true);
+
+                PageRequest page = PageRequest.of(1, 1);
+                when(mapBroadcastRateEventRepo.find(event.getIntersectionID(),
+                                event.getEventGeneratedAt() - 1,
+                                event.getEventGeneratedAt() + 1, PageRequest.of(1, 1)))
+                                .thenReturn(new PageImpl<>(events, page, 1L));
+
+                ResponseEntity<Page<MapBroadcastRateEvent>> result = controller
+                                .findMapBroadcastRateEvents(
+                                                event.getIntersectionID(),
+                                                event.getEventGeneratedAt() - 1,
+                                                event.getEventGeneratedAt() + 1, false, 1, 1, false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                assertThat(result.getBody().getContent()).isEqualTo(events);
+        }
+
+        @Test
+        public void testBsmEvents() {
+                BsmEvent event = MockEventGenerator.getBsmEvent();
+
+                List<BsmEvent> events = new ArrayList<>();
+                events.add(event);
+
+                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
+                when(permissionService.hasRole("USER")).thenReturn(true);
+
+                PageRequest page = PageRequest.of(1, 1);
+                when(bsmEventRepo.find(event.getIntersectionID(),
+                                event.getStartingBsmTimestamp() - 1,
+                                event.getStartingBsmTimestamp() + 1, PageRequest.of(1, 1)))
+                                .thenReturn(new PageImpl<>(events, page, 1L));
+
+                ResponseEntity<Page<BsmEvent>> result = controller
+                                .findBsmEvents(
+                                                event.getIntersectionID(),
+                                                event.getStartingBsmTimestamp() - 1,
+                                                event.getStartingBsmTimestamp() + 1, false, 1, 1, false);
+                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+                assertThat(result.getBody().getContent()).isEqualTo(events);
+        }
 
 }

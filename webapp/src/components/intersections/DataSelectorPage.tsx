@@ -41,8 +41,8 @@ const valid_counts_event_types: string[] = [
   'lane_direction_of_travel',
   'signal_group_alignment',
   'signal_state_conflict',
-  'signal_state',
-  'signal_state_stop',
+  'stop_line_passage',
+  'stop_line_stop',
   'time_change_details',
 ]
 

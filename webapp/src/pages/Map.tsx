@@ -876,6 +876,12 @@ function MapPage() {
     event: React.SyntheticEvent<Element, Event>,
     origin: 'config' | 'msgViewer' | 'mooveai'
   ) => {
+    // Deselect any selected RSU when toggling point select tools
+    dispatch(selectRsu(null))
+    dispatch(clearFirmware())
+    setSelectedRsuCount(null)
+
+    // Toggle the corresponding point select tool based on the origin
     if (origin === 'config') {
       dispatch(toggleConfigPointSelect())
       if (addGeoMsgPoint) dispatch(toggleGeoMsgPointSelect())
@@ -1190,6 +1196,8 @@ function MapPage() {
                   latitude={rsu.geometry.coordinates[1]}
                   longitude={rsu.geometry.coordinates[0]}
                   onClick={(e) => {
+                    // Prevent RSU selection if adding points to geospatial polygon selection
+                    if (addConfigPoint || addGeoMsgPoint || addMooveAiPoint) return
                     e.originalEvent.stopPropagation()
                     dispatch(selectRsu(rsu))
                     setSelectedWZDxMarkerIndex(null)
@@ -1205,6 +1213,8 @@ function MapPage() {
                   <button
                     className="marker-btn"
                     onClick={(e) => {
+                      // Prevent RSU selection if adding points to geospatial polygon selection
+                      if (addConfigPoint || addGeoMsgPoint || addMooveAiPoint) return
                       e.stopPropagation()
                       dispatch(selectRsu(rsu))
                       dispatch(clearFirmware()) // TODO: Should remove??

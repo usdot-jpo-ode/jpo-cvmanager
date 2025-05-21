@@ -23,12 +23,10 @@ import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.IntersectionReferenceAlignmentNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.LaneDirectionOfTravelNotification;
-import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.Notification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalGroupAlignmentNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalStateConflictNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.MapBroadcastRateNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.SpatBroadcastRateNotification;
-import us.dot.its.jpo.ode.api.accessors.notifications.ActiveNotification.ActiveNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.ConnectionOfTravelNotification.ConnectionOfTravelNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.IntersectionReferenceAlignmentNotification.IntersectionReferenceAlignmentNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.LaneDirectionOfTravelNotificationRepo.LaneDirectionOfTravelNotificationRepository;
@@ -67,9 +65,6 @@ public class CmNotificationControllerTest {
 
         @MockBean
         ConnectionOfTravelNotificationRepository connectionOfTravelNotificationRepo;
-
-        @MockBean
-        ActiveNotificationRepository activeNotificationRepo;
 
         @MockBean
         PermissionService permissionService;
@@ -256,48 +251,6 @@ public class CmNotificationControllerTest {
                                                 notification.getIntersectionID(),
                                                 notification.getNotificationGeneratedAt() - 1,
                                                 notification.getNotificationGeneratedAt() + 1, false, 1, 1, false);
-                assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-                assertThat(result.getBody().getContent()).isEqualTo(notifications);
-        }
-
-        @Test
-        public void testActiveNotification() {
-                List<Integer> allowedInteresections = new ArrayList<>();
-                allowedInteresections.add(null);
-
-                when(permissionService.hasIntersection(null, "USER")).thenReturn(true);
-                when(permissionService.hasRole("USER")).thenReturn(true);
-
-                SpatBroadcastRateNotification spatBroadcastRateNotification = MockNotificationGenerator
-                                .getSpatBroadcastRateNotification();
-                SignalStateConflictNotification signalStateConflictNotification = MockNotificationGenerator
-                                .getSignalStateConflictNotification();
-                SignalGroupAlignmentNotification signalGroupAlignmentNotification = MockNotificationGenerator
-                                .getSignalGroupAlignmentNotification();
-                MapBroadcastRateNotification mapBroadcastRateNotification = MockNotificationGenerator
-                                .getMapBroadcastRateNotification();
-                LaneDirectionOfTravelNotification laneDirectionOfTravelNotification = MockNotificationGenerator
-                                .getLaneDirectionOfTravelNotification();
-                ConnectionOfTravelNotification connectionOfTravelNotification = MockNotificationGenerator
-                                .getConnectionOfTravelNotification();
-
-                List<Notification> notifications = new ArrayList<>();
-                notifications.add(spatBroadcastRateNotification);
-                notifications.add(signalStateConflictNotification);
-                notifications.add(signalGroupAlignmentNotification);
-                notifications.add(mapBroadcastRateNotification);
-                notifications.add(laneDirectionOfTravelNotification);
-                notifications.add(connectionOfTravelNotification);
-
-                PageRequest page = PageRequest.of(1, 1);
-                when(activeNotificationRepo.find(null,
-                                null,
-                                null, PageRequest.of(1, 1)))
-                                .thenReturn(new PageImpl<>(notifications, page, 1L));
-
-                ResponseEntity<Page<Notification>> result = controller
-                                .findActiveNotifications(
-                                                null, null, null, 1, 1, false);
                 assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
                 assertThat(result.getBody().getContent()).isEqualTo(notifications);
         }

@@ -41,6 +41,7 @@ Enhancements in this release:
 - [CDOT PR 174](https://github.com/CDOT-CV/jpo-cvmanager/pull/174): Intersection Map UI rework
 - [CDOT PR 181](https://github.com/CDOT-CV/jpo-cvmanager/pull/181): Integrate jpo-utils Kafka setup into CV Manager via submodule
 - [CDOT PR 196](https://github.com/CDOT-CV/jpo-cvmanager/pull/196): Fixing Q2 Testing Bugs
+- [CDOT PR 198](https://github.com/CDOT-CV/jpo-cvmanager/pull/198): RSU popup display fixes
 - [CDOT PR 199](https://github.com/CDOT-CV/jpo-cvmanager/pull/199): Improving Intersection Dashboard Assessment Plot Formatting
 
 ## Version 1.5.0

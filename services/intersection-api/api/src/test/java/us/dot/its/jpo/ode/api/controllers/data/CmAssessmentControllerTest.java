@@ -38,7 +38,7 @@ import us.dot.its.jpo.ode.mockdata.MockAssessmentGenerator;
 @AutoConfigureEmbeddedDatabase
 public class CmAssessmentControllerTest {
 
-        private final AssessmentController controller;
+        private final CmAssessmentController controller;
 
         @MockBean
         LaneDirectionOfTravelAssessmentRepository laneDirectionOfTravelAssessmentRepo;
@@ -56,7 +56,7 @@ public class CmAssessmentControllerTest {
         PermissionService permissionService;
 
         @Autowired
-        public CmAssessmentControllerTest(AssessmentController controller) {
+        public CmAssessmentControllerTest(CmAssessmentController controller) {
                 this.controller = controller;
         }
 

@@ -56,7 +56,7 @@ import us.dot.its.jpo.ode.mockdata.MockEventGenerator;
 @AutoConfigureEmbeddedDatabase
 public class CmEventControllerTest {
 
-        private final EventController controller;
+        private final CmEventController controller;
 
         @MockBean
         ConnectionOfTravelEventRepository connectionOfTravelEventRepo;
@@ -104,7 +104,7 @@ public class CmEventControllerTest {
         PermissionService permissionService;
 
         @Autowired
-        public CmEventControllerTest(EventController controller) {
+        public CmEventControllerTest(CmEventController controller) {
                 this.controller = controller;
         }
 

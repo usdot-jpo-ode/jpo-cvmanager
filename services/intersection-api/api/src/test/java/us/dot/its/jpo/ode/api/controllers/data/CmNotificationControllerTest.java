@@ -45,7 +45,7 @@ import us.dot.its.jpo.ode.mockdata.MockNotificationGenerator;
 @AutoConfigureEmbeddedDatabase
 public class CmNotificationControllerTest {
 
-        private final NotificationController controller;
+        private final CmNotificationController controller;
 
         @MockBean
         IntersectionReferenceAlignmentNotificationRepository intersectionReferenceAlignmentNotificationRepo;
@@ -75,7 +75,7 @@ public class CmNotificationControllerTest {
         PermissionService permissionService;
 
         @Autowired
-        public CmNotificationControllerTest(NotificationController controller) {
+        public CmNotificationControllerTest(CmNotificationController controller) {
                 this.controller = controller;
         }
 

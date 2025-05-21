@@ -73,7 +73,7 @@ import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
 @RequestMapping("/data/cm-events")
-public class EventController {
+public class CmEventController {
 
     private final ConnectionOfTravelEventRepository connectionOfTravelEventRepo;
     private final IntersectionReferenceAlignmentEventRepository intersectionReferenceAlignmentEventRepo;
@@ -96,7 +96,7 @@ public class EventController {
     int MILLISECONDS_PER_MINUTE = 60 * 1000;
 
     @Autowired
-    public EventController(
+    public CmEventController(
             ConnectionOfTravelEventRepository connectionOfTravelEventRepo,
             IntersectionReferenceAlignmentEventRepository intersectionReferenceAlignmentEventRepo,
             LaneDirectionOfTravelEventRepository laneDirectionOfTravelEventRepo,

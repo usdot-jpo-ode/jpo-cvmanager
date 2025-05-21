@@ -37,7 +37,7 @@ import us.dot.its.jpo.ode.mockdata.MockAssessmentGenerator;
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
 @RequestMapping("/data/cm-assessments")
-public class AssessmentController {
+public class CmAssessmentController {
 
     private final LaneDirectionOfTravelAssessmentRepository laneDirectionOfTravelAssessmentRepo;
     private final ConnectionOfTravelAssessmentRepository connectionOfTravelAssessmentRepo;
@@ -45,7 +45,7 @@ public class AssessmentController {
     private final StopLinePassageAssessmentRepository stopLinePassageAssessmentRepo;
 
     @Autowired
-    public AssessmentController(
+    public CmAssessmentController(
             LaneDirectionOfTravelAssessmentRepository laneDirectionOfTravelAssessmentRepo,
             ConnectionOfTravelAssessmentRepository connectionOfTravelAssessmentRepo,
             StopLineStopAssessmentRepository stopLineStopAssessmentRepo,

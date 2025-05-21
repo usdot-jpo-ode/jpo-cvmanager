@@ -58,7 +58,7 @@ import us.dot.its.jpo.ode.mockdata.MockNotificationGenerator;
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
 @RequestMapping("/data/cm-notifications")
-public class NotificationController {
+public class CmNotificationController {
 
     private final IntersectionReferenceAlignmentNotificationRepository intersectionReferenceAlignmentNotificationRepo;
     private final LaneDirectionOfTravelNotificationRepository laneDirectionOfTravelNotificationRepo;
@@ -73,7 +73,7 @@ public class NotificationController {
     private final ActiveNotificationRepository activeNotificationRepo;
 
     @Autowired
-    public NotificationController(
+    public CmNotificationController(
             IntersectionReferenceAlignmentNotificationRepository intersectionReferenceAlignmentNotificationRepo,
             LaneDirectionOfTravelNotificationRepository laneDirectionOfTravelNotificationRepo,
             MapBroadcastRateNotificationRepository mapBroadcastRateNotificationRepo,

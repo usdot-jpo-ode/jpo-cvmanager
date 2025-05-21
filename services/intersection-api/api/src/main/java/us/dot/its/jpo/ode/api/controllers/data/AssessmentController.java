@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.controllers;
+package us.dot.its.jpo.ode.api.controllers.data;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;

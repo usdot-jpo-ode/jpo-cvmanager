@@ -33,12 +33,12 @@ import us.dot.its.jpo.ode.api.asn1.DecoderManager;
                 @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
 @RequestMapping("/asn1")
-public class DecoderController {
+public class Asn1Controller {
 
         private final DecoderManager decoderManager;
 
         @Autowired
-        public DecoderController(
+        public Asn1Controller(
                         DecoderManager decoderManager) {
                 this.decoderManager = decoderManager;
         }

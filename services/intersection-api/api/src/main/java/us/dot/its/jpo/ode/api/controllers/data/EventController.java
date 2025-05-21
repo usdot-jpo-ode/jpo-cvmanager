@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.controllers;
+package us.dot.its.jpo.ode.api.controllers.data;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;

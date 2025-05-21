@@ -46,7 +46,7 @@ import us.dot.its.jpo.ode.api.accessors.events.SpatMinimumDataEvent.SpatMinimumD
 import us.dot.its.jpo.ode.api.accessors.events.StopLinePassageEvent.StopLinePassageEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.StopLineStopEvent.StopLineStopEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.TimeChangeDetailsEvent.TimeChangeDetailsEventRepository;
-import us.dot.its.jpo.ode.api.controllers.EventController;
+import us.dot.its.jpo.ode.api.controllers.data.EventController;
 import us.dot.its.jpo.ode.api.services.PermissionService;
 import us.dot.its.jpo.ode.api.services.PostgresService;
 import us.dot.its.jpo.ode.mockdata.MockEventGenerator;

@@ -28,13 +28,13 @@ import us.dot.its.jpo.ode.api.services.ReportService;
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
 @RequestMapping("/reports")
-public class ReportController {
+public class ReportsController {
 
     private final ReportService reportService;
     private final ReportRepository reportRepo;
 
     @Autowired
-    public ReportController(
+    public ReportsController(
             ReportService reportService,
             ReportRepository reportRepo) {
         this.reportService = reportService;

@@ -21,7 +21,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.ode.api.accessors.bsm.OdeBsmJsonRepository;
-import us.dot.its.jpo.ode.api.controllers.BsmController;
+import us.dot.its.jpo.ode.api.controllers.data.BsmController;
 import us.dot.its.jpo.ode.api.services.PermissionService;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 

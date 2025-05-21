@@ -29,7 +29,7 @@ import us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment
 import us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment.LaneDirectionOfTravelAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.StopLinePassageAssessment.StopLinePassageAssessmentRepository;
 import us.dot.its.jpo.ode.api.accessors.assessments.StopLineStopAssessment.StopLineStopAssessmentRepository;
-import us.dot.its.jpo.ode.api.controllers.AssessmentController;
+import us.dot.its.jpo.ode.api.controllers.data.AssessmentController;
 import us.dot.its.jpo.ode.api.services.PermissionService;
 import us.dot.its.jpo.ode.mockdata.MockAssessmentGenerator;
 

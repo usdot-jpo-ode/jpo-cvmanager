@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.controllers;
+package us.dot.its.jpo.ode.api.controllers.intersections;
 
 import java.util.ArrayList;
 import java.util.List;

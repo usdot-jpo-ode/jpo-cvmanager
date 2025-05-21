@@ -22,7 +22,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
 import us.dot.its.jpo.ode.api.accessors.spat.ProcessedSpatRepository;
-import us.dot.its.jpo.ode.api.controllers.SpatController;
+import us.dot.its.jpo.ode.api.controllers.data.SpatController;
 import us.dot.its.jpo.ode.api.services.PermissionService;
 import us.dot.its.jpo.ode.mockdata.MockSpatGenerator;
 

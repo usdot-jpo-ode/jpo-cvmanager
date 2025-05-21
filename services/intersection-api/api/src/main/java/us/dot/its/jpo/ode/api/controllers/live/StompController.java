@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.controllers;
+package us.dot.its.jpo.ode.api.controllers.live;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;

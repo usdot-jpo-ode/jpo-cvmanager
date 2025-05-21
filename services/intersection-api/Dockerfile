@@ -22,7 +22,8 @@ RUN apk update && apk add --no-cache \
     linux-headers \
     build-base \
     librdkafka \
-    librdkafka-dev 
+    librdkafka-dev \
+    asio-dev
 
 # Install pugixml
 COPY ./asn1_codec/pugixml /asn1_codec/pugixml

@@ -38,10 +38,10 @@ class GraphsApi {
       case 'signal_state_conflict':
         val.SignalStateConflictEventCount = count
         break
-      case 'signal_state':
+      case 'stop_line_passage':
         val.StopLinePassageEventCount = count
         break
-      case 'signal_state_stop':
+      case 'stop_line_stop':
         val.StopLineStopEventCount = count
         break
       case 'time_change_details':

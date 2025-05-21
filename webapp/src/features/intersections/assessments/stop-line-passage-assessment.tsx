@@ -13,7 +13,7 @@ import {
 } from 'recharts'
 import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent'
 
-export const SignalStateEventAssessmentCard = (props: {
+export const StopLinePassageAssessmentCard = (props: {
   assessment: StopLinePassageAssessment | undefined
   minWidth: number
 }) => {

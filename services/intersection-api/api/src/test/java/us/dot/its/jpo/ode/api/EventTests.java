@@ -236,7 +236,7 @@ public class EventTests {
         }
 
         @Test
-        public void testSignalStateStopEvents() {
+        public void testStopLineStopEvents() {
                 StopLineStopEvent event = MockEventGenerator.getStopLineStopEvent();
 
                 List<StopLineStopEvent> events = new ArrayList<>();
@@ -261,7 +261,7 @@ public class EventTests {
         }
 
         @Test
-        public void testSignalStateEvents() {
+        public void testStopLinePassageEvents() {
                 StopLinePassageEvent event = MockEventGenerator.getStopLinePassageEvent();
 
                 List<StopLinePassageEvent> events = new ArrayList<>();

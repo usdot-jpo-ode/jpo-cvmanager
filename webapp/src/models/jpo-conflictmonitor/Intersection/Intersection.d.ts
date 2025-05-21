@@ -5,7 +5,6 @@ type Intersection = {
   startLines: IntersectionLine[]
   referencePoint: Coordinate
   intersectionId: number
-  roadRegulatorId: number
   laneConnections: LaneConnection[]
   ingressLaneId: number
   egressLaneId: number

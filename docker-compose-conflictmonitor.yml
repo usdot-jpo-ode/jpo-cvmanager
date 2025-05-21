@@ -27,7 +27,7 @@ services:
       kafka:
         condition: service_healthy
         required: false
-      kafka_init:
+      kafka-setup:
         condition: service_started
 
   ode:

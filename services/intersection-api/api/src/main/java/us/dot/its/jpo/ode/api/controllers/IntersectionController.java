@@ -58,7 +58,6 @@ public class IntersectionController {
             IntersectionReferenceData ref = new IntersectionReferenceData();
             ref.setRsuIP("1.1.1.1");
             ref.setIntersectionID(12109);
-            ref.setRoadRegulatorID("0");
 
             List<IntersectionReferenceData> refList = new ArrayList<>();
             refList.add(ref);
@@ -100,7 +99,6 @@ public class IntersectionController {
             IntersectionReferenceData ref = new IntersectionReferenceData();
             ref.setRsuIP("1.1.1.1");
             ref.setIntersectionID(12109);
-            ref.setRoadRegulatorID("0");
 
             List<IntersectionReferenceData> refList = new ArrayList<>();
             refList.add(ref);

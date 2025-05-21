@@ -1,3 +1,5 @@
+@import 'https://use.typekit.net/ioz0eth.css';
+
 #admin {
   width: 100%;
   height: 100%;
@@ -8,7 +10,7 @@
   padding-left: 25px;
   padding-bottom: 20px;
   text-align: left;
-  font-family: sans-serif;
+  font-family: 'museo-slab', sans-serif;
 }
 
 .errorMsg {
@@ -23,7 +25,7 @@
 .panel-header {
   margin-bottom: 20px;
   padding: 5px;
-  font-family: sans-serif;
+  font-family: 'museo-slab', sans-serif;
   font-size: 25px;
   height: fit-content;
 }
@@ -32,7 +34,7 @@
   text-align: left;
   margin-top: 20px;
   margin-left: 30px;
-  font-family: sans-serif;
+  font-family: 'museo-slab', sans-serif;
 }
 
 .form-control {
@@ -53,25 +55,8 @@
   width: 150px;
 }
 
-.org-form-dropdown {
-  width: 400px;
-  max-width: 400px;
-  margin-top: 5px;
-  margin-bottom: 15px;
-}
-
-.form-multiselect,
-.form-dropdown {
-  width: 400px;
-  max-width: 400px;
-  margin-top: 3px;
-  margin-bottom: 15px;
-}
-
 .org-multiselect {
-  min-width: 300px;
-  max-width: 95%;
-  margin-right: 10px;
+  min-width: 200px;
 }
 
 .spacer {
@@ -97,11 +82,7 @@
 }
 
 .accordion {
-  margin-bottom: 10px;
-}
-
-.accordion-header {
-  font-weight: bold;
+  border-radius: 0px;
 }
 
 .scroll-div {
@@ -115,13 +96,8 @@
   overflow-y: auto;
 }
 
-.scroll-div-org-tab {
-  height: calc(100vh - 390px);
-  overflow-y: auto;
-}
-
 .admin_button {
-  font-family: sans-serif;
+  font-family: 'museo-slab', sans-serif;
   font-size: 15px;
   margin-top: 0px;
   margin-bottom: 0px;

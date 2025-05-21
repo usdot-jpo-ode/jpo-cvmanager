@@ -1,19 +1,24 @@
 import { Card, CardContent, Grid2, Typography, useTheme } from '@mui/material'
 import React from 'react'
-import { BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar, Tooltip, TooltipProps } from 'recharts'
+import {
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Legend,
+  Bar,
+  Tooltip,
+  TooltipProps,
+  ResponsiveContainer,
+} from 'recharts'
 import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent'
 
-export const ConnectionOfTravelAssessmentCard = (props: { assessment: ConnectionOfTravelAssessment | undefined }) => {
+export const ConnectionOfTravelAssessmentCard = (props: {
+  assessment: ConnectionOfTravelAssessment | undefined
+  minWidth: number
+}) => {
   const { assessment } = props
   const theme = useTheme()
-
-  function getWidthFactorFromData(data: any[] | undefined): number {
-    if (!data) return 0.1
-    const maxFactor = 0.9
-    const numRowsForMax = 40
-    return 0.1 + Math.min(maxFactor, data.length / numRowsForMax)
-  }
-  const widthFactor = getWidthFactorFromData(assessment?.connectionOfTravelAssessmentGroups)
 
   const CustomTooltip = ({ active, payload }: TooltipProps<ValueType, NameType>) => {
     if (active && payload) {
@@ -70,70 +75,64 @@ export const ConnectionOfTravelAssessmentCard = (props: { assessment: Connection
   const hasInvalidEvents = data?.some((item) => item.eventCountInvalid > 0)
 
   return (
-    <Grid2 width={assessment === undefined ? 200 : 80 + widthFactor * 1600}>
-      <Card sx={{ height: '100%', overflow: 'visible' }}>
+    <Grid2 sx={{ height: '100%', minHeight: assessment === undefined ? 200 : 500 }}>
+      <Card sx={{ height: '100%', overflowX: 'auto' }}>
         <CardContent>
-          <Grid2 container spacing={3} sx={{ justifyContent: 'space-between' }}>
-            <Grid2>
-              <Typography color="textSecondary" gutterBottom variant="overline">
+          <Grid2 container spacing={1} sx={{ justifyContent: 'left' }}>
+            <Grid2 sx={{ width: '100%', height: '100%' }}>
+              <Typography gutterBottom variant="h6">
                 Connection of Travel Assessment
               </Typography>
               {assessment === undefined ? (
-                <Typography color="textPrimary" variant="h5" key={''}>
+                <Typography color="textSecondary" fontSize="small" key={''}>
                   No Data
                 </Typography>
               ) : (
-                <BarChart
-                  width={widthFactor * 1600}
-                  height={350}
-                  data={data}
-                  margin={{
-                    top: 5,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                  }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="name"
-                    interval={0}
-                    angle={-45}
-                    height={50}
-                    textAnchor="end"
-                    label={{ value: 'Connection ID', position: 'insideBottomRight', offset: -15 }}
-                  />
-                  <YAxis label={{ value: 'Event Count', angle: -90, position: 'insideLeft' }} />
-                  <Tooltip content={CustomTooltip} />
-                  <Legend
-                    wrapperStyle={{
-                      paddingTop: '20px',
-                      height: hasValidEvents && hasInvalidEvents && (data?.length ?? 5) <= 4 ? '90px' : '50px',
-                    }}
-                    payload={[
-                      ...(hasValidEvents
-                        ? [
-                            {
-                              value: `Event Count Valid Connection ID`,
-                              id: 'eventCountValid',
-                              color: '#463af1',
-                            },
-                          ]
-                        : []),
-                      ...(hasInvalidEvents
-                        ? [
-                            {
-                              value: `Event Count Invalid Connection ID`,
-                              id: 'eventCountInvalid',
-                              color: '#f35555',
-                            },
-                          ]
-                        : []),
-                    ]}
-                  />
-                  <Bar dataKey="eventCountValid" stackId="a" fill="#463af1" />
-                  <Bar dataKey="eventCountInvalid" stackId="a" fill="#f35555" />
-                </BarChart>
+                <ResponsiveContainer width="100%" minWidth={`${props.minWidth}px`} height={350}>
+                  <BarChart data={data}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis
+                      dataKey="name"
+                      interval={0}
+                      angle={-45}
+                      height={50}
+                      textAnchor="end"
+                      label={{ value: 'Connection ID', position: 'insideBottom', offset: -15 }}
+                    />
+                    <YAxis label={{ value: 'Event Count', angle: -90, position: 'insideLeft' }} />
+                    <Tooltip content={CustomTooltip} />
+                    <Legend
+                      layout="horizontal"
+                      verticalAlign="bottom"
+                      align="center"
+                      wrapperStyle={{
+                        position: 'relative',
+                      }}
+                      payload={[
+                        ...(hasValidEvents
+                          ? [
+                              {
+                                value: `Valid Connection ID`,
+                                id: 'eventCountValid',
+                                color: '#463af1',
+                              },
+                            ]
+                          : []),
+                        ...(hasInvalidEvents
+                          ? [
+                              {
+                                value: `Invalid Connection ID`,
+                                id: 'eventCountInvalid',
+                                color: '#f35555',
+                              },
+                            ]
+                          : []),
+                      ]}
+                    />
+                    <Bar dataKey="eventCountValid" stackId="a" fill="#463af1" />
+                    <Bar dataKey="eventCountInvalid" stackId="a" fill="#f35555" />
+                  </BarChart>
+                </ResponsiveContainer>
               )}
             </Grid2>
           </Grid2>

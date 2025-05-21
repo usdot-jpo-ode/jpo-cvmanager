@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
@@ -58,6 +60,7 @@ public class ReportService {
         private final SpatBroadcastRateEventRepository spatBroadcastRateEventRepo;
         private final MapBroadcastRateEventRepository mapBroadcastRateEventRepo;
         private final ReportRepository reportRepo;
+        private final int maximumResponseSize;
 
         @Autowired
         public ReportService(ProcessedMapRepository processedMapRepo,
@@ -73,7 +76,8 @@ public class ReportService {
                         MapMinimumDataEventRepository mapMinimumDataEventRepo,
                         SpatBroadcastRateEventRepository spatBroadcastRateEventRepo,
                         MapBroadcastRateEventRepository mapBroadcastRateEventRepo,
-                        ReportRepository reportRepo) {
+                        ReportRepository reportRepo,
+                        @Value("${maximumResponseSize}") int maximumResponseSize) {
                 this.processedMapRepo = processedMapRepo;
                 this.stopLinePassageEventRepo = stopLinePassageEventRepo;
                 this.stopLineStopEventRepo = stopLineStopEventRepo;
@@ -88,6 +92,7 @@ public class ReportService {
                 this.spatBroadcastRateEventRepo = spatBroadcastRateEventRepo;
                 this.mapBroadcastRateEventRepo = mapBroadcastRateEventRepo;
                 this.reportRepo = reportRepo;
+                this.maximumResponseSize = maximumResponseSize;
 
         }
 
@@ -98,10 +103,9 @@ public class ReportService {
                                 .collect(Collectors.toList());
         }
 
-        public ReportDocument buildReport(int intersectionID, String roadRegulatorID, long startTime, long endTime) {
+        public ReportDocument buildReport(int intersectionID, long startTime, long endTime) {
                 // ####### 1. Name Report #######
-                String reportName = "CmReport_" + intersectionID + "_" + roadRegulatorID + "_" + startTime + "_"
-                                + endTime;
+                String reportName = "CmReport_" + intersectionID + "_" + startTime + "_" + endTime;
 
                 // ####### 2. Collect Report Data By Category #######
                 // Lane Direction of Travel Info
@@ -122,7 +126,8 @@ public class ReportService {
 
                 // Retrieve the most recent ProcessedMap
                 List<ProcessedMap<LineString>> processedMaps = processedMapRepo
-                                .findProcessedMaps(processedMapRepo.getQuery(intersectionID, null, null, true, true));
+                                .findLatest(intersectionID, null, null, true)
+                                .getContent();
                 ProcessedMap<LineString> mostRecentProcessedMap = processedMaps.isEmpty() ? null
                                 : processedMaps.getFirst();
 
@@ -175,9 +180,9 @@ public class ReportService {
                                 .getAggregatedDailySpatBroadcastRateEventCounts(intersectionID, startTime, endTime);
 
                 List<SpatMinimumDataEvent> spatMinimumDataEvents = spatMinimumDataEventRepo
-                                .find(spatMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, true));
+                                .findLatest(intersectionID, startTime, endTime).getContent();
                 List<MapMinimumDataEvent> mapMinimumDataEvents = mapMinimumDataEventRepo
-                                .find(mapMinimumDataEventRepo.getQuery(intersectionID, startTime, endTime, true));
+                                .findLatest(intersectionID, startTime, endTime).getContent();
 
                 // Parse missing elements from minimum data events
                 List<String> latestMapMinimumDataEventMissingElements = mapMinimumDataEvents.isEmpty()
@@ -210,20 +215,22 @@ public class ReportService {
 
                 // Retrieve StopLineStopEvents
                 List<StopLineStopEvent> stopLineStopEvents = stopLineStopEventRepo
-                                .find(stopLineStopEventRepo.getQuery(intersectionID, startTime, endTime, false));
+                                .find(intersectionID, startTime, endTime, PageRequest.of(0, maximumResponseSize))
+                                .getContent();
                 List<StopLineStopReportData> stopLineStopReportData = StopLineStopReportData
                                 .aggregateStopLineStopEvents(stopLineStopEvents);
 
                 // Retrieve StopLinePassageEvents
                 List<StopLinePassageEvent> stopLinePassageEvents = stopLinePassageEventRepo
-                                .find(stopLinePassageEventRepo.getQuery(intersectionID, startTime, endTime, false));
+                                .find(intersectionID, startTime, endTime,
+                                                PageRequest.of(0, maximumResponseSize))
+                                .getContent();
                 List<StopLinePassageReportData> stopLinePassageReportData = StopLinePassageReportData
                                 .aggregateStopLinePassageEvents(stopLinePassageEvents);
 
                 // ####### 3. Create Report Document #######
                 ReportDocument doc = new ReportDocument();
                 doc.setIntersectionID(intersectionID);
-                doc.setRoadRegulatorID(roadRegulatorID);
                 doc.setReportGeneratedAt(Instant.now().toEpochMilli());
                 doc.setReportStartTime(startTime);
                 doc.setReportStopTime(endTime);

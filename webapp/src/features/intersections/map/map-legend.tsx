@@ -1,37 +1,27 @@
-import { Paper, Typography, Divider } from '@mui/material'
+import { Paper, Box, IconButton, Typography, Divider, Fab, AccordionSummary, AccordionDetails } from '@mui/material'
 import React from 'react'
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion'
-import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary'
-import MuiAccordionDetails from '@mui/material/AccordionDetails'
-import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp'
-import { styled } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import { selectMapLegendColors } from './map-layer-style-slice'
 import { useSelector } from 'react-redux'
+import { Close, ExpandMoreOutlined, FormatListBulleted } from '@mui/icons-material'
 
 const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(
   ({ theme }) => ({})
 )
 
-const AccordionSummary = styled((props: AccordionSummaryProps) => (
-  <MuiAccordionSummary expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.8rem' }} />} {...props} />
-))(({ theme }) => ({
-  minHeight: 0,
-  paddingLeft: 10,
-  flexDirection: 'row-reverse',
-  '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
-    transform: 'rotate(90deg)',
-  },
-  '& .MuiAccordionSummary-content': {
-    marginLeft: theme.spacing(1),
-    marginTop: 0,
-    marginBottom: 0,
-  },
-}))
+type MapLegendProps = {
+  openPanel: string
+  setOpenPanel: (panel: string) => void
+}
 
-const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({}))
-
-export const MapLegend = () => {
+export const MapLegend = (props: MapLegendProps) => {
   const mapLegendColors = useSelector(selectMapLegendColors)
+  const theme = useTheme()
+
+  const toggleOpen = () => {
+    props.openPanel === 'map-legend' ? props.setOpenPanel('') : props.setOpenPanel('map-legend')
+  }
 
   const { bsmColors, travelConnectionColors, laneColors, signalHeadIcons } = mapLegendColors
 
@@ -44,14 +34,14 @@ export const MapLegend = () => {
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            marginLeft: 5,
-            marginRight: 5,
+            margin: '5px',
           }}
         >
-          <div style={{ fontSize: 12 }}>{key}: </div>
-          <div style={{ height: 20, width: 20, backgroundColor: value, marginLeft: 2 }}></div>
+          <div style={{ height: 20, width: 20, backgroundColor: value }} />
+          <Typography fontSize="14px" sx={{ ml: 1, textTransform: 'capitalize' }}>
+            {key.toLowerCase()}
+          </Typography>
         </div>
-        <p>|</p>
       </React.Fragment>
     )
   }
@@ -70,19 +60,19 @@ export const MapLegend = () => {
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            marginLeft: 5,
-            marginRight: 5,
+            margin: '5px',
           }}
         >
-          <div style={{ fontSize: 12 }}>{key}: </div>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ height: heightColored, width: 10, backgroundColor: value[0], marginLeft: 2 }}></div>
-            <div style={{ height: heightWhite, width: 10, backgroundColor: '#ffffff', marginLeft: 2 }}></div>
-            <div style={{ height: heightColored, width: 10, backgroundColor: value[0], marginLeft: 2 }}></div>
-            <div style={{ height: heightWhite, width: 10, backgroundColor: '#ffffff', marginLeft: 2 }}></div>
+            <div style={{ height: heightColored, width: 10, backgroundColor: value[0] }} />
+            <div style={{ height: heightWhite, width: 10, backgroundColor: '#ffffff' }} />
+            <div style={{ height: heightColored, width: 10, backgroundColor: value[0] }} />
+            <div style={{ height: heightWhite, width: 10, backgroundColor: '#ffffff' }} />
           </div>
+          <Typography fontSize="14px" sx={{ ml: 1, textTransform: 'capitalize' }}>
+            {key.toLowerCase()}
+          </Typography>
         </div>
-        <p>|</p>
       </React.Fragment>
     )
   }
@@ -96,13 +86,13 @@ export const MapLegend = () => {
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            marginLeft: 5,
-            marginRight: 5,
+            margin: '5px',
           }}
         >
-          <div style={{ fontSize: 12 }}>{key}: </div>
-          <div style={{ height: 20, width: 20, backgroundColor: value, marginLeft: 2 }}></div>
-          <div>|</div>
+          <div style={{ height: 20, width: 20, backgroundColor: value }} />
+          <Typography fontSize="14px" sx={{ ml: 1, textTransform: 'capitalize' }}>
+            {key.toLowerCase()}
+          </Typography>
         </div>
       </React.Fragment>
     )
@@ -117,70 +107,184 @@ export const MapLegend = () => {
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            marginLeft: 5,
-            marginRight: 3,
+            margin: '5px',
           }}
         >
-          <div style={{ fontSize: 12 }}>{key}: </div>
-          <img src={value} style={{ height: 40, width: 30, marginLeft: 2 }}></img>
-          <div>|</div>
+          <img src={value} style={{ height: 40, width: 30 }} />
+          <Typography fontSize="14px" sx={{ ml: 1, textTransform: 'capitalize' }}>
+            {key.toLowerCase()}
+          </Typography>
         </div>
       </React.Fragment>
     )
   }
 
   return (
-    <Accordion disableGutters defaultExpanded={false}>
-      <AccordionSummary>
-        <Typography variant="h5">Legend</Typography>
-      </AccordionSummary>
-      <AccordionDetails>
-        <Paper className="legend" style={{ userSelect: 'none' }}>
-          <Accordion disableGutters defaultExpanded={true}>
-            <AccordionSummary>
-              <Typography variant="h5">Signal Heads</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <div style={{ display: 'flex', flexDirection: 'row', overflowX: 'auto' }}>{signalHeadIconsList}</div>
-            </AccordionDetails>
-          </Accordion>
+    <>
+      <Fab
+        id="map-legend-button"
+        sx={{
+          position: 'absolute',
+          zIndex: 10,
+          top: theme.spacing(3),
+          right: theme.spacing(10),
+          backgroundColor: theme.palette.background.paper,
+          '&:hover': {
+            backgroundColor: theme.palette.custom.intersectionMapButtonHover,
+          },
+        }}
+        size="small"
+        onClick={() => {
+          toggleOpen()
+        }}
+      >
+        <FormatListBulleted />
+      </Fab>
+      <div
+        style={{
+          position: 'absolute',
+          zIndex: 10,
+          bottom: theme.spacing(3),
+          maxHeight: 'calc(100vh - 240px)',
+          right: 0,
+          width: props.openPanel === 'map-legend' ? 600 : 0,
+          fontSize: '16px',
+        }}
+      >
+        {props.openPanel !== 'map-legend' ? null : (
+          <Box style={{ position: 'relative', height: '100%', width: '100%' }}>
+            <Paper sx={{ height: '100%', width: '100%', borderRadius: '4px' }} id="legend-paper" square>
+              <Box>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '8px 16px',
+                  }}
+                >
+                  <Typography fontSize="16px">Legend</Typography>
+                  <IconButton
+                    onClick={() => {
+                      toggleOpen()
+                    }}
+                  >
+                    <Close color="info" />
+                  </IconButton>
+                </Box>
+                <Box
+                  sx={{
+                    maxHeight: '600px',
+                    overflow: 'auto',
+                    scrollbarColor: `${theme.palette.text.primary} ${theme.palette.background.paper}`,
+                    borderRadius: '4px',
+                  }}
+                >
+                  <Accordion
+                    sx={{
+                      '& .Mui-expanded': {
+                        backgroundColor: theme.palette.custom.intersectionMapAccordionExpanded,
+                      },
+                    }}
+                    disableGutters
+                  >
+                    <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
+                      <Typography fontSize="16px">Signal Heads</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          overflowY: 'auto',
+                          justifyContent: 'flex-start',
+                        }}
+                      >
+                        {signalHeadIconsList}
+                      </div>
+                    </AccordionDetails>
+                  </Accordion>
 
-          <Divider sx={{ borderRadius: 1 }} />
+                  <Accordion
+                    sx={{
+                      '& .Mui-expanded': {
+                        backgroundColor: theme.palette.custom.intersectionMapAccordionExpanded,
+                      },
+                    }}
+                    disableGutters
+                  >
+                    <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
+                      <Typography fontSize="16px">Lane Lines</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          overflowY: 'auto',
+                          justifyContent: 'flex-start',
+                        }}
+                      >
+                        {laneColorsList}
+                      </div>
+                    </AccordionDetails>
+                  </Accordion>
 
-          <Accordion disableGutters defaultExpanded={true}>
-            <AccordionSummary>
-              <Typography variant="h5">Lane Lines</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <div style={{ display: 'flex', flexDirection: 'row', overflowX: 'auto' }}>{laneColorsList}</div>
-            </AccordionDetails>
-          </Accordion>
+                  <Accordion
+                    sx={{
+                      '& .Mui-expanded': {
+                        backgroundColor: theme.palette.custom.intersectionMapAccordionExpanded,
+                      },
+                    }}
+                    disableGutters
+                  >
+                    <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
+                      <Typography fontSize="16px">Lane Connections</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          overflowY: 'auto',
+                          justifyContent: 'flex-start',
+                        }}
+                      >
+                        {travelConnectionColorsList}
+                      </div>
+                    </AccordionDetails>
+                  </Accordion>
 
-          <Divider sx={{ borderRadius: 1 }} />
-
-          <Accordion disableGutters defaultExpanded={true}>
-            <AccordionSummary>
-              <Typography variant="h5">Lane Connections</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <div style={{ display: 'flex', flexDirection: 'row', overflowX: 'auto' }}>
-                {travelConnectionColorsList}
-              </div>
-            </AccordionDetails>
-          </Accordion>
-
-          <Accordion disableGutters defaultExpanded={true}>
-            <AccordionSummary>
-              <Typography variant="h5">BSM Colors</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <div style={{ display: 'flex', flexDirection: 'row', overflowX: 'auto' }}>{bsmColorsList}</div>
-            </AccordionDetails>
-          </Accordion>
-
-          <Divider sx={{ borderRadius: 1 }} />
-        </Paper>
-      </AccordionDetails>
-    </Accordion>
+                  <Accordion
+                    sx={{
+                      '& .Mui-expanded': {
+                        backgroundColor: theme.palette.custom.intersectionMapAccordionExpanded,
+                      },
+                    }}
+                    disableGutters
+                  >
+                    <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
+                      <Typography fontSize="16px">BSM Colors</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          overflowY: 'auto',
+                          justifyContent: 'flex-start',
+                        }}
+                      >
+                        {bsmColorsList}
+                      </div>
+                    </AccordionDetails>
+                  </Accordion>
+                </Box>
+              </Box>
+            </Paper>
+          </Box>
+        )}
+      </div>
+    </>
   )
 }

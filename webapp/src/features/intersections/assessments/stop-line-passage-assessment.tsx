@@ -1,9 +1,22 @@
 import { Card, CardContent, Grid2, Typography, useTheme } from '@mui/material'
 import React from 'react'
-import { BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar, Tooltip, TooltipProps } from 'recharts'
+import {
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Legend,
+  Bar,
+  Tooltip,
+  TooltipProps,
+  ResponsiveContainer,
+} from 'recharts'
 import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent'
 
-export const StopLinePassageAssessmentCard = (props: { assessment: StopLinePassageAssessment | undefined }) => {
+export const SignalStateEventAssessmentCard = (props: {
+  assessment: StopLinePassageAssessment | undefined
+  minWidth: number
+}) => {
   const { assessment } = props
   const theme = useTheme()
 
@@ -112,53 +125,47 @@ export const StopLinePassageAssessmentCard = (props: { assessment: StopLinePassa
   const hasDark = data?.some((item) => item.darkCount > 0)
 
   return (
-    <Grid2 width={assessment === undefined ? 200 : 80 + widthFactor * 1200}>
-      <Card sx={{ height: '100%', overflow: 'visible' }}>
+    <Grid2 sx={{ height: '100%', minHeight: assessment === undefined ? 200 : 500 }}>
+      <Card sx={{ height: '100%', overflowX: 'auto' }}>
         <CardContent>
-          <Grid2 container spacing={3} sx={{ justifyContent: 'space-between' }}>
-            <Grid2>
-              <Typography color="textSecondary" gutterBottom variant="overline">
+          <Grid2 container spacing={1} sx={{ justifyContent: 'left' }}>
+            <Grid2 sx={{ width: '100%' }}>
+              <Typography gutterBottom variant="h6">
                 Stop Line Passage Assessment
               </Typography>
               {assessment === undefined ? (
-                <Typography color="textPrimary" variant="h5" key={''}>
+                <Typography color="textSecondary" fontSize="small" key={''}>
                   No Data
                 </Typography>
               ) : (
-                <BarChart
-                  width={widthFactor * 1200}
-                  height={350}
-                  data={data}
-                  margin={{
-                    top: 20,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                  }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" label={{ value: 'Signal Group', position: 'insideBottomRight', offset: -5 }} />
-                  <YAxis unit="%" label={{ value: 'Event Count (%)', angle: -90, position: 'insideLeft' }} />
-                  <Tooltip content={CustomTooltip} />
-                  <Legend
-                    wrapperStyle={{
-                      paddingTop: '10px',
-                      height: '50px',
-                    }}
-                    payload={
-                      [
-                        { value: 'Red', type: 'square', id: 'red', color: '#e74b4b' },
-                        { value: 'Yellow', type: 'square', id: 'yellow', color: '#ffe600' },
-                        { value: 'Green', type: 'square', id: 'green', color: '#44db51' },
-                        hasDark ? { value: 'Dark', type: 'square', id: 'dark', color: '#505050' } : null,
-                      ].filter((item) => item !== null) as any[]
-                    }
-                  />
-                  <Bar dataKey="red" stackId="a" fill="#e74b4b" />
-                  <Bar dataKey="yellow" stackId="a" fill="#ffe600" />
-                  <Bar dataKey="green" stackId="a" fill="#44db51" />
-                  <Bar dataKey="dark" stackId="a" fill="#505050" />
-                </BarChart>
+                <ResponsiveContainer width="100%" minWidth={`${props.minWidth}px`} height={350}>
+                  <BarChart height={350} data={data}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" label={{ value: 'Signal Group', position: 'insideBottom', offset: -15 }} />
+                    <YAxis unit="%" label={{ value: 'Event Count (%)', angle: -90, position: 'insideLeft' }} />
+                    <Tooltip content={CustomTooltip} />
+                    <Legend
+                      layout="horizontal"
+                      verticalAlign="bottom"
+                      align="center"
+                      wrapperStyle={{
+                        position: 'relative',
+                      }}
+                      payload={
+                        [
+                          { value: 'Red', type: 'square', id: 'red', color: '#e74b4b' },
+                          { value: 'Yellow', type: 'square', id: 'yellow', color: '#ffe600' },
+                          { value: 'Green', type: 'square', id: 'green', color: '#44db51' },
+                          hasDark ? { value: 'Dark', type: 'square', id: 'dark', color: '#505050' } : null,
+                        ].filter((item) => item !== null) as any[]
+                      }
+                    />
+                    <Bar dataKey="red" stackId="a" fill="#e74b4b" />
+                    <Bar dataKey="yellow" stackId="a" fill="#ffe600" />
+                    <Bar dataKey="green" stackId="a" fill="#44db51" />
+                    <Bar dataKey="dark" stackId="a" fill="#505050" />
+                  </BarChart>
+                </ResponsiveContainer>
               )}
             </Grid2>
           </Grid2>

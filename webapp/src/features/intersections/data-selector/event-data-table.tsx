@@ -31,11 +31,10 @@ export const EventDataTable = (props: {
 
   return (
     <>
-      <Container maxWidth={false}>
+      <Container maxWidth={false} disableGutters>
         <Card>
           <>
             <CardHeader title="Data" />
-            <Divider />
           </>
           <EventListResults
             events={paginatedNotifications}
@@ -60,6 +59,7 @@ export const EventDataTable = (props: {
                   variant="contained"
                   onClick={onDownload}
                   disabled={events.length <= 0 ? true : false}
+                  className="museo-slab capital-case"
                 >
                   Download
                 </Button>
@@ -68,6 +68,7 @@ export const EventDataTable = (props: {
                   variant="contained"
                   onClick={onDownloadJson}
                   disabled={events.length <= 0 ? true : false}
+                  className="museo-slab capital-case"
                 >
                   Download JSON
                 </Button>

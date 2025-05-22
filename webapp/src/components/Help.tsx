@@ -9,36 +9,30 @@ import configure from '../icons/rsu_configure.PNG'
 import EnvironmentVars from '../EnvironmentVars'
 import ContactSupportMenu from './ContactSupportMenu'
 import { BorderedImage } from '../styles/components/BorderedImage'
-import { alpha, useTheme } from '@mui/material'
+import { Stack, Container, useTheme } from '@mui/material'
 
 const Help = () => {
   const theme = useTheme()
   return (
-    <div id="help">
-      <h1 className="helpHeader">Welcome to the {EnvironmentVars.DOT_NAME} CV Manager Website</h1>
-      <div className="spacer">
-        <p className="pHelp">
+    <Container maxWidth={false} id="help" sx={{ textAlign: 'left', backgroundColor: theme.palette.background.default }}>
+      <Stack spacing={2}>
+        <h2>Welcome to the {EnvironmentVars.DOT_NAME} CV Manager Website</h2>
+        <p>
           This application shows the physical location and message counts for each RSU installed by the Colorado
           Department of Transportation at various road sites throughout Colorado.
         </p>
-      </div>
-      <div className="spacer">
-        <p className="pHelp">
+        <p>
           The map on this website will represent the location of each RSU with a red, green, or yellow dot (shown
           below). A green dot represents an RSU that is online. A yellow dot represents an RSU that is offline but was
           recently active. A red dot represents an RSU that is not currently online.
         </p>
-      </div>
-      <BorderedImage src={status} alt="RSU Statuses Shown on Map" />
-      <div className="spacer">
-        <p className="pHelp">
+        <BorderedImage src={status} alt="RSU Statuses Shown on Map" />
+        <p>
           Clicking on the RSU will give the following information: IP address, online status, time last online, milepost
           number, serial number, and number of message counts (shown below).
         </p>
-      </div>
-      <BorderedImage src={popup} alt="RSU Popup with Data" />
-      <div className="spacer">
-        <p className="pHelp">
+        <BorderedImage src={popup} alt="RSU Popup with Data" />
+        <p>
           The menu on the right side of the webpage will allow users to select the time range and message type to be
           displayed for the RSUs. The menu will toggle between being hidden and visible each time the red X is clicked.
           The time frame can be changed by adjusting the date and time values in the date-time pickers. The top
@@ -47,40 +41,30 @@ const Help = () => {
           the date-time pickers or message selection dropdown the webpage will update accordingly. These elements are
           shown in the image below:
         </p>
-      </div>
-      <BorderedImage src={menu} alt="RSU Menu" />
-      <div className="spacer">
-        <p className="pHelp">
+        <BorderedImage src={menu} alt="RSU Menu" />
+        <p>
           The table included in the menu will show the number of message counts for each RSU in the given time frame
           regardless of online status (shown below). The table can be sorted by RSU, road, or count by clicking on the
           desired column header. Each time a column header is clicked, it will toggle between sorting the data in an
           ascending/descending fashion.
         </p>
-      </div>
-      <BorderedImage src={table} alt="RSU Message Count Table" />
-      <div className="spacer">
-        <p className="pHelp">
+        <BorderedImage src={table} alt="RSU Message Count Table" />
+        <p>
           Selecting 'Heat Map' on the navigation bar will show a heat map representing RSU message counts for the time
           range and message type selected in the menu (shown below). Any update to time range or message type in the
           menu will carry over between the heat map and RSU map.
         </p>
-      </div>
-      <BorderedImage src={heatmap} alt="CV Manager Heat Map" />
-      <div className="spacer">
-        <p className="pHelp">
+        <BorderedImage src={heatmap} alt="CV Manager Heat Map" />
+        <p>
           Selecting 'Configure' on the navigation bar will allow users to perform certain actions to the RSU based on
           their role. An RSU must first be selected on the RSU Map before any options become available. Users will be
           able to perform one or more of the following: pull current message forwarding configuration, add/delete
           message forwarding configurations, and perform an RSU reboot.
         </p>
-      </div>
-      <BorderedImage src={configure} alt="CV Manager Configuration Page" />
-      <div id="supportMenuParent" style={{ backgroundColor: alpha(theme.palette.background.default, 0.5) }}>
-        <div id="supportMenuContainer">
-          <ContactSupportMenu />
-        </div>
-      </div>
-    </div>
+        <BorderedImage src={configure} alt="CV Manager Configuration Page" />
+      </Stack>
+      <ContactSupportMenu />
+    </Container>
   )
 }
 

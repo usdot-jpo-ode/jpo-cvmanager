@@ -2,6 +2,7 @@ import { Action, ThunkAction, configureStore } from '@reduxjs/toolkit'
 import rsuReducer from './generalSlices/rsuSlice'
 import userReducer from './generalSlices/userSlice'
 import wzdxReducer from './generalSlices/wzdxSlice'
+import mooveAiReducer from './generalSlices/mooveAiSlice'
 import configReducer from './generalSlices/configSlice'
 import intersectionReducer from './generalSlices/intersectionSlice'
 import adminAddOrganizationReducer from './features/adminAddOrganization/adminAddOrganizationSlice'
@@ -27,6 +28,7 @@ import asn1DecoderSlice from './features/intersections/decoder/asn1-decoder-slic
 import intersectionMapReducer from './features/intersections/map/map-slice'
 import intersectionMapLayerStyleReducer from './features/intersections/map/map-layer-style-slice'
 import dataSelectorReducer from './features/intersections/data-selector/dataSelectorSlice'
+import { intersectionApiSlice } from './features/api/intersectionApiSlice'
 import mapSliceReducer from './pages/mapSlice'
 
 export const setupStore = (preloadedState: any) => {
@@ -35,6 +37,7 @@ export const setupStore = (preloadedState: any) => {
       rsu: rsuReducer,
       user: userReducer,
       wzdx: wzdxReducer,
+      mooveai: mooveAiReducer,
       config: configReducer,
       intersection: intersectionReducer,
       adminAddOrganization: adminAddOrganizationReducer,
@@ -61,6 +64,7 @@ export const setupStore = (preloadedState: any) => {
       dataSelector: dataSelectorReducer,
       map: mapSliceReducer,
       asn1Decoder: asn1DecoderSlice,
+      [intersectionApiSlice.reducerPath]: intersectionApiSlice.reducer,
     },
     preloadedState,
     middleware: (getDefaultMiddleware) =>
@@ -68,7 +72,7 @@ export const setupStore = (preloadedState: any) => {
         thunk: true,
         serializableCheck: false,
         immutableCheck: false,
-      }),
+      }).concat(intersectionApiSlice.middleware),
     devTools: true,
   })
 }
@@ -76,5 +80,7 @@ export const setupStore = (preloadedState: any) => {
 type AppStore = ReturnType<typeof setupStore>
 export type AppState = ReturnType<AppStore['getState']>
 type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppState, unknown, Action>
+
+export type AppDispatch = ReturnType<typeof setupStore>['dispatch']
 
 export type RootState = ReturnType<ReturnType<typeof setupStore>['getState']>

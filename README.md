@@ -18,7 +18,7 @@ The JPO Connected Vehicle Manager is a web-based application that helps an organ
 - jpo-ode supported message counts, sorted by RSU IP (BSM, MAP, SPaT, SRM, SSM, TIM)
 - Visualize an RSU's currently active MAP message
 - Visualize Basic Safety Messages (BSMs) relative to a specified geofence and time period
-- Device configuration over SNMP (v3) for message forwarding
+- Device configuration over SNMP (v3) for message forwarding including an option to include security headers for NTCIP-1218 devices
 - Device firmware upgrade support for Kapsch, Commsignia and Yunex devices
 - Admin controls for adding, modifying and removing devices and users
 - Fully customizable theming with Material UI - [cvmanager theming documentation](webapp/src/styles/README.md)
@@ -105,13 +105,15 @@ Ease of local development has been a major consideration in the integration of i
 
 - kafka
   - Base kafka image used to supply required topics to the intersection api
-- kafka_init
+- kafka-setup
   - Kafka topic creation image, to create required topics for the intersection api
 - MongoDB
   - Base MongoDB image, with sample data, used to supply data to the intersection api
 
+It should be noted that the `kafka` and `kafka-setup` services are provided by the jpo-utils repository.
+
 **Intersection API Submodules**
-The Intersection API uses nested submodules for asn1 encoding and decoding [usdot-jpo-ode/asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec). These submodules need to be initialized and updated before the API can be built and run locally. Run the following command to initialize the submodules:
+The Intersection API uses nested submodules for asn1 encoding and decoding [usdot-jpo-ode/asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec) and kafka management. These submodules need to be initialized and updated before the API can be built and run locally. Run the following command to initialize the submodules:
 
 ```sh
 git submodule update --init --recursive
@@ -151,11 +153,15 @@ Some simple sample data is injected into the MongoDB instance when created. If m
 
 The following steps are intended to help get a new user up and running the JPO CV Manager in their own environment.
 
-1.  Follow the Requirements and Limitations section and make sure all requirements are met.
-2.  Create a copy of the sample.env named ".env" and refer to the Environmental variables section below for more information on each variable.
+1. Follow the Requirements and Limitations section and make sure all requirements are met.
+2. Run the following command to initialize submodules:
+    ```sh
+    git submodule update --init --recursive
+    ```
+3. Create a copy of the sample.env named ".env" and refer to the Environmental variables section below for more information on each variable.
     1.  Make sure at least the DOCKER_HOST_IP, KEYCLOAK_ADMIN_PASSWORD, KEYCLOAK_API_CLIENT_SECRET_KEY, and MAPBOX_TOKEN are set for this.
     2.  Some of these variables, delineated by sections, pertain to the [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor), [jpo-geojsonconverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter), and [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode). Please see the documentation provided for these projects when setting these variables.
-3.  The CV Manager has four components that need to be containerized and deployed: the API, the PostgreSQL database, Keycloak, and the webapp.
+4. The CV Manager has four components that need to be containerized and deployed: the API, the PostgreSQL database, Keycloak, and the webapp.
 
     - If you are looking to deploy the CV Manager locally, you can simply run the docker-compose, make sure to fill out the .env file to ensure it launches properly. Also, edit your host file ([How to edit the host file](<[resources/kubernetes](https://docs.rackspace.com/support/how-to/modify-your-hosts-file/)>)) and add IP address of your docker host to these custom domains (remove the carrot brackets and just put the IP address):
 
@@ -164,7 +170,7 @@ The following steps are intended to help get a new user up and running the JPO C
          <DOCKER_HOST_IP> cvmanager.local.com
          <DOCKER_HOST_IP> cvmanager.auth.com
 
-4.  Apply the docker compose to start the required components:
+5. Apply the docker compose to start the required components:
 
     ```sh
     docker compose up -d
@@ -176,7 +182,7 @@ The following steps are intended to help get a new user up and running the JPO C
     docker compose up --build -d
     ```
 
-5.  Access the website by going to:
+6. Access the website by going to:
 
     ```
       http://cvmanager.local.com
@@ -184,7 +190,7 @@ The following steps are intended to help get a new user up and running the JPO C
       Default Password: tester
     ```
 
-6.  To access keycloak go to:
+7. To access keycloak go to:
 
     ```
       http://cvmanager.auth.com:8084/
@@ -197,7 +203,9 @@ The following steps are intended to help get a new user up and running the JPO C
 ### Docker Profiles
 
 Docker compose profiles allow for the customization of services that are run. For more information on how this works, see the [Docker Compose Profiles Documentation](https://docs.docker.com/compose/profiles/).
-Services and profiles are configured using the COMPOSE_PROFILES environment variable. Multiple profiles may be specified, like COMPOSE_PROFILES=basic,webapp,intersectionThis
+Services and profiles are configured using the COMPOSE_PROFILES environment variable. Multiple profiles may be specified, like COMPOSE_PROFILES=basic,webapp,intersection
+
+In addition to the groups defined in the table below, each service may also be activated independently by specifying the service name as a profile. This can be combined with other service names or profile groups to produce unique combinations of services. For example, the entry COMPOSE_PROFILES=kafka,kafka_init,basic would bring up the kafka services and the basic CV-Manager services. To avoid breaking name changes, the conflictmonitor service can be started individually using the "conflictmonitor_only" profile.
 
 #### Profiles and Services
 
@@ -208,8 +216,6 @@ Services and profiles are configured using the COMPOSE_PROFILES environment vari
 | cvmanager_postgres                 | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌      |
 | cvmanager_keycloak                 | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌      |
 | intersection_api                   | ❌    | ❌     | ✅           | ❌                  | ❌              | ❌     | ❌      |
-| kafka                              | ❌    | ❌     | ✅           | ✅                  | ✅              | ❌     | ❌      |
-| kafka_init                         | ❌    | ❌     | ✅           | ✅                  | ✅              | ❌     | ❌      |
 | mongodb_container                  | ❌    | ❌     | ✅           | ✅                  | ✅              | ❌     | ❌      |
 | conflictmonitor                    | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
 | ode                                | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
@@ -223,6 +229,10 @@ Services and profiles are configured using the COMPOSE_PROFILES environment vari
 | firmware_manager_upgrade_runner    | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌      |
 | jpo_ota_backend                    | ❌    | ❌     | ❌           | ❌                  | ❌              | ❌     | ✅      |
 | jpo_ota_nginx                      | ❌    | ❌     | ❌           | ❌                  | ❌              | ❌     | ✅      |
+
+##### Note on Kafka
+While `kafka` and `kafka-setup` are not included in the table above, they are required for the intersection API to run. These services 
+are provided by the jpo-utils repository. To enable these services, you must include the `kafka_full` profile.
 
 ### Debugging
 
@@ -347,6 +357,10 @@ docker compose up -d cvmanager_api cvmanager_webapp cvmanager_postgres cvmanager
 - CSM_AUTH_ENABLED: Set to "true" if the SMTP server requires authentication.
 - WZDX_ENDPOINT: WZDX datafeed endpoint.
 - WZDX_API_KEY: API key for the WZDX datafeed.
+- GOOGLE_ACCESS_KEY_NAME: The required Google environment variable for authenticating with Google Cloud.
+- GCP_PROJECT_ID: The Google Cloud project ID for which the service account associated with GOOGLE_ACCESS_KEY_NAME is for.
+- MOOVE_AI_SEGMENT_AGG_STATS_TABLE: The BigQuery table name for Moove.Ai's segment aggregate statistics.
+- MOOVE_AI_SEGMENT_EVENT_STATS_TABLE: The BigQuery table name for Moove.Ai's segment event statistics.
 - TIMEZONE: Timezone to be used for the API.
 - GOOGLE_APPLICATION_CREDENTIALS: Path to the GCP service account credentials file. Attached as a volume to the CV manager API service.
 
@@ -379,6 +393,7 @@ git config --global core.autocrlf false
 - KEYCLOAK_ADMIN_PASSWORD: Admin password for Keycloak configuration.
 - KEYCLOAK_ENDPOINT: Keycloak base URL to send requests to. Reference the sample.env for the URL formatting.
 - KEYCLOAK_REALM: Keycloak Realm name.
+- KEYCLOAK_GUI_CLIENT_ID: Keycloak GUI client name (unauthorized client)
 - KEYCLOAK_API_CLIENT_ID: Keycloak API client name.
 - KEYCLOAK_API_CLIENT_SECRET_KEY: Keycloak API secret for the given client name.
 - KEYCLOAK_LOGIN_THEME_NAME: Name of the jar file to use as the theme provider in Keycloak. For generating a custom theme reference the [Keycloakify](https://github.com/CDOT-CV/keycloakify-starter) Github

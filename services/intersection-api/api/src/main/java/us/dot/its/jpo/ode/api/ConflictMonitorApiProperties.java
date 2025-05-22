@@ -30,11 +30,6 @@ import org.slf4j.LoggerFactory;
 import lombok.Getter;
 import lombok.Setter;
 
-import us.dot.its.jpo.ode.context.AppContext;
-import us.dot.its.jpo.ode.model.OdeMsgMetadata;
-import us.dot.its.jpo.ode.eventlog.EventLogger;
-import us.dot.its.jpo.ode.util.CommonUtils;
-
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serdes;
@@ -69,10 +64,8 @@ public class ConflictMonitorApiProperties {
     private String confluentSecret = null;
 
     private String version;
-    public static final int OUTPUT_SCHEMA_VERSION = 6;
     private String kafkaBrokers = null;
     private static final String DEFAULT_KAFKA_PORT = "9092";
-    private String kafkaProducerType = AppContext.DEFAULT_KAFKA_PRODUCER_TYPE;
     private String cmServerURL = "";
     private String emailBroker = "";
     private String emailFromAddress = "noreply@cimms.com";
@@ -103,8 +96,7 @@ public class ConflictMonitorApiProperties {
     private boolean enableEmails;
     private boolean enableReports;
 
-    @Autowired
-    BuildProperties buildProperties;
+    private BuildProperties buildProperties;
 
     @Getter
     @Setter
@@ -114,6 +106,11 @@ public class ConflictMonitorApiProperties {
     @Setter
     private String dockerHostIP = null;
     private static final String DEFAULT_CONNECT_PORT = "8083";
+
+    @Autowired
+    public ConflictMonitorApiProperties(BuildProperties buildProperties) {
+        this.buildProperties = buildProperties;
+    }
 
     public int getMaximumResponseSize() {
         return maximumResponseSize;
@@ -220,14 +217,6 @@ public class ConflictMonitorApiProperties {
         return enableReports;
     }
 
-    public String getKafkaProducerType() {
-        return kafkaProducerType;
-    }
-
-    public void setKafkaProducerType(String kafkaProducerType) {
-        this.kafkaProducerType = kafkaProducerType;
-    }
-
     public boolean getConfluentCloudEnabled() {
         return confluentCloudEnabled;
     }
@@ -292,6 +281,14 @@ public class ConflictMonitorApiProperties {
         this.kafkaTopicsDisabledSet = kafkaTopicsDisabledSet;
     }
 
+    private static String getEnvironmentVariable(String variableName) {
+        String value = System.getenv(variableName);
+        if (value == null || value.equals("")) {
+            System.out.println("Something went wrong retrieving the environment variable " + variableName);
+        }
+        return value;
+    }
+
     @Bean
     public ObjectMapper defaultMapper() {
         ObjectMapper objectMapper = DateJsonMapper.getInstance();
@@ -307,7 +304,6 @@ public class ConflictMonitorApiProperties {
         logger.info("groupId: {}", buildProperties.getGroup());
         logger.info("artifactId: {}", buildProperties.getArtifact());
         logger.info("version: {}", version);
-        OdeMsgMetadata.setStaticSchemaVersion(OUTPUT_SCHEMA_VERSION);
 
         uploadLocations.add(Paths.get(uploadLocationRoot));
 
@@ -320,12 +316,11 @@ public class ConflictMonitorApiProperties {
             logger.info("Unknown host error: {}, using random", e);
         }
         hostId = hostname;
-        logger.info("Host ID: {}", hostId);
-        EventLogger.logger.info("Initializing services on host {}", hostId);
+        logger.info("Initializing services on host {}", hostId);
 
         if (kafkaBrokers == null) {
 
-            String dockerIp = CommonUtils.getEnvironmentVariable("DOCKER_HOST_IP");
+            String dockerIp = getEnvironmentVariable("DOCKER_HOST_IP");
 
             logger.info("ode.kafkaBrokers property not defined. Will try DOCKER_HOST_IP => {}", kafkaBrokers);
 
@@ -343,21 +338,21 @@ public class ConflictMonitorApiProperties {
             }
         }
 
-        String kafkaType = CommonUtils.getEnvironmentVariable("KAFKA_TYPE");
+        String kafkaType = getEnvironmentVariable("KAFKA_TYPE");
         if (kafkaType != null) {
             confluentCloudEnabled = kafkaType.equals("CONFLUENT");
             if (confluentCloudEnabled) {
 
                 logger.info("Enabling Confluent Cloud Integration");
 
-                confluentKey = CommonUtils.getEnvironmentVariable("CONFLUENT_KEY");
-                confluentSecret = CommonUtils.getEnvironmentVariable("CONFLUENT_SECRET");
+                confluentKey = getEnvironmentVariable("CONFLUENT_KEY");
+                confluentSecret = getEnvironmentVariable("CONFLUENT_SECRET");
             }
         }
 
         // Initialize the Kafka Connect URL
         if (connectURL == null) {
-            String dockerIp = CommonUtils.getEnvironmentVariable("DOCKER_HOST_IP");
+            String dockerIp = getEnvironmentVariable("DOCKER_HOST_IP");
             if (dockerIp == null) {
                 dockerIp = "localhost";
             }

@@ -1,41 +1,12 @@
+@import 'https://use.typekit.net/ioz0eth.css';
+
 #help {
   width: '100%';
   padding-bottom: 5em;
 }
 
-.helpHeader {
+h2 {
   padding-top: 3vh;
-  padding-bottom: 1vh;
-  text-align: center;
-  font-family: sans-serif;
-}
-
-.spacer {
-  margin-top: 3vh;
-}
-
-.pHelp {
-  margin-left: 2em;
-  margin-right: 2em;
-  size: 12px;
-  font-family: sans-serif;
-}
-
-#supportMenuParent {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  position: fixed;
-  bottom: 0;
-  z-index: 1000;
-}
-
-#supportMenuContainer {
-  display: inline-block;
-  margin-bottom: 10px;
-  text-align: center;
-  width: fit-content;
-  height: fit-content;
-  text-align: center;
+  padding-bottom: 2vh;
+  font-family: 'museo-slab', sans-serif;
 }

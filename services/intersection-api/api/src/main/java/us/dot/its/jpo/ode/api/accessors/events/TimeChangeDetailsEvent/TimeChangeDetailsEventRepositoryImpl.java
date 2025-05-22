@@ -17,60 +17,96 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
 
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import us.dot.its.jpo.ode.api.accessors.IntersectionCriteria;
+import us.dot.its.jpo.ode.api.accessors.PageableQuery;
+
 import us.dot.its.jpo.ode.api.models.IDCount;
 
 @Component
-public class TimeChangeDetailsEventRepositoryImpl implements TimeChangeDetailsEventRepository {
+public class TimeChangeDetailsEventRepositoryImpl
+        implements TimeChangeDetailsEventRepository, PageableQuery {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
-
-    @Autowired
-    ConflictMonitorApiProperties props;
+    private final MongoTemplate mongoTemplate;
 
     private final String collectionName = "CmSpatTimeChangeDetailsEvent";
+    private final String DATE_FIELD = "eventGeneratedAt";
+    private final String INTERSECTION_ID_FIELD = "intersectionID";
 
-    public Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest) {
-        Query query = new Query();
-
-        if (intersectionID != null) {
-            query.addCriteria(Criteria.where("intersectionID").is(intersectionID));
-        }
-        Date startTimeDate = new Date(0);
-        Date endTimeDate = new Date();
-
-        if (startTime != null) {
-            startTimeDate = new Date(startTime);
-        }
-        if (endTime != null) {
-            endTimeDate = new Date(endTime);
-        }
-
-        query.addCriteria(Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate));
-        if (latest) {
-            query.with(Sort.by(Sort.Direction.DESC, "eventGeneratedAt"));
-            query.limit(1);
-        } else {
-            query.limit(props.getMaximumResponseSize());
-        }
-        return query;
+    @Autowired
+    public TimeChangeDetailsEventRepositoryImpl(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
     }
 
-    public long getQueryResultCount(Query query) {
-        return mongoTemplate.count(query, TimeChangeDetailsEvent.class, collectionName);
+    /**
+     * Get a page representing the count of data for a given intersectionID,
+     * startTime, and endTime
+     *
+     * @param intersectionID the intersection ID to query by, if null will not be
+     *                       applied
+     * @param startTime      the start time to query by, if null will not be applied
+     * @param endTime        the end time to query by, if null will not be applied
+     * @return the paginated data that matches the given criteria
+     */
+    public long count(
+            Integer intersectionID,
+            Long startTime,
+            Long endTime) {
+        Criteria criteria = new IntersectionCriteria()
+                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
+        Query query = Query.query(criteria);
+        return mongoTemplate.count(query, collectionName);
     }
 
-    public long getQueryFullCount(Query query) {
-        int limit = query.getLimit();
-        query.limit(-1);
-        long count = mongoTemplate.count(query, TimeChangeDetailsEvent.class, collectionName);
-        query.limit(limit);
-        return count;
+    /**
+     * Get a page containing the single most recent record for a given
+     * intersectionID, startTime, and endTime
+     *
+     * @param intersectionID the intersection ID to query by, if null will not be
+     *                       applied
+     * @param startTime      the start time to query by, if null will not be applied
+     * @param endTime        the end time to query by, if null will not be applied
+     * @return the paginated data that matches the given criteria
+     */
+    public Page<TimeChangeDetailsEvent> findLatest(
+            Integer intersectionID,
+            Long startTime,
+            Long endTime) {
+        Criteria criteria = new IntersectionCriteria()
+                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
+        Query query = Query.query(criteria);
+        Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
+        return wrapSingleResultWithPage(
+                mongoTemplate.findOne(
+                        query.with(sort),
+                        TimeChangeDetailsEvent.class,
+                        collectionName));
     }
 
-    public List<TimeChangeDetailsEvent> find(Query query) {
-        return mongoTemplate.find(query, TimeChangeDetailsEvent.class, collectionName);
+    /**
+     * Get paginated data from a given intersectionID, startTime, and endTime
+     *
+     * @param intersectionID the intersection ID to query by, if null will not be
+     *                       applied
+     * @param startTime      the start time to query by, if null will not be applied
+     * @param endTime        the end time to query by, if null will not be applied
+     * @param pageable       the pageable object to use for pagination
+     * @return the paginated data that matches the given criteria
+     */
+    public Page<TimeChangeDetailsEvent> find(
+            Integer intersectionID,
+            Long startTime,
+            Long endTime,
+            Pageable pageable) {
+        Criteria criteria = new IntersectionCriteria()
+                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
+        Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null, TimeChangeDetailsEvent.class);
     }
 
     public List<IDCount> getAggregatedDailyTimeChangeDetailsEventCounts(int intersectionID, Long startTime,

@@ -1,11 +1,10 @@
 package us.dot.its.jpo.ode.api.controllers;
 
-import java.util.List;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,11 +29,16 @@ import us.dot.its.jpo.ode.api.services.ReportService;
 })
 public class ReportController {
 
-    @Autowired
-    ReportService reportService;
+    private final ReportService reportService;
+    private final ReportRepository reportRepo;
 
     @Autowired
-    ReportRepository reportRepo;
+    public ReportController(
+            ReportService reportService,
+            ReportRepository reportRepo) {
+        this.reportService = reportService;
+        this.reportRepo = reportRepo;
+    }
 
     @Operation(summary = "Generate a Report", description = "Generates a new report for the intersection specified, within the start and end time. This can take upwards of 15 minutes to complete for longer reports")
     @RequestMapping(value = "/reports/generate", method = RequestMethod.GET, produces = "application/octet-stream")
@@ -45,17 +49,11 @@ public class ReportController {
     })
     public byte[] generateReport(
             @RequestParam(name = "intersection_id") int intersectionID,
-            @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
             @RequestParam(name = "start_time_utc_millis") long startTime,
             @RequestParam(name = "end_time_utc_millis") long endTime) {
         log.debug("Generating Report");
 
-        if (roadRegulatorID == null) {
-            roadRegulatorID = -1;
-        }
-
-        ReportDocument document = reportService.buildReport(intersectionID, roadRegulatorID.toString(), startTime,
-                endTime);
+        ReportDocument document = reportService.buildReport(intersectionID, startTime, endTime);
 
         return document.getReportContents();
     }
@@ -67,17 +65,24 @@ public class ReportController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role"),
     })
-    public ResponseEntity<List<ReportDocument>> listReports(
+    public ResponseEntity<Page<ReportDocument>> listReports(
             @RequestParam(name = "report_name", required = false) String reportName,
             @RequestParam(name = "intersection_id") int intersectionID,
             @RequestParam(name = "start_time_utc_millis") long startTime,
             @RequestParam(name = "end_time_utc_millis") long endTime,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "latest") boolean latest) {
 
-        Query query = reportRepo.getQuery(reportName, intersectionID, startTime, endTime,
-                false,
-                latest);
-        return ResponseEntity.ok(reportRepo.find(query));
+        if (latest) {
+            return ResponseEntity.ok(reportRepo.findLatest(reportName, intersectionID, startTime, endTime, false));
+        } else {
+            // Retrieve a paginated result from the repository
+            PageRequest pageable = PageRequest.of(page, size);
+            Page<ReportDocument> response = reportRepo.find(reportName, intersectionID, startTime, endTime,
+                    false, pageable);
+            return ResponseEntity.ok(response);
+        }
     }
 
     @Operation(summary = "Download a Report", description = "Returns the a report by name, as aggregated data")
@@ -91,15 +96,12 @@ public class ReportController {
     public ResponseEntity<byte[]> downloadReport(
             @RequestParam(name = "report_name") String reportName) {
 
-        Query query = reportRepo.getQuery(reportName, null, null, null, true, true);
+        Page<ReportDocument> reports = reportRepo.findLatest(reportName, null, null, null, true);
 
-        log.debug("Returning archived report for download");
-
-        List<ReportDocument> reports = reportRepo.find(query);
         if (!reports.isEmpty()) {
             return ResponseEntity.ok()
                     .header("Content-Disposition", "attachment; filename=\"" + reportName + "\"")
-                    .body(reports.getFirst().getReportContents());
+                    .body(reports.getContent().getFirst().getReportContents());
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }

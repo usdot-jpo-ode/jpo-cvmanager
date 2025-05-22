@@ -24,43 +24,52 @@ import java.util.stream.Collectors;
 public class DecoderManager {
 
     public static final Map<String, Pair<MessageType, Integer>> startFlagsToTypesAndSizes = Map.of(
-        "0014", Pair.of(MessageType.BSM, 500),
-        "0012", Pair.of(MessageType.MAP, 2048),
-        "0013", Pair.of(MessageType.SPAT, 1000),
-        "001d", Pair.of(MessageType.SRM, 500),
-        "001e", Pair.of(MessageType.SSM, 500),
-        "001f", Pair.of(MessageType.TIM, 500)
-    );
+            "0014", Pair.of(MessageType.BSM, 500),
+            "0012", Pair.of(MessageType.MAP, 2048),
+            "0013", Pair.of(MessageType.SPAT, 1000),
+            "001d", Pair.of(MessageType.SRM, 500),
+            "001e", Pair.of(MessageType.SSM, 500),
+            "001f", Pair.of(MessageType.TIM, 500));
     public static final Map<MessageType, String> typesToStartFlags = startFlagsToTypesAndSizes.entrySet().stream()
-        .collect(Collectors.toMap(entry -> entry.getValue().getLeft(), Map.Entry::getKey));
+            .collect(Collectors.toMap(entry -> entry.getValue().getLeft(), Map.Entry::getKey));
     public static final int HEADER_MINIMUM_SIZE = 20;
 
-    @Autowired
-    public BsmDecoder bsmDecoder;
+    private final BsmDecoder bsmDecoder;
+    private final MapDecoder mapDecoder;
+    private final SpatDecoder spatDecoder;
+    private final SrmDecoder srmDecoder;
+    private final SsmDecoder ssmDecoder;
+    private final TimDecoder timDecoder;
 
     @Autowired
-    public MapDecoder mapDecoder;
+    public DecoderManager(
+            BsmDecoder bsmDecoder,
+            MapDecoder mapDecoder,
+            SpatDecoder spatDecoder,
+            SrmDecoder srmDecoder,
+            SsmDecoder ssmDecoder,
+            TimDecoder timDecoder) {
+        this.bsmDecoder = bsmDecoder;
+        this.mapDecoder = mapDecoder;
+        this.spatDecoder = spatDecoder;
+        this.srmDecoder = srmDecoder;
+        this.ssmDecoder = ssmDecoder;
+        this.timDecoder = timDecoder;
 
-    @Autowired
-    public SpatDecoder spatDecoder;
-
-    @Autowired
-    public SrmDecoder srmDecoder;
-
-    @Autowired
-    public SsmDecoder ssmDecoder;
-
-    @Autowired
-    public TimDecoder timDecoder;
-
+    }
 
     /**
-     * This function takes in an Encoded message object, and decodes it into a DecodedMessage Object. 
+     * This function takes in an Encoded message object, and decodes it into a
+     * DecodedMessage Object.
      * During the decoding process this function performs the following
      * Remove Message Headers
      * Pass the Message to the ACM module for Decoding
-     * Pass the message to the appropriate Message type decoder to be converted to the correct J2735 and Processed- message formats. 
-     * @return A DecodedMessage object representing the object in its multiple representations. This includes, asn.1, ODEJsonFormat, and Processed formats for available message types.
+     * Pass the message to the appropriate Message type decoder to be converted to
+     * the correct J2735 and Processed- message formats.
+     * 
+     * @return A DecodedMessage object representing the object in its multiple
+     *         representations. This includes, asn.1, ODEJsonFormat, and Processed
+     *         formats for available message types.
      */
     public DecodedMessage decode(EncodedMessage message) {
         final String payload = removeHeader(message.getAsn1Message(), message.getType());
@@ -71,25 +80,33 @@ public class DecoderManager {
                     "Unable to find valid message start flag within input data");
         }
 
-        final Decoder decoder = switch(message.getType()) {
-            case MessageType.BSM: yield bsmDecoder;
-            case MessageType.MAP: yield mapDecoder;
-            case MessageType.SPAT: yield spatDecoder;
-            case MessageType.SRM: yield srmDecoder;
-            case MessageType.SSM: yield ssmDecoder;
-            case MessageType.TIM: yield timDecoder;
-            case MessageType.UNKNOWN: yield null;
+        final Decoder decoder = switch (message.getType()) {
+            case MessageType.BSM:
+                yield bsmDecoder;
+            case MessageType.MAP:
+                yield mapDecoder;
+            case MessageType.SPAT:
+                yield spatDecoder;
+            case MessageType.SRM:
+                yield srmDecoder;
+            case MessageType.SSM:
+                yield ssmDecoder;
+            case MessageType.TIM:
+                yield timDecoder;
+            case MessageType.UNKNOWN:
+                yield null;
         };
         if (decoder == null) {
             return new DecodedMessage(payload, message.getType(), "No Valid Decoder found for Message Type UNKNOWN");
-        }
-        else {
+        } else {
             return decoder.decode(message);
         }
     }
 
     /**
-     * This is a helper function to return the current time as an ISO formatted String
+     * This is a helper function to return the current time as an ISO formatted
+     * String
+     * 
      * @return An ISO formatted string representing the current time
      */
     public static String getCurrentIsoTimestamp() {
@@ -98,17 +115,22 @@ public class DecoderManager {
     }
 
     /**
-     * This returns a static string representing the "Origin IP" for user-uploaded data
+     * This returns a static string representing the "Origin IP" for user-uploaded
+     * data
+     * 
      * @return "user-upload"
      */
     public static String getStaticUserOriginIp() {
         return "user-upload";
     }
 
-
     /**
-     * This returns a Hex Encoded ASN.1 String where any header bytes before the message frame type bytes have been removed.
-     * @return A hexadecimal string representing an ASN.1 encoded message. The first 4 characters of the hex string should correspond to an ASN.1 message type. 
+     * This returns a Hex Encoded ASN.1 String where any header bytes before the
+     * message frame type bytes have been removed.
+     * 
+     * @return A hexadecimal string representing an ASN.1 encoded message. The first
+     *         4 characters of the hex string should correspond to an ASN.1 message
+     *         type.
      */
     public static String removeHeader(String hexPacket, MessageType type) {
 
@@ -116,9 +138,11 @@ public class DecoderManager {
 
         int startIndex = hexPacket.indexOf(startFlag);
 
-        return switch(startIndex) {
-            case 0: yield hexPacket; // Raw Message no Headers
-            case -1: yield null;
+        return switch (startIndex) {
+            case 0:
+                yield hexPacket; // Raw Message no Headers
+            case -1:
+                yield null;
             default:
                 // We likely found a message with a header, look past the first 20
                 // bytes for the start of the message
@@ -129,8 +153,12 @@ public class DecoderManager {
     }
 
     /**
-     * This method takes in a hex encoded ASN.1 packet and returns the message type that matches the corresponding method. 
-     * @return An EncodedMessage object containing a String representing the hex encoded asn.1 and MessageType object representing MAP, SPaT, BSM, etc. 
+     * This method takes in a hex encoded ASN.1 packet and returns the message type
+     * that matches the corresponding method.
+     * 
+     * @return An EncodedMessage object containing a String representing the hex
+     *         encoded asn.1 and MessageType object representing MAP, SPaT, BSM,
+     *         etc.
      */
     public static EncodedMessage identifyAsn1(String hexPacket) {
 
@@ -187,8 +215,11 @@ public class DecoderManager {
     }
 
     /**
-     * The input to this function is an XML String containing the asn.1 of an encoded message as well as ODE metadata fields. 
-     * This function passes the XML string to the ACM module which returns back an XML object representing the J2735 Encoded Message.
+     * The input to this function is an XML String containing the asn.1 of an
+     * encoded message as well as ODE metadata fields.
+     * This function passes the XML string to the ACM module which returns back an
+     * XML object representing the J2735 Encoded Message.
+     * 
      * @return An xml string containing the Decoded ASN.1 from the input xml
      */
     public static String decodeXmlWithAcm(String xmlMessage) throws Exception {
@@ -214,8 +245,7 @@ public class DecoderManager {
             log.info("Decode Result: {}", result);
 
             return result;
-        }
-        finally {
+        } finally {
             // Clean up temp file
             boolean deleteResult = tempFile.delete();
             if (!deleteResult) {

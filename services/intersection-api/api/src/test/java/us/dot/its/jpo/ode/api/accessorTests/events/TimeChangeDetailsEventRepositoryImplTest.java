@@ -7,14 +7,24 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.bson.Document;
@@ -38,6 +48,9 @@ public class TimeChangeDetailsEventRepositoryImplTest {
     @Mock
     private MongoTemplate mongoTemplate;
 
+    @Mock
+    private Page<TimeChangeDetailsEvent> mockPage;
+
     @InjectMocks
     private TimeChangeDetailsEventRepositoryImpl repository;
 
@@ -49,53 +62,40 @@ public class TimeChangeDetailsEventRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        repository = new TimeChangeDetailsEventRepositoryImpl(mongoTemplate);
     }
 
     @Test
-    public void testGetQuery() {
-
-        Query query = repository.getQuery(intersectionID, startTime, endTime, latest);
-
-        // Assert IntersectionID
-        assertThat(query.getQueryObject().get("intersectionID")).isEqualTo(intersectionID);
-
-        // Assert Start and End Time
-        Document queryTimeDocument = (Document) query.getQueryObject().get("eventGeneratedAt");
-        assertThat(queryTimeDocument.getDate("$gte")).isEqualTo(new Date(startTime));
-        assertThat(queryTimeDocument.getDate("$lte")).isEqualTo(new Date(endTime));
-
-        // Assert sorting and limit
-        assertThat(query.getSortObject().keySet().contains("eventGeneratedAt")).isTrue();
-        assertThat(query.getSortObject().get("eventGeneratedAt")).isEqualTo(-1);
-        assertThat(query.getLimit()).isEqualTo(1);
-
-    }
-
-    @Test
-    public void testGetQueryResultCount() {
-        Query query = new Query();
+    public void testCount() {
         long expectedCount = 10;
 
-        Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString()))
-                .thenReturn(expectedCount);
+        when(mongoTemplate.count(any(),
+                Mockito.<String>any())).thenReturn(expectedCount);
 
-        long resultCount = repository.getQueryResultCount(query);
+        long resultCount = repository.count(1, null, null);
 
         assertThat(resultCount).isEqualTo(expectedCount);
-        Mockito.verify(mongoTemplate).count(Mockito.eq(query), Mockito.any(), Mockito.anyString());
+        verify(mongoTemplate).count(any(Query.class), anyString());
     }
 
     @Test
-    public void testFindTimeChangeDetailsEvents() {
-        Query query = new Query();
-        List<TimeChangeDetailsEvent> expected = new ArrayList<>();
+    public void testFind() {
+        TimeChangeDetailsEventRepositoryImpl repo = mock(TimeChangeDetailsEventRepositoryImpl.class);
 
-        Mockito.doReturn(expected).when(mongoTemplate).find(query, TimeChangeDetailsEvent.class,
-                "CmTimeChangeDetailsEvents");
+        when(repo.findPage(
+                any(),
+                any(),
+                any(PageRequest.class),
+                any(Criteria.class),
+                any(Sort.class),
+                any(),
+                eq(TimeChangeDetailsEvent.class))).thenReturn(mockPage);
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        doCallRealMethod().when(repo).find(1, null, null, pageRequest);
 
-        List<TimeChangeDetailsEvent> results = repository.find(query);
+        Page<TimeChangeDetailsEvent> results = repo.find(1, null, null, pageRequest);
 
-        assertThat(results).isEqualTo(expected);
+        assertThat(results).isEqualTo(mockPage);
     }
 
     @Test

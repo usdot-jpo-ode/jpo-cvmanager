@@ -39,8 +39,8 @@ bad_input = {
 }
 
 user_insert_query = (
-    "INSERT INTO public.users(email, first_name, last_name, super_user) "
-    "VALUES ('jdoe@example.com', 'John', 'Doe', '1')"
+    "INSERT INTO public.users(email, first_name, last_name, super_user, created_timestamp) "
+    "VALUES ('jdoe@example.com', 'John', 'Doe', '1', 1678901234000)"
 )
 
 user_org_insert_query = (

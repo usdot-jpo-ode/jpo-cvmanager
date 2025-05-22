@@ -11,6 +11,7 @@ public interface DefaultConfigRepository {
 
     long getQueryResultCount(Query query);
 
+    @SuppressWarnings("rawtypes")
     List<DefaultConfig> find(Query query);
 
     void save(DefaultConfig<?> config);

@@ -1,14 +1,12 @@
 package us.dot.its.jpo.ode.api.accessors.spat;
 
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.domain.Page;
 
 import us.dot.its.jpo.ode.api.models.DataLoader;
 import us.dot.its.jpo.ode.model.OdeSpatData;
 
 public interface OdeSpatDataRepository extends DataLoader<OdeSpatData> {
-    Query getQuery(Integer intersectionID, Long startTime, Long endTime, boolean latest);
+    long count(Integer intersectionID, Long startTime, Long endTime);
 
-    long getQueryResultCount(Query query);
-
-    long getQueryFullCount(Query query);
+    Page<OdeSpatData> findLatest(Integer intersectionID, Long startTime, Long endTime);
 }

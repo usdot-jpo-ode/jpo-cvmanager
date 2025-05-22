@@ -1,3 +1,5 @@
+@import 'https://use.typekit.net/ioz0eth.css';
+
 #toggle {
   border: none;
   padding: 1px 10px;
@@ -23,7 +25,7 @@
 }
 
 #ssmsrmDataHeader {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
   font-weight: bolder;
   margin: 15px;
   margin-top: 25px;
@@ -48,13 +50,13 @@
 }
 
 #countsHeader {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
   font-weight: bolder;
   margin: 10px;
 }
 
 #countsData {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
   font-weight: bold;
   width: 90px;
   padding: 5px;
@@ -62,28 +64,28 @@
 }
 
 #ssmTimeHeader {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
   font-weight: bold;
   width: 100px;
   margin-left: 20px;
 }
 
 #requestHeader {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
   font-weight: bold;
   width: 100px;
   margin-left: 20px;
 }
 
 #roleHeader {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
   font-weight: bold;
   width: 90px;
   margin-left: 40px;
 }
 
 #ssmSrmHeader {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
   font-weight: bold;
   width: 100px;
 }

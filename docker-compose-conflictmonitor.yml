@@ -2,6 +2,7 @@ services:
   conflictmonitor:
     profiles:
       - conflictmonitor
+      - conflictmonitor_only
     image: usdotjpoode/jpo-conflictmonitor:latest
     restart: ${RESTART_POLICY}
     ports:
@@ -26,10 +27,13 @@ services:
       kafka:
         condition: service_healthy
         required: false
+      kafka-setup:
+        condition: service_started
 
   ode:
     profiles:
       - conflictmonitor
+      - ode
     image: usdotjpoode/jpo-ode:latest
     restart: ${RESTART_POLICY}
     ports:
@@ -74,6 +78,7 @@ services:
   geojsonconverter:
     profiles:
       - conflictmonitor
+      - geojsonconverter
     image: usdotjpoode/geojsonconverter:latest
     restart: ${RESTART_POLICY}
     deploy:
@@ -97,6 +102,7 @@ services:
   connect:
     profiles:
       - conflictmonitor
+      - connect
     image: cp-kafka-connect:6.1.9
     build:
       context: ./resources/connect_scripts
@@ -108,10 +114,10 @@ services:
     depends_on:
       mongodb_container:
         condition: service_healthy
+        required: false
       kafka:
-        condition: service_started
-      conflictmonitor:
-        condition: service_started
+        condition: service_healthy
+        required: false
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
       DB_HOST_IP: ${DB_HOST_IP}

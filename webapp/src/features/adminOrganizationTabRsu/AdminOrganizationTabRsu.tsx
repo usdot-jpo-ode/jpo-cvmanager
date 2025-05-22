@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import AdminTable from '../../components/AdminTable'
-import { AiOutlinePlusCircle } from 'react-icons/ai'
-import { Divider } from '@mui/material'
+import { Button, Typography, useTheme } from '@mui/material'
 import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
-import Typography from '@mui/material/Typography'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import { Multiselect } from 'react-widgets'
 import { confirmAlert } from 'react-confirm-alert'
 import { Options } from '../../components/AdminDeletionOptions'
 import {
@@ -30,7 +27,9 @@ import { RootState } from '../../store'
 import { Action, Column } from '@material-table/core'
 import { AdminOrgRsu } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import toast from 'react-hot-toast'
-import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
+import { AddCircleOutline, DeleteOutline } from '@mui/icons-material'
+import { Multiselect } from 'react-widgets/cjs'
+import '../css/multiselect.css'
 
 interface AdminOrganizationTabRsuProps {
   selectedOrg: string
@@ -42,6 +41,7 @@ interface AdminOrganizationTabRsuProps {
 const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
   const { selectedOrg, selectedOrgEmail, updateTableData } = props
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const theme = useTheme()
 
   const availableRsuList = useSelector(selectAvailableRsuList)
   const selectedRsuList = useSelector(selectSelectedRsuList)
@@ -54,8 +54,10 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
 
   let rsuActions: Action<AdminOrgRsu>[] = [
     {
-      icon: 'delete',
-      tooltip: 'Remove From Organization',
+      icon: () => <DeleteOutline sx={{ color: theme.palette.custom.rowActionIcon }} />,
+      iconProps: {
+        itemType: 'rowAction',
+      },
       position: 'row',
       onClick: (event, rowData: AdminOrgRsu) => {
         const buttons = [
@@ -73,6 +75,10 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
     {
       tooltip: 'Remove All Selected From Organization',
       icon: 'delete',
+      iconProps: {
+        itemType: 'rowAction',
+      },
+      position: 'toolbarOnSelect',
       onClick: (event, rowData: AdminOrgRsu[]) => {
         const buttons = [
           { label: 'Yes', onClick: () => rsuMultiDelete(rowData) },
@@ -85,6 +91,38 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
         )
         confirmAlert(alertOptions)
       },
+    },
+    {
+      position: 'toolbar',
+      iconProps: {
+        itemType: 'displayIcon',
+      },
+      icon: () => (
+        <Multiselect
+          dataKey="id"
+          textField="ip"
+          placeholder="Click to add RSUs"
+          data={availableRsuList}
+          value={selectedRsuList}
+          onChange={(value) => {
+            dispatch(setSelectedRsuList(value))
+          }}
+          style={{
+            fontSize: '1rem',
+          }}
+        />
+      ),
+      onClick: () => {},
+    },
+    {
+      position: 'toolbar',
+      iconProps: {
+        title: 'Add RSU',
+        color: 'primary',
+        itemType: 'contained',
+      },
+      icon: () => <AddCircleOutline />,
+      onClick: () => rsuMultiAdd(selectedRsuList),
     },
   ]
 
@@ -114,6 +152,10 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
   }
 
   const rsuMultiAdd = async (rsuList: AdminOrgRsu[]) => {
+    if (rsuList.length === 0) {
+      toast.error('Please select RSUs to add')
+      return
+    }
     dispatch(rsuAddMultiple({ rsuList, selectedOrg, selectedOrgEmail, updateTableData })).then((data) => {
       if (!(data.payload as any).success) {
         toast.error((data.payload as any).message)
@@ -125,43 +167,14 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
 
   return (
     <div className="accordion">
-      <Accordion className="accordion-content">
+      <Accordion className="accordion-content" elevation={0}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
-          <Typography variant="h6">{selectedOrg} RSUs</Typography>
+          <Typography variant="h6">RSUs</Typography>
         </AccordionSummary>
-        <AccordionDetails>
+        <AccordionDetails sx={{ padding: '8px 0px' }}>
           {loadingGlobal === false && [
-            <div key="accordion" style={{ marginBottom: 10 }}>
-              <div style={{ display: 'flex' }}>
-                <Multiselect
-                  className="org-multiselect"
-                  dataKey="id"
-                  textField="ip"
-                  placeholder="Click to add RSUs"
-                  data={availableRsuList}
-                  value={selectedRsuList}
-                  onChange={(value) => {
-                    dispatch(setSelectedRsuList(value))
-                  }}
-                />
-
-                <ContainedIconButton
-                  key="rsu_plus_button"
-                  onClick={() => rsuMultiAdd(selectedRsuList)}
-                  title="Add RSUs To Organization"
-                >
-                  <AiOutlinePlusCircle size={20} />
-                </ContainedIconButton>
-              </div>
-            </div>,
-            <Divider />,
             <div key="adminTable">
-              <AdminTable
-                title={'Modify RSU-Organization Assignment'}
-                data={props.tableData}
-                columns={rsuColumns}
-                actions={rsuActions}
-              />
+              <AdminTable title={''} data={props.tableData} columns={rsuColumns} actions={rsuActions} />
             </div>,
           ]}
         </AccordionDetails>

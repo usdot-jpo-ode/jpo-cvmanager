@@ -10,6 +10,7 @@ import {
   mapFormToRequestJson,
 
   // reducers
+  clear,
   setSelectedOrganizations,
   setSelectedRsus,
   updateStates,
@@ -434,14 +435,25 @@ describe('reducers', () => {
   const initialState: RootState['adminEditIntersection'] = {
     loading: null,
     value: {
-      apiData: null,
-      organizations: null,
-      selectedOrganizations: null,
-      rsus: null,
-      selectedRsus: null,
-      submitAttempt: null,
+      apiData: {} as undefined,
+      organizations: [] as { name: string }[],
+      selectedOrganizations: [] as { name: string }[],
+      rsus: [] as { name: string }[],
+      selectedRsus: [] as { name: string }[],
+      submitAttempt: false,
     },
   }
+
+  it('clear reducer updates state correctly', async () => {
+    const selectedOrganizations = [{ name: 'selectedOrganizations' }]
+
+    expect(reducer({ ...initialState, value: { ...initialState.value, selectedOrganizations } }, clear())).toEqual({
+      ...initialState,
+      value: {
+        ...initialState.value,
+      },
+    })
+  })
 
   it('setSelectedOrganizations reducer updates state correctly', async () => {
     const selectedOrganizations = 'selectedOrganizations'

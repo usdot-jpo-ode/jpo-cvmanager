@@ -1,6 +1,40 @@
+@import 'https://use.typekit.net/ioz0eth.css';
+
+@font-face {
+  font-family: 'Trebuchet MS';
+  src: local('Trebuchet MS'), url('./fonts/Trebuchet\ MS.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Trebuchet MS';
+  src: local('Trebuchet MS'), url('./fonts/Trebuchet\ MS\ Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Trebuchet MS';
+  src: local('Trebuchet MS'), url('./fonts/Trebuchet\ MS\ Italic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Trebuchet MS';
+  src: local('Trebuchet MS'), url('./fonts/Trebuchet\ MS\ Bold\ Italic.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
+}
+
 * {
   margin: 0;
   padding: 0;
+}
+
+body {
+  overflow-y: hidden;
 }
 
 #masterdiv {
@@ -9,7 +43,11 @@
 }
 
 header {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
+}
+
+p {
+  font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;
 }
 
 .popop-h2 {
@@ -33,4 +71,20 @@ header {
 
 #unauthMap {
   width: 100%;
+}
+
+.capital-case {
+  text-transform: capitalize;
+}
+
+.museo-slab {
+  font-family: 'museo-slab', Arial, Helvetica, sans-serif;
+}
+
+.capitalize {
+  text-transform: uppercase;
+}
+
+.trebuchet {
+  font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;
 }

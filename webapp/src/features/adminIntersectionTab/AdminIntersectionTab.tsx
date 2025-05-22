@@ -2,8 +2,6 @@ import React from 'react'
 import AdminAddIntersection from '../adminAddIntersection/AdminAddIntersection'
 import AdminEditIntersection, { AdminEditIntersectionFormType } from '../adminEditIntersection/AdminEditIntersection'
 import AdminTable from '../../components/AdminTable'
-import { IoRefresh } from 'react-icons/io5'
-import { AiOutlinePlusCircle } from 'react-icons/ai'
 import { confirmAlert } from 'react-confirm-alert'
 import { Options } from '../../components/AdminDeletionOptions'
 import {
@@ -17,6 +15,7 @@ import {
   setEditIntersectionRowData,
   selectColumns,
 } from './adminIntersectionTabSlice'
+import { clear, getIntersectionInfo } from '../adminEditIntersection/adminEditIntersectionSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
@@ -25,26 +24,13 @@ import { Action } from '@material-table/core'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
 import toast from 'react-hot-toast'
-import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
-
-const getTitle = (activeTab: string) => {
-  if (activeTab === undefined) {
-    return 'CV Manager Intersections'
-  } else if (activeTab === 'editIntersection') {
-    return ''
-  } else if (activeTab === 'addIntersection') {
-    return ''
-  }
-  return 'Unknown'
-}
+import { DeleteOutline, ModeEditOutline } from '@mui/icons-material'
+import { useTheme } from '@mui/material'
 
 const AdminIntersectionTab = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const navigate = useNavigate()
-  const location = useLocation()
-
-  const activeTab = location.pathname.split('/')[4]
-  const title = getTitle(activeTab)
+  const theme = useTheme()
 
   const tableData = useSelector(selectTableData)
   const columns = useSelector(selectColumns)
@@ -53,8 +39,18 @@ const AdminIntersectionTab = () => {
 
   const tableActions: Action<AdminEditIntersectionFormType>[] = [
     {
-      icon: 'delete',
-      tooltip: 'Delete Intersection',
+      icon: () => <ModeEditOutline sx={{ color: theme.palette.custom.rowActionIcon }} />,
+      position: 'row',
+      iconProps: {
+        itemType: 'rowAction',
+      },
+      onClick: (_, rowData: AdminEditIntersectionFormType) => onEdit(rowData),
+    },
+    {
+      icon: () => <DeleteOutline sx={{ color: theme.palette.custom.rowActionIcon }} />,
+      iconProps: {
+        itemType: 'rowAction',
+      },
       position: 'row',
       onClick: (_, rowData: AdminEditIntersectionFormType) => {
         const buttons = [
@@ -70,14 +66,12 @@ const AdminIntersectionTab = () => {
       },
     },
     {
-      icon: 'edit',
-      tooltip: 'Edit Intersection',
-      position: 'row',
-      onClick: (_, rowData: AdminEditIntersectionFormType) => onEdit(rowData),
-    },
-    {
       tooltip: 'Remove All Selected From Organization',
       icon: 'delete',
+      position: 'toolbarOnSelect',
+      iconProps: {
+        itemType: 'rowAction',
+      },
       onClick: (_, rowData: AdminEditIntersectionFormType[]) => {
         const buttons = [
           { label: 'Yes', onClick: () => multiDelete(rowData) },
@@ -91,9 +85,37 @@ const AdminIntersectionTab = () => {
         confirmAlert(alertOptions)
       },
     },
+    {
+      icon: () => null,
+      position: 'toolbar',
+      iconProps: {
+        title: 'Refresh',
+        color: 'info',
+        itemType: 'outlined',
+      },
+      onClick: () => {
+        updateTableData()
+      },
+    },
+    {
+      icon: () => null,
+      position: 'toolbar',
+      iconProps: {
+        title: 'New',
+        color: 'primary',
+        itemType: 'contained',
+      },
+      onClick: () => {
+        navigate('addIntersection')
+      },
+    },
   ]
 
   const onEdit = (row: AdminEditIntersectionFormType) => {
+    // Fetch the intersection info before navigating to ensure updated menu state
+    dispatch(clear())
+    dispatch(getIntersectionInfo(row.intersection_id))
+
     dispatch(setEditIntersectionRowData(row))
     navigate('editIntersection/' + row.intersection_id)
   }
@@ -116,43 +138,6 @@ const AdminIntersectionTab = () => {
 
   return (
     <div>
-      <div>
-        <h3 className="panel-header" key="adminIntersectionTab">
-          {title}
-          {activeTab === undefined && [
-            <>
-              <ContainedIconButton
-                key="plus_button"
-                onClick={() => navigate('addIntersection')}
-                title="Add Intersection"
-                sx={{
-                  float: 'right',
-                  margin: 2,
-                  mt: -0.5,
-                  mr: 0,
-                  ml: 0.5,
-                }}
-              >
-                <AiOutlinePlusCircle size={20} />
-              </ContainedIconButton>
-              <ContainedIconButton
-                key="refresh_button"
-                title="Refresh Intersections"
-                onClick={() => dispatch(updateTableData())}
-                sx={{
-                  float: 'right',
-                  margin: 2,
-                  mt: -0.5,
-                  mr: 0,
-                  ml: 0.5,
-                }}
-              >
-                <IoRefresh size={20} />
-              </ContainedIconButton>
-            </>,
-          ]}
-        </h3>
-      </div>
       <Routes>
         <Route
           path="/"

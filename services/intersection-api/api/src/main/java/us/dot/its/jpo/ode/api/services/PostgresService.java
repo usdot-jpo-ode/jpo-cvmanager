@@ -17,36 +17,51 @@ public class PostgresService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    // TODO: Consider using "EXISTS" to improve queries
     private final String findUserOrgRolesQuery = "SELECT new us.dot.its.jpo.ode.api.models.postgres.derived.UserOrgRole(u.email, o.name, r.name) "
             +
-            "FROM Users u JOIN UserOrganization uo on u.user_id = uo.user_id " +
-            "JOIN Organizations o on uo.organization_id = o.organization_id " +
-            "JOIN Roles r on uo.role_id = r.role_id " +
-            "where u.email = :email";
+            "FROM Users u " +
+            "JOIN UserOrganization uo ON u.user_id = uo.user_id " +
+            "JOIN Organizations o ON uo.organization_id = o.organization_id " +
+            "JOIN Roles r ON uo.role_id = r.role_id " +
+            "WHERE EXISTS (" +
+            "SELECT 1 " +
+            "FROM UserOrganization uo2 " +
+            "WHERE uo2.user_id = u.user_id AND u.email = :email" +
+            ")";
 
-    // TODO: Consider using "EXISTS" to improve queries
-    private final String findUserQuery = "SELECT u from Users u where u.email = :email";
+    private final String findUserQuery = "SELECT u FROM Users u WHERE EXISTS (" +
+            "SELECT 1 " +
+            "FROM Users u2 " +
+            "WHERE u2.email = :email AND u2.user_id = u.user_id)";
 
-    // TODO: Consider using "EXISTS" to improve queries
-    private final String findUserRsuIPQuery = "select r.ipv4_address " +
-            "FROM Users u JOIN UserOrganization uo on u.user_id = uo.user_id " +
-            "JOIN RsuOrganization ro on ro.organization_id = uo.organization_id " +
-            "JOIN Rsus r on r.rsu_id = ro.rsu_id " +
-            "where u.email = :email";
+    private final String findUserRsuIPQuery = "SELECT r.ipv4_address " +
+            "FROM Rsus r " +
+            "WHERE EXISTS (" +
+            "SELECT 1 " +
+            "FROM Users u " +
+            "JOIN UserOrganization uo ON u.user_id = uo.user_id " +
+            "JOIN RsuOrganization ro ON ro.organization_id = uo.organization_id " +
+            "WHERE ro.rsu_id = r.rsu_id AND u.email = :email" +
+            ")";
 
-    // TODO: Consider using "EXISTS" to improve queries
-    private final String findUserIntersectionQuery = "select i.intersection_number " +
-            "FROM Users u JOIN UserOrganization uo on u.user_id = uo.user_id " +
-            "JOIN IntersectionOrganization io on io.organization_id = uo.organization_id " +
-            "JOIN Intersections i on i.intersection_id = io.intersection_id " +
-            "where u.email = :email";
+    private final String findUserIntersectionQuery = "SELECT i.intersection_number " +
+            "FROM Intersections i " +
+            "WHERE EXISTS (" +
+            "SELECT 1 " +
+            "FROM Users u " +
+            "JOIN UserOrganization uo ON u.user_id = uo.user_id " +
+            "JOIN IntersectionOrganization io ON io.organization_id = uo.organization_id " +
+            "WHERE io.intersection_id = i.intersection_id AND u.email = :email" +
+            ")";
 
-    // TODO: Consider using "EXISTS" to improve queries
-    private final String findIntersectionsByOrganizationQuery = "select i.intersection_number " +
-            "FROM Organizations o JOIN IntersectionOrganization io on io.organization_id = o.organization_id " +
-            "JOIN Intersections i on i.intersection_id = io.intersection_id " +
-            "where o.name = :orgName";
+    private final String findIntersectionsByOrganizationQuery = "SELECT i.intersection_number " +
+            "FROM Intersections i " +
+            "WHERE EXISTS (" +
+            "SELECT 1 " +
+            "FROM IntersectionOrganization io " +
+            "JOIN Organizations o ON io.organization_id = o.organization_id " +
+            "WHERE io.intersection_id = i.intersection_id AND o.name = :orgName" +
+            ")";
 
     public List<UserOrgRole> findUserOrgRoles(String email) {
         TypedQuery<UserOrgRole> query = entityManager.createQuery(findUserOrgRolesQuery, UserOrgRole.class);
@@ -73,10 +88,14 @@ public class PostgresService {
 
     public String getUserRoleInOrg(String email, String organization) {
         String queryString = "SELECT r.name " +
-                "FROM Users u JOIN UserOrganization uo on u.user_id = uo.user_id " +
-                "JOIN Organizations o on uo.organization_id = o.organization_id " +
-                "JOIN Roles r on uo.role_id = r.role_id " +
-                "where u.email = :email AND o.name = :organization";
+                "FROM Roles r " +
+                "WHERE EXISTS (" +
+                "SELECT 1 " +
+                "FROM Users u " +
+                "JOIN UserOrganization uo ON u.user_id = uo.user_id " +
+                "JOIN Organizations o ON uo.organization_id = o.organization_id " +
+                "WHERE u.email = :email AND o.name = :organization AND uo.role_id = r.role_id" +
+                ")";
         TypedQuery<String> query = entityManager.createQuery(queryString, String.class);
         query.setParameter("email", email);
         query.setParameter("organization", organization);
@@ -111,15 +130,19 @@ public class PostgresService {
             return false;
         }
         String queryString = "SELECT rsu.ipv4_address::text AS ipv4_address " +
-                "FROM public.rsus rsu " +
-                "JOIN public.rsu_organization AS rsu_org ON rsu_org.rsu_id = rsu.rsu_id " +
-                "JOIN public.organizations AS org ON org.organization_id = rsu_org.organization_id " +
-                "WHERE org.name IN :allowedOrgs " +
+                "FROM Rsus rsu " +
+                "WHERE EXISTS (" +
+                "SELECT 1 " +
+                "FROM RsuOrganization rsu_org " +
+                "JOIN Organizations org ON org.organization_id = rsu_org.organization_id " +
+                "WHERE rsu_org.rsu_id = rsu.rsu_id " +
+                "AND org.name IN (:allowedOrgs)) " +
                 "AND rsu.ipv4_address = :rsuIp";
 
         TypedQuery<String> query = entityManager.createQuery(queryString, String.class);
         query.setParameter("allowedOrgs", organizations);
         query.setParameter("rsuIp", rsuIp);
+        query.setMaxResults(1);
 
         List<String> result = query.getResultList();
         return !result.isEmpty() && result.get(0).equals(rsuIp);
@@ -129,16 +152,21 @@ public class PostgresService {
         if (organizations.isEmpty()) {
             return false;
         }
-        String queryString = "SELECT i.intersection_number::text AS intersection_number " +
-                "FROM public.intersections i " +
-                "JOIN public.intersection_organization AS io ON io.intersection_id = i.intersection_id " +
-                "JOIN public.organizations AS org ON org.organization_id = io.organization_id " +
-                "WHERE org.name = :allowedOrgs " +
+
+        String queryString = "SELECT i.intersection_number " +
+                "FROM Intersections i " +
+                "WHERE EXISTS (" +
+                "SELECT 1 " +
+                "FROM IntersectionOrganization io " +
+                "JOIN Organizations org ON org.organization_id = io.organization_id " +
+                "WHERE io.intersection_id = i.intersection_id " +
+                "AND org.name IN (:allowedOrgs)) " +
                 "AND i.intersection_number = :intersectionId";
 
         TypedQuery<String> query = entityManager.createQuery(queryString, String.class);
         query.setParameter("allowedOrgs", organizations);
         query.setParameter("intersectionId", intersectionId);
+        query.setMaxResults(1);
 
         List<String> result = query.getResultList();
         return !result.isEmpty() && result.get(0).equals(intersectionId);

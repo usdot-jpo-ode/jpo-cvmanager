@@ -6,12 +6,17 @@ import { ThemeProvider } from '@mui/material'
 import { testTheme } from '../../styles'
 import { setupStore } from '../../store'
 import { replaceChaoticIds } from '../../utils/test-utils'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 it('should take a snapshot', () => {
   const { container } = render(
     <ThemeProvider theme={testTheme}>
       <Provider store={setupStore({})}>
-        <AdminAddNotification />
+        <BrowserRouter>
+          <Routes>
+            <Route path="*" element={<AdminAddNotification />} />
+          </Routes>
+        </BrowserRouter>
       </Provider>
     </ThemeProvider>
   )

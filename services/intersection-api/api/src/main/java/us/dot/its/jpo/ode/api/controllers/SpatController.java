@@ -1,7 +1,6 @@
 package us.dot.its.jpo.ode.api.controllers;
 
 import java.util.List;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -17,7 +16,9 @@ import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
 import us.dot.its.jpo.ode.api.accessors.spat.ProcessedSpatRepository;
 import us.dot.its.jpo.ode.mockdata.MockSpatGenerator;
 
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -30,8 +31,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 })
 public class SpatController {
 
+    private final ProcessedSpatRepository processedSpatRepo;
+
     @Autowired
-    ProcessedSpatRepository processedSpatRepo;
+    public SpatController(ProcessedSpatRepository processedSpatRepo) {
+        this.processedSpatRepo = processedSpatRepo;
+    }
 
     @Operation(summary = "Find SPATs", description = "Returns a list of SPATs based on the provided parameters. The latest parameter will return the most recent SPAT message. The compact flag will omit the \"recordGeneratedAt\", \"validationMessages\" fields.")
     @RequestMapping(value = "/spat/json", method = RequestMethod.GET, produces = "application/json")
@@ -40,19 +45,30 @@ public class SpatController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<List<ProcessedSpat>> findSpats(
+    public ResponseEntity<Page<ProcessedSpat>> findSpats(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
             @RequestParam(name = "compact", required = false, defaultValue = "false") boolean compact,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
-            return ResponseEntity.ok(MockSpatGenerator.getProcessedSpats());
+            List<ProcessedSpat> list = MockSpatGenerator.getProcessedSpats();
+            return ResponseEntity.ok(new PageImpl<>(list, PageRequest.of(page, size), list.size()));
+        }
+
+        if (latest) {
+            return ResponseEntity.ok(processedSpatRepo.findLatest(intersectionID, startTime, endTime, compact));
         } else {
-            Query query = processedSpatRepo.getQuery(intersectionID, startTime, endTime, latest, compact);
-            return ResponseEntity.ok(processedSpatRepo.findProcessedSpats(query));
+            // Retrieve a paginated result from the repository
+            PageRequest pageable = PageRequest.of(page, size);
+            Page<ProcessedSpat> response = processedSpatRepo.find(intersectionID, startTime, endTime, compact,
+                    pageable);
+
+            return ResponseEntity.ok(response);
         }
     }
 
@@ -72,9 +88,7 @@ public class SpatController {
         if (testData) {
             return ResponseEntity.ok(80L);
         } else {
-            Query query = processedSpatRepo.getQuery(intersectionID, startTime, endTime, false, true);
-            long count = processedSpatRepo.getQueryResultCount(query);
-            log.info("Found: {} ProcessedSpat Messages", count);
+            long count = processedSpatRepo.count(intersectionID, startTime, endTime);
             return ResponseEntity.ok(count);
         }
     }

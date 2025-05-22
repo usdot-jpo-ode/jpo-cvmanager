@@ -33,8 +33,8 @@ export const DataVisualizer = (props: { data: any[]; onDownload: () => void }) =
             <Line type="monotone" dataKey="ProcessingTimePeriodCount" stroke="#00ff00" />
             <Line type="monotone" dataKey="SignalGroupAlignmentEventCount" stroke="#0000ff" />
             <Line type="monotone" dataKey="SignalStateConflictEventCount" stroke="#ff00ff" />
-            <Line type="monotone" dataKey="SignalStateEventCount" stroke="#ffff00" />
-            <Line type="monotone" dataKey="SignalStateStopEventCount" stroke="#00ffff" />
+            <Line type="monotone" dataKey="StopLinePassageEventCount" stroke="#ffff00" />
+            <Line type="monotone" dataKey="StopLineStopEventCount" stroke="#00ffff" />
             <Line type="monotone" dataKey="TimeChangeDetailsEventCount" stroke="#ff8000" />
             <Line type="monotone" dataKey="MapMinimumDataEventCount" stroke="#8000ff" />
             <Line type="monotone" dataKey="SpatMinimumDataEventCount" stroke="#ff0080" />

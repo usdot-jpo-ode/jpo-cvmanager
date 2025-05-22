@@ -1,23 +1,25 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 import { getIssScmsStatus, selectRsuData } from '../../generalSlices/rsuSlice'
 
 import '../../components/css/SnmpwalkMenu.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { Action } from '@material-table/core'
+import MaterialTable, { Action } from '@material-table/core'
 import { RootState } from '../../store'
 import { selectRsuOnlineStatus, selectIssScmsStatusData } from '../../generalSlices/rsuSlice'
 
-import { PlaceOutlined, ArrowBackIos } from '@mui/icons-material'
+import { GpsFixedSharp } from '@mui/icons-material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 import AdminTable from '../../components/AdminTable'
 import { setMapViewState } from '../../pages/mapSlice'
-import { Accordion, AccordionDetails, AccordionSummary, Button, Typography, useTheme } from '@mui/material'
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Stack, Typography, useTheme } from '@mui/material'
 import RsuErrorSummary from '../../components/RsuErrorSummary'
-import GenerateRSUErrorsPDF from './GenerateRSUErrorsPDF'
 import { RsuInfo } from '../../models/RsuApi'
+import { useReactToPrint } from 'react-to-print'
+import { SideBarHeader } from '../../styles/components/SideBarHeader'
+import { toggleMapMenuSelection } from './menuSlice'
 
 const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo }) => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -26,6 +28,10 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
   const issScmsStatusData = useSelector(selectIssScmsStatusData)
   const [selectedRSU, setSelectedRSU] = useState<RsuInfo | undefined>(initialSelectedRsu)
   const [emailHidden, setEmailHidden] = useState(true)
+  const contentRef = useRef(null)
+  const errorRef = useRef(null)
+  const handlePrint = useReactToPrint({ contentRef })
+  const handleErrorPrint = useReactToPrint({ contentRef: errorRef })
 
   const theme = useTheme()
 
@@ -85,7 +91,7 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
               rsu_scms_status += ' (RSU SCMS certificate expired)'
             }
           } catch (e) {
-            console.debug('Error parsing SCMS expiration date: ', e)
+            console.error(`Error parsing SCMS expiration date: ${rsu_scms_expiration}`, e)
           }
           break
       }
@@ -97,28 +103,42 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
 
   // Create RSU Errors Table Data
   const rsuTableData = rsuData.map((rsu) => {
-    var rsu_online_status = 'RSU ' + getRSUOnlineStatus(rsu.properties.ipv4_address)
-
-    var rsu_scms_status = getRSUSCMSDisplay(rsu.properties.ipv4_address)
-
     return {
       rsu: rsu.properties.ipv4_address,
       road: rsu.properties.primary_route,
       lat: rsu.geometry.coordinates[1],
       lon: rsu.geometry.coordinates[0],
-      online_status: rsu_online_status,
-      scms_status: rsu_scms_status,
+      online_status: getRSUOnlineStatus(rsu.properties.ipv4_address),
+      scms_status: getRSUSCMSStatus(rsu.properties.ipv4_address),
+      cert_expiration: getRSUSCMSExpiration(rsu.properties.ipv4_address),
+      milepost: rsu.properties.milepost,
+      primary_route: rsu.properties.primary_route,
     }
   })
 
   const tableActions: Action<RsuErrorRowType>[] = [
     {
-      icon: () => <PlaceOutlined />,
-      tooltip: 'View RSU on Map',
-      position: 'row',
-      onClick: (event, rowData: RsuErrorRowType) => {
-        dispatch(setMapViewState({ latitude: rowData.lat, longitude: rowData.lon, zoom: 15 }))
-        setSelectedRSU(rsuData.find((rsu) => rsu.properties.ipv4_address === rowData.rsu))
+      icon: () => null,
+      iconProps: {
+        title: 'Print Full Report',
+        color: 'info',
+        itemType: 'outlined',
+      },
+      position: 'toolbar',
+      onClick: () => {
+        handlePrint()
+      },
+    },
+    {
+      icon: () => null,
+      iconProps: {
+        title: 'Print Error Report',
+        color: 'info',
+        itemType: 'outlined',
+      },
+      position: 'toolbar',
+      onClick: () => {
+        handleErrorPrint()
       },
     },
   ]
@@ -136,13 +156,14 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
     width: '100%',
     height: '100%',
     backgroundColor: theme.palette.custom.mapLegendBackground,
+    borderRadius: '4px',
   }
 
   const errorPageStyle = {
     backgroundColor: theme.palette.custom.mapLegendBackground,
     borderTop: '1px solid white',
     borderBottom: '1px solid white',
-    fontFamily: 'Arial Helvetica Sans-Serif',
+    fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
     width: '90%',
     padding: '0.5rem 1rem',
   }
@@ -150,33 +171,15 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
   return (
     <div style={containerStyle}>
       {selectedRSU !== undefined ? (
-        <div
-          id="container"
-          className="sideBarOn"
-          style={{
-            width: '95%',
-            display: 'block',
-          }}
-        >
-          <h1 className="h1" style={{ marginBottom: '1rem', width: '100%', textAlign: 'center' }}>
-            {selectedRSU.properties.ipv4_address} Status
-          </h1>
-          <ArrowBackIos
-            style={{
-              position: 'absolute',
-              top: '1px',
-              left: '0.5rem',
-              margin: '1rem',
-              borderRadius: '50%',
-              zIndex: 90,
-              cursor: 'pointer',
-            }}
+        <Stack direction="column" spacing={2} sx={{ pl: 1, pr: 1, width: '100%' }}>
+          <SideBarHeader
             onClick={() => {
               setSelectedRSU(undefined)
             }}
+            title={selectedRSU.properties.ipv4_address + ' Status'}
           />
-          <div id="sideBarBlock" className="accordion">
-            <Accordion>
+          <div className="accordion">
+            <Accordion elevation={0}>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography>Online Status</Typography>
               </AccordionSummary>
@@ -194,7 +197,7 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
                 </div>
               </AccordionDetails>
             </Accordion>
-            <Accordion>
+            <Accordion elevation={0}>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography>SCMS Status</Typography>
               </AccordionSummary>
@@ -213,13 +216,14 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
               </AccordionDetails>
             </Accordion>
           </div>
-          <div style={{ display: 'flex', alignContent: 'center', justifyContent: 'center', flexDirection: 'row' }}>
+          <div style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', flexDirection: 'row' }}>
             <Button
               variant="contained"
               style={{ margin: '1rem' }}
               onClick={() => {
                 setEmailHidden(false)
               }}
+              className="museo-slab"
             >
               Generate Error Summary Email
             </Button>
@@ -236,59 +240,87 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
             hidden={emailHidden}
             setHidden={setHidden}
           />
-        </div>
+        </Stack>
       ) : (
-        <div id="container" className="sideBarOn" style={{ width: '95%', display: 'block' }}>
-          <h1 className="h1" style={{ marginBottom: '1rem', width: '100%', textAlign: 'center' }}>
-            RSU Status
-          </h1>
-          <GenerateRSUErrorsPDF rows={rsuTableData} />
+        <Stack direction="column" spacing={2} sx={{ pl: 1, pr: 1 }}>
+          <SideBarHeader onClick={() => dispatch(toggleMapMenuSelection('Display RSU Status'))} title="RSU Status" />
           <AdminTable
             actions={tableActions}
             columns={[
-              { title: 'RSU', field: 'rsu' },
+              {
+                title: 'Location',
+                field: 'milepost',
+                width: '30%',
+                render: (rowData) => (
+                  <Button
+                    onClick={() => {
+                      dispatch(setMapViewState({ latitude: rowData.lat, longitude: rowData.lon, zoom: 15 }))
+                      setSelectedRSU(rsuData.find((rsu) => rsu.properties.ipv4_address === rowData.rsu))
+                    }}
+                    variant="text"
+                    endIcon={<GpsFixedSharp />}
+                    color="info"
+                    sx={{
+                      '&:hover': {
+                        backgroundColor: 'transparent',
+                      },
+                    }}
+                  >
+                    <Typography
+                      fontSize="small"
+                      sx={{
+                        '&:hover': {
+                          textDecoration: 'underline',
+                        },
+                      }}
+                    >
+                      {rowData.primary_route} Mile {rowData.milepost}
+                    </Typography>
+                  </Button>
+                ),
+              },
               {
                 title: 'Online Status',
                 field: 'online_status',
                 render: (rowData) => (
-                  <p
-                    style={
-                      rowData.online_status.includes('RSU Offline')
-                        ? {
-                            color: theme.palette.error.main,
-                            fontWeight: 'bold',
-                          }
-                        : {
-                            color: theme.palette.success.main,
-                            fontWeight: 'bold',
-                          }
-                    }
+                  <Box
+                    style={{
+                      color: theme.palette.text.primary,
+                      backgroundColor: rowData.scms_status.includes('SCMS Healthy')
+                        ? theme.palette.success.dark
+                        : theme.palette.error.dark,
+                      width: '4rem',
+                      height: '1.5rem',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderRadius: '1rem',
+                    }}
                   >
-                    {rowData.online_status}
-                  </p>
+                    <Typography fontSize="medium">{rowData.online_status}</Typography>
+                  </Box>
                 ),
               },
               {
                 title: 'SCMS Status',
                 field: 'scms_status',
                 render: (rowData) => (
-                  <p
-                    style={
-                      rowData.scms_status.includes('SCMS Healthy')
-                        ? {
-                            color: theme.palette.success.main,
-                            fontWeight: 'bold',
-                          }
-                        : {
-                            color: theme.palette.error.main,
-                            fontWeight: 'bold',
-                          }
-                    }
-                  >
-                    {rowData.scms_status}
-                  </p>
+                  <>
+                    <Typography
+                      fontSize="medium"
+                      sx={{
+                        color: rowData.scms_status == '1' ? theme.palette.success.light : theme.palette.error.light,
+                      }}
+                    >
+                      {rowData.scms_status == '1' ? 'Healthy' : 'Unhealthy'}
+                    </Typography>
+                    <Typography fontSize="small" sx={{ color: theme.palette.text.primary }}>
+                      {rowData.cert_expiration}
+                    </Typography>
+                  </>
                 ),
               },
+              { title: 'RSU IP', field: 'rsu' },
             ]}
             data={rsuTableData}
             title=""
@@ -296,8 +328,204 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
             tableLayout="auto"
             pageSizeOptions={[]}
           />
-        </div>
+        </Stack>
       )}
+      <div style={{ display: 'none' }}>
+        <div
+          ref={contentRef}
+          style={{
+            margin: '50px',
+            fontFamily: 'Arial Helvetica Sans-Serif',
+            height: '100vh',
+          }}
+        >
+          <h1 style={{ textAlign: 'center', marginBottom: '10px', color: 'black' }}>RSU Summary</h1>
+          <br />
+          <p style={{ color: 'black' }}>
+            Below is the generated RSU summary report for all RSUs at {new Date().toISOString()} UTC:
+          </p>
+          <div style={{ marginTop: '25px' }}>
+            <MaterialTable
+              columns={[
+                {
+                  title: 'RSU',
+                  field: 'rsu',
+                  render: (rowData) => <p style={{ color: 'black', fontWeight: 'bold' }}>{rowData.rsu}</p>,
+                },
+                {
+                  title: 'Road',
+                  field: 'road',
+                  render: (rowData) => <p style={{ color: 'black', fontWeight: 'bold' }}>{rowData.road}</p>,
+                },
+                {
+                  title: 'Online Status',
+                  field: 'online_status',
+                  render: (rowData) => (
+                    <Typography
+                      fontSize="medium"
+                      sx={
+                        rowData.online_status.includes('RSU Offline')
+                          ? {
+                              color: theme.palette.error.dark,
+                              fontWeight: 'bold',
+                            }
+                          : {
+                              color: theme.palette.success.dark,
+                              fontWeight: 'bold',
+                            }
+                      }
+                    >
+                      {rowData.online_status}
+                    </Typography>
+                  ),
+                },
+                {
+                  title: 'SCMS Status',
+                  field: 'scms_status',
+                  render: (rowData) => (
+                    <>
+                      <Typography
+                        fontSize="medium"
+                        sx={{
+                          color: rowData.scms_status == '1' ? theme.palette.success.dark : theme.palette.error.dark,
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        {rowData.scms_status == '1' ? 'Healthy' : 'Unhealthy'}
+                      </Typography>
+                      <Typography fontSize="small" sx={{ color: 'black' }}>
+                        {rowData.cert_expiration}
+                      </Typography>
+                    </>
+                  ),
+                },
+              ].map((column) => ({
+                ...column,
+                cellStyle: {
+                  borderRight: '1px solid black', // Add column lines
+                },
+              }))}
+              actions={[]}
+              data={rsuTableData}
+              title=""
+              options={{
+                toolbar: false,
+                search: false,
+                paging: false,
+                rowStyle: {
+                  overflowWrap: 'break-word',
+                  border: `1px solid black`, // Add cell borders
+                },
+              }}
+              style={{
+                backgroundColor: 'white',
+                color: 'black',
+                fontFamily: 'Arial Helvetica Sans-Serif',
+                border: 'none',
+              }}
+            />
+          </div>
+        </div>
+        <div
+          ref={errorRef}
+          style={{
+            margin: '50px',
+            fontFamily: 'Arial Helvetica Sans-Serif',
+            height: '100vh',
+          }}
+        >
+          <h1 style={{ textAlign: 'center', marginBottom: '10px', color: 'black' }}>RSU Error Summary</h1>
+          <br />
+          <p style={{ color: 'black' }}>
+            Below is the generated RSU Error summary report for all RSUs at {new Date().toISOString()} UTC:
+          </p>
+          <div style={{ marginTop: '25px' }}>
+            <MaterialTable
+              columns={[
+                {
+                  title: 'RSU',
+                  field: 'rsu',
+                  render: (rowData) => <p style={{ color: 'black', fontWeight: 'bold' }}>{rowData.rsu}</p>,
+                },
+                {
+                  title: 'Road',
+                  field: 'road',
+                  render: (rowData) => <p style={{ color: 'black', fontWeight: 'bold' }}>{rowData.road}</p>,
+                },
+                {
+                  title: 'Online Status',
+                  field: 'online_status',
+                  render: (rowData) => (
+                    <Typography
+                      fontSize="medium"
+                      sx={
+                        rowData.online_status.includes('RSU Offline')
+                          ? {
+                              color: theme.palette.error.dark,
+                              fontWeight: 'bold',
+                            }
+                          : {
+                              color: theme.palette.success.dark,
+                              fontWeight: 'bold',
+                            }
+                      }
+                    >
+                      {rowData.online_status}
+                    </Typography>
+                  ),
+                },
+                {
+                  title: 'SCMS Status',
+                  field: 'scms_status',
+                  render: (rowData) => (
+                    <>
+                      <Typography
+                        fontSize="medium"
+                        sx={{
+                          color: rowData.scms_status == '1' ? theme.palette.success.dark : theme.palette.error.dark,
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        {rowData.scms_status == '1' ? 'Healthy' : 'Unhealthy'}
+                      </Typography>
+                      <Typography fontSize="small" sx={{ color: 'black' }}>
+                        {rowData.cert_expiration}
+                      </Typography>
+                    </>
+                  ),
+                },
+              ].map((column) => ({
+                ...column,
+                cellStyle: {
+                  borderRight: '1px solid black', // Add column lines
+                },
+              }))}
+              actions={[]}
+              data={
+                rsuTableData !== undefined
+                  ? rsuTableData.filter((row) => row.online_status.includes('Offline') || row.scms_status.includes('0'))
+                  : []
+              }
+              title=""
+              options={{
+                toolbar: false,
+                search: false,
+                paging: false,
+                rowStyle: {
+                  overflowWrap: 'break-word',
+                  border: `1px solid black`, // Add cell borders
+                },
+              }}
+              style={{
+                backgroundColor: 'white',
+                color: 'black',
+                fontFamily: 'Arial Helvetica Sans-Serif',
+                border: 'none',
+              }}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

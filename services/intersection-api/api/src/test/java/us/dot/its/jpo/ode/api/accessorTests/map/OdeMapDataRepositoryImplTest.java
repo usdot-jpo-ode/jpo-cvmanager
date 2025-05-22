@@ -1,26 +1,36 @@
 package us.dot.its.jpo.ode.api.accessorTests.map;
 
 import org.junit.jupiter.api.Test;
+import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bson.Document;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import us.dot.its.jpo.ode.api.accessors.map.OdeMapDataRepositoryImpl;
+import us.dot.its.jpo.ode.api.models.AggregationResult;
 import us.dot.its.jpo.ode.model.OdeMapData;
 
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -32,65 +42,63 @@ import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 @AutoConfigureEmbeddedDatabase
 public class OdeMapDataRepositoryImplTest {
 
-    @Mock
+    @SpyBean
     private MongoTemplate mongoTemplate;
+
+    @Mock
+    private AggregationResults<AggregationResult> mockAggregationResult;
+
+    @Mock
+    private Page<Document> mockDocumentPage;
+
+    @Mock
+    private Page<OdeMapData> mockPage;
 
     @InjectMocks
     private OdeMapDataRepositoryImpl repository;
 
     Integer intersectionID = 123;
-    Long startTime = 1624640400000L; // June 26, 2021 00:00:00 GMT
-    Long endTime = 1624726799000L; // June 26, 2021 23:59:59 GMT
+    Long startTime = 1724170658205L;
+    String startTimeString = "2024-08-20T16:17:38.205Z";
+    Long endTime = 1724170778205L;
+    String endTimeString = "2024-08-20T16:19:38.205Z";
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        repository = new OdeMapDataRepositoryImpl(mongoTemplate);
     }
 
     @Test
-    public void testGetQuery() {
-
-        boolean latest = true;
-
-        Query query = repository.getQuery(intersectionID, startTime, endTime, latest);
-
-        // Assert IntersectionID
-        assertThat(query.getQueryObject().get("properties.intersectionId")).isEqualTo(intersectionID);
-
-        // Assert Start and End Time
-        Document queryTimeDocument = (Document) query.getQueryObject().get("properties.timeStamp");
-        assertThat(queryTimeDocument.getString("$gte")).isEqualTo(Instant.ofEpochMilli(startTime).toString());
-        assertThat(queryTimeDocument.getString("$lte")).isEqualTo(Instant.ofEpochMilli(endTime).toString());
-
-        // Assert sorting and limit
-        assertThat(query.getSortObject().keySet().contains("properties.timeStamp")).isTrue();
-        assertThat(query.getSortObject().get("properties.timeStamp")).isEqualTo(-1);
-        assertThat(query.getLimit()).isEqualTo(1);
-    }
-
-    @Test
-    public void testGetQueryResultCount() {
-        Query query = new Query();
+    public void testCount() {
         long expectedCount = 10;
 
-        Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString()))
-                .thenReturn(expectedCount);
+        doReturn(expectedCount).when(mongoTemplate).count(any(),
+                Mockito.<String>any());
 
-        long resultCount = repository.getQueryResultCount(query);
+        long resultCount = repository.count(1, null, null);
 
         assertThat(resultCount).isEqualTo(expectedCount);
-        Mockito.verify(mongoTemplate).count(Mockito.eq(query), Mockito.any(), Mockito.anyString());
+        verify(mongoTemplate).count(any(Query.class), anyString());
     }
 
     @Test
-    public void testFindMaps() {
-        Query query = new Query();
-        List<OdeMapData> expectedMaps = new ArrayList<>();
+    public void testFind() {
+        OdeMapDataRepositoryImpl repo = mock(OdeMapDataRepositoryImpl.class);
 
-        Mockito.doReturn(expectedMaps).when(mongoTemplate).find(query, OdeMapData.class, "OdeMapJson");
+        when(repo.findPage(
+                any(),
+                any(),
+                any(PageRequest.class),
+                any(Criteria.class),
+                any(Sort.class),
+                any(),
+                eq(OdeMapData.class))).thenReturn(mockPage);
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        doCallRealMethod().when(repo).find(1, null, null, pageRequest);
 
-        List<OdeMapData> resultMaps = repository.findMaps(query);
+        Page<OdeMapData> results = repo.find(1, null, null, pageRequest);
 
-        assertThat(resultMaps).isEqualTo(expectedMaps);
+        assertThat(results).isEqualTo(mockPage);
     }
 }

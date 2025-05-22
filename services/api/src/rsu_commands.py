@@ -129,7 +129,7 @@ def fetch_index(command, rsu_ip, rsu_info, message_type=None, target_ip=None):
     if code == 200:
         walkResult = {}
         if rsu_info["snmp_version"] == "1218":
-            if message_type.upper() == "BSM" or message_type.upper() == "SSM":
+            if message_type.upper() == "BSM" or message_type.upper() == "SRM":
                 walkResult = data["RsuFwdSnmpwalk"]["rsuReceivedMsgTable"]
             else:
                 walkResult = data["RsuFwdSnmpwalk"]["rsuXmitMsgFwdingTable"]
@@ -157,7 +157,8 @@ def fetch_index(command, rsu_ip, rsu_info, message_type=None, target_ip=None):
                     and walkResult[entry]["IP"] == target_ip
                 ):
                     index = int(entry)
-    return index
+
+    return index if index != 0 else 1
 
 
 def execute_rsufwdsnmpset(command, organization, rsu_list, args):

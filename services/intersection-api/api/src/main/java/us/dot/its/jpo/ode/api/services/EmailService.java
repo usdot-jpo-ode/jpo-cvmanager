@@ -27,19 +27,18 @@ import us.dot.its.jpo.ode.api.models.EmailFrequency;
 @Service
 public class EmailService {
 
-    @Autowired
-    private JavaMailSender mailSender;
-
+    private final JavaMailSender mailSender;
     private final SendGrid sendGrid;
+    private final ApiClient postmark;
+    private final ConflictMonitorApiProperties props;
 
     @Autowired
-    private ApiClient postmark;
-
-    @Autowired
-    ConflictMonitorApiProperties props;
-
-    public EmailService(SendGrid sendGrid) {
+    public EmailService(JavaMailSender mailSender, SendGrid sendGrid, ApiClient postmark,
+            ConflictMonitorApiProperties props) {
+        this.mailSender = mailSender;
         this.sendGrid = sendGrid;
+        this.postmark = postmark;
+        this.props = props;
     }
 
     public void sendEmailViaSendGrid(String to, String subject, String text) {

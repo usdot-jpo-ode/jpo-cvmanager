@@ -4,29 +4,42 @@ import { updateTableData as updateRsuTableData } from '../features/adminRsuTab/a
 import { getAvailableUsers } from '../features/adminUserTab/adminUserTabSlice'
 
 import './css/NoTableWidth.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../store'
 import { NotFound } from './404'
 import VerticalTabs from '../components/VerticalTabs'
 import DashboardPage from '../components/intersections/DashboardPage'
 import NotificationPage from '../components/intersections/NotificationPage'
 import DataSelectorPage from '../components/intersections/DataSelectorPage'
 import ReportsPage from '../components/intersections/ReportsPage'
-import { InputLabel, Select, MenuItem, IconButton, FormControl, Tooltip } from '@mui/material'
+import {
+  InputLabel,
+  Select,
+  MenuItem,
+  FormControl,
+  Tooltip,
+  Button,
+  useTheme,
+  Grid2,
+  Box,
+  Typography,
+} from '@mui/material'
 import {
   selectIntersections,
   selectSelectedIntersectionId,
   setSelectedIntersection,
 } from '../generalSlices/intersectionSlice'
-import MapIconRounded from '@mui/icons-material/Map'
 import MapDialog from '../features/intersections/intersection-selector/intersection-selector-dialog'
+import ConfigurationPage from '../components/intersections/ConfigurationPage'
 import { headerTabHeight } from '../styles/index'
+import { TrafficOutlined } from '@mui/icons-material'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../store'
 
 function IntersectionDashboard() {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const intersectionId = useSelector(selectSelectedIntersectionId)
   const intersections = useSelector(selectIntersections)
   const [openMapDialog, setOpenMapDialog] = useState(false)
+  const theme = useTheme()
 
   useEffect(() => {
     dispatch(updateRsuTableData())
@@ -36,34 +49,64 @@ function IntersectionDashboard() {
   return (
     <>
       <div id="admin" style={{ height: `calc(100vh - ${headerTabHeight}px)` }}>
-        <h2 className="adminHeader">Intersection Dashboard</h2>
-        <FormControl sx={{ mt: 1, minWidth: 200 }}>
-          <InputLabel>Intersection ID</InputLabel>
-          <Select
-            value={intersectionId}
-            onChange={(e) => {
-              dispatch(setSelectedIntersection(e.target.value as number))
+        <div
+          style={{
+            width: `fit-content`,
+            position: 'absolute',
+            left: `calc(250px + ${theme.spacing(3)})`,
+            backgroundColor: theme.palette.background.default,
+            justifyContent: 'flex-start',
+            display: 'flex',
+            zIndex: 100,
+            marginTop: '15px',
+          }}
+        >
+          <FormControl
+            size="small"
+            sx={{
+              mt: 1,
+              width: 200,
+              minWidth: 100,
             }}
           >
-            {/* TODO: Update to display intersection Name */}
-            {intersections.map((intersection) => (
-              <MenuItem value={intersection.intersectionID} key={intersection.intersectionID}>
-                {intersection.intersectionID}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <Tooltip title="Select Intersection on Map">
-          <IconButton
-            onClick={() => {
-              setOpenMapDialog(true)
-            }}
-          >
-            <MapIconRounded fontSize="large" />
-          </IconButton>
-        </Tooltip>
+            <InputLabel htmlFor="intersection-select">Intersection ID</InputLabel>
+            <Select
+              labelId="intersection-select"
+              label="Intersection ID"
+              value={intersectionId}
+              onChange={(e) => {
+                dispatch(setSelectedIntersection(e.target.value as number))
+              }}
+            >
+              {/* TODO: Update to display intersection Name */}
+              {intersections.map((intersection) => (
+                <MenuItem value={intersection.intersectionID} key={intersection.intersectionID}>
+                  {intersection.intersectionID}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Grid2 sx={{ display: 'flex', alignItems: 'flex-end' }}>
+            <Tooltip title="Select Intersection on Map">
+              <Button
+                variant="contained"
+                onClick={() => {
+                  setOpenMapDialog(true)
+                }}
+                startIcon={<TrafficOutlined />}
+                sx={{
+                  ml: 2,
+                  height: '40px',
+                }}
+                className="museo-slab capital-case"
+              >
+                <Typography fontSize="16px">Select Intersection</Typography>
+              </Button>
+            </Tooltip>
+          </Grid2>
+        </div>
         <VerticalTabs
-          height={`calc(100vh - ${headerTabHeight + 140}px)`}
+          height={`calc(100vh - ${headerTabHeight}px)`}
           notFoundRoute={
             <NotFound
               redirectRoute="/dashboard/intersection"
@@ -81,7 +124,11 @@ function IntersectionDashboard() {
             {
               path: 'notifications',
               title: 'Notifications',
-              child: <NotificationPage />,
+              child: (
+                <Box sx={{ paddingTop: theme.spacing(5) }}>
+                  <NotificationPage />
+                </Box>
+              ),
             },
             {
               path: 'data-selector',
@@ -91,14 +138,21 @@ function IntersectionDashboard() {
             {
               path: 'reports',
               title: 'Reports',
-              child: <ReportsPage />,
+              child: (
+                <Box sx={{ paddingTop: theme.spacing(8) }}>
+                  <ReportsPage />
+                </Box>
+              ),
             },
-            // The configuration page is still under development
-            // {
-            //   path: 'configuration',
-            //   title: 'Configuration',
-            //   child: <ConfigurationPage />,
-            // },
+            {
+              path: 'configuration',
+              title: 'Configuration',
+              child: (
+                <Box sx={{ paddingTop: theme.spacing(5) }}>
+                  <ConfigurationPage />
+                </Box>
+              ),
+            },
           ]}
         />
       </div>

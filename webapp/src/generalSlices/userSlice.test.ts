@@ -40,7 +40,6 @@ describe('user reducer', () => {
         authLoginData: null,
         organization: undefined,
         loginFailure: false,
-        kcFailure: false,
         loginMessage: '',
         routeNotFound: false,
       },
@@ -55,7 +54,6 @@ describe('async thunks', () => {
       authLoginData: null,
       organization: null,
       loginFailure: undefined,
-      kcFailure: null,
       loginMessage: '',
       routeNotFound: false,
     },
@@ -151,7 +149,6 @@ describe('reducers', () => {
       organization: null,
       loginFailure: null,
       loginMessage: '',
-      kcFailure: null,
       routeNotFound: false,
     },
   }

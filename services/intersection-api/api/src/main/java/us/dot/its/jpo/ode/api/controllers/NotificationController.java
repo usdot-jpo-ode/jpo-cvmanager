@@ -13,7 +13,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,7 +37,6 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.StopLineStopN
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.TimeChangeDetailsNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.MapBroadcastRateNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.SpatBroadcastRateNotification;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.notifications.ActiveNotification.ActiveNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.ConnectionOfTravelNotification.ConnectionOfTravelNotificationRepository;
 import us.dot.its.jpo.ode.api.accessors.notifications.IntersectionReferenceAlignmentNotification.IntersectionReferenceAlignmentNotificationRepository;
@@ -58,70 +59,70 @@ import us.dot.its.jpo.ode.mockdata.MockNotificationGenerator;
 })
 public class NotificationController {
 
-    @Autowired
-    IntersectionReferenceAlignmentNotificationRepository intersectionReferenceAlignmentNotificationRepo;
+    private final IntersectionReferenceAlignmentNotificationRepository intersectionReferenceAlignmentNotificationRepo;
+    private final LaneDirectionOfTravelNotificationRepository laneDirectionOfTravelNotificationRepo;
+    private final MapBroadcastRateNotificationRepository mapBroadcastRateNotificationRepo;
+    private final SignalGroupAlignmentNotificationRepository signalGroupAlignmentNotificationRepo;
+    private final SignalStateConflictNotificationRepository signalStateConflictNotificationRepo;
+    private final SpatBroadcastRateNotificationRepository spatBroadcastRateNotificationRepo;
+    private final ConnectionOfTravelNotificationRepository connectionOfTravelNotificationRepo;
+    private final TimeChangeDetailsNotificationRepository timeChangeDetailsNotificationRepo;
+    private final StopLineStopNotificationRepository stopLineStopNotificationRepo;
+    private final StopLinePassageNotificationRepository stopLinePassageNotificationRepo;
+    private final ActiveNotificationRepository activeNotificationRepo;
 
     @Autowired
-    LaneDirectionOfTravelNotificationRepository laneDirectionOfTravelNotificationRepo;
+    public NotificationController(
+            IntersectionReferenceAlignmentNotificationRepository intersectionReferenceAlignmentNotificationRepo,
+            LaneDirectionOfTravelNotificationRepository laneDirectionOfTravelNotificationRepo,
+            MapBroadcastRateNotificationRepository mapBroadcastRateNotificationRepo,
+            SignalGroupAlignmentNotificationRepository signalGroupAlignmentNotificationRepo,
+            SignalStateConflictNotificationRepository signalStateConflictNotificationRepo,
+            SpatBroadcastRateNotificationRepository spatBroadcastRateNotificationRepo,
+            ConnectionOfTravelNotificationRepository connectionOfTravelNotificationRepo,
+            TimeChangeDetailsNotificationRepository timeChangeDetailsNotificationRepo,
+            StopLineStopNotificationRepository stopLineStopNotificationRepo,
+            StopLinePassageNotificationRepository stopLinePassageNotificationRepo,
+            ActiveNotificationRepository activeNotificationRepo) {
 
-    @Autowired
-    MapBroadcastRateNotificationRepository mapBroadcastRateNotificationRepo;
+        this.intersectionReferenceAlignmentNotificationRepo = intersectionReferenceAlignmentNotificationRepo;
+        this.laneDirectionOfTravelNotificationRepo = laneDirectionOfTravelNotificationRepo;
+        this.mapBroadcastRateNotificationRepo = mapBroadcastRateNotificationRepo;
+        this.signalGroupAlignmentNotificationRepo = signalGroupAlignmentNotificationRepo;
+        this.signalStateConflictNotificationRepo = signalStateConflictNotificationRepo;
+        this.spatBroadcastRateNotificationRepo = spatBroadcastRateNotificationRepo;
+        this.connectionOfTravelNotificationRepo = connectionOfTravelNotificationRepo;
+        this.timeChangeDetailsNotificationRepo = timeChangeDetailsNotificationRepo;
+        this.stopLineStopNotificationRepo = stopLineStopNotificationRepo;
+        this.stopLinePassageNotificationRepo = stopLinePassageNotificationRepo;
+        this.activeNotificationRepo = activeNotificationRepo;
 
-    @Autowired
-    SignalGroupAlignmentNotificationRepository signalGroupAlignmentNotificationRepo;
-
-    @Autowired
-    SignalStateConflictNotificationRepository signalStateConflictNotificationRepo;
-
-    @Autowired
-    SpatBroadcastRateNotificationRepository spatBroadcastRateNotificationRepo;
-
-    @Autowired
-    ConnectionOfTravelNotificationRepository connectionOfTravelNotificationRepo;
-
-    @Autowired
-    TimeChangeDetailsNotificationRepository timeChangeDetailsNotificationRepo;
-
-    @Autowired
-    StopLineStopNotificationRepository stopLineStopNotificationRepo;
-
-    @Autowired
-    StopLinePassageNotificationRepository stopLinePassageNotificationRepo;
-
-    @Autowired
-    ActiveNotificationRepository activeNotificationRepo;
-    @Autowired
-    ConflictMonitorApiProperties props;
+    }
 
     @Operation(summary = "Find Active Notifications", description = "Returns a list of Active Notifications, filtered by intersection ID, start time, end time, and key")
     @RequestMapping(value = "/notifications/active", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
-            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
-    public ResponseEntity<List<Notification>> findActiveNotification(
+    public ResponseEntity<Page<Notification>> findActiveNotifications(
             @RequestParam(name = "intersection_id") Integer intersectionID,
-            @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
             @RequestParam(name = "notification_type", required = false) String notificationType,
             @RequestParam(name = "key", required = false) String key,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
         if (testData) {
             List<Notification> list = new ArrayList<>();
             list.add(MockNotificationGenerator.getConnectionOfTravelNotification());
-            return ResponseEntity.ok(list);
-        } else {
-            Query query = activeNotificationRepo.getQuery(intersectionID, roadRegulatorID, notificationType, key);
-            long count = activeNotificationRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                log.debug("Returning ActiveNotification Response with Size: {}", count);
-                return ResponseEntity.ok(activeNotificationRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            return ResponseEntity.ok(new PageImpl<>(list, PageRequest.of(page, size), list.size()));
         }
+
+        // Retrieve a paginated result from the repository
+        PageRequest pageable = PageRequest.of(page, size);
+        Page<Notification> response = activeNotificationRepo.find(intersectionID, notificationType, key, pageable);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Count Active Notifications", description = "Returns the count of Active Notifications, filtered by intersection ID, start time, end time, and key")
@@ -129,20 +130,19 @@ public class NotificationController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
-    public ResponseEntity<Long> countActiveNotification(
+    public ResponseEntity<Long> countActiveNotifications(
             @RequestParam(name = "intersection_id") Integer intersectionID,
-            @RequestParam(name = "road_regulator_id", required = false) Integer roadRegulatorID,
             @RequestParam(name = "notification_type", required = false) String notificationType,
             @RequestParam(name = "key", required = false) String key,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = activeNotificationRepo.getQuery(intersectionID, roadRegulatorID, notificationType, key);
-            long count = activeNotificationRepo.getQueryResultCount(query);
-            log.debug("Found: {} Active Notifications", count);
+            long count = activeNotificationRepo.count(intersectionID, notificationType, key);
+
             return ResponseEntity.ok(count);
         }
     }
@@ -156,10 +156,12 @@ public class NotificationController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
     public @ResponseBody ResponseEntity<String> deleteActiveNotification(@RequestBody String key) {
-        Query query = activeNotificationRepo.getQuery(null, null, null, key.replace("\"", ""));
-
         try {
-            activeNotificationRepo.delete(query);
+            long count = activeNotificationRepo.delete(key.replace("\"", ""));
+            if (count == 0) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Active Notification with key " + key + " not found");
+            }
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
@@ -172,29 +174,30 @@ public class NotificationController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
-            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
-    public ResponseEntity<List<ConnectionOfTravelNotification>> findConnectionOfTravelNotification(
+    public ResponseEntity<Page<ConnectionOfTravelNotification>> findConnectionOfTravelNotifications(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
         if (testData) {
-            List<ConnectionOfTravelNotification> list = new ArrayList<>();
-            list.add(MockNotificationGenerator.getConnectionOfTravelNotification());
-            return ResponseEntity.ok(list);
+            // Mock response for test data
+            List<ConnectionOfTravelNotification> list = List
+                    .of(MockNotificationGenerator.getConnectionOfTravelNotification());
+            return ResponseEntity.ok(new PageImpl<>(list, PageRequest.of(page, size), list.size()));
+        } else if (latest) {
+            return ResponseEntity.ok(connectionOfTravelNotificationRepo.findLatest(intersectionID,
+                    startTime, endTime));
         } else {
-            Query query = connectionOfTravelNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = connectionOfTravelNotificationRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                log.debug("Returning ConnectionOfTravelNotification Response with Size: {}", count);
-                return ResponseEntity.ok(connectionOfTravelNotificationRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            // Retrieve a paginated result from the repository
+            PageRequest pageable = PageRequest.of(page, size);
+            Page<ConnectionOfTravelNotification> response = connectionOfTravelNotificationRepo.find(intersectionID,
+                    startTime, endTime, pageable);
+            return ResponseEntity.ok(response);
         }
     }
 
@@ -205,18 +208,17 @@ public class NotificationController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<Long> countConnectionOfTravelNotification(
+    public ResponseEntity<Long> countConnectionOfTravelNotifications(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = connectionOfTravelNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = connectionOfTravelNotificationRepo.getQueryResultCount(query);
+            long count = connectionOfTravelNotificationRepo.count(intersectionID, startTime, endTime);
 
-            log.debug("Found: {} ConnectionOfTravelNotifications", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -226,31 +228,31 @@ public class NotificationController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
-            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
-    public ResponseEntity<List<IntersectionReferenceAlignmentNotification>> findIntersectionReferenceAlignmentNotification(
+    public ResponseEntity<Page<IntersectionReferenceAlignmentNotification>> findIntersectionReferenceAlignmentNotifications(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
-
         if (testData) {
             List<IntersectionReferenceAlignmentNotification> list = new ArrayList<>();
             list.add(MockNotificationGenerator.getIntersectionReferenceAlignmentNotification());
-            return ResponseEntity.ok(list);
+            return ResponseEntity.ok(new PageImpl<>(list, PageRequest.of(page, size), list.size()));
+        }
+
+        if (latest) {
+            return ResponseEntity.ok(intersectionReferenceAlignmentNotificationRepo.findLatest(intersectionID,
+                    startTime, endTime));
         } else {
-            Query query = intersectionReferenceAlignmentNotificationRepo.getQuery(intersectionID, startTime, endTime,
-                    latest);
-            long count = intersectionReferenceAlignmentNotificationRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                log.debug("Returning IntersectionReferenceAlignmentNotification Response with Size: {}", count);
-                return ResponseEntity.ok(intersectionReferenceAlignmentNotificationRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            // Retrieve a paginated result from the repository
+            PageRequest pageable = PageRequest.of(page, size);
+            Page<IntersectionReferenceAlignmentNotification> response = intersectionReferenceAlignmentNotificationRepo
+                    .find(intersectionID, startTime, endTime, pageable);
+            return ResponseEntity.ok(response);
         }
     }
 
@@ -261,7 +263,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<Long> countIntersectionReferenceAlignmentNotification(
+    public ResponseEntity<Long> countIntersectionReferenceAlignmentNotifications(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -270,11 +272,8 @@ public class NotificationController {
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = intersectionReferenceAlignmentNotificationRepo.getQuery(intersectionID, startTime, endTime,
-                    false);
-            long count = intersectionReferenceAlignmentNotificationRepo.getQueryResultCount(query);
+            long count = intersectionReferenceAlignmentNotificationRepo.count(intersectionID, startTime, endTime);
 
-            log.debug("Found: {} IntersectionReferenceAlignmentNotifications", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -284,30 +283,31 @@ public class NotificationController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
-            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
-    public ResponseEntity<List<LaneDirectionOfTravelNotification>> findLaneDirectionOfTravelNotification(
+    public ResponseEntity<Page<LaneDirectionOfTravelNotification>> findLaneDirectionOfTravelNotifications(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
-
         if (testData) {
             List<LaneDirectionOfTravelNotification> list = new ArrayList<>();
             list.add(MockNotificationGenerator.getLaneDirectionOfTravelNotification());
-            return ResponseEntity.ok(list);
+            return ResponseEntity.ok(new PageImpl<>(list, PageRequest.of(page, size), list.size()));
+        }
+
+        if (latest) {
+            return ResponseEntity.ok(laneDirectionOfTravelNotificationRepo.findLatest(intersectionID,
+                    startTime, endTime));
         } else {
-            Query query = laneDirectionOfTravelNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = laneDirectionOfTravelNotificationRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                log.debug("Returning LaneDirectionOfTravelNotification Response with Size: {}", count);
-                return ResponseEntity.ok(laneDirectionOfTravelNotificationRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            // Retrieve a paginated result from the repository
+            PageRequest pageable = PageRequest.of(page, size);
+            Page<LaneDirectionOfTravelNotification> response = laneDirectionOfTravelNotificationRepo
+                    .find(intersectionID, startTime, endTime, pageable);
+            return ResponseEntity.ok(response);
         }
     }
 
@@ -318,7 +318,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<Long> countLaneDirectionOfTravelNotification(
+    public ResponseEntity<Long> countLaneDirectionOfTravelNotifications(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -327,12 +327,9 @@ public class NotificationController {
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = laneDirectionOfTravelNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = laneDirectionOfTravelNotificationRepo.getQueryResultCount(query);
+            long count = laneDirectionOfTravelNotificationRepo.count(intersectionID, startTime, endTime);
 
-            log.debug("Found: {} LaneDirectionOfTravelNotifications", count);
             return ResponseEntity.ok(count);
-
         }
     }
 
@@ -341,30 +338,31 @@ public class NotificationController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
-            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
-    public ResponseEntity<List<MapBroadcastRateNotification>> findMapBroadcastRateNotification(
+    public ResponseEntity<Page<MapBroadcastRateNotification>> findMapBroadcastRateNotifications(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
-
         if (testData) {
             List<MapBroadcastRateNotification> list = new ArrayList<>();
             list.add(MockNotificationGenerator.getMapBroadcastRateNotification());
-            return ResponseEntity.ok(list);
+            return ResponseEntity.ok(new PageImpl<>(list, PageRequest.of(page, size), list.size()));
+        }
+
+        if (latest) {
+            return ResponseEntity.ok(mapBroadcastRateNotificationRepo.findLatest(intersectionID,
+                    startTime, endTime));
         } else {
-            Query query = mapBroadcastRateNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = mapBroadcastRateNotificationRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                log.debug("Returning MapBroadcastRateNotification Response with Size: {}", count);
-                return ResponseEntity.ok(mapBroadcastRateNotificationRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            // Retrieve a paginated result from the repository
+            PageRequest pageable = PageRequest.of(page, size);
+            Page<MapBroadcastRateNotification> response = mapBroadcastRateNotificationRepo.find(intersectionID,
+                    startTime, endTime, pageable);
+            return ResponseEntity.ok(response);
         }
     }
 
@@ -375,7 +373,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<Long> countMapBroadcastRateNotification(
+    public ResponseEntity<Long> countMapBroadcastRateNotifications(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -384,10 +382,8 @@ public class NotificationController {
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = mapBroadcastRateNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = mapBroadcastRateNotificationRepo.getQueryResultCount(query);
+            long count = mapBroadcastRateNotificationRepo.count(intersectionID, startTime, endTime);
 
-            log.debug("Found: {} MapBroadcastRateNotifications", count);
             return ResponseEntity.ok(count);
         }
     }
@@ -397,29 +393,31 @@ public class NotificationController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
-            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
-    public ResponseEntity<List<SignalGroupAlignmentNotification>> findSignalGroupAlignmentNotification(
+    public ResponseEntity<Page<SignalGroupAlignmentNotification>> findSignalGroupAlignmentNotifications(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
         if (testData) {
             List<SignalGroupAlignmentNotification> list = new ArrayList<>();
             list.add(MockNotificationGenerator.getSignalGroupAlignmentNotification());
-            return ResponseEntity.ok(list);
+            return ResponseEntity.ok(new PageImpl<>(list, PageRequest.of(page, size), list.size()));
+        }
+
+        if (latest) {
+            return ResponseEntity.ok(signalGroupAlignmentNotificationRepo.findLatest(intersectionID,
+                    startTime, endTime));
         } else {
-            Query query = signalGroupAlignmentNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = signalGroupAlignmentNotificationRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                log.debug("Returning SignalGroupAlignmentNotification Response with Size: {}", count);
-                return ResponseEntity.ok(signalGroupAlignmentNotificationRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            // Retrieve a paginated result from the repository
+            PageRequest pageable = PageRequest.of(page, size);
+            Page<SignalGroupAlignmentNotification> response = signalGroupAlignmentNotificationRepo.find(intersectionID,
+                    startTime, endTime, pageable);
+            return ResponseEntity.ok(response);
         }
     }
 
@@ -430,17 +428,17 @@ public class NotificationController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<Long> countSignalGroupAlignmentNotification(
+    public ResponseEntity<Long> countSignalGroupAlignmentNotifications(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = signalGroupAlignmentNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = signalGroupAlignmentNotificationRepo.getQueryResultCount(query);
-            log.debug("Found: {} SignalGroupAlignmentNotifications", count);
+            long count = signalGroupAlignmentNotificationRepo.count(intersectionID, startTime, endTime);
+
             return ResponseEntity.ok(count);
         }
     }
@@ -450,30 +448,31 @@ public class NotificationController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
-            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
-    public ResponseEntity<List<SignalStateConflictNotification>> findSignalStateConflictNotification(
+    public ResponseEntity<Page<SignalStateConflictNotification>> findSignalStateConflictNotifications(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
-
         if (testData) {
             List<SignalStateConflictNotification> list = new ArrayList<>();
             list.add(MockNotificationGenerator.getSignalStateConflictNotification());
-            return ResponseEntity.ok(list);
+            return ResponseEntity.ok(new PageImpl<>(list, PageRequest.of(page, size), list.size()));
+        }
+
+        if (latest) {
+            return ResponseEntity.ok(signalStateConflictNotificationRepo.findLatest(intersectionID,
+                    startTime, endTime));
         } else {
-            Query query = signalStateConflictNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = signalStateConflictNotificationRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                log.debug("Returning SignalStateConflictNotification Response with Size: {}", count);
-                return ResponseEntity.ok(signalStateConflictNotificationRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            // Retrieve a paginated result from the repository
+            PageRequest pageable = PageRequest.of(page, size);
+            Page<SignalStateConflictNotification> response = signalStateConflictNotificationRepo.find(intersectionID,
+                    startTime, endTime, pageable);
+            return ResponseEntity.ok(response);
         }
     }
 
@@ -484,7 +483,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<Long> countSignalStateConflictNotification(
+    public ResponseEntity<Long> countSignalStateConflictNotifications(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -493,9 +492,8 @@ public class NotificationController {
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = signalStateConflictNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = signalStateConflictNotificationRepo.getQueryResultCount(query);
-            log.debug("Found: {} SignalStateConflictNotifications", count);
+            long count = signalStateConflictNotificationRepo.count(intersectionID, startTime, endTime);
+
             return ResponseEntity.ok(count);
         }
     }
@@ -505,30 +503,31 @@ public class NotificationController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
-            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
-    public ResponseEntity<List<SpatBroadcastRateNotification>> findSpatBroadcastRateNotification(
+    public ResponseEntity<Page<SpatBroadcastRateNotification>> findSpatBroadcastRateNotifications(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
-
         if (testData) {
             List<SpatBroadcastRateNotification> list = new ArrayList<>();
             list.add(MockNotificationGenerator.getSpatBroadcastRateNotification());
-            return ResponseEntity.ok(list);
+            return ResponseEntity.ok(new PageImpl<>(list, PageRequest.of(page, size), list.size()));
+        }
+
+        if (latest) {
+            return ResponseEntity.ok(spatBroadcastRateNotificationRepo.findLatest(intersectionID,
+                    startTime, endTime));
         } else {
-            Query query = spatBroadcastRateNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = spatBroadcastRateNotificationRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                log.debug("Returning SpatBroadcastRateNotification Response with Size: {}", count);
-                return ResponseEntity.ok(spatBroadcastRateNotificationRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            // Retrieve a paginated result from the repository
+            PageRequest pageable = PageRequest.of(page, size);
+            Page<SpatBroadcastRateNotification> response = spatBroadcastRateNotificationRepo.find(intersectionID,
+                    startTime, endTime, pageable);
+            return ResponseEntity.ok(response);
         }
     }
 
@@ -539,7 +538,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<Long> countSpatBroadcastRateNotification(
+    public ResponseEntity<Long> countSpatBroadcastRateNotifications(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -548,9 +547,8 @@ public class NotificationController {
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = spatBroadcastRateNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = spatBroadcastRateNotificationRepo.getQueryResultCount(query);
-            log.debug("Found: {} SpatBroadcastRateNotifications", count);
+            long count = spatBroadcastRateNotificationRepo.count(intersectionID, startTime, endTime);
+
             return ResponseEntity.ok(count);
         }
     }
@@ -560,29 +558,31 @@ public class NotificationController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
-            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
-    public ResponseEntity<List<StopLineStopNotification>> findStopLineStopNotification(
+    public ResponseEntity<Page<StopLineStopNotification>> findStopLineStopNotifications(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
         if (testData) {
             List<StopLineStopNotification> list = new ArrayList<>();
             list.add(MockNotificationGenerator.getStopLineStopNotification());
-            return ResponseEntity.ok(list);
+            return ResponseEntity.ok(new PageImpl<>(list, PageRequest.of(page, size), list.size()));
+        }
+
+        if (latest) {
+            return ResponseEntity.ok(stopLineStopNotificationRepo.findLatest(intersectionID,
+                    startTime, endTime));
         } else {
-            Query query = stopLineStopNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = stopLineStopNotificationRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                log.debug("Returning StopLineStopNotification Response with Size: {}", count);
-                return ResponseEntity.ok(stopLineStopNotificationRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            // Retrieve a paginated result from the repository
+            PageRequest pageable = PageRequest.of(page, size);
+            Page<StopLineStopNotification> response = stopLineStopNotificationRepo.find(intersectionID, startTime,
+                    endTime, pageable);
+            return ResponseEntity.ok(response);
         }
     }
 
@@ -593,17 +593,17 @@ public class NotificationController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<Long> countStopLineStopNotification(
+    public ResponseEntity<Long> countStopLineStopNotifications(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = stopLineStopNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = stopLineStopNotificationRepo.getQueryResultCount(query);
-            log.debug("Found: {} StopLineStopNotifications", count);
+            long count = stopLineStopNotificationRepo.count(intersectionID, startTime, endTime);
+
             return ResponseEntity.ok(count);
         }
     }
@@ -613,29 +613,31 @@ public class NotificationController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
-            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
-    public ResponseEntity<List<StopLinePassageNotification>> findStopLinePassageNotification(
+    public ResponseEntity<Page<StopLinePassageNotification>> findStopLinePassageNotifications(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
         if (testData) {
             List<StopLinePassageNotification> list = new ArrayList<>();
             list.add(MockNotificationGenerator.getStopLinePassageNotification());
-            return ResponseEntity.ok(list);
+            return ResponseEntity.ok(new PageImpl<>(list, PageRequest.of(page, size), list.size()));
+        }
+
+        if (latest) {
+            return ResponseEntity.ok(stopLinePassageNotificationRepo.findLatest(intersectionID,
+                    startTime, endTime));
         } else {
-            Query query = stopLinePassageNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = stopLinePassageNotificationRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                log.debug("Returning StopLinePassageNotification Response with Size: {}", count);
-                return ResponseEntity.ok(stopLinePassageNotificationRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            // Retrieve a paginated result from the repository
+            PageRequest pageable = PageRequest.of(page, size);
+            Page<StopLinePassageNotification> response = stopLinePassageNotificationRepo.find(intersectionID, startTime,
+                    endTime, pageable);
+            return ResponseEntity.ok(response);
         }
     }
 
@@ -646,17 +648,17 @@ public class NotificationController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<Long> countStopLinePassageNotification(
+    public ResponseEntity<Long> countStopLinePassageNotifications(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = stopLinePassageNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = stopLinePassageNotificationRepo.getQueryResultCount(query);
-            log.debug("Found: {} StopLinePassageNotifications", count);
+            long count = stopLinePassageNotificationRepo.count(intersectionID, startTime, endTime);
+
             return ResponseEntity.ok(count);
         }
     }
@@ -666,29 +668,31 @@ public class NotificationController {
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
-            @ApiResponse(responseCode = "413", description = "Payload Too Large - The requested query has more results than allowed by server. Please reduce the query bounds and try again.")
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested")
     })
-    public ResponseEntity<List<TimeChangeDetailsNotification>> findTimeChangeDetailsNotification(
+    public ResponseEntity<Page<TimeChangeDetailsNotification>> findTimeChangeDetailsNotifications(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
         if (testData) {
             List<TimeChangeDetailsNotification> list = new ArrayList<>();
             list.add(MockNotificationGenerator.getTimeChangeDetailsNotification());
-            return ResponseEntity.ok(list);
+            return ResponseEntity.ok(new PageImpl<>(list, PageRequest.of(page, size), list.size()));
+        }
+
+        if (latest) {
+            return ResponseEntity.ok(timeChangeDetailsNotificationRepo.findLatest(intersectionID,
+                    startTime, endTime));
         } else {
-            Query query = timeChangeDetailsNotificationRepo.getQuery(intersectionID, startTime, endTime, latest);
-            long count = timeChangeDetailsNotificationRepo.getQueryResultCount(query);
-            if (count <= props.getMaximumResponseSize()) {
-                log.debug("Returning TimeChangeDetailsNotification Response with Size: {}", count);
-                return ResponseEntity.ok(timeChangeDetailsNotificationRepo.find(query));
-            } else {
-                throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                        "The requested query has more results than allowed by server. Please reduce the query bounds and try again.");
-            }
+            // Retrieve a paginated result from the repository
+            PageRequest pageable = PageRequest.of(page, size);
+            Page<TimeChangeDetailsNotification> response = timeChangeDetailsNotificationRepo.find(intersectionID,
+                    startTime, endTime, pageable);
+            return ResponseEntity.ok(response);
         }
     }
 
@@ -699,17 +703,17 @@ public class NotificationController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<Long> countTimeChangeDetailsNotification(
+    public ResponseEntity<Long> countTimeChangeDetailsNotifications(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+
         if (testData) {
             return ResponseEntity.ok(1L);
         } else {
-            Query query = timeChangeDetailsNotificationRepo.getQuery(intersectionID, startTime, endTime, false);
-            long count = timeChangeDetailsNotificationRepo.getQueryResultCount(query);
-            log.debug("Found: {} TimeChangeDetailNotifications", count);
+            long count = timeChangeDetailsNotificationRepo.count(intersectionID, startTime, endTime);
+
             return ResponseEntity.ok(count);
         }
     }

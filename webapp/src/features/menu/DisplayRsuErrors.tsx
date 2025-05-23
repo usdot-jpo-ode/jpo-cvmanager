@@ -288,6 +288,8 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
                       color: theme.palette.text.primary,
                       backgroundColor: rowData.online_status.toLowerCase().includes('online')
                         ? theme.palette.success.dark
+                        : rowData.online_status.toLowerCase().includes('unstable')
+                        ? theme.palette.warning.main
                         : theme.palette.error.dark,
                       width: '4rem',
                       height: '1.5rem',

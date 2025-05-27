@@ -53,7 +53,7 @@ export const intersectionApiSlice = createApi({
         url: '/default',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body,
+        body: { ...body, roadRegulatorID: -1 }, // necessary for Intersection API deserialization, not used by webapp
       }),
       async onQueryStarted(props, { dispatch, queryFulfilled }) {
         await queryFulfilled
@@ -73,7 +73,7 @@ export const intersectionApiSlice = createApi({
         url: '',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body,
+        body: { ...body, roadRegulatorID: -1 }, // necessary for Intersection API deserialization, not used by webapp
       }),
       transformResponse: (response: any, meta: any) => response as IntersectionConfig,
       invalidatesTags: ['intersectionConfigs'],
@@ -83,7 +83,7 @@ export const intersectionApiSlice = createApi({
         url: ``,
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: config,
+        body: { ...config, roadRegulatorID: -1 }, // necessary for Intersection API deserialization, not used by webapp
       }),
       transformResponse: (response: any, meta: any) => response as IntersectionConfig,
       invalidatesTags: ['intersectionConfigs'],

@@ -58,17 +58,15 @@ class NotificationApi {
     for (const id of ids) {
       success =
         success &&
-        (
-          await authApiHelper.invokeApi({
-            path: `/intersections/active-notifications`,
-            method: 'DELETE',
-            abortController,
-            token: token,
-            body: id.toString(),
-            booleanResponse: true,
-            tag: 'intersection',
-          })
-        )?.content?.[0]
+        (await authApiHelper.invokeApi({
+          path: `/intersections/active-notifications`,
+          method: 'DELETE',
+          abortController,
+          token: token,
+          body: id.toString(),
+          booleanResponse: true,
+          tag: 'intersection',
+        }))
     }
     if (success) {
       toast.success(`Successfully Dismissed ${ids.length} Notifications`)

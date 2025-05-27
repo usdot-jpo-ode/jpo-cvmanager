@@ -37,7 +37,7 @@ import us.dot.its.jpo.ode.mockdata.MockNotificationGenerator;
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
-@RequestMapping("/data/cm-notifications")
+@RequestMapping("/intersections/active-notifications")
 public class ActiveNotificationController {
 
     private final ActiveNotificationRepository activeNotificationRepo;
@@ -51,7 +51,7 @@ public class ActiveNotificationController {
     }
 
     @Operation(summary = "Find Active Notifications", description = "Returns a list of Active Notifications, filtered by intersection ID, start time, end time, and key")
-    @RequestMapping(value = "/active", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -77,7 +77,7 @@ public class ActiveNotificationController {
     }
 
     @Operation(summary = "Count Active Notifications", description = "Returns the count of Active Notifications, filtered by intersection ID, start time, end time, and key")
-    @RequestMapping(value = "/active/count", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -99,7 +99,7 @@ public class ActiveNotificationController {
     }
 
     @Operation(summary = "Delete Active Notification", description = "Deletes a specific Active Notification by key")
-    @DeleteMapping(value = "/active", produces = "application/json")
+    @DeleteMapping(produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('OPERATOR')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),

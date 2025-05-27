@@ -18,7 +18,7 @@ const getQueryString = (query_params: Record<string, string>) => {
 export const intersectionApiSlice = createApi({
   reducerPath: 'intersectionApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: EnvironmentVars.CVIZ_API_SERVER_URL,
+    baseUrl: EnvironmentVars.CVIZ_API_SERVER_URL + 'intersections/configuration',
     prepareHeaders: (headers, { getState, endpoint }) => {
       const token = selectToken(getState() as RootState)
 
@@ -36,13 +36,13 @@ export const intersectionApiSlice = createApi({
   endpoints: (builder) => ({
     getGeneralParameters: builder.query<Config[], undefined>({
       query: () => {
-        return `config/default/all`
+        return `/default/all`
       },
       providesTags: ['defaultConfigs'],
     }),
     getIntersectionParameters: builder.query<IntersectionConfig[], number>({
       query: (intersectionId) => {
-        return `config/intersection/unique${getQueryString({
+        return `/unique${getQueryString({
           intersection_id: intersectionId.toString(),
         })}`
       },
@@ -50,7 +50,7 @@ export const intersectionApiSlice = createApi({
     }),
     updateDefaultParameter: builder.mutation<Config | undefined, Config>({
       query: (body) => ({
-        url: 'config/default',
+        url: '/default',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body,
@@ -70,7 +70,7 @@ export const intersectionApiSlice = createApi({
     }),
     updateIntersectionParameter: builder.mutation<IntersectionConfig | undefined, Config>({
       query: (body) => ({
-        url: 'config/intersection',
+        url: '',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body,
@@ -80,7 +80,7 @@ export const intersectionApiSlice = createApi({
     }),
     removeOverriddenParameter: builder.mutation<IntersectionConfig | undefined, IntersectionConfig>({
       query: (config) => ({
-        url: `config/intersection`,
+        url: ``,
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: config,

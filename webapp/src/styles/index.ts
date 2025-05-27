@@ -266,6 +266,9 @@ const themeMainDark = createTheme({
       main: '#A0D36466',
       dark: '#5B7737',
     },
+    warning: {
+      main: '#D1A711',
+    },
     text: {
       primary: '#FFFFFF',
       secondary: '#c7c7c7',

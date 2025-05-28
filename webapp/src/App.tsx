@@ -21,7 +21,7 @@ import EnvironmentVars from './EnvironmentVars'
 import { useThemeDetector as useBrowserThemeDetector } from './hooks/use-browser-theme-detector'
 import '../src/styles/fonts/museo-slab.css'
 import { ReactKeycloakProvider } from '@react-keycloak/web'
-import { syncWithNtp } from './generalSlices/timeSyncSlice'
+import { syncTimeOffset } from './generalSlices/timeSyncSlice'
 
 let loginDispatched = false
 
@@ -44,9 +44,9 @@ const App = () => {
   // Sync NTP timing slice
   useEffect(() => {
     // Start background synchronization
-    dispatch(syncWithNtp())
+    dispatch(syncTimeOffset())
     const interval = setInterval(() => {
-      dispatch(syncWithNtp())
+      dispatch(syncTimeOffset())
     }, 60000) // Sync every 60 seconds
 
     return () => clearInterval(interval)

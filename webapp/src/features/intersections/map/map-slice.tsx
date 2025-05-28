@@ -22,7 +22,7 @@ import { downloadAllData } from './utilities/file-utilities'
 import React from 'react'
 import { SsmSrmData } from '../../../models/RsuApi'
 import { getTimestamp } from './map-component'
-import { getAccurateTimeMillis } from '../../../generalSlices/timeSyncSlice'
+import { getAccurateTimeMillis, selectTimeOffsetMillis } from '../../../generalSlices/timeSyncSlice'
 
 export type MAP_LAYERS =
   | 'map-message'
@@ -954,7 +954,9 @@ export const initializeLiveStreaming = createAsyncThunk(
           const spatMessage: ProcessedSpat = JSON.parse(mes.body)
           const messageTime = getTimestamp(spatMessage.utcTimeStamp)
           console.debug(
-            'Received SPaT message with age of ' + (getAccurateTimeMillis(getState() as RootState) - messageTime) + 'ms'
+            'Received SPaT message with age of ' +
+              (getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState)) - messageTime) +
+              'ms'
           )
           dispatch(renderIterative_Spat([spatMessage]))
           // dispatch(maybeUpdateSliderValue())
@@ -964,7 +966,9 @@ export const initializeLiveStreaming = createAsyncThunk(
           const mapMessage: ProcessedMap = JSON.parse(mes.body)
           const messageTime = getTimestamp(mapMessage.properties.odeReceivedAt)
           console.debug(
-            'Received MAP message with age of ' + (getAccurateTimeMillis(getState() as RootState) - messageTime) + 'ms'
+            'Received MAP message with age of ' +
+              (getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState)) - messageTime) +
+              'ms'
           )
           dispatch(renderIterative_Map([mapMessage]))
           // dispatch(maybeUpdateSliderValue())
@@ -974,7 +978,9 @@ export const initializeLiveStreaming = createAsyncThunk(
           const bsmData: OdeBsmData = JSON.parse(mes.body)
           const messageTime = getTimestamp(bsmData.metadata.odeReceivedAt)
           console.debug(
-            'Received BSM message with age of ' + (getAccurateTimeMillis(getState() as RootState) - messageTime) + 'ms'
+            'Received BSM message with age of ' +
+              (getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState)) - messageTime) +
+              'ms'
           )
           dispatch(renderIterative_Bsm([bsmData]))
           // dispatch(maybeUpdateSliderValue())

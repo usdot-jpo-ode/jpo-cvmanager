@@ -126,7 +126,7 @@ export const StopLineStopAssessmentCard = (props: {
           <Grid2 container spacing={1} sx={{ justifyContent: 'left' }}>
             <Grid2 sx={{ width: '100%' }}>
               <Typography gutterBottom variant="h6">
-                Signal State Stop Assessment
+                Stop Line Stop Assessment
               </Typography>
               {assessment === undefined || assessment.stopLineStopAssessmentGroup === undefined ? (
                 <Typography color="textSecondary" fontSize="small" key={''}>

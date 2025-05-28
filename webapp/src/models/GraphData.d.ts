@@ -6,8 +6,8 @@ type GraphArrayDataType = {
   ProcessingTimePeriodCount: number
   SignalGroupAlignmentEventCount: number
   SignalStateConflictEventCount: number
-  SignalStateEventCount: number
-  SignalStateStopEventCount: number
+  StopLinePassageEventCount: number
+  StopLineStopEventCount: number
   TimeChangeDetailsEventCount: number
   MapMinimumDataEventCount: number
   SpatMinimumDataEventCount: number
@@ -23,8 +23,8 @@ type EVENT_TYPES =
   | 'ProcessingTimePeriod'
   | 'SignalGroupAlignmentEvent'
   | 'SignalStateConflictEvent'
-  | 'SignalStateEvent'
-  | 'SignalStateStopEvent'
+  | 'StopLinePassageEvent'
+  | 'StopLineStopEvent'
   | 'TimeChangeDetailsEvent'
   | 'MapMinimumDataEvent'
   | 'SpatMinimumDataEvent'

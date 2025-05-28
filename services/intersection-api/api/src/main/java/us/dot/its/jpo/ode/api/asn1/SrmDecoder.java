@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import us.dot.its.jpo.ode.api.models.messages.SrmDecodedMessage;
 import us.dot.its.jpo.ode.api.models.messages.DecodedMessage;
 import us.dot.its.jpo.ode.api.models.messages.EncodedMessage;
-import us.dot.its.jpo.ode.context.AppContext;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.model.Asn1Encoding;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
@@ -82,10 +82,10 @@ public class SrmDecoder implements Decoder {
     public OdeSrmData getAsOdeJson(String consumedData) throws XmlUtilsException {
         ObjectNode consumed = XmlUtils.toObjectNode(consumedData);
 
-        JsonNode metadataNode = consumed.findValue(AppContext.METADATA_STRING);
+        JsonNode metadataNode = consumed.findValue(OdeMsgMetadata.METADATA_STRING);
         if (metadataNode instanceof ObjectNode object) {
             // Removing encodings to match ODE behavior
-            object.remove(AppContext.ENCODINGS_STRING);
+            object.remove(OdeMsgMetadata.ENCODINGS_STRING);
 
             // Ssm header file does not have a location and use predefined set required
             // RxSource
@@ -95,7 +95,7 @@ public class SrmDecoder implements Decoder {
             JsonNode jsonNode;
             try {
                 jsonNode = objectMapper.readTree(receivedMessageDetails.toJson());
-                object.set(AppContext.RECEIVEDMSGDETAILS_STRING, jsonNode);
+                object.set(OdeMsgMetadata.RECEIVEDMSGDETAILS_STRING, jsonNode);
             } catch (JsonProcessingException e) {
                 log.error("Exception decoding SRM to ODE json", e);
             }

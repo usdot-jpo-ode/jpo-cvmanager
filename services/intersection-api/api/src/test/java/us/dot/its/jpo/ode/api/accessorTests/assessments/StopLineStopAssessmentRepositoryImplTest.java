@@ -28,7 +28,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLineStopAssessment;
-import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.StopLineStopAssessmentRepositoryImpl;
+import us.dot.its.jpo.ode.api.accessors.assessments.StopLineStopAssessment.StopLineStopAssessmentRepositoryImpl;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -70,6 +70,7 @@ public class StopLineStopAssessmentRepositoryImplTest {
     }
 
     @Test
+
     public void testFind() {
         StopLineStopAssessmentRepositoryImpl repo = mock(StopLineStopAssessmentRepositoryImpl.class);
 

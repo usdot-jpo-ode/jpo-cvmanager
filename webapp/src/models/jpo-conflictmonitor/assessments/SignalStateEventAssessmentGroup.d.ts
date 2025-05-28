@@ -1,4 +1,4 @@
-type SignalStateEventAssessmentGroup = {
+type StopLinePassageAssessmentGroup = {
   signalGroup: number
   darkEvents: number
   redEvents: number

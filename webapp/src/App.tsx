@@ -21,6 +21,7 @@ import EnvironmentVars from './EnvironmentVars'
 import { useThemeDetector as useBrowserThemeDetector } from './hooks/use-browser-theme-detector'
 import '../src/styles/fonts/museo-slab.css'
 import { ReactKeycloakProvider } from '@react-keycloak/web'
+import { syncWithNtp } from './generalSlices/timeSyncSlice'
 
 let loginDispatched = false
 
@@ -39,6 +40,17 @@ const App = () => {
       console.error('Failed to refresh the token, or the session has expired')
     })
   }, [])
+
+  // Sync NTP timing slice
+  useEffect(() => {
+    // Start background synchronization
+    dispatch(syncWithNtp())
+    const interval = setInterval(() => {
+      dispatch(syncWithNtp())
+    }, 60000) // Sync every 60 seconds
+
+    return () => clearInterval(interval)
+  }, [dispatch])
 
   useEffect(() => {
     dispatch(getRsuData())

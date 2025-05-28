@@ -22,6 +22,7 @@ import { downloadAllData } from './utilities/file-utilities'
 import React from 'react'
 import { SsmSrmData } from '../../../models/RsuApi'
 import { getTimestamp } from './map-component'
+import { getAccurateTimeMillis } from '../../../generalSlices/timeSyncSlice'
 
 export type MAP_LAYERS =
   | 'map-message'
@@ -952,7 +953,9 @@ export const initializeLiveStreaming = createAsyncThunk(
         client.subscribe(spatTopic, function (mes: IMessage) {
           const spatMessage: ProcessedSpat = JSON.parse(mes.body)
           const messageTime = getTimestamp(spatMessage.utcTimeStamp)
-          console.debug('Received SPaT message with age of ' + (Date.now() - messageTime) + 'ms')
+          console.debug(
+            'Received SPaT message with age of ' + (getAccurateTimeMillis(getState() as RootState) - messageTime) + 'ms'
+          )
           dispatch(renderIterative_Spat([spatMessage]))
           // dispatch(maybeUpdateSliderValue())
         })
@@ -960,7 +963,9 @@ export const initializeLiveStreaming = createAsyncThunk(
         client.subscribe(mapTopic, function (mes: IMessage) {
           const mapMessage: ProcessedMap = JSON.parse(mes.body)
           const messageTime = getTimestamp(mapMessage.properties.odeReceivedAt)
-          console.debug('Received MAP message with age of ' + (Date.now() - messageTime) + 'ms')
+          console.debug(
+            'Received MAP message with age of ' + (getAccurateTimeMillis(getState() as RootState) - messageTime) + 'ms'
+          )
           dispatch(renderIterative_Map([mapMessage]))
           // dispatch(maybeUpdateSliderValue())
         })
@@ -968,7 +973,9 @@ export const initializeLiveStreaming = createAsyncThunk(
         client.subscribe(bsmTopic, function (mes: IMessage) {
           const bsmData: OdeBsmData = JSON.parse(mes.body)
           const messageTime = getTimestamp(bsmData.metadata.odeReceivedAt)
-          console.debug('Received BSM message with age of ' + (Date.now() - messageTime) + 'ms')
+          console.debug(
+            'Received BSM message with age of ' + (getAccurateTimeMillis(getState() as RootState) - messageTime) + 'ms'
+          )
           dispatch(renderIterative_Bsm([bsmData]))
           // dispatch(maybeUpdateSliderValue())
         })

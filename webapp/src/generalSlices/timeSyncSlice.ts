@@ -15,6 +15,11 @@ const initialState: TimeSyncState = {
   syncError: null,
 }
 
+export const computeAccurateTimeMillis = (utcMillis: number, timeOffsetMillis: number): number =>
+  utcMillis + timeOffsetMillis
+
+export const getNewAccurateTimeMillis = (timeOffsetMillis: number): number => Date.now() + timeOffsetMillis
+
 export const syncWithNtp = createAsyncThunk('timeSync/syncWithNtp', async (_, { dispatch }) => {
   try {
     ntpClient.getNetworkTime('pool.ntp.org', 123, (err, date) => {
@@ -65,7 +70,8 @@ export const { setTimeOffset, setSyncError } = timeSyncSlice.actions
 export const selectTimeOffsetMillis = (state: RootState) => state.timeSync.timeOffsetMillis
 export const selectLastSync = (state: RootState) => state.timeSync.lastSync
 export const selectSyncError = (state: RootState) => state.timeSync.syncError
-export const getAccurateTimeMillis = (state: RootState) => Date.now() + selectTimeOffsetMillis(state)
+export const getAccurateTimeMillis = (state: RootState) =>
+  computeAccurateTimeMillis(Date.now(), selectTimeOffsetMillis(state))
 export const getAccurateTime = (state: RootState) => new Date(getAccurateTimeMillis(state))
 
 export default timeSyncSlice.reducer

@@ -1,5 +1,13 @@
 ## JPO CV Manager Release Notes
 
+## Version 1.6.1
+----------------------------------------
+### **Summary**
+In this hotfix, UX bugs have been resolved to ensure full feature functionality for the user.
+
+Enhancements in this release:
+- [CDOT PR 209](https://github.com/CDOT-CV/jpo-cvmanager/pull/209): Hotfix/1.6.1: Fix/map UI bugs
+
 ## Version 1.6.0
 
 ### **Summary**

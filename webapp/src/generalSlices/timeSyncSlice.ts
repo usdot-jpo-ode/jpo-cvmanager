@@ -21,15 +21,11 @@ export const getAccurateTimeMillis = (timeOffsetMillis: number): number => Date.
 
 export const syncTimeOffset = createAsyncThunk('timeSync/syncTimeOffset', async (_) => {
   const start = Date.now() // Record the start time
-  console.warn('Synchronizing time offset with server...')
   const response = await fetch(TIME_SERVER_URL_UTC)
-  console.warn('Response:', response)
   const end = Date.now() // Record the end time
 
   const rtt = end - start // Calculate round-trip time
-  console.warn('RTT:', rtt)
   const data = await response.json()
-  console.warn('Response JSON:', data)
   const serverTime = new Date(data.utc_datetime).getTime()
 
   // Adjust for half the round-trip time

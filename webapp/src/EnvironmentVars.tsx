@@ -1,10 +1,6 @@
 class EnvironmentVars {
   static getBaseApiUrl() {
-    let endpoint = process.env.REACT_APP_GATEWAY_BASE_URL!
-
-    // trim a trailing slash if it exists
-    if (endpoint.endsWith('/')) endpoint = endpoint.slice(0, -1)
-    return endpoint
+    return process.env.REACT_APP_GATEWAY_BASE_URL?.replace(/\/$/, '') // remove trailing slash
   }
 
   static getMessageTypes() {
@@ -40,8 +36,8 @@ class EnvironmentVars {
   }
 
   static MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN
-  static CVIZ_API_SERVER_URL = process.env.REACT_APP_CVIZ_API_SERVER_URL
-  static CVIZ_API_WS_URL = process.env.REACT_APP_CVIZ_API_WS_URL
+  static CVIZ_API_SERVER_URL = process.env.REACT_APP_CVIZ_API_SERVER_URL?.replace(/\/$/, '') // remove trailing slash
+  static CVIZ_API_WS_URL = process.env.REACT_APP_CVIZ_API_WS_URL?.replace(/\/$/, '') // remove trailing slash
   static KEYCLOAK_HOST_URL = process.env.REACT_APP_KEYCLOAK_URL
   static KEYCLOAK_REALM = process.env.REACT_APP_KEYCLOAK_REALM
   static KEYCLOAK_CLIENT_ID = process.env.REACT_APP_KEYCLOAK_CLIENT_ID

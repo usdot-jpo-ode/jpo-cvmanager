@@ -132,7 +132,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Retrieve Intersection Reference Alignment Events", description = "Get Intersection Reference Alignment Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
-    @RequestMapping(value = "/intersection_reference_alignment", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/intersection-reference-alignment", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -166,7 +166,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Count Intersection Reference Alignment Events", description = "Get the count of Intersection Reference Alignment Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
-    @RequestMapping(value = "/intersection_reference_alignment/count", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/intersection-reference-alignment/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -188,7 +188,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Retrieve Daily Counts of Intersection Reference Alignment Events", description = "Get the daily counts of Intersection Reference Alignment Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
-    @RequestMapping(value = "/connection_of_travel", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/connection-of-travel", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -221,7 +221,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Count Connection of Travel Events", description = "Get the count of Connection of Travel Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
-    @RequestMapping(value = "/connection_of_travel/count", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/connection-of-travel/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -243,7 +243,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Retrieve Aggregated Daily Counts of Connection of Travel Events", description = "Get the aggregated daily counts of Connection of Travel Events, filtered by intersection ID, start time, and end time.")
-    @RequestMapping(value = "/connection_of_travel/daily_counts", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/connection-of-travel/daily-counts", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -265,7 +265,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Retrieve Lane Direction of Travel Events", description = "Get Lane Direction of Travel Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
-    @RequestMapping(value = "/lane_direction_of_travel", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/lane-direction-of-travel", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -298,7 +298,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Count Lane Direction of Travel Events", description = "Get the count of Lane Direction of Travel Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
-    @RequestMapping(value = "/lane_direction_of_travel/count", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/lane-direction-of-travel/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -320,7 +320,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Retrieve Aggregated Daily Counts of Lane Direction of Travel Events", description = "Get the aggregated daily counts of Lane Direction of Travel Events, filtered by intersection ID, start time, and end time.")
-    @RequestMapping(value = "/lane_direction_of_travel/daily_counts", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/lane-direction-of-travel/daily-counts", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -342,7 +342,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Retrieve Signal Group Alignment Events", description = "Get Signal Group Alignment Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
-    @RequestMapping(value = "/signal_group_alignment", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/signal-group-alignment", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -375,7 +375,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Count Signal Group Alignment Events", description = "Get the count of Signal Group Alignment Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
-    @RequestMapping(value = "/signal_group_alignment/count", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/signal-group-alignment/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -397,7 +397,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Retrieve Aggregated Daily Counts of Signal Group Alignment Events", description = "Get the aggregated daily counts of Signal Group Alignment Events, filtered by intersection ID, start time, and end time.")
-    @RequestMapping(value = "/signal_group_alignment/daily_counts", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/signal-group-alignment/daily-counts", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -419,7 +419,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Retrieve Signal State Conflict Events", description = "Get Signal State Conflict Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
-    @RequestMapping(value = "/signal_state_conflict", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/signal-state-conflict", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -452,7 +452,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Count Signal State Conflict Events", description = "Get the count of Signal State Conflict Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
-    @RequestMapping(value = "/signal_state_conflict/count", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/signal-state-conflict/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -474,7 +474,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Retrieve Aggregated Daily Counts of Signal State Conflict Events", description = "Get the aggregated daily counts of Signal State Conflict Events, filtered by intersection ID, start time, and end time.")
-    @RequestMapping(value = "/signal_state_conflict/daily_counts", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/signal-state-conflict/daily-counts", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -496,7 +496,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Retrieve Stop Line Passage Events", description = "Get Stop Line Passage Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
-    @RequestMapping(value = "/stop_line_passage", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/stop-line-passage", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -529,7 +529,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Count Stop Line Passage Events", description = "Get the count of Stop Line Passage Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
-    @RequestMapping(value = "/stop_line_passage/count", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/stop-line-passage/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -552,7 +552,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Retrieve Aggregated Daily Counts of Stop Line Passage Events", description = "Get the aggregated daily counts of Stop Line Passage Events, filtered by intersection ID, start time, and end time.")
-    @RequestMapping(value = "/stop_line_passage/daily_counts", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/stop-line-passage/daily-counts", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -574,7 +574,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Retrieve Stop Line Stop Events", description = "Get Stop Line Stop Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
-    @RequestMapping(value = "/stop_line_stop", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/stop-line-stop", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -608,7 +608,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Count Stop Line Stop Events", description = "Get the count of Stop Line Stop Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
-    @RequestMapping(value = "/stop_line_stop/count", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/stop-line-stop/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -631,7 +631,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Retrieve Aggregated Daily Counts of Stop Line Stop Events", description = "Get the aggregated daily counts of Stop Line Stop Events, filtered by intersection ID, start time, and end time.")
-    @RequestMapping(value = "/stop_line_stop/daily_counts", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/stop-line-stop/daily-counts", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -653,7 +653,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Retrieve Time Change Details Events", description = "Get Time Change Details Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
-    @RequestMapping(value = "/time_change_details", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/time-change-details", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -686,7 +686,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Count Time Change Details Events", description = "Get the count of Time Change Details Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
-    @RequestMapping(value = "/time_change_details/count", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/time-change-details/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -708,7 +708,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Retrieve Aggregated Daily Counts of Time Change Details Events", description = "Get the aggregated daily counts of Time Change Details Events, filtered by intersection ID, start time, and end time.")
-    @RequestMapping(value = "/time_change_details/daily_counts", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/time-change-details/daily-counts", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -730,7 +730,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Retrieve SPaT Minimum Data Events", description = "Get SPaT Minimum Data Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
-    @RequestMapping(value = "/spat_minimum_data", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/spat-minimum-data", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -763,7 +763,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Count SPaT Minimum Data Events", description = "Get the count of SPaT Minimum Data Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
-    @RequestMapping(value = "/spat_minimum_data/count", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/spat-minimum-data/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -785,7 +785,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Retrieve MAP Minimum Data Events", description = "Get MAP Minimum Data Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
-    @RequestMapping(value = "/map_minimum_data", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/map-minimum-data", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -818,7 +818,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Count MAP Minimum Data Events", description = "Get the count of MAP Minimum Data Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
-    @RequestMapping(value = "/map_minimum_data/count", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/map-minimum-data/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -840,7 +840,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Retrieve MAP Broadcast Rate Events", description = "Get MAP Broadcast Rate Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
-    @RequestMapping(value = "/map_broadcast_rate", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/map-broadcast-rate", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -873,7 +873,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Count MAP Broadcast Rate Events", description = "Get the count of MAP Broadcast Rate Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
-    @RequestMapping(value = "/map_broadcast_rate/count", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/map-broadcast-rate/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -895,7 +895,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Retrieve SPaT Broadcast Rate Events", description = "Get SPaT Broadcast Rate Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
-    @RequestMapping(value = "/spat_broadcast_rate", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/spat-broadcast-rate", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -928,7 +928,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Count SPaT Broadcast Rate Events", description = "Get the count of SPaT Broadcast Rate Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
-    @RequestMapping(value = "/spat_broadcast_rate/count", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/spat-broadcast-rate/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -950,7 +950,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Retrieve SPaT Message Count Progression Events", description = "Get SPaT Message Count Progression Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
-    @RequestMapping(value = "/spat_message_count_progression", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/spat-message-count-progression", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -983,7 +983,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Count SPaT Message Count Progression Events", description = "Get the count of SPaT Message Count Progression Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
-    @RequestMapping(value = "/spat_message_count_progression/count", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/spat-message-count-progression/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -1005,7 +1005,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Retrieve MAP Message Count Progression Events", description = "Get MAP Message Count Progression Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
-    @RequestMapping(value = "/map_message_count_progression", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/map-message-count-progression", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -1038,7 +1038,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Count MAP Message Count Progression Events", description = "Get the count of MAP Message Count Progression Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
-    @RequestMapping(value = "/map_message_count_progression/count", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/map-message-count-progression/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -1060,7 +1060,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Retrieve BSM Message Count Progression Events", description = "Get BSM Message Count Progression Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
-    @RequestMapping(value = "/bsm_message_count_progression", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/bsm-message-count-progression", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -1093,7 +1093,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Count BSM Message Count Progression Events", description = "Get the count of BSM Message Count Progression Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
-    @RequestMapping(value = "/bsm_message_count_progression/count", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/bsm-message-count-progression/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -1115,7 +1115,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Retrieve BSM Events", description = "Get BSM Events, filtered by intersection ID, start time, and end time. The latest flag will only return the latest message satisfying the query.")
-    @RequestMapping(value = "/bsm_events", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/bsm-events", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -1147,7 +1147,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Count BSM Events", description = "Get the count of BSM Events, filtered by intersection ID, start time, and end time. The full count flag will disable the MongoDB default response limit")
-    @RequestMapping(value = "/bsm_events/count", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/bsm-events/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -1169,7 +1169,7 @@ public class CmEventController {
     }
 
     @Operation(summary = "Retrieve Aggregated Counts of BSM Events By Minute", description = "Get the aggregated counts of BSM Events over each minute, filtered by intersection ID, start time, and end time.")
-    @RequestMapping(value = "/bsm_events_by_minute", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/bsm-events-by-minute", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER')) ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),

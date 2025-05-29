@@ -913,9 +913,9 @@ export const initializeLiveStreaming = createAsyncThunk(
     let client = Stomp.client(url, protocols)
 
     // Topics are in the format /live/{intersectionID}/{spat,map,bsm}
-    let spatTopic = `/live/${intersectionId}/spat`
-    let mapTopic = `/live/${intersectionId}/map`
-    let bsmTopic = `/live/${intersectionId}/bsm` // TODO: Filter by road regulator ID
+    let spatTopic = `/live/${intersectionId}/processed-spat`
+    let mapTopic = `/live/${intersectionId}/processed-map`
+    let bsmTopic = `/live/${intersectionId}/ode-bsm-json` // TODO: Filter by road regulator ID
     let spatTime = Date.now()
     let mapTime = Date.now()
     let bsmTime = Date.now()

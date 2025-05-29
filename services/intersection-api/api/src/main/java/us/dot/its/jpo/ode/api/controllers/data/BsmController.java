@@ -29,7 +29,7 @@ import us.dot.its.jpo.ode.model.OdeBsmData;
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
-@RequestMapping("/data/bsm")
+@RequestMapping("/data/ode-bsm-json")
 public class BsmController {
 
     private final OdeBsmJsonRepository odeBsmJsonRepo;

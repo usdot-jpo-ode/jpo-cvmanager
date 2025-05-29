@@ -30,7 +30,7 @@ import us.dot.its.jpo.ode.mockdata.MockMapGenerator;
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
-@RequestMapping("/data/map")
+@RequestMapping("/data/processed-map")
 public class MapController {
 
     private final ProcessedMapRepository processedMapRepo;

@@ -94,7 +94,7 @@ class MessageMonitorApi {
     if (compact) queryParams['compact'] = compact.toString()
 
     var response: PagedResponse<ProcessedSpat> = await authApiHelper.invokeApi({
-      path: '/data/spat',
+      path: '/data/processed-spat',
       token: token,
       queryParams,
       abortController,
@@ -126,7 +126,7 @@ class MessageMonitorApi {
     if (latest !== undefined) queryParams['latest'] = latest.toString()
 
     var response = await authApiHelper.invokeApi({
-      path: '/data/map',
+      path: '/data/processed-map',
       token: token,
       queryParams,
       abortController,
@@ -164,7 +164,7 @@ class MessageMonitorApi {
     if (distance) queryParams['distance'] = distance.toString()
 
     var response: PagedResponse<OdeBsmData> = await authApiHelper.invokeApi({
-      path: '/data/bsm',
+      path: '/data/ode-bsm-json',
       token: token,
       queryParams,
       abortController,

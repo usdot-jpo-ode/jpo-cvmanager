@@ -29,7 +29,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
-@RequestMapping("/data/spat")
+@RequestMapping("/data/processed-spat")
 public class SpatController {
 
     private final ProcessedSpatRepository processedSpatRepo;

@@ -20,43 +20,43 @@ class GraphsApi {
       SpatBroadcastRateEventCount: 0,
     }
     switch (event_type) {
-      case 'connection_of_travel':
+      case 'connection-of-travel':
         val.ConnectionOfTravelEventCount = count
         break
-      case 'intersection_reference_alignment':
+      case 'intersection-reference-alignment':
         val.IntersectionReferenceAlignmentEventCount = count
         break
-      case 'lane_direction_of_travel':
+      case 'lane-direction-of-travel':
         val.LaneDirectionOfTravelEventCount = count
         break
-      case 'processing_time_period':
+      case 'processing-time-period':
         val.ProcessingTimePeriodCount = count
         break
-      case 'signal_group_alignment':
+      case 'signal-group-alignment':
         val.SignalGroupAlignmentEventCount = count
         break
-      case 'signal_state_conflict':
+      case 'signal-state-conflict':
         val.SignalStateConflictEventCount = count
         break
-      case 'stop_line_passage':
+      case 'stop-line-passage':
         val.StopLinePassageEventCount = count
         break
-      case 'stop_line_stop':
+      case 'stop-line-stop':
         val.StopLineStopEventCount = count
         break
-      case 'time_change_details':
+      case 'time-change-details':
         val.TimeChangeDetailsEventCount = count
         break
-      case 'map_minimum_data':
+      case 'map-minimum-data':
         val.MapMinimumDataEventCount = count
         break
-      case 'spat_minimum_data':
+      case 'spat-minimum-data':
         val.SpatMinimumDataEventCount = count
         break
-      case 'map_broadcast_rate':
+      case 'map-broadcast-rate':
         val.MapBroadcastRateEventCount = count
         break
-      case 'spat_broadcast_rate':
+      case 'spat-broadcast-rate':
         val.SpatBroadcastRateEventCount = count
         break
     }
@@ -106,7 +106,7 @@ class GraphsApi {
     for (const event_type of event_types) {
       try {
         const graphData: Array<{ id: string; count: number }> = await authApiHelper.invokeApi({
-          path: `/data/cm-events/${event_type}/daily_counts`,
+          path: `/data/cm-events/${event_type}/daily-counts`,
           token: token,
           queryParams,
           abortController,

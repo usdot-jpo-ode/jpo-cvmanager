@@ -2,13 +2,13 @@ import toast from 'react-hot-toast'
 import { authApiHelper } from './api-helper-cviz'
 
 const NOTIFICATION_TYPES: string[] = [
-  'connection_of_travel',
-  'intersection_reference_alignment',
-  'lane_direction_of_travel',
-  'signal_state_conflict_notification',
-  'signal_group_alignment_notification',
-  'map_broadcast_rate_notification',
-  'spat_broadcast_rate_notification',
+  'connection-of-travel',
+  'intersection-reference-alignment',
+  'lane-direction-of-travel',
+  'signal-state-conflict-notification',
+  'signal-group-alignment-notification',
+  'map-broadcast-rate-notification',
+  'spat-broadcast-rate-notification',
 ]
 
 class NotificationApi {

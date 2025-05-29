@@ -1,5 +1,5 @@
 
-package us.dot.its.jpo.ode.api.accessors.events.SignalStateConflictEvent;
+package us.dot.its.jpo.ode.api.accessors.events.signal_state_conflict_event;
 
 import java.util.List;
 

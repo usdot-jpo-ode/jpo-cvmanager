@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.accessors.notifications.ActiveNotification;
+package us.dot.its.jpo.ode.api.accessors.notifications.active_notification;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

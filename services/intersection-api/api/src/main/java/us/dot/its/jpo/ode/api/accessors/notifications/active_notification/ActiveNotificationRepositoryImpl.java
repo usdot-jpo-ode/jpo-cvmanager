@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.accessors.notifications.ActiveNotification;
+package us.dot.its.jpo.ode.api.accessors.notifications.active_notification;
 
 import java.util.ArrayList;
 import java.util.Collections;

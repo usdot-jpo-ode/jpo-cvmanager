@@ -1,5 +1,5 @@
 
-package us.dot.its.jpo.ode.api.accessors.events.TimeChangeDetailsEvent;
+package us.dot.its.jpo.ode.api.accessors.events.time_change_details_event;
 
 import java.util.List;
 

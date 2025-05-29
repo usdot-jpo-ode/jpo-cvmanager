@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.accessors.events.SpatMessageCountProgressionEvent;
+package us.dot.its.jpo.ode.api.accessors.events.spat_message_count_progression_event;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;

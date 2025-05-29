@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.accessors.notifications.LaneDirectionOfTravelNotificationRepo;
+package us.dot.its.jpo.ode.api.accessors.notifications.lane_direction_of_travel_notification;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

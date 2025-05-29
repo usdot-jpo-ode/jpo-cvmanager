@@ -1,5 +1,5 @@
 
-package us.dot.its.jpo.ode.api.accessors.events.StopLinePassageEvent;
+package us.dot.its.jpo.ode.api.accessors.events.stop_line_passage_event;
 
 import java.util.List;
 

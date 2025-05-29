@@ -1,5 +1,5 @@
 
-package us.dot.its.jpo.ode.api.accessors.events.LaneDirectionOfTravelEvent;
+package us.dot.its.jpo.ode.api.accessors.events.lane_direction_of_travel_event;
 
 import java.util.Date;
 import java.util.List;

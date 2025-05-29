@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.accessors.notifications.SpatBroadcastRateNotification;
+package us.dot.its.jpo.ode.api.accessors.notifications.spat_broadcast_rate_notification;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

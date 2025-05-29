@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.accessors.events.SpatBroadcastRateEvent;
+package us.dot.its.jpo.ode.api.accessors.events.spat_broadcast_rate_event;
 
 import java.util.Date;
 import java.util.List;

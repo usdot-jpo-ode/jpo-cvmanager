@@ -23,10 +23,10 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.ConnectionOfTra
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLinePassageAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLineStopAssessment;
-import us.dot.its.jpo.ode.api.accessors.assessments.ConnectionOfTravelAssessment.ConnectionOfTravelAssessmentRepository;
-import us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment.LaneDirectionOfTravelAssessmentRepository;
-import us.dot.its.jpo.ode.api.accessors.assessments.StopLinePassageAssessment.StopLinePassageAssessmentRepository;
-import us.dot.its.jpo.ode.api.accessors.assessments.StopLineStopAssessment.StopLineStopAssessmentRepository;
+import us.dot.its.jpo.ode.api.accessors.assessments.connection_of_travel_assessment.ConnectionOfTravelAssessmentRepository;
+import us.dot.its.jpo.ode.api.accessors.assessments.lane_direction_of_travel_assessment.LaneDirectionOfTravelAssessmentRepository;
+import us.dot.its.jpo.ode.api.accessors.assessments.stop_line_passage_assessment.StopLinePassageAssessmentRepository;
+import us.dot.its.jpo.ode.api.accessors.assessments.stop_line_stop_assessment.StopLineStopAssessmentRepository;
 import us.dot.its.jpo.ode.mockdata.MockAssessmentGenerator;
 
 @Slf4j

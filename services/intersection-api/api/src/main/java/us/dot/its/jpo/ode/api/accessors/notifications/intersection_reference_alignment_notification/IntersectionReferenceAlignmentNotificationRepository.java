@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.accessors.notifications.IntersectionReferenceAlignmentNotification;
+package us.dot.its.jpo.ode.api.accessors.notifications.intersection_reference_alignment_notification;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

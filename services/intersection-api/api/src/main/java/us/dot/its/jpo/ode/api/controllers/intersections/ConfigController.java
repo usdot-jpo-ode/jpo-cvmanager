@@ -39,8 +39,8 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.config.DefaultConfigMap;
 import us.dot.its.jpo.conflictmonitor.monitor.models.config.IntersectionConfig;
 import us.dot.its.jpo.conflictmonitor.monitor.models.config.IntersectionConfigMap;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
-import us.dot.its.jpo.ode.api.accessors.config.DefaultConfig.DefaultConfigRepository;
-import us.dot.its.jpo.ode.api.accessors.config.IntersectionConfig.IntersectionConfigRepository;
+import us.dot.its.jpo.ode.api.accessors.config.default_config.DefaultConfigRepository;
+import us.dot.its.jpo.ode.api.accessors.config.intersection_config.IntersectionConfigRepository;
 import us.dot.its.jpo.ode.api.services.PermissionService;
 import us.dot.its.jpo.ode.api.services.PostgresService;
 

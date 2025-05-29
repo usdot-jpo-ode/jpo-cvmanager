@@ -1,5 +1,5 @@
 
-package us.dot.its.jpo.ode.api.accessors.config.DefaultConfig;
+package us.dot.its.jpo.ode.api.accessors.config.default_config;
 
 import java.util.List;
 

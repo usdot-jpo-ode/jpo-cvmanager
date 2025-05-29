@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.accessors.notifications.ConnectionOfTravelNotification;
+package us.dot.its.jpo.ode.api.accessors.notifications.connection_of_travel_notification;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

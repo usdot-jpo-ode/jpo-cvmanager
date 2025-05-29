@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.accessors.events.MapMessageCountProgressionEventRepository;
+package us.dot.its.jpo.ode.api.accessors.events.map_message_count_progression_event;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

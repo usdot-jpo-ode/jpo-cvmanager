@@ -1,5 +1,5 @@
 
-package us.dot.its.jpo.ode.api.accessors.assessments.StopLineStopAssessment;
+package us.dot.its.jpo.ode.api.accessors.assessments.stop_line_stop_assessment;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

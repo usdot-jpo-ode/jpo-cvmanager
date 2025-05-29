@@ -1,5 +1,5 @@
 
-package us.dot.its.jpo.ode.api.accessors.events.SignalGroupAlignmentEvent;
+package us.dot.its.jpo.ode.api.accessors.events.signal_group_alignment_event;
 
 import java.time.Instant;
 import java.util.List;

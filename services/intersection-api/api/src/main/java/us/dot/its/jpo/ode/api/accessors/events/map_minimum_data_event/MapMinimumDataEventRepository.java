@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.accessors.events.MapMinimumDataEvent;
+package us.dot.its.jpo.ode.api.accessors.events.map_minimum_data_event;
 
 import java.util.List;
 

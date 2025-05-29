@@ -1,5 +1,5 @@
 
-package us.dot.its.jpo.ode.api.accessors.events.ConnectionOfTravelEvent;
+package us.dot.its.jpo.ode.api.accessors.events.connection_of_travel_event;
 
 import java.util.List;
 

@@ -1,5 +1,5 @@
 
-package us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment;
+package us.dot.its.jpo.ode.api.accessors.assessments.lane_direction_of_travel_assessment;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.accessors.notifications.SignalStateConflictNotification;
+package us.dot.its.jpo.ode.api.accessors.notifications.signal_state_conflict_notification;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

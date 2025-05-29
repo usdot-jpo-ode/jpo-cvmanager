@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.accessors.notifications.StopLinePassageNotification;
+package us.dot.its.jpo.ode.api.accessors.notifications.stop_line_passage_notification;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

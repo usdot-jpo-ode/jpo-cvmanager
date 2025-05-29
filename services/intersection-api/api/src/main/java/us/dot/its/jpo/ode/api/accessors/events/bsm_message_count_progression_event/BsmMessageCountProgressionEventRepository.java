@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.accessors.events.BsmMessageCountProgressionEventRepository;
+package us.dot.its.jpo.ode.api.accessors.events.bsm_message_count_progression_event;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

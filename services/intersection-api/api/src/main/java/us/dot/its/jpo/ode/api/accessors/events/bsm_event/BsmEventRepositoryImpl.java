@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.accessors.events.BsmEvent;
+package us.dot.its.jpo.ode.api.accessors.events.bsm_event;
 
 import java.time.Instant;
 import java.util.List;

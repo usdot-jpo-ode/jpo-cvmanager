@@ -1,5 +1,5 @@
 
-package us.dot.its.jpo.ode.api.accessors.events.IntersectionReferenceAlignmentEvent;
+package us.dot.its.jpo.ode.api.accessors.events.intersection_reference_alignment_event;
 
 import java.util.Date;
 import java.util.List;

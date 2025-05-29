@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.accessors.events.SpatMinimumDataEvent;
+package us.dot.its.jpo.ode.api.accessors.events.spat_minimum_data_event;
 
 import java.util.List;
 

@@ -1,5 +1,5 @@
 
-package us.dot.its.jpo.ode.api.accessors.config.IntersectionConfig;
+package us.dot.its.jpo.ode.api.accessors.config.intersection_config;
 
 import java.util.List;
 

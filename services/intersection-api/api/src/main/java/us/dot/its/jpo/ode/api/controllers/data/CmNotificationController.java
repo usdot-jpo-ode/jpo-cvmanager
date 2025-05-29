@@ -31,16 +31,16 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.StopLineStopN
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.TimeChangeDetailsNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.MapBroadcastRateNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.SpatBroadcastRateNotification;
-import us.dot.its.jpo.ode.api.accessors.notifications.ConnectionOfTravelNotification.ConnectionOfTravelNotificationRepository;
-import us.dot.its.jpo.ode.api.accessors.notifications.IntersectionReferenceAlignmentNotification.IntersectionReferenceAlignmentNotificationRepository;
-import us.dot.its.jpo.ode.api.accessors.notifications.LaneDirectionOfTravelNotificationRepo.LaneDirectionOfTravelNotificationRepository;
-import us.dot.its.jpo.ode.api.accessors.notifications.MapBroadcastRateNotification.MapBroadcastRateNotificationRepository;
-import us.dot.its.jpo.ode.api.accessors.notifications.SignalGroupAlignmentNotificationRepo.SignalGroupAlignmentNotificationRepository;
-import us.dot.its.jpo.ode.api.accessors.notifications.SignalStateConflictNotification.SignalStateConflictNotificationRepository;
-import us.dot.its.jpo.ode.api.accessors.notifications.SpatBroadcastRateNotification.SpatBroadcastRateNotificationRepository;
-import us.dot.its.jpo.ode.api.accessors.notifications.StopLinePassageNotification.StopLinePassageNotificationRepository;
-import us.dot.its.jpo.ode.api.accessors.notifications.StopLineStopNotification.StopLineStopNotificationRepository;
-import us.dot.its.jpo.ode.api.accessors.notifications.TimeChangeDetailsNotification.TimeChangeDetailsNotificationRepository;
+import us.dot.its.jpo.ode.api.accessors.notifications.connection_of_travel_notification.ConnectionOfTravelNotificationRepository;
+import us.dot.its.jpo.ode.api.accessors.notifications.intersection_reference_alignment_notification.IntersectionReferenceAlignmentNotificationRepository;
+import us.dot.its.jpo.ode.api.accessors.notifications.lane_direction_of_travel_notification.LaneDirectionOfTravelNotificationRepository;
+import us.dot.its.jpo.ode.api.accessors.notifications.map_broadcast_rate_notification.MapBroadcastRateNotificationRepository;
+import us.dot.its.jpo.ode.api.accessors.notifications.signal_group_alignment_notification.SignalGroupAlignmentNotificationRepository;
+import us.dot.its.jpo.ode.api.accessors.notifications.signal_state_conflict_notification.SignalStateConflictNotificationRepository;
+import us.dot.its.jpo.ode.api.accessors.notifications.spat_broadcast_rate_notification.SpatBroadcastRateNotificationRepository;
+import us.dot.its.jpo.ode.api.accessors.notifications.stop_line_passage_notification.StopLinePassageNotificationRepository;
+import us.dot.its.jpo.ode.api.accessors.notifications.stop_line_stop_notification.StopLineStopNotificationRepository;
+import us.dot.its.jpo.ode.api.accessors.notifications.time_change_details_notification.TimeChangeDetailsNotificationRepository;
 import us.dot.its.jpo.ode.mockdata.MockNotificationGenerator;
 
 @Slf4j

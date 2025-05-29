@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.accessors.events.MapBroadcastRateEvents;
+package us.dot.its.jpo.ode.api.accessors.events.map_broadcast_rate_event;
 
 import java.util.List;
 

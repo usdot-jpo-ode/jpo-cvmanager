@@ -23,6 +23,7 @@ import React from 'react'
 import { SsmSrmData } from '../../../models/RsuApi'
 import { getTimestamp } from './map-component'
 import { getAccurateTimeMillis, selectTimeOffsetMillis } from '../../../generalSlices/timeSyncSlice'
+import { combineUrlPaths } from '../../../apis/intersections/api-helper-cviz'
 
 export type MAP_LAYERS =
   | 'map-message'
@@ -921,7 +922,7 @@ export const initializeLiveStreaming = createAsyncThunk(
 
     let protocols = ['v10.stomp', 'v11.stomp']
     protocols.push(token)
-    const url = `${EnvironmentVars.CVIZ_API_WS_URL}/stomp`
+    const url = combineUrlPaths(EnvironmentVars.CVIZ_API_WS_URL, 'stomp')
 
     // Stomp Client Documentation: https://stomp-js.github.io/stomp-websocket/codo/extra/docs-src/Usage.md.html
     let client = Stomp.client(url, protocols)
@@ -943,9 +944,9 @@ export const initializeLiveStreaming = createAsyncThunk(
     dispatch(renderIterative_Map(await rawMapPromise))
 
     // Topics are in the format /live/{intersectionID}/{spat,map,bsm}
-    let spatTopic = `/live/${intersectionId}/spat`
-    let mapTopic = `/live/${intersectionId}/map`
-    let bsmTopic = `/live/${intersectionId}/bsm`
+    let spatTopic = `/live/${intersectionId}/processed-spat`
+    let mapTopic = `/live/${intersectionId}/processed-map`
+    let bsmTopic = `/live/${intersectionId}/ode-bsm-json`
     let connectionStartTime = Date.now()
     client.connect(
       {},

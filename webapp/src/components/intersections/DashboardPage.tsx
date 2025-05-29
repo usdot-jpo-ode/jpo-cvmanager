@@ -3,7 +3,7 @@ import { NotificationsTable } from '../../features/intersections/notifications/n
 import { ConnectionOfTravelAssessmentCard } from '../../features/intersections/assessments/connection-of-travel-assessment'
 import { LaneDirectionOfTravelAssessmentCard } from '../../features/intersections/assessments/lane-direction-of-travel-assessment'
 import { StopLineStopAssessmentCard } from '../../features/intersections/assessments/stop-line-stop-assessment'
-import { SignalStateEventAssessmentCard } from '../../features/intersections/assessments/signal-state-event-assessment'
+import { StopLinePassageAssessmentCard } from '../../features/intersections/assessments/stop-line-passage-assessment'
 import React, { useEffect, useMemo, useState } from 'react'
 import AssessmentsApi from '../../apis/intersections/assessments-api'
 import { selectSelectedIntersectionId } from '../../generalSlices/intersectionSlice'
@@ -17,7 +17,7 @@ const Page = () => {
   // create hooks, and methods for each assessment type:
   const [stopLineStopAssessment, setStopLineStopAssessment] = useState<StopLineStopAssessment | undefined>(undefined)
   // create hooks, and methods for each assessment type:
-  const [signalStateEventAssessment, setSignalStateEventAssessment] = useState<SignalStateEventAssessment | undefined>(
+  const [stopLinePassageAssessment, setStopLinePassageAssessment] = useState<StopLinePassageAssessment | undefined>(
     undefined
   )
   const [connectionOfTravelAssessment, setConnectionOfTravelAssessment] = useState<
@@ -32,28 +32,28 @@ const Page = () => {
       setStopLineStopAssessment(
         (await AssessmentsApi.getLatestAssessment(
           token,
-          'signal_state_assessment',
+          'stop-line-stop-assessment',
           intersectionId
         )) as StopLineStopAssessment
       )
-      setSignalStateEventAssessment(
+      setStopLinePassageAssessment(
         (await AssessmentsApi.getLatestAssessment(
           token,
-          'signal_state_event_assessment',
+          'stop-line-passage-assessment',
           intersectionId
-        )) as SignalStateEventAssessment
+        )) as StopLinePassageAssessment
       )
       setConnectionOfTravelAssessment(
         (await AssessmentsApi.getLatestAssessment(
           token,
-          'connection_of_travel',
+          'connection-of-travel',
           intersectionId
         )) as ConnectionOfTravelAssessment
       )
       setLaneDirectionOfTravelAssessment(
         (await AssessmentsApi.getLatestAssessment(
           token,
-          'lane_direction_of_travel',
+          'lane-direction-of-travel',
           intersectionId
         )) as LaneDirectionOfTravelAssessment
       )
@@ -112,9 +112,9 @@ const Page = () => {
     () => getChartWidth(stopLineStopAssessment?.stopLineStopAssessmentGroup?.length),
     [stopLineStopAssessment]
   )
-  const signalStateEventMinWidth = useMemo(
-    () => getChartWidth(signalStateEventAssessment?.signalStateEventAssessmentGroup?.length),
-    [signalStateEventAssessment]
+  const stopLinePassageMinWidth = useMemo(
+    () => getChartWidth(stopLinePassageAssessment?.stopLinePassageAssessmentGroup?.length),
+    [stopLinePassageAssessment]
   )
 
   // Lane direction of travel shows 2 bars per unique lane ID
@@ -133,9 +133,9 @@ const Page = () => {
     () => generateBreakpoints(stopLineStopMinWidth + chartCardPadding),
     [stopLineStopMinWidth]
   )
-  const signalStateEventBreakpoints = useMemo(
-    () => generateBreakpoints(signalStateEventMinWidth + chartCardPadding),
-    [signalStateEventMinWidth]
+  const stopLinePassageBreakpoints = useMemo(
+    () => generateBreakpoints(stopLinePassageMinWidth + chartCardPadding),
+    [stopLinePassageMinWidth]
   )
   const laneDirectionOfTravelBreakpoints = useMemo(
     () => generateBreakpoints(laneDirectionOfTravelMinWidth + chartCardPadding),
@@ -161,11 +161,8 @@ const Page = () => {
           <Grid2 size={stopLineStopBreakpoints}>
             <StopLineStopAssessmentCard assessment={stopLineStopAssessment} minWidth={stopLineStopMinWidth} />
           </Grid2>
-          <Grid2 size={signalStateEventBreakpoints}>
-            <SignalStateEventAssessmentCard
-              assessment={signalStateEventAssessment}
-              minWidth={signalStateEventMinWidth}
-            />
+          <Grid2 size={stopLinePassageBreakpoints}>
+            <StopLinePassageAssessmentCard assessment={stopLinePassageAssessment} minWidth={stopLinePassageMinWidth} />
           </Grid2>
           <Grid2 size={laneDirectionOfTravelBreakpoints}>
             <LaneDirectionOfTravelAssessmentCard

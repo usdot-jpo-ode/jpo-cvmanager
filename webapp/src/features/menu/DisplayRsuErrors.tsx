@@ -286,8 +286,10 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
                   <Box
                     style={{
                       color: theme.palette.text.primary,
-                      backgroundColor: rowData.scms_status.includes('SCMS Healthy')
+                      backgroundColor: rowData.online_status.toLowerCase().includes('online')
                         ? theme.palette.success.dark
+                        : rowData.online_status.toLowerCase().includes('unstable')
+                        ? theme.palette.warning.main
                         : theme.palette.error.dark,
                       width: '4rem',
                       height: '1.5rem',
@@ -364,13 +366,13 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
                     <Typography
                       fontSize="medium"
                       sx={
-                        rowData.online_status.includes('RSU Offline')
+                        rowData.online_status.toLowerCase().includes('online')
                           ? {
-                              color: theme.palette.error.dark,
+                              color: theme.palette.success.dark,
                               fontWeight: 'bold',
                             }
                           : {
-                              color: theme.palette.success.dark,
+                              color: theme.palette.error.dark,
                               fontWeight: 'bold',
                             }
                       }
@@ -459,13 +461,13 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
                     <Typography
                       fontSize="medium"
                       sx={
-                        rowData.online_status.includes('RSU Offline')
+                        rowData.online_status.toLowerCase().includes('online')
                           ? {
-                              color: theme.palette.error.dark,
+                              color: theme.palette.success.dark,
                               fontWeight: 'bold',
                             }
                           : {
-                              color: theme.palette.success.dark,
+                              color: theme.palette.error.dark,
                               fontWeight: 'bold',
                             }
                       }

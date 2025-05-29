@@ -1,5 +1,13 @@
 ## JPO CV Manager Release Notes
 
+## Version 1.6.1
+----------------------------------------
+### **Summary**
+In this hotfix, UX bugs have been resolved to ensure full feature functionality for the user.
+
+Enhancements in this release:
+- [CDOT PR 209](https://github.com/CDOT-CV/jpo-cvmanager/pull/209): Hotfix/1.6.1: Fix/map UI bugs
+
 ## Version 1.6.0
 
 ### **Summary**
@@ -43,6 +51,11 @@ Enhancements in this release:
 - [CDOT PR 196](https://github.com/CDOT-CV/jpo-cvmanager/pull/196): Fixing Q2 Testing Bugs
 - [CDOT PR 198](https://github.com/CDOT-CV/jpo-cvmanager/pull/198): RSU popup display fixes
 - [CDOT PR 199](https://github.com/CDOT-CV/jpo-cvmanager/pull/199): Improving Intersection Dashboard Assessment Plot Formatting
+- [CDOT PR 206](https://github.com/CDOT-CV/jpo-cvmanager/pull/206): Adding additional required package to dockerfile
+- [CDOT PR 204](https://github.com/CDOT-CV/jpo-cvmanager/pull/204): Prevent RSU selection during point selection
+- [CDOT PR 189](https://github.com/CDOT-CV/jpo-cvmanager/pull/189): Update the collection and topic names based on the new event names
+- [CDOT PR 205](https://github.com/CDOT-CV/jpo-cvmanager/pull/205): Upgrading Intersection API ODE Dependencies
+- [CDOT PR 208](https://github.com/CDOT-CV/jpo-cvmanager/pull/208): Fixing Notification Dismissal Response
 
 ## Version 1.5.0
 

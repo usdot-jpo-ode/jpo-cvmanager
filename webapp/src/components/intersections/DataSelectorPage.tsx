@@ -37,13 +37,13 @@ import { RootState } from '../../store'
 // - "map_broadcast_rate"
 // - "spat_broadcast_rate"
 const valid_counts_event_types: string[] = [
-  'connection_of_travel',
-  'lane_direction_of_travel',
-  'signal_group_alignment',
-  'signal_state_conflict',
-  'signal_state',
-  'signal_state_stop',
-  'time_change_details',
+  'connection-of-travel',
+  'lane-direction-of-travel',
+  'signal-group-alignment',
+  'signal-state-conflict',
+  'stop-line-passage',
+  'stop-line-stop',
+  'time-change-details',
 ]
 
 const DataSelectorPage = () => {

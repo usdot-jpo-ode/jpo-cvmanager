@@ -89,6 +89,8 @@ maximumResponseSize: ${CM_MAXIMUM_RESPONSE_SIZE:10000}
 
 spring.main.allow-circular-references: true
 
+server.servlet.context-path: ${BASE_ROUTE_PREFIX:/}
+
 ### General Email Settings
 
 # Email Broker Options: sendgrid, postmark, anything else will use generic SMTP mail server.

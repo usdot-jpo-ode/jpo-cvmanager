@@ -1,6 +1,10 @@
 class EnvironmentVars {
   static getBaseApiUrl() {
-    return process.env.REACT_APP_GATEWAY_BASE_URL
+    let endpoint = process.env.REACT_APP_GATEWAY_BASE_URL!
+
+    // trim a trailing slash if it exists
+    if (endpoint.endsWith('/')) endpoint = endpoint.slice(0, -1)
+    return endpoint
   }
 
   static getMessageTypes() {

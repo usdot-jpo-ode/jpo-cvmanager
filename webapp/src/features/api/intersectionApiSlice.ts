@@ -5,6 +5,7 @@ import EnvironmentVars from '../../EnvironmentVars'
 import { RootState } from '../../store'
 import { selectToken } from '../../generalSlices/userSlice'
 import { selectSelectedIntersectionId } from '../../generalSlices/intersectionSlice'
+import { combineUrlPaths } from '../../apis/intersections/api-helper-cviz'
 
 const getQueryString = (query_params: Record<string, string>) => {
   // filter out undefined values from query params
@@ -18,7 +19,7 @@ const getQueryString = (query_params: Record<string, string>) => {
 export const intersectionApiSlice = createApi({
   reducerPath: 'intersectionApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: EnvironmentVars.CVIZ_API_SERVER_URL + 'intersections/configuration',
+    baseUrl: combineUrlPaths(EnvironmentVars.CVIZ_API_SERVER_URL, 'intersections/configuration'),
     prepareHeaders: (headers, { getState, endpoint }) => {
       const token = selectToken(getState() as RootState)
 

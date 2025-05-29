@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.controllers;
+package us.dot.its.jpo.ode.api.controllers.live;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -64,7 +64,7 @@ public class StompController {
 
             if (intersectionID != -1) {
                 try {
-                    broadcastMessage(buildTopicName(intersectionID, "spat"), mapper.writeValueAsString(spat));
+                    broadcastMessage(buildTopicName(intersectionID, "processed-spat"), mapper.writeValueAsString(spat));
                 } catch (JsonProcessingException e) {
                     log.error("Exception encoding SPaT data to STOMP topic", e);
                 }
@@ -82,7 +82,7 @@ public class StompController {
 
             if (intersectionID != -1) {
                 try {
-                    broadcastMessage(buildTopicName(intersectionID, "map"), mapper.writeValueAsString(map));
+                    broadcastMessage(buildTopicName(intersectionID, "processed-map"), mapper.writeValueAsString(map));
                 } catch (JsonProcessingException e) {
                     log.error("Exception encoding MAP data to STOMP topic", e);
                 }
@@ -94,7 +94,7 @@ public class StompController {
         if (bsm != null) {
             if (intersectionId != -1) {
                 try {
-                    broadcastMessage(buildTopicName(intersectionId, "bsm"),
+                    broadcastMessage(buildTopicName(intersectionId, "ode-bsm-json"),
                             mapper.writeValueAsString(bsm));
                 } catch (JsonProcessingException e) {
                     log.error("Exception encoding BSM data to STOMP topic", e);

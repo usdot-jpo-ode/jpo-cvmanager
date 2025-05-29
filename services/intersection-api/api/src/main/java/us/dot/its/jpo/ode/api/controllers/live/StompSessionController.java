@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.controllers;
+package us.dot.its.jpo.ode.api.controllers.live;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

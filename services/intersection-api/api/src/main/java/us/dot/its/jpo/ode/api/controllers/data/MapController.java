@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.controllers;
+package us.dot.its.jpo.ode.api.controllers.data;
 
 import java.util.List;
 
@@ -30,6 +30,7 @@ import us.dot.its.jpo.ode.mockdata.MockMapGenerator;
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
+@RequestMapping("/data/processed-map")
 public class MapController {
 
     private final ProcessedMapRepository processedMapRepo;
@@ -41,7 +42,7 @@ public class MapController {
     }
 
     @Operation(summary = "Find Processed Map Messages", description = "Returns a list of Processed Map Messages based on the provided parameters. The latest parameter will return the most recent map message. The compact flag will omit the \"recordGeneratedAt\", \"properties.validationMessages\" fields.")
-    @RequestMapping(value = "/map/json", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
@@ -74,7 +75,7 @@ public class MapController {
     }
 
     @Operation(summary = "Count Processed Map Messages", description = "Returns the count of Processed Map Messages based on the provided parameters.")
-    @RequestMapping(value = "/map/count", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/count", method = RequestMethod.GET, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasIntersection(#intersectionID, 'USER') and @PermissionService.hasRole('USER'))")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),

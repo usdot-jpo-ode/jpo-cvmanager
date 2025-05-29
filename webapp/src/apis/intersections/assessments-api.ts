@@ -18,7 +18,7 @@ class AssessmentsApi {
     var response =
       (
         (await authApiHelper.invokeApi({
-          path: `/assessments/${assessmentType}`,
+          path: `/data/cm-assessments/${assessmentType}`,
           token: token,
           queryParams,
           abortController,
@@ -46,7 +46,7 @@ class AssessmentsApi {
     return (
       (
         (await authApiHelper.invokeApi({
-          path: `/assessments/${assessmentType}`,
+          path: `/data/cm-assessments/${assessmentType}`,
           token: token,
           queryParams,
           abortController,

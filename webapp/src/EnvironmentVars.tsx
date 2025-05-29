@@ -1,6 +1,6 @@
 class EnvironmentVars {
   static getBaseApiUrl() {
-    return process.env.REACT_APP_GATEWAY_BASE_URL
+    return process.env.REACT_APP_GATEWAY_BASE_URL?.replace(/\/$/, '') // remove trailing slash
   }
 
   static getMessageTypes() {

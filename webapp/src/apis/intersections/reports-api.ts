@@ -75,7 +75,7 @@ class ReportsApi {
     }
 
     const pdfReport = await authApiHelper.invokeApi({
-      path: `/reports/generate`,
+      path: `/reports/intersection/generate`,
       token: token,
       responseType: 'blob',
       queryParams,
@@ -107,7 +107,7 @@ class ReportsApi {
     queryParams['latest'] = 'false'
 
     const pdfReport = await authApiHelper.invokeApi({
-      path: `/reports/list`,
+      path: `/reports/intersection`,
       token: token,
       queryParams,
       abortController,
@@ -144,7 +144,7 @@ class ReportsApi {
     queryParams['report_name'] = reportName
 
     const pdfReport = await authApiHelper.invokeApi({
-      path: `/reports/download`,
+      path: `/reports/intersection/download`,
       token: token,
       responseType: 'blob',
       queryParams,

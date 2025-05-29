@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api;
+package us.dot.its.jpo.ode.api.controllers.data;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -23,7 +23,6 @@ import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
-import us.dot.its.jpo.ode.api.controllers.MapController;
 import us.dot.its.jpo.ode.api.services.PermissionService;
 import us.dot.its.jpo.ode.mockdata.MockMapGenerator;
 
@@ -31,7 +30,7 @@ import us.dot.its.jpo.ode.mockdata.MockMapGenerator;
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
 @AutoConfigureEmbeddedDatabase
-public class MapTest {
+public class MapControllerTest {
 
     private final MapController controller;
 
@@ -42,7 +41,7 @@ public class MapTest {
     PermissionService permissionService;
 
     @Autowired
-    public MapTest(MapController controller) {
+    public MapControllerTest(MapController controller) {
         this.controller = controller;
     }
 

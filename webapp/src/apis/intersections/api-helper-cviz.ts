@@ -3,8 +3,8 @@ import EnvironmentVars from '../../EnvironmentVars'
 import { evaluateFeatureFlags } from '../../feature-flags'
 
 export const combineUrlPaths = (base: string, path: string): string => {
-  if (!base.endsWith('/')) base += '/'
-  if (path.startsWith('/')) path = path.substring(1)
+  if (!base?.endsWith('/')) base += '/'
+  if (path?.startsWith('/')) path = path.substring(1)
   return base + path
 }
 

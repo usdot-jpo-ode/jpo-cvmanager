@@ -1399,9 +1399,11 @@ function MapPage() {
                       style={{
                         color: theme.palette.text.primary,
                         backgroundColor:
-                          getStatus().toLowerCase() === 'offline'
-                            ? theme.palette.error.dark
-                            : theme.palette.success.dark,
+                          getStatus().toLowerCase() === 'online'
+                            ? theme.palette.success.dark
+                            : getStatus().toLowerCase() === 'unstable'
+                            ? theme.palette.warning.main
+                            : theme.palette.error.dark,
                         width: '4rem',
                         height: '1.5rem',
                         display: 'flex',

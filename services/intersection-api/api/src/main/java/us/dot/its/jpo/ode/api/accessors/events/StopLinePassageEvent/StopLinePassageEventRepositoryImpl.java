@@ -1,5 +1,5 @@
 
-package us.dot.its.jpo.ode.api.accessors.events.SignalStateEvent;
+package us.dot.its.jpo.ode.api.accessors.events.StopLinePassageEvent;
 
 import java.util.Date;
 import java.util.List;
@@ -26,8 +26,8 @@ import org.springframework.data.mongodb.core.aggregation.DateOperators;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
 @Component
-public class SignalStateEventRepositoryImpl
-        implements SignalStateEventRepository, PageableQuery {
+public class StopLinePassageEventRepositoryImpl
+        implements StopLinePassageEventRepository, PageableQuery {
 
     private final MongoTemplate mongoTemplate;
 
@@ -36,7 +36,8 @@ public class SignalStateEventRepositoryImpl
     private final String INTERSECTION_ID_FIELD = "intersectionID";
 
     @Autowired
-    public SignalStateEventRepositoryImpl(MongoTemplate mongoTemplate) {
+
+    public StopLinePassageEventRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
 
@@ -109,7 +110,8 @@ public class SignalStateEventRepositoryImpl
         return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null, StopLinePassageEvent.class);
     }
 
-    public List<IDCount> getAggregatedDailySignalStateEventCounts(int intersectionID, Long startTime, Long endTime) {
+    public List<IDCount> getAggregatedDailyStopLinePassageEventCounts(int intersectionID, Long startTime,
+            Long endTime) {
         Date startTimeDate = new Date(0);
         Date endTimeDate = new Date();
 

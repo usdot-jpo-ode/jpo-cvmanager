@@ -5,11 +5,11 @@
   "assessmentGeneratedAt": {
     "$date": "2024-08-20T16:17:03.056Z"
   },
-  "assessmentType": "SignalStateEvent",
+  "assessmentType": "StopLinePassage",
   "roadRegulatorID": -1,
   "intersectionID": 12109,
   "source": "{\"rsuId\":\"10.11.81.12\",\"intersectionId\":12109,\"region\":0}",
-  "signalStateEventAssessmentGroup": [
+  "stopLinePassageAssessmentGroup": [
     {
       "darkEvents": 0,
       "greenEvents": 0,

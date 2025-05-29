@@ -41,8 +41,8 @@ const valid_counts_event_types: string[] = [
   'lane_direction_of_travel',
   'signal_group_alignment',
   'signal_state_conflict',
-  'signal_state',
-  'signal_state_stop',
+  'stop_line_passage',
+  'stop_line_stop',
   'time_change_details',
 ]
 
@@ -240,27 +240,16 @@ const DataSelectorPage = () => {
         sx={{
           backgroundColor: 'background.default',
           flexGrow: 1,
+          py: 5,
+          width: '100%',
         }}
       >
-        <Container maxWidth={false}>
-          <Box
-            sx={{
-              alignItems: 'center',
-              display: 'flex',
-              overflow: 'hidden',
-            }}
-          >
-            <div>
-              <Typography noWrap variant="h4" color="text.secondary">
-                Query
-              </Typography>
-            </div>
-          </Box>
+        <Container maxWidth={false} disableGutters>
           <Box mt={3}>
             <DataSelectorEditForm onQuery={query} onVisualize={onVisualize} />
           </Box>
         </Container>
-        <Container maxWidth={false} sx={{ mt: 5, alignItems: 'center', display: 'flex' }}>
+        <Container maxWidth={false} disableGutters sx={{ mt: 5, alignItems: 'center', display: 'flex' }}>
           {type == 'events' && (
             <EventDataTable
               events={events}

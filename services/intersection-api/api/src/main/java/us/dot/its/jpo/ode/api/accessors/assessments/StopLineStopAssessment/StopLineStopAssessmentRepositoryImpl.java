@@ -1,5 +1,5 @@
 
-package us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment;
+package us.dot.its.jpo.ode.api.accessors.assessments.StopLineStopAssessment;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

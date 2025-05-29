@@ -876,6 +876,12 @@ function MapPage() {
     event: React.SyntheticEvent<Element, Event>,
     origin: 'config' | 'msgViewer' | 'mooveai'
   ) => {
+    // Deselect any selected RSU when toggling point select tools
+    dispatch(selectRsu(null))
+    dispatch(clearFirmware())
+    setSelectedRsuCount(null)
+
+    // Toggle the corresponding point select tool based on the origin
     if (origin === 'config') {
       dispatch(toggleConfigPointSelect())
       if (addGeoMsgPoint) dispatch(toggleGeoMsgPointSelect())
@@ -1190,6 +1196,8 @@ function MapPage() {
                   latitude={rsu.geometry.coordinates[1]}
                   longitude={rsu.geometry.coordinates[0]}
                   onClick={(e) => {
+                    // Prevent RSU selection if adding points to geospatial polygon selection
+                    if (addConfigPoint || addGeoMsgPoint || addMooveAiPoint) return
                     e.originalEvent.stopPropagation()
                     dispatch(selectRsu(rsu))
                     setSelectedWZDxMarkerIndex(null)
@@ -1205,6 +1213,8 @@ function MapPage() {
                   <button
                     className="marker-btn"
                     onClick={(e) => {
+                      // Prevent RSU selection if adding points to geospatial polygon selection
+                      if (addConfigPoint || addGeoMsgPoint || addMooveAiPoint) return
                       e.stopPropagation()
                       dispatch(selectRsu(rsu))
                       dispatch(clearFirmware()) // TODO: Should remove??
@@ -1363,7 +1373,7 @@ function MapPage() {
             >
               <Stack
                 sx={{
-                  height: '230px',
+                  height: '240px',
                   width: '350px',
                 }}
               >
@@ -1389,7 +1399,11 @@ function MapPage() {
                       style={{
                         color: theme.palette.text.primary,
                         backgroundColor:
-                          getStatus() === 'Offline' ? theme.palette.error.dark : theme.palette.success.dark,
+                          getStatus().toLowerCase() === 'online'
+                            ? theme.palette.success.dark
+                            : getStatus().toLowerCase() === 'unstable'
+                            ? theme.palette.warning.main
+                            : theme.palette.error.dark,
                         width: '4rem',
                         height: '1.5rem',
                         display: 'flex',

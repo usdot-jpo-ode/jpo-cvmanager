@@ -11,8 +11,8 @@ class GraphsApi {
       ProcessingTimePeriodCount: 0,
       SignalGroupAlignmentEventCount: 0,
       SignalStateConflictEventCount: 0,
-      SignalStateEventCount: 0,
-      SignalStateStopEventCount: 0,
+      StopLinePassageEventCount: 0,
+      StopLineStopEventCount: 0,
       TimeChangeDetailsEventCount: 0,
       MapMinimumDataEventCount: 0,
       SpatMinimumDataEventCount: 0,
@@ -38,11 +38,11 @@ class GraphsApi {
       case 'signal_state_conflict':
         val.SignalStateConflictEventCount = count
         break
-      case 'signal_state':
-        val.SignalStateEventCount = count
+      case 'stop_line_passage':
+        val.StopLinePassageEventCount = count
         break
-      case 'signal_state_stop':
-        val.SignalStateStopEventCount = count
+      case 'stop_line_stop':
+        val.StopLineStopEventCount = count
         break
       case 'time_change_details':
         val.TimeChangeDetailsEventCount = count
@@ -72,8 +72,8 @@ class GraphsApi {
     ProcessingTimePeriodCount: val1.ProcessingTimePeriodCount + val2.ProcessingTimePeriodCount,
     SignalGroupAlignmentEventCount: val1.SignalGroupAlignmentEventCount + val2.SignalGroupAlignmentEventCount,
     SignalStateConflictEventCount: val1.SignalStateConflictEventCount + val2.SignalStateConflictEventCount,
-    SignalStateEventCount: val1.SignalStateEventCount + val2.SignalStateEventCount,
-    SignalStateStopEventCount: val1.SignalStateStopEventCount + val2.SignalStateStopEventCount,
+    StopLinePassageEventCount: val1.StopLinePassageEventCount + val2.StopLinePassageEventCount,
+    StopLineStopEventCount: val1.StopLineStopEventCount + val2.StopLineStopEventCount,
     TimeChangeDetailsEventCount: val1.TimeChangeDetailsEventCount + val2.TimeChangeDetailsEventCount,
     MapMinimumDataEventCount: val1.MapMinimumDataEventCount + val2.MapMinimumDataEventCount,
     SpatMinimumDataEventCount: val1.SpatMinimumDataEventCount + val2.SpatMinimumDataEventCount,

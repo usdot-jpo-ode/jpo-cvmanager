@@ -2,6 +2,12 @@ import toast from 'react-hot-toast'
 import EnvironmentVars from '../../EnvironmentVars'
 import { evaluateFeatureFlags } from '../../feature-flags'
 
+export const combineUrlPaths = (base: string, path: string): string => {
+  if (!base?.endsWith('/')) base += '/'
+  if (path?.startsWith('/')) path = path.substring(1)
+  return base + path
+}
+
 class CvizApiHelper {
   formatQueryParams(query_params?: Record<string, any>): string {
     if (!query_params || Object.keys(query_params).length === 0) return ''
@@ -47,7 +53,8 @@ class CvizApiHelper {
       console.debug(`Returning null because feature is disabled for tag ${tag} and path ${path}`)
       return null
     }
-    const url = (basePath ?? EnvironmentVars.CVIZ_API_SERVER_URL!) + path + this.formatQueryParams(queryParams)
+    const url =
+      combineUrlPaths(basePath ?? EnvironmentVars.CVIZ_API_SERVER_URL!, path) + this.formatQueryParams(queryParams)
 
     const localHeaders: HeadersInit = { ...headers }
     if (token) localHeaders['Authorization'] = `Bearer ${token}`

@@ -22,7 +22,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import us.dot.its.jpo.ode.api.accessors.notifications.IntersectionReferenceAlignmentNotification.IntersectionReferenceAlignmentNotificationRepositoryImpl;
+import us.dot.its.jpo.ode.api.accessors.notifications.intersection_reference_alignment_notification.IntersectionReferenceAlignmentNotificationRepositoryImpl;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.IntersectionReferenceAlignmentNotification;
 
 import org.springframework.boot.test.context.SpringBootTest;

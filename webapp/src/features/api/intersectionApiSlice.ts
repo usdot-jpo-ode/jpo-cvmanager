@@ -5,6 +5,7 @@ import EnvironmentVars from '../../EnvironmentVars'
 import { RootState } from '../../store'
 import { selectToken } from '../../generalSlices/userSlice'
 import { selectSelectedIntersectionId } from '../../generalSlices/intersectionSlice'
+import { combineUrlPaths } from '../../apis/intersections/api-helper-cviz'
 
 const getQueryString = (query_params: Record<string, string>) => {
   // filter out undefined values from query params
@@ -18,7 +19,7 @@ const getQueryString = (query_params: Record<string, string>) => {
 export const intersectionApiSlice = createApi({
   reducerPath: 'intersectionApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: EnvironmentVars.CVIZ_API_SERVER_URL,
+    baseUrl: combineUrlPaths(EnvironmentVars.CVIZ_API_SERVER_URL, '/intersections/configuration'),
     prepareHeaders: (headers, { getState, endpoint }) => {
       const token = selectToken(getState() as RootState)
 
@@ -36,13 +37,13 @@ export const intersectionApiSlice = createApi({
   endpoints: (builder) => ({
     getGeneralParameters: builder.query<Config[], undefined>({
       query: () => {
-        return `config/default/all`
+        return `/default/all`
       },
       providesTags: ['defaultConfigs'],
     }),
     getIntersectionParameters: builder.query<IntersectionConfig[], number>({
       query: (intersectionId) => {
-        return `config/intersection/unique${getQueryString({
+        return `/intersection/unique${getQueryString({
           intersection_id: intersectionId.toString(),
         })}`
       },
@@ -50,7 +51,7 @@ export const intersectionApiSlice = createApi({
     }),
     updateDefaultParameter: builder.mutation<Config | undefined, Config>({
       query: (body) => ({
-        url: 'config/default',
+        url: '/default',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: { ...body, roadRegulatorID: -1 }, // necessary for Intersection API deserialization, not used by webapp
@@ -70,7 +71,7 @@ export const intersectionApiSlice = createApi({
     }),
     updateIntersectionParameter: builder.mutation<IntersectionConfig | undefined, Config>({
       query: (body) => ({
-        url: 'config/intersection',
+        url: '/intersection',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: { ...body, roadRegulatorID: -1 }, // necessary for Intersection API deserialization, not used by webapp
@@ -80,7 +81,7 @@ export const intersectionApiSlice = createApi({
     }),
     removeOverriddenParameter: builder.mutation<IntersectionConfig | undefined, IntersectionConfig>({
       query: (config) => ({
-        url: `config/intersection`,
+        url: `/intersection`,
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: { ...config, roadRegulatorID: -1 }, // necessary for Intersection API deserialization, not used by webapp

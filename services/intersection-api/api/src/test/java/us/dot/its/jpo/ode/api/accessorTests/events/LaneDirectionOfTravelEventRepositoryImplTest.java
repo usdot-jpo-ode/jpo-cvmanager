@@ -39,7 +39,7 @@ import java.util.List;
 import org.bson.Document;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.LaneDirectionOfTravelEvent;
-import us.dot.its.jpo.ode.api.accessors.events.LaneDirectionOfTravelEvent.LaneDirectionOfTravelEventRepositoryImpl;
+import us.dot.its.jpo.ode.api.accessors.events.lane_direction_of_travel_event.LaneDirectionOfTravelEventRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.AggregationResult;
 import us.dot.its.jpo.ode.api.models.AggregationResultCount;
 import us.dot.its.jpo.ode.api.models.IDCount;

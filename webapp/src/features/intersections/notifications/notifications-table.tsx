@@ -96,6 +96,10 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
     } else {
       console.error('Did not attempt to dismiss notifications. Intersection ID:', dbIntersectionId)
     }
+    // wait 1 second, then re-request notifications
+    setTimeout(() => {
+      updateNotifications()
+    }, 1000)
   }
 
   useEffect(() => {

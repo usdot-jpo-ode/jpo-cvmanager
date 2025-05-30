@@ -39,7 +39,7 @@ import java.util.List;
 import org.bson.Document;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.SpatMinimumDataEvent;
-import us.dot.its.jpo.ode.api.accessors.events.SpatMinimumDataEvent.SpatMinimumDataEventRepositoryImpl;
+import us.dot.its.jpo.ode.api.accessors.events.spat_minimum_data_event.SpatMinimumDataEventRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.AggregationResult;
 import us.dot.its.jpo.ode.api.models.AggregationResultCount;
 import us.dot.its.jpo.ode.api.models.IDCount;

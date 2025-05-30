@@ -38,7 +38,7 @@ import java.util.List;
 
 import org.bson.Document;
 
-import us.dot.its.jpo.ode.api.accessors.events.SignalStateConflictEvent.SignalStateConflictEventRepositoryImpl;
+import us.dot.its.jpo.ode.api.accessors.events.signal_state_conflict_event.SignalStateConflictEventRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.AggregationResult;
 import us.dot.its.jpo.ode.api.models.AggregationResultCount;
 import us.dot.its.jpo.ode.api.models.IDCount;

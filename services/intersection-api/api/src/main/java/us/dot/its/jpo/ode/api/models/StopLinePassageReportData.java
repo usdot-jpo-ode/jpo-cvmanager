@@ -21,16 +21,16 @@ public class StopLinePassageReportData {
     private int greenEvents;
     private int darkEvents;
 
-    public static List<StopLinePassageReportData> aggregateSignalStateEvents(List<StopLinePassageEvent> events) {
+    public static List<StopLinePassageReportData> aggregateStopLinePassageEvents(List<StopLinePassageEvent> events) {
         Map<Integer, StopLinePassageReportData> reportDataMap = new HashMap<>();
-    
+
         for (StopLinePassageEvent event : events) {
             int signalGroup = event.getSignalGroup();
             StopLinePassageReportData data = reportDataMap.getOrDefault(signalGroup, new StopLinePassageReportData());
             data.setSignalGroup(signalGroup);
             data.setTotalEvents(data.getTotalEvents() + 1);
-    
-            switch(event.getEventState()) {
+
+            switch (event.getEventState()) {
                 case UNAVAILABLE:
                 case DARK:
                     data.setDarkEvents(data.getDarkEvents() + 1);
@@ -52,10 +52,10 @@ public class StopLinePassageReportData {
                 default:
                     break;
             }
-    
+
             reportDataMap.put(signalGroup, data);
         }
-    
+
         return new ArrayList<>(reportDataMap.values());
     }
 }

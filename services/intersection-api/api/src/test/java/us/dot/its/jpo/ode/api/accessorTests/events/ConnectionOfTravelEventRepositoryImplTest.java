@@ -39,7 +39,7 @@ import java.util.List;
 import org.bson.Document;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.ConnectionOfTravelEvent;
-import us.dot.its.jpo.ode.api.accessors.events.ConnectionOfTravelEvent.ConnectionOfTravelEventRepositoryImpl;
+import us.dot.its.jpo.ode.api.accessors.events.connection_of_travel_event.ConnectionOfTravelEventRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.AggregationResult;
 import us.dot.its.jpo.ode.api.models.AggregationResultCount;
 import us.dot.its.jpo.ode.api.models.IDCount;

@@ -28,7 +28,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalGroupAlignmentNotification;
-import us.dot.its.jpo.ode.api.accessors.notifications.SignalGroupAlignmentNotificationRepo.SignalGroupAlignmentNotificationRepositoryImpl;
+import us.dot.its.jpo.ode.api.accessors.notifications.signal_group_alignment_notification.SignalGroupAlignmentNotificationRepositoryImpl;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)

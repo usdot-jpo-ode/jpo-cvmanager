@@ -1,0 +1,22 @@
+{
+  "_id": {
+    "$oid": "66c4c17fbc6a472adb01a4e2"
+  },
+  "assessmentGeneratedAt": {
+    "$date": "2024-08-20T16:17:03.056Z"
+  },
+  "assessmentType": "StopLinePassage",
+  "roadRegulatorID": -1,
+  "intersectionID": 12109,
+  "source": "{\"rsuId\":\"10.11.81.12\",\"intersectionId\":12109,\"region\":0}",
+  "stopLinePassageAssessmentGroup": [
+    {
+      "darkEvents": 0,
+      "greenEvents": 0,
+      "redEvents": 0,
+      "signalGroup": 2,
+      "yellowEvents": 1
+    }
+  ],
+  "timestamp": 1724170623059
+}

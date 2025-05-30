@@ -11,7 +11,7 @@
     "roadRegulatorID": -1,
     "intersectionID": 12109,
     "source": "{\"rsuId\":\"10.11.81.12\",\"intersectionId\":12109,\"region\":0}",
-    "signalStateEventAssessmentGroup": [
+    "stopLinePassageAssessmentGroup": [
       {
         "darkEvents": 0,
         "greenEvents": 0,

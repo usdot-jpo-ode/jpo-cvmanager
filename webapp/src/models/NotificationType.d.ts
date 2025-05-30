@@ -5,7 +5,7 @@ type NotificationType =
   | 'MapMinimumDataNotification'
   | 'SpatBroadcastRateNotification'
   | 'MapBroadcastRateNotification'
-  | 'SignalStateAssessmentNotification'
+  | 'StopLineStopAssessmentNotification'
   | 'LaneDirectionOfTravelAssessmentNotification'
   | 'ConnectionOfTravelNotification'
   | 'SignalStateConflictNotification'

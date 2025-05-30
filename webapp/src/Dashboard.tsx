@@ -28,9 +28,7 @@ const Dashboard = () => {
 
   return (
     <Paper id="masterdiv" style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
-      <div style={{ flex: '0 0 100px' }}>
-        <Header />
-      </div>
+      <Header />
       <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column' }}>
         {authLoginData && keycloak?.authenticated ? (
           <>

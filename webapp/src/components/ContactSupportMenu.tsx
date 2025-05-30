@@ -10,8 +10,7 @@ import toast from 'react-hot-toast'
 import Dialog from '@mui/material/Dialog'
 import { Button, DialogActions, DialogContent, DialogTitle } from '@mui/material'
 import { AdminButton } from '../styles/components/AdminButton'
-import { LightButton } from '../styles/components/LightButton'
-import ContactSupportIcon from '@mui/icons-material/ContactSupport'
+import '../styles/fonts/museo-slab.css'
 
 const ContactSupportMenu = () => {
   const [hidden, setHidden] = useState(true) // hidden by default
@@ -40,17 +39,15 @@ const ContactSupportMenu = () => {
 
   if (hidden) {
     return (
-      <div>
-        <LightButton
+      <div className="contactWrapper">
+        <Button
           variant="contained"
-          startIcon={<ContactSupportIcon />}
           onClick={() => {
             setHidden(!hidden)
           }}
-          sx={{ padding: 2, margin: 1, top: 5 }}
         >
           Contact Support
-        </LightButton>
+        </Button>
       </div>
     )
   }
@@ -62,7 +59,7 @@ const ContactSupportMenu = () => {
         <Form
           id="contact-support-form"
           onSubmit={handleSubmit(onSubmit)}
-          style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
+          style={{ fontFamily: '"museo-slab", Arial, Helvetica, sans-serif' }}
         >
           <Form.Group className="mb-3" controlId="email">
             <Form.Label className="label">Your Email</Form.Label>

@@ -11,8 +11,8 @@ class GraphsApi {
       ProcessingTimePeriodCount: 0,
       SignalGroupAlignmentEventCount: 0,
       SignalStateConflictEventCount: 0,
-      SignalStateEventCount: 0,
-      SignalStateStopEventCount: 0,
+      StopLinePassageEventCount: 0,
+      StopLineStopEventCount: 0,
       TimeChangeDetailsEventCount: 0,
       MapMinimumDataEventCount: 0,
       SpatMinimumDataEventCount: 0,
@@ -20,43 +20,43 @@ class GraphsApi {
       SpatBroadcastRateEventCount: 0,
     }
     switch (event_type) {
-      case 'connection_of_travel':
+      case 'connection-of-travel':
         val.ConnectionOfTravelEventCount = count
         break
-      case 'intersection_reference_alignment':
+      case 'intersection-reference-alignment':
         val.IntersectionReferenceAlignmentEventCount = count
         break
-      case 'lane_direction_of_travel':
+      case 'lane-direction-of-travel':
         val.LaneDirectionOfTravelEventCount = count
         break
-      case 'processing_time_period':
+      case 'processing-time-period':
         val.ProcessingTimePeriodCount = count
         break
-      case 'signal_group_alignment':
+      case 'signal-group-alignment':
         val.SignalGroupAlignmentEventCount = count
         break
-      case 'signal_state_conflict':
+      case 'signal-state-conflict':
         val.SignalStateConflictEventCount = count
         break
-      case 'signal_state':
-        val.SignalStateEventCount = count
+      case 'stop-line-passage':
+        val.StopLinePassageEventCount = count
         break
-      case 'signal_state_stop':
-        val.SignalStateStopEventCount = count
+      case 'stop-line-stop':
+        val.StopLineStopEventCount = count
         break
-      case 'time_change_details':
+      case 'time-change-details':
         val.TimeChangeDetailsEventCount = count
         break
-      case 'map_minimum_data':
+      case 'map-minimum-data':
         val.MapMinimumDataEventCount = count
         break
-      case 'spat_minimum_data':
+      case 'spat-minimum-data':
         val.SpatMinimumDataEventCount = count
         break
-      case 'map_broadcast_rate':
+      case 'map-broadcast-rate':
         val.MapBroadcastRateEventCount = count
         break
-      case 'spat_broadcast_rate':
+      case 'spat-broadcast-rate':
         val.SpatBroadcastRateEventCount = count
         break
     }
@@ -72,8 +72,8 @@ class GraphsApi {
     ProcessingTimePeriodCount: val1.ProcessingTimePeriodCount + val2.ProcessingTimePeriodCount,
     SignalGroupAlignmentEventCount: val1.SignalGroupAlignmentEventCount + val2.SignalGroupAlignmentEventCount,
     SignalStateConflictEventCount: val1.SignalStateConflictEventCount + val2.SignalStateConflictEventCount,
-    SignalStateEventCount: val1.SignalStateEventCount + val2.SignalStateEventCount,
-    SignalStateStopEventCount: val1.SignalStateStopEventCount + val2.SignalStateStopEventCount,
+    StopLinePassageEventCount: val1.StopLinePassageEventCount + val2.StopLinePassageEventCount,
+    StopLineStopEventCount: val1.StopLineStopEventCount + val2.StopLineStopEventCount,
     TimeChangeDetailsEventCount: val1.TimeChangeDetailsEventCount + val2.TimeChangeDetailsEventCount,
     MapMinimumDataEventCount: val1.MapMinimumDataEventCount + val2.MapMinimumDataEventCount,
     SpatMinimumDataEventCount: val1.SpatMinimumDataEventCount + val2.SpatMinimumDataEventCount,
@@ -84,7 +84,6 @@ class GraphsApi {
   async getGraphData({
     token,
     intersectionId,
-    roadRegulatorId,
     event_types,
     startTime,
     endTime,
@@ -92,7 +91,6 @@ class GraphsApi {
   }: {
     token: string
     intersectionId: number
-    roadRegulatorId: number
     event_types: string[]
     startTime: Date
     endTime: Date
@@ -100,7 +98,6 @@ class GraphsApi {
   }): Promise<Array<GraphArrayDataType>> {
     const queryParams: Record<string, string> = {}
     queryParams['intersection_id'] = intersectionId.toString()
-    queryParams['road_regulator_id'] = roadRegulatorId.toString()
     queryParams['start_time_utc_millis'] = startTime.getTime().toString()
     queryParams['end_time_utc_millis'] = endTime.getTime().toString()
 
@@ -109,7 +106,7 @@ class GraphsApi {
     for (const event_type of event_types) {
       try {
         const graphData: Array<{ id: string; count: number }> = await authApiHelper.invokeApi({
-          path: `/events/${event_type}/daily_counts`,
+          path: `/data/cm-events/${event_type}/daily-counts`,
           token: token,
           queryParams,
           abortController,

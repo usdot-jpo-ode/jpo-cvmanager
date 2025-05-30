@@ -19,6 +19,7 @@ import { Toaster } from 'react-hot-toast'
 import { ThemeProvider, StyledEngineProvider, CssBaseline, GlobalStyles } from '@mui/material'
 import EnvironmentVars from './EnvironmentVars'
 import { useThemeDetector as useBrowserThemeDetector } from './hooks/use-browser-theme-detector'
+import '../src/styles/fonts/museo-slab.css'
 import { ReactKeycloakProvider } from '@react-keycloak/web'
 
 let loginDispatched = false
@@ -74,7 +75,7 @@ const App = () => {
           <Toaster
             toastOptions={{
               style: {
-                fontFamily: 'Arial, Helvetica, sans-serif',
+                fontFamily: '"museo-slab", Arial, Helvetica, sans-serif',
               },
             }}
           />

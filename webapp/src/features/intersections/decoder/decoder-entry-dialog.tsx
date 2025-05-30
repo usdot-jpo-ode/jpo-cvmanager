@@ -46,9 +46,11 @@ const DecoderEntryDialog = () => {
   return (
     <>
       <Dialog onClose={handleClose} open={open} fullWidth maxWidth={'lg'}>
-        <DialogTitle>Select Intersection</DialogTitle>
+        <DialogTitle sx={{ padding: '8px' }}>
+          <Typography fontSize="16px">Select Intersection</Typography>
+        </DialogTitle>
 
-        <Typography sx={{ m: 1 }} variant="h6" color="white">
+        <Typography sx={{ m: 1 }} fontSize="16px" color="white">
           1. Upload data, either by uploading individual files or pasting the data directly into the text box.
           <br />
           2. Select an uploaded MAP message to view the decoded data. SPaT data is filtered by intersection ID. SPaT
@@ -56,11 +58,11 @@ const DecoderEntryDialog = () => {
           <br />
           3. Select BSM messages to view, all selected BSM data is shown, regardless of the time slider.
         </Typography>
-        <Container sx={{ height: '60vh' }}>
+        <Container sx={{ height: 'fit-content' }}>
           <DecoderTables />
         </Container>
         <DialogActions>
-          <Button autoFocus onClick={handleClose} variant="contained">
+          <Button autoFocus onClick={handleClose} variant="contained" className="capital-case">
             Close
           </Button>
         </DialogActions>

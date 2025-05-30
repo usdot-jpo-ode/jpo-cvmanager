@@ -73,9 +73,6 @@ export const toggleMapMenuSelection = createAsyncThunk(
           break
         case 'Display RSU Status':
           dispatch(setDisplay(null))
-          break
-        case 'V2x Message Viewer':
-          dispatch(toggleLayerActive('msg-viewer-layer'))
       }
     } else {
       menuSelection = [...menuSelection, label]
@@ -91,9 +88,6 @@ export const toggleMapMenuSelection = createAsyncThunk(
             menuSelection = [...menuSelection.filter((item) => item !== 'Display Message Counts'), 'Display RSU Status']
           }
           dispatch(setDisplay('displayRsuErrors'))
-          break
-        case 'V2x Message Viewer':
-          dispatch(toggleLayerActive('msg-viewer-layer'))
       }
     }
     return menuSelection

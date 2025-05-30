@@ -11,13 +11,14 @@ import { useSelector } from 'react-redux'
 type ReportGenerationDialogProps = {
   onClose: () => void
   open: boolean
+  onReportGenerated: () => void
 }
 
 export const ReportGenerationDialog = (props: ReportGenerationDialogProps) => {
   const token = useSelector(selectToken)
   const intersectionId = useSelector(selectSelectedIntersectionId)
 
-  const { onClose, open } = props
+  const { onClose, open, onReportGenerated } = props
 
   const handleClose = () => {
     onClose()
@@ -25,50 +26,31 @@ export const ReportGenerationDialog = (props: ReportGenerationDialogProps) => {
 
   const getReport = async ({
     intersectionId,
-    roadRegulatorId,
     startTime,
     endTime,
   }: {
     intersectionId?: number
-    roadRegulatorId?: number
     startTime: Date
     endTime: Date
   }) => {
-    if (!intersectionId || !roadRegulatorId) {
-      console.error(
-        'Did not attempt to generate report. Intersection ID:',
-        intersectionId,
-        'Road Regulator ID:',
-        roadRegulatorId
-      )
+    if (!intersectionId) {
+      console.error('Did not attempt to generate report. Intersection ID:', intersectionId)
       return
     }
     const promise = ReportsApi.generateReport({
       token: token,
       intersectionId,
-      roadRegulatorId,
       startTime,
       endTime,
     })
+
     toast.promise(promise, {
-      loading: 'Generating Performance Report',
-      success: 'Successfully Generated Performance Report',
+      loading: `Generating Performance Report - this may take up to 15 minutes (started at ${new Date().toLocaleTimeString()})`,
+      success: `Successfully Generated Performance Report!`,
       error: 'Error Generating Performance Report',
     })
-    const report = await promise
-    const name = `Performance Report ${new Date().toISOString()}.pdf`
-    if (report !== undefined) {
-      downloadPdf(report, name)
-    }
-  }
-
-  const downloadPdf = (contents: Blob, name: string) => {
-    const url = window.URL.createObjectURL(contents)
-    const link = document.createElement('a')
-    link.href = url
-    link.setAttribute('download', name) //or any other extension
-    document.body.appendChild(link)
-    link.click()
+    await promise
+    onReportGenerated()
   }
 
   return (
@@ -79,7 +61,7 @@ export const ReportGenerationDialog = (props: ReportGenerationDialogProps) => {
           <ReportRequestEditForm onGenerateReport={getReport} dbIntersectionId={intersectionId} />
         </Container>
         <DialogActions>
-          <Button autoFocus onClick={handleClose}>
+          <Button autoFocus onClick={handleClose} className="capital-case">
             Close
           </Button>
         </DialogActions>

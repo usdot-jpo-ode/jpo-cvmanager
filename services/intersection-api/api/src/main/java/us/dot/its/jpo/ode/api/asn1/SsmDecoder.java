@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import us.dot.its.jpo.ode.api.models.messages.SsmDecodedMessage;
 import us.dot.its.jpo.ode.api.models.messages.DecodedMessage;
 import us.dot.its.jpo.ode.api.models.messages.EncodedMessage;
-import us.dot.its.jpo.ode.context.AppContext;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata;
 import us.dot.its.jpo.ode.model.Asn1Encoding;
 import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
 import us.dot.its.jpo.ode.model.OdeAsn1Data;
@@ -33,10 +33,9 @@ import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
 @Component
 public class SsmDecoder implements Decoder {
 
-
     @Override
     public DecodedMessage decode(EncodedMessage message) {
-        
+
         // Convert to Ode Data type and Add Metadata
         OdeData data = getAsOdeData(message.getAsn1Message());
 
@@ -48,9 +47,8 @@ public class SsmDecoder implements Decoder {
 
             // Send String through ASN.1 Decoder to get Decoded XML Data
             String decodedXml = DecoderManager.decodeXmlWithAcm(xml);
-            
 
-            // Convert to Ode Json 
+            // Convert to Ode Json
             OdeSsmData ssm = getAsOdeJson(decodedXml);
 
             // build output data structure
@@ -71,11 +69,11 @@ public class SsmDecoder implements Decoder {
         metadata.setOdeReceivedAt(DecoderManager.getCurrentIsoTimestamp());
         metadata.setOriginIp(DecoderManager.getStaticUserOriginIp());
         metadata.setRecordType(RecordType.ssmTx);
-        
-        Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",EncodingRule.UPER);
+
+        Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame", EncodingRule.UPER);
         metadata.addEncoding(unsecuredDataEncoding);
-        
-        //construct odeData
+
+        // construct odeData
         return new OdeAsn1Data(metadata, payload);
 
     }
@@ -84,10 +82,10 @@ public class SsmDecoder implements Decoder {
     public OdeSsmData getAsOdeJson(String consumedData) throws XmlUtilsException {
         ObjectNode consumed = XmlUtils.toObjectNode(consumedData);
 
-        JsonNode metadataNode = consumed.findValue(AppContext.METADATA_STRING);
+        JsonNode metadataNode = consumed.findValue(OdeMsgMetadata.METADATA_STRING);
         if (metadataNode instanceof ObjectNode object) {
             // Removing encodings to match ODE behavior
-            object.remove(AppContext.ENCODINGS_STRING);
+            object.remove(OdeMsgMetadata.ENCODINGS_STRING);
 
             // Ssm header file does not have a location and use predefined set required
             // RxSource
@@ -97,12 +95,12 @@ public class SsmDecoder implements Decoder {
             JsonNode jsonNode;
             try {
                 jsonNode = objectMapper.readTree(receivedMessageDetails.toJson());
-                object.set(AppContext.RECEIVEDMSGDETAILS_STRING, jsonNode);
+                object.set(OdeMsgMetadata.RECEIVEDMSGDETAILS_STRING, jsonNode);
             } catch (JsonProcessingException e) {
                 log.error("Exception decoding SSM to ODE json", e);
             }
         }
-        
+
         OdeSsmMetadata metadata = (OdeSsmMetadata) JsonUtils.fromJson(metadataNode.toString(), OdeSsmMetadata.class);
 
         if (metadata.getSchemaVersion() <= 4) {
@@ -112,6 +110,5 @@ public class SsmDecoder implements Decoder {
         OdeSsmPayload payload = new OdeSsmPayload(SSMBuilder.genericSSM(consumed.findValue("SignalStatusMessage")));
         return new OdeSsmData(metadata, payload);
     }
-
 
 }

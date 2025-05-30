@@ -7,18 +7,23 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.bson.Document;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.LaneDirectionOfTravelNotification;
-import us.dot.its.jpo.ode.api.accessors.notifications.LaneDirectionOfTravelNotificationRepo.LaneDirectionOfTravelNotificationRepositoryImpl;
+import us.dot.its.jpo.ode.api.accessors.notifications.lane_direction_of_travel_notification.LaneDirectionOfTravelNotificationRepositoryImpl;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -35,6 +40,9 @@ public class LaneDirectionOfTravelNotificationRepositoryImplTest {
     @Mock
     private MongoTemplate mongoTemplate;
 
+    @Mock
+    private Page<LaneDirectionOfTravelNotification> mockPage;
+
     @InjectMocks
     private LaneDirectionOfTravelNotificationRepositoryImpl repository;
 
@@ -50,50 +58,37 @@ public class LaneDirectionOfTravelNotificationRepositoryImplTest {
     }
 
     @Test
-    public void testGetQuery() {
-
-        Query query = repository.getQuery(intersectionID, startTime, endTime, latest);
-
-        // Assert IntersectionID
-        assertThat(query.getQueryObject().get("intersectionID")).isEqualTo(intersectionID);
-
-        // Assert Start and End Time
-        Document queryTimeDocument = (Document) query.getQueryObject().get("notificationGeneratedAt");
-        assertThat(queryTimeDocument.getDate("$gte")).isEqualTo(new Date(startTime));
-        assertThat(queryTimeDocument.getDate("$lte")).isEqualTo(new Date(endTime));
-
-        // Assert sorting and limit
-        assertThat(query.getSortObject().keySet().contains("notificationGeneratedAt")).isTrue();
-        assertThat(query.getSortObject().get("notificationGeneratedAt")).isEqualTo(-1);
-        assertThat(query.getLimit()).isEqualTo(1);
-
-    }
-
-    @Test
-    public void testGetQueryResultCount() {
-        Query query = new Query();
+    public void testCount() {
         long expectedCount = 10;
 
-        Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString()))
-                .thenReturn(expectedCount);
+        when(mongoTemplate.count(any(),
+                Mockito.<String>any())).thenReturn(expectedCount);
 
-        long resultCount = repository.getQueryResultCount(query);
+        long resultCount = repository.count(1, null, null);
 
         assertThat(resultCount).isEqualTo(expectedCount);
-        Mockito.verify(mongoTemplate).count(Mockito.eq(query), Mockito.any(), Mockito.anyString());
+        verify(mongoTemplate).count(any(Query.class), anyString());
     }
 
     @Test
-    public void testFindLaneDirectionOfTravelNotifications() {
-        Query query = new Query();
-        List<LaneDirectionOfTravelNotification> expected = new ArrayList<>();
+    public void testFind() {
+        LaneDirectionOfTravelNotificationRepositoryImpl repo = mock(
+                LaneDirectionOfTravelNotificationRepositoryImpl.class);
 
-        Mockito.doReturn(expected).when(mongoTemplate).find(query, LaneDirectionOfTravelNotification.class,
-                "CmLaneDirectionOfTravelNotifications");
+        when(repo.findPage(
+                any(),
+                any(),
+                any(PageRequest.class),
+                any(Criteria.class),
+                any(Sort.class),
+                any(),
+                eq(LaneDirectionOfTravelNotification.class))).thenReturn(mockPage);
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        doCallRealMethod().when(repo).find(1, null, null, pageRequest);
 
-        List<LaneDirectionOfTravelNotification> results = repository.find(query);
+        Page<LaneDirectionOfTravelNotification> results = repo.find(1, null, null, pageRequest);
 
-        assertThat(results).isEqualTo(expected);
+        assertThat(results).isEqualTo(mockPage);
     }
 
 }

@@ -2,197 +2,229 @@
 
 exports[`should take a snapshot 1`] = `
 <div>
-  <div>
+  <div
+    class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-mocked-MuiPaper-root"
+    style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
+  >
     <div
-      class="sideBarOn"
-      id="container"
+      class="MuiStack-root css-mocked-MuiStack-root"
     >
-      <h1
-        class="h1"
+      <p
+        class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
       >
-        BSM
-         Counts
-      </h1>
-      <div
-        class="DateRangeContainer"
-        style="border: 2px solid rgba(0, 0, 0, 0.87); border-radius: 15px;"
+        Message Counts
+      </p>
+      <button
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
+        tabindex="0"
+        type="button"
       >
-        <div
-          style="margin-bottom: 8px;"
-        >
-          <div
-            class="MuiFormControl-root MuiTextField-root css-mocked-MuiFormControl-root-MuiTextField-root"
-          >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
-              data-shrink="true"
-              for="mui-1"
-              id="mui-1-label"
-            >
-              Select start date
-            </label>
-            <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MuiInputBase-adornedEnd css-mocked-MuiInputBase-root-MuiOutlinedInput-root"
-            >
-              <input
-                autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
-                id="mui-1"
-                inputmode="text"
-                placeholder="MM/DD/YYYY hh:mm aa"
-                type="text"
-                value="04/08/2024 06:00 PM"
-              />
-              <div
-                class="MuiInputAdornment-root MuiInputAdornment-positionEnd MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-mocked-MuiInputAdornment-root"
-              >
-                <button
-                  aria-label="Choose date, selected date is Apr 8, 2024"
-                  class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
-                  tabindex="0"
-                  type="button"
-                >
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
-                    data-testid="CalendarIcon"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"
-                    />
-                  </svg>
-                </button>
-              </div>
-              <fieldset
-                aria-hidden="true"
-                class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
-              >
-                <legend
-                  class="css-w1u3ce"
-                >
-                  <span>
-                    Select start date
-                  </span>
-                </legend>
-              </fieldset>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div
-            class="MuiFormControl-root MuiTextField-root css-mocked-MuiFormControl-root-MuiTextField-root"
-          >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
-              data-shrink="true"
-              for="mui-2"
-              id="mui-2-label"
-            >
-              Select end date
-            </label>
-            <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MuiInputBase-adornedEnd css-mocked-MuiInputBase-root-MuiOutlinedInput-root"
-            >
-              <input
-                autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
-                id="mui-2"
-                inputmode="text"
-                placeholder="MM/DD/YYYY hh:mm aa"
-                type="text"
-                value="04/09/2024 06:00 PM"
-              />
-              <div
-                class="MuiInputAdornment-root MuiInputAdornment-positionEnd MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-mocked-MuiInputAdornment-root"
-              >
-                <button
-                  aria-label="Choose date, selected date is Apr 9, 2024"
-                  class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
-                  tabindex="0"
-                  type="button"
-                >
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
-                    data-testid="CalendarIcon"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"
-                    />
-                  </svg>
-                </button>
-              </div>
-              <fieldset
-                aria-hidden="true"
-                class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
-              >
-                <legend
-                  class="css-w1u3ce"
-                >
-                  <span>
-                    Select end date
-                  </span>
-                </legend>
-              </fieldset>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary css-mocked-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
-      >
-        <div
-          aria-controls="mui-3"
-          aria-expanded="false"
-          aria-haspopup="listbox"
-          class="MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input css-mocked-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input"
-          role="combobox"
-          tabindex="0"
-        >
-          <span
-            class="notranslate"
-          >
-            ​
-          </span>
-        </div>
-        <input
-          aria-hidden="true"
-          class="MuiSelect-nativeInput css-mocked-MuiSelect-nativeInput"
-          placeholder="Select Message Type"
-          tabindex="-1"
-          value="BSM"
-        />
         <svg
           aria-hidden="true"
-          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-mocked-MuiSvgIcon-root-MuiSelect-icon"
-          data-testid="ArrowDropDownIcon"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+          data-testid="CloseIcon"
           focusable="false"
           viewBox="0 0 24 24"
         >
           <path
-            d="M7 10l5 5 5-5z"
+            d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
           />
         </svg>
-        <fieldset
-          aria-hidden="true"
-          class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
+      </button>
+    </div>
+    <div
+      class="MuiStack-root css-mocked-MuiStack-root"
+    >
+      <div
+        class="MuiBox-root css-1ykdma4"
+      >
+        <div
+          class="MuiFormControl-root MuiTextField-root css-mocked-MuiFormControl-root-MuiTextField-root"
         >
-          <legend
-            class="css-w4cd9x"
+          <label
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
+            data-shrink="true"
+            for="mui-1"
+            id="mui-1-label"
           >
-            <span
-              class="notranslate"
+            Select start date
+          </label>
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MuiInputBase-adornedEnd css-mocked-MuiInputBase-root-MuiOutlinedInput-root"
+          >
+            <input
+              autocomplete="off"
+              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
+              id="mui-1"
+              inputmode="text"
+              placeholder="MM/DD/YYYY hh:mm aa"
+              type="text"
+              value="04/08/2024 06:00 PM"
+            />
+            <div
+              class="MuiInputAdornment-root MuiInputAdornment-positionEnd MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-mocked-MuiInputAdornment-root"
             >
-              ​
-            </span>
-          </legend>
-        </fieldset>
+              <button
+                aria-label="Choose date, selected date is Apr 8, 2024"
+                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
+                tabindex="0"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                  data-testid="CalendarIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"
+                  />
+                </svg>
+              </button>
+            </div>
+            <fieldset
+              aria-hidden="true"
+              class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="css-w1u3ce"
+              >
+                <span>
+                  Select start date
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
       </div>
-      <span />
+      <div
+        class="MuiBox-root css-1ykdma4"
+      >
+        <div
+          class="MuiFormControl-root MuiTextField-root css-mocked-MuiFormControl-root-MuiTextField-root"
+        >
+          <label
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
+            data-shrink="true"
+            for="mui-2"
+            id="mui-2-label"
+          >
+            Select end date
+          </label>
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MuiInputBase-adornedEnd css-mocked-MuiInputBase-root-MuiOutlinedInput-root"
+          >
+            <input
+              autocomplete="off"
+              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
+              id="mui-2"
+              inputmode="text"
+              placeholder="MM/DD/YYYY hh:mm aa"
+              type="text"
+              value="04/09/2024 06:00 PM"
+            />
+            <div
+              class="MuiInputAdornment-root MuiInputAdornment-positionEnd MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-mocked-MuiInputAdornment-root"
+            >
+              <button
+                aria-label="Choose date, selected date is Apr 9, 2024"
+                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
+                tabindex="0"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                  data-testid="CalendarIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"
+                  />
+                </svg>
+              </button>
+            </div>
+            <fieldset
+              aria-hidden="true"
+              class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="css-w1u3ce"
+              >
+                <span>
+                  Select end date
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+      <div
+        class="MuiBox-root css-1ykdma4"
+      >
+        <div
+          class="MuiFormControl-root css-mocked-MuiFormControl-root"
+        >
+          <label
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
+            data-shrink="true"
+            for="counts-msg-dropdown"
+          >
+            Message Type
+          </label>
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl css-mocked-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
+          >
+            <div
+              aria-controls="mui-3"
+              aria-expanded="false"
+              aria-haspopup="listbox"
+              aria-labelledby="counts-msg-dropdown"
+              class="MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input css-mocked-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input"
+              id="counts-msg-dropdown"
+              role="combobox"
+              tabindex="0"
+            >
+              <span
+                class="notranslate"
+              >
+                ​
+              </span>
+            </div>
+            <input
+              aria-hidden="true"
+              class="MuiSelect-nativeInput css-mocked-MuiSelect-nativeInput"
+              tabindex="-1"
+              value="BSM"
+            />
+            <svg
+              aria-hidden="true"
+              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-mocked-MuiSvgIcon-root-MuiSelect-icon"
+              data-testid="ArrowDropDownIcon"
+              focusable="false"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M7 10l5 5 5-5z"
+              />
+            </svg>
+            <fieldset
+              aria-hidden="true"
+              class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="css-w1u3ce"
+              >
+                <span>
+                  Message Type
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+      </div>
       <div
         class="table"
       >
@@ -200,24 +232,38 @@ exports[`should take a snapshot 1`] = `
           class="header"
         >
           <div
-            style="border: 1px solid rgba(0, 0, 0, 0.87);"
+            style="border-bottom: 1px solid rgba(0, 0, 0, 0.87);"
           >
             RSU
           </div>
           <div
-            style="border: 1px solid rgba(0, 0, 0, 0.87);"
+            style="border-bottom: 1px solid rgba(0, 0, 0, 0.87);"
           >
             Road
           </div>
           <div
-            style="border: 1px solid rgba(0, 0, 0, 0.87);"
+            style="border-bottom: 1px solid rgba(0, 0, 0, 0.87);"
           >
             Count
           </div>
         </div>
         <div
           class="body"
-        />
+        >
+          <div
+            class="row"
+          >
+            <div
+              style="grid-column: 1 / span 3; text-align: center;"
+            >
+              <p
+                class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+              >
+                No data found for the selected range
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

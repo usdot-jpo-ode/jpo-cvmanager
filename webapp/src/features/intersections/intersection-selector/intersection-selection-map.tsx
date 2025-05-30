@@ -165,7 +165,7 @@ const IntersectionMap = () => {
             closeOnClick={false}
             closeButton={false}
           >
-            <div style={{ color: 'black' }}>SELECTED {selectedIntersection.intersectionID}</div>
+            <div>SELECTED {selectedIntersection.intersectionID}</div>
           </Popup>
         )}
         <Source

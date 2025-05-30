@@ -103,7 +103,7 @@ declare -A CmLaneDirectionOfTravelAssessment=([name]="topic.CmLaneDirectionOfTra
     [convert_timestamp]=true [timefield]="assessmentGeneratedAt" [use_key]=false [key]="" [add_timestamp]=false)
 declare -A CmConnectionOfTravelAssessment=([name]="topic.CmConnectionOfTravelAssessment" [collection]="CmConnectionOfTravelAssessment"
     [convert_timestamp]=true [timefield]="assessmentGeneratedAt" [use_key]=false [key]="" [add_timestamp]=false)
-declare -A CmSignalStateEventAssessment=([name]="topic.CmSignalStateEventAssessment" [collection]="CmSignalStateEventAssessment"
+declare -A CmStopLinePassageAssessment=([name]="topic.CmStopLinePassageAssessment" [collection]="CmStopLinePassageAssessment"
     [convert_timestamp]=true [timefield]="assessmentGeneratedAt" [use_key]=false [key]="" [add_timestamp]=false)
 declare -A CmStopLineStopAssessment=([name]="topic.CmStopLineStopAssessment" [collection]="CmStopLineStopAssessment"
     [convert_timestamp]=true [timefield]="assessmentGeneratedAt" [use_key]=false [key]="" [add_timestamp]=false)
@@ -237,7 +237,6 @@ createSink CmIntersectionReferenceAlignmentEvents
 createSink CmSignalGroupAlignmentEvents
 createSink CmConnectionOfTravelEvent
 createSink CmLaneDirectionOfTravelEvent
-createSink CmSignalStateEvent
 createSink CmSpatTimeChangeDetailsEvent
 createSink CmSpatMinimumDataEvents
 createSink CmMapBroadcastRateEvents
@@ -249,7 +248,7 @@ createSink CmBsmEvents
 
 createSink CmLaneDirectionOfTravelAssessment
 createSink CmConnectionOfTravelAssessment
-createSink CmSignalStateEventAssessment
+createSink CmStopLinePassageAssessment
 createSink CmStopLineStopAssessment
 
 createSink CmSpatTimeChangeDetailsNotification

@@ -33,7 +33,6 @@ FROM quay.io/keycloak/keycloak:26.0.5
 ARG KEYCLOAK_LOGIN_THEME_NAME
 COPY --from=ubi-micro-build /mnt/rootfs /
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
-COPY custom-welcome /opt/keycloak/themes/custom-welcome
 COPY realm.json /opt/keycloak/data/import/realm.json
 COPY ${KEYCLOAK_LOGIN_THEME_NAME} /opt/keycloak/providers/theme.jar
 

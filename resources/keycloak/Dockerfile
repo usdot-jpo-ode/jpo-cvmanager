@@ -26,7 +26,7 @@ WORKDIR /opt/keycloak
 
 COPY --from=jarbuilder /home/custom-user-provider/target/keycloak-custom-providers.jar /opt/keycloak/providers/
 
-RUN /opt/keycloak/bin/kc.sh build --health-enabled=true
+RUN /opt/keycloak/bin/kc.sh build
 
 ################## Integrate realm and theme ##################
 FROM quay.io/keycloak/keycloak:26.0.5

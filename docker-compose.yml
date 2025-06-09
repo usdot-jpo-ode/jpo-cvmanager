@@ -171,6 +171,7 @@ services:
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       WEBAPP_ORIGIN: http://${WEBAPP_DOMAIN}
       KC_HEALTH_ENABLED: 'true'
+      KC_LOGGING_LEVEL: ${KC_LOGGING_LEVEL}
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://${PG_DB_HOST}/postgres?currentSchema=keycloak
       KC_DB_USERNAME: ${PG_DB_USER}
@@ -183,7 +184,6 @@ services:
       KC_HTTP_ENABLED: 'true'
     command:
       - start-dev
-      - --log-level=${KC_LOGGING_LEVEL}
       - --import-realm
     logging:
       options:

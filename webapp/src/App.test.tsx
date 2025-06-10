@@ -16,6 +16,7 @@ jest.mock('./EnvironmentVars', () => ({
     longitude: -104.9903,
     zoom: 10,
   })),
+  KEYCLOAK_HOST_URL: 'https://keycloak.example.com',
   KEYCLOAK_CLIENT_ID: 'keycloak-client-id',
   KEYCLOAK_REALM: 'keycloak-realm',
 }))

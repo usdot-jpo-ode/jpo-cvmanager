@@ -165,11 +165,13 @@ services:
       ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
     ports:
       - '8084:8080'
+      - '9000:9000'
     environment:
-      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       WEBAPP_ORIGIN: http://${WEBAPP_DOMAIN}
-      KC_HEALTH_ENABLED: true
+      KC_HEALTH_ENABLED: 'true'
+      KC_LOGGING_LEVEL: ${KC_LOGGING_LEVEL}
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://${PG_DB_HOST}/postgres?currentSchema=keycloak
       KC_DB_USERNAME: ${PG_DB_USER}
@@ -178,16 +180,16 @@ services:
       KEYCLOAK_API_CLIENT_SECRET_KEY: ${KEYCLOAK_API_CLIENT_SECRET_KEY}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      KC_HOSTNAME_STRICT_HTTPS: 'false'
+      KC_HTTP_ENABLED: 'true'
     command:
       - start-dev
-      - --log-level=${KC_LOGGING_LEVEL}
       - --import-realm
-      - --spi-theme-welcome-theme=custom-welcome
     logging:
       options:
         max-size: '10m'
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:8080/health']
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/health']
       interval: 30s
       timeout: 10s
       retries: 3

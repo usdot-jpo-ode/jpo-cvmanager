@@ -3,7 +3,7 @@ import SnmpwalkItem from './SnmpwalkItem'
 import { useSelector, useDispatch } from 'react-redux'
 import { confirmAlert } from 'react-confirm-alert'
 import { Options } from './AdminDeletionOptions'
-import { selectRsuManufacturer, selectRsuIpv4 } from '../generalSlices/rsuSlice'
+import { selectRsuIpv4 } from '../generalSlices/rsuSlice'
 import {
   selectMsgFwdConfig,
 
@@ -16,7 +16,7 @@ import {
   // Actions
   deleteSnmpSet,
 } from '../generalSlices/configSlice'
-import { IconButton, Tooltip } from '@mui/material'
+import { Button, Tooltip } from '@mui/material'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 import toast from 'react-hot-toast'
@@ -27,7 +27,6 @@ const SnmpwalkMenu = () => {
   const msgFwdConfig = useSelector(selectMsgFwdConfig)
 
   const rsuIp = useSelector(selectRsuIpv4)
-  const rsuManufacturer = useSelector(selectRsuManufacturer)
 
   useEffect(() => {
     // Refresh Data
@@ -68,20 +67,6 @@ const SnmpwalkMenu = () => {
 
   return (
     <div>
-      <div id="msgfwddiv">
-        <h2 id="snmpheader">Message Forwarding</h2>
-        <Tooltip title="Refresh Message Forwarding">
-          <IconButton
-            onClick={() => {
-              dispatch(refreshSnmpFwdConfig(rsuIp))
-            }}
-            size="medium"
-          >
-            <RefreshIcon />
-          </IconButton>
-        </Tooltip>
-      </div>
-
       <div>
         {Object.hasOwn(msgFwdConfig, 'rsuXmitMsgFwdingTable') && Object.hasOwn(msgFwdConfig, 'rsuReceivedMsgTable') ? (
           <div>
@@ -123,6 +108,25 @@ const SnmpwalkMenu = () => {
             ))}
           </div>
         )}
+      </div>
+      <div id="msgfwddiv">
+        <Tooltip title="Refresh Message Forwarding">
+          <Button
+            startIcon={<RefreshIcon />}
+            variant="outlined"
+            onClick={() => {
+              dispatch(refreshSnmpFwdConfig(rsuIp))
+            }}
+            size="large"
+            sx={{
+              marginTop: '20px',
+            }}
+            color="info"
+            className="museo-slab capital-case"
+          >
+            Refresh Message Forwarding
+          </Button>
+        </Tooltip>
       </div>
     </div>
   )

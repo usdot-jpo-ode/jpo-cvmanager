@@ -12,6 +12,7 @@ import {
   TablePagination,
   TableRow,
   Typography,
+  useTheme,
 } from '@mui/material'
 import React from 'react'
 import MapRoundedIcon from '@mui/icons-material/MapRounded'
@@ -19,21 +20,27 @@ import { useNavigate } from 'react-router-dom'
 
 export const EventListResults = ({ events, eventsCount, onPageChange, onRowsPerPageChange, page, rowsPerPage }) => {
   const navigate = useNavigate()
+  const theme = useTheme()
 
   const getEventDescription = (event: MessageMonitor.Event) => {
     return JSON.stringify(event).replace(/,/g, ', ')
   }
 
   return (
-    <Card>
+    <Card sx={{ py: 0 }}>
       <PerfectScrollbar>
-        <Box sx={{ minWidth: 1050, overflowX: 'scroll' }}>
+        <Box sx={{ minWidth: 1050, overflowX: 'auto' }}>
           <Table>
-            <TableHead>
+            <TableHead
+              sx={{
+                backgroundColor: theme.palette.background.paper,
+                '& .MuiTableCell-root': { textTransform: 'capitalize' },
+              }}
+            >
               <TableRow>
                 <TableCell>Event Type</TableCell>
                 <TableCell>Date</TableCell>
-                <TableCell>Open Map</TableCell>
+                <TableCell>View On Map</TableCell>
                 <TableCell>Message</TableCell>
               </TableRow>
             </TableHead>
@@ -59,9 +66,7 @@ export const EventListResults = ({ events, eventsCount, onPageChange, onRowsPerP
                         component="a"
                         onClick={() =>
                           navigate(
-                            `/dashboard/intersectionMap/timestamp/${event.intersectionID}/${
-                              event.roadRegulatorID ?? -1
-                            }/${event.eventGeneratedAt}`
+                            `/dashboard/intersectionMap/timestamp/${event.intersectionID}/${event.eventGeneratedAt}`
                           )
                         }
                       >

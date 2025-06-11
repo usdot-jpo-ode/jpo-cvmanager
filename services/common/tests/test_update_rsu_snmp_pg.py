@@ -11,10 +11,10 @@ def test_insert_config_list(mock_write_db):
     # check
     expected_query = (
         "INSERT INTO public.snmp_msgfwd_config("
-        "rsu_id, msgfwd_type, snmp_index, message_type, dest_ipv4, dest_port, start_datetime, end_datetime, active) "
+        "rsu_id, msgfwd_type, snmp_index, message_type, dest_ipv4, dest_port, start_datetime, end_datetime, active, security) "
         "VALUES "
-        "(1, 2, 1, 'BSM', '5.5.5.5', 46800, '2024-02-05 00:00', '2034-02-05 00:00', '1'), "
-        "(2, 3, 1, 'MAP', '5.5.5.5', 44920, '2024-02-05 00:00', '2034-02-05 00:00', '1')"
+        "(1, 2, 1, 'BSM', '5.5.5.5', 46800, '2024-02-05 00:00', '2034-02-05 00:00', '1', '1'), "
+        "(2, 3, 1, 'MAP', '5.5.5.5', 44920, '2024-02-05 00:00', '2034-02-05 00:00', '1', '1')"
     )
     mock_write_db.assert_called_with(expected_query)
 
@@ -66,6 +66,7 @@ def test_get_config_list(mock_query_db):
                 "start_datetime": "2024-02-05T00:00:00",
                 "end_datetime": "2034-02-05T00:00:00",
                 "active": "1",
+                "security": "1",
             },
         ),
         (
@@ -79,6 +80,7 @@ def test_get_config_list(mock_query_db):
                 "start_datetime": "2024-02-05T00:00:00",
                 "end_datetime": "2034-02-05T00:00:00",
                 "active": "1",
+                "security": "1",
             },
         ),
     ]
@@ -148,6 +150,7 @@ def test_update_postgresql_delete(
                 "start_datetime": "2024-02-05 00:00",
                 "end_datetime": "2034-02-05 00:00",
                 "active": "1",
+                "security": "1",
             }
         ]
     )

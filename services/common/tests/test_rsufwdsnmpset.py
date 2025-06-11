@@ -108,13 +108,17 @@ def test_config_txrxmsg_tx(mock_perform_snmp_mods, mock_subprocess_run):
     udp_port = 1234
     psid = 5678
     tx = True
+    security = 1
     result = rsufwdsnmpset.config_txrxmsg(
-        rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, tx
+        rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, security, tx
     )
 
     # check
     mock_perform_snmp_mods.assert_called_once()
-    expected_result = ("Successfully completed the Yunex SNMPSET configuration", 200)
+    expected_result = (
+        "Successfully completed the NTCIP-1218 SNMPSET configuration",
+        200,
+    )
     assert result == expected_result
 
 
@@ -130,13 +134,17 @@ def test_config_txrxmsg_no_tx(mock_perform_snmp_mods, mock_subprocess_run):
     udp_port = 1234
     psid = 5678
     tx = False
+    security = 0
     result = rsufwdsnmpset.config_txrxmsg(
-        rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, tx
+        rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, security, tx
     )
 
     # check
     mock_perform_snmp_mods.assert_called_once()
-    expected_result = ("Successfully completed the Yunex SNMPSET configuration", 200)
+    expected_result = (
+        "Successfully completed the NTCIP-1218 SNMPSET configuration",
+        200,
+    )
     assert result == expected_result
 
 
@@ -413,8 +421,16 @@ def test_config_init_commsignia_bsm(mock_config_msgfwd_yunex, mock_config_msgfwd
     snmp_version = "41"
     manufacturer = "Commsignia"
     msg_type = "BSM"
+    security = 1
     result = rsufwdsnmpset.config_init(
-        rsu_ip, manufacturer, snmp_version, snmp_creds, dest_ip, msg_type, rsu_index
+        rsu_ip,
+        manufacturer,
+        snmp_version,
+        snmp_creds,
+        dest_ip,
+        msg_type,
+        rsu_index,
+        security,
     )
     expected_result = "success"
     assert result == expected_result
@@ -431,8 +447,16 @@ def test_config_init_commsignia_spat(mock_config_msgfwd_yunex, mock_config_msgfw
     snmp_version = "41"
     manufacturer = "Commsignia"
     msg_type = "SPaT"
+    security = 0
     result = rsufwdsnmpset.config_init(
-        rsu_ip, manufacturer, snmp_version, snmp_creds, dest_ip, msg_type, rsu_index
+        rsu_ip,
+        manufacturer,
+        snmp_version,
+        snmp_creds,
+        dest_ip,
+        msg_type,
+        rsu_index,
+        security,
     )
     expected_result = "success"
     assert result == expected_result
@@ -449,8 +473,16 @@ def test_config_init_commsignia_map(mock_config_msgfwd_yunex, mock_config_msgfwd
     snmp_version = "41"
     manufacturer = "Commsignia"
     msg_type = "MAP"
+    security = 1
     result = rsufwdsnmpset.config_init(
-        rsu_ip, manufacturer, snmp_version, snmp_creds, dest_ip, msg_type, rsu_index
+        rsu_ip,
+        manufacturer,
+        snmp_version,
+        snmp_creds,
+        dest_ip,
+        msg_type,
+        rsu_index,
+        security,
     )
     expected_result = "success"
     assert result == expected_result
@@ -474,8 +506,16 @@ def test_config_init_commsignia_ssm(mock_config_msgfwd_yunex, mock_config_msgfwd
     snmp_version = "41"
     manufacturer = "Commsignia"
     msg_type = "SSM"
+    security = 0
     result = rsufwdsnmpset.config_init(
-        rsu_ip, manufacturer, snmp_version, snmp_creds, dest_ip, msg_type, rsu_index
+        rsu_ip,
+        manufacturer,
+        snmp_version,
+        snmp_creds,
+        dest_ip,
+        msg_type,
+        rsu_index,
+        security,
     )
     expected_result = "success"
     assert result == expected_result
@@ -499,8 +539,16 @@ def test_config_init_commsignia_srm(mock_config_msgfwd_yunex, mock_config_msgfwd
     snmp_version = "41"
     manufacturer = "Commsignia"
     msg_type = "SRM"
+    security = 1
     result = rsufwdsnmpset.config_init(
-        rsu_ip, manufacturer, snmp_version, snmp_creds, dest_ip, msg_type, rsu_index
+        rsu_ip,
+        manufacturer,
+        snmp_version,
+        snmp_creds,
+        dest_ip,
+        msg_type,
+        rsu_index,
+        security,
     )
     expected_result = "success"
     assert result == expected_result
@@ -524,8 +572,16 @@ def test_config_init_commsignia_tim(mock_config_msgfwd_yunex, mock_config_msgfwd
     snmp_version = "41"
     manufacturer = "Commsignia"
     msg_type = "TIM"
+    security = 1
     result = rsufwdsnmpset.config_init(
-        rsu_ip, manufacturer, snmp_version, snmp_creds, dest_ip, msg_type, rsu_index
+        rsu_ip,
+        manufacturer,
+        snmp_version,
+        snmp_creds,
+        dest_ip,
+        msg_type,
+        rsu_index,
+        security,
     )
     expected_result = "success"
     assert result == expected_result
@@ -550,8 +606,16 @@ def test_config_init_unsupported_msg_type_rsu41(
     snmp_version = "41"
     manufacturer = "test"
     msg_type = "test_msg_type"
+    security = 0
     result = rsufwdsnmpset.config_init(
-        rsu_ip, manufacturer, snmp_version, snmp_creds, dest_ip, msg_type, rsu_index
+        rsu_ip,
+        manufacturer,
+        snmp_version,
+        snmp_creds,
+        dest_ip,
+        msg_type,
+        rsu_index,
+        security,
     )
     expected_result = (
         "Supported message type is currently only BSM, SPaT, MAP, SSM, SRM and TIM",
@@ -570,8 +634,16 @@ def test_config_init_unsupported_msg_type_ntcip1218(
     snmp_version = "1218"
     manufacturer = "test"
     msg_type = "test_msg_type"
+    security = 1
     result = rsufwdsnmpset.config_init(
-        rsu_ip, manufacturer, snmp_version, snmp_creds, dest_ip, msg_type, rsu_index
+        rsu_ip,
+        manufacturer,
+        snmp_version,
+        snmp_creds,
+        dest_ip,
+        msg_type,
+        rsu_index,
+        security,
     )
     expected_result = (
         "Supported message type is currently only BSM, SPaT, MAP, SSM, SRM and TIM",
@@ -590,8 +662,16 @@ def test_config_init_unsupported_snmp_version(
     snmp_version = "test_snmp_version"
     manufacturer = "test_manufacturer"
     msg_type = "test_msg_type"
+    security = 0
     result = rsufwdsnmpset.config_init(
-        rsu_ip, manufacturer, snmp_version, snmp_creds, dest_ip, msg_type, rsu_index
+        rsu_ip,
+        manufacturer,
+        snmp_version,
+        snmp_creds,
+        dest_ip,
+        msg_type,
+        rsu_index,
+        security,
     )
     expected_result = (
         "Supported SNMP protocol versions are currently only RSU 4.1 and NTCIP 1218",
@@ -617,6 +697,7 @@ def test_post(mock_config_init, mock_validate):
             "msg_type": "init",
             "dest_ip": "192.168.0.20",
             "rsu_index": 1,
+            "security": 1,
         },
         "rsu_ip": "192.168.0.20",
         "manufacturer": "test_manufacturer",
@@ -637,6 +718,7 @@ def test_post(mock_config_init, mock_validate):
         dest_ip=request["args"]["dest_ip"],
         msg_type=request["args"]["msg_type"],
         index=request["args"]["rsu_index"],
+        security=request["args"]["security"],
     )
 
     # check result
@@ -657,6 +739,7 @@ def test_post_error(mock_config_init, mock_validate):
         "args": {
             "msg_type": "init",
             "rsu_index": 1,
+            "security": 0,
         },
         "rsu_ip": "192.168.0.20",
         "manufacturer": "test_manufacturer",
@@ -845,10 +928,11 @@ def test_config_txrxmsg_exception(
     rsu_index = 1
     psid = "20"
     tx = True
+    security = 1
 
     # Call the function
     response, code = rsufwdsnmpset.config_txrxmsg(
-        rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, tx
+        rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, security, tx
     )
     mock_check_error_type.assert_called_once_with("any")
     # Assert the function result

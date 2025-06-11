@@ -1,6 +1,6 @@
 class EnvironmentVars {
   static getBaseApiUrl() {
-    return process.env.REACT_APP_GATEWAY_BASE_URL
+    return process.env.REACT_APP_GATEWAY_BASE_URL?.replace(/\/$/, '') // remove trailing slash
   }
 
   static getMessageTypes() {
@@ -36,8 +36,8 @@ class EnvironmentVars {
   }
 
   static MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN
-  static CVIZ_API_SERVER_URL = process.env.REACT_APP_CVIZ_API_SERVER_URL
-  static CVIZ_API_WS_URL = process.env.REACT_APP_CVIZ_API_WS_URL
+  static CVIZ_API_SERVER_URL = process.env.REACT_APP_CVIZ_API_SERVER_URL?.replace(/\/$/, '') // remove trailing slash
+  static CVIZ_API_WS_URL = process.env.REACT_APP_CVIZ_API_WS_URL?.replace(/\/$/, '') // remove trailing slash
   static KEYCLOAK_HOST_URL = process.env.REACT_APP_KEYCLOAK_URL
   static KEYCLOAK_REALM = process.env.REACT_APP_KEYCLOAK_REALM
   static KEYCLOAK_CLIENT_ID = process.env.REACT_APP_KEYCLOAK_CLIENT_ID
@@ -49,6 +49,7 @@ class EnvironmentVars {
   static WEBAPP_THEME_LIGHT = process.env.REACT_APP_WEBAPP_THEME_LIGHT
   static WEBAPP_THEME_DARK = process.env.REACT_APP_WEBAPP_THEME_DARK
 
+  static cvmanagerBaseEndpoint = `${this.getBaseApiUrl()}`
   static rsuInfoEndpoint = `${this.getBaseApiUrl()}/rsuinfo`
   static rsuOnlineEndpoint = `${this.getBaseApiUrl()}/rsu-online-status`
   static rsuCountsEndpoint = `${this.getBaseApiUrl()}/rsucounts`

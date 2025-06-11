@@ -67,9 +67,11 @@ def perform_snmp_mods(snmp_mods):
 
 
 # Configures message forwarding over SNMP based on the NTCIP 1218 standard
-def config_txrxmsg(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, tx):
+def config_txrxmsg(
+    rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, security, tx
+):
     try:
-        logging.info("Running SNMP config on Yunex RSU {}".format(dest_ip))
+        logging.info("Running NTCIP-1218 SNMP config {}".format(dest_ip))
 
         snmp_mods = []
         authstring = snmpcredential.get_authstring(snmp_creds)
@@ -81,7 +83,7 @@ def config_txrxmsg(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, tx):
         # rsuXmitMsgFwdingProtocol - int : protocol (1: tcp, 2: udp)
         # rsuXmitMsgFwdingDeliveryStart - hex : start datetime
         # rsuXmitMsgFwdingDeliveryStop - hex : end datetime
-        # rsuXmitMsgFwdingSecure - int : Yunex WSMP full message (0: only payload, 1: full message)
+        # rsuXmitMsgFwdingSecure - int : WSMP full message (0: only payload, 1: full message)
         # rsuXmitMsgFwdingStatus - int : SNMP row value (4: create, 6: delete)
         if tx:
             snmp_mod = "snmpset -v 3 {auth} {rsu_ip} ".format(
@@ -106,7 +108,7 @@ def config_txrxmsg(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, tx):
                 index=rsu_index
             )
 
-            # Yunex expects a hex value of 16 length for rsuXmitMsgFwdingTable
+            # NTCIP-1218 expects a hex value of 16 length for rsuXmitMsgFwdingTable
             now = util.utc2tz(datetime.now())
             start_hex = hex_datetime(now) + "0000"
             end_hex = hex_datetime(now, 10) + "0000"
@@ -121,8 +123,8 @@ def config_txrxmsg(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, tx):
                     index=rsu_index, dt=end_hex
                 )
             )
-            snmp_mod += "NTCIP1218-v01:rsuXmitMsgFwdingSecure.{index} i 0 ".format(
-                index=rsu_index
+            snmp_mod += "NTCIP1218-v01:rsuXmitMsgFwdingSecure.{index} i {sec} ".format(
+                index=rsu_index, sec=security
             )
             snmp_mod += "NTCIP1218-v01:rsuXmitMsgFwdingStatus.{index} i 4".format(
                 index=rsu_index
@@ -139,7 +141,7 @@ def config_txrxmsg(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, tx):
         # rsuReceivedMsgDeliveryStart - hex : start datetime
         # rsuReceivedMsgDeliveryStop - hex : end datetime
         # rsuReceivedMsgStatus - int : SNMP row value (4: create, 6: delete)
-        # rsuReceivedMsgSecure - int : Yunex WSMP full message (0: only payload, 1: full message)
+        # rsuReceivedMsgSecure - int : WSMP full message (0: only payload, 1: full message)
         # rsuReceivedMsgAuthMsgInterval - int : Do not turn on. (0: off, 1: on)
         else:
             snmp_mod = "snmpset -v 3 {auth} {rsu_ip} ".format(
@@ -166,7 +168,7 @@ def config_txrxmsg(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, tx):
                 index=rsu_index
             )
 
-            # Yunex expects a hex value of 16 length for rsuReceivedMsgTable
+            # NTCIP-1218 expects a hex value of 16 length for rsuReceivedMsgTable
             now = util.utc2tz(datetime.now())
             start_hex = hex_datetime(now) + "0000"
             end_hex = hex_datetime(now, 10) + "0000"
@@ -184,8 +186,8 @@ def config_txrxmsg(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, tx):
             snmp_mod += "NTCIP1218-v01:rsuReceivedMsgStatus.{index} i 4 ".format(
                 index=rsu_index
             )
-            snmp_mod += "NTCIP1218-v01:rsuReceivedMsgSecure.{index} i 0 ".format(
-                index=rsu_index
+            snmp_mod += "NTCIP1218-v01:rsuReceivedMsgSecure.{index} i {sec} ".format(
+                index=rsu_index, sec=security
             )
             snmp_mod += (
                 "NTCIP1218-v01:rsuReceivedMsgAuthMsgInterval.{index} i 0".format(
@@ -196,11 +198,13 @@ def config_txrxmsg(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, tx):
             snmp_mods.append(snmp_mod)
 
         perform_snmp_mods(snmp_mods)
-        response = "Successfully completed the Yunex SNMPSET configuration"
+        response = "Successfully completed the NTCIP-1218 SNMPSET configuration"
         code = 200
     except subprocess.CalledProcessError as e:
         output = e.stderr.decode("utf-8").split("\n")[:-1]
-        logging.error(f"Encountered error while modifying Yunex RSU SNMP: {output[-1]}")
+        logging.error(
+            f"Encountered error while modifying NTCIP-1218 RSU SNMP: {output[-1]}"
+        )
         response = snmperrorcheck.check_error_type(output[-1])
         code = 500
 
@@ -443,7 +447,7 @@ def config_del(rsu_ip, snmp_version, snmp_creds, msg_type, rsu_index):
 
 
 def config_init(
-    rsu_ip, manufacturer, snmp_version, snmp_creds, dest_ip, msg_type, index
+    rsu_ip, manufacturer, snmp_version, snmp_creds, dest_ip, msg_type, index, security
 ):
     # Based on manufacturer, choose the right function call
     if snmp_version == "41":
@@ -507,30 +511,30 @@ def config_init(
             )
     elif snmp_version == "1218":
         # Based on message type, choose the right port
-        # rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, tx
+        # rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, security, tx
         if msg_type.lower() == "bsm":
             return config_txrxmsg(
-                rsu_ip, snmp_creds, dest_ip, "46800", index, "20", False
+                rsu_ip, snmp_creds, dest_ip, "46800", index, "20", security, False
             )
         if msg_type.lower() == "spat":
             return config_txrxmsg(
-                rsu_ip, snmp_creds, dest_ip, "44910", index, "8002", True
+                rsu_ip, snmp_creds, dest_ip, "44910", index, "8002", security, True
             )
         if msg_type.lower() == "map":
             return config_txrxmsg(
-                rsu_ip, snmp_creds, dest_ip, "44920", index, "E0000017", True
+                rsu_ip, snmp_creds, dest_ip, "44920", index, "E0000017", security, True
             )
         if msg_type.lower() == "ssm":
             return config_txrxmsg(
-                rsu_ip, snmp_creds, dest_ip, "44900", index, "E0000015", True
+                rsu_ip, snmp_creds, dest_ip, "44900", index, "E0000015", security, True
             )
         if msg_type.lower() == "srm":
             return config_txrxmsg(
-                rsu_ip, snmp_creds, dest_ip, "44930", index, "E0000016", False
+                rsu_ip, snmp_creds, dest_ip, "44930", index, "E0000016", security, False
             )
         if msg_type.lower() == "tim":
             return config_txrxmsg(
-                rsu_ip, snmp_creds, dest_ip, "47900", index, "8003", True
+                rsu_ip, snmp_creds, dest_ip, "47900", index, "8003", security, True
             )
         else:
             return (
@@ -547,6 +551,7 @@ def config_init(
 class SnmpsetSchema(Schema):
     dest_ip = fields.IPv4(required=True)
     msg_type = fields.Str(required=True)
+    security = fields.Int(required=True)
     rsu_index = fields.Int(required=True)
 
 
@@ -566,6 +571,7 @@ def post(request):
         dest_ip=request["args"]["dest_ip"],
         msg_type=request["args"]["msg_type"],
         index=request["args"]["rsu_index"],
+        security=request["args"]["security"],
     )
     return {"RsuFwdSnmpset": response}, code
 

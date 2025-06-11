@@ -32,3 +32,15 @@ textarea {
   resize: vertical;
   min-height: 100px;
 }
+
+.contactWrapper {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  padding: 16px 0px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}

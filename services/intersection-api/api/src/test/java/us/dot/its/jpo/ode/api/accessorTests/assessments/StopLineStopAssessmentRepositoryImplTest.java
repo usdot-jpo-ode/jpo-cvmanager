@@ -7,25 +7,28 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.bson.Document;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
-import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.SignalStateAssessment;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.StopLineStopAssessment;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
-import us.dot.its.jpo.ode.api.accessors.assessments.SignalStateAssessment.StopLineStopAssessmentRepositoryImpl;
+import us.dot.its.jpo.ode.api.accessors.assessments.stop_line_stop_assessment.StopLineStopAssessmentRepositoryImpl;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -37,7 +40,7 @@ public class StopLineStopAssessmentRepositoryImplTest {
     private MongoTemplate mongoTemplate;
 
     @Mock
-    private ConflictMonitorApiProperties props;
+    private Page<StopLineStopAssessment> mockPage;
 
     @InjectMocks
     private StopLineStopAssessmentRepositoryImpl repository;
@@ -50,54 +53,41 @@ public class StopLineStopAssessmentRepositoryImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        repository = new StopLineStopAssessmentRepositoryImpl(mongoTemplate, props);
+        repository = new StopLineStopAssessmentRepositoryImpl(mongoTemplate);
     }
 
     @Test
-    public void testGetQuery() {
-
-        Query query = repository.getQuery(intersectionID, startTime, endTime, latest);
-
-        // Assert IntersectionID
-        assertThat(query.getQueryObject().get("intersectionID")).isEqualTo(intersectionID);
-
-        // Assert Start and End Time
-        Document queryTimeDocument = (Document) query.getQueryObject().get("assessmentGeneratedAt");
-        assertThat(queryTimeDocument.getDate("$gte")).isEqualTo(new Date(startTime));
-        assertThat(queryTimeDocument.getDate("$lte")).isEqualTo(new Date(endTime));
-
-        // Assert sorting and limit
-        assertThat(query.getSortObject().keySet().contains("assessmentGeneratedAt")).isTrue();
-        assertThat(query.getSortObject().get("assessmentGeneratedAt")).isEqualTo(-1);
-        assertThat(query.getLimit()).isEqualTo(1);
-
-    }
-
-    @Test
-    public void testGetQueryResultCount() {
-        Query query = new Query();
+    public void testCount() {
         long expectedCount = 10;
 
-        Mockito.when(mongoTemplate.count(Mockito.eq(query), Mockito.any(), Mockito.anyString()))
-                .thenReturn(expectedCount);
+        when(mongoTemplate.count(any(),
+                Mockito.<String>any())).thenReturn(expectedCount);
 
-        long resultCount = repository.getQueryResultCount(query);
+        long resultCount = repository.count(1, null, null);
 
         assertThat(resultCount).isEqualTo(expectedCount);
-        Mockito.verify(mongoTemplate).count(Mockito.eq(query), Mockito.any(), Mockito.anyString());
+        verify(mongoTemplate).count(any(Query.class), anyString());
     }
 
     @Test
-    public void testFindSignalStateAssessments() {
-        Query query = new Query();
-        List<StopLineStopAssessment> expected = new ArrayList<>();
 
-        Mockito.doReturn(expected).when(mongoTemplate).find(query, SignalStateAssessment.class,
-                "CmStopLineStopAssessments");
+    public void testFind() {
+        StopLineStopAssessmentRepositoryImpl repo = mock(StopLineStopAssessmentRepositoryImpl.class);
 
-        List<StopLineStopAssessment> results = repository.find(query);
+        when(repo.findPage(
+                any(),
+                any(),
+                any(PageRequest.class),
+                any(Criteria.class),
+                any(Sort.class),
+                any(),
+                eq(StopLineStopAssessment.class))).thenReturn(mockPage);
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        doCallRealMethod().when(repo).find(1, null, null, pageRequest);
 
-        assertThat(results).isEqualTo(expected);
+        Page<StopLineStopAssessment> results = repo.find(1, null, null, pageRequest);
+
+        assertThat(results).isEqualTo(mockPage);
     }
 
 }

@@ -11,13 +11,15 @@ import java.util.List;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.Notification;
-import us.dot.its.jpo.ode.api.accessors.notifications.ActiveNotification.ActiveNotificationRepository;
+import us.dot.its.jpo.ode.api.accessors.notifications.active_notification.ActiveNotificationRepository;
 import us.dot.its.jpo.ode.api.models.EmailFrequency;
 import us.dot.its.jpo.ode.api.services.EmailService;
 
@@ -43,9 +45,13 @@ public class EmailTask {
     private List<Notification> lastWeekList;
     private List<Notification> lastMonthList;
 
-    public EmailTask(EmailService email, ActiveNotificationRepository activeNotificationRepo) {
+    private final int maximumResponseSize;
+
+    public EmailTask(EmailService email, ActiveNotificationRepository activeNotificationRepo,
+            @Value("${maximumResponseSize}") int maximumResponseSize) {
         this.email = email;
         this.activeNotificationRepo = activeNotificationRepo;
+        this.maximumResponseSize = maximumResponseSize;
     }
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
@@ -153,8 +159,9 @@ public class EmailTask {
     }
 
     public List<Notification> getActiveNotifications() {
-        Query query = activeNotificationRepo.getQuery(null, null, null, null);
-        return activeNotificationRepo.find(query);
+        Page<Notification> notifications = activeNotificationRepo
+                .find(null, null, null, PageRequest.of(0, maximumResponseSize));
+        return notifications.getContent();
     }
 
     public List<Notification> getNewNotifications(List<Notification> newList, List<Notification> oldList) {

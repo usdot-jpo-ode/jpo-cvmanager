@@ -13,8 +13,9 @@ import {
   TableRow,
   Typography,
   IconButton,
-  TableContainer,
   Collapse,
+  useTheme,
+  alpha,
 } from '@mui/material'
 import React, { ReactElement } from 'react'
 import MapRoundedIcon from '@mui/icons-material/MapRounded'
@@ -22,7 +23,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../../generalSlices/intersectionSlice'
+import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
 
 export const NotificationsTableResults = ({
   customers,
@@ -38,9 +39,9 @@ export const NotificationsTableResults = ({
   rowsPerPage,
 }) => {
   const intersectionId = useSelector(selectSelectedIntersectionId)
-  const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
 
   const navigate = useNavigate()
+  const theme = useTheme()
   const handleSelectAll = (event) => {
     let newSelectedCustomerIds: string[] = []
     if (notificationsCount === 0) return
@@ -94,10 +95,6 @@ export const NotificationsTableResults = ({
           <Typography>
             {`- Intersection IDs, MAP: ${mapArr.map((v) => v.intersectionId)}, SPAT: ${spatArr.map(
               (v) => v.intersectionId
-            )}`}
-            <br />
-            {`- Road Regulator IDs, MAP: ${mapArr.map((v) => v.roadRegulatorId)}, SPAT: ${spatArr.map(
-              (v) => v.roadRegulatorId
             )}`}
           </Typography>
         )
@@ -180,8 +177,14 @@ export const NotificationsTableResults = ({
       <PerfectScrollbar>
         <Box sx={{ minWidth: 1050 }}>
           <Table>
-            <TableHead>
+            <TableHead
+              sx={{
+                backgroundColor: theme.palette.background.paper,
+                '& .MuiTableCell-root': { textTransform: 'capitalize' },
+              }}
+            >
               <TableRow>
+                <TableCell></TableCell>
                 <TableCell padding="checkbox">
                   <Checkbox
                     checked={selectedNotifications.length === notificationsCount && selectedNotifications.length != 0}
@@ -241,14 +244,22 @@ export const NotificationsTableResults = ({
                       <TableCell>{notification.notificationText}</TableCell>
                       <TableCell align="right">
                         <IconButton
+                          sx={{
+                            '&:hover': {
+                              backgroundColor: alpha(theme.palette.custom.rowActionIcon, 0.1),
+                              borderRadius: '4px',
+                            },
+                            '& .MuiButtonBase-root': {
+                              borderRadius: '4px',
+                              color: theme.palette.custom.rowActionIcon,
+                            },
+                          }}
                           component="a"
                           onClick={() =>
-                            navigate(
-                              `/dashboard/intersectionMap/notification/${intersectionId}/${roadRegulatorId}/${notification.key}`
-                            )
+                            navigate(`/dashboard/intersectionMap/notification/${intersectionId}/${notification.key}`)
                           }
                         >
-                          <MapRoundedIcon fontSize="medium" />
+                          <MapRoundedIcon sx={{ color: theme.palette.custom.rowActionIcon }} fontSize="medium" />
                         </IconButton>
                       </TableCell>
                     </TableRow>

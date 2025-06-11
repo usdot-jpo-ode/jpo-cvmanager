@@ -3,15 +3,13 @@
   "version": "1.2.0-SNAPSHOT",
   "private": true,
   "dependencies": {
-    "@date-io/date-fns": "^2.15.0",
+    "@date-io/date-fns": "^3.2.1",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.13.0",
-    "@fontsource/roboto": "^5.1.0",
     "@hookform/error-message": "^2.0.1",
     "@material-table/core": "^6.1.4",
     "@mui/icons-material": "^6.1.4",
     "@mui/material": "^6.1.4",
-    "@mui/styled-engine-sc": "^6.1.5",
     "@mui/styles": "^6.1.4",
     "@mui/x-date-pickers": "^7.20.0",
     "@react-keycloak/web": "3.4.0",
@@ -26,15 +24,20 @@
     "axios": "^1.6.5",
     "color": "^4.2.3",
     "cv-manager": "file:",
+    "date-fns": "^3.2.0",
+    "date-fns-tz": "^3.2.0",
     "dayjs": "^1.11.7",
     "env-cmd": "^10.1.0",
     "fbjs": "^3.0.4",
     "file-saver": "^2.0.5",
     "formik": "^2.4.6",
+    "html-to-image": "^1.11.11",
     "isomorphic-fetch": "^3.0.0",
     "jest-fetch-mock": "^3.0.3",
+    "js-sha256": "^0.11.0",
+    "jspdf": "^2.5.2",
     "jszip": "^3.10.1",
-    "keycloak-js": "21.1.1",
+    "keycloak-js": "26.0.5",
     "luxon": "^3.5.0",
     "mapbox-gl": "^2.9.1",
     "rc-slider": "^10.1.0",
@@ -95,24 +98,30 @@
     ]
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.20.2",
+    "@babel/core": "^7.27.3",
+    "@babel/preset-env": "^7.27.2",
     "@babel/preset-react": "^7.18.6",
     "@testing-library/jest-dom": "^6.6.3",
     "@types/jest": "^29.5.8",
     "@types/node": "^20.6.2",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^18.2.7",
-    "babel-jest": "^29.5.0",
+    "babel-jest": "^29.7.0",
     "babel-plugin-transform-export-extensions": "^6.22.0",
     "eslint": "8.23.1",
+    "identity-obj-proxy": "^3.0.0",
     "jest": "^26.6.0",
     "jest-canvas-mock": "^2.5.2",
     "react-test-renderer": "^17.0.2",
     "typescript": "^4.9.4"
   },
   "jest": {
+    "transformIgnorePatterns": [
+      "node_modules/(?!keycloak-js)"
+    ],
     "moduleNameMapper": {
-      "worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker": "<rootDir>/mocks/workerLoader.js"
+      "\\.(css|less|scss|sass)$": "identity-obj-proxy",
+      "worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker": "<rootDir>/__mocks__/worker-loader.js"
     }
   }
 }

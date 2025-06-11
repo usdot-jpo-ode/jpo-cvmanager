@@ -84,7 +84,17 @@ prop_namevalue = {
 
 # delta is in years
 def hex_datetime(now, delta=0):
-    # Regex to convert int to hex and to ensure a leading 0 if less than specified length
+    """
+    Converts a datetime object to a hexadecimal string representation.
+
+    Args:
+        now (datetime.datetime): The current datetime object to convert.
+        delta (int, optional): An integer value to add to the year component before conversion. Defaults to 0.
+
+    Returns:
+        str: A hexadecimal string representing the date and time in the format:
+             YYYYMMDDHHmm, where each component is zero-padded and represented in hexadecimal.
+    """
     regex = "{0:0{1}x}"
     hex_string = regex.format(now.year + delta, 4)
     hex_string += regex.format(now.month, 2)
@@ -95,6 +105,18 @@ def hex_datetime(now, delta=0):
 
 
 def perform_snmp_mods(snmp_mods):
+    """
+    Executes a list of SNMP modification commands using subprocess.
+
+    Each command in the provided list is executed via the shell, and the output is logged.
+    Logs both the command being run and its output.
+
+    Args:
+        snmp_mods (list of str): A list of SNMP command strings to be executed.
+
+    Raises:
+        subprocess.CalledProcessError: If any command returns a non-zero exit status.
+    """
     for snmp_mod in snmp_mods:
         # Perform configuration
         logging.info(f'Running SNMPSET "{snmp_mod}"')
@@ -104,6 +126,27 @@ def perform_snmp_mods(snmp_mods):
 
 
 def get(rsu_ip, snmp_creds):
+    """
+    Retrieves and parses SNMP configuration tables from a Roadside Unit (RSU) using SNMPv3.
+
+    This function performs SNMP walk operations to fetch and process two specific SNMP tables:
+    - `rsuReceivedMsgTable`
+    - `rsuXmitMsgFwdingTable`
+
+    It parses the output of each table, organizes the configuration data by index, and returns a structured dictionary containing the configurations for each table.
+
+    Args:
+        rsu_ip (str): The IP address of the RSU to query.
+        snmp_creds (dict): SNMPv3 credentials required for authentication.
+
+    Returns:
+        tuple: A tuple containing:
+            - dict: A dictionary with the parsed SNMP configuration tables, or an error message if the SNMP walk fails.
+            - int: HTTP status code (200 for success, 500 for SNMP errors).
+
+    Raises:
+        None. All exceptions are handled internally and result in an error response.
+    """
     snmpwalk_results = {"rsuReceivedMsgTable": {}, "rsuXmitMsgFwdingTable": {}}
     # Start with rsuReceivedMsgTable
     output = ""
@@ -218,6 +261,30 @@ def get(rsu_ip, snmp_creds):
 
 
 def set(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, security, tx):
+    """
+    Configures SNMP message forwarding on an NTCIP-1218 RSU device.
+
+    Depending on the `tx` flag, this function sets up either transmit (TX) or receive (RX) message forwarding
+    by constructing and executing appropriate SNMP set commands for the RSU.
+
+    Args:
+        rsu_ip (str): The IP address of the RSU device to configure.
+        snmp_creds (dict): SNMP credentials required for authentication.
+        dest_ip (str): The destination IP address to forward messages to.
+        udp_port (int): The UDP port number for message forwarding.
+        rsu_index (int): The index in the SNMP table for the message forwarding entry.
+        psid (str): The Provider Service Identifier (PSID) in hexadecimal format.
+        security (int): Security flag (0 for only payload, 1 for full WSMP message).
+        tx (bool): If True, configures TX (transmit) message forwarding; if False, configures RX (receive) message forwarding.
+
+    Returns:
+        tuple: A tuple containing:
+            - response (str): A message indicating the result of the configuration attempt.
+            - code (int): HTTP-like status code (200 for success, 500 for error).
+
+    Raises:
+        subprocess.CalledProcessError: If the SNMP set command fails to execute.
+    """
     try:
         logging.info("Running SNMP config on NTCIP-1218 RSU {}".format(dest_ip))
 
@@ -360,6 +427,23 @@ def set(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, security, tx):
 
 
 def delete(rsu_ip, snmp_creds, msg_type, rsu_index):
+    """
+    Deletes a specific NTCIP 1218 SNMP configuration on a Roadside Unit (RSU) by issuing an SNMP SET command.
+
+    Args:
+        rsu_ip (str): The IP address of the RSU device.
+        snmp_creds (dict): SNMP v3 credentials required for authentication.
+        msg_type (str): The type of message to delete (e.g., 'bsm', 'spat', 'map', 'ssm', 'srm', 'tim').
+        rsu_index (int): The index of the RSU message configuration to delete.
+
+    Returns:
+        tuple: A tuple containing:
+            - response (str): Success or error message describing the result of the operation.
+            - code (int): HTTP-like status code (200 for success, 500 for failure).
+
+    Raises:
+        None. All exceptions are handled internally and reflected in the return values.
+    """
     try:
         snmp_mods = "snmpset -v 3 -t 5 {auth} {rsuip} ".format(
             auth=snmpcredential.get_authstring(snmp_creds), rsuip=rsu_ip

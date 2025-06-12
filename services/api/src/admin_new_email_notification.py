@@ -70,14 +70,16 @@ def add_notification_authorized(email: str, notification_spec: dict):
         pgquery.write_db(notification_insert_query)
 
     except IntegrityError as e:
-        if e.orig is None:
-            raise InternalServerError("Encountered unknown issue") from e
-        failed_value = e.orig.args[0]["D"]
-        failed_value = failed_value.replace("(", '"')
-        failed_value = failed_value.replace(")", '"')
-        failed_value = failed_value.replace("=", " = ")
-        logging.error(f"Exception encountered: {failed_value}")
-        raise InternalServerError(failed_value) from e
+        # Log the full exception for debugging purposes
+        logging.error("IntegrityError encountered", exc_info=True)
+
+        # Attempt to extract meaningful details from the exception
+        error_message = "An integrity error occurred."
+        if hasattr(e, "orig") and hasattr(e.orig, "args") and len(e.orig.args) > 0:
+            error_message = str(e.orig.args[0])
+
+        # Raise a generic internal server error with the extracted message
+        raise InternalServerError(error_message) from e
     except SQLAlchemyError as e:
         logging.error(f"SQL Exception encountered: {e}")
         raise InternalServerError("Encountered unknown issue executing query") from e
@@ -122,8 +124,11 @@ class AdminNewNotification(Resource):
         if errors:
             logging.error(str(errors))
             abort(400, str(errors))
-        user_email = urllib.request.unquote(request.args["user_email"])
-        return (get_allowed_types_authorized(user_email), 200, self.headers)
+        return (
+            get_allowed_types_authorized(request.args["user_email"]),
+            200,
+            self.headers,
+        )
 
     @require_permission(required_role=None)
     def post(self):

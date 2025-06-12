@@ -1,4 +1,3 @@
-from typing import Any
 from flask import request, abort
 from flask_restful import Resource
 from marshmallow import Schema, fields
@@ -357,7 +356,7 @@ def delete_org_authorized(org_name: str):
     pgquery.write_db(intersection_org_remove_query)
 
     # Delete organization data
-    org_remove_query = "DELETE FROM public.organizations WHERE " f"name = '{org_name}'"
+    org_remove_query = f"DELETE FROM public.organizations WHERE name = '{org_name}'"
     pgquery.write_db(org_remove_query)
 
     return {"message": "Organization successfully deleted"}

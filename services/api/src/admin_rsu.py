@@ -35,9 +35,8 @@ def get_rsu_data(rsu_ip: str, user: EnvironWithOrg, qualified_orgs: list[str]):
 
     where_clauses = []
     if not user.user_info.super_user:
-        where_clauses.append(
-            f"org.name = ANY (ARRAY[{', '.join(f"'{org}'" for org in qualified_orgs)}])"
-        )
+        qualified_orgs_str = ", ".join(f"'{org}'" for org in qualified_orgs)
+        where_clauses.append(f"org.name = ANY (ARRAY[{qualified_orgs_str}])")
     if rsu_ip != "all":
         where_clauses.append(f"ipv4_address = '{rsu_ip}'")
     if where_clauses:
@@ -229,7 +228,7 @@ def delete_rsu_authorized(rsu_ip: str):
     pgquery.write_db(msg_config_remove_query)
 
     # Delete RSU data
-    rsu_remove_query = "DELETE FROM public.rsus WHERE " f"ipv4_address = '{rsu_ip}'"
+    rsu_remove_query = f"DELETE FROM public.rsus WHERE ipv4_address = '{rsu_ip}'"
     pgquery.write_db(rsu_remove_query)
 
     return {"message": "RSU successfully deleted"}

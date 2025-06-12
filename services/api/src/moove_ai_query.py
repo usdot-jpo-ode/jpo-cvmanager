@@ -1,8 +1,14 @@
+from flask import request
+from flask_restful import Resource
+from marshmallow import Schema, fields
 from google.cloud import bigquery
 import os
 import logging
 import pandas as pd
 from shapely import wkt
+from werkzeug.exceptions import InternalServerError
+
+from common.auth_tools import ORG_ROLE_LITERAL, require_permission
 
 
 def query_moove_ai(pointList):
@@ -56,18 +62,15 @@ def query_moove_ai(pointList):
             segment_data.append(segment_geojson)
 
         logging.info(f"Total Moove AI segments processed: {len(segment_data)}")
-        return segment_data, 200
+        return segment_data
     except Exception as e:
         logging.error(f"Moove AI query failed: {e}")
-        return [], 500
+        raise InternalServerError(
+            f"Encountered unknown issue querying Moove AI data: {e}"
+        ) from e
 
 
-# REST endpoint resource class and schema
-from flask import request
-from flask_restful import Resource
-from marshmallow import Schema, fields
-
-
+# REST endpoint resource class
 class MooveAiDataSchema(Schema):
     geometry = fields.List(fields.List(fields.Float))
 
@@ -89,6 +92,7 @@ class MooveAiData(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
+    @require_permission(required_role=ORG_ROLE_LITERAL.USER)
     def post(self):
         logging.debug("MooveAiData POST requested")
 
@@ -103,7 +107,4 @@ class MooveAiData(Resource):
                 self.headers,
             )
 
-        pointList = request.json["geometry"]
-        data, code = query_moove_ai(pointList)
-
-        return (data, code, self.headers)
+        return (query_moove_ai(request.json["geometry"]), 200, self.headers)

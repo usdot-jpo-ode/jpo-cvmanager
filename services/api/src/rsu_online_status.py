@@ -36,6 +36,8 @@ def get_ping_data(user: EnvironWithOrg):
         ") AS ping_data ON rd.rsu_id = ping_data.rsu_id "
     )
 
+    "WHERE ron_v.name = 'True' ORDER BY rd.rsu_id, ping_data.timestamp DESC;"
+
     where_clause = None
     if user.organization:
         where_clause = f"ron_v.name = '{user.organization}'"
@@ -105,10 +107,10 @@ def get_last_online_data_authorized(ip: str):
 
 
 # duration - duration of online status calculated (in minutes)
-def get_rsu_online_statuses():
+def get_rsu_online_statuses(user: EnvironWithOrg):
     result = {}
     # query ping data
-    ping_result = get_ping_data()
+    ping_result = get_ping_data(user)
 
     # calculate online status
     for key, value in ping_result.items():
@@ -155,17 +157,13 @@ class RsuOnlineStatus(Resource):
 
         if "rsu_ip" in request.args:
             return (
-                get_last_online_data_authorized(
-                    request.args["rsu_ip"],
-                    permission_result.user,
-                    permission_result.qualified_orgs,
-                ),
+                get_last_online_data_authorized(request.args["rsu_ip"]),
                 200,
                 self.headers,
             )
         else:
             return (
-                get_rsu_online_statuses(),
+                get_rsu_online_statuses(permission_result.user),
                 200,
                 self.headers,
             )

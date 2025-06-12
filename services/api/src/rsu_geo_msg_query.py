@@ -6,8 +6,9 @@ import os
 import logging
 from datetime import datetime
 from pymongo import MongoClient, ASCENDING, GEOSPHERE
+from werkzeug.exceptions import InternalServerError
 
-from common.auth_tools import require_permission
+from common.auth_tools import ORG_ROLE_LITERAL, require_permission
 
 coord_resolution = 0.0001  # lats more than this are considered different
 time_resolution = 10  # time deltas bigger than this are considered different
@@ -134,7 +135,9 @@ def query_geo_data_mongo(pointList, start, end, msg_type):
         return result
     except Exception as e:
         logging.error(f"Filter failed: {e}")
-        return [], 500
+        raise InternalServerError(
+            f"Encountered unknown issue querying MongoDB: {e}"
+        ) from e
 
 
 class RsuGeoDataSchema(Schema):
@@ -161,7 +164,7 @@ class RsuGeoData(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
-    @require_permission(required_role=None)
+    @require_permission(required_role=ORG_ROLE_LITERAL.USER)
     def post(self):
         logging.debug("RsuGeoData POST requested")
 
@@ -179,6 +182,8 @@ class RsuGeoData(Resource):
                 self.headers,
             )
 
-        data, code = query_geo_data_mongo(pointList, start, end, msg_type.capitalize())
-
-        return (data, code, self.headers)
+        return (
+            query_geo_data_mongo(pointList, start, end, msg_type.capitalize()),
+            200,
+            self.headers,
+        )

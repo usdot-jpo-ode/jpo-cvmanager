@@ -217,7 +217,6 @@ class Middleware:
             if requested_org:
                 for org_name, org_role in user_info.organizations.items():
                     if org_name == requested_org:
-                        org_name = True
                         environ[ENVIRON_USER_KEY] = EnvironWithOrg(
                             user_info, org_name, org_role
                         )

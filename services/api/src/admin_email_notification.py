@@ -52,9 +52,9 @@ def get_notification_data(user_email):
     resource_type=RESOURCE_TYPE.USER,
 )
 def get_modify_notification_data_authorized(user_email):
-    modify_notification_obj = {}
-    modify_notification_obj["notification_data"] = get_notification_data(user_email)
-    return modify_notification_obj
+    return {
+        "notification_data": get_notification_data(user_email)
+    }
 
 
 def check_safe_input(notification_spec):

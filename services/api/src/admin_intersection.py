@@ -170,7 +170,7 @@ def modify_intersection_authorized(intersection_id: str, intersection_spec: dict
         if "origin_ip" in intersection_spec:
             query += f", origin_ip='{intersection_spec['origin_ip']}'"
         query += (
-            f" WHERE intersection_number='{intersection_spec["orig_intersection_id"]}'"
+            f" WHERE intersection_number='{intersection_spec['orig_intersection_id']}'"
         )
         pgquery.write_db(query)
 

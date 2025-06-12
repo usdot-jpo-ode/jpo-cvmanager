@@ -163,7 +163,7 @@ def modify_user(orig_email: str, user_spec: dict):
         # Modify the existing user data
         query = (
             "UPDATE public.users SET "
-            f"email='{user_spec["email"]}', "
+            f"email='{user_spec['email']}', "
             f"first_name='{user_spec['first_name']}', "
             f"last_name='{user_spec['last_name']}', "
             f"super_user='{'1' if user_spec['super_user'] else '0'}' "
@@ -177,7 +177,7 @@ def modify_user(orig_email: str, user_spec: dict):
             for organization in user_spec["organizations_to_add"]:
                 org_add_query += (
                     " ("
-                    f"(SELECT user_id FROM public.users WHERE email = '{user_spec["email"]}'), "
+                    f"(SELECT user_id FROM public.users WHERE email = '{user_spec['email']}'), "
                     f"(SELECT organization_id FROM public.organizations WHERE name = '{organization['name']}'), "
                     f"(SELECT role_id FROM public.roles WHERE name = '{organization['role']}')"
                     "),"
@@ -190,7 +190,7 @@ def modify_user(orig_email: str, user_spec: dict):
             org_modify_query = (
                 "UPDATE public.user_organization "
                 f"SET role_id = (SELECT role_id FROM public.roles WHERE name = '{organization['role']}') "
-                f"WHERE user_id = (SELECT user_id FROM public.users WHERE email = '{user_spec["email"]}') "
+                f"WHERE user_id = (SELECT user_id FROM public.users WHERE email = '{user_spec['email']}') "
                 f"AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = '{organization['name']}')"
             )
             pgquery.write_db(org_modify_query)
@@ -199,7 +199,7 @@ def modify_user(orig_email: str, user_spec: dict):
         for organization in user_spec["organizations_to_remove"]:
             org_remove_query = (
                 "DELETE FROM public.user_organization WHERE "
-                f"user_id = (SELECT user_id FROM public.users WHERE email = '{user_spec["email"]}') "
+                f"user_id = (SELECT user_id FROM public.users WHERE email = '{user_spec['email']}') "
                 f"AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = '{organization['name']}')"
             )
             pgquery.write_db(org_remove_query)
@@ -234,7 +234,7 @@ def delete_user_authorized(user_email: str):
     pgquery.write_db(org_remove_query)
 
     # Delete user data
-    user_remove_query = "DELETE FROM public.users WHERE " f"email = '{user_email}'"
+    user_remove_query = f"DELETE FROM public.users WHERE email = '{user_email}'"
     pgquery.write_db(user_remove_query)
 
     return {"message": "User successfully deleted"}

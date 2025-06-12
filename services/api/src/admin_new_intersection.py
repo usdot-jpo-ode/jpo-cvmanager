@@ -177,11 +177,13 @@ def enforce_add_intersection_org_permissions(
     intersection_spec: dict,
 ):
     if not user.user_info.super_user:
+        # Collect list of organizations the user doesn't have enough permissions to modify
         unqualified_orgs = [
             org
             for org in intersection_spec.get("organizations", [])
             if org not in qualified_orgs
         ]
+        # If the user tries to add organizations they are not authorized for, raise Forbidden
         if unqualified_orgs:
             raise Forbidden(
                 f"Unauthorized added organizations: {','.join(unqualified_orgs)}"

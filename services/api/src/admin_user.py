@@ -117,11 +117,13 @@ def enforce_modify_user_org_permissions(
     user_spec: dict,
 ):
     if not user.user_info.super_user:
+        # Collect list of organizations the user doesn't have enough permissions to modify
         unqualified_orgs = [
             org
             for org in user_spec.get("organizations_to_add", [])
             if org not in qualified_orgs
         ]
+        # If the user tries to add organizations they are not authorized for, raise Forbidden
         if unqualified_orgs:
             raise Forbidden(
                 f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
@@ -132,6 +134,7 @@ def enforce_modify_user_org_permissions(
             for org in user_spec.get("organizations_to_modify", [])
             if org not in qualified_orgs
         ]
+        # If the user tries to modify organizations they are not authorized for, raise Forbidden
         if unqualified_orgs:
             raise Forbidden(
                 f"Unauthorized modified organizations: {','.join(unqualified_orgs)}"
@@ -142,6 +145,7 @@ def enforce_modify_user_org_permissions(
             for org in user_spec.get("organizations_to_remove", [])
             if org not in qualified_orgs
         ]
+        # If the user tries to remove organizations they are not authorized for, raise Forbidden
         if unqualified_orgs:
             raise Forbidden(
                 f"Unauthorized removed organizations: {','.join(unqualified_orgs)}"

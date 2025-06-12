@@ -123,11 +123,13 @@ def enforce_modify_intersection_org_permissions(
         Forbidden: If the user attempts to remove organizations they are not authorized to modify.
     """
     if not user.user_info.super_user:
+        # Collect list of organizations the user doesn't have enough permissions to modify
         unqualified_orgs = [
             org
             for org in intersection_spec.get("organizations_to_add", [])
             if org not in qualified_orgs
         ]
+        # If the user tries to add organizations they are not authorized for, raise Forbidden
         if unqualified_orgs:
             raise Forbidden(
                 f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
@@ -138,6 +140,7 @@ def enforce_modify_intersection_org_permissions(
             for org in intersection_spec.get("organizations_to_remove", [])
             if org not in qualified_orgs
         ]
+        # If the user tries to remove organizations they are not authorized for, raise Forbidden
         if unqualified_orgs:
             raise Forbidden(
                 f"Unauthorized removed organizations: {','.join(unqualified_orgs)}"

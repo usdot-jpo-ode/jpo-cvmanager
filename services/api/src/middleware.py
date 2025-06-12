@@ -3,6 +3,7 @@ from werkzeug.wrappers import Request
 from keycloak import KeycloakOpenID
 import logging
 import os
+import jwt
 from werkzeug.exceptions import Forbidden, Unauthorized, NotImplemented
 
 from common.auth_tools import (
@@ -46,7 +47,11 @@ def get_user_role(token) -> UserInfo | None:
 
     if introspect["active"]:
         # Pull all user data from authenticated token
-        data = UserInfo(introspect)
+
+        decodedToken = jwt.decode(token, options={"verify_signature": False})
+        data = UserInfo(
+            decodedToken
+        )  # Need to use decoded token because introspect strips the custom mapped field cvmanager_data
 
         logging.debug(f"Middleware get_user_role get user info of {data.email}")
     else:

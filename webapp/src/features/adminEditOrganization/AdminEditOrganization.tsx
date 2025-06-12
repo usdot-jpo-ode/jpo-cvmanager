@@ -34,6 +34,7 @@ const AdminEditOrganization = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
   const [open, setOpen] = useState(true)
+  const [unknownOrg, setUnknownOrg] = useState(false)
   const successMsg = useSelector(selectSuccessMsg)
   const selectedOrg = useSelector(selectSelectedOrg)
   const orgData = useSelector(selectOrgData)
@@ -66,8 +67,11 @@ const AdminEditOrganization = () => {
   }, [dispatch])
 
   useEffect(() => {
-    updateStates(setValue, selectedOrg?.name, selectedOrg?.email)
-  }, [setValue, selectedOrg?.name])
+    if (selectedOrg) {
+      updateStates(setValue, selectedOrg?.name, selectedOrg?.email)
+      if (unknownOrg) setUnknownOrg(false)
+    } else setUnknownOrg(true)
+  }, [setValue, selectedOrg?.name, selectedOrg?.email, selectedOrg, unknownOrg])
 
   const onSubmit = (data: adminOrgPatch) => {
     dispatch(editOrganization({ json: data, setValue, selectedOrg: selectedOrg?.name })).then((data: any) => {
@@ -85,88 +89,96 @@ const AdminEditOrganization = () => {
   }, [successMsg])
 
   return (
-    <Dialog open={open}>
-      <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
-        <SideBarHeader
-          onClick={() => {
-            setOpen(false)
-            navigate('..')
-          }}
-          title="Edit Organization"
-        />
-        {Object.keys(selectedOrg ?? {}).length != 0 ? (
-          <Form id="admin-edit-org" onSubmit={handleSubmit((data) => onSubmit(data))}>
-            <Form.Group controlId="name">
-              <FormControl fullWidth margin="normal">
-                <TextField
-                  label="Organization Name"
-                  placeholder="Enter Organization Name"
-                  color="info"
-                  variant="outlined"
-                  required
-                  {...register('name', {
-                    required: 'Please enter the organization name',
-                  })}
-                  slotProps={{
-                    inputLabel: {
-                      shrink: true,
-                    },
-                  }}
-                />
-              </FormControl>
-              <FormControl fullWidth margin="normal">
-                <TextField
-                  label="Organization Email"
-                  placeholder="Enter Organization Email"
-                  color="info"
-                  variant="outlined"
-                  required
-                  {...register('email')}
-                  slotProps={{
-                    inputLabel: {
-                      shrink: true,
-                    },
-                  }}
-                />
-              </FormControl>
-              {errors.name && (
-                <p className="errorMsg" role="alert">
-                  {errors.name.message}
-                </p>
-              )}
-            </Form.Group>
-          </Form>
-        ) : (
-          <Typography variant={'h4'}>
-            Unknown organization. Either this organization does not exist, or you do not have access to it.{' '}
-            <Link to="../">Organizations</Link>
-          </Typography>
-        )}
-      </DialogContent>
-      <DialogActions sx={{ padding: '20px' }}>
-        <Button
-          onClick={() => {
-            setOpen(false)
-            navigate('/dashboard/admin/organizations')
-          }}
-          variant="outlined"
-          color="info"
-          style={{ position: 'absolute', bottom: 10, left: 10 }}
-          className="museo-slab capital-case"
-        >
-          Cancel
-        </Button>
-        <Button
-          form="admin-edit-org"
-          type="submit"
-          variant="contained"
-          style={{ position: 'absolute', bottom: 10, right: 10 }}
-          className="museo-slab capital-case"
-        >
-          Apply Changes
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <>
+      {Object.keys(selectedOrg ?? {}).length !== 0 && unknownOrg === false ? (
+        <Dialog open={open}>
+          <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
+            <SideBarHeader
+              onClick={() => {
+                setOpen(false)
+                navigate('..')
+              }}
+              title="Edit Organization"
+            />
+            <Form id="admin-edit-org" onSubmit={handleSubmit((data) => onSubmit(data))}>
+              <Form.Group controlId="name">
+                <FormControl fullWidth margin="normal">
+                  <TextField
+                    label="Organization Name"
+                    placeholder="Enter Organization Name"
+                    color="info"
+                    variant="outlined"
+                    required
+                    {...register('name', {
+                      required: 'Please enter the organization name',
+                    })}
+                    slotProps={{
+                      inputLabel: {
+                        shrink: true,
+                      },
+                    }}
+                  />
+                </FormControl>
+                <FormControl fullWidth margin="normal">
+                  <TextField
+                    label="Organization Email"
+                    placeholder="Enter Organization Email"
+                    color="info"
+                    variant="outlined"
+                    required
+                    {...register('email')}
+                    slotProps={{
+                      inputLabel: {
+                        shrink: true,
+                      },
+                    }}
+                  />
+                </FormControl>
+                {errors.name && (
+                  <p className="errorMsg" role="alert">
+                    {errors.name.message}
+                  </p>
+                )}
+              </Form.Group>
+            </Form>
+          </DialogContent>
+          <DialogActions sx={{ padding: '20px' }}>
+            <Button
+              onClick={() => {
+                setOpen(false)
+                navigate('/dashboard/admin/organizations')
+              }}
+              variant="outlined"
+              color="info"
+              style={{ position: 'absolute', bottom: 10, left: 10 }}
+              className="museo-slab capital-case"
+            >
+              Cancel
+            </Button>
+            <Button
+              form="admin-edit-org"
+              type="submit"
+              variant="contained"
+              style={{ position: 'absolute', bottom: 10, right: 10 }}
+              className="museo-slab capital-case"
+            >
+              Apply Changes
+            </Button>
+          </DialogActions>
+        </Dialog>
+      ) : (
+        unknownOrg === true && (
+          <Dialog open={open}>
+            <DialogContent>
+              <Typography variant={'h4'}>
+                Unknown organization. Either this organization does not exist, or you do not have access to it.{' '}
+                <Link to="../">Organizations</Link>
+              </Typography>
+            </DialogContent>
+          </Dialog>
+        )
+      )}
+    </>
   )
 }
 

@@ -1,4 +1,4 @@
-from flask import request
+from flask import abort, request
 from flask_restful import Resource
 from marshmallow import Schema, fields
 from google.cloud import bigquery
@@ -101,10 +101,6 @@ class MooveAiData(Resource):
         errors = schema.validate(request.json)
         if errors:
             logging.error(str(errors))
-            return (
-                'Body format: {"geometry": coordinate list}',
-                400,
-                self.headers,
-            )
+            abort(400, str(errors))
 
         return (query_moove_ai(request.json["geometry"]), 200, self.headers)

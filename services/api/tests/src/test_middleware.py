@@ -6,14 +6,16 @@ from api.tests.data import auth_data
 from werkzeug.exceptions import Unauthorized
 
 
+@patch("api.src.middleware.jwt")
 @patch("api.src.middleware.KeycloakOpenID")
-def test_get_user_role(mock_keycloak):
+def test_get_user_role(mock_keycloak, mock_jwt):
     mock_instance = mock_keycloak.return_value
     introspect = auth_data.jwt_token_data_good
 
     # Valid Token
     introspect["active"] = True
     mock_instance.introspect.return_value = auth_data.jwt_token_data_good
+    mock_jwt.decode.return_value = auth_data.jwt_token_data_good
 
     result = middleware.get_user_role("dummy_token")
     assert result is not None

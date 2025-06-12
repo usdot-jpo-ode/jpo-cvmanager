@@ -2,6 +2,8 @@ from copy import deepcopy
 from datetime import datetime, timedelta
 from unittest.mock import patch, MagicMock
 import os
+
+import pytest
 from api.src.rsu_geo_msg_query import (
     query_geo_data_mongo,
     geo_hash,
@@ -10,6 +12,7 @@ from api.src.rsu_geo_msg_query import (
 )
 import json
 import api.tests.data.rsu_geo_msg_query_data as rsu_geo_msg_query_data
+from werkzeug.exceptions import InternalServerError
 
 
 def test_geo_hash():
@@ -74,15 +77,17 @@ def test_query_geo_data_mongo_filter_failed(mock_mongo):
 
     start = "2023-07-01T00:00:00Z"
     end = "2023-07-02T00:00:00Z"
-    response, code = query_geo_data_mongo(
-        rsu_geo_msg_query_data.point_list, start, end, "BsM"
+
+    with pytest.raises(InternalServerError) as exc_info:
+        query_geo_data_mongo(rsu_geo_msg_query_data.point_list, start, end, "BsM")
+
+    assert (
+        str(exc_info.value)
+        == "500 Internal Server Error: Encountered unknown issue querying MongoDB: Failed to find"
     )
-    expected_response = []
 
     mock_mongo.assert_called()
     mock_collection.find.assert_called()
-    assert code == 500
-    assert response == expected_response
 
 
 @patch.dict(
@@ -146,6 +151,14 @@ def test_query_geo_data_mongo_psm(mock_mongo):
         assert resp["type"] == exp["type"]
         assert resp["geometry"] == exp["geometry"]
         assert resp["properties"] == exp["properties"]
+
+    # with pytest.raises(InternalServerError) as exc_info:
+    #     query_geo_data_mongo(rsu_geo_msg_query_data.point_list, start, end, "PsM")
+
+    # assert str(exc_info.value) == "Encountered unknown issue querying MongoDB: "
+
+    # mock_mongo.assert_called()
+    # mock_collection.find.assert_called()
 
 
 @patch.dict(

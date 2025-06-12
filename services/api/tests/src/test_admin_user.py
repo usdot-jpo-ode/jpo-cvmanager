@@ -3,9 +3,8 @@ import pytest
 import api.src.admin_user as admin_user
 import api.tests.data.admin_user_data as admin_user_data
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from werkzeug.exceptions import HTTPException
 from api.tests.data import auth_data
-from werkzeug.exceptions import BadRequest, InternalServerError
+from werkzeug.exceptions import BadRequest, HTTPException, InternalServerError
 
 user_valid = auth_data.get_request_environ()
 

@@ -140,7 +140,7 @@ def test_online_statuses_no_data(mock_last_online, mock_ping):
     mock_last_online.return_value = []
     mock_ping.return_value = {}
     expected_rsu_data = {}
-    actual_result = rsu_online_status.get_rsu_online_statuses()
+    actual_result = rsu_online_status.get_rsu_online_statuses(user_valid)
     assert actual_result == expected_rsu_data
 
 
@@ -162,7 +162,7 @@ def test_util_format_date_denver():
 def test_online_statuses_single_result(mock_ping):
     mock_ping.return_value = data.mock_ping_return_single
     expected_rsu_data = data.online_status_expected_single
-    actual_result = rsu_online_status.get_rsu_online_statuses()
+    actual_result = rsu_online_status.get_rsu_online_statuses(user_valid)
     assert actual_result == expected_rsu_data
 
 
@@ -171,5 +171,5 @@ def test_online_statuses_multiple_result(mock_ping):
     mock_ping.return_value = data.mock_ping_return_multiple
     expected_rsu_data = data.online_status_expected_multiple
 
-    actual_result = rsu_online_status.get_rsu_online_statuses()
+    actual_result = rsu_online_status.get_rsu_online_statuses(user_valid)
     assert actual_result == expected_rsu_data

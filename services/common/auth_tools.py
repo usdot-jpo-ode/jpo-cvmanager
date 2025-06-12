@@ -124,7 +124,7 @@ def check_intersection_with_org(intersection_id: str, organizations: list[str]) 
     allowed_orgs_str = ", ".join(f"'{org}'" for org in organizations)
     query = (
         "SELECT intersection.intersection_number as intersection_number "
-        "FROM public.intersections rsu "
+        "FROM public.intersections intersection "
         "JOIN public.intersection_organization AS intersection_org ON intersection_org.intersection_id = intersection.intersection_id "
         "JOIN public.organizations AS org ON org.organization_id = intersection_org.organization_id "
         f"WHERE org.name = ANY (ARRAY[{allowed_orgs_str}])"
@@ -144,7 +144,7 @@ def check_user_with_org(user_email: str, organizations: list[str]) -> bool:
     query = (
         "SELECT u.email as email "
         "FROM public.users u "
-        "JOIN public.user_organization AS user_org ON user_org.user_id = intersection.user_id "
+        "JOIN public.user_organization AS user_org ON user_org.user_id = u.user_id "
         "JOIN public.organizations AS org ON org.organization_id = user_org.organization_id "
         f"WHERE org.name = ANY (ARRAY[{allowed_orgs_str}])"
         f"AND u.email = '{user_email}'"

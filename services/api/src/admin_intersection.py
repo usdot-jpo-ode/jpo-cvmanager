@@ -19,6 +19,24 @@ from common.auth_tools import (
 def get_intersection_data(
     intersection_id: str, user: EnvironWithOrg, qualified_orgs: list[str]
 ):
+    """
+    Retrieve intersection data from the database for a given intersection ID or all intersections.
+
+    Args:
+        intersection_id (str): The ID of the intersection to retrieve data for.
+                               Use "all" to retrieve data for all intersections.
+        user (EnvironWithOrg): The user object containing organizational context and permissions.
+        qualified_orgs (list[str]): A list of organizations the user is qualified to access.
+
+    Returns:
+        dict or list[dict]:
+            - If a single intersection ID is provided and found, returns a dictionary containing the intersection data.
+            - If "all" is provided, returns a list of dictionaries containing data for all intersections.
+            - If no data is found for a single intersection ID, returns an empty dictionary.
+
+    Raises:
+        Exception: If there is an issue querying the database or processing the data.
+    """
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
@@ -87,6 +105,19 @@ def get_intersection_data(
 def get_modify_intersection_data(
     intersection_id: str, user: EnvironWithOrg, qualified_orgs: list[str]
 ):
+    """
+    Retrieve and modify intersection summary data for a given intersection ID.
+
+    Args:
+        intersection_id (str): The ID of the intersection to retrieve data for.
+                               Use "all" to retrieve data for all intersections.
+        user (EnvironWithOrg): The user object containing organizational context.
+        qualified_orgs (list[str]): A list of organizations the user is qualified to access.
+
+    Returns:
+        dict: A dictionary containing intersection data (and allowed selections
+              if a specific intersection ID is provided).
+    """
     modify_intersection_obj = {}
     modify_intersection_obj["intersection_data"] = get_intersection_data(
         intersection_id, user, qualified_orgs

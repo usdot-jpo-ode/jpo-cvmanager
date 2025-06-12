@@ -1,6 +1,8 @@
 type AuthLoginData = {
   data: {
     name: string
+    first_name: string
+    last_name: string
     email: string
     super_user: boolean
     organizations: Array<{
@@ -22,6 +24,17 @@ type AuthLoginData = {
 //     { "name": "Region 1", "role": "admin" }
 //   ]
 // },
+
+type UserAuthResponse = {
+  email: string
+  first_name: string
+  last_name: string
+  super_user: boolean
+  organizations: Array<{
+    name: string
+    role: string
+  }>
+}
 
 type AdminUser = {
   email: string

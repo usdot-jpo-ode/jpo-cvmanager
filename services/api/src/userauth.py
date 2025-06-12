@@ -33,7 +33,7 @@ class UserAuth(Resource):
         # Check for user info and return data
 
         return (
-            json.dumps(permission_result.user.user_info.to_dict()),
+            permission_result.user.user_info.to_dict(),
             200,
             self.headers,
         )

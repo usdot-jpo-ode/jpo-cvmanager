@@ -13,7 +13,9 @@ export const keycloakLogin = createAsyncThunk('user/login', async (token: string
       switch (response.status) {
         case 200:
           let authLoginData = {
-            data: JSON.parse(response.json.toString()),
+            data: response.json
+              ? { ...response.json, name: `${response.json.first_name} ${response.json.last_name}` }
+              : null,
             token: token,
             expires_at: Date.now() + 590000,
           }

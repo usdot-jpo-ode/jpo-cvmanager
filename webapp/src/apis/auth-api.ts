@@ -10,9 +10,9 @@ class AuthApi {
       },
     })
 
-    let json = {}
+    let json: UserAuthResponse | null = null
     if (content.status === 200) {
-      json = await content.json()
+      json = (await content.json()) as UserAuthResponse
     }
 
     return {

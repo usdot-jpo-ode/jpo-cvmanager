@@ -17,6 +17,25 @@ from common.auth_tools import (
 
 
 def get_allowed_selections(user: EnvironWithOrg):
+    """
+    Retrieve the list of allowed organizations and RSUs for the given user.
+
+    This function determines the organizations and RSUs (Roadside Units) that the user
+    is authorized to access. If the user is a superuser, all organizations and RSUs are
+    returned. Otherwise, only the organizations and RSUs associated with the user's
+    permissions are included.
+
+    Args:
+        user (EnvironWithOrg): The user object containing organizational context and permissions.
+
+    Returns:
+        dict: A dictionary containing the allowed organizations and RSUs for the user.
+              Example:
+              {
+                  "organizations": ["Org A", "Org B"],
+                  "rsus": ["192.168.1.1", "192.168.1.2"]
+              }
+    """
     allowed = {}
 
     if user.user_info.super_user:
@@ -35,6 +54,19 @@ def get_allowed_selections(user: EnvironWithOrg):
 
 
 def check_safe_input(intersection_spec):
+    """
+    Validate the intersection specification for unsafe characters.
+
+    This function checks the intersection specification for special characters or sequences
+    that could indicate potential SQL injection or other unsafe input. If any unsafe input
+    is detected, the function returns False.
+
+    Args:
+        intersection_spec (dict): A dictionary containing the intersection specification.
+
+    Returns:
+        bool: True if the input is safe, False otherwise.
+    """
     special_characters = "!\"#$%&'()*+,./:;<=>?@[\\]^`{|}~"
     unchecked_fields = [
         "origin_ip",
@@ -64,6 +96,39 @@ def check_safe_input(intersection_spec):
 
 
 def add_intersection(intersection_spec: dict):
+    """
+    Add a new intersection to the database.
+
+    This function inserts a new intersection into the database, including its associated
+    organizations and RSUs (Roadside Units). It validates the input for unsafe characters
+    and handles database integrity and SQL errors.
+
+    Args:
+        intersection_spec (dict): A dictionary containing the intersection specification.
+                                  Example:
+                                  {
+                                      "intersection_id": "123",
+                                      "ref_pt": {"latitude": 40.123, "longitude": -105.456},
+                                      "bbox": {
+                                          "latitude1": 40.111,
+                                          "longitude1": -105.444,
+                                          "latitude2": 40.133,
+                                          "longitude2": -105.466
+                                      },
+                                      "intersection_name": "Main St Intersection",
+                                      "origin_ip": "192.168.1.1",
+                                      "organizations": ["Org A", "Org B"],
+                                      "rsus": ["192.168.1.2", "192.168.1.3"]
+                                  }
+
+    Returns:
+        dict: A success message indicating the intersection was added.
+              Example: {"message": "New Intersection successfully added"}
+
+    Raises:
+        BadRequest: If the input contains unsafe characters.
+        InternalServerError: If a database integrity or SQL error occurs.
+    """
     # Check for special characters for potential SQL injection
     if not check_safe_input(intersection_spec):
         raise BadRequest(
@@ -176,6 +241,29 @@ def enforce_add_intersection_org_permissions(
     qualified_orgs: list[str],
     intersection_spec: dict,
 ):
+    """
+    Enforce permissions for adding organizations to an intersection.
+
+    This function ensures that a user has the necessary permissions to add organizations
+    to an intersection. If the user attempts to add organizations they are not authorized
+    to modify, a Forbidden exception is raised.
+
+    Args:
+        user (EnvironWithOrg): The user object containing organizational context and permissions.
+        qualified_orgs (list[str]): A list of organizations the user is authorized to access.
+        intersection_spec (dict): A dictionary containing the intersection specification,
+                                  including the organizations to be added.
+
+    Raises:
+        Forbidden: If the user attempts to add organizations they are not authorized to modify.
+
+    Example:
+        >>> user = EnvironWithOrg(user_info={"super_user": False})
+        >>> qualified_orgs = ["Org A", "Org B"]
+        >>> intersection_spec = {"organizations": ["Org A", "Org C"]}
+        >>> enforce_add_intersection_org_permissions(user, qualified_orgs, intersection_spec)
+        Forbidden: Unauthorized added organizations: Org C
+    """
     if not user.user_info.super_user:
         # Collect list of organizations the user doesn't have enough permissions to modify
         unqualified_orgs = [

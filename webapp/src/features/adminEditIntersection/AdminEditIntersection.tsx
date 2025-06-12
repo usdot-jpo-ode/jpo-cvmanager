@@ -35,7 +35,6 @@ import {
   Typography,
 } from '@mui/material'
 import toast from 'react-hot-toast'
-import CloseIcon from '@mui/icons-material/Close'
 import { AdminButton } from '../../styles/components/AdminButton'
 import { ErrorMessageText } from '../../styles/components/Messages'
 import '../../styles/fonts/museo-slab.css'
@@ -61,6 +60,7 @@ const AdminEditIntersection = () => {
   const intersectionTableData = useSelector(selectTableData)
 
   const [open, setOpen] = useState(true)
+  const [unknownIntersection, setUnknownIntersection] = useState(false)
   const navigate = useNavigate()
 
   const {
@@ -108,8 +108,12 @@ const AdminEditIntersection = () => {
       setValue('bbox.longitude2', currIntersection.bbox?.longitude2?.toString())
       setValue('intersection_name', currIntersection.intersection_name)
       setValue('origin_ip', currIntersection.origin_ip)
+      if (unknownIntersection === true) setUnknownIntersection(false)
+    } else {
+      setUnknownIntersection(true)
+      console.error('Unknown Intersection ID: ', intersectionId)
     }
-  }, [apiData, setValue])
+  }, [apiData, intersectionId, intersectionTableData, setValue, unknownIntersection])
 
   useEffect(() => {
     dispatch(updateTableData())
@@ -128,9 +132,9 @@ const AdminEditIntersection = () => {
   }
 
   return (
-    <Dialog open={open}>
-      {Object.keys(apiData ?? {}).length != 0 ? (
-        <>
+    <>
+      {Object.keys(apiData ?? {}).length !== 0 && unknownIntersection === false ? (
+        <Dialog open={open}>
           <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
             <SideBarHeader
               onClick={() => {
@@ -376,23 +380,27 @@ const AdminEditIntersection = () => {
               Apply Changes
             </Button>
           </DialogActions>
-        </>
+        </Dialog>
       ) : (
-        <DialogContent>
-          <Typography variant={'h4'}>
-            Unknown Intersection ID. Either this Intersection does not exist, or you do not have access to it.
-          </Typography>
-          <AdminButton
-            onClick={() => {
-              setOpen(false)
-              navigate('/dashboard/admin/intersections')
-            }}
-          >
-            Close
-          </AdminButton>
-        </DialogContent>
+        unknownIntersection === true && (
+          <Dialog open={open}>
+            <DialogContent>
+              <Typography variant={'h4'}>
+                Unknown Intersection ID. Either this Intersection does not exist, or you do not have access to it.
+              </Typography>
+              <AdminButton
+                onClick={() => {
+                  setOpen(false)
+                  navigate('/dashboard/admin/intersections')
+                }}
+              >
+                Close
+              </AdminButton>
+            </DialogContent>
+          </Dialog>
+        )
       )}
-    </Dialog>
+    </>
   )
 }
 

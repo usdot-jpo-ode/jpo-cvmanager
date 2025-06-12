@@ -76,7 +76,8 @@ def add_notification_authorized(email: str, notification_spec: dict):
         # Attempt to extract meaningful details from the exception
         error_message = "An integrity error occurred."
         if hasattr(e, "orig") and hasattr(e.orig, "args") and len(e.orig.args) > 0:
-            error_message = str(e.orig.args[0])
+
+            error_message = e.orig.args[0].get("D", error_message)
 
         # Raise a generic internal server error with the extracted message
         raise InternalServerError(error_message) from e

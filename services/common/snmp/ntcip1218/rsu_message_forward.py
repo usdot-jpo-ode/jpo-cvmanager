@@ -82,28 +82,6 @@ prop_namevalue = {
 }
 
 
-# delta is in years
-def hex_datetime(now, delta=0):
-    """
-    Converts a datetime object to a hexadecimal string representation.
-
-    Args:
-        now (datetime.datetime): The current datetime object to convert.
-        delta (int, optional): An integer value to add to the year component before conversion. Defaults to 0.
-
-    Returns:
-        str: A hexadecimal string representing the date and time in the format:
-             YYYYMMDDHHmm, where each component is zero-padded and represented in hexadecimal.
-    """
-    regex = "{0:0{1}x}"
-    hex_string = regex.format(now.year + delta, 4)
-    hex_string += regex.format(now.month, 2)
-    hex_string += regex.format(now.day, 2)
-    hex_string += regex.format(now.hour, 2)
-    hex_string += regex.format(now.minute, 2)
-    return hex_string
-
-
 def perform_snmp_mods(snmp_mods):
     """
     Executes a list of SNMP modification commands using subprocess.
@@ -325,8 +303,8 @@ def set(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, security, tx):
 
             # NTCIP-1218 expects a hex value of 16 length for rsuXmitMsgFwdingTable
             now = util.utc2tz(datetime.now())
-            start_hex = hex_datetime(now) + "0000"
-            end_hex = hex_datetime(now, 10) + "0000"
+            start_hex = rsu_message_forward_helpers.hex_datetime(now) + "0000"
+            end_hex = rsu_message_forward_helpers.hex_datetime(now, 10) + "0000"
 
             snmp_mod += (
                 "NTCIP1218-v01:rsuXmitMsgFwdingDeliveryStart.{index} x {dt} ".format(
@@ -385,8 +363,8 @@ def set(rsu_ip, snmp_creds, dest_ip, udp_port, rsu_index, psid, security, tx):
 
             # NTCIP-1218 expects a hex value of 16 length for rsuReceivedMsgTable
             now = util.utc2tz(datetime.now())
-            start_hex = hex_datetime(now) + "0000"
-            end_hex = hex_datetime(now, 10) + "0000"
+            start_hex = rsu_message_forward_helpers.hex_datetime(now) + "0000"
+            end_hex = rsu_message_forward_helpers.hex_datetime(now, 10) + "0000"
 
             snmp_mod += (
                 "NTCIP1218-v01:rsuReceivedMsgDeliveryStart.{index} x {dt} ".format(

@@ -73,6 +73,10 @@ def fetch_index(command, rsu_ip, rsu_info, message_type, target_ip=None):
         )
     )
 
+    # The index is calculated as the maximum existing index + 1.
+    # If the next index exceeds 127, it will return -1.
+    # May be worth changing this to grab the first available index from 1
+    # if the next index exceeds 127 based on the maximum existing index.
     if command == "add":
         index = max((int(entry) for entry in walk_result), default=0) + 1
         if index < 128:

@@ -51,28 +51,6 @@ def ip_to_hex(ip):
     return "00000000000000000000FFFF" + hex_dest_ip
 
 
-# delta is in years
-def hex_datetime(now, delta=0):
-    """
-    Converts a datetime object to a hexadecimal string representation.
-
-    Args:
-        now (datetime.datetime): The current datetime object to convert.
-        delta (int, optional): An integer value to add to the year component before conversion. Defaults to 0.
-
-    Returns:
-        str: A hexadecimal string representing the date and time in the format:
-             YYYYMMDDHHmm, where each component is zero-padded and represented in hexadecimal.
-    """
-    regex = "{0:0{1}x}"
-    hex = regex.format(now.year + delta, 4)
-    hex += regex.format(now.month, 2)
-    hex += regex.format(now.day, 2)
-    hex += regex.format(now.hour, 2)
-    hex += regex.format(now.minute, 2)
-    return hex
-
-
 def set_rsu_status(rsu_ip, snmp_creds, operate):
     """
     Sets the status of a Roadside Unit (RSU) to either 'operate' or 'standby' mode using SNMP.
@@ -304,11 +282,11 @@ def set(
                 # UTC
                 now = datetime.now()
             snmp_mod += "RSU-MIB:rsuDsrcFwdDeliveryStart.{index} x {dt} ".format(
-                index=rsu_index, dt=hex_datetime(now)
+                index=rsu_index, dt=rsu_message_forward_helpers.hex_datetime(now)
             )
             # Stop datetime, hex of the current time + 10 years in the future
             snmp_mod += "RSU-MIB:rsuDsrcFwdDeliveryStop.{index} x {dt} ".format(
-                index=rsu_index, dt=hex_datetime(now, 10)
+                index=rsu_index, dt=rsu_message_forward_helpers.hex_datetime(now, 10)
             )
             snmp_mod += "RSU-MIB:rsuDsrcFwdEnable.{index} i 1".format(index=rsu_index)
             snmp_mods.append(snmp_mod)
@@ -354,7 +332,10 @@ def set(
                 now = datetime.now()
             snmp_mods.append(
                 "snmpset -v 3 -t 5 {auth} {rsuip} 1.0.15628.4.1.7.1.8.{index} x {dt}".format(
-                    auth=authstring, rsuip=rsu_ip, index=rsu_index, dt=hex_datetime(now)
+                    auth=authstring,
+                    rsuip=rsu_ip,
+                    index=rsu_index,
+                    dt=rsu_message_forward_helpers.hex_datetime(now),
                 )
             )
             # Stop datetime, hex of the current time + 10 years in the future
@@ -363,7 +344,7 @@ def set(
                     auth=authstring,
                     rsuip=rsu_ip,
                     index=rsu_index,
-                    dt=hex_datetime(now, 10),
+                    dt=rsu_message_forward_helpers.hex_datetime(now, 10),
                 )
             )
             snmp_mods.append(

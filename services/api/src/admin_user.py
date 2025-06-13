@@ -210,8 +210,6 @@ def modify_user(orig_email: str, user_spec: dict):
     except IntegrityError as e:
         if e.orig is None:
             raise InternalServerError("Encountered unknown issue") from e
-        if e.orig is None:
-            raise InternalServerError("Encountered unknown issue") from e
         failed_value = e.orig.args[0]["D"]
         failed_value = failed_value.replace("(", '"')
         failed_value = failed_value.replace(")", '"')

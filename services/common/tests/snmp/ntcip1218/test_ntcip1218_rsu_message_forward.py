@@ -196,3 +196,80 @@ def test_ntcip1218_rsu_message_forward_delete_exception(
     expected_code = 500
     assert code == expected_code
     assert response == expected_response
+
+
+@patch("common.snmp.ntcip1218.rsu_message_forward.subprocess.run")
+@patch(
+    "common.snmp.ntcip1218.rsu_message_forward.snmpcredential.get_authstring",
+    return_value="auth_string",
+)
+def test_ntcip1218_rsu_message_forward_get(mock_get_authstring, mock_run):
+    # Prepare input
+    rsu_ip = "192.168.0.20"
+    snmp_creds = {
+        "ip": "10.0.0.1",
+        "username": "public",
+        "password": "password",
+        "encrypt_pw": "password",
+    }
+
+    # Mock subprocess.run to simulate a successful SNMP GET operation
+    mock_run.return_value = Mock(stdout=b"SNMP GET successful")
+
+    # Call the function
+    response = rsu_message_forward.get(rsu_ip, snmp_creds)
+
+    # Verify subprocess.run was called with the expected arguments
+    expected_calls = [
+        call(
+            "snmpwalk -v 3 -t 5 auth_string 192.168.0.20 NTCIP1218-v01:rsuReceivedMsgTable",
+            shell=True,
+            capture_output=True,
+            check=True,
+        ),
+        call(
+            "snmpwalk -v 3 -t 5 auth_string 192.168.0.20 NTCIP1218-v01:rsuXmitMsgFwdingTable",
+            shell=True,
+            capture_output=True,
+            check=True,
+        ),
+    ]
+    mock_run.assert_has_calls(expected_calls, any_order=False)
+    assert mock_get_authstring.call_count == 2
+
+    # Verify the response
+    assert response == (
+        {"RsuFwdSnmpwalk": {"rsuReceivedMsgTable": {}, "rsuXmitMsgFwdingTable": {}}},
+        200,
+    )
+
+
+@patch("common.snmp.ntcip1218.rsu_message_forward.subprocess.run")
+def test_ntcip1218_rsu_message_forward_get_with_snmp_config(mock_subprocess_run):
+    # mock
+    mock_subprocess_run.return_value = Mock()
+    mock_subprocess_run.return_value.stdout = Mock()
+    mock_subprocess_run.return_value.stdout.decode.side_effect = [
+        "NTCIP1218-v01::rsuReceivedMsgPsid.1 = STRING: 20000000\n" * 15,
+        "NTCIP1218-v01::rsuXmitMsgFwdingPsid.1 = STRING: e0000017\n" * 15,
+    ]
+
+    # prepare input
+    rsu_ip = "192.168.0.20"
+    snmp_creds = {
+        "ip": "10.0.0.1",
+        "username": "public",
+        "password": "password",
+        "encrypt_pw": "password",
+    }
+
+    # call function
+    output = rsu_message_forward.get(rsu_ip, snmp_creds)
+
+    # verify
+    expected_snmp_config = {
+        "rsuReceivedMsgTable": {"1": {"Message Type": "BSM"}},
+        "rsuXmitMsgFwdingTable": {"1": {"Message Type": "MAP"}},
+    }
+    expected_output = ({"RsuFwdSnmpwalk": expected_snmp_config}, 200)
+    assert output == expected_output

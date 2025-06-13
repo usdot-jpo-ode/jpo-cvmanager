@@ -84,7 +84,19 @@ def init_connection_engine():
         )
 
 
-def query_db(query_string):
+def query_db(query_string, params=None):
+    """
+    Execute a parameterized query against the database.
+
+    Args:
+        query_string (str): The SQL query string with placeholders for parameters.
+                            Example: "SELECT * FROM table WHERE column = :value"
+        params (dict, optional): A dictionary of parameters to bind to the query.
+                                 Example: {"value": "some_value"}
+
+    Returns:
+        list: The result of the query as a list of rows.
+    """
     global db
     if db is None:
         db = init_connection_engine()
@@ -92,7 +104,7 @@ def query_db(query_string):
     logging.info("DB connection starting...")
     with db.connect() as conn:
         logging.debug("Executing query...")
-        data = conn.execute(sqlalchemy.text(query_string)).fetchall()
+        data = conn.execute(sqlalchemy.text(query_string), params).fetchall()
         return data
 
 

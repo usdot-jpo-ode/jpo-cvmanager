@@ -103,17 +103,19 @@ def check_rsu_with_org(rsu_ip: str, organizations: list[str]) -> bool:
     if not organizations:
         return False
     allowed_orgs_str = ", ".join(f"'{org}'" for org in organizations)
+
     query = (
         "SELECT rsu.ipv4_address::text AS ipv4_address "
         "FROM public.rsus rsu "
         "JOIN public.rsu_organization AS rsu_org ON rsu_org.rsu_id = rsu.rsu_id "
         "JOIN public.organizations AS org ON org.organization_id = rsu_org.organization_id "
-        f"WHERE org.name = ANY (ARRAY[{allowed_orgs_str}]) "
-        f"AND rsu.ipv4_address = '{rsu_ip}'"
+        "WHERE org.name = ANY (ARRAY[%s]) "
+        "AND rsu.ipv4_address = '%s'"
     )
 
     logging.debug(f'Executing query: "{query};"')
-    data = pgquery.query_db(query)
+    params = [allowed_orgs_str, rsu_ip]
+    data = pgquery.query_db(query, params=params)
 
     return data[0]["ipv4_address"] == rsu_ip if data else False
 
@@ -127,12 +129,13 @@ def check_intersection_with_org(intersection_id: str, organizations: list[str]) 
         "FROM public.intersections intersection "
         "JOIN public.intersection_organization AS intersection_org ON intersection_org.intersection_id = intersection.intersection_id "
         "JOIN public.organizations AS org ON org.organization_id = intersection_org.organization_id "
-        f"WHERE org.name = ANY (ARRAY[{allowed_orgs_str}])"
-        f"AND intersection.intersection_number = '{intersection_id}'"
+        "WHERE org.name = ANY (ARRAY[%s])"
+        "AND intersection.intersection_number = '%s'"
     )
 
     logging.debug(f'Executing query: "{query};"')
-    data = pgquery.query_db(query)
+    params = [allowed_orgs_str, intersection_id]
+    data = pgquery.query_db(query, params=params)
 
     return data[0]["intersection_number"] == intersection_id if data else False
 
@@ -146,12 +149,13 @@ def check_user_with_org(user_email: str, organizations: list[str]) -> bool:
         "FROM public.users u "
         "JOIN public.user_organization AS user_org ON user_org.user_id = u.user_id "
         "JOIN public.organizations AS org ON org.organization_id = user_org.organization_id "
-        f"WHERE org.name = ANY (ARRAY[{allowed_orgs_str}])"
-        f"AND u.email = '{user_email}'"
+        "WHERE org.name = ANY (ARRAY[%s])"
+        "AND u.email = '%s'"
     )
 
     logging.debug(f'Executing query: "{query};"')
-    data = pgquery.query_db(query)
+    params = [allowed_orgs_str, user_email]
+    data = pgquery.query_db(query, params=params)
 
     return data[0]["email"] == user_email if data else False
 

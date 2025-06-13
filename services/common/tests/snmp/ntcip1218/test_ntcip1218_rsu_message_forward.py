@@ -1,6 +1,7 @@
 import datetime
-from unittest.mock import MagicMock, call, patch, Mock, create_autospec
+from unittest.mock import call, patch, Mock
 import common.snmp.ntcip1218.rsu_message_forward as rsu_message_forward
+import common.snmp.rsu_message_forward_helpers as rsu_forward_helpers
 import subprocess
 
 
@@ -18,7 +19,7 @@ rsu_index = 1
 def test_hex_datetime():
     dt = datetime.datetime(2020, 1, 1, 1, 1, 1)
     expected = "07e401010101"
-    assert rsu_message_forward.hex_datetime(dt) == expected
+    assert rsu_forward_helpers.hex_datetime(dt) == expected
 
 
 @patch("common.snmp.ntcip1218.rsu_message_forward.subprocess.run")

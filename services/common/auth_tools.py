@@ -90,11 +90,12 @@ def get_rsu_set_for_org(organizations: list[str]) -> set[str]:
         "FROM public.rsus rsu "
         "JOIN public.rsu_organization AS rsu_org ON rsu_org.rsu_id = rsu.rsu_id "
         "JOIN public.organizations AS org ON org.organization_id = rsu_org.organization_id "
-        f"WHERE org.name = ANY (ARRAY[{allowed_orgs_str}])"
+        "WHERE org.name = ANY (ARRAY[%s])"
     )
 
     logging.debug(f'Executing query: "{query};"')
-    data = pgquery.query_db(query)
+    params = [allowed_orgs_str]
+    data = pgquery.query_db(query, params=params)
 
     return set([rsu["ipv4_address"] for rsu in data])
 

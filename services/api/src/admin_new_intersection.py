@@ -10,7 +10,7 @@ from common.auth_tools import (
     ORG_ROLE_LITERAL,
     EnvironWithOrg,
     get_qualified_org_list,
-    get_rsu_dict_for_org,
+    get_rsu_set_for_org,
     require_permission,
     PermissionResult,
 )
@@ -48,7 +48,7 @@ def get_allowed_selections(user: EnvironWithOrg):
         allowed["organizations"] = get_qualified_org_list(
             user, ORG_ROLE_LITERAL.OPERATOR, include_super_user=False
         )
-        allowed["rsus"] = get_rsu_dict_for_org(allowed["organizations"]).keys()
+        allowed["rsus"] = list(get_rsu_set_for_org(allowed["organizations"]))
 
     return allowed
 

@@ -81,9 +81,9 @@ class EnvironWithOrg:
 
 
 ####################################### Restrictions By Organization #######################################
-def get_rsu_dict_for_org(organizations: list[str]) -> dict[str, str]:
+def get_rsu_set_for_org(organizations: list[str]) -> set[str]:
     if not organizations:
-        return {}
+        return set()
     allowed_orgs_str = ", ".join(f"'{org}'" for org in organizations)
     query = (
         "SELECT rsu.ipv4_address::text AS ipv4_address "
@@ -96,7 +96,7 @@ def get_rsu_dict_for_org(organizations: list[str]) -> dict[str, str]:
     logging.debug(f'Executing query: "{query};"')
     data = pgquery.query_db(query)
 
-    return {rsu["ipv4_address"]: rsu["ipv4_address"] for rsu in data}
+    return set([rsu["ipv4_address"] for rsu in data])
 
 
 def check_rsu_with_org(rsu_ip: str, organizations: list[str]) -> bool:

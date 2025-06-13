@@ -44,9 +44,9 @@ def test_user_info():
 
 ######################### RSUs #########################
 @patch("common.pgquery.query_db")
-def test_get_rsu_dict_for_org(mock_query_db):
+def test_get_rsu_set_for_org(mock_query_db):
     mock_query_db.return_value = auth_tools_data.rsu_query_return
-    valid_rsus = auth_tools.get_rsu_dict_for_org(auth_tools_data.query_organizations)
+    valid_rsus = auth_tools.get_rsu_set_for_org(auth_tools_data.query_organizations)
     assert "1.1.1.1" in valid_rsus
     assert len(valid_rsus) == 3
 
@@ -55,9 +55,9 @@ def test_get_rsu_dict_for_org(mock_query_db):
 
 
 @patch("common.pgquery.query_db")
-def test_get_rsu_dict_for_org_no_orgs(mock_query_db):
+def test_get_rsu_set_for_org_no_orgs(mock_query_db):
     mock_query_db.return_value = []
-    valid_rsus = auth_tools.get_rsu_dict_for_org([])
+    valid_rsus = auth_tools.get_rsu_set_for_org(set())
     assert len(valid_rsus) == 0
 
     assert mock_query_db.call_count == 0

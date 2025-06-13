@@ -26,7 +26,7 @@ def test_options_request():
 )
 @patch("api.src.rsu_ssm_srm.query_ssm_data_mongo")
 @patch("api.src.rsu_ssm_srm.query_srm_data_mongo")
-@patch("api.src.rsu_ssm_srm.get_rsu_dict_for_org")
+@patch("api.src.rsu_ssm_srm.get_rsu_set_for_org")
 def test_get_request(mock_get_rsu_dict, mock_srm, mock_ssm):
     ssm_srm = rsu_ssm_srm.RsuSsmSrmData()
     mock_ssm.return_value = []
@@ -60,7 +60,7 @@ def test_get_request(mock_get_rsu_dict, mock_srm, mock_ssm):
 )
 @patch("api.src.rsu_ssm_srm.query_ssm_data_mongo")
 @patch("api.src.rsu_ssm_srm.query_srm_data_mongo")
-@patch("api.src.rsu_ssm_srm.get_rsu_dict_for_org")
+@patch("api.src.rsu_ssm_srm.get_rsu_set_for_org")
 def test_get_request_invalid(mock_get_rsu_dict, mock_srm, mock_ssm):
     ssm_srm = rsu_ssm_srm.RsuSsmSrmData()
     mock_ssm.return_value = []

@@ -11,7 +11,7 @@ from common.auth_tools import (
     ORG_ROLE_LITERAL,
     PermissionResult,
     require_permission,
-    get_rsu_dict_for_org,
+    get_rsu_set_for_org,
 )
 
 
@@ -149,7 +149,7 @@ def query_srm_data_mongo() -> list:
 
 
 def filter_results_by_ip_address(
-    results: list[dict[str, Any]], valid_ips: dict[str, str]
+    results: list[dict[str, Any]], valid_ips: set[str]
 ) -> list:
     return [result for result in results if result["ip"] in valid_ips]
 
@@ -182,8 +182,8 @@ class RsuSsmSrmData(Resource):
 
         # Filter by RSUs within authenticated organizations
         if permission_result.user.organization:
-            allowed_ips = get_rsu_dict_for_org([permission_result.user.organization])
+            allowed_ips = get_rsu_set_for_org([permission_result.user.organization])
         else:
-            allowed_ips = get_rsu_dict_for_org(permission_result.qualified_orgs)
+            allowed_ips = get_rsu_set_for_org(permission_result.qualified_orgs)
 
         return (filter_results_by_ip_address(data, allowed_ips), 200, self.headers)

@@ -4,7 +4,7 @@ rsu_query_return = [
     {"ipv4_address": "1.1.1.3"},
 ]
 
-query_organizations = ["Test Org", "Test Org 3"]
+query_organizations = set(["Test Org 3", "Test Org"])
 rsu_query_statement = (
     "SELECT rsu.ipv4_address::text AS ipv4_address "
     "FROM public.rsus rsu "

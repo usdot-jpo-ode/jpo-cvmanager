@@ -74,7 +74,16 @@ def fetch_index(command, rsu_ip, rsu_info, message_type, target_ip=None):
     )
 
     if command == "add":
-        return max((int(entry) for entry in walk_result), default=0) + 1
+        index = max((int(entry) for entry in walk_result), default=0) + 1
+        if index < 128:
+            return index
+        else:
+            logging.error(
+                "SNMP index exceeds maximum allowed value of 127 for RSU {}".format(
+                    rsu_ip
+                )
+            )
+            return -1
 
     if command == "del" and message_type and target_ip:
         return max(

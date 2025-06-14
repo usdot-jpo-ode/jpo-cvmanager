@@ -108,16 +108,16 @@ modify_user_params = {
 add_org_sql = (
     "INSERT INTO public.user_organization(user_id, organization_id, role_id) VALUES"
     " ("
-    "(SELECT user_id FROM public.users WHERE email = '%s'), "
-    "(SELECT organization_id FROM public.organizations WHERE name = '%s'), "
-    "(SELECT role_id FROM public.roles WHERE name = '%s')"
+    "(SELECT user_id FROM public.users WHERE email = :email), "
+    "(SELECT organization_id FROM public.organizations WHERE name = :org_name), "
+    "(SELECT role_id FROM public.roles WHERE name = :role)"
     ")"
 )
-add_org_params = [
-    "test@gmail.com",
-    "Test Org3",
-    "admin",
-]
+add_org_params = {
+    "email": "test@gmail.com",
+    "org_name": "Test Org3",
+    "role": "admin",
+}
 
 modify_org_sql = (
     "UPDATE public.user_organization "

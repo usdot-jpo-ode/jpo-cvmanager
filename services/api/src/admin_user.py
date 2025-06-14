@@ -187,21 +187,20 @@ def modify_user(orig_email: str, user_spec: dict):
 
         # Add the user-to-organization relationships
         if len(user_spec["organizations_to_add"]) > 0:
-            org_add_query = "INSERT INTO public.user_organization(user_id, organization_id, role_id) VALUES"
-            params_list = []
             for organization in user_spec["organizations_to_add"]:
-                org_add_query += (
-                    " ("
-                    "(SELECT user_id FROM public.users WHERE email = '%s'), "
-                    "(SELECT organization_id FROM public.organizations WHERE name = '%s'), "
-                    "(SELECT role_id FROM public.roles WHERE name = '%s')"
-                    "),"
+                org_add_query = (
+                    "INSERT INTO public.user_organization(user_id, organization_id, role_id) VALUES ("
+                    "(SELECT user_id FROM public.users WHERE email = :email), "
+                    "(SELECT organization_id FROM public.organizations WHERE name = :org_name), "
+                    "(SELECT role_id FROM public.roles WHERE name = :role)"
+                    ")"
                 )
-                params_list.extend(
-                    [user_spec["email"], organization["name"], organization["role"]]
-                )
-            org_add_query = org_add_query[:-1]
-            pgquery.write_db(org_add_query, params=params_list)
+                params = {
+                    "email": user_spec["email"],
+                    "org_name": organization["name"],
+                    "role": organization["role"],
+                }
+                pgquery.write_db(org_add_query, params=params)
 
         # Modify the user-to-organization relationships
         for organization in user_spec["organizations_to_modify"]:

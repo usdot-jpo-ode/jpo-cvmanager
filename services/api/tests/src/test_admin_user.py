@@ -126,7 +126,7 @@ def test_get_user_data_all(mock_query_db):
     expected_query = admin_user_data.expected_get_user_query
     actual_result = admin_user.get_user_data("all", user_valid, [])
 
-    mock_query_db.assert_called_with(expected_query)
+    mock_query_db.assert_called_with(expected_query, params={})
     assert actual_result == expected_result
 
 
@@ -137,7 +137,9 @@ def test_get_user_data_email(mock_query_db):
     expected_query = admin_user_data.expected_get_user_query_one
     actual_result = admin_user.get_user_data("test@gmail.com", user_valid, [])
 
-    mock_query_db.assert_called_with(expected_query)
+    mock_query_db.assert_called_with(
+        expected_query, params=admin_user_data.expected_get_user_query_one_params
+    )
     assert actual_result == expected_result
 
 
@@ -146,14 +148,16 @@ def test_get_user_data_none(mock_query_db):
     # get user should return an empty object if there are no users with specified email
     mock_query_db.return_value = []
     expected_result = {}
-    expected_query = admin_user_data.expected_get_user_query_one
     actual_result = admin_user.get_user_data(
         "test@gmail.com",
         user_valid,
         [],
     )
 
-    mock_query_db.assert_called_with(expected_query)
+    mock_query_db.assert_called_with(
+        admin_user_data.expected_get_user_query_one,
+        params=admin_user_data.expected_get_user_query_one_params,
+    )
     assert actual_result == expected_result
 
 
@@ -213,10 +217,12 @@ def test_modify_user_success(mock_pgquery, mock_check_email, mock_check_safe_inp
     )
 
     calls = [
-        call(admin_user_data.modify_user_sql),
-        call(admin_user_data.add_org_sql),
-        call(admin_user_data.modify_org_sql),
-        call(admin_user_data.remove_org_sql),
+        call(
+            admin_user_data.modify_user_sql, params=admin_user_data.modify_user_params
+        ),
+        call(admin_user_data.add_org_sql, params=admin_user_data.add_org_params),
+        call(admin_user_data.modify_org_sql, params=admin_user_data.modify_org_params),
+        call(admin_user_data.remove_org_sql, params=admin_user_data.remove_org_params),
     ]
     mock_pgquery.assert_has_calls(calls)
     assert actual_msg == expected_msg
@@ -297,8 +303,8 @@ def test_delete_user(mock_write_db):
     actual_result = admin_user.delete_user_authorized("test@gmail.com")
 
     calls = [
-        call(admin_user_data.delete_user_calls[0]),
-        call(admin_user_data.delete_user_calls[1]),
+        call(admin_user_data.delete_user_calls[0], params={"email": "test@gmail.com"}),
+        call(admin_user_data.delete_user_calls[1], params={"email": "test@gmail.com"}),
     ]
     mock_write_db.assert_has_calls(calls)
     assert actual_result == expected_result

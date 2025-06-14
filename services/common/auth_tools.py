@@ -84,17 +84,17 @@ class EnvironWithOrg:
 def get_rsu_set_for_org(organizations: list[str]) -> set[str]:
     if not organizations:
         return set()
-    allowed_orgs_str = ", ".join(f"'{org}'" for org in organizations)
+
     query = (
         "SELECT rsu.ipv4_address::text AS ipv4_address "
         "FROM public.rsus rsu "
         "JOIN public.rsu_organization AS rsu_org ON rsu_org.rsu_id = rsu.rsu_id "
         "JOIN public.organizations AS org ON org.organization_id = rsu_org.organization_id "
-        "WHERE org.name = ANY (ARRAY[%s])"
+        "WHERE org.name = ANY (:allowed_orgs)"
     )
 
     logging.debug(f'Executing query: "{query};"')
-    params = [allowed_orgs_str]
+    params = {"allowed_orgs": organizations}
     data = pgquery.query_db(query, params=params)
 
     return set([rsu["ipv4_address"] for rsu in data])
@@ -103,19 +103,18 @@ def get_rsu_set_for_org(organizations: list[str]) -> set[str]:
 def check_rsu_with_org(rsu_ip: str, organizations: list[str]) -> bool:
     if not organizations:
         return False
-    allowed_orgs_str = ", ".join(f"'{org}'" for org in organizations)
 
     query = (
         "SELECT rsu.ipv4_address::text AS ipv4_address "
         "FROM public.rsus rsu "
         "JOIN public.rsu_organization AS rsu_org ON rsu_org.rsu_id = rsu.rsu_id "
         "JOIN public.organizations AS org ON org.organization_id = rsu_org.organization_id "
-        "WHERE org.name = ANY (ARRAY[%s]) "
-        "AND rsu.ipv4_address = '%s'"
+        "WHERE org.name = ANY (:allowed_orgs) "
+        "AND rsu.ipv4_address = :rsu_ip"
     )
 
     logging.debug(f'Executing query: "{query};"')
-    params = [allowed_orgs_str, rsu_ip]
+    params = {"allowed_orgs": organizations, "rsu_ip": rsu_ip}
     data = pgquery.query_db(query, params=params)
 
     return data[0]["ipv4_address"] == rsu_ip if data else False
@@ -124,18 +123,17 @@ def check_rsu_with_org(rsu_ip: str, organizations: list[str]) -> bool:
 def check_intersection_with_org(intersection_id: str, organizations: list[str]) -> bool:
     if not organizations:
         return False
-    allowed_orgs_str = ", ".join(f"'{org}'" for org in organizations)
     query = (
         "SELECT intersection.intersection_number as intersection_number "
         "FROM public.intersections intersection "
         "JOIN public.intersection_organization AS intersection_org ON intersection_org.intersection_id = intersection.intersection_id "
         "JOIN public.organizations AS org ON org.organization_id = intersection_org.organization_id "
-        "WHERE org.name = ANY (ARRAY[%s])"
-        "AND intersection.intersection_number = '%s'"
+        "WHERE org.name = ANY (:allowed_orgs)"
+        "AND intersection.intersection_number = :intersection_id"
     )
 
     logging.debug(f'Executing query: "{query};"')
-    params = [allowed_orgs_str, intersection_id]
+    params = {"allowed_orgs": organizations, "intersection_id": intersection_id}
     data = pgquery.query_db(query, params=params)
 
     return data[0]["intersection_number"] == intersection_id if data else False
@@ -144,18 +142,17 @@ def check_intersection_with_org(intersection_id: str, organizations: list[str]) 
 def check_user_with_org(user_email: str, organizations: list[str]) -> bool:
     if not organizations:
         return False
-    allowed_orgs_str = ", ".join(f"'{org}'" for org in organizations)
     query = (
         "SELECT u.email as email "
         "FROM public.users u "
         "JOIN public.user_organization AS user_org ON user_org.user_id = u.user_id "
         "JOIN public.organizations AS org ON org.organization_id = user_org.organization_id "
-        "WHERE org.name = ANY (ARRAY[%s])"
-        "AND u.email = '%s'"
+        "WHERE org.name = ANY (:allowed_orgs)"
+        "AND u.email = :user_email"
     )
 
     logging.debug(f'Executing query: "{query};"')
-    params = [allowed_orgs_str, user_email]
+    params = {"allowed_orgs": organizations, "user_email": user_email}
     data = pgquery.query_db(query, params=params)
 
     return data[0]["email"] == user_email if data else False

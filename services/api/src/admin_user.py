@@ -30,15 +30,18 @@ def get_user_data(user_email: str, user: EnvironWithOrg, qualified_orgs: list[st
     )
 
     where_clauses = []
+    params: dict[str, Any] = {}
     if not user.user_info.super_user:
-        where_clauses.append(f"org.name IN ({','.join(qualified_orgs)})")
+        where_clauses.append("org.name IN (:qualified_orgs)")
+        params["qualified_orgs"] = qualified_orgs
     if user_email != "all":
-        where_clauses.append(f"u.email = '{user_email}'")
+        where_clauses.append("u.email = :user_email")
+        params["user_email"] = user_email
     if where_clauses:
         query += " WHERE " + " AND ".join(where_clauses)
     query += ") as row"
 
-    data = pgquery.query_db(query)
+    data = pgquery.query_db(query, params=params)
 
     user_dict = {}
     for row in data:
@@ -167,46 +170,63 @@ def modify_user(orig_email: str, user_spec: dict):
         # Modify the existing user data
         query = (
             "UPDATE public.users SET "
-            f"email='{user_spec['email']}', "
-            f"first_name='{user_spec['first_name']}', "
-            f"last_name='{user_spec['last_name']}', "
-            f"super_user='{'1' if user_spec['super_user'] else '0'}' "
-            f"WHERE email = '{orig_email}'"
+            "email=:email, "
+            "first_name=:first_name, "
+            "last_name=:last_name, "
+            "super_user=:super_user "
+            "WHERE email=:orig_email"
         )
-        pgquery.write_db(query)
+        params = {
+            "email": user_spec["email"],
+            "first_name": user_spec["first_name"],
+            "last_name": user_spec["last_name"],
+            "super_user": "1" if user_spec["super_user"] else "0",
+            "orig_email": orig_email,
+        }
+        pgquery.write_db(query, params=params)
 
         # Add the user-to-organization relationships
         if len(user_spec["organizations_to_add"]) > 0:
             org_add_query = "INSERT INTO public.user_organization(user_id, organization_id, role_id) VALUES"
+            params_list = []
             for organization in user_spec["organizations_to_add"]:
                 org_add_query += (
                     " ("
-                    f"(SELECT user_id FROM public.users WHERE email = '{user_spec['email']}'), "
-                    f"(SELECT organization_id FROM public.organizations WHERE name = '{organization['name']}'), "
-                    f"(SELECT role_id FROM public.roles WHERE name = '{organization['role']}')"
+                    "(SELECT user_id FROM public.users WHERE email = '%s'), "
+                    "(SELECT organization_id FROM public.organizations WHERE name = '%s'), "
+                    "(SELECT role_id FROM public.roles WHERE name = '%s')"
                     "),"
                 )
+                params_list.extend(
+                    [user_spec["email"], organization["name"], organization["role"]]
+                )
             org_add_query = org_add_query[:-1]
-            pgquery.write_db(org_add_query)
+            pgquery.write_db(org_add_query, params=params_list)
 
         # Modify the user-to-organization relationships
         for organization in user_spec["organizations_to_modify"]:
             org_modify_query = (
                 "UPDATE public.user_organization "
-                f"SET role_id = (SELECT role_id FROM public.roles WHERE name = '{organization['role']}') "
-                f"WHERE user_id = (SELECT user_id FROM public.users WHERE email = '{user_spec['email']}') "
-                f"AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = '{organization['name']}')"
+                "SET role_id = (SELECT role_id FROM public.roles WHERE name = :role) "
+                "WHERE user_id = (SELECT user_id FROM public.users WHERE email = :email) "
+                "AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = :org_name)"
             )
-            pgquery.write_db(org_modify_query)
+            params = {
+                "role": organization["role"],
+                "email": user_spec["email"],
+                "org_name": organization["name"],
+            }
+            pgquery.write_db(org_modify_query, params=params)
 
         # Remove the user-to-organization relationships
         for organization in user_spec["organizations_to_remove"]:
             org_remove_query = (
                 "DELETE FROM public.user_organization WHERE "
-                f"user_id = (SELECT user_id FROM public.users WHERE email = '{user_spec['email']}') "
-                f"AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = '{organization['name']}')"
+                "user_id = (SELECT user_id FROM public.users WHERE email = :email) "
+                "AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = :org_name)"
             )
-            pgquery.write_db(org_remove_query)
+            params = {"email": user_spec["email"], "org_name": organization["name"]}
+            pgquery.write_db(org_remove_query, params=params)
     except IntegrityError as e:
         if e.orig is None:
             raise InternalServerError("Encountered unknown issue") from e
@@ -231,13 +251,15 @@ def delete_user_authorized(user_email: str):
     # Delete user-to-organization relationships
     org_remove_query = (
         "DELETE FROM public.user_organization WHERE "
-        f"user_id = (SELECT user_id FROM public.users WHERE email = '{user_email}')"
+        "user_id = (SELECT user_id FROM public.users WHERE email = :email)"
     )
-    pgquery.write_db(org_remove_query)
+    params = {"email": user_email}
+    pgquery.write_db(org_remove_query, params=params)
 
     # Delete user data
-    user_remove_query = f"DELETE FROM public.users WHERE email = '{user_email}'"
-    pgquery.write_db(user_remove_query)
+    user_remove_query = "DELETE FROM public.users WHERE email = :email"
+    params = {"email": user_email}
+    pgquery.write_db(user_remove_query, params=params)
 
     return {"message": "User successfully deleted"}
 

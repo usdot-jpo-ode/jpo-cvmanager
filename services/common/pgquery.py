@@ -108,7 +108,19 @@ def query_db(query_string, params=None):
         return data
 
 
-def write_db(query_string):
+def write_db(query_string, params=None):
+    """
+    Execute a parameterized write query (INSERT, UPDATE, DELETE) against the database.
+
+    Args:
+        query_string (str): The SQL query string with placeholders for parameters.
+                            Example: "INSERT INTO table (column) VALUES (:value)"
+        params (dict, optional): A dictionary of parameters to bind to the query.
+                                 Example: {"value": "some_value"}
+
+    Returns:
+        None
+    """
     global db
     if db is None:
         db = init_connection_engine()
@@ -116,7 +128,7 @@ def write_db(query_string):
     logging.info("DB connection starting...")
     with db.connect() as conn:
         logging.debug("Executing insert query...")
-        conn.execute(sqlalchemy.text(query_string))
+        conn.execute(sqlalchemy.text(query_string), params)
         conn.commit()
 
 

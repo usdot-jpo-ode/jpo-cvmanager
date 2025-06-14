@@ -51,7 +51,10 @@ def test_get_rsu_set_for_org(mock_query_db):
     assert len(valid_rsus) == 3
 
     assert mock_query_db.call_count == 1
-    assert mock_query_db.call_args[0][0] == auth_tools_data.rsu_query_statement
+    mock_query_db.assert_called_with(
+        auth_tools_data.rsu_query_statement,
+        params=auth_tools_data.rsu_query_params,
+    )
 
 
 @patch("common.pgquery.query_db")

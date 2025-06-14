@@ -4,14 +4,15 @@ rsu_query_return = [
     {"ipv4_address": "1.1.1.3"},
 ]
 
-query_organizations = set(["Test Org 3", "Test Org"])
+query_organizations = ["Test Org", "Test Org 3"]
 rsu_query_statement = (
     "SELECT rsu.ipv4_address::text AS ipv4_address "
     "FROM public.rsus rsu "
     "JOIN public.rsu_organization AS rsu_org ON rsu_org.rsu_id = rsu.rsu_id "
     "JOIN public.organizations AS org ON org.organization_id = rsu_org.organization_id "
-    "WHERE org.name = ANY (ARRAY['Test Org', 'Test Org 3'])"
+    "WHERE org.name = ANY (:allowed_orgs)"
 )
+rsu_query_params = {"allowed_orgs": ["Test Org", "Test Org 3"]}
 
 intersection_query_return = [
     {"intersection_number": "1"},

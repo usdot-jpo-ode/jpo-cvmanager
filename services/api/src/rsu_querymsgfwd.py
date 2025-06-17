@@ -56,7 +56,7 @@ def query_snmp_msgfwd(rsu_ip, organization):
             msgfwd_configs_dict["rsuXmitMsgFwdingTable"][row["snmp_index"]] = config_row
         else:
             # changed the double quotes around msgfwd_type to single quotes to allow for vscode debugging to work properly
-            logging.warn(
+            logging.warning(
                 f"Encountered unknown message forwarding configuration type '{row['msgfwd_type']}' for RSU '{rsu_ip}'"
             )
 

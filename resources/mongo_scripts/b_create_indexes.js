@@ -268,7 +268,7 @@ const collections = [
     intersectionField: 'intersectionID',
   },
   {
-    name: 'CmSignalStateEventAssessment',
+    name: 'CmStopLinePassageAssessment',
     ttlField: 'assessmentGeneratedAt',
     timeField: 'assessmentGeneratedAt',
     intersectionField: 'intersectionID',

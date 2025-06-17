@@ -32,8 +32,8 @@ public class ReportDocument {
     private List<ConnectionData> invalidConnectionOfTravelData; // Updated type
     private List<IDCount> connectionOfTravelEventCounts;
     private List<IDCount> signalStateConflictEventCount;
-    private List<IDCount> signalStateEventCounts;
-    private List<IDCount> signalStateStopEventCounts;
+    private List<IDCount> stopLinePassageEventCounts;
+    private List<IDCount> stopLineStopEventCounts;
     private List<IDCount> timeChangeDetailsEventCount;
     private List<IDCount> intersectionReferenceAlignmentEventCounts;
     private List<IDCount> mapBroadcastRateEventCount;

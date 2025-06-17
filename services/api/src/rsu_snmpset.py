@@ -19,6 +19,30 @@ msg_type_map = {
 
 # Returns the appropriate snmp_walk index given add/del command
 def fetch_index(command, rsu_ip, rsu_info, message_type, target_ip=None):
+    """
+    Fetches the index for SNMP message forwarding table operations on a Roadside Unit (RSU).
+
+    Depending on the command, this function either determines the next available index for adding a new entry,
+    or finds the index of an existing entry to delete, based on message type and target IP.
+
+    Args:
+        command (str): The operation to perform. Supported values are "add" or "del".
+        rsu_ip (str): The IP address of the RSU device.
+        rsu_info (dict): Dictionary containing RSU SNMP credentials and version information. Expected keys:
+            - "snmp_username": SNMP username.
+            - "snmp_password": SNMP password.
+            - "snmp_encrypt_pw": SNMP encryption password.
+            - "snmp_version": SNMP version ("1218" or "41").
+        message_type (str): The type of message (e.g., "BSM", "SRM") to filter or add.
+        target_ip (str, optional): The target IP address for deletion operations.
+
+    Returns:
+        int: The index for the SNMP table operation.
+            - For "add": Returns the next available index (max existing + 1).
+            - For "del": Returns the index of the entry matching the message type and target IP, or 0 if not found.
+            - Returns -1 if the SNMP version is unsupported or if the SNMP request fails.
+            - Returns 1 as a default fallback.
+    """
     snmp_creds = {
         "username": rsu_info["snmp_username"],
         "password": rsu_info["snmp_password"],
@@ -49,8 +73,21 @@ def fetch_index(command, rsu_ip, rsu_info, message_type, target_ip=None):
         )
     )
 
+    # The index is calculated as the maximum existing index + 1.
+    # If the next index exceeds 127, it will return -1.
+    # May be worth changing this to grab the first available index from 1
+    # if the next index exceeds 127 based on the maximum existing index.
     if command == "add":
-        return max((int(entry) for entry in walk_result), default=0) + 1
+        index = max((int(entry) for entry in walk_result), default=0) + 1
+        if index < 128:
+            return index
+        else:
+            logging.error(
+                "SNMP index exceeds maximum allowed value of 127 for RSU {}".format(
+                    rsu_ip
+                )
+            )
+            return -1
 
     if command == "del" and message_type and target_ip:
         return max(
@@ -67,6 +104,21 @@ def fetch_index(command, rsu_ip, rsu_info, message_type, target_ip=None):
 
 
 def perform_snmp_operation(command, rsu, rsu_info, snmp_creds, args, index):
+    """
+    Performs an SNMP operation (set or delete) on a specified RSU (Roadside Unit) based on the SNMP version and command.
+
+    Args:
+        command (str): The SNMP operation to perform (e.g., 'rsufwdsnmpset-del' or 'rsufwdsnmpset-set').
+        rsu (str): The IP address or identifier of the RSU.
+        rsu_info (dict): Information about the RSU, including 'snmp_version' and possibly 'manufacturer'.
+        snmp_creds (dict): SNMP credentials required for authentication.
+        args (dict): Additional arguments for the SNMP operation, such as 'msg_type', 'dest_ip', and 'security'.
+        index (int): The index of the RSU or SNMP table entry to operate on.
+
+    Returns:
+        tuple: A tuple containing the result of the SNMP operation and an HTTP status code.
+               Returns (None, 400) if the SNMP version is unsupported.
+    """
     msg_type = args["msg_type"].lower()
     snmp_version = rsu_info["snmp_version"]
 
@@ -100,6 +152,28 @@ def perform_snmp_operation(command, rsu, rsu_info, snmp_creds, args, index):
 
 
 def execute_rsufwdsnmpset(command, organization, rsu_list, args):
+    """
+    Executes SNMP set operations (add or delete) for a list of RSUs (Roadside Units) within a specified organization.
+
+    This function performs the following steps for each RSU in the provided list:
+    1. Fetches RSU information for the given organization.
+    2. Validates the completeness of RSU data.
+    3. Determines the appropriate SNMP index for the operation.
+    4. Performs the SNMP operation (add or delete) using the provided command and arguments.
+    5. Collects the result for each RSU, including status code and response data.
+    6. Updates the PostgreSQL database with the latest SNMP configuration for the processed RSUs.
+
+    Args:
+        command (str): The SNMP operation to perform (e.g., "rsufwdsnmpset-add" or "rsufwdsnmpset-del").
+        organization (str): The organization identifier for which the RSUs belong.
+        rsu_list (list): A list of RSU IPv4 addresses to process.
+        args (dict): Additional arguments required for the SNMP operation. May include "dest_ip" for delete operations and "msg_type".
+
+    Returns:
+        dict: A dictionary mapping each RSU IP address to a result object containing:
+            - "code" (int): HTTP-like status code indicating success or failure.
+            - "data" (str): Message or data returned from the SNMP operation or error details.
+    """
     return_dict = {}
     dest_ip = args.pop("dest_ip", None) if command == "rsufwdsnmpset-del" else None
 

@@ -1,19 +1,5 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react'
-import {
-  Box,
-  Button,
-  Card,
-  Container,
-  Divider,
-  Grid2,
-  InputAdornment,
-  Stack,
-  Tab,
-  Tabs,
-  TextField,
-  TextFieldProps,
-  Typography,
-} from '@mui/material'
+import React, { useState, useEffect } from 'react'
+import { Box, Button, Card, Container, InputAdornment, Tab, Tabs, TextField, Typography, useTheme } from '@mui/material'
 import { ConfigParamListTable } from '../../features/intersections/configuration/configuration-list-table'
 import RefreshIcon from '@mui/icons-material/Refresh'
 import SearchIcon from '@mui/icons-material/Search'
@@ -106,6 +92,8 @@ const Page = () => {
     tab: currentTab,
   })
 
+  const theme = useTheme()
+
   const { data: parameters, refetch } = useGetIntersectionParametersQuery(intersectionId)
 
   useEffect(() => {
@@ -159,86 +147,69 @@ const Page = () => {
                 flexGrow: 1,
               }}
             >
-              <Container maxWidth={false}>
-                <Box
-                  sx={{
-                    alignItems: 'center',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    flexWrap: 'wrap',
-                    m: -1,
-                  }}
-                >
-                  <Grid2 container justifyContent="space-between" spacing={3}>
-                    <Grid2>
-                      <Typography sx={{ m: 1 }} variant="h4" color="text.secondary">
-                        Configuration Parameters
-                      </Typography>
-                    </Grid2>
-                  </Grid2>
-                  <Box
-                    sx={{
-                      m: -1,
-                      mt: 3,
-                    }}
-                  ></Box>
-                </Box>
-                <Box
-                  sx={{
-                    m: -1,
-                    mt: 3,
-                    mb: 3,
-                  }}
-                >
-                  <Button
-                    color="primary"
-                    variant="contained"
-                    onClick={refetch}
-                    startIcon={<RefreshIcon fontSize="small" sx={{ color: 'white' }} />}
-                    sx={{ m: 1 }}
-                  >
-                    Refresh
-                  </Button>
-                </Box>
+              <Container
+                maxWidth={false}
+                sx={{
+                  backgroundColor: theme.palette.background.paper,
+                  marginTop: theme.spacing(3),
+                  borderRadius: '4px',
+                }}
+                disableGutters
+              >
                 <Card>
-                  <Tabs
-                    indicatorColor="primary"
-                    onChange={handleTabsChange}
-                    scrollButtons="auto"
-                    sx={{ px: 3 }}
-                    textColor="primary"
-                    value={currentTab}
-                    variant="scrollable"
-                  >
-                    {tabs.map((tab) => (
-                      <Tab key={tab.value} label={tab.label} value={tab.value} />
-                    ))}
-                  </Tabs>
-                  <Divider />
-                  <Box
-                    sx={{
-                      alignItems: 'center',
-                      display: 'flex',
-                      flexWrap: 'wrap',
-                      m: -1.5,
-                      p: 3,
-                    }}
-                  >
-                    <Stack>
+                  <Box>
+                    <Tabs
+                      onChange={handleTabsChange}
+                      value={currentTab}
+                      centered
+                      sx={{
+                        px: 3,
+                        mt: 1,
+                        '& .MuiButtonBase-root': { textTransform: 'capitalize' },
+                        '& .MuiTabs-indicator': { backgroundColor: theme.palette.custom.rowActionIcon },
+                        '& .Mui-selected': { color: `${theme.palette.custom.rowActionIcon} !important` },
+                      }}
+                    >
+                      {tabs.map((tab) => (
+                        <Tab key={tab.value} label={tab.label} value={tab.value} />
+                      ))}
+                    </Tabs>
+                    <Box
+                      sx={{
+                        alignItems: 'center',
+                        display: 'flex',
+                        alignContent: 'space-between',
+                        justifyContent: 'flex-start',
+                        flexWrap: 'wrap',
+                        m: -1.5,
+                        p: 2,
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          mb: 1,
+                          width: '100%',
+                        }}
+                      >
+                        <Typography color={theme.palette.text.secondary}>{currentDescription}</Typography>
+                      </Box>
                       <Box
                         component="form"
-                        sx={{
-                          flexGrow: 1,
-                          m: 1.5,
-                        }}
                         onSubmit={(e) => {
                           e.preventDefault()
                           // Handle form submission if needed
                         }}
+                        sx={{
+                          flexGrow: 1,
+                          m: 1.5,
+                        }}
                       >
                         <TextField
                           defaultValue=""
-                          fullWidth
+                          variant="standard"
                           onChange={handleQueryChange}
                           slotProps={{
                             input: {
@@ -249,11 +220,25 @@ const Page = () => {
                               ),
                             },
                           }}
-                          placeholder="Search parameters"
+                          placeholder="Search..."
+                          sx={{
+                            '& .Mui-focused::after': {
+                              borderBottom: `2px solid ${theme.palette.custom.rowActionIcon}`,
+                            },
+                          }}
                         />
                       </Box>
-                      <Typography variant="body1">{currentDescription}</Typography>
-                    </Stack>
+                      <Button
+                        color="info"
+                        variant="outlined"
+                        onClick={refetch}
+                        startIcon={<RefreshIcon fontSize="small" />}
+                        sx={{ m: 1 }}
+                        className="museo-slab capital-case"
+                      >
+                        Refresh
+                      </Button>
+                    </Box>
                   </Box>
 
                   <ConfigParamListTable

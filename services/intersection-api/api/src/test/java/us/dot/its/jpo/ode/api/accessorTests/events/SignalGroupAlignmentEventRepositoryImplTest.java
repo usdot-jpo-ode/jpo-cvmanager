@@ -29,7 +29,7 @@ import java.util.List;
 
 import org.bson.Document;
 
-import us.dot.its.jpo.ode.api.accessors.events.SignalGroupAlignmentEvent.SignalGroupAlignmentEventRepositoryImpl;
+import us.dot.its.jpo.ode.api.accessors.events.signal_group_alignment_event.SignalGroupAlignmentEventRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
 import org.springframework.boot.test.context.SpringBootTest;

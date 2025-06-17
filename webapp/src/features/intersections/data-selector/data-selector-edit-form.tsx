@@ -12,21 +12,18 @@ import {
   Card,
   CardActions,
   CardContent,
-  Divider,
   Grid2,
   TextField,
-  InputLabel,
   MenuItem,
   Select,
   InputAdornment,
-  FormControl,
 } from '@mui/material'
 import { FormikCheckboxList } from './formik-checkbox-list'
 import { selectDataSelectorForm, setDataSelectorForm } from './dataSelectorSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../../store'
-import { selectIntersections, selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
+import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
 
 interface Item {
   label: string
@@ -36,26 +33,26 @@ interface Item {
 // TODO: Add processing_time_period event type when supported by the API
 const EVENT_TYPES: Item[] = [
   { label: 'All', value: 'All' },
-  { label: 'ConnectionOfTravelEvent', value: 'connection_of_travel' },
-  { label: 'IntersectionReferenceAlignmentEvent', value: 'intersection_reference_alignment' },
-  { label: 'LaneDirectionOfTravelEvent', value: 'lane_direction_of_travel' },
-  { label: 'SignalGroupAlignmentEvent', value: 'signal_group_alignment' },
-  { label: 'SignalStateConflictEvent', value: 'signal_state_conflict' },
-  { label: 'SignalStateEvent', value: 'signal_state' },
-  { label: 'SignalStateStopEvent', value: 'signal_state_stop' },
-  { label: 'TimeChangeDetailsEvent', value: 'time_change_details' },
-  { label: 'MapMinimumDataEvent', value: 'map_minimum_data' },
-  { label: 'SpatMinimumDataEvent', value: 'spat_minimum_data' },
-  { label: 'MapBroadcastRateEvent', value: 'map_broadcast_rate' },
-  { label: 'SpatBroadcastRateEvent', value: 'spat_broadcast_rate' },
+  { label: 'ConnectionOfTravelEvent', value: 'connection-of-travel' },
+  { label: 'IntersectionReferenceAlignmentEvent', value: 'intersection-reference-alignment' },
+  { label: 'LaneDirectionOfTravelEvent', value: 'lane-direction-of-travel' },
+  { label: 'SignalGroupAlignmentEvent', value: 'signal-group-alignment' },
+  { label: 'SignalStateConflictEvent', value: 'signal-state-conflict' },
+  { label: 'StopLinePassageEvent', value: 'stop-line-passage' },
+  { label: 'StopLineStopEvent', value: 'stop-line-stop' },
+  { label: 'TimeChangeDetailsEvent', value: 'time-change-details' },
+  { label: 'MapMinimumDataEvent', value: 'map-minimum-data' },
+  { label: 'SpatMinimumDataEvent', value: 'spat-minimum-data' },
+  { label: 'MapBroadcastRateEvent', value: 'map-broadcast-rate' },
+  { label: 'SpatBroadcastRateEvent', value: 'spat-broadcast-rate' },
 ]
 
 const ASSESSMENT_TYPES: Item[] = [
   { label: 'All', value: 'All' },
-  { label: 'SignalStateEventAssessment', value: 'signal_state_event_assessment' },
-  { label: 'StopLineStopAssessment', value: 'signal_state_assessment' },
-  { label: 'LaneDirectionOfTravelAssessment', value: 'lane_direction_of_travel' },
-  { label: 'ConnectionOfTravelAssessment', value: 'connection_of_travel' },
+  { label: 'StopLinePassageAssessment', value: 'stop-line-passage-assessment' },
+  { label: 'StopLineStopAssessment', value: 'stop-line-stop-assessment' },
+  { label: 'LaneDirectionOfTravelAssessment', value: 'lane-direction-of-travel' },
+  { label: 'ConnectionOfTravelAssessment', value: 'connection-of-travel' },
 ]
 
 export const DataSelectorEditForm = (props: { onQuery: (query: any) => void; onVisualize: (query: any) => void }) => {
@@ -129,29 +126,27 @@ export const DataSelectorEditForm = (props: { onQuery: (query: any) => void; onV
         )
       case 'events':
         return (
-          <Grid2 size={{ md: 6, xs: 12 }}>
-            <InputLabel variant="standard" htmlFor="uncontrolled-native">
-              Event Type
-            </InputLabel>
-            <FormikCheckboxList
-              values={EVENT_TYPES}
-              selectedValues={formik.values.eventTypes}
-              setValues={(val) => formik.setFieldValue('eventTypes', val)}
-            />
-          </Grid2>
+          <>
+            <Grid2 container>
+              <FormikCheckboxList
+                values={EVENT_TYPES}
+                selectedValues={formik.values.eventTypes}
+                setValues={(val) => formik.setFieldValue('eventTypes', val)}
+              />
+            </Grid2>
+          </>
         )
       case 'assessments':
         return (
-          <Grid2 size={{ md: 6, xs: 12 }}>
-            <InputLabel variant="standard" htmlFor="uncontrolled-native">
-              Assessment Type
-            </InputLabel>
-            <FormikCheckboxList
-              values={ASSESSMENT_TYPES}
-              selectedValues={formik.values.assessmentTypes}
-              setValues={(val) => formik.setFieldValue('assessmentTypes', val)}
-            />
-          </Grid2>
+          <>
+            <Grid2 container>
+              <FormikCheckboxList
+                values={ASSESSMENT_TYPES}
+                selectedValues={formik.values.assessmentTypes}
+                setValues={(val) => formik.setFieldValue('assessmentTypes', val)}
+              />
+            </Grid2>
+          </>
         )
       default:
         return <></>
@@ -161,8 +156,6 @@ export const DataSelectorEditForm = (props: { onQuery: (query: any) => void; onV
   return (
     <form onSubmit={formik.handleSubmit} {...other}>
       <Card>
-        {/* <CardHeader title="Edit Configuration Parameter" /> */}
-        <Divider />
         <CardContent>
           <Grid2 container spacing={3} sx={{ justifyContent: 'flex-start', flexWrap: 'wrap' }}>
             <Grid2 sx={{ width: '200px' }}>
@@ -215,6 +208,7 @@ export const DataSelectorEditForm = (props: { onQuery: (query: any) => void; onV
                             formik.setFieldValue('timeUnit', e.target.value)
                           }}
                           onBlur={formik.handleBlur}
+                          variant="standard"
                         >
                           <MenuItem value={'minutes'}>minutes</MenuItem>
                           <MenuItem value={'hours'}>hours</MenuItem>
@@ -228,14 +222,13 @@ export const DataSelectorEditForm = (props: { onQuery: (query: any) => void; onV
               />
             </Grid2>
           </Grid2>
-          <Grid2 container spacing={3} sx={{ justifyContent: 'flex-start', flexWrap: 'wrap', marginTop: 3 }}>
+          <Grid2 container spacing={3} sx={{ justifyContent: 'flex-start', flexWrap: 'wrap' }}>
             {getTypeSpecificFilters(formik.values.type)}
           </Grid2>
         </CardContent>
         <CardActions
           sx={{
             flexWrap: 'wrap',
-            m: -1,
           }}
         >
           <Button
@@ -244,6 +237,7 @@ export const DataSelectorEditForm = (props: { onQuery: (query: any) => void; onV
             sx={{ m: 1 }}
             variant="contained"
             onClick={() => setVisualize(false)}
+            className="museo-slab capital-case"
           >
             Query Data
           </Button>
@@ -253,6 +247,7 @@ export const DataSelectorEditForm = (props: { onQuery: (query: any) => void; onV
             sx={{ m: 1 }}
             variant="contained"
             onClick={() => setVisualize(true)}
+            className="museo-slab capital-case"
           >
             View Counts
           </Button>

@@ -18,24 +18,23 @@ WORKDIR /home/custom-user-provider
 RUN mvn clean package -DskipTests
 
 ################## Build custom user provider into keycloak ##################
-FROM quay.io/keycloak/keycloak:21.1 as builder
+FROM quay.io/keycloak/keycloak:26.0.5 as builder
 
+ARG KEYCLOAK_LOGIN_THEME_NAME
 ENV KC_DB=postgres
 
 WORKDIR /opt/keycloak
 
 COPY --from=jarbuilder /home/custom-user-provider/target/keycloak-custom-providers.jar /opt/keycloak/providers/
+COPY ${KEYCLOAK_LOGIN_THEME_NAME} /opt/keycloak/providers/theme.jar
 
-RUN /opt/keycloak/bin/kc.sh build
+RUN /opt/keycloak/bin/kc.sh build --health-enabled=true
 
 ################## Integrate realm and theme ##################
-FROM quay.io/keycloak/keycloak:21.1
-ARG KEYCLOAK_LOGIN_THEME_NAME
+FROM quay.io/keycloak/keycloak:26.0.5
 COPY --from=ubi-micro-build /mnt/rootfs /
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
-COPY custom-welcome /opt/keycloak/themes/custom-welcome
 COPY realm.json /opt/keycloak/data/import/realm.json
-COPY ${KEYCLOAK_LOGIN_THEME_NAME} /opt/keycloak/providers/theme.jar
 
 HEALTHCHECK --interval=5s --timeout=10s --start-period=30s --retries=30 \
 CMD curl --fail http://localhost:8080/health || exit 1

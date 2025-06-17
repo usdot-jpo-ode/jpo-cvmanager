@@ -29,7 +29,7 @@ import java.util.List;
 
 import org.bson.Document;
 
-import us.dot.its.jpo.ode.api.accessors.events.TimeChangeDetailsEvent.TimeChangeDetailsEventRepositoryImpl;
+import us.dot.its.jpo.ode.api.accessors.events.time_change_details_event.TimeChangeDetailsEventRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
 import org.springframework.boot.test.context.SpringBootTest;

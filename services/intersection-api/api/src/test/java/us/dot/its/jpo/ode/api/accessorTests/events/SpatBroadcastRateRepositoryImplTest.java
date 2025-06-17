@@ -39,7 +39,7 @@ import java.util.List;
 import org.bson.Document;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.broadcast_rate.SpatBroadcastRateEvent;
-import us.dot.its.jpo.ode.api.accessors.events.SpatBroadcastRateEvent.SpatBroadcastRateEventRepositoryImpl;
+import us.dot.its.jpo.ode.api.accessors.events.spat_broadcast_rate_event.SpatBroadcastRateEventRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.AggregationResult;
 import us.dot.its.jpo.ode.api.models.AggregationResultCount;
 import us.dot.its.jpo.ode.api.models.IDCount;

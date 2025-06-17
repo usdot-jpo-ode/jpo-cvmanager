@@ -32,6 +32,17 @@ prop_namevalue = {
 
 
 def ip_to_hex(ip):
+    """
+    Converts an IPv4 address string to a hexadecimal string representation
+    with a fixed prefix, suitable for use in certain SNMP or network contexts.
+
+    Args:
+        ip (str): The IPv4 address in dotted-decimal notation (e.g., "192.168.1.1").
+
+    Returns:
+        str: The hexadecimal string representation of the IP address,
+             prefixed with "00000000000000000000FFFF".
+    """
     hex_dest_ip = ""
     for octet in ip.split("."):
         if len(hex(int(octet))[2:]) == 1:
@@ -40,19 +51,26 @@ def ip_to_hex(ip):
     return "00000000000000000000FFFF" + hex_dest_ip
 
 
-# delta is in years
-def hex_datetime(now, delta=0):
-    # Regex to convert int to hex and to ensure a leading 0 if less than specified length
-    regex = "{0:0{1}x}"
-    hex = regex.format(now.year + delta, 4)
-    hex += regex.format(now.month, 2)
-    hex += regex.format(now.day, 2)
-    hex += regex.format(now.hour, 2)
-    hex += regex.format(now.minute, 2)
-    return hex
-
-
 def set_rsu_status(rsu_ip, snmp_creds, operate):
+    """
+    Sets the status of a Roadside Unit (RSU) to either 'operate' or 'standby' mode using SNMP.
+
+    Args:
+        rsu_ip (str): The IP address of the RSU device.
+        snmp_creds (dict): SNMP credentials required for authentication.
+        operate (bool): If True, sets the RSU to 'operate' mode; if False, sets to 'standby' mode.
+
+    Returns:
+        str: "success" if the operation was successful, or an error message string if an error occurred.
+
+    Logs:
+        - Information about the status change operation.
+        - Output of the SNMP command.
+        - Error details if the operation fails.
+
+    Raises:
+        None. Handles subprocess.CalledProcessError internally and returns an error message.
+    """
     try:
         if operate:
             logging.info(f"Changing RSU status to operate..")
@@ -82,6 +100,19 @@ def set_rsu_status(rsu_ip, snmp_creds, operate):
 
 
 def perform_snmp_mods(snmp_mods):
+    """
+    Executes a list of SNMP modification commands and logs their execution and output.
+
+    Args:
+        snmp_mods (list of str): A list of SNMP command strings to be executed.
+
+    Logs:
+        - The SNMP command being executed.
+        - The output of each SNMP command after execution.
+
+    Raises:
+        subprocess.CalledProcessError: If any SNMP command returns a non-zero exit status.
+    """
     for snmp_mod in snmp_mods:
         # Perform configuration
         logging.info(f'Running SNMPSET "{snmp_mod}"')
@@ -91,6 +122,30 @@ def perform_snmp_mods(snmp_mods):
 
 
 def get(rsu_ip, snmp_creds):
+    """
+    Retrieve and parse SNMP message forwarding configuration from a specified RSU.
+
+    This function executes an SNMP walk command to query the message forwarding configuration
+    from a Roadside Unit (RSU) using SNMPv3 credentials. The output is parsed and converted
+    into a structured dictionary format for further processing.
+
+    Args:
+        rsu_ip (str): The IP address of the RSU to query.
+        snmp_creds (dict): SNMPv3 credentials required for authentication.
+
+    Returns:
+        tuple: A tuple containing:
+            - dict: A dictionary with the key "RsuFwdSnmpwalk" mapping to the parsed SNMP configuration,
+              an error message, or an empty dict if no configuration is found.
+            - int: HTTP status code (200 for success, 500 for SNMP command errors).
+
+    Notes:
+        - If the SNMP walk output contains fewer than 10 lines, it is assumed that there is no
+          message forwarding configuration or an error occurred, and an empty response is returned.
+        - If an error occurs during the SNMP walk, an error message and a 500 status code are returned.
+        - The function relies on external utilities: `snmpcredential.get_authstring`, `snmperrorcheck.check_error_type`,
+          and a mapping `prop_namevalue` for property name/value processing.
+    """
     # Create the SNMPWalk command based on the road
     cmd = "snmpwalk -v 3 -t 5 {auth} {rsuip} 1.0.15628.4.1.7".format(
         auth=snmpcredential.get_authstring(snmp_creds), rsuip=rsu_ip
@@ -154,6 +209,36 @@ def get(rsu_ip, snmp_creds):
 def set(
     rsu_ip, manufacturer, snmp_creds, dest_ip, udp_port, rsu_index, psid, raw=False
 ):
+    """
+    Configures RSU (Roadside Unit) message forwarding via SNMP.
+
+    This function sets up message forwarding on an RSU device by constructing and executing
+    the appropriate SNMP set commands, either according to the RSU 4.1 specification or in
+    a raw mode for non-standard PSIDs. It handles both manufacturer-specific and generic
+    configurations, including setting delivery start/stop times and enabling forwarding.
+
+    Args:
+        rsu_ip (str): IP address of the RSU device.
+        manufacturer (str): Manufacturer name of the RSU (e.g., "Commsignia").
+        snmp_creds (dict): SNMP credentials for authentication.
+        dest_ip (str): Destination IP address for message forwarding.
+        udp_port (int): UDP port number for forwarding.
+        rsu_index (int): Index of the RSU forwarding entry.
+        psid (str): Provider Service Identifier (PSID) in hexadecimal format.
+        raw (bool, optional): If True, use raw SNMP commands (not RSU 4.1 spec). Defaults to False.
+
+    Returns:
+        tuple: (response_message (str), status_code (int))
+            response_message: Success or error message.
+            status_code: HTTP-like status code (200 for success, 500 for failure).
+
+    Raises:
+        subprocess.CalledProcessError: If an SNMP command fails to execute.
+
+    Side Effects:
+        - Puts the RSU in standby mode before configuration and returns it to run mode after.
+        - Logs SNMP configuration actions and errors.
+    """
     try:
         # Put RSU in standby
         rsu_mod_result = set_rsu_status(rsu_ip, snmp_creds, operate=False)
@@ -197,11 +282,11 @@ def set(
                 # UTC
                 now = datetime.now()
             snmp_mod += "RSU-MIB:rsuDsrcFwdDeliveryStart.{index} x {dt} ".format(
-                index=rsu_index, dt=hex_datetime(now)
+                index=rsu_index, dt=rsu_message_forward_helpers.hex_datetime(now)
             )
             # Stop datetime, hex of the current time + 10 years in the future
             snmp_mod += "RSU-MIB:rsuDsrcFwdDeliveryStop.{index} x {dt} ".format(
-                index=rsu_index, dt=hex_datetime(now, 10)
+                index=rsu_index, dt=rsu_message_forward_helpers.hex_datetime(now, 10)
             )
             snmp_mod += "RSU-MIB:rsuDsrcFwdEnable.{index} i 1".format(index=rsu_index)
             snmp_mods.append(snmp_mod)
@@ -247,7 +332,10 @@ def set(
                 now = datetime.now()
             snmp_mods.append(
                 "snmpset -v 3 -t 5 {auth} {rsuip} 1.0.15628.4.1.7.1.8.{index} x {dt}".format(
-                    auth=authstring, rsuip=rsu_ip, index=rsu_index, dt=hex_datetime(now)
+                    auth=authstring,
+                    rsuip=rsu_ip,
+                    index=rsu_index,
+                    dt=rsu_message_forward_helpers.hex_datetime(now),
                 )
             )
             # Stop datetime, hex of the current time + 10 years in the future
@@ -256,7 +344,7 @@ def set(
                     auth=authstring,
                     rsuip=rsu_ip,
                     index=rsu_index,
-                    dt=hex_datetime(now, 10),
+                    dt=rsu_message_forward_helpers.hex_datetime(now, 10),
                 )
             )
             snmp_mods.append(
@@ -289,6 +377,23 @@ def set(
 
 
 def delete(rsu_ip, snmp_creds, rsu_index):
+    """
+    Deletes a DSRC forward configuration from an RSU (Roadside Unit) using SNMP.
+
+    This function performs the following steps:
+    1. Puts the RSU into standby mode.
+    2. Executes an SNMP SET command to delete the specified DSRC forward configuration.
+    3. Handles and logs any errors encountered during the SNMP operation.
+    4. Returns the RSU to run mode regardless of success or failure.
+
+    Args:
+        rsu_ip (str): The IP address of the RSU.
+        snmp_creds (dict): SNMP credentials required for authentication.
+        rsu_index (int): The index of the DSRC forward configuration to delete.
+
+    Returns:
+        tuple: A tuple containing a response message (str) and an HTTP status code (int).
+    """
     try:
         # Put RSU in standby
         rsu_mod_result = set_rsu_status(rsu_ip, snmp_creds, operate=False)

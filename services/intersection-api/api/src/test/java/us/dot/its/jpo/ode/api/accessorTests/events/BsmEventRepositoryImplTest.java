@@ -28,7 +28,7 @@ import java.util.List;
 
 import org.bson.Document;
 
-import us.dot.its.jpo.ode.api.accessors.events.BsmEvent.BsmEventRepositoryImpl;
+import us.dot.its.jpo.ode.api.accessors.events.bsm_event.BsmEventRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
 import org.springframework.boot.test.context.SpringBootTest;

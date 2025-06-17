@@ -3,16 +3,14 @@ import {
   Button,
   Card,
   Container,
-  Divider,
   Grid2,
   InputAdornment,
-  Stack,
   Tab,
   Tabs,
   TextField,
   TextFieldProps,
   Typography,
-  CardHeader,
+  useTheme,
 } from '@mui/material'
 import { NotificationsTableResults } from './notifications-table-results'
 import RefreshIcon from '@mui/icons-material/Refresh'
@@ -22,17 +20,18 @@ import React, { useEffect, useState, useRef } from 'react'
 import { selectToken } from '../../../generalSlices/userSlice'
 import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
 import { useSelector } from 'react-redux'
+import { Close } from '@mui/icons-material'
 
 const tabs = [
   {
     label: 'All',
     value: 'all',
-    description: 'All Notifications',
+    description: '',
   },
   {
     label: 'Cease Broadcast',
-    value: 'CeaseBaroadcast',
-    description: 'Notification Requests to Cease Broadcast of associated messages',
+    value: 'CeaseBroadcast',
+    description: 'Notification Requests to Cease Broadcast of Associated Messages',
   },
 ]
 
@@ -78,6 +77,7 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
   })
   const token = useSelector(selectToken)
   const dbIntersectionId = useSelector(selectSelectedIntersectionId)
+  const theme = useTheme()
 
   const updateNotifications = () => {
     if (dbIntersectionId) {
@@ -96,6 +96,10 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
     } else {
       console.error('Did not attempt to dismiss notifications. Intersection ID:', dbIntersectionId)
     }
+    // wait 1 second, then re-request notifications
+    setTimeout(() => {
+      updateNotifications()
+    }, 1000)
   }
 
   useEffect(() => {
@@ -145,107 +149,97 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
 
   return (
     <>
-      <Container maxWidth={false}>
-        {!simple && (
-          <>
-            <Box
-              sx={{
-                alignItems: 'center',
-                display: 'flex',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                m: -1,
-              }}
-            >
-              <Grid2 container justifyContent="space-between" spacing={3}>
-                <Grid2>
-                  <Typography sx={{ m: 1 }} variant="h4" color="text.secondary">
-                    Notifications
-                  </Typography>
-                </Grid2>
-              </Grid2>
-              <Box
-                sx={{
-                  m: -1,
-                  mt: 3,
-                }}
-              ></Box>
-            </Box>
-            <Box
-              sx={{
-                m: -1,
-                mt: 3,
-                mb: 3,
-              }}
-            >
-              <Button
-                color="primary"
-                variant="contained"
-                onClick={updateNotifications}
-                startIcon={<RefreshIcon fontSize="small" />}
-                sx={{ m: 1 }}
-              >
-                Refresh
-              </Button>
-            </Box>
-          </>
-        )}
+      <Container
+        maxWidth={false}
+        sx={{
+          backgroundColor: theme.palette.background.paper,
+          marginTop: theme.spacing(3),
+          borderRadius: '4px',
+        }}
+        disableGutters
+      >
         <Card sx={{ overflowY: 'auto' }}>
           {!simple && (
-            <>
-              <CardHeader title="Notifications" />
+            <Box>
               <Tabs
-                indicatorColor="primary"
                 onChange={handleTabsChange}
-                scrollButtons="auto"
-                sx={{ px: 3 }}
-                textColor="primary"
                 value={currentTab}
-                variant="scrollable"
+                centered
+                sx={{
+                  px: 3,
+                  mt: 1,
+                  '& .MuiButtonBase-root': { textTransform: 'capitalize' },
+                  '& .MuiTabs-indicator': { backgroundColor: theme.palette.custom.rowActionIcon },
+                  '& .Mui-selected': { color: `${theme.palette.custom.rowActionIcon} !important` },
+                }}
               >
                 {tabs.map((tab) => (
                   <Tab key={tab.value} label={tab.label} value={tab.value} />
                 ))}
               </Tabs>
-              <Divider />
               <Box
                 sx={{
                   alignItems: 'center',
                   display: 'flex',
+                  alignContent: 'space-between',
+                  justifyContent: 'flex-start',
                   flexWrap: 'wrap',
                   m: -1.5,
-                  p: 3,
+                  p: 2,
                 }}
               >
-                <Stack>
-                  <Box
-                    component="form"
-                    onSubmit={handleQueryChange}
-                    sx={{
-                      flexGrow: 1,
-                      m: 1.5,
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    mb: 1,
+                    width: '100%',
+                  }}
+                >
+                  <Typography color={theme.palette.text.secondary}>{currentDescription}</Typography>
+                </Box>
+                <Box
+                  component="form"
+                  onSubmit={handleQueryChange}
+                  sx={{
+                    flexGrow: 1,
+                    m: 1.5,
+                  }}
+                >
+                  <TextField
+                    defaultValue=""
+                    variant="standard"
+                    slotProps={{
+                      input: {
+                        ref: queryRef,
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <SearchIcon fontSize="small" />
+                          </InputAdornment>
+                        ),
+                      },
                     }}
-                  >
-                    <TextField
-                      defaultValue=""
-                      fullWidth
-                      slotProps={{
-                        input: {
-                          ref: queryRef,
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <SearchIcon fontSize="small" />
-                            </InputAdornment>
-                          ),
-                        },
-                      }}
-                      placeholder="Search parameters"
-                    />
-                  </Box>
-                  <Typography variant="body1">{currentDescription}</Typography>
-                </Stack>
+                    placeholder="Search..."
+                    sx={{
+                      '& .Mui-focused::after': {
+                        borderBottom: `2px solid ${theme.palette.custom.rowActionIcon}`,
+                      },
+                    }}
+                  />
+                </Box>
+                <Button
+                  color="info"
+                  variant="outlined"
+                  onClick={updateNotifications}
+                  startIcon={<RefreshIcon fontSize="small" />}
+                  sx={{ m: 1 }}
+                  className="museo-slab capital-case"
+                >
+                  Refresh
+                </Button>
               </Box>
-            </>
+            </Box>
           )}
 
           <NotificationsTableResults
@@ -267,19 +261,24 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
             sx={{
               m: -1,
               mt: 3,
+              pb: 1,
             }}
           >
-            <Grid2 container justifyContent="left" spacing={3}>
+            <Grid2 container justifyContent="right" spacing={3}>
               <Grid2>
                 <Button
                   sx={{
                     m: 1,
+                    mr: 3,
                   }}
-                  variant="contained"
+                  variant="outlined"
+                  color="info"
+                  startIcon={<Close fontSize="small" />}
                   onClick={() => {
                     dismissNotifications(acceptedNotifications)
                   }}
                   disabled={acceptedNotifications.length <= 0 ? true : false}
+                  className="museo-slab capital-case"
                 >
                   Dismiss Notifications
                 </Button>

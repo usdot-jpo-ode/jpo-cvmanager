@@ -7,8 +7,16 @@ from multiprocessing import Pool, cpu_count
 
 
 class UpdatePostgresRsuSecurity(UpdatePostgresSnmpAbstractClass):
+    """
+    UpdatePostgresRsuSecurity is a class that manages the synchronization of RSU SCMS health expirations collected via SNMP
+    between the CV Manager PostgreSQL database and the RSUs. It provides methods to fetch configurations directly from
+    RSUs in order to insert and update SNMP configurations stored in PostgreSQL.
+    """
 
     def insert_config_list(self, snmp_config_list):
+        """
+        Inserts a list of SNMP RSU SCMS expiration durations (hours) into the PostgreSQL database.
+        """
         if len(snmp_config_list) == 0:
             logging.info("No RSU SCMS data to insert into PostgreSQL")
             return
@@ -25,6 +33,10 @@ class UpdatePostgresRsuSecurity(UpdatePostgresSnmpAbstractClass):
         pgquery.write_db(query[:-1])
 
     def update_postgresql(self, rsu_snmp_configs_obj, subset=False):
+        """
+        Synchronizes the SNMP RSU SCMS expiration durations between the PostgreSQL database and the provided RSU
+        configurations. Handles additions but no deletions are done for historical analysis.
+        """
         snmp_config_list = []
         for rsu_id, config in rsu_snmp_configs_obj.items():
             if config is None:
@@ -45,6 +57,11 @@ class UpdatePostgresRsuSecurity(UpdatePostgresSnmpAbstractClass):
             logging.info("No RSU SCMS data to update in PostgreSQL")
 
     def process_rsu(self, rsu):
+        """
+        Processes a single RSU to retrieve its SCMS certificate expiration duration via SNMP in hours.
+        Returns a tuple of (rsu_id, config) where config contains the timestamp and expiration duration.
+        If the SNMP version is unsupported or the SNMP request fails, returns (rsu_id, None) to indicate unknown duration.
+        """
         # Process a single RSU
         snmp_creds = {
             "username": rsu["snmp_username"],
@@ -82,6 +99,9 @@ class UpdatePostgresRsuSecurity(UpdatePostgresSnmpAbstractClass):
         return rsu["rsu_id"], config
 
     def get_snmp_configs(self, rsu_list):
+        """
+        Retrieves SNMP configuration objects for a list of RSUs in parallel.
+        """
         config_obj = {}
 
         # Use a multiprocessing pool to process RSUs in parallel

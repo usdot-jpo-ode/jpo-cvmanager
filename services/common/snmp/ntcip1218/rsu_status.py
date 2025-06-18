@@ -4,6 +4,9 @@ import common.snmp.snmpcredential as snmpcredential
 
 
 def convert_status_value(val):
+    """
+    Converts the SNMP NTCIP-1218 value for RSU status into an integer based on the NTCIP-1218 standard.
+    """
     if val == "other(1)":
         return 1
     elif val == "okay(2)":
@@ -17,6 +20,12 @@ def convert_status_value(val):
 
 
 def get(rsu_ip, snmp_creds):
+    """
+    Retrieves the RSU's status using SNMP NTCIP-1218 OID.
+    Returns a dictionary with the RSU status as an integer.
+    Returns 5 for 'unknown' status if the command fails or the status is not recognized
+    which conforms to the NTCIP-1218 standardized way to report an unknown RSU status.
+    """
     snmpget_result = None
 
     try:

@@ -5,6 +5,9 @@ import common.snmp.snmperrorcheck as snmperrorcheck
 
 
 def convert_location_value(val):
+    """
+    Converts the SNMP NTCIP-1218 value for latitude or longitude into a float in degrees.
+    """
     numerical = val.split(" ")[0]
     # rsuLocationLat = 900000001 represents unknown
     if numerical == "900000001":
@@ -22,6 +25,10 @@ def convert_location_value(val):
 
 
 def get(rsu_ip, snmp_creds):
+    """
+    Retrieves the RSU's latitude and longitude using SNMP NTCIP-1218 OIDs.
+    Rerturns a dictionary with latitude and longitude in degrees.
+    """
     snmpget_result = {"latitude": None, "longitude": None}
 
     # Collect RSU latitude

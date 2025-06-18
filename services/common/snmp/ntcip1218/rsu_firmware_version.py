@@ -5,6 +5,10 @@ import common.snmp.snmperrorcheck as snmperrorcheck
 
 
 def get(rsu_ip, snmp_creds):
+    """
+    Retrieves the RSU's firmware version using SNMP NTCIP-1218 OID.
+    Returns a dictionary with the firmware version as a string.
+    """
     snmpget_result = None
 
     try:

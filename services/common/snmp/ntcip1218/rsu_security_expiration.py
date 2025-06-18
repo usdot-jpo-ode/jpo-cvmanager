@@ -8,6 +8,10 @@ import common.snmp.snmperrorcheck as snmperrorcheck
 # Returns a human-readable string of the expiration time of the RSU security certificate
 # The expiration time is granular to the hour
 def get(rsu_ip, snmp_creds):
+    """
+    Retrieves the RSU's security certificate expiration time using SNMP NTCIP-1218 OIDs.
+    Returns a dictionary with the expiration time as a string in the format "YYYY-MM-DD HH:00:00 UTC".
+    """
     sec_result = None
     single_cert_duration = 0
     total_cert_duration = 0

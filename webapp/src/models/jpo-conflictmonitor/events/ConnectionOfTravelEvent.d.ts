@@ -1,4 +1,4 @@
-/// <reference path="Event.d.ts" />
+import './Event.d.ts'
 type ConnectionOfTravelEvent = MessageMonitor.Event & {
   timestamp: number
   ingressLaneID: number

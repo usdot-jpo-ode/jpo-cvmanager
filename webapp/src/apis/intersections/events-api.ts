@@ -1,4 +1,3 @@
-import { number } from 'prop-types'
 import { authApiHelper } from './api-helper-cviz'
 
 interface Item {

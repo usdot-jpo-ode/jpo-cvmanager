@@ -15,6 +15,7 @@ it('should take a snapshot', () => {
           selectedOrg={''}
           selectedOrgEmail={''}
           tableData={[]}
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           updateTableData={(orgname: string) => {}}
         />
       </Provider>

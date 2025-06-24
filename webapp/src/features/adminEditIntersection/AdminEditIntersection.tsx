@@ -35,7 +35,6 @@ import {
   Typography,
 } from '@mui/material'
 import toast from 'react-hot-toast'
-import CloseIcon from '@mui/icons-material/Close'
 import { AdminButton } from '../../styles/components/AdminButton'
 import { ErrorMessageText } from '../../styles/components/Messages'
 import '../../styles/fonts/museo-slab.css'
@@ -310,7 +309,7 @@ const AdminEditIntersection = () => {
                     value={selectedOrganizations.map((org) => org.name)}
                     defaultValue={selectedOrganizations.map((org) => org.name)}
                     onChange={(event) => {
-                      const selectedOrgs = event.target.value as String[]
+                      const selectedOrgs = event.target.value as string[]
                       dispatch(setSelectedOrganizations(organizations.filter((org) => selectedOrgs.includes(org.name))))
                     }}
                   >
@@ -336,9 +335,9 @@ const AdminEditIntersection = () => {
                     value={selectedRsus.map((rsu) => rsu.name)}
                     defaultValue={selectedRsus.map((rsu) => rsu.name)}
                     onChange={(event) => {
-                      const selectedRsus = event.target.value as String[]
+                      const selectedRsus = event.target.value as string[]
                       console.log('selectedRsus', selectedRsus)
-                      var filteredRsus = rsus.filter((rsu) => selectedRsus.includes(rsu.name))
+                      const filteredRsus = rsus.filter((rsu) => selectedRsus.includes(rsu.name))
                       console.log('filteredRsus', filteredRsus)
                       dispatch(setSelectedRsus(rsus.filter((rsu) => selectedRsus.includes(rsu.name))))
                     }}

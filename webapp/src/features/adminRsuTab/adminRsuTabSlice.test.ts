@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import reducer from './adminRsuTabSlice'
 import {
   // async thunks
@@ -156,7 +157,6 @@ describe('async thunks', () => {
       let action = deleteRsu({ rsu_ip, shouldUpdateTableData })
 
       apiHelper._deleteData = jest.fn().mockReturnValue({ status: 200, message: 'message', body: 'data' })
-      let resp = await action(dispatch, getState, undefined)
       expect(apiHelper._deleteData).toHaveBeenCalledWith({
         url: EnvironmentVars.adminRsu,
         token: 'token',
@@ -170,7 +170,6 @@ describe('async thunks', () => {
       action = deleteRsu({ rsu_ip, shouldUpdateTableData })
 
       apiHelper._deleteData = jest.fn().mockReturnValue({ status: 500, message: 'message' })
-      resp = await action(dispatch, getState, undefined)
       expect(apiHelper._deleteData).toHaveBeenCalledWith({
         url: EnvironmentVars.adminRsu,
         token: 'token',
@@ -190,7 +189,7 @@ describe('async thunks', () => {
 
     it('Updates the state correctly fulfilled', async () => {
       const loading = false
-      let state = reducer(initialState, {
+      const state = reducer(initialState, {
         type: 'adminRsuTab/deleteRsu/fulfilled',
       })
       expect(state).toEqual({ ...initialState, loading, value: { ...initialState.value } })
@@ -207,7 +206,7 @@ describe('async thunks', () => {
 
   describe('deleteMultipleRsus', () => {
     it('returns and calls the api correctly', async () => {
-      let dispatch = jest.fn()
+      const dispatch = jest.fn()
       const getState = jest.fn().mockReturnValue({
         user: {
           value: {
@@ -217,7 +216,7 @@ describe('async thunks', () => {
       })
       const rows = [{ ip: '1.1.1.1' }, { ip: '1.1.1.2' }, { ip: '1.1.1.3' }] as any
 
-      let action = deleteMultipleRsus(rows)
+      const action = deleteMultipleRsus(rows)
 
       await action(dispatch, getState, undefined)
       expect(dispatch).toHaveBeenCalledTimes(rows.length + 1 + 2)

@@ -22,8 +22,8 @@ import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
 import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
-import { useNavigate, useParams } from 'react-router-dom'
-import { selectEditNotificationRowData, selectTableData } from '../adminNotificationTab/adminNotificationTabSlice'
+import { useNavigate } from 'react-router-dom'
+import { selectEditNotificationRowData } from '../adminNotificationTab/adminNotificationTabSlice'
 import { AdminNotificationForm } from '../adminAddNotification/adminAddNotificationSlice'
 import { selectEmail } from '../../generalSlices/userSlice'
 import { ErrorMessageText, SuccessMessageText } from '../../styles/components/Messages'
@@ -32,15 +32,12 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
   FormControl,
-  IconButton,
   InputLabel,
   MenuItem,
   Select,
   Typography,
 } from '@mui/material'
-import CloseIcon from '@mui/icons-material/Close'
 import { SideBarHeader } from '../../styles/components/SideBarHeader'
 
 const AdminEditNotification = () => {
@@ -58,12 +55,9 @@ const AdminEditNotification = () => {
   const navigate = useNavigate()
 
   const {
-    register,
     handleSubmit,
-    formState: { errors },
+    formState: {},
   } = useForm<AdminNotificationForm>()
-
-  const { email } = useParams<{ email: string }>()
 
   useEffect(() => {
     dispatch(getNotificationData())

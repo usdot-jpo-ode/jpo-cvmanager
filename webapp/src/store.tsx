@@ -1,4 +1,4 @@
-import { Action, ThunkAction, configureStore } from '@reduxjs/toolkit'
+import { configureStore } from '@reduxjs/toolkit'
 import rsuReducer from './generalSlices/rsuSlice'
 import userReducer from './generalSlices/userSlice'
 import wzdxReducer from './generalSlices/wzdxSlice'
@@ -31,7 +31,7 @@ import dataSelectorReducer from './features/intersections/data-selector/dataSele
 import { intersectionApiSlice } from './features/api/intersectionApiSlice'
 import mapSliceReducer from './pages/mapSlice'
 
-export const setupStore = (preloadedState: any) => {
+export const setupStore = (preloadedState?: Partial<RootState>) => {
   return configureStore({
     reducer: {
       rsu: rsuReducer,
@@ -79,8 +79,7 @@ export const setupStore = (preloadedState: any) => {
 
 type AppStore = ReturnType<typeof setupStore>
 export type AppState = ReturnType<AppStore['getState']>
-type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppState, unknown, Action>
 
 export type AppDispatch = ReturnType<typeof setupStore>['dispatch']
 
-export type RootState = ReturnType<ReturnType<typeof setupStore>['getState']>
+export type RootState = ReturnType<ReturnType<typeof configureStore>['getState']>

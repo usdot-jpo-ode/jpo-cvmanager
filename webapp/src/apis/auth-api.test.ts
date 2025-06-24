@@ -48,6 +48,7 @@ it('Test AuthApi logIn method with non-200 response', async () => {
   global.fetch = jest.fn().mockResolvedValue(expectedResponse)
 
   try {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const response = await AuthApi.logIn(testToken)
   } catch (error) {
     expect(error).toEqual(expectedResponse)

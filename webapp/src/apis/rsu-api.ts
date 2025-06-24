@@ -21,7 +21,7 @@ class RsuApi {
   getRsuInfo = async (
     token: string,
     org: string,
-    url_ext: string = '',
+    url_ext = '',
     query_params: Record<string, string> = {}
   ): Promise<RsuInfoList> =>
     apiHelper._getData({
@@ -34,7 +34,7 @@ class RsuApi {
   getRsuOnline = async (
     token: string,
     org: string,
-    url_ext: string = '',
+    url_ext = '',
     query_params: Record<string, string> = {}
   ): Promise<RsuOnlineStatusRespMultiple | RsuOnlineStatusRespSingle> =>
     apiHelper._getData({
@@ -47,7 +47,7 @@ class RsuApi {
   getRsuCounts = async (
     token: string,
     org: string,
-    url_ext: string = '',
+    url_ext = '',
     query_params: Record<string, string> = {}
   ): Promise<RsuCounts> =>
     apiHelper._getData({
@@ -60,7 +60,7 @@ class RsuApi {
   getRsuMsgFwdConfigs = async (
     token: string,
     org: string,
-    url_ext: string = '',
+    url_ext = '',
     query_params: Record<string, string> = {}
   ): Promise<RsuMsgFwdConfigs> =>
     apiHelper._getData({
@@ -73,7 +73,7 @@ class RsuApi {
   getRsuAuth = async (
     token: string,
     org: string,
-    url_ext: string = '',
+    url_ext = '',
     query_params: Record<string, string> = {}
   ): Promise<GetRsuUserAuthResp> =>
     apiHelper._getData({
@@ -86,7 +86,7 @@ class RsuApi {
   getRsuCommand = async (
     token: string,
     org: string,
-    url_ext: string = '',
+    url_ext = '',
     query_params: Record<string, string> = {}
   ): Promise<GetRsuCommandResp> =>
     apiHelper._getData({
@@ -98,7 +98,7 @@ class RsuApi {
     })
   getSsmSrmData = async (
     token: string,
-    url_ext: string = '',
+    url_ext = '',
     query_params: Record<string, string> = {}
   ): Promise<SsmSrmData> =>
     apiHelper._getData({
@@ -110,7 +110,7 @@ class RsuApi {
   getIssScmsStatus = async (
     token: string,
     org: string,
-    url_ext: string = '',
+    url_ext = '',
     query_params: Record<string, string> = {}
   ): Promise<IssScmsStatus> =>
     apiHelper._getData({
@@ -122,7 +122,7 @@ class RsuApi {
     })
 
   // WZDx
-  getWzdxData = async (token: string, url_ext: string = '', query_params = {}): Promise<WZDxWorkZoneFeed> =>
+  getWzdxData = async (token: string, url_ext = '', query_params = {}): Promise<WZDxWorkZoneFeed> =>
     apiHelper._getData({
       url: EnvironmentVars.wzdxEndpoint + url_ext,
       token,
@@ -133,8 +133,8 @@ class RsuApi {
   // Moove AI
   postMooveAiData = async (
     token: string,
-    body: Object,
-    url_ext: string = ''
+    body: object,
+    url_ext = ''
   ): Promise<ApiMsgRespWithCodes<MooveAiFeature[]>> =>
     apiHelper._postData({
       url: EnvironmentVars.mooveAiDataEndpoint + url_ext,
@@ -144,7 +144,7 @@ class RsuApi {
     })
 
   // POST
-  postGeoMsgData = async (token: string, body: Object, url_ext: string = ''): Promise<ApiMsgRespWithCodes<any>> =>
+  postGeoMsgData = async (token: string, body: object, url_ext = ''): Promise<ApiMsgRespWithCodes<any>> =>
     apiHelper._postData({ url: EnvironmentVars.geoMsgDataEndpoint + url_ext, body, token, tag: 'rsu' })
 
   // POST
@@ -164,7 +164,7 @@ class RsuApi {
   }
 
   // POST
-  postRsuGeo = async (token: string, org: string, body: Object, url_ext: string): Promise<ApiMsgRespWithCodes<any>> => {
+  postRsuGeo = async (token: string, org: string, body: object, url_ext: string): Promise<ApiMsgRespWithCodes<any>> => {
     return await apiHelper._postData({
       url: EnvironmentVars.rsuGeoQueryEndpoint + url_ext,
       body,
@@ -175,7 +175,7 @@ class RsuApi {
   }
 
   // POST
-  postContactSupport = async (json: Object): Promise<ApiMsgRespWithCodes<any>> => {
+  postContactSupport = async (json: object): Promise<ApiMsgRespWithCodes<any>> => {
     return await apiHelper._postData({
       url: EnvironmentVars.contactSupport,
       body: JSON.stringify(json),
@@ -184,7 +184,7 @@ class RsuApi {
   }
 
   // POST
-  postRsuErrorSummary = async (json: Object): Promise<ApiMsgRespWithCodes<any>> => {
+  postRsuErrorSummary = async (json: object): Promise<ApiMsgRespWithCodes<any>> => {
     return await apiHelper._postData({
       url: EnvironmentVars.rsuErrorSummary,
       body: JSON.stringify(json),

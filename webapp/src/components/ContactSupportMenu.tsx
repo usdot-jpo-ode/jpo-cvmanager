@@ -21,7 +21,7 @@ const ContactSupportMenu = () => {
     formState: { errors },
   } = useForm()
 
-  const onSubmit = async (data: Object) => {
+  const onSubmit = async (data: object) => {
     try {
       const res = await RsuApi.postContactSupport(data)
       const status = res.status
@@ -31,6 +31,7 @@ const ContactSupportMenu = () => {
       } else {
         toast.error('Something went wrong: ' + status)
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (exception_var) {
       toast.error('An exception occurred, please try again later')
     }

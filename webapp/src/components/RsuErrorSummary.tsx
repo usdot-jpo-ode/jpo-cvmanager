@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 
@@ -29,7 +29,7 @@ const RsuErrorSummary = (props: RsuErrorSummaryType) => {
     formState: { errors },
   } = useForm()
 
-  const onSubmit = async (data: Object) => {
+  const onSubmit = async (data: object) => {
     try {
       const res = await RsuApi.postRsuErrorSummary(data)
       const status = res.status
@@ -39,6 +39,7 @@ const RsuErrorSummary = (props: RsuErrorSummaryType) => {
       } else {
         toast.error('Something went wrong: ' + status)
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (exception_var) {
       toast.error('An exception occurred, please try again later')
     }

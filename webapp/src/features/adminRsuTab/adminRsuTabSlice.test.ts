@@ -157,6 +157,7 @@ describe('async thunks', () => {
       let action = deleteRsu({ rsu_ip, shouldUpdateTableData })
 
       apiHelper._deleteData = jest.fn().mockReturnValue({ status: 200, message: 'message', body: 'data' })
+      let resp = await action(dispatch, getState, undefined)
       expect(apiHelper._deleteData).toHaveBeenCalledWith({
         url: EnvironmentVars.adminRsu,
         token: 'token',
@@ -170,6 +171,7 @@ describe('async thunks', () => {
       action = deleteRsu({ rsu_ip, shouldUpdateTableData })
 
       apiHelper._deleteData = jest.fn().mockReturnValue({ status: 500, message: 'message' })
+      resp = await action(dispatch, getState, undefined)
       expect(apiHelper._deleteData).toHaveBeenCalledWith({
         url: EnvironmentVars.adminRsu,
         token: 'token',

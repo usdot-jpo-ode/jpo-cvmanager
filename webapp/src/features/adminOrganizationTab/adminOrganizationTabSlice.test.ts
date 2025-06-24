@@ -214,6 +214,7 @@ describe('async thunks', () => {
       const action = deleteOrg(org_name)
 
       apiHelper._deleteData = jest.fn().mockReturnValue({ status: 200, message: 'message' })
+      let resp = await action(dispatch, getState, undefined)
       expect(apiHelper._deleteData).toHaveBeenCalledWith({
         url: EnvironmentVars.adminOrg,
         token: 'token',
@@ -223,6 +224,7 @@ describe('async thunks', () => {
 
       dispatch = jest.fn()
       apiHelper._deleteData = jest.fn().mockReturnValue({ status: 500, message: 'message' })
+      resp = await action(dispatch, getState, undefined)
       expect(apiHelper._deleteData).toHaveBeenCalledWith({
         url: EnvironmentVars.adminOrg,
         token: 'token',

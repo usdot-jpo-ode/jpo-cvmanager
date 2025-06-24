@@ -121,14 +121,11 @@ import { RoomOutlined } from '@mui/icons-material'
 import MooveAiHardBrakingLegend from '../components/MooveAiHardBrakingLegend'
 import { PrimaryButton } from '../styles/components/PrimaryButton'
 import { ConditionalRenderRsu, evaluateFeatureFlags } from '../feature-flags'
-
-// @ts-expect-error: workerClass does not exist in typed mapboxgl
-import('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').then((module) => {
-  // @ts-expect-error: module.default is the worker class
-  mapboxgl.workerClass = module.default
-})
-
 import { DateTime } from 'luxon'
+
+// eslint-disable-next-line
+// eslint-disable-next-line import/no-webpack-loader-syntax, @typescript-eslint/no-require-imports
+;(mapboxgl as any).workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default
 
 function MapPage() {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()

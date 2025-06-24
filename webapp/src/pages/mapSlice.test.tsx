@@ -60,8 +60,8 @@ describe('setMapViewState', () => {
   })
 })
 
-const mapState = { map: initialState } as any
+const mapState: RootState = { map: initialState }
 
 it('selectors return the correct value', async () => {
-  expect(selectViewState({ ...mapState })).toEqual(initialState.value.mapViewState)
+  expect(selectViewState(mapState)).toEqual(initialState.value.mapViewState)
 })

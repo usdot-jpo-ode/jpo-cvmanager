@@ -155,15 +155,15 @@ Some simple sample data is injected into the MongoDB instance when created. If m
 
 The following steps are intended to help get a new user up and running the JPO CV Manager in their own environment.
 
-1. Follow the Requirements and Limitations section and make sure all requirements are met.
-2. Run the following command to initialize submodules:
+1.  Follow the Requirements and Limitations section and make sure all requirements are met.
+2.  Run the following command to initialize submodules:
     ```sh
     git submodule update --init --recursive
     ```
-3. Create a copy of the sample.env named ".env" and refer to the Environmental variables section below for more information on each variable.
-    1.  Make sure at least the DOCKER_HOST_IP, KEYCLOAK_ADMIN_PASSWORD, KEYCLOAK_API_CLIENT_SECRET_KEY, and MAPBOX_TOKEN are set for this.
-    2.  Some of these variables, delineated by sections, pertain to the [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor), [jpo-geojsonconverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter), and [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode). Please see the documentation provided for these projects when setting these variables.
-4. The CV Manager has four components that need to be containerized and deployed: the API, the PostgreSQL database, Keycloak, and the webapp.
+3.  Create a copy of the sample.env named ".env" and refer to the Environmental variables section below for more information on each variable.
+    1. Make sure at least the DOCKER_HOST_IP, KEYCLOAK_ADMIN_PASSWORD, KEYCLOAK_API_CLIENT_SECRET_KEY, and MAPBOX_TOKEN are set for this.
+    2. Some of these variables, delineated by sections, pertain to the [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor), [jpo-geojsonconverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter), and [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode). Please see the documentation provided for these projects when setting these variables.
+4.  The CV Manager has four components that need to be containerized and deployed: the API, the PostgreSQL database, Keycloak, and the webapp.
 
     - If you are looking to deploy the CV Manager locally, you can simply run the docker-compose, make sure to fill out the .env file to ensure it launches properly. Also, edit your host file ([How to edit the host file](<[resources/kubernetes](https://docs.rackspace.com/support/how-to/modify-your-hosts-file/)>)) and add IP address of your docker host to these custom domains (remove the carrot brackets and just put the IP address):
 
@@ -172,7 +172,7 @@ The following steps are intended to help get a new user up and running the JPO C
          <DOCKER_HOST_IP> cvmanager.local.com
          <DOCKER_HOST_IP> cvmanager.auth.com
 
-5. Apply the docker compose to start the required components:
+5.  Apply the docker compose to start the required components:
 
     ```sh
     docker compose up -d
@@ -184,7 +184,7 @@ The following steps are intended to help get a new user up and running the JPO C
     docker compose up --build -d
     ```
 
-6. Access the website by going to:
+6.  Access the website by going to:
 
     ```
       http://cvmanager.local.com
@@ -192,7 +192,7 @@ The following steps are intended to help get a new user up and running the JPO C
       Default Password: tester
     ```
 
-7. To access keycloak go to:
+7.  To access keycloak go to:
 
     ```
       http://cvmanager.auth.com:8084/
@@ -231,9 +231,10 @@ In addition to the groups defined in the table below, each service may also be a
 | jpo_ota_backend                    | ❌    | ❌     | ❌           | ❌                  | ❌              | ❌     | ✅      |
 | jpo_ota_nginx                      | ❌    | ❌     | ❌           | ❌                  | ❌              | ❌     | ✅      |
 
-##### Note on Kafka
-While `kafka`, `kafka-setup`, `mongo` and `mongo-setup` are not included in the table above, they are required for the intersection API to run. These services 
-are provided by the jpo-utils repository. To enable these services, you must include the `kafka_full` and `mongo_full` profiles.
+##### Note on JPO-Utils Profiles
+
+While `kafka`, `kafka-setup`, `mongo`, `mongo-setup`, and `kafka-connect` are not included in the table above, they are required for the intersection API to run. These services
+are provided by the jpo-utils repository. To enable these services, you must include the `kafka_full`, `mongo_full`, and `kafka_connect_standalone` profiles.
 
 ### Debugging
 

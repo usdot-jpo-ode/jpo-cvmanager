@@ -25,6 +25,7 @@ import { AdminEmailNotification } from '../../models/Notifications'
 import { headerTabHeight } from '../../styles/index'
 import { Button, useTheme } from '@mui/material'
 import { AddCircleOutline, DeleteOutline, ModeEditOutline, Refresh } from '@mui/icons-material'
+import toast from 'react-hot-toast'
 
 const AdminNotificationTab = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -57,7 +58,13 @@ const AdminNotificationTab = () => {
         const buttons = [
           {
             label: 'Yes',
-            onClick: () => dispatch(deleteNotifications([rowData])),
+            onClick: () =>
+              dispatch(deleteNotifications([rowData])).then((data: any) => {
+                console.log(data)
+                data.payload.success
+                  ? toast.success('Notification Deleted Successfully')
+                  : toast.error('Failed to delete notification due to error: ' + data.payload)
+              }),
           },
           {
             label: 'No',
@@ -83,7 +90,13 @@ const AdminNotificationTab = () => {
         const buttons = [
           {
             label: 'Yes',
-            onClick: () => dispatch(deleteNotifications(rowData)),
+            onClick: () =>
+              dispatch(deleteNotifications(rowData)).then((data: any) => {
+                console.log(data)
+                data.payload.success
+                  ? toast.success('Notifications Deleted Successfully')
+                  : toast.error('Failed to delete one or more notification due to error: ' + data.payload)
+              }),
           },
           {
             label: 'No',

@@ -184,16 +184,15 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
                 <Typography>Online Status</Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <div style={errorPageStyle}>
-                  <p>
+                <div>
+                  <Typography fontSize="small" sx={{ color: theme.palette.text.secondary }}>
                     <b>RSU Online Status: </b>
                     {getRSUOnlineStatus(selectedRSU.properties.ipv4_address)}
-                  </p>
-                  <br />
-                  <p>
+                  </Typography>
+                  <Typography fontSize="small" sx={{ color: theme.palette.text.secondary }}>
                     <b>RSU Last Online: </b>
                     {getRSULastOnline(selectedRSU.properties.ipv4_address)}
-                  </p>
+                  </Typography>
                 </div>
               </AccordionDetails>
             </Accordion>
@@ -202,16 +201,15 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
                 <Typography>SCMS Status</Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <div style={errorPageStyle}>
-                  <p>
+                <div>
+                  <Typography fontSize="small" sx={{ color: theme.palette.text.secondary }}>
                     <b>SCMS Status: </b>
                     {getRSUSCMSStatus(selectedRSU.properties.ipv4_address) === '1' ? 'Healthy' : 'Unhealthy'}
-                  </p>
-                  <br />
-                  <p>
+                  </Typography>
+                  <Typography fontSize="small" sx={{ color: theme.palette.text.secondary }}>
                     <b>SCMS Expiration: </b>
                     {getRSUSCMSExpiration(selectedRSU.properties.ipv4_address)}
-                  </p>
+                  </Typography>
                 </div>
               </AccordionDetails>
             </Accordion>

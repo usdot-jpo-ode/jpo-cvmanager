@@ -52,7 +52,7 @@ services:
     environment:
       RSU_PING: ${RSU_PING}
       ZABBIX: ${ZABBIX}
-      RSU_SNMP_FETCH: ${RSU_SNMP_FETCH}
+      RSU_MSGFWD_FETCH: ${RSU_MSGFWD_FETCH}
 
       ZABBIX_ENDPOINT: ${ZABBIX_ENDPOINT}
       ZABBIX_USER: ${ZABBIX_USER}

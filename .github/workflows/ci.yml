@@ -52,7 +52,7 @@ jobs:
   webapp:
     runs-on: ubuntu-latest
     container:
-      image: node:16.16.0
+      image: node:19.8.1
       options: --user root
       env:
         CI: true

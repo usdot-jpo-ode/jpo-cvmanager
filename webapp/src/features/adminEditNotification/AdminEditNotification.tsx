@@ -2,9 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import {
-  selectSuccessMsg,
-  selectErrorState,
-  selectErrorMsg,
   selectSubmitAttempt,
   selectApiData,
   setSelectedType,
@@ -26,7 +23,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { selectEditNotificationRowData, selectTableData } from '../adminNotificationTab/adminNotificationTabSlice'
 import { AdminNotificationForm } from '../adminAddNotification/adminAddNotificationSlice'
 import { selectEmail } from '../../generalSlices/userSlice'
-import { ErrorMessageText, SuccessMessageText } from '../../styles/components/Messages'
+import { ErrorMessageText } from '../../styles/components/Messages'
 import {
   Button,
   Dialog,
@@ -42,13 +39,11 @@ import {
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import { SideBarHeader } from '../../styles/components/SideBarHeader'
+import toast from 'react-hot-toast'
 
 const AdminEditNotification = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-  const successMsg = useSelector(selectSuccessMsg)
   const apiData = useSelector(selectApiData)
-  const errorState = useSelector(selectErrorState)
-  const errorMsg = useSelector(selectErrorMsg)
   const submitAttempt = useSelector(selectSubmitAttempt)
   const selectedType = useSelector(selectSelectedType)
   const availableTypes = useSelector(selectAvailableTypes)
@@ -76,7 +71,15 @@ const AdminEditNotification = () => {
 
   const onSubmit = (data: AdminNotificationForm) => {
     data.email = userEmail
-    dispatch(submitForm({ data }))
+    dispatch(submitForm({ data })).then((data: any) => {
+      if (data.payload.success) {
+        toast.success('Notification updated successfully')
+      } else {
+        toast.error('Failed to update Notification: ' + data.payload.message)
+      }
+    })
+    setOpen(false)
+    navigate('..')
   }
 
   return (
@@ -127,12 +130,6 @@ const AdminEditNotification = () => {
           </Form.Group>
           {selectedType.type === '' && submitAttempt && (
             <ErrorMessageText role="alert">Must select a new email notification type</ErrorMessageText>
-          )}
-          {successMsg && <SuccessMessageText role="status">{successMsg}</SuccessMessageText>}
-          {errorState && (
-            <ErrorMessageText role="alert">
-              Failed to update email notification due to error: {errorMsg}
-            </ErrorMessageText>
           )}
         </Form>
       </DialogContent>

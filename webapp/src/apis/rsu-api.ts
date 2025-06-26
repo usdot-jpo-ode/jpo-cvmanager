@@ -96,11 +96,7 @@ class RsuApi {
       additional_headers: { Organization: org },
       tag: 'rsu',
     })
-  getSsmSrmData = async (
-    token: string,
-    url_ext = '',
-    query_params: Record<string, string> = {}
-  ): Promise<SsmSrmData> =>
+  getSsmSrmData = async (token: string, url_ext = '', query_params: Record<string, string> = {}): Promise<SsmSrmData> =>
     apiHelper._getData({
       url: EnvironmentVars.ssmSrmEndpoint + url_ext,
       token,
@@ -131,11 +127,7 @@ class RsuApi {
     })
 
   // Moove AI
-  postMooveAiData = async (
-    token: string,
-    body: object,
-    url_ext = ''
-  ): Promise<ApiMsgRespWithCodes<MooveAiFeature[]>> =>
+  postMooveAiData = async (token: string, body: string, url_ext = ''): Promise<ApiMsgRespWithCodes<MooveAiFeature[]>> =>
     apiHelper._postData({
       url: EnvironmentVars.mooveAiDataEndpoint + url_ext,
       body,
@@ -144,7 +136,7 @@ class RsuApi {
     })
 
   // POST
-  postGeoMsgData = async (token: string, body: object, url_ext = ''): Promise<ApiMsgRespWithCodes<any>> =>
+  postGeoMsgData = async (token: string, body: string, url_ext = ''): Promise<ApiMsgRespWithCodes<any>> =>
     apiHelper._postData({ url: EnvironmentVars.geoMsgDataEndpoint + url_ext, body, token, tag: 'rsu' })
 
   // POST
@@ -164,7 +156,7 @@ class RsuApi {
   }
 
   // POST
-  postRsuGeo = async (token: string, org: string, body: object, url_ext: string): Promise<ApiMsgRespWithCodes<any>> => {
+  postRsuGeo = async (token: string, org: string, body: string, url_ext: string): Promise<ApiMsgRespWithCodes<any>> => {
     return await apiHelper._postData({
       url: EnvironmentVars.rsuGeoQueryEndpoint + url_ext,
       body,

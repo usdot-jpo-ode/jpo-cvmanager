@@ -31,7 +31,7 @@ import dataSelectorReducer from './features/intersections/data-selector/dataSele
 import { intersectionApiSlice } from './features/api/intersectionApiSlice'
 import mapSliceReducer from './pages/mapSlice'
 
-export const setupStore = (preloadedState?: Partial<RootState>) => {
+export const setupStore = (preloadedState?: Partial<any>) => {
   return configureStore({
     reducer: {
       rsu: rsuReducer,
@@ -82,4 +82,4 @@ export type AppState = ReturnType<AppStore['getState']>
 
 export type AppDispatch = ReturnType<typeof setupStore>['dispatch']
 
-export type RootState = ReturnType<ReturnType<typeof configureStore>['getState']>
+export type RootState = ReturnType<ReturnType<typeof setupStore>['getState']>

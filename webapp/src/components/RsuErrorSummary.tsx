@@ -39,8 +39,8 @@ const RsuErrorSummary = (props: RsuErrorSummaryType) => {
       } else {
         toast.error('Something went wrong: ' + status)
       }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (exception_var) {
+      console.error('Error in RsuErrorSummary onSubmit', exception_var)
       toast.error('An exception occurred, please try again later')
     }
     props.setHidden()

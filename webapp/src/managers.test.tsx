@@ -28,12 +28,6 @@ class LocalStorageMock {
   }
 }
 
-try {
-  global.localStorage = new LocalStorageMock()
-} catch {
-  /* empty */
-}
-
 test('UserManager correctly checks if login is active', () => {
   let authLoginData: AuthLoginData = undefined
   expect(UserManager.isLoginActive(authLoginData)).toBe(false)

@@ -197,37 +197,6 @@ function ControlPanel() {
   const [isExpandedDownload, setIsExpandedDownload] = useState(false)
   const [isExpandedDecoder, setIsExpandedDecoder] = useState(false)
 
-  // const isQueryParamFormValid = () => {
-  //   try {
-  //     const d = eventTime?.toDate().getTime()
-  //     return (
-  //       !isNaN(d) &&
-  //       getNumber(timeBefore) !== null &&
-  //       getNumber(timeAfter) !== null &&
-  //       getNumber(timeWindowSecondsLocal) !== null
-  //     )
-  //   } catch (e) {
-  //     return false
-  //   }
-  // }
-
-  // const isNewQueryAllowed = useMemo(() => {
-  //   if (!isQueryParamFormValid()) return false
-  //   const eventTimeDate = eventTime?.toDate()
-  //   const timeBeforeNum = getNumber(timeBefore)
-  //   const timeAfterNum = getNumber(timeAfter)
-  //   const currentQueryParams = {
-  //     eventDate: eventTimeDate,
-  //     startDate: new Date(eventTimeDate.getTime() - (timeBeforeNum ?? 0) * 1000),
-  //     endDate: new Date(eventTimeDate.getTime() + (timeAfterNum ?? 0) * 1000),
-  //   }
-  //   return (
-  //     currentQueryParams.eventDate.getTime() !== queryParams.eventDate.getTime() ||
-  //     currentQueryParams.startDate.getTime() !== queryParams.startDate.getTime() ||
-  //     currentQueryParams.endDate.getTime() !== queryParams.endDate.getTime()
-  //   )
-  // }, [eventTime, timeBefore, timeAfter, queryParams])
-
   useEffect(() => {
     const newDateParams = getQueryParams(queryParams)
     setEventTime(dayjs(newDateParams.eventTime))
@@ -524,9 +493,7 @@ function ControlPanel() {
                   <Bar dataKey="count" barSize={10} minPointSize={10}></Bar>
                   <Tooltip
                     cursor={<TimelineCursor bsmEventsByMinute={[]} />}
-                    content={({ active, payload, label }) => (
-                      <TimelineTooltip active={active} payload={payload} label={label} />
-                    )}
+                    content={({ active, payload }) => <TimelineTooltip active={active} payload={payload} />}
                   />
                 </BarChart>
               </ResponsiveContainer>

@@ -9,7 +9,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
-import Slider from 'rc-slider'
+import Slider from '@mui/material/Slider'
 import {
   selectRsuOnlineStatus,
   selectRsuData,
@@ -99,7 +99,6 @@ import {
   Stack,
 } from '@mui/material'
 
-import 'rc-slider/assets/index.css'
 import './css/MsgMap.css'
 import './css/Map.css'
 import { WZDxFeature, WZDxWorkZoneFeed } from '../models/wzdx/WzdxWorkZoneFeed42'
@@ -1514,22 +1513,32 @@ function MapPage() {
       {activeLayers.includes('msg-viewer-layer') &&
         (filter && geoMsgData.length > 0 ? (
           <div className="filterControl" style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}>
-            <div id="timeContainer" style={{ textAlign: 'center' }}>
+            {/* <div id="timeContainer" style={{ textAlign: 'center' }}>
               <p id="timeHeader">
                 {msgViewerSliderStartDate.toLocaleString([], dateTimeOptions)} -{' '}
                 {msgViewerSliderEndDate.toLocaleTimeString([], dateTimeOptions)}
               </p>
-            </div>
+            </div> */}
             <div id="sliderContainer" style={{ margin: '5px 10px' }}>
               <Slider
-                allowCross={false}
-                included={false}
                 min={0}
                 max={geoMsgFilterMaxOffset}
                 value={filterOffset}
-                onChange={(e) => {
-                  dispatch(setGeoMsgFilterOffset(e as number))
+                onChange={(_, value) => {
+                  dispatch(setGeoMsgFilterOffset(value as number))
                 }}
+                step={1}
+                valueLabelDisplay="on"
+                valueLabelFormat={() => {
+                  // Calculate the window for the current offset
+                  const start = new Date(new Date(startGeoMsgDate).getTime() + 60000 * (filterOffset * filterStep))
+                  const end = new Date(start.getTime() + 60000 * filterStep)
+                  return `${start.toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })} - ${end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+                }}
+                sx={{ width: '100%' }}
               />
             </div>
             <div id="controlContainer">

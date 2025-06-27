@@ -1566,8 +1566,8 @@ function MapPage() {
                 })}
               </Select>
 
-              <Button variant="contained" onClick={() => dispatch(setGeoMsgFilter(false))}>
-                New Search
+              <Button variant="contained" size="small" onClick={() => dispatch(setGeoMsgFilter(false))}>
+                <Typography fontSize="small">New Search</Typography>
               </Button>
             </div>
           </div>

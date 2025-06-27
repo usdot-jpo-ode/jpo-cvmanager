@@ -1588,13 +1588,13 @@
           "providerId": "custom-user-provider",
           "subComponents": {},
           "config": {
-            "JDBC_URL": ["jdbc:postgresql://172.26.97.25:5432/postgres?currentSchema=keycloak"],
-            "DB_USERNAME": ["postgres"],
+            "JDBC_URL": ["${KC_DB_URL}"],
+            "DB_USERNAME": ["${KC_DB_USERNAME}"],
             "VALIDATION_QUERY": ["select 1"],
             "cachePolicy": ["NO_CACHE"],
             "JDBC_DRIVER": ["org.postgresql.Driver"],
             "enabled": ["true"],
-            "DB_PASSWORD": ["postgres"]
+            "DB_PASSWORD": ["${KC_DB_PASSWORD}"]
           }
         }
       ],

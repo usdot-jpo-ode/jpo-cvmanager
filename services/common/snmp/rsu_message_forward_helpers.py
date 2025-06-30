@@ -1,3 +1,25 @@
+# Delta is in years
+def hex_datetime(now, delta=0):
+    """
+    Converts a datetime object to a hexadecimal string representation.
+
+    Args:
+        now (datetime.datetime): The current datetime object to convert.
+        delta (int, optional): An integer value to add to the year component before conversion. Defaults to 0.
+
+    Returns:
+        str: A hexadecimal string representing the date and time in the format:
+             YYYYMMDDHHmm, where each component is zero-padded and represented in hexadecimal.
+    """
+    regex = "{0:0{1}x}"
+    hex_string = regex.format(now.year + delta, 4)
+    hex_string += regex.format(now.month, 2)
+    hex_string += regex.format(now.day, 2)
+    hex_string += regex.format(now.hour, 2)
+    hex_string += regex.format(now.minute, 2)
+    return hex_string
+
+
 # Check for which J2735 PSID matches val
 # BSM  - 20
 # SPaT - 8002

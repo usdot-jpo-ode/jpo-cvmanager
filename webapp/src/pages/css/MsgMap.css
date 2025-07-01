@@ -50,25 +50,11 @@
 }
 
 #sliderContainer .MuiSlider-mark {
-  background-color: #ffffff !important;
-  height: 16px !important;
+  background-color: var(--mui-palette-custom-sliderMark) !important;
+  height: 6px !important;
   width: 4px !important;
   border-radius: 2px !important;
   z-index: 0 !important;
-}
-
-#sliderContainer .MuiSlider-markLabel {
-  font-size: 0.75rem !important;
-  color: var(--mui-palette-text-secondary, #bdbdbd) !important;
-}
-
-.slider-legend-bar {
-  width: 4px;
-  height: 16px;
-  background-color: #ffd600;
-  border-radius: 2px;
-  display: inline-block;
-  margin-right: 4px;
 }
 
 /* hides the track line */

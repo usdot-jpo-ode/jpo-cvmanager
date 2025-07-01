@@ -472,6 +472,32 @@ function MapPage() {
     return calculateMaxOffset(startGeoMsgDate, endGeoMsgDate, filterStep)
   }, [startGeoMsgDate, endGeoMsgDate, filterStep])
 
+  // Helper function to calculate data availability for each time window...
+  // in the v2x message viewer slider.
+  const calculateDataAvailability = useMemo(() => {
+    if (!geoMsgData || geoMsgData.length === 0) return []
+
+    const availability: { offset: number; count: number }[] = []
+
+    // Calculate data for each possible offset
+    for (let offset = 0; offset <= geoMsgFilterMaxOffset; offset++) {
+      const windowStart = new Date(new Date(startGeoMsgDate).getTime() + 60000 * offset * filterStep)
+      const windowEnd = new Date(windowStart.getTime() + 60000 * filterStep)
+
+      // Count messages in this time window
+      const messageCount = geoMsgData.filter((message) => {
+        const messageDate = new Date(message.properties.timeStamp)
+        return isDateInRange(messageDate, windowStart, windowEnd)
+      }).length
+
+      if (messageCount > 0) {
+        availability.push({ offset, count: messageCount })
+      }
+    }
+
+    return availability
+  }, [geoMsgData, startGeoMsgDate, filterStep, geoMsgFilterMaxOffset])
+
   function dateChanged(e: Date, type: 'start' | 'end') {
     try {
       let date = DateTime.fromISO(e.toISOString())
@@ -1513,12 +1539,12 @@ function MapPage() {
       {activeLayers.includes('msg-viewer-layer') &&
         (filter && geoMsgData.length > 0 ? (
           <div className="filterControl" style={{ backgroundColor: theme.palette.custom.mapLegendBackground }}>
-            {/* <div id="timeContainer" style={{ textAlign: 'center' }}>
+            <div id="timeContainer" style={{ textAlign: 'center' }}>
               <p id="timeHeader">
                 {msgViewerSliderStartDate.toLocaleString([], dateTimeOptions)} -{' '}
                 {msgViewerSliderEndDate.toLocaleTimeString([], dateTimeOptions)}
               </p>
-            </div> */}
+            </div>
             <div id="sliderContainer" style={{ margin: '5px 10px' }}>
               <Slider
                 min={0}
@@ -1528,7 +1554,7 @@ function MapPage() {
                   dispatch(setGeoMsgFilterOffset(value as number))
                 }}
                 step={1}
-                valueLabelDisplay="on"
+                valueLabelDisplay="auto"
                 valueLabelFormat={() => {
                   // Calculate the window for the current offset
                   const start = new Date(new Date(startGeoMsgDate).getTime() + 60000 * (filterOffset * filterStep))
@@ -1538,7 +1564,11 @@ function MapPage() {
                     minute: '2-digit',
                   })} - ${end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
                 }}
-                sx={{ width: '100%' }}
+                marks={calculateDataAvailability.map(({ offset }) => ({
+                  value: offset,
+                  label: '', // No numbers, just bars
+                }))}
+                style={{ width: '100%' }}
               />
             </div>
             <div id="controlContainer">

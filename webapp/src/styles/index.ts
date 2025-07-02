@@ -18,7 +18,6 @@ declare module '@mui/material/styles' {
       intersectionMapAccordionExpanded: string
       intersectionMapButtonHover: string
       rowActionIcon: string
-      sliderMark: string
     }
   }
   interface Palette {
@@ -36,7 +35,6 @@ declare module '@mui/material/styles' {
       intersectionMapAccordionExpanded: string
       intersectionMapButtonHover: string
       rowActionIcon: string
-      sliderMark: string
     }
   }
 }
@@ -59,7 +57,6 @@ export const testTheme = createTheme({
       intersectionMapAccordionExpanded: '#000000',
       intersectionMapButtonHover: '#000000',
       rowActionIcon: '#000000',
-      sliderMark: '#000000',
     },
   },
 })
@@ -164,7 +161,7 @@ const themeMainLight = createTheme({
       paper: '#FFFFFF',
     },
     custom: {
-      mapLegendBackground: '#c8cfda',
+      mapLegendBackground: '#FFFFFF',
       tableHeaderBackground: '#F3F4F6',
       tableErrorBackground: '#fdc7c7',
       mapStyleFilePath: 'mapbox-styles/main-light.json',
@@ -177,7 +174,6 @@ const themeMainLight = createTheme({
       intersectionMapAccordionExpanded: '#d7d7d7',
       intersectionMapButtonHover: '#d7d7d7',
       rowActionIcon: '#9DBDD3',
-      sliderMark: '#000000',
     },
   },
 })
@@ -295,7 +291,6 @@ const themeMainDark = createTheme({
       intersectionMapAccordionExpanded: '#2E2F31',
       intersectionMapButtonHover: '#2D5F7F',
       rowActionIcon: '#9DBDD3',
-      sliderMark: '#ffffff',
     },
     background: {
       paper: '#1b1d1f',

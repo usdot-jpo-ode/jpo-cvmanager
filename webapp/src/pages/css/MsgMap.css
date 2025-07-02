@@ -50,7 +50,7 @@
 }
 
 #sliderContainer .MuiSlider-mark {
-  background-color: var(--mui-palette-custom-sliderMark) !important;
+  background-color: var(--mui-palette-primary-main) !important;
   height: 6px !important;
   width: 4px !important;
   border-radius: 2px !important;

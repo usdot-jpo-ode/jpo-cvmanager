@@ -8,12 +8,13 @@ import common.pgquery as pgquery
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 import admin_new_user
 import os
-from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden
+from werkzeug.exceptions import InternalServerError, BadRequest
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
     RESOURCE_TYPE,
     EnvironWithOrg,
     PermissionResult,
+    enforce_organization_restrictions,
     require_permission,
 )
 
@@ -111,48 +112,6 @@ def check_safe_input(user_spec):
         if any(c in special_characters for c in org["role"]):
             return False
     return True
-
-
-def enforce_modify_user_org_permissions(
-    *,
-    user: EnvironWithOrg,
-    qualified_orgs: list[str],
-    user_spec: dict,
-):
-    if not user.user_info.super_user:
-        # Collect list of organizations the user doesn't have enough permissions to modify
-        unqualified_orgs = [
-            org
-            for org in user_spec.get("organizations_to_add", [])
-            if org not in qualified_orgs
-        ]
-        # If the user tries to add organizations they are not authorized for, raise Forbidden
-        if unqualified_orgs:
-            raise Forbidden(
-                f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
-            )
-
-        unqualified_orgs = [
-            org
-            for org in user_spec.get("organizations_to_modify", [])
-            if org not in qualified_orgs
-        ]
-        # If the user tries to modify organizations they are not authorized for, raise Forbidden
-        if unqualified_orgs:
-            raise Forbidden(
-                f"Unauthorized modified organizations: {','.join(unqualified_orgs)}"
-            )
-
-        unqualified_orgs = [
-            org
-            for org in user_spec.get("organizations_to_remove", [])
-            if org not in qualified_orgs
-        ]
-        # If the user tries to remove organizations they are not authorized for, raise Forbidden
-        if unqualified_orgs:
-            raise Forbidden(
-                f"Unauthorized removed organizations: {','.join(unqualified_orgs)}"
-            )
 
 
 def modify_user(orig_email: str, user_spec: dict):
@@ -339,10 +298,15 @@ class AdminUser(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        enforce_modify_user_org_permissions(
+        enforce_organization_restrictions(
             user=permission_result.user,
             qualified_orgs=permission_result.qualified_orgs,
-            user_spec=body,
+            spec=body,
+            keys_to_check=[
+                "organizations_to_add",
+                "organizations_to_modify",
+                "organizations_to_remove",
+            ],
         )
 
         return (

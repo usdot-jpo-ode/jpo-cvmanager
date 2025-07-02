@@ -7,11 +7,12 @@ import common.pgquery as pgquery
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 import os
 import time
-from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden
+from werkzeug.exceptions import InternalServerError, BadRequest
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
     EnvironWithOrg,
     PermissionResult,
+    enforce_organization_restrictions,
     get_qualified_org_list,
     require_permission,
 )
@@ -147,25 +148,6 @@ class AdminNewUserSchema(Schema):
     )
 
 
-def enforce_add_user_org_permissions(
-    user: EnvironWithOrg,
-    qualified_orgs: list[str],
-    user_spec: dict,
-):
-    if not user.user_info.super_user:
-        # Collect list of organizations the user doesn't have enough permissions to modify
-        unqualified_orgs = [
-            org
-            for org in user_spec.get("organizations", [])
-            if org not in qualified_orgs
-        ]
-        # If the user tries to add organizations they are not authorized for, raise Forbidden
-        if unqualified_orgs:
-            raise Forbidden(
-                f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
-            )
-
-
 class AdminNewUser(Resource):
     options_headers = {
         "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
@@ -205,8 +187,12 @@ class AdminNewUser(Resource):
         if errors:
             logging.error(str(errors))
             abort(400, str(errors))
-        enforce_add_user_org_permissions(
-            permission_result.user, permission_result.qualified_orgs, body
+
+        enforce_organization_restrictions(
+            user=permission_result.user,
+            qualified_orgs=permission_result.qualified_orgs,
+            spec=request.json,
+            keys_to_check=["organizations"],
         )
 
         return (add_user(body), 200, self.headers)

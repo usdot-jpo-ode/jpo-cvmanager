@@ -5,10 +5,11 @@ import logging
 import common.pgquery as pgquery
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 import os
-from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden
+from werkzeug.exceptions import InternalServerError, BadRequest
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
     EnvironWithOrg,
+    enforce_organization_restrictions,
     get_qualified_org_list,
     get_rsu_set_for_org,
     require_permission,
@@ -236,48 +237,6 @@ class AdminNewIntersectionSchema(Schema):
     rsus = fields.List(fields.IPv4(), required=True)
 
 
-def enforce_add_intersection_org_permissions(
-    user: EnvironWithOrg,
-    qualified_orgs: list[str],
-    intersection_spec: dict,
-):
-    """
-    Enforce permissions for adding organizations to an intersection.
-
-    This function ensures that a user has the necessary permissions to add organizations
-    to an intersection. If the user attempts to add organizations they are not authorized
-    to modify, a Forbidden exception is raised.
-
-    Args:
-        user (EnvironWithOrg): The user object containing organizational context and permissions.
-        qualified_orgs (list[str]): A list of organizations the user is authorized to access.
-        intersection_spec (dict): A dictionary containing the intersection specification,
-                                  including the organizations to be added.
-
-    Raises:
-        Forbidden: If the user attempts to add organizations they are not authorized to modify.
-
-    Example:
-        >>> user = EnvironWithOrg(user_info={"super_user": False})
-        >>> qualified_orgs = ["Org A", "Org B"]
-        >>> intersection_spec = {"organizations": ["Org A", "Org C"]}
-        >>> enforce_add_intersection_org_permissions(user, qualified_orgs, intersection_spec)
-        Forbidden: Unauthorized added organizations: Org C
-    """
-    if not user.user_info.super_user:
-        # Collect list of organizations the user doesn't have enough permissions to modify
-        unqualified_orgs = [
-            org
-            for org in intersection_spec.get("organizations", [])
-            if org not in qualified_orgs
-        ]
-        # If the user tries to add organizations they are not authorized for, raise Forbidden
-        if unqualified_orgs:
-            raise Forbidden(
-                f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
-            )
-
-
 class AdminNewIntersection(Resource):
     options_headers = {
         "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
@@ -314,10 +273,11 @@ class AdminNewIntersection(Resource):
         if errors:
             logging.error(str(errors))
             abort(400, str(errors))
-        enforce_add_intersection_org_permissions(
+        enforce_organization_restrictions(
             user=permission_result.user,
             qualified_orgs=permission_result.qualified_orgs,
-            intersection_spec=request.json,
+            spec=request.json,
+            keys_to_check=["organizations"],
         )
 
         return (add_intersection(request.json), 200, self.headers)

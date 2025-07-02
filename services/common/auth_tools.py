@@ -208,6 +208,40 @@ def protect_user_access(user_email: str, user: EnvironWithOrg):
     return True
 
 
+def enforce_organization_restrictions(
+    user: EnvironWithOrg,
+    qualified_orgs: list[str],
+    spec: dict,
+    keys_to_check: list[str],
+):
+    """
+    Validates that the user has the necessary permissions to modify specific organizational relationships.
+
+    This function ensures that the user is authorized to modify particular organizations.
+    If the user attempts to modify organizations they are not authorized for, a `Forbidden` exception is raised.
+
+    Args:
+        user (EnvironWithOrg): The user making the request, including their organizational context.
+        qualified_orgs (list[str]): A list of organizations the user is authorized to modify.
+        spec (dict): A dictionary containing the organizations to modify.
+        keys_to_check (list[str]): A list of keys in the intersection_spec that should be authorized.
+
+    Raises:
+        Forbidden: If the user attempts to modify organizations they are not authorized to modify.
+    """
+    if not user.user_info.super_user:
+        for key in keys_to_check:
+            # Collect list of organizations the user doesn't have enough permissions to modify
+            unqualified_orgs = [
+                org for org in spec.get(key, []) if org not in qualified_orgs
+            ]
+            # If the user tries to add organizations they are not authorized for, raise Forbidden
+            if unqualified_orgs:
+                raise Forbidden(
+                    f"Unauthorized organization modification through {key}: {','.join(unqualified_orgs)}"
+                )
+
+
 class PermissionResult:
     def __init__(
         self,
@@ -324,22 +358,10 @@ class DefaultPermissionChecker:
         )
 
 
-class AdditionalCheck(Protocol):
-    # Define types here, as if __call__ were a function (ignore self).
-    def __call__(
-        self,
-        user: EnvironWithOrg,
-        required_role: ORG_ROLE_LITERAL,
-        resource_type: RESOURCE_TYPE,
-        resource_id: str,
-    ) -> PermissionResult: ...
-
-
 def require_permission(
     required_role: ORG_ROLE_LITERAL | None,
     resource_type: Optional[RESOURCE_TYPE] = None,
     checker: Optional[PermissionChecker] = None,
-    additional_check: Optional[AdditionalCheck] = None,
 ):
     """Decorator that requires a specific permission check to pass and passes results to wrapped function"""
     if checker is None:
@@ -360,24 +382,6 @@ def require_permission(
 
             # Perform permission check
             result = checker.check(user, required_role, resource_type, resource_id)
-
-            # If additional check is provided and the permission check is allowed, run the additional check
-            result = (
-                additional_check(
-                    *args,
-                    **kwargs,
-                    user=user,
-                    required_role=required_role,
-                    resource_type=resource_type,
-                    resource_id=resource_id,
-                )
-                if (
-                    additional_check
-                    and result.allowed
-                    and not user.user_info.super_user
-                )
-                else result
-            )
 
             if not result.allowed:
                 raise Forbidden(

@@ -216,12 +216,9 @@ def test_require_permission_calls_super_user(
     mock_check_role_above,
     mock_get_qualified_org_list,
 ):
-    additional_check = Mock()
-
     @require_permission(
         required_role=ORG_ROLE_LITERAL.OPERATOR,
         resource_type=RESOURCE_TYPE.USER,
-        additional_check=additional_check,
     )
     def test_function(email: str, permission_result: PermissionResult):
         return permission_result
@@ -241,7 +238,6 @@ def test_require_permission_calls_super_user(
         mock_check_rsu_with_org.assert_not_called()
         mock_check_intersection_with_org.assert_not_called()
         mock_check_role_above.assert_not_called()
-        additional_check.assert_not_called()
 
 
 @patch("common.auth_tools.get_qualified_org_list", return_value=["Test Org"])
@@ -256,12 +252,9 @@ def test_require_permission_calls_user_self(
     mock_check_role_above,
     mock_get_qualified_org_list,
 ):
-    additional_check = Mock()
-
     @require_permission(
         required_role=ORG_ROLE_LITERAL.OPERATOR,
         resource_type=RESOURCE_TYPE.USER,
-        additional_check=additional_check,
     )
     def test_function(email: str, permission_result: PermissionResult):
         return permission_result
@@ -284,14 +277,6 @@ def test_require_permission_calls_user_self(
         mock_check_rsu_with_org.assert_not_called()
         mock_check_intersection_with_org.assert_not_called()
         mock_check_role_above.assert_not_called()
-        additional_check.assert_called_once()
-        additional_check.assert_called_with(
-            "test@example.com",
-            user=user_valid,
-            required_role=ORG_ROLE_LITERAL.OPERATOR,
-            resource_type=RESOURCE_TYPE.USER,
-            resource_id="test@example.com",
-        )
 
 
 @patch("common.auth_tools.get_qualified_org_list", return_value=["Test Org"])
@@ -306,12 +291,9 @@ def test_require_permission_calls_user_other(
     mock_check_role_above,
     mock_get_qualified_org_list,
 ):
-    additional_check = Mock()
-
     @require_permission(
         required_role=ORG_ROLE_LITERAL.OPERATOR,
         resource_type=RESOURCE_TYPE.USER,
-        additional_check=additional_check,
     )
     def test_function(email: str, permission_result: PermissionResult):
         return permission_result
@@ -341,75 +323,6 @@ def test_require_permission_calls_user_other(
         mock_check_role_above.assert_called_once()
         mock_check_role_above.assert_called_with(
             ORG_ROLE_LITERAL.OPERATOR, ORG_ROLE_LITERAL.OPERATOR
-        )
-        additional_check.assert_called_once()
-        additional_check.assert_called_with(
-            "different@example.com",
-            user=user_valid,
-            required_role=ORG_ROLE_LITERAL.OPERATOR,
-            resource_type=RESOURCE_TYPE.USER,
-            resource_id="different@example.com",
-        )
-
-
-@patch("common.auth_tools.get_qualified_org_list", return_value=["Test Org"])
-@patch("common.auth_tools.check_role_above")
-@patch("common.auth_tools.check_user_with_org", return_value=True)
-def test_require_permission_additional_check(
-    mock_check_user_with_org,
-    mock_check_role_above,
-    mock_get_qualified_org_list,
-):
-    user_valid = auth_data.get_request_environ()
-    user_valid.user_info.email = "test@example.com"
-    user_valid.user_info.super_user = False
-    user_valid.organization = "Test Org"
-    user_valid.role = ORG_ROLE_LITERAL.OPERATOR
-
-    additional_check_result = PermissionResult(
-        user=user_valid,
-        allowed=False,
-        qualified_orgs=["qualified org"],
-        message="additional check message",
-    )
-    additional_check = Mock()
-    additional_check.return_value = additional_check_result
-
-    @require_permission(
-        required_role=ORG_ROLE_LITERAL.ADMIN,
-        resource_type=RESOURCE_TYPE.USER,
-        additional_check=additional_check,
-    )
-    def test_function(email: str, permission_result: PermissionResult):
-        return permission_result
-
-    req = MagicMock()
-    req.environ = {ENVIRON_USER_KEY: user_valid}
-
-    # Mock the environment
-    with patch("common.auth_tools.request", req):
-        with pytest.raises(Forbidden) as e:
-            test_function("different@example.com")
-        assert str(e.value) == "403 Forbidden: additional check message"
-        mock_check_user_with_org.assert_called_once()
-        mock_check_user_with_org.assert_called_with(
-            "different@example.com", ["Test Org"]
-        )
-        mock_check_role_above.assert_called_once()
-        mock_check_role_above.assert_called_with(
-            ORG_ROLE_LITERAL.OPERATOR, ORG_ROLE_LITERAL.ADMIN
-        )
-        mock_get_qualified_org_list.assert_called_once()
-        mock_get_qualified_org_list.assert_called_with(
-            user_valid, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
-        )
-        additional_check.assert_called_once()
-        additional_check.assert_called_with(
-            "different@example.com",
-            user=user_valid,
-            required_role=ORG_ROLE_LITERAL.ADMIN,
-            resource_type=RESOURCE_TYPE.USER,
-            resource_id="different@example.com",
         )
 
 

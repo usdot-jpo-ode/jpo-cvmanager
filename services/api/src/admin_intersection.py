@@ -6,12 +6,13 @@ import common.pgquery as pgquery
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 import admin_new_intersection
 import os
-from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden
+from werkzeug.exceptions import InternalServerError, BadRequest
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
     RESOURCE_TYPE,
     EnvironWithOrg,
     PermissionResult,
+    enforce_organization_restrictions,
     require_permission,
 )
 
@@ -129,61 +130,19 @@ def get_modify_intersection_data(
     return modify_intersection_obj
 
 
-def enforce_modify_intersection_org_permissions(
-    *,
-    user: EnvironWithOrg,
-    qualified_orgs: list[str],
-    intersection_spec: dict,
-):
-    """
-    Validates that the user has the necessary permissions to modify an intersection's organizational relationships.
-
-    This function ensures that the user is authorized to add or remove organizations from an intersection.
-    If the user attempts to modify organizations they are not authorized for, a `Forbidden` exception is raised.
-
-    Args:
-        user (EnvironWithOrg): The user making the request, including their organizational context.
-        qualified_orgs (list[str]): A list of organizations the user is authorized to modify.
-        intersection_spec (dict): A dictionary containing the organizations to add or remove.
-            Expected keys:
-            - `organizations_to_add` (list[str]): Organizations to associate with the intersection.
-            - `organizations_to_remove` (list[str]): Organizations to disassociate from the intersection.
-
-    Raises:
-        Forbidden: If the user attempts to add organizations they are not authorized to modify.
-        Forbidden: If the user attempts to remove organizations they are not authorized to modify.
-    """
-    if not user.user_info.super_user:
-        # Collect list of organizations the user doesn't have enough permissions to modify
-        unqualified_orgs = [
-            org
-            for org in intersection_spec.get("organizations_to_add", [])
-            if org not in qualified_orgs
-        ]
-        # If the user tries to add organizations they are not authorized for, raise Forbidden
-        if unqualified_orgs:
-            raise Forbidden(
-                f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
-            )
-
-        unqualified_orgs = [
-            org
-            for org in intersection_spec.get("organizations_to_remove", [])
-            if org not in qualified_orgs
-        ]
-        # If the user tries to remove organizations they are not authorized for, raise Forbidden
-        if unqualified_orgs:
-            raise Forbidden(
-                f"Unauthorized removed organizations: {','.join(unqualified_orgs)}"
-            )
-
-
 @require_permission(
-    required_role=ORG_ROLE_LITERAL.OPERATOR,
-    resource_type=RESOURCE_TYPE.INTERSECTION,
-    additional_check=enforce_modify_intersection_org_permissions,
+    required_role=ORG_ROLE_LITERAL.OPERATOR, resource_type=RESOURCE_TYPE.INTERSECTION
 )
-def modify_intersection_authorized(intersection_id: str, intersection_spec: dict):
+def modify_intersection_authorized(
+    permission_result: PermissionResult, intersection_id: str, intersection_spec: dict
+):
+    enforce_organization_restrictions(
+        user=permission_result.user,
+        qualified_orgs=permission_result.qualified_orgs,
+        spec=intersection_spec,
+        keys_to_check=["organizations_to_add", "organizations_to_remove"],
+    )
+
     # Check for special characters for potential SQL injection
     if not admin_new_intersection.check_safe_input(intersection_spec):
         raise BadRequest(

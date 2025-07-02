@@ -6,12 +6,13 @@ import common.pgquery as pgquery
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 import admin_new_rsu
 import os
-from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden
+from werkzeug.exceptions import InternalServerError, BadRequest
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
     RESOURCE_TYPE,
     EnvironWithOrg,
     PermissionResult,
+    enforce_organization_restrictions,
     require_permission,
 )
 
@@ -94,41 +95,19 @@ def get_modify_rsu_data_authorized(rsu_ip: str, permission_result: PermissionRes
     return modify_rsu_obj
 
 
-def enforce_modify_rsu_org_permissions(
-    *,
-    user: EnvironWithOrg,
-    qualified_orgs: list[str],
-    rsu_spec: dict,
-):
-    if not user.user_info.super_user:
-        # Collect list of organizations the user doesn't have enough permissions to modify
-        unqualified_orgs = [
-            org for org in rsu_spec["organizations_to_add"] if org not in qualified_orgs
-        ]
-        # If the user tries to add organizations they are not authorized for, raise Forbidden
-        if unqualified_orgs:
-            raise Forbidden(
-                f"Unauthorized added organizations: {','.join(unqualified_orgs)}"
-            )
-
-        unqualified_orgs = [
-            org
-            for org in rsu_spec["organizations_to_remove"]
-            if org not in qualified_orgs
-        ]
-        # If the user tries to remove organizations they are not authorized for, raise Forbidden
-        if unqualified_orgs:
-            raise Forbidden(
-                f"Unauthorized removed organizations: {','.join(unqualified_orgs)}"
-            )
-
-
 @require_permission(
-    required_role=ORG_ROLE_LITERAL.OPERATOR,
-    resource_type=RESOURCE_TYPE.RSU,
-    additional_check=enforce_modify_rsu_org_permissions,
+    required_role=ORG_ROLE_LITERAL.OPERATOR, resource_type=RESOURCE_TYPE.RSU
 )
-def modify_rsu_authorized(orig_ip: str, rsu_spec: dict):
+def modify_rsu_authorized(
+    permission_result: PermissionResult, orig_ip: str, rsu_spec: dict
+):
+    enforce_organization_restrictions(
+        user=permission_result.user,
+        qualified_orgs=permission_result.qualified_orgs,
+        spec=rsu_spec,
+        keys_to_check=["organizations_to_add", "organizations_to_remove"],
+    )
+
     # Check for special characters for potential SQL injection
     if not admin_new_rsu.check_safe_input(rsu_spec):
         raise BadRequest(

@@ -62,13 +62,15 @@ def check_safe_input(intersection_spec):
     that could indicate potential SQL injection or other unsafe input. If any unsafe input
     is detected, the function returns False.
 
+    ##Note - Jacob Frye, 2025/07/02, allowing & character for intersection names
+
     Args:
         intersection_spec (dict): A dictionary containing the intersection specification.
 
     Returns:
         bool: True if the input is safe, False otherwise.
     """
-    special_characters = "!\"#$%&'()*+,./:;<=>?@[\\]^`{|}~"
+    special_characters = "!\"#$%'()*+,./:;<=>?@[\\]^`{|}~"
     unchecked_fields = [
         "origin_ip",
         "rsus",
@@ -92,6 +94,7 @@ def check_safe_input(intersection_spec):
             if (k in unchecked_fields) or (value is None):
                 continue
             if any(c in special_characters for c in str(value)) or "--" in str(value):
+                logging.debug("Unsafe input detected in field '%s': %s", k, value)
                 return False
     return True
 
@@ -133,7 +136,7 @@ def add_intersection(intersection_spec: dict):
     # Check for special characters for potential SQL injection
     if not check_safe_input(intersection_spec):
         raise BadRequest(
-            "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+            "No special characters are allowed: !\"#$%'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
         )
 
     try:

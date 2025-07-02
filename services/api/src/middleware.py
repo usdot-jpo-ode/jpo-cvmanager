@@ -1,10 +1,12 @@
 from enum import Enum
+import json
+from flask import Response, jsonify
 from werkzeug.wrappers import Request
 from keycloak import KeycloakOpenID
 import logging
 import os
 import jwt
-from werkzeug.exceptions import Forbidden, Unauthorized, NotImplemented
+from werkzeug.exceptions import HTTPException, Forbidden, Unauthorized, NotImplemented
 
 from common.auth_tools import (
     ENVIRON_USER_KEY,
@@ -230,13 +232,22 @@ class Middleware:
                 raise Forbidden("User unauthorized")
 
             return self.app(environ, start_response)
-        except Unauthorized:
-            raise
-        except Forbidden:
-            raise
-        except NotImplemented:
-            raise
+        except HTTPException as e:
+            # Convert the exception into a proper HTTP response
+            response_body = json.dumps({"error": e.name, "message": e.description})
+            response = Response(
+                response_body, status=e.code, content_type="application/json"
+            )
+            return response(environ, start_response)
+
         except Exception as e:
-            # Throws an exception if not valid
-            logging.exception(f"Invalid token for reason: {e}")
-            raise Unauthorized(f"Authorization failed: {e}")
+            # Log the exception
+            logging.exception(f"Unknown error authorizing request: {e}")
+            # Catch any other unexpected exceptions
+            response_body = json.dumps(
+                {"error": "Internal Server Error", "message": str(e)}
+            )
+            response = Response(
+                response_body, status=500, content_type="application/json"
+            )
+            return response(environ, start_response)

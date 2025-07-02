@@ -8,7 +8,7 @@
   - [Requirements ](#requirements-)
     - [rsu_ping_fetch](#rsu_ping_fetch)
     - [rsu_pinger](#rsu_pinger)
-    - [rsu_snmp_fetch](#rsu_snmp_fetch)
+    - [rsu_msgfwd_fetch](#rsu_msgfwd_fetch)
 
 ## About <a name = "about"></a>
 
@@ -20,7 +20,7 @@ If you have access to a Zabbix server that is tracking RSUs, it is recommended t
 
 Another feature the 'rsu_status_check' application provides is a ping data purger that will remove stale ping data from the CV Manager PostgreSQL database to allow for high performance RSU ping queries. The amount of time a message needs to be in the database to be considered stale is configurable with the STALE_PERIOD environment variable. This purger will run once every 24 hours to check for stale ping data in the database.
 
-The 'rsu_snmp_fetch' service is used to monitor the current state of deployed RSUs' SNMP configurations. This information is stored in PostgreSQL to allow for the CV Manager to have a historic record of the last configuration a RSU was known to have. This helps with offline RSUs and to allow a consistent performance behavior for users instead of waiting on a SNMPwalk to return. This data is monitored every 4 hours. Configurations are added, removed or left intact in the PostgreSQL database based on the results of the SNMPwalks performed by the 'rsu_snmp_fetch' service.
+The 'rsu_msgfwd_fetch' service is used to monitor the current state of deployed RSUs' SNMP message forwarding configurations. This information is stored in PostgreSQL to allow for the CV Manager to have a historic record of the last configuration a RSU was known to have. This helps with offline RSUs and to allow a consistent performance behavior for users instead of waiting on a SNMPwalk to return. This data is monitored every 4 hours. Configurations are added, removed or left intact in the PostgreSQL database based on the results of the SNMPwalks performed by the 'rsu_msgfwd_fetch' service.
 
 ## Requirements <a name = "requirements"></a>
 
@@ -66,20 +66,21 @@ The rsu_pinger service expects the following environment variables to be set:
 - STALE_PERIOD - Number of hours a ping log needs to be around in the PostgreSQL database to be considered stale.
 - LOGGING_LEVEL (optional, defaults to 'info')
 
-### rsu_snmp_fetch
+### rsu_msgfwd_fetch
 
-To properly run the rsu_snmp_fetch service the following additional services are also required:
+To properly run the rsu_msgfwd_fetch service the following additional services are also required:
 
 - CV Manager PostgreSQL database with at least one RSU inserted into the 'rsus' table
 - rsu_status_check must be deployed in the same environment or K8s cluster as the PostgreSQL database
 - Network rules must be in place to allow proper routing between the rsu_status_check microservice and deployed RSUs
 
-The rsu_snmp_fetch service expects the following environment variables to be set:
+The rsu_msgfwd_fetch service expects the following environment variables to be set:
 
-- RSU_SNMP_FETCH = True
+- RSU_MSGFWD_FETCH = True
 - DB_USER - PostgreSQL access username.
 - DB_PASS - PostgreSQL access password.
 - DB_NAME - PostgreSQL database name.
 - DB_HOST - PostgreSQL hostname, make sure to include port number.
 - STALE_PERIOD - Number of hours a ping log needs to be around in the PostgreSQL database to be considered stale.
+- RSU_MSGFWD_FETCH - Feature flag for collecting active message forwarding configurations from all RSUs in the PostgreSQL database. Supports both NTCIP-1218 and RSU 4.1 supported devices.
 - LOGGING_LEVEL (optional, defaults to 'info')

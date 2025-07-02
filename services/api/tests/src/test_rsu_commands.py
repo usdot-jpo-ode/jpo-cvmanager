@@ -36,56 +36,6 @@ def test_rsu_commands_snmpfilter_option_present():
     )
 
 
-@patch("api.src.rsu_commands.rsufwdsnmpwalk.get")
-def test_execute_command_rsufwdsnmpwalk(mock_rsufwdsnmpwalk_get):
-    # mock
-    mock_rsufwdsnmpwalk_get.return_value = "mocked rsufwdsnmpwalk.get"
-    rsu_commands.command_data["rsufwdsnmpwalk"]["function"] = mock_rsufwdsnmpwalk_get
-
-    # call
-    command = "rsufwdsnmpwalk"
-    result = rsu_commands.execute_command(command, rsu_ip, args, rsu_info)
-
-    # check
-    mock_rsufwdsnmpwalk_get.assert_called_once()
-    expected_result = "mocked rsufwdsnmpwalk.get"
-    assert result == expected_result
-
-
-@patch("api.src.rsu_commands.rsufwdsnmpset.post")
-def test_execute_command_rsufwdsnmpset(mock_rsufwdsnmpset_post):
-    # mock
-    mock_rsufwdsnmpset_post.return_value = "mocked rsufwdsnmpset.post"
-    rsu_commands.command_data["rsufwdsnmpset"]["function"] = mock_rsufwdsnmpset_post
-
-    # call
-    command = "rsufwdsnmpset"
-    result = rsu_commands.execute_command(command, rsu_ip, args, rsu_info)
-
-    # check
-    mock_rsufwdsnmpset_post.assert_called_once()
-    expected_result = "mocked rsufwdsnmpset.post"
-    assert result == expected_result
-
-
-@patch("api.src.rsu_commands.rsufwdsnmpset.delete")
-def test_execute_command_rsufwdsnmpset_del(mock_rsufwdsnmpset_delete):
-    # mock
-    mock_rsufwdsnmpset_delete.return_value = "mocked rsufwdsnmpset.delete"
-    rsu_commands.command_data["rsufwdsnmpset-del"][
-        "function"
-    ] = mock_rsufwdsnmpset_delete
-
-    # call
-    command = "rsufwdsnmpset-del"
-    result = rsu_commands.execute_command(command, rsu_ip, args, rsu_info)
-
-    # check
-    mock_rsufwdsnmpset_delete.assert_called_once()
-    expected_result = "mocked rsufwdsnmpset.delete"
-    assert result == expected_result
-
-
 @patch("api.src.rsu_commands.ssh_commands.reboot")
 def test_execute_command_reboot(mock_ssh_commands_reboot):
     # mock

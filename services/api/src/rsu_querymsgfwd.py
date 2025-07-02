@@ -2,7 +2,7 @@ from flask import request, abort
 from flask_restful import Resource
 from marshmallow import Schema, fields
 import common.pgquery as pgquery
-import common.snmpwalk_helpers as snmpwalk_helpers
+import common.snmp.rsu_message_forward_helpers as rsu_message_forward_helpers
 import common.util as util
 import os
 import logging
@@ -52,8 +52,8 @@ def query_snmp_msgfwd_authorized(rsu_ip: str, organization: ORG_ROLE_LITERAL):
             "Port": row["dest_port"],
             "Start DateTime": util.format_date_denver_iso(row["start_datetime"]),
             "End DateTime": util.format_date_denver_iso(row["end_datetime"]),
-            "Config Active": snmpwalk_helpers.active(row["active"]),
-            "Full WSMP": snmpwalk_helpers.active(row["security"]),
+            "Config Active": rsu_message_forward_helpers.active(row["active"]),
+            "Full WSMP": rsu_message_forward_helpers.active(row["security"]),
         }
 
         # Based on the value of msgfwd_type, store the configuration data to match the response object of rsufwdsnmpwalk
@@ -68,6 +68,7 @@ def query_snmp_msgfwd_authorized(rsu_ip: str, organization: ORG_ROLE_LITERAL):
                 msgfwd_configs_dict["rsuXmitMsgFwdingTable"] = {}
             msgfwd_configs_dict["rsuXmitMsgFwdingTable"][row["snmp_index"]] = config_row
         else:
+            # changed the double quotes around msgfwd_type to single quotes to allow for vscode debugging to work properly
             logging.warning(
                 f"Encountered unknown message forwarding configuration type '{row['msgfwd_type']}' for RSU '{rsu_ip}'"
             )

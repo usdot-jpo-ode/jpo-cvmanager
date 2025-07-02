@@ -1588,7 +1588,9 @@
           "providerId": "custom-user-provider",
           "subComponents": {},
           "config": {
-            "JDBC_URL": ["${KC_DB_URL}"],
+            "JDBC_URL": [
+              "jdbc:postgresql://${KC_DB_URL_HOST}:${KC_DB_URL_PORT}/${KC_DB_URL_DATABASE}?currentSchema=${KC_DB_SCHEMA}"
+            ],
             "DB_USERNAME": ["${KC_DB_USERNAME}"],
             "VALIDATION_QUERY": ["select 1"],
             "cachePolicy": ["NO_CACHE"],

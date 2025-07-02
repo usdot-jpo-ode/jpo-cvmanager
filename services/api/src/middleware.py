@@ -1,6 +1,6 @@
 from enum import Enum
 import json
-from flask import Response, jsonify
+from flask import Response
 from werkzeug.wrappers import Request
 from keycloak import KeycloakOpenID
 import logging

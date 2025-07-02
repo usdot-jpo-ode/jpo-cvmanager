@@ -1,6 +1,5 @@
 from unittest.mock import patch, Mock
 
-import pytest
 from api.src import middleware
 from api.tests.data import auth_data
 from werkzeug.exceptions import Unauthorized
@@ -67,14 +66,14 @@ def test_middleware_class_call_user_unauthorized(mock_request, mock_get_user_rol
     middleware_instance = middleware.Middleware(app)
     # call
     mock_get_user_role.return_value = None
-    environ = {}
+    environ = {"REQUEST_METHOD": "GET", "PATH_INFO": "/user-auth"}
     start_response = Mock()
     # check
-    with pytest.raises(Unauthorized) as exc_info:
-        middleware_instance(environ, start_response)
-
+    response = middleware_instance(environ, start_response)
+    response_body = b"".join(response).decode("utf-8")
     assert (
-        str(exc_info.value) == "401 Unauthorized: Failed to parse Authorization token"
+        str(response_body)
+        == '{"error": "Unauthorized", "message": "Failed to parse Authorization token"}'
     )
 
 
@@ -119,16 +118,17 @@ def test_middleware_class_call_exception(mock_keycloak, mock_request):
 
     # call
     mock_keycloak_instance = mock_keycloak.return_value
-    mock_keycloak_instance.introspect.side_effect = Exception("test")
+    mock_keycloak_instance.introspect.side_effect = Unauthorized("test")
 
-    environ = {}
+    environ = {"REQUEST_METHOD": "GET", "PATH_INFO": "/user-auth"}
     start_response = Mock()
     middleware_instance = middleware.Middleware(app)
 
-    with pytest.raises(Unauthorized) as exc_info:
-        middleware_instance(environ, start_response)
-
-    assert str(exc_info.value) == "401 Unauthorized: Authorization failed: test"
+    response = middleware_instance(environ, start_response)
+    print(type(response))
+    response_body = b"".join(response).decode("utf-8")
+    print(response_body)
+    assert str(response_body) == '{"error": "Unauthorized", "message": "test"}'
     app.assert_not_called()
     mock_request.assert_called_once_with(environ)
 

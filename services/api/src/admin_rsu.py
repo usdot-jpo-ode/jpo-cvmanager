@@ -299,7 +299,9 @@ class AdminRsu(Resource):
             abort(400, str(errors))
 
         return (
-            modify_rsu_authorized(request.json["orig_ip"], request.json),
+            modify_rsu_authorized(
+                orig_ip=request.json["orig_ip"], rsu_spec=request.json
+            ),
             200,
             self.headers,
         )

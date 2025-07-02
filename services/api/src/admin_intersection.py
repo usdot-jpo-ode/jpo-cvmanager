@@ -351,7 +351,8 @@ class AdminIntersection(Resource):
 
         return (
             modify_intersection_authorized(
-                request.json.get("intersection_id"), request.json
+                intersection_id=request.json.get("intersection_id"),
+                intersection_spec=request.json,
             ),
             200,
             self.headers,

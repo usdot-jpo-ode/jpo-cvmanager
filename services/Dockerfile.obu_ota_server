@@ -2,10 +2,10 @@ FROM python:3.12-alpine
 
 WORKDIR /home
 
-ADD addons/images/obu_ota_server/requirements.txt .
+COPY addons/images/obu_ota_server/requirements.txt .
 RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
-ADD addons/images/obu_ota_server/*.py .
-ADD common/*.py ./common/
+COPY addons/images/obu_ota_server/*.py .
+COPY common/*.py ./common/
 
 CMD ["uvicorn", "obu_ota_server:app", "--host", "0.0.0.0", "--port", "8085"]

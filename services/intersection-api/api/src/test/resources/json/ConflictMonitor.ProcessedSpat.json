@@ -1,0 +1,107 @@
+{
+  "_id": {
+    "$oid": "66c4c16cbc6a472adb01a14e"
+  },
+  "validationMessages": [
+    {
+      "schemaPath": "#/$defs/J2735RoadRegulatorID/type",
+      "jsonPath": "$.payload.data.intersectionStateList.intersectionStatelist[0].id.region",
+      "message": "$.payload.data.intersectionStateList.intersectionStatelist[0].id.region: null found, integer expected"
+    },
+    {
+      "schemaPath": "#/$defs/J2735TimeMark/type",
+      "jsonPath": "$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[0].state_time_speed.movementEventList[0].timing.startTime",
+      "message": "DE_TimeMark is missing"
+    },
+    {
+      "schemaPath": "#/$defs/J2735TimeMark/type",
+      "jsonPath": "$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[0].state_time_speed.movementEventList[0].timing.nextTime",
+      "message": "DE_TimeMark is missing"
+    },
+    {
+      "schemaPath": "#/$defs/J2735TimeMark/type",
+      "jsonPath": "$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[1].state_time_speed.movementEventList[0].timing.startTime",
+      "message": "DE_TimeMark is missing"
+    },
+    {
+      "schemaPath": "#/$defs/J2735TimeMark/type",
+      "jsonPath": "$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[1].state_time_speed.movementEventList[0].timing.nextTime",
+      "message": "DE_TimeMark is missing"
+    },
+    {
+      "schemaPath": "#/$defs/J2735TimeMark/type",
+      "jsonPath": "$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[2].state_time_speed.movementEventList[0].timing.startTime",
+      "message": "DE_TimeMark is missing"
+    },
+    {
+      "schemaPath": "#/$defs/J2735TimeMark/type",
+      "jsonPath": "$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[2].state_time_speed.movementEventList[0].timing.nextTime",
+      "message": "DE_TimeMark is missing"
+    }
+  ],
+  "utcTimeStamp": "2024-08-20T16:16:43.051Z",
+  "schemaVersion": 1,
+  "recordGeneratedAt": {
+    "$date": "2024-08-20T16:16:43.369Z"
+  },
+  "revision": 0,
+  "states": [
+    {
+      "stateTimeSpeed": [
+        {
+          "eventState": "PROTECTED_CLEARANCE",
+          "timing": {
+            "minEndTime": "2024-08-20T16:03:17Z",
+            "maxEndTime": "2024-08-20T16:03:17Z"
+          }
+        }
+      ],
+      "signalGroup": 2
+    },
+    {
+      "stateTimeSpeed": [
+        {
+          "eventState": "STOP_AND_REMAIN",
+          "timing": {
+            "minEndTime": "2024-08-20T16:03:20.1Z",
+            "maxEndTime": "2024-08-20T16:03:20.1Z"
+          }
+        }
+      ],
+      "signalGroup": 4
+    },
+    {
+      "stateTimeSpeed": [
+        {
+          "eventState": "PROTECTED_CLEARANCE",
+          "timing": {
+            "minEndTime": "2024-08-20T16:03:17Z",
+            "maxEndTime": "2024-08-20T16:03:17Z"
+          }
+        }
+      ],
+      "signalGroup": 6
+    }
+  ],
+  "messageType": "SPAT",
+  "cti4501Conformant": false,
+  "intersectionId": 12109,
+  "odeReceivedAt": "2024-08-20T16:16:43.051Z",
+  "originIp": "10.11.81.12",
+  "status": {
+    "failureFlash": false,
+    "noValidSPATisAvailableAtThisTime": false,
+    "fixedTimeOperation": false,
+    "standbyOperation": false,
+    "trafficDependentOperation": false,
+    "manualControlIsEnabled": false,
+    "off": false,
+    "stopTimeIsActivated": false,
+    "recentChangeInMAPassignedLanesIDsUsed": false,
+    "recentMAPmessageUpdate": false,
+    "failureMode": false,
+    "noValidMAPisAvailableAtThisTime": false,
+    "signalPriorityIsActive": false,
+    "preemptIsActive": false
+  }
+}

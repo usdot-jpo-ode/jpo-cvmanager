@@ -27,6 +27,8 @@ services:
       kafka:
         condition: service_healthy
         required: false
+      kafka-setup:
+        condition: service_started
 
   ode:
     profiles:

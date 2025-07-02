@@ -2,23 +2,20 @@ import React, { useEffect } from 'react'
 import { Box, Container } from '@mui/material'
 import IntersectionMap from '../../../features/intersections/map/map-component'
 import { useParams } from 'react-router-dom'
-import { setSelectedIntersectionId, setSelectedRoadRegulatorId } from '../../../generalSlices/intersectionSlice'
+import { setSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
 import { headerTabHeight } from '../../../styles/index'
 
 const IntersectionTsMapPage = () => {
-  const { intersectionId, roadRegulatorId, timestamp } = useParams<{
+  const { intersectionId, timestamp } = useParams<{
     intersectionId: string
-    roadRegulatorId: string
     timestamp: string
   }>()
 
   const intersectionIdInt = parseInt(intersectionId) ?? -1
-  const roadRegulatorIdInt = parseInt(roadRegulatorId) ?? -1
   const timestampInt = parseInt(timestamp) ?? 0
 
   useEffect(() => {
     setSelectedIntersectionId(intersectionIdInt)
-    setSelectedRoadRegulatorId(roadRegulatorIdInt)
   }, [intersectionId])
 
   return (
@@ -44,7 +41,6 @@ const IntersectionTsMapPage = () => {
             sourceData={timestampInt !== undefined ? { timestamp: timestampInt } : undefined}
             sourceDataType={timestampInt !== undefined ? 'timestamp' : undefined}
             intersectionId={intersectionIdInt}
-            roadRegulatorId={roadRegulatorIdInt}
           />
         </Container>
       </Box>

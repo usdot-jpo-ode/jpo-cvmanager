@@ -8,7 +8,7 @@ import { setupStore } from '../../store'
 import { replaceChaoticIds } from '../../utils/test-utils'
 import { BrowserRouter } from 'react-router-dom'
 
-it('snapshot add', () => {
+it('should take a snapshot', () => {
   const { container } = render(
     <ThemeProvider theme={testTheme}>
       <Provider store={setupStore({ adminRsuTab: { loading: false, value: { activeDiv: 'rsu_table' } } })}>
@@ -18,24 +18,6 @@ it('snapshot add', () => {
       </Provider>
     </ThemeProvider>
   )
-
-  fireEvent.click(screen.queryByTitle('Add RSU'))
-
-  expect(replaceChaoticIds(container)).toMatchSnapshot()
-})
-
-it('snapshot refresh', () => {
-  const { container } = render(
-    <ThemeProvider theme={testTheme}>
-      <Provider store={setupStore({ adminRsuTab: { loading: false, value: { activeDiv: 'rsu_table' } } })}>
-        <BrowserRouter>
-          <AdminRsuTab />
-        </BrowserRouter>
-      </Provider>
-    </ThemeProvider>
-  )
-
-  fireEvent.click(screen.queryByTitle('Refresh RSUs'))
 
   expect(replaceChaoticIds(container)).toMatchSnapshot()
 })

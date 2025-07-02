@@ -52,7 +52,7 @@ services:
     environment:
       RSU_PING: ${RSU_PING}
       ZABBIX: ${ZABBIX}
-      RSU_SNMP_FETCH: ${RSU_SNMP_FETCH}
+      RSU_MSGFWD_FETCH: ${RSU_MSGFWD_FETCH}
 
       ZABBIX_ENDPOINT: ${ZABBIX_ENDPOINT}
       ZABBIX_USER: ${ZABBIX_USER}
@@ -100,11 +100,11 @@ services:
       PG_DB_PASS: ${PG_DB_PASS}
 
       PROJECT_ID: ${GCP_PROJECT_ID}
-      GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
+      GOOGLE_APPLICATION_CREDENTIALS: /home/gcp_key.json
 
       LOGGING_LEVEL: ${ISS_LOGGING_LEVEL}
     volumes:
-      - ${GOOGLE_APPLICATION_CREDENTIALS}:/google/gcp_credentials.json
+      - ./resources/google/${GOOGLE_ACCESS_KEY_NAME}:/home/gcp_key.json
     logging:
       options:
         max-size: '10m'
@@ -132,7 +132,6 @@ services:
 
       LOGGING_LEVEL: ${FIRMWARE_MANAGER_LOGGING_LEVEL}
     volumes:
-      - ${GOOGLE_APPLICATION_CREDENTIALS}:/google/gcp_credentials.json
       - ${HOST_BLOB_STORAGE_DIRECTORY}:/mnt/blob_storage
     logging:
       options:
@@ -158,15 +157,18 @@ services:
       FW_UPGRADE_MAX_RETRY_LIMIT: ${FW_UPGRADE_MAX_RETRY_LIMIT}
 
       GCP_PROJECT: ${GCP_PROJECT_ID}
-      GOOGLE_APPLICATION_CREDENTIALS: '/google/gcp_credentials.json'
+      GOOGLE_APPLICATION_CREDENTIALS: /home/gcp_key.json
 
       SMTP_SERVER_IP: ${SMTP_SERVER_IP}
       SMTP_EMAIL: ${SMTP_EMAIL}
       SMTP_USERNAME: ${SMTP_USERNAME}
       SMTP_PASSWORD: ${SMTP_PASSWORD}
+
+      UPGRADE_SCHEDULER_ENDPOINT: ${FIRMWARE_MANAGER_UPGRADE_SCHEDULER_ENDPOINT}
+
       LOGGING_LEVEL: ${FIRMWARE_MANAGER_LOGGING_LEVEL}
     volumes:
-      - ${GOOGLE_APPLICATION_CREDENTIALS}:/google/gcp_credentials.json
+      - ./resources/google/${GOOGLE_ACCESS_KEY_NAME}:/home/gcp_key.json
       - ${HOST_BLOB_STORAGE_DIRECTORY}:/mnt/blob_storage
     logging:
       options:

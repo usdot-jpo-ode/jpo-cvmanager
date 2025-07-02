@@ -3,139 +3,78 @@
 exports[`should take a snapshot 1`] = `
 <div>
   <div
+    class="MuiContainer-root css-mocked-MuiContainer-root"
     id="help"
   >
-    <h1
-      class="helpHeader"
-    >
-      Welcome to the 
-       CV Manager Website
-    </h1>
     <div
-      class="spacer"
+      class="MuiStack-root css-mocked-MuiStack-root"
     >
-      <p
-        class="pHelp"
-      >
+      <h2>
+        Welcome to the 
+         CV Manager Website
+      </h2>
+      <p>
         This application shows the physical location and message counts for each RSU installed by the Colorado Department of Transportation at various road sites throughout Colorado.
       </p>
-    </div>
-    <div
-      class="spacer"
-    >
-      <p
-        class="pHelp"
-      >
+      <p>
         The map on this website will represent the location of each RSU with a red, green, or yellow dot (shown below). A green dot represents an RSU that is online. A yellow dot represents an RSU that is offline but was recently active. A red dot represents an RSU that is not currently online.
       </p>
-    </div>
-    <img
-      alt="RSU Statuses Shown on Map"
-      class="css-16bzm2g"
-      src="rsu_status.PNG"
-    />
-    <div
-      class="spacer"
-    >
-      <p
-        class="pHelp"
-      >
+      <img
+        alt="RSU Statuses Shown on Map"
+        class="css-2ttpiu"
+        src="rsu_status.PNG"
+      />
+      <p>
         Clicking on the RSU will give the following information: IP address, online status, time last online, milepost number, serial number, and number of message counts (shown below).
       </p>
-    </div>
-    <img
-      alt="RSU Popup with Data"
-      class="css-16bzm2g"
-      src="rsu_popup.PNG"
-    />
-    <div
-      class="spacer"
-    >
-      <p
-        class="pHelp"
-      >
+      <img
+        alt="RSU Popup with Data"
+        class="css-2ttpiu"
+        src="rsu_popup.PNG"
+      />
+      <p>
         The menu on the right side of the webpage will allow users to select the time range and message type to be displayed for the RSUs. The menu will toggle between being hidden and visible each time the red X is clicked. The time frame can be changed by adjusting the date and time values in the date-time pickers. The top date-time picker represents the start time while the bottom represents the end time. Below the date-time pickers is a dropdown menu where the RSU message type can be selected. Each time a value is updated in either the date-time pickers or message selection dropdown the webpage will update accordingly. These elements are shown in the image below:
       </p>
-    </div>
-    <img
-      alt="RSU Menu"
-      class="css-16bzm2g"
-      src="rsu_menu.PNG"
-    />
-    <div
-      class="spacer"
-    >
-      <p
-        class="pHelp"
-      >
+      <img
+        alt="RSU Menu"
+        class="css-2ttpiu"
+        src="rsu_menu.PNG"
+      />
+      <p>
         The table included in the menu will show the number of message counts for each RSU in the given time frame regardless of online status (shown below). The table can be sorted by RSU, road, or count by clicking on the desired column header. Each time a column header is clicked, it will toggle between sorting the data in an ascending/descending fashion.
       </p>
-    </div>
-    <img
-      alt="RSU Message Count Table"
-      class="css-16bzm2g"
-      src="rsu_count.PNG"
-    />
-    <div
-      class="spacer"
-    >
-      <p
-        class="pHelp"
-      >
+      <img
+        alt="RSU Message Count Table"
+        class="css-2ttpiu"
+        src="rsu_count.PNG"
+      />
+      <p>
         Selecting 'Heat Map' on the navigation bar will show a heat map representing RSU message counts for the time range and message type selected in the menu (shown below). Any update to time range or message type in the menu will carry over between the heat map and RSU map.
       </p>
-    </div>
-    <img
-      alt="CV Manager Heat Map"
-      class="css-16bzm2g"
-      src="rsu_heatmap.PNG"
-    />
-    <div
-      class="spacer"
-    >
-      <p
-        class="pHelp"
-      >
+      <img
+        alt="CV Manager Heat Map"
+        class="css-2ttpiu"
+        src="rsu_heatmap.PNG"
+      />
+      <p>
         Selecting 'Configure' on the navigation bar will allow users to perform certain actions to the RSU based on their role. An RSU must first be selected on the RSU Map before any options become available. Users will be able to perform one or more of the following: pull current message forwarding configuration, add/delete message forwarding configurations, and perform an RSU reboot.
       </p>
+      <img
+        alt="CV Manager Configuration Page"
+        class="css-2ttpiu"
+        src="rsu_configure.PNG"
+      />
     </div>
-    <img
-      alt="CV Manager Configuration Page"
-      class="css-16bzm2g"
-      src="rsu_configure.PNG"
-    />
     <div
-      id="supportMenuParent"
-      style="background-color: rgba(255, 255, 255, 0.5);"
+      class="contactWrapper"
     >
-      <div
-        id="supportMenuContainer"
+      <button
+        class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
+        tabindex="0"
+        type="button"
       >
-        <div>
-          <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
-            tabindex="0"
-            type="button"
-          >
-            <span
-              class="MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-mocked-MuiButton-startIcon"
-            >
-              <svg
-                aria-hidden="true"
-                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
-                data-testid="ContactSupportIcon"
-                focusable="false"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M11.5 2C6.81 2 3 5.81 3 10.5S6.81 19 11.5 19h.5v3c4.86-2.34 8-7 8-11.5C20 5.81 16.19 2 11.5 2m1 14.5h-2v-2h2zm0-3.5h-2c0-3.25 3-3 3-5 0-1.1-.9-2-2-2s-2 .9-2 2h-2c0-2.21 1.79-4 4-4s4 1.79 4 4c0 2.5-3 2.75-3 5"
-                />
-              </svg>
-            </span>
-            Contact Support
-          </button>
-        </div>
-      </div>
+        Contact Support
+      </button>
     </div>
   </div>
 </div>

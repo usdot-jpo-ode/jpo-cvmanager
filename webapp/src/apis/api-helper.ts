@@ -89,7 +89,6 @@ class ApiHelper {
       } catch (err) {
         console.error('Error in _getDataWithCodes: ' + err)
       }
-
       return {
         body: respBody,
         status: resp.status,
@@ -139,7 +138,6 @@ class ApiHelper {
       } catch (err) {
         console.error('Error in _postData: ' + err)
       }
-
       return {
         body: respBody,
         status: resp.status,
@@ -187,7 +185,6 @@ class ApiHelper {
       } catch (err) {
         console.error('Error in _deleteData: ' + err)
       }
-
       return {
         body: respBody,
         status: resp.status,
@@ -238,7 +235,6 @@ class ApiHelper {
       } catch (err) {
         console.error('Error in _patchData: ' + err)
       }
-
       return {
         body: respBody,
         status: resp.status,

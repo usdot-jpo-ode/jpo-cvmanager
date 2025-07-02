@@ -63,6 +63,9 @@ services:
       CSM_EMAIL_APP_USERNAME: ${CSM_EMAIL_APP_USERNAME}
       CSM_EMAIL_APP_PASSWORD: ${CSM_EMAIL_APP_PASSWORD}
 
+      ENVIRONMENT_NAME: ${ENVIRONMENT_NAME}
+      LOGS_LINK: ${LOGS_LINK}
+
       GOOGLE_APPLICATION_CREDENTIALS: /home/gcp_key.json
       GCP_PROJECT_ID: ${GCP_PROJECT_ID}
       MOOVE_AI_SEGMENT_AGG_STATS_TABLE: ${MOOVE_AI_SEGMENT_AGG_STATS_TABLE}
@@ -96,8 +99,8 @@ services:
         MAPBOX_INIT_LATITUDE: ${MAPBOX_INIT_LATITUDE}
         MAPBOX_INIT_LONGITUDE: ${MAPBOX_INIT_LONGITUDE}
         MAPBOX_INIT_ZOOM: ${MAPBOX_INIT_ZOOM}
-        CVIZ_API_SERVER_URL: ${CVIZ_API_SERVER_URL}
-        CVIZ_API_WS_URL: ${CVIZ_API_WS_URL}
+        CVIZ_API_SERVER_URL: ${CVIZ_API_SERVER_URL}${INTERSECTION_API_ROUTE_PREFIX:-/}
+        CVIZ_API_WS_URL: ${CVIZ_API_WS_URL}${INTERSECTION_API_ROUTE_PREFIX:-/}
         ENABLE_RSU_FEATURES: ${ENABLE_RSU_FEATURES}
         ENABLE_INTERSECTION_FEATURES: ${ENABLE_INTERSECTION_FEATURES}
         ENABLE_WZDX_FEATURES: ${ENABLE_WZDX_FEATURES}
@@ -162,11 +165,15 @@ services:
       ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
     ports:
       - '8084:8080'
+      - '9000:9000'
     environment:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       WEBAPP_ORIGIN: ${WEBAPP_ENDPOINT}
-      KC_HEALTH_ENABLED: true
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_HEALTH_ENABLED: 'true'
+      KC_LOGGING_LEVEL: ${KC_LOGGING_LEVEL}
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://${PG_DB_HOST}/postgres?currentSchema=keycloak
       KC_DB_USERNAME: ${PG_DB_USER}
@@ -175,16 +182,16 @@ services:
       KEYCLOAK_API_CLIENT_SECRET_KEY: ${KEYCLOAK_API_CLIENT_SECRET_KEY}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      KC_HOSTNAME_STRICT_HTTPS: 'false'
+      KC_HTTP_ENABLED: 'true'
     command:
       - start-dev
-      - --log-level=${KC_LOGGING_LEVEL}
       - --import-realm
-      - --spi-theme-welcome-theme=custom-welcome
     logging:
       options:
         max-size: '10m'
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:8080/health']
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/health']
       interval: 30s
       timeout: 10s
       retries: 3

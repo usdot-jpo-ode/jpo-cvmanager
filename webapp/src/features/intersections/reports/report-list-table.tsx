@@ -1,56 +1,27 @@
 import React from 'react'
 import { format } from 'date-fns'
 import {
-  Avatar,
   Box,
   Button,
-  IconButton,
   Table,
   TableBody,
   TableCell,
   TablePagination,
   TableRow,
   Typography,
+  useTheme,
 } from '@mui/material'
 import PerfectScrollbar from 'react-perfect-scrollbar'
-import { ArrowDownward } from '@mui/icons-material'
-import toast from 'react-hot-toast'
-import ReportsApi, { ReportMetadata } from '../../../apis/intersections/reports-api'
-import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-import { selectToken } from '../../../generalSlices/userSlice'
+import { ReportMetadata } from '../../../apis/intersections/reports-api'
 
 interface ReportRowProps {
   report: ReportMetadata
+  onViewReport: (report: ReportMetadata) => void
 }
 
 const ReportRow = (props: ReportRowProps) => {
-  const navigate = useNavigate()
-  const token = useSelector(selectToken)
-  const { report } = props
-
-  const downloadReport = async (reportName: string) => {
-    const promise = ReportsApi.downloadReport({ token: token, reportName })
-    toast.promise(promise, {
-      loading: `Downloading Performance Report ${reportName}`,
-      success: `Successfully Downloaded Performance Report ${reportName}`,
-      error: `Error Downloading Performance Report ${reportName}`,
-    })
-    const report = await promise
-    const name = `Performance Report ${reportName}.pdf`
-    if (report !== undefined) {
-      downloadPdf(report, name)
-    }
-  }
-
-  const downloadPdf = (contents: Blob, name: string) => {
-    const url = window.URL.createObjectURL(contents)
-    const link = document.createElement('a')
-    link.href = url
-    link.setAttribute('download', name) //or any other extension
-    document.body.appendChild(link)
-    link.click()
-  }
+  const theme = useTheme()
+  const { report, onViewReport } = props
 
   return (
     <TableRow
@@ -79,7 +50,6 @@ const ReportRow = (props: ReportRowProps) => {
             textDecoration: 'none',
             whiteSpace: 'nowrap',
           }}
-          onClick={() => navigate(`/dashboard/logs/1`)}
         >
           <Box sx={{ ml: 2 }}>
             <Typography color="textSecondary" variant="subtitle2">
@@ -97,8 +67,8 @@ const ReportRow = (props: ReportRowProps) => {
         >
           <Typography variant="subtitle2">Report Duration</Typography>
           <Typography color="textSecondary" variant="body2">
-            {report.reportStartTime && format(new Date(report.reportStartTime), 'MMM dd, h:mm:ss a')} -{' '}
-            {report.reportStopTime && format(new Date(report.reportStopTime), 'MMM dd, h:mm:ss a')}
+            {report.reportStartTime && format(report.reportStartTime, 'MMM dd, h:mm:ss a')} -{' '}
+            {report.reportStopTime && format(report.reportStopTime, 'MMM dd, h:mm:ss a')}
           </Typography>
         </Box>
       </TableCell>
@@ -111,18 +81,17 @@ const ReportRow = (props: ReportRowProps) => {
         >
           <Typography variant="subtitle2">Generated At</Typography>
           <Typography color="textSecondary" variant="body2">
-            {report.reportGeneratedAt && format(new Date(report.reportGeneratedAt), 'MMM dd, h:mm:ss a')}
+            {report.reportGeneratedAt && format(report.reportGeneratedAt, 'MMM dd, h:mm:ss a')}
           </Typography>
         </Box>
       </TableCell>
       <TableCell align="right">
         <Button
-          endIcon={<ArrowDownward fontSize="small" />}
-          onClick={() => {
-            downloadReport(report.reportName)
-          }}
+          onClick={() => onViewReport(report)}
+          className="capital-case"
+          sx={{ color: theme.palette.custom.rowActionIcon }}
         >
-          Download
+          View
         </Button>
       </TableCell>
     </TableRow>
@@ -130,17 +99,17 @@ const ReportRow = (props: ReportRowProps) => {
 }
 
 interface ReportListTableProps {
-  group: boolean
   reports: ReportMetadata[]
   reportsCount: number
   onPageChange: (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => void
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
   page: number
   rowsPerPage: number
+  onViewReport: (report: ReportMetadata) => void
 }
 
 export const ReportListTable = (props: ReportListTableProps) => {
-  const { group, reports, reportsCount, onPageChange, onRowsPerPageChange, page, rowsPerPage, ...other } = props
+  const { reports, reportsCount, onPageChange, onRowsPerPageChange, page, rowsPerPage, onViewReport, ...other } = props
 
   return (
     <div {...other}>
@@ -150,14 +119,13 @@ export const ReportListTable = (props: ReportListTableProps) => {
             borderCollapse: 'separate',
             borderSpacing: (theme) => `0 ${theme.spacing(3)}`,
             minWidth: 600,
-            marginTop: (theme) => `-${theme.spacing(3)}`,
             p: '1px',
           }}
         >
           {
             <TableBody>
               {reports.map((report: ReportMetadata) => (
-                <ReportRow report={report} />
+                <ReportRow key={report.reportName} report={report} onViewReport={onViewReport} />
               ))}
             </TableBody>
           }

@@ -1,21 +1,19 @@
 FROM python:3.12.2-slim
 
 # Prepare the SNMP functionality for the image
-RUN apt-get update
-RUN apt-get install -y snmpd
-RUN apt-get install -y snmp
-ADD resources/mibs/* /usr/share/snmp/mibs/
+RUN apt-get update && apt-get install -y snmpd && apt-get install -y snmp
+COPY resources/mibs/* /usr/share/snmp/mibs/
 
 # Allow statements and log messages to immediately appear in the Knative logs
-ENV PYTHONUNBUFFERED True
+ENV PYTHONUNBUFFERED=True
 
 # Copy local code to the container image.
-ENV APP_HOME /app
+ENV APP_HOME=/app
 WORKDIR $APP_HOME
-ADD api/requirements.txt .
-ADD api/src/* .
-ADD api/src/error_email/* ./error_email/
-ADD common/*.py ./common/
+COPY api/requirements.txt .
+COPY api/src/* .
+COPY api/src/error_email/* ./error_email/
+COPY common/ ./common/
 
 # Install production dependencies.
 RUN pip install --no-cache-dir -r requirements.txt

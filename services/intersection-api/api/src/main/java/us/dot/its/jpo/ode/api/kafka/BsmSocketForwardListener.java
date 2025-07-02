@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import us.dot.its.jpo.conflictmonitor.monitor.models.bsm.BsmIntersectionIdKey;
-import us.dot.its.jpo.ode.api.controllers.StompController;
+import us.dot.its.jpo.ode.api.controllers.live.StompController;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 
 @Component

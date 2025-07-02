@@ -2,12 +2,6 @@
 
 exports[`should take a snapshot 1`] = `
 <div>
-  <div>
-    <h2
-      class="firmwareHeader"
-    >
-      Firmware Upgrade
-    </h2>
-  </div>
+  <div />
 </div>
 `;

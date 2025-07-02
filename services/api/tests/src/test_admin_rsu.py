@@ -196,7 +196,7 @@ def test_modify_rsu_success(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     expected_msg = {"message": "RSU successfully modified"}
     actual_msg = admin_rsu.modify_rsu_authorized(
-        "10.0.0.1", admin_rsu_data.request_json_good
+        orig_ip="10.0.0.1", rsu_spec=admin_rsu_data.request_json_good
     )
 
     calls = [
@@ -214,7 +214,9 @@ def test_modify_rsu_check_fail(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = False
 
     with pytest.raises(BadRequest) as exc_info:
-        admin_rsu.modify_rsu_authorized("10.0.0.1", admin_rsu_data.request_json_good)
+        admin_rsu.modify_rsu_authorized(
+            orig_ip="10.0.0.1", rsu_spec=admin_rsu_data.request_json_good
+        )
 
     assert (
         str(exc_info.value)
@@ -230,7 +232,9 @@ def test_modify_rsu_generic_exception(mock_pgquery, mock_check_safe_input):
     mock_pgquery.side_effect = SQLAlchemyError("Test")
 
     with pytest.raises(InternalServerError) as exc_info:
-        admin_rsu.modify_rsu_authorized("10.0.0.1", admin_rsu_data.request_json_good)
+        admin_rsu.modify_rsu_authorized(
+            orig_ip="10.0.0.1", rsu_spec=admin_rsu_data.request_json_good
+        )
 
     assert (
         str(exc_info.value)
@@ -247,7 +251,9 @@ def test_modify_rsu_sql_exception(mock_pgquery, mock_check_safe_input):
     mock_pgquery.side_effect = IntegrityError("", {}, orig)
 
     with pytest.raises(InternalServerError) as exc_info:
-        admin_rsu.modify_rsu_authorized("10.0.0.1", admin_rsu_data.request_json_good)
+        admin_rsu.modify_rsu_authorized(
+            orig_ip="10.0.0.1", rsu_spec=admin_rsu_data.request_json_good
+        )
 
     assert str(exc_info.value) == "500 Internal Server Error: SQL issue encountered"
 

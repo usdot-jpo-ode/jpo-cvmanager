@@ -217,7 +217,8 @@ def test_modify_intersection_success(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     expected_msg = {"message": "Intersection successfully modified"}
     actual_msg = admin_intersection.modify_intersection_authorized(
-        "1121", admin_intersection_data.request_json_good
+        intersection_id="1121",
+        intersection_spec=admin_intersection_data.request_json_good,
     )
 
     calls = [
@@ -240,7 +241,8 @@ def test_modify_intersection_check_fail(mock_pgquery, mock_check_safe_input):
 
     with pytest.raises(BadRequest) as exc_info:
         admin_intersection.modify_intersection_authorized(
-            "1121", admin_intersection_data.request_json_good
+            intersection_id="1121",
+            intersection_spec=admin_intersection_data.request_json_good,
         )
 
     assert (
@@ -258,7 +260,8 @@ def test_modify_intersection_generic_exception(mock_pgquery, mock_check_safe_inp
 
     with pytest.raises(InternalServerError) as exc_info:
         admin_intersection.modify_intersection_authorized(
-            "1121", admin_intersection_data.request_json_good
+            intersection_id="1121",
+            intersection_spec=admin_intersection_data.request_json_good,
         )
 
     assert (
@@ -277,7 +280,8 @@ def test_modify_intersection_sql_exception(mock_pgquery, mock_check_safe_input):
 
     with pytest.raises(InternalServerError) as exc_info:
         admin_intersection.modify_intersection_authorized(
-            "1121", admin_intersection_data.request_json_good
+            intersection_id="1121",
+            intersection_spec=admin_intersection_data.request_json_good,
         )
 
     assert str(exc_info.value) == "500 Internal Server Error: SQL issue encountered"

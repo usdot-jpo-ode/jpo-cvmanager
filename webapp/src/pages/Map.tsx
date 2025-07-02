@@ -9,7 +9,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
-import Slider from 'rc-slider'
+import Slider from '@mui/material/Slider'
 import {
   selectRsuOnlineStatus,
   selectRsuData,
@@ -99,7 +99,6 @@ import {
   Stack,
 } from '@mui/material'
 
-import 'rc-slider/assets/index.css'
 import './css/MsgMap.css'
 import './css/Map.css'
 import { WZDxFeature, WZDxWorkZoneFeed } from '../models/wzdx/WzdxWorkZoneFeed42'
@@ -127,6 +126,14 @@ import { ConditionalRenderRsu, evaluateFeatureFlags } from '../feature-flags'
 mapboxgl.workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default
 
 const { DateTime } = require('luxon')
+
+const MILLISECONDS_PER_MINUTE = 60000
+
+const calculateTimeWindow = (baseDate: string | Date, offset: number, step: number) => {
+  const start = new Date(new Date(baseDate).getTime() + MILLISECONDS_PER_MINUTE * offset * step)
+  const end = new Date(start.getTime() + MILLISECONDS_PER_MINUTE * step)
+  return { start, end }
+}
 
 function MapPage() {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -190,10 +197,10 @@ function MapPage() {
   const [baseDate, setBaseDate] = useState(new Date(startGeoMsgDate))
 
   const [msgViewerSliderStartDate, setMsgViewerSliderStartDate] = useState(
-    new Date(baseDate.getTime() + 60000 * filterOffset * filterStep)
+    new Date(baseDate.getTime() + MILLISECONDS_PER_MINUTE * filterOffset * filterStep)
   )
   const [msgViewerSliderEndDate, setMsgViewerSliderEndDate] = useState(
-    new Date(msgViewerSliderStartDate.getTime() + 60000 * filterStep)
+    new Date(msgViewerSliderStartDate.getTime() + MILLISECONDS_PER_MINUTE * filterStep)
   )
 
   // stepOptions is used to set the step options for the message viewer
@@ -262,9 +269,7 @@ function MapPage() {
 
   // useEffects for BSM layer
   useEffect(() => {
-    const localBaseDate = new Date(startGeoMsgDate)
-    const localStartDate = new Date(localBaseDate.getTime() + 60000 * filterOffset * filterStep)
-    const localEndDate = new Date(new Date(localStartDate).getTime() + 60000 * filterStep)
+    const { start: localStartDate, end: localEndDate } = calculateTimeWindow(startGeoMsgDate, filterOffset, filterStep)
 
     setMsgViewerSliderStartDate(localStartDate)
     setMsgViewerSliderEndDate(localEndDate)
@@ -466,12 +471,37 @@ function MapPage() {
 
   // Helper function to calculate the maximum offset based on the start and end dates and the step
   const calculateMaxOffset = (start: string | Date, end: string | Date, step: number) => {
-    return Math.floor((new Date(end).getTime() - new Date(start).getTime()) / (step * 60000))
+    return Math.floor((new Date(end).getTime() - new Date(start).getTime()) / (step * MILLISECONDS_PER_MINUTE))
   }
 
   const geoMsgFilterMaxOffset = useMemo(() => {
     return calculateMaxOffset(startGeoMsgDate, endGeoMsgDate, filterStep)
   }, [startGeoMsgDate, endGeoMsgDate, filterStep])
+
+  // Helper function to calculate data availability for each time window...
+  // in the v2x message viewer slider.
+  const calculateDataAvailability = useMemo(() => {
+    if (!geoMsgData || geoMsgData.length === 0) return []
+
+    const availability: { offset: number; count: number }[] = []
+
+    // Calculate data for each possible offset
+    for (let offset = 0; offset <= geoMsgFilterMaxOffset; offset++) {
+      const { start: windowStart, end: windowEnd } = calculateTimeWindow(startGeoMsgDate, offset, filterStep)
+
+      // Count messages in this time window
+      const messageCount = geoMsgData.filter((message) => {
+        const messageDate = new Date(message.properties.timeStamp)
+        return isDateInRange(messageDate, windowStart, windowEnd)
+      }).length
+
+      if (messageCount > 0) {
+        availability.push({ offset, count: messageCount })
+      }
+    }
+
+    return availability
+  }, [geoMsgData, startGeoMsgDate, filterStep, geoMsgFilterMaxOffset])
 
   function dateChanged(e: Date, type: 'start' | 'end') {
     try {
@@ -1522,14 +1552,26 @@ function MapPage() {
             </div>
             <div id="sliderContainer" style={{ margin: '5px 10px' }}>
               <Slider
-                allowCross={false}
-                included={false}
                 min={0}
                 max={geoMsgFilterMaxOffset}
                 value={filterOffset}
-                onChange={(e) => {
-                  dispatch(setGeoMsgFilterOffset(e as number))
+                onChange={(_: Event, value: number | number[]) => {
+                  dispatch(setGeoMsgFilterOffset(value as number))
                 }}
+                step={1}
+                valueLabelDisplay="auto"
+                valueLabelFormat={() => {
+                  const { start, end } = calculateTimeWindow(startGeoMsgDate, filterOffset, filterStep)
+                  return `${start.toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })} - ${end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+                }}
+                marks={calculateDataAvailability.map(({ offset }) => ({
+                  value: offset,
+                  label: '', // No numbers, just bars
+                }))}
+                style={{ width: '100%' }}
               />
             </div>
             <div id="controlContainer">
@@ -1557,8 +1599,8 @@ function MapPage() {
                 })}
               </Select>
 
-              <Button variant="contained" onClick={() => dispatch(setGeoMsgFilter(false))}>
-                New Search
+              <Button variant="contained" size="small" onClick={() => dispatch(setGeoMsgFilter(false))}>
+                <Typography fontSize="small">New Search</Typography>
               </Button>
             </div>
           </div>

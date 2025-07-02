@@ -50,11 +50,11 @@ conflict:
 spring:
   data:
     mongodb:
-      database: ${CM_MONGO_DATABASE:CV}
+      database: ${CM_DATABASE_NAME:CV}
       host: ${DB_HOST_IP:localhost}
       port: 27017
-      username: ${CM_MONGO_API_USERNAME:api}
-      password: ${CM_MONGO_API_PASSWORD:api}
+      username: ${MONGO_READ_WRITE_USER:api}
+      password: ${MONGO_READ_WRITE_PASS:api}
       authenticationDatabase: ${CM_MONGO_AUTH_DB:admin}
       uri: ${CM_MONGO_URI:null}
   # Postgres Configuration

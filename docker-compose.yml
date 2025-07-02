@@ -14,9 +14,6 @@ services:
       dockerfile: Dockerfile.api
     image: jpo_cvmanager_api:latest
     restart: always
-    extra_hosts:
-      ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
-      ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
     ports:
       - '8081:5000'
     environment:
@@ -116,9 +113,6 @@ services:
       cvmanager_keycloak:
         condition: service_healthy
         required: false
-    extra_hosts:
-      ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
-      ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
     ports:
       - '80:80'
     logging:
@@ -159,17 +153,13 @@ services:
       cvmanager_postgres:
         required: false
         condition: service_started
-
-    extra_hosts:
-      ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
-      ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
     ports:
       - '8084:8080'
       - '9000:9000'
     environment:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
-      WEBAPP_ORIGIN: ${WEBAPP_ENDPOINT}
+      WEBAPP_ENDPOINT: ${WEBAPP_ENDPOINT}
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_HEALTH_ENABLED: 'true'

@@ -11,7 +11,7 @@
 
 .filterControl {
   height: fit-content;
-  width: 250px;
+  width: 300px;
   padding: 10px;
   position: absolute;
   z-index: 90;
@@ -47,4 +47,18 @@
 
 #stepSelect {
   width: fit-content;
+}
+
+#sliderContainer .MuiSlider-mark {
+  background-color: var(--mui-palette-primary-main) !important;
+  height: 6px !important;
+  width: 4px !important;
+  border-radius: 2px !important;
+  z-index: 0 !important;
+}
+
+/* hides the track line */
+#sliderContainer .MuiSlider-track {
+  background: transparent !important;
+  border: none !important;
 }

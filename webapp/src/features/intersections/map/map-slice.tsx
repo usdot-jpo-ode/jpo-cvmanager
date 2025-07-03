@@ -43,7 +43,7 @@ export type MAP_QUERY_PARAMS = {
 
 export type IMPORTED_MAP_MESSAGE_DATA = {
   mapData: ProcessedMap[]
-  bsmData: OdeBsmData[]
+  bsmData: BsmFeatureCollection
   spatData: ProcessedSpat[]
   notificationData: any
 }
@@ -301,6 +301,10 @@ export const pullInitialData = createAsyncThunk(
     let rawMap: ProcessedMap[] = []
     let rawSpat: ProcessedSpat[] = []
     let rawBsm: OdeBsmData[] = []
+    let rawBsmGeojson: BsmFeatureCollection = {
+      type: 'FeatureCollection',
+      features: [],
+    }
     let abortController = new AbortController()
     if (decoderModeEnabled) {
       rawMap = (sourceData as { map: ProcessedMap[] }).map.map((map) => ({
@@ -393,16 +397,21 @@ export const pullInitialData = createAsyncThunk(
       })
       rawMap = await rawMapPromise
     } else {
-      rawMap = importedMessageData.mapData
-      rawSpat = importedMessageData.spatData.sort((a, b) => a.utcTimeStamp - b.utcTimeStamp)
-      rawBsm = importedMessageData.bsmData
+      rawMap = [...importedMessageData.mapData]
+      rawSpat = [...importedMessageData.spatData].sort((a, b) => a.utcTimeStamp - b.utcTimeStamp)
+      rawBsmGeojson = importedMessageData.bsmData
+    }
+    if (rawBsmGeojson == undefined && rawBsm) {
+      rawBsmGeojson = parseBsmToGeojson(rawBsm)
     }
 
     if (decoderModeEnabled) {
-      let bsmGeojson = parseBsmToGeojson(rawBsm)
+      let bsmGeojson = rawBsmGeojson
       bsmGeojson = {
-        ...bsmGeojson,
-        features: [...[...bsmGeojson.features].sort((a, b) => b.properties.odeReceivedAt - a.properties.odeReceivedAt)],
+        ...rawBsmGeojson,
+        features: [
+          ...[...rawBsmGeojson.features].sort((a, b) => b.properties.odeReceivedAt - a.properties.odeReceivedAt),
+        ],
       }
       dispatch(renderEntireMap({ currentMapData: [], currentSpatData: [], currentBsmData: bsmGeojson }))
     }
@@ -413,7 +422,6 @@ export const pullInitialData = createAsyncThunk(
 
     const latestMapMessage: ProcessedMap = rawMap.at(-1)!
     const mapCoordinates: OdePosition3D = latestMapMessage?.properties.refPoint
-
     const mapSignalGroupsLocal = parseMapSignalGroups(latestMapMessage)
     dispatch(
       handleNewMapMessageData({
@@ -423,7 +431,6 @@ export const pullInitialData = createAsyncThunk(
         mapTime: latestMapMessage.properties.odeReceivedAt as unknown as number,
       })
     )
-
     if (importedMessageData == undefined && !decoderModeEnabled) {
       if (selectAbortAllFutureRequests(getState() as RootState)) {
         return
@@ -1243,7 +1250,7 @@ export const intersectionMapSlice = createSlice({
       state,
       action: PayloadAction<{
         mapData: ProcessedMap[]
-        bsmData: OdeBsmData[]
+        bsmData: BsmFeatureCollection
         spatData: ProcessedSpat[]
         notificationData: any
       }>

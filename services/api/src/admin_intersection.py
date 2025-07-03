@@ -51,7 +51,7 @@ def get_intersection_data(intersection_id):
         rsus = intersection_dict[str(row["intersection_number"])]["rsus"]
         if row["org_name"] not in orgs:
             orgs.append(row["org_name"])
-        if row["rsu_ip"] not in orgs and row["rsu_ip"] is not None:
+        if row["rsu_ip"] not in rsus and row["rsu_ip"] is not None:
             rsus.append(row["rsu_ip"])
 
     intersection_list = list(intersection_dict.values())

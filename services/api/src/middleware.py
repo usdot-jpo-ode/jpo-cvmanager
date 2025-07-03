@@ -236,7 +236,10 @@ class Middleware:
             # Convert the exception into a proper HTTP response
             response_body = json.dumps({"error": e.name, "message": e.description})
             response = Response(
-                response_body, status=e.code, content_type="application/json"
+                response_body,
+                status=e.code,
+                content_type="application/json",
+                headers={"Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"]},
             )
             return response(environ, start_response)
 
@@ -248,6 +251,9 @@ class Middleware:
                 {"error": "Internal Server Error", "message": str(e)}
             )
             response = Response(
-                response_body, status=500, content_type="application/json"
+                response_body,
+                status=500,
+                content_type="application/json",
+                headers={"Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"]},
             )
             return response(environ, start_response)

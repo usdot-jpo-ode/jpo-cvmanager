@@ -22,6 +22,17 @@ import { selectSelectedIntersectionId } from '../../../generalSlices/intersectio
 import { useSelector } from 'react-redux'
 import { Close } from '@mui/icons-material'
 
+export const CeaseBroadcastRecommendationTypes = [
+  'SpatBroadcastRateNotification',
+  'MapBroadcastRateNotification',
+  'StopLinePassageNotification',
+  'StopLineStopNotification',
+  'LaneDirectionOfTravelNotification',
+  'ConnectionOfTravelNotification',
+  'SignalStateConflictNotification',
+  'TimeChangeDetailsNotification',
+]
+
 const tabs = [
   {
     label: 'All',
@@ -30,7 +41,8 @@ const tabs = [
   },
   {
     label: 'Cease Broadcast',
-    value: 'CeaseBroadcast',
+    value: 'ceaseBroadcast',
+    values: CeaseBroadcastRecommendationTypes,
     description: 'Notification Requests to Cease Broadcast of Associated Messages',
   },
 ]
@@ -55,7 +67,8 @@ const applyFilters = (parameters, filter) =>
       return true
     }
 
-    return parameter['notificationType'] == filter.tab
+    const tab = tabs.find((tab) => tab.value === filter.tab)
+    return (tab?.values ?? []).includes(parameter['notificationType'])
   })
 
 const applyPagination = (parameters, page, rowsPerPage) =>
@@ -175,7 +188,7 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
                 }}
               >
                 {tabs.map((tab) => (
-                  <Tab key={tab.value} label={tab.label} value={tab.value} />
+                  <Tab key={tab.label} label={tab.label} value={tab.value} />
                 ))}
               </Tabs>
               <Box

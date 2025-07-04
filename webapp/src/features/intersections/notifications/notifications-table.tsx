@@ -120,10 +120,11 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
   }
 
   const handleQueryChange = (event) => {
+    // console.log('Query changed:', event, queryRef)
     event.preventDefault()
     setFilter((prevState) => ({
       ...prevState,
-      query: queryRef.current?.value as string,
+      query: event.target.value,
     }))
   }
 
@@ -200,8 +201,7 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
                   <Typography color={theme.palette.text.secondary}>{currentDescription}</Typography>
                 </Box>
                 <Box
-                  component="form"
-                  onSubmit={handleQueryChange}
+                  onChange={handleQueryChange}
                   sx={{
                     flexGrow: 1,
                     m: 1.5,
@@ -212,7 +212,6 @@ export const NotificationsTable = (props: { simple: Boolean }) => {
                     variant="standard"
                     slotProps={{
                       input: {
-                        ref: queryRef,
                         startAdornment: (
                           <InputAdornment position="start">
                             <SearchIcon fontSize="small" />

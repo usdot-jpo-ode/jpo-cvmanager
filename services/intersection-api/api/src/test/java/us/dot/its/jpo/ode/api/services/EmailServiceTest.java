@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.api.services;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -78,8 +80,8 @@ class EmailServiceTest {
         ArgumentCaptor<Message> captor = ArgumentCaptor.forClass(Message.class);
         verify(postmark, times(1)).deliverMessage(captor.capture());
         Message sentMessage = captor.getValue();
-        assert sentMessage.getTo().equals(to);
-        assert sentMessage.getSubject().equals(subject);
+        assertEquals(to, sentMessage.getTo());
+        assertEquals(subject, sentMessage.getSubject());
     }
 
     @Test
@@ -96,9 +98,9 @@ class EmailServiceTest {
         ArgumentCaptor<SimpleMailMessage> captor = ArgumentCaptor.forClass(SimpleMailMessage.class);
         verify(mailSender, times(1)).send(captor.capture());
         SimpleMailMessage sentMessage = captor.getValue();
-        assert sentMessage.getTo()[0].equals(to);
-        assert sentMessage.getSubject().equals(subject);
-        assert sentMessage.getText().equals(text);
+        assertEquals(to, sentMessage.getTo()[0]);
+        assertEquals(subject, sentMessage.getSubject());
+        assertEquals(text, sentMessage.getText());
     }
 
     @Test
@@ -180,6 +182,6 @@ class EmailServiceTest {
         List<UserRepresentation> result = emailService.getNotificationEmailList(EmailFrequency.ONCE_PER_DAY);
 
         // Assert
-        assert result.isEmpty();
+        assertTrue(result.isEmpty());
     }
 }

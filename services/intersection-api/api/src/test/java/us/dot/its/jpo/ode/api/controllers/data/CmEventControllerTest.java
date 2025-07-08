@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -59,9 +60,16 @@ import us.dot.its.jpo.ode.api.accessors.events.stop_line_passage_event.StopLineP
 import us.dot.its.jpo.ode.api.accessors.events.stop_line_stop_event.StopLineStopEventRepository;
 import us.dot.its.jpo.ode.api.accessors.events.time_change_details_event.TimeChangeDetailsEventRepository;
 import us.dot.its.jpo.ode.api.models.IDCount;
+import us.dot.its.jpo.ode.api.models.MinuteCount;
 import us.dot.its.jpo.ode.api.services.PermissionService;
 import us.dot.its.jpo.ode.api.services.PostgresService;
 import us.dot.its.jpo.ode.mockdata.MockEventGenerator;
+import us.dot.its.jpo.ode.model.OdeBsmData;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata;
+import us.dot.its.jpo.ode.model.OdeMsgPayload;
+import us.dot.its.jpo.ode.model.OdeObject;
+import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
+import us.dot.its.jpo.ode.plugin.j2735.J2735BsmCoreData;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -187,9 +195,6 @@ public class CmEventControllerTest {
                 when(permissionService.hasRole("USER")).thenReturn(true);
                 boolean latest = true;
 
-                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-                when(permissionService.hasRole("USER")).thenReturn(true);
-
                 Page<IntersectionReferenceAlignmentEvent> mockPage = new PageImpl<>(events);
                 when(intersectionReferenceAlignmentEventRepo.findLatest(eq(event.getIntersectionID()), any(), any()))
                                 .thenReturn(mockPage);
@@ -297,9 +302,6 @@ public class CmEventControllerTest {
                 when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
                 when(permissionService.hasRole("USER")).thenReturn(true);
                 boolean latest = true;
-
-                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-                when(permissionService.hasRole("USER")).thenReturn(true);
 
                 Page<ConnectionOfTravelEvent> mockPage = new PageImpl<>(events);
                 when(connectionOfTravelEventRepo.findLatest(eq(event.getIntersectionID()), any(), any()))
@@ -448,9 +450,6 @@ public class CmEventControllerTest {
                 when(permissionService.hasRole("USER")).thenReturn(true);
                 boolean latest = true;
 
-                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-                when(permissionService.hasRole("USER")).thenReturn(true);
-
                 Page<LaneDirectionOfTravelEvent> mockPage = new PageImpl<>(events);
                 when(laneDirectionOfTravelRepo.findLatest(eq(event.getIntersectionID()), any(), any()))
                                 .thenReturn(mockPage);
@@ -597,9 +596,6 @@ public class CmEventControllerTest {
                 when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
                 when(permissionService.hasRole("USER")).thenReturn(true);
                 boolean latest = true;
-
-                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-                when(permissionService.hasRole("USER")).thenReturn(true);
 
                 Page<SignalGroupAlignmentEvent> mockPage = new PageImpl<>(events);
                 when(signalGroupAlignmentEventRepo.findLatest(eq(event.getIntersectionID()), any(), any()))
@@ -748,9 +744,6 @@ public class CmEventControllerTest {
                 when(permissionService.hasRole("USER")).thenReturn(true);
                 boolean latest = true;
 
-                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-                when(permissionService.hasRole("USER")).thenReturn(true);
-
                 Page<SignalStateConflictEvent> mockPage = new PageImpl<>(events);
                 when(signalStateConflictEventRepo.findLatest(eq(event.getIntersectionID()), any(), any()))
                                 .thenReturn(mockPage);
@@ -897,9 +890,6 @@ public class CmEventControllerTest {
                 when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
                 when(permissionService.hasRole("USER")).thenReturn(true);
                 boolean latest = true;
-
-                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-                when(permissionService.hasRole("USER")).thenReturn(true);
 
                 Page<StopLinePassageEvent> mockPage = new PageImpl<>(events);
                 when(stopLinePassageEventRepo.findLatest(eq(event.getIntersectionID()), any(), any()))
@@ -1048,9 +1038,6 @@ public class CmEventControllerTest {
                 when(permissionService.hasRole("USER")).thenReturn(true);
                 boolean latest = true;
 
-                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-                when(permissionService.hasRole("USER")).thenReturn(true);
-
                 Page<StopLineStopEvent> mockPage = new PageImpl<>(events);
                 when(stopLineStopEventRepo.findLatest(eq(event.getIntersectionID()), any(), any()))
                                 .thenReturn(mockPage);
@@ -1197,9 +1184,6 @@ public class CmEventControllerTest {
                 when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
                 when(permissionService.hasRole("USER")).thenReturn(true);
                 boolean latest = true;
-
-                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-                when(permissionService.hasRole("USER")).thenReturn(true);
 
                 Page<TimeChangeDetailsEvent> mockPage = new PageImpl<>(events);
                 when(timeChangeDetailsEventRepo.findLatest(eq(event.getIntersectionID()), any(), any()))
@@ -1348,9 +1332,6 @@ public class CmEventControllerTest {
                 when(permissionService.hasRole("USER")).thenReturn(true);
                 boolean latest = true;
 
-                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-                when(permissionService.hasRole("USER")).thenReturn(true);
-
                 Page<SpatMinimumDataEvent> mockPage = new PageImpl<>(events);
                 when(spatMinimumDataEventRepo.findLatest(eq(event.getIntersectionID()), any(), any()))
                                 .thenReturn(mockPage);
@@ -1458,9 +1439,6 @@ public class CmEventControllerTest {
                 when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
                 when(permissionService.hasRole("USER")).thenReturn(true);
                 boolean latest = true;
-
-                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-                when(permissionService.hasRole("USER")).thenReturn(true);
 
                 Page<MapMinimumDataEvent> mockPage = new PageImpl<>(events);
                 when(mapMinimumDataEventRepo.findLatest(eq(event.getIntersectionID()), any(), any()))
@@ -1570,9 +1548,6 @@ public class CmEventControllerTest {
                 when(permissionService.hasRole("USER")).thenReturn(true);
                 boolean latest = true;
 
-                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-                when(permissionService.hasRole("USER")).thenReturn(true);
-
                 Page<MapBroadcastRateEvent> mockPage = new PageImpl<>(events);
                 when(mapBroadcastRateEventRepo.findLatest(eq(event.getIntersectionID()), any(), any()))
                                 .thenReturn(mockPage);
@@ -1680,9 +1655,6 @@ public class CmEventControllerTest {
                 when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
                 when(permissionService.hasRole("USER")).thenReturn(true);
                 boolean latest = true;
-
-                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-                when(permissionService.hasRole("USER")).thenReturn(true);
 
                 Page<SpatBroadcastRateEvent> mockPage = new PageImpl<>(events);
                 when(spatBroadcastRateEventRepo.findLatest(eq(event.getIntersectionID()), any(), any()))
@@ -1792,9 +1764,6 @@ public class CmEventControllerTest {
                 when(permissionService.hasRole("USER")).thenReturn(true);
                 boolean latest = true;
 
-                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-                when(permissionService.hasRole("USER")).thenReturn(true);
-
                 Page<SpatMessageCountProgressionEvent> mockPage = new PageImpl<>(events);
                 when(spatMessageCountProgressionEventRepo.findLatest(eq(event.getIntersectionID()), any(), any()))
                                 .thenReturn(mockPage);
@@ -1901,9 +1870,6 @@ public class CmEventControllerTest {
                 when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
                 when(permissionService.hasRole("USER")).thenReturn(true);
                 boolean latest = true;
-
-                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-                when(permissionService.hasRole("USER")).thenReturn(true);
 
                 Page<MapMessageCountProgressionEvent> mockPage = new PageImpl<>(events);
                 when(mapMessageCountProgressionEventRepo.findLatest(eq(event.getIntersectionID()), any(), any()))
@@ -2013,9 +1979,6 @@ public class CmEventControllerTest {
                 when(permissionService.hasRole("USER")).thenReturn(true);
                 boolean latest = true;
 
-                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-                when(permissionService.hasRole("USER")).thenReturn(true);
-
                 Page<BsmMessageCountProgressionEvent> mockPage = new PageImpl<>(events);
                 when(bsmMessageCountProgressionEventRepo.findLatest(eq(event.getIntersectionID()), any(), any()))
                                 .thenReturn(mockPage);
@@ -2124,9 +2087,6 @@ public class CmEventControllerTest {
                 when(permissionService.hasRole("USER")).thenReturn(true);
                 boolean latest = true;
 
-                when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-                when(permissionService.hasRole("USER")).thenReturn(true);
-
                 Page<BsmEvent> mockPage = new PageImpl<>(events);
                 when(bsmEventRepo.findLatest(eq(event.getIntersectionID()), any(), any()))
                                 .thenReturn(mockPage);
@@ -2202,6 +2162,74 @@ public class CmEventControllerTest {
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
                 assertThat(response.getBody()).isEqualTo(expectedCount);
                 verify(bsmEventRepo, times(1)).count(intersectionID, startTime, endTime);
+        }
+
+        @Test
+        void testGetBsmActivityByMinuteInRangeWithTestData() {
+                Integer intersectionID = 1;
+                Long startTime = 1000L;
+                Long endTime = 2000L;
+                boolean testData = true;
+
+                when(permissionService.hasIntersection(intersectionID, "USER")).thenReturn(true);
+                when(permissionService.hasRole("USER")).thenReturn(true);
+
+                ResponseEntity<Page<MinuteCount>> response = controller.getBsmActivityByMinuteInRange(
+                                intersectionID, startTime, endTime, false, 0, 10, testData);
+
+                assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+                assertThat(response.getBody().getContent()).isNotEmpty();
+                assertThat(response.getBody().getContent().size()).isEqualTo(10); // Test data generates 10 items
+        }
+
+        @Test
+        void testGetBsmActivityByMinuteInRangeWithLatestFlag() {
+                Integer intersectionID = 1;
+                Long startTime = 1000L;
+                Long endTime = 2000L;
+                boolean latest = true;
+                boolean testData = false;
+
+                when(permissionService.hasIntersection(intersectionID, "USER")).thenReturn(true);
+                when(permissionService.hasRole("USER")).thenReturn(true);
+                Page<BsmEvent> mockPage = new PageImpl<>(Collections.emptyList());
+                when(bsmEventRepo.findLatest(intersectionID, startTime, endTime)).thenReturn(mockPage);
+
+                ResponseEntity<Page<MinuteCount>> response = controller.getBsmActivityByMinuteInRange(
+                                intersectionID, startTime, endTime, latest, 0, 10, testData);
+
+                assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+                assertThat(response.getBody().getContent()).isEmpty(); // No events in the mock repository
+                verify(bsmEventRepo, times(1)).findLatest(intersectionID, startTime, endTime);
+        }
+
+        @Test
+        void testGetBsmActivityByMinuteInRangeWithPagination() {
+                Integer intersectionID = 1;
+                Long startTime = 1000L;
+                Long endTime = 2000L;
+                boolean latest = false;
+                boolean testData = false;
+                J2735Bsm bsm = new J2735Bsm();
+                J2735BsmCoreData coreData = new J2735BsmCoreData();
+                coreData.setId("id");
+                bsm.setCoreData(coreData);
+
+                when(permissionService.hasIntersection(intersectionID, "USER")).thenReturn(true);
+                when(permissionService.hasRole("USER")).thenReturn(true);
+                BsmEvent mockEvent = new BsmEvent();
+                mockEvent.setStartingBsm(new OdeBsmData(new OdeMsgMetadata(), new OdeMsgPayload(bsm)));
+                mockEvent.setEndingBsm(new OdeBsmData(new OdeMsgMetadata(), new OdeMsgPayload()));
+                Page<BsmEvent> mockPage = new PageImpl<>(Collections.singletonList(mockEvent), PageRequest.of(0, 10),
+                                1);
+                when(bsmEventRepo.find(intersectionID, startTime, endTime, PageRequest.of(0, 10))).thenReturn(mockPage);
+
+                ResponseEntity<Page<MinuteCount>> response = controller.getBsmActivityByMinuteInRange(
+                                intersectionID, startTime, endTime, latest, 0, 10, testData);
+
+                assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+                assertThat(response.getBody().getContent()).isNotEmpty();
+                verify(bsmEventRepo, times(1)).find(intersectionID, startTime, endTime, PageRequest.of(0, 10));
         }
 
 }

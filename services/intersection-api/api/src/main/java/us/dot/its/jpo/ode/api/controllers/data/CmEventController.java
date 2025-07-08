@@ -271,7 +271,7 @@ public class CmEventController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<Page<LaneDirectionOfTravelEvent>> findLaneDirectionOfTravelEvent(
+    public ResponseEntity<Page<LaneDirectionOfTravelEvent>> findLaneDirectionOfTravelEvents(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -348,7 +348,7 @@ public class CmEventController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<Page<SignalGroupAlignmentEvent>> findSignalGroupAlignmentEvent(
+    public ResponseEntity<Page<SignalGroupAlignmentEvent>> findSignalGroupAlignmentEvents(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -425,7 +425,7 @@ public class CmEventController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<Page<SignalStateConflictEvent>> findSignalStateConflictEvent(
+    public ResponseEntity<Page<SignalStateConflictEvent>> findSignalStateConflictEvents(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -502,7 +502,7 @@ public class CmEventController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<Page<StopLinePassageEvent>> findStopLinePassageEvent(
+    public ResponseEntity<Page<StopLinePassageEvent>> findStopLinePassageEvents(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -536,7 +536,7 @@ public class CmEventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
 
-    public ResponseEntity<Long> countStopLinePassageEvent(
+    public ResponseEntity<Long> countStopLinePassageEvents(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -581,7 +581,7 @@ public class CmEventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
 
-    public ResponseEntity<Page<StopLineStopEvent>> findStopLineStopEvent(
+    public ResponseEntity<Page<StopLineStopEvent>> findStopLineStopEvents(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -615,7 +615,7 @@ public class CmEventController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
 
-    public ResponseEntity<Long> countStopLineStopEvent(
+    public ResponseEntity<Long> countStopLineStopEvents(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -659,7 +659,7 @@ public class CmEventController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<Page<TimeChangeDetailsEvent>> findTimeChangeDetailsEvent(
+    public ResponseEntity<Page<TimeChangeDetailsEvent>> findTimeChangeDetailsEvents(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -714,7 +714,7 @@ public class CmEventController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<List<IDCount>> getTimeChangeDetailsEventCounts(
+    public ResponseEntity<List<IDCount>> getDailyTimeChangeDetailsEventCounts(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis") Long startTime,
             @RequestParam(name = "end_time_utc_millis") Long endTime,

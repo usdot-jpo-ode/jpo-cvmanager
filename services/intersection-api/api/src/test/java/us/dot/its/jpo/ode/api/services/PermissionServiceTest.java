@@ -64,7 +64,6 @@ public class PermissionServiceTest {
     @Test
     public void testIsSuperUserWhenUserIsNull() {
         when(permissionService.isAuthValid(authentication)).thenReturn(true);
-        // when(permissionService.getUsername(authentication)).thenReturn("testUser");
         when(postgresService.findUser("testUser")).thenReturn(null);
 
         boolean result = permissionService.isSuperUser();
@@ -78,7 +77,6 @@ public class PermissionServiceTest {
         user.setSuper_user(false);
 
         when(permissionService.isAuthValid(authentication)).thenReturn(true);
-        // when(permissionService.getUsername(authentication)).thenReturn("testUser");
         when(postgresService.findUser("testUser")).thenReturn(user);
 
         boolean result = permissionService.isSuperUser();
@@ -258,28 +256,22 @@ public class PermissionServiceTest {
 
     @Test
     void testHasRoleWhenAuthIsInvalid() {
-        // Arrange
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(permissionService.isAuthValid(authentication)).thenReturn(false);
 
-        // Act
         boolean result = permissionService.hasRole("admin");
 
-        // Assert
         assertFalse(result);
     }
 
     @Test
     void testHasRoleWhenUserIsSuperUser() {
-        // Arrange
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(permissionService.isAuthValid(authentication)).thenReturn(true);
         when(permissionService.isSuperUser()).thenReturn(true);
 
-        // Act
         boolean result = permissionService.hasRole("admin");
 
-        // Assert
         assertTrue(result);
     }
 
@@ -348,10 +340,8 @@ public class PermissionServiceTest {
             when(permissionService.isSuperUser()).thenReturn(false);
             when(postgresService.getQualifiedOrgList("testUser", "admin")).thenReturn(Collections.emptyList());
 
-            // Act
             boolean result = permissionService.hasRole("admin");
 
-            // Assert
             assertFalse(result);
         }
     }

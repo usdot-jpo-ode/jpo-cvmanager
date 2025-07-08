@@ -63,7 +63,7 @@ public class CmAssessmentController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<Page<ConnectionOfTravelAssessment>> findConnectionOfTravelAssessment(
+    public ResponseEntity<Page<ConnectionOfTravelAssessment>> findConnectionOfTravelAssessments(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -97,7 +97,7 @@ public class CmAssessmentController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<Long> countConnectionOfTravelAssessment(
+    public ResponseEntity<Long> countConnectionOfTravelAssessments(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -119,7 +119,7 @@ public class CmAssessmentController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<Page<LaneDirectionOfTravelAssessment>> findLaneDirectionOfTravelAssessment(
+    public ResponseEntity<Page<LaneDirectionOfTravelAssessment>> findLaneDirectionOfTravelAssessments(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -154,7 +154,7 @@ public class CmAssessmentController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<Long> countLaneDirectionOfTravelAssessment(
+    public ResponseEntity<Long> countLaneDirectionOfTravelAssessments(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -177,7 +177,7 @@ public class CmAssessmentController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<Page<StopLineStopAssessment>> findStopLineStopAssessment(
+    public ResponseEntity<Page<StopLineStopAssessment>> findStopLineStopAssessments(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -211,7 +211,7 @@ public class CmAssessmentController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<Long> countStopLineStopAssessment(
+    public ResponseEntity<Long> countStopLineStopAssessments(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -234,7 +234,7 @@ public class CmAssessmentController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
 
-    public ResponseEntity<Page<StopLinePassageAssessment>> findStopLinePassageAssessment(
+    public ResponseEntity<Page<StopLinePassageAssessment>> findStopLinePassageAssessments(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
@@ -268,7 +268,7 @@ public class CmAssessmentController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or USER role with access to the intersection requested"),
     })
-    public ResponseEntity<Long> countStopLinePassageAssessment(
+    public ResponseEntity<Long> countStopLinePassageAssessments(
             @RequestParam(name = "intersection_id") Integer intersectionID,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
             @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,

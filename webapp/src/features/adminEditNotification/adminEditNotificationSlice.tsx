@@ -81,11 +81,15 @@ export const submitForm = createAsyncThunk(
       new_email_type: currentState.adminEditNotification.value.selectedType.type,
     }
 
-    const res = await dispatch(editNotification({ json: tmpData }))
-    if ((res as any).payload && (res as any).payload.success) {
-      return { submitAttempt: false, success: true, message: 'Notification Updated Successfully' }
+    if (currentState.adminEditNotification.value.selectedType.type !== '') {
+      const res = await dispatch(editNotification({ json: tmpData }))
+      if ((res as any).payload && (res as any).payload.success) {
+        return { submitAttempt: false, success: true, message: 'Notification Updated Successfully' }
+      } else {
+        return { submitAttempt: false, success: false, message: (res as any).payload?.message }
+      }
     } else {
-      return { submitAttempt: false, success: false, message: (res as any).payload?.message }
+      return { submitAttempt: true, success: false, message: 'Please fill out all required fields' }
     }
   }
 )

@@ -92,11 +92,16 @@ export const submitForm = createAsyncThunk(
   async (payload: { data: AdminNotificationForm; reset: () => void }, { getState, dispatch }) => {
     const { data, reset } = payload
     data.email_type = (getState() as RootState).adminAddNotification.value.selectedType.type
-    var res = await dispatch(createNotification({ json: data, reset }))
-    if ((res as any).payload && (res as any).payload.success) {
-      return { submitAttempt: false, success: true, message: 'Notification Added Successfully' }
+    const currentState = getState() as RootState
+    if (currentState.adminAddNotification.value.selectedType.type !== '') {
+      var res = await dispatch(createNotification({ json: data, reset }))
+      if ((res as any).payload && (res as any).payload.success) {
+        return { submitAttempt: false, success: true, message: 'Notification Added Successfully' }
+      } else {
+        return { submitAttempt: false, success: false, message: (res as any).payload?.message }
+      }
     } else {
-      return { submitAttempt: false, success: false, message: (res as any).payload?.message }
+      return { submitAttempt: true, success: false, message: 'Please fill out all required fields' }
     }
   },
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }

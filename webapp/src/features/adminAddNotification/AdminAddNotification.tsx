@@ -5,7 +5,6 @@ import {
   selectSelectedType,
   selectAvailableTypes,
   selectApiData,
-  selectSubmitAttempt,
 
   // actions
   submitForm,
@@ -27,15 +26,12 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
   FormControl,
-  IconButton,
   InputLabel,
   MenuItem,
   Select,
   Typography,
 } from '@mui/material'
-import CloseIcon from '@mui/icons-material/Close'
 import { useNavigate } from 'react-router-dom'
 import { SideBarHeader } from '../../styles/components/SideBarHeader'
 import toast from 'react-hot-toast'
@@ -43,7 +39,6 @@ import toast from 'react-hot-toast'
 const AdminAddNotification = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const apiData = useSelector(selectApiData)
-  const submitAttempt = useSelector(selectSubmitAttempt)
   const selectedType = useSelector(selectSelectedType)
   const availableTypes = useSelector(selectAvailableTypes)
   const userEmail = useSelector(selectEmail)
@@ -52,7 +47,7 @@ const AdminAddNotification = () => {
   const {
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { isSubmitted },
   } = useForm<AdminNotificationForm>()
 
   useEffect(() => {
@@ -67,6 +62,9 @@ const AdminAddNotification = () => {
   const notifyError = (message: string) => toast.error(message)
 
   const onSubmit = (data: AdminNotificationForm) => {
+    if (selectedType.type === '') {
+      return;
+    }
     data.email = userEmail
     dispatch(submitForm({ data, reset })).then((data: any) => {
       data.payload.success
@@ -122,7 +120,7 @@ const AdminAddNotification = () => {
             </FormControl>
           </Form.Group>
 
-          {selectedType.type === '' && submitAttempt && (
+          {(selectedType.type === '') && isSubmitted && (
             <ErrorMessageText role="alert">Must select at least one email notification type</ErrorMessageText>
           )}
         </Form>

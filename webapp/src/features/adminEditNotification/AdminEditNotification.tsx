@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import {
-  selectSubmitAttempt,
   selectApiData,
   setSelectedType,
 
@@ -20,7 +19,7 @@ import 'react-widgets/styles.css'
 import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { useNavigate, useParams } from 'react-router-dom'
-import { selectEditNotificationRowData, selectTableData } from '../adminNotificationTab/adminNotificationTabSlice'
+import { selectEditNotificationRowData } from '../adminNotificationTab/adminNotificationTabSlice'
 import { AdminNotificationForm } from '../adminAddNotification/adminAddNotificationSlice'
 import { selectEmail } from '../../generalSlices/userSlice'
 import { ErrorMessageText } from '../../styles/components/Messages'
@@ -29,22 +28,18 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
   FormControl,
-  IconButton,
   InputLabel,
   MenuItem,
   Select,
   Typography,
 } from '@mui/material'
-import CloseIcon from '@mui/icons-material/Close'
 import { SideBarHeader } from '../../styles/components/SideBarHeader'
 import toast from 'react-hot-toast'
 
 const AdminEditNotification = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const apiData = useSelector(selectApiData)
-  const submitAttempt = useSelector(selectSubmitAttempt)
   const selectedType = useSelector(selectSelectedType)
   const availableTypes = useSelector(selectAvailableTypes)
   const notificationEditTableData = useSelector(selectEditNotificationRowData)
@@ -55,7 +50,7 @@ const AdminEditNotification = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { isSubmitted },
   } = useForm<AdminNotificationForm>()
 
   const { email } = useParams<{ email: string }>()
@@ -70,6 +65,9 @@ const AdminEditNotification = () => {
   }, [apiData, dispatch])
 
   const onSubmit = (data: AdminNotificationForm) => {
+    if (selectedType.type === '') {
+      return;
+    }
     data.email = userEmail
     dispatch(submitForm({ data })).then((data: any) => {
       if (data.payload.success) {
@@ -128,7 +126,7 @@ const AdminEditNotification = () => {
               </Select>
             </FormControl>
           </Form.Group>
-          {selectedType.type === '' && submitAttempt && (
+          {selectedType.type === '' && isSubmitted && (
             <ErrorMessageText role="alert">Must select a new email notification type</ErrorMessageText>
           )}
         </Form>

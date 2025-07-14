@@ -75,9 +75,9 @@ const AdminEditNotification = () => {
       } else {
         toast.error('Failed to update Notification: ' + data.payload.message)
       }
+      setOpen(false)
+      navigate('..')
     })
-    setOpen(false)
-    navigate('..')
   }
 
   return (

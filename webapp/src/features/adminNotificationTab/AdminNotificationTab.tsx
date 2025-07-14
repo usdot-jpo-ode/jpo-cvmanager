@@ -60,10 +60,9 @@ const AdminNotificationTab = () => {
             label: 'Yes',
             onClick: () =>
               dispatch(deleteNotifications([rowData])).then((data: any) => {
-                console.log(data)
                 data.payload.success
                   ? toast.success('Notification Deleted Successfully')
-                  : toast.error('Failed to delete notification due to error: ' + data.payload)
+                  : toast.error('Failed to delete notification due to error: ' + data.payload.message)
               }),
           },
           {
@@ -92,10 +91,9 @@ const AdminNotificationTab = () => {
             label: 'Yes',
             onClick: () =>
               dispatch(deleteNotifications(rowData)).then((data: any) => {
-                console.log(data)
                 data.payload.success
                   ? toast.success('Notifications Deleted Successfully')
-                  : toast.error('Failed to delete one or more notification due to error: ' + data.payload)
+                  : toast.error('Failed to delete one or more notification due to error: ' + data.payload.message)
               }),
           },
           {

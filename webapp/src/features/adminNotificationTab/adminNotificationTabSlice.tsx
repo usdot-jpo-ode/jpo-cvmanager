@@ -4,7 +4,6 @@ import EnvironmentVars from '../../EnvironmentVars'
 import apiHelper from '../../apis/api-helper'
 import { RootState } from '../../store'
 import { AdminEmailNotification } from '../../models/Notifications'
-import { BreakfastDining } from '@mui/icons-material'
 
 const initialState = {
   activeDiv: 'notification_table',
@@ -29,19 +28,19 @@ export const deleteNotification = async (email: string, email_type: string, toke
     query_params: { email, email_type },
   })
 
-  var return_val = {}
+  let returnVal = {}
 
   switch (data.status) {
     case 200:
       console.debug(`Successfully deleted Notification: ${email_type} for ${email}`)
-      return_val = { success: true, message: 'Successfully deleted Notification' }
+      returnVal = { success: true, message: 'Successfully deleted Notification' }
       break
     default:
       console.error(data.message)
-      return_val = { success: false, message: data.message }
+      returnVal = { success: false, message: data.message }
       break
   }
-  return return_val
+  return returnVal
 }
 
 export const getUserNotifications = createAsyncThunk(

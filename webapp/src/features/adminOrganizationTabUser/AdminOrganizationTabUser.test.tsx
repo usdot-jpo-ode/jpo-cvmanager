@@ -15,7 +15,7 @@ it('should take a snapshot', () => {
           selectedOrg={''}
           selectedOrgEmail={''}
           tableData={[]}
-          updateTableData={(org: string) => {}}
+          updateTableData={(_: string) => {}}
         />
       </Provider>
     </ThemeProvider>

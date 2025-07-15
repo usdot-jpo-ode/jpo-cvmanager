@@ -93,7 +93,6 @@ public class ReportService {
                 this.mapBroadcastRateEventRepo = mapBroadcastRateEventRepo;
                 this.reportRepo = reportRepo;
                 this.maximumResponseSize = maximumResponseSize;
-
         }
 
         private List<String> cleanMissingElements(List<String> elements, boolean isMap) {

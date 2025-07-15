@@ -1,1 +1,1 @@
-type SpatBroadcastRateEvent = {}
+type SpatBroadcastRateEvent = object

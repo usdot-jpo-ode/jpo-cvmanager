@@ -14,7 +14,7 @@ type MapSharedProperties = {
   msgIssueRevision: number
   revision: number
   refPoint: OdePosition3D
-  cti4501Conformant: Boolean
+  cti4501Conformant: boolean
   validationMessages: ProcessedValidationMessage[]
   laneWidth: number
   speedLimits?: J2735RegulatorySpeedLimit[]

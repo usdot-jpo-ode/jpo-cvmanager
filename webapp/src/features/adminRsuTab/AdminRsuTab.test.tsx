@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, fireEvent, screen } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import AdminRsuTab from './AdminRsuTab'
 import { Provider } from 'react-redux'
 import { ThemeProvider } from '@mui/material'

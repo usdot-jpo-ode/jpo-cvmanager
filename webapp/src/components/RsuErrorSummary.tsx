@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 
@@ -29,7 +29,7 @@ const RsuErrorSummary = (props: RsuErrorSummaryType) => {
     formState: { errors },
   } = useForm()
 
-  const onSubmit = async (data: Object) => {
+  const onSubmit = async (data: object) => {
     try {
       const res = await RsuApi.postRsuErrorSummary(data)
       const status = res.status
@@ -40,6 +40,7 @@ const RsuErrorSummary = (props: RsuErrorSummaryType) => {
         toast.error('Something went wrong: ' + status)
       }
     } catch (exception_var) {
+      console.error('Error in RsuErrorSummary onSubmit', exception_var)
       toast.error('An exception occurred, please try again later')
     }
     props.setHidden()

@@ -332,7 +332,7 @@ const AdminEditRsu = () => {
                         defaultValue={selectedRoute}
                         required
                         onChange={(event) => {
-                          const route = event.target.value as String
+                          const route = event.target.value as string
                           dispatch(updateSelectedRoute(route))
                         }}
                       >
@@ -399,7 +399,7 @@ const AdminEditRsu = () => {
                         defaultValue={selectedModel}
                         required
                         onChange={(event) => {
-                          const selectedRSUModel = event.target.value as String
+                          const selectedRSUModel = event.target.value as string
                           dispatch(setSelectedModel(selectedRSUModel))
                         }}
                       >
@@ -453,7 +453,7 @@ const AdminEditRsu = () => {
                     defaultValue={selectedSshGroup}
                     required
                     onChange={(event) => {
-                      const selectedSSHGroup = event.target.value as String
+                      const selectedSSHGroup = event.target.value as string
                       dispatch(setSelectedSshGroup(selectedSSHGroup))
                     }}
                   >
@@ -482,7 +482,7 @@ const AdminEditRsu = () => {
                         defaultValue={selectedSnmpGroup}
                         required
                         onChange={(event) => {
-                          const selectedGroup = event.target.value as String
+                          const selectedGroup = event.target.value as string
                           dispatch(setSelectedSnmpGroup(selectedGroup))
                         }}
                       >
@@ -512,7 +512,7 @@ const AdminEditRsu = () => {
                         defaultValue={selectedSnmpVersion}
                         required
                         onChange={(event) => {
-                          const selectedVersion = event.target.value as String
+                          const selectedVersion = event.target.value as string
                           dispatch(setSelectedSnmpVersion(selectedVersion))
                         }}
                       >
@@ -542,7 +542,7 @@ const AdminEditRsu = () => {
                     value={selectedOrganizations.map((org) => org.name)}
                     defaultValue={selectedOrganizations.map((org) => org.name)}
                     onChange={(event) => {
-                      const selectedOrgs = event.target.value as String[]
+                      const selectedOrgs = event.target.value as string[]
                       dispatch(setSelectedOrganizations(organizations.filter((org) => selectedOrgs.includes(org.name))))
                     }}
                   >

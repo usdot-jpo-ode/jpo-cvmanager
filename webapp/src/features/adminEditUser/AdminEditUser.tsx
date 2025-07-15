@@ -206,7 +206,7 @@ const AdminEditUser = () => {
                     value={selectedOrganizations.map((org) => org.name)}
                     defaultValue={selectedOrganizations.map((org) => org.name)}
                     onChange={(event) => {
-                      const selectedOrgs = event.target.value as String[]
+                      const selectedOrgs = event.target.value as string[]
                       dispatch(updateOrganizations(organizationNames.filter((org) => selectedOrgs.includes(org.name))))
                     }}
                   >
@@ -219,12 +219,12 @@ const AdminEditUser = () => {
                 </FormControl>
               </Form.Group>
 
-              {selectedOrganizations.length > 0 && (
-                <Form.Group controlId="roles">
-                  <Form.Label className="trebuchet">Roles</Form.Label>
-                  <p className="spacer" />
-                  {selectedOrganizations.map((organization) => {
-                    let role = { role: organization.role }
+            {selectedOrganizations.length > 0 && (
+              <Form.Group controlId="roles">
+                <Form.Label className="trebuchet">Roles</Form.Label>
+                <p className="spacer" />
+                {selectedOrganizations.map((organization) => {
+                  const role = { role: organization.role }
 
                     return (
                       <Form.Group controlId={organization.id.toString()}>

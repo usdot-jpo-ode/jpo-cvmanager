@@ -108,7 +108,7 @@ const AdminEditIntersection = () => {
       setValue('bbox.longitude2', currIntersection.bbox?.longitude2?.toString())
       setValue('intersection_name', currIntersection.intersection_name)
       setValue('origin_ip', currIntersection.origin_ip)
-      if (unknownIntersection === true) setUnknownIntersection(false)
+      if (unknownIntersection) setUnknownIntersection(false)
     } else {
       setUnknownIntersection(true)
       console.error('Unknown Intersection ID: ', intersectionId)
@@ -133,7 +133,7 @@ const AdminEditIntersection = () => {
 
   return (
     <>
-      {Object.keys(apiData ?? {}).length !== 0 && unknownIntersection === false ? (
+      {Object.keys(apiData ?? {}).length !== 0 && !unknownIntersection ? (
         <Dialog open={open}>
           <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
             <SideBarHeader
@@ -382,7 +382,7 @@ const AdminEditIntersection = () => {
           </DialogActions>
         </Dialog>
       ) : (
-        unknownIntersection === true && (
+        unknownIntersection && (
           <Dialog open={open}>
             <DialogContent>
               <Typography variant={'h4'}>

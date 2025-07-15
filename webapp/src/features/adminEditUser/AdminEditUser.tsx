@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import {
-  selectSelectedOrganizationNames,
   selectSelectedOrganizations,
   selectOrganizationNames,
   selectAvailableRoles,
@@ -27,25 +26,20 @@ import {
   Button,
   DialogActions,
   DialogContent,
-  DialogTitle,
   FormControl,
-  IconButton,
   InputLabel,
   MenuItem,
-  OutlinedInput,
   Select,
   TextField,
   Typography,
 } from '@mui/material'
 import Dialog from '@mui/material/Dialog'
 import toast from 'react-hot-toast'
-import CloseIcon from '@mui/icons-material/Close'
 import { ErrorMessageText } from '../../styles/components/Messages'
 import { SideBarHeader } from '../../styles/components/SideBarHeader'
 
 const AdminEditUser = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-  const selectedOrganizationNames = useSelector(selectSelectedOrganizationNames)
   const selectedOrganizations = useSelector(selectSelectedOrganizations)
   const organizationNames = useSelector(selectOrganizationNames)
   const availableRoles = useSelector(selectAvailableRoles)
@@ -87,7 +81,7 @@ const AdminEditUser = () => {
       setValue('first_name', currUser.first_name)
       setValue('last_name', currUser.last_name)
       setValue('super_user', currUser.super_user)
-      if (unknownUser === true) setUnknownUser(false)
+      if (unknownUser) setUnknownUser(false)
     } else {
       setUnknownUser(true)
       console.error('Encountered Unknown User: ', email)
@@ -108,7 +102,7 @@ const AdminEditUser = () => {
 
   return (
     <>
-      {Object.keys(apiData ?? {}).length !== 0 && unknownUser === false ? (
+      {Object.keys(apiData ?? {}).length !== 0 && !unknownUser ? (
         <Dialog open={open}>
           <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
             <SideBarHeader
@@ -289,7 +283,7 @@ const AdminEditUser = () => {
           </DialogActions>
         </Dialog>
       ) : (
-        unknownUser === true && (
+        unknownUser && (
           <Dialog open={open}>
             <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
               <Typography variant={'h4'}>

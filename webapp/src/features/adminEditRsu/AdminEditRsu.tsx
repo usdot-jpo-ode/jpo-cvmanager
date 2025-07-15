@@ -136,7 +136,7 @@ const AdminEditRsu = () => {
       setValue('milepost', String(currRsu.milepost))
       setValue('serial_number', currRsu.serial_number)
       setValue('scms_id', currRsu.scms_id)
-      if (unknownRsu === true) setUnknownRsu(false)
+      if (unknownRsu) setUnknownRsu(false)
     } else {
       setUnknownRsu(true)
       console.error('Unknown RSU IP: ', rsuIp)
@@ -165,7 +165,7 @@ const AdminEditRsu = () => {
 
   return (
     <>
-      {Object.keys(apiData ?? {}).length !== 0 && unknownRsu === false ? (
+      {Object.keys(apiData ?? {}).length !== 0 && !unknownRsu ? (
         <Dialog open={open}>
           <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
             <SideBarHeader
@@ -584,7 +584,7 @@ const AdminEditRsu = () => {
           </DialogActions>
         </Dialog>
       ) : (
-        unknownRsu === true && (
+        unknownRsu && (
           <Dialog open={open}>
             <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
               <Typography variant={'h4'}>

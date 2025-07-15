@@ -90,7 +90,7 @@ const AdminEditOrganization = () => {
 
   return (
     <>
-      {Object.keys(selectedOrg ?? {}).length !== 0 && unknownOrg === false ? (
+      {Object.keys(selectedOrg ?? {}).length !== 0 && !unknownOrg ? (
         <Dialog open={open}>
           <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
             <SideBarHeader
@@ -167,7 +167,7 @@ const AdminEditOrganization = () => {
           </DialogActions>
         </Dialog>
       ) : (
-        unknownOrg === true && (
+        unknownOrg && (
           <Dialog open={open}>
             <DialogContent>
               <Typography variant={'h4'}>

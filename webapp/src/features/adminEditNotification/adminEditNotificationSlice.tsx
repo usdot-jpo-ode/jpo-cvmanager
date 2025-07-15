@@ -82,10 +82,14 @@ export const submitForm = createAsyncThunk(
     }
 
     if (currentState.adminEditNotification.value.selectedType.type !== '') {
-      dispatch(editNotification({ json: tmpData }))
-      return false
+      const res = await dispatch(editNotification({ json: tmpData }))
+      if ((res as any).payload && (res as any).payload.success) {
+        return { submitAttempt: false, success: true, message: 'Notification Updated Successfully' }
+      } else {
+        return { submitAttempt: false, success: false, message: (res as any).payload?.message }
+      }
     } else {
-      return true
+      return { submitAttempt: true, success: false, message: 'Please fill out all required fields' }
     }
   }
 )
@@ -156,7 +160,7 @@ export const adminEditNotificationSlice = createSlice({
         state.loading = false
       })
       .addCase(submitForm.fulfilled, (state, action) => {
-        state.value.submitAttempt = action.payload
+        state.value.submitAttempt = action.payload.submitAttempt
       })
   },
 })

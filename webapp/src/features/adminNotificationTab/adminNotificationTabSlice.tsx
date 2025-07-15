@@ -28,14 +28,19 @@ export const deleteNotification = async (email: string, email_type: string, toke
     query_params: { email, email_type },
   })
 
+  let returnVal = {}
+
   switch (data.status) {
     case 200:
       console.debug(`Successfully deleted Notification: ${email_type} for ${email}`)
+      returnVal = { success: true, message: 'Successfully deleted Notification' }
       break
     default:
       console.error(data.message)
+      returnVal = { success: false, message: data.message }
       break
   }
+  return returnVal
 }
 
 export const getUserNotifications = createAsyncThunk(
@@ -71,8 +76,15 @@ export const deleteNotifications = createAsyncThunk(
     for (const user of data) {
       promises.push(deleteNotification(user.email, user.email_type, token))
     }
-    await Promise.all(promises)
+    var res = await Promise.all(promises)
     dispatch(getUserNotifications())
+    for (const r of res) {
+      if (!r.success) {
+        console.error(`Failed to delete Notification: ${r.payload.message}`)
+        return { success: false, message: 'Failed to delete one or more Notification(s)' }
+      }
+    }
+    return { success: true, message: 'Notifications Deleted Successfully' }
   },
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )

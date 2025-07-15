@@ -20,15 +20,6 @@ export const StopLinePassageAssessmentCard = (props: {
   const { assessment } = props
   const theme = useTheme()
 
-  function getWidthFactorFromData(data: any[] | undefined): number {
-    if (!data) return 0.1
-    const maxFactor = 0.9
-    const numRowsForMax = 40
-    return 0.1 + Math.min(maxFactor, data.length / numRowsForMax)
-  }
-
-  const widthFactor = getWidthFactorFromData(assessment?.stopLinePassageAssessmentGroup)
-
   const CustomTooltip = ({ active, payload }: TooltipProps<ValueType, NameType>) => {
     if (active && payload) {
       const obj = payload[0].payload

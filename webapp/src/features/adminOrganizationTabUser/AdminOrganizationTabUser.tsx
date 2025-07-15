@@ -51,7 +51,7 @@ interface AdminOrganizationTabUserProps {
 const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const theme = useTheme()
-  const { selectedOrg, selectedOrgEmail } = props
+  const { selectedOrg } = props
   const availableUserList = useSelector(selectAvailableUserList)
   const selectedUserList = useSelector(selectSelectedUserList)
   const availableRoles = useSelector(selectAvailableRoles)
@@ -80,7 +80,7 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
     },
   ])
 
-  let userActions: Action<AdminOrgUser>[] = [
+  const userActions: Action<AdminOrgUser>[] = [
     {
       icon: () => <DeleteOutline sx={{ color: theme.palette.custom.rowActionIcon }} />,
       iconProps: {
@@ -165,7 +165,7 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
     },
   ]
 
-  let userTableEditable = {
+  const userTableEditable = {
     onBulkUpdate: (
       changes: Record<
         number,
@@ -175,7 +175,7 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
         }
       >
     ) =>
-      new Promise((resolve, reject) => {
+      new Promise((resolve) => {
         userBulkEdit(changes)
         setTimeout(() => {
           resolve(null)

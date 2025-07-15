@@ -46,7 +46,7 @@ export const getNotificationData = createAsyncThunk(
 
 export const editNotification = createAsyncThunk(
   'adminEditNotification/editNotification',
-  async (payload: { json: Object }, { getState, dispatch }) => {
+  async (payload: { json: object }, { getState, dispatch }) => {
     const { json } = payload
     const currentState = getState() as RootState
     const token = selectToken(currentState)
@@ -75,7 +75,7 @@ export const submitForm = createAsyncThunk(
     const { data } = payload
     const currentState = getState() as RootState
 
-    var tmpData = {
+    const tmpData = {
       email: data.email,
       old_email_type: currentState.adminNotificationTab.value.editNotificationRowData.email_type,
       new_email_type: currentState.adminEditNotification.value.selectedType.type,
@@ -99,7 +99,7 @@ export const adminEditNotificationSlice = createSlice({
   reducers: {
     updateEmailTypesApiData: (state) => {
       if (Object.keys(state.value.apiData).length !== 0) {
-        let typeData = [] as { type: string }[]
+        const typeData = [] as { type: string }[]
         state.value.apiData.email_types.forEach((type) => typeData.push({ type }))
         state.value.availableTypes = [...typeData]
       }

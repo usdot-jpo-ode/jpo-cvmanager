@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 import MessageMonitorApi from '../apis/intersections/mm-api'
 import { selectToken } from './userSlice'

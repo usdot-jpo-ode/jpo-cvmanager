@@ -1,6 +1,6 @@
-import { Box, Button, Card, Container, Divider, Grid2, TextFieldProps, CardHeader } from '@mui/material'
+import { Box, Button, Card, Container, Grid2, CardHeader } from '@mui/material'
 import { AssessmentListResults } from './assessment-list-results'
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState } from 'react'
 
 const applyPagination = (parameters, page, rowsPerPage) =>
   parameters.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -11,10 +11,8 @@ export const AssessmentDataTable = (props: {
   onDownloadJson: () => void
 }) => {
   const { assessments, onDownload, onDownloadJson } = props
-  const queryRef = useRef<TextFieldProps>(null)
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
-  const [currentDescription, setCurrentDescription] = useState('')
 
   useEffect(() => {
     setPage(0)

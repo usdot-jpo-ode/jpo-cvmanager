@@ -61,7 +61,7 @@ const applyFilters = (parameters, filter) =>
 const applyPagination = (parameters, page, rowsPerPage) =>
   parameters.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 
-export const NotificationsTable = (props: { simple: Boolean }) => {
+export const NotificationsTable = (props: { simple: boolean }) => {
   const { simple } = props
   const queryRef = useRef<TextFieldProps>(null)
   const [notifications, setNotifications] = useState<MessageMonitor.Notification[]>([])

@@ -42,7 +42,7 @@ describe('admin add User reducer', () => {
 })
 
 describe('async thunks', () => {
-  var initialState: RootState['adminAddUser'] = {
+  const initialState: RootState['adminAddUser'] = {
     loading: null,
     value: {
       selectedOrganizationNames: null,
@@ -64,7 +64,7 @@ describe('async thunks', () => {
 
   describe('getUserData', () => {
     it('returns and calls the api correctly', async () => {
-      let dispatch = jest.fn()
+      const dispatch = jest.fn()
       const getState = jest.fn().mockReturnValue({
         user: {
           value: {
@@ -154,7 +154,7 @@ describe('async thunks', () => {
       })
       const json = { data: 'data' } as any
 
-      let reset = jest.fn()
+      const reset = jest.fn()
       let action = createUser({ json, reset })
       apiHelper._postData = jest.fn().mockReturnValue({ status: 200, message: 'User Creation is successful.' })
       let resp = await action(dispatch, getState, undefined)
@@ -230,8 +230,8 @@ describe('async thunks', () => {
 
   describe('resetForm', () => {
     it('returns and calls the api correctly', async () => {
-      let dispatch = jest.fn()
-      let getState = jest.fn().mockReturnValue({
+      const dispatch = jest.fn()
+      const getState = jest.fn().mockReturnValue({
         user: {
           value: {
             authLoginData: { token: 'token' },
@@ -239,15 +239,15 @@ describe('async thunks', () => {
         },
       })
 
-      let reset = jest.fn()
+      const reset = jest.fn()
       global.setTimeout = jest.fn((cb) => cb()) as any
       try {
-        let action = resetForm(reset)
+        const action = resetForm(reset)
         await action(dispatch, getState, undefined)
         expect(reset).toHaveBeenCalledTimes(1)
         expect(dispatch).toHaveBeenCalledTimes(0 + 2)
       } catch (e) {
-        ;(global.setTimeout as any).mockClear()
+        (global.setTimeout as any).mockClear()
         throw e
       }
     })
@@ -284,7 +284,7 @@ describe('async thunks', () => {
       })
       const data = { data: 'data' } as any
 
-      let reset = jest.fn()
+      const reset = jest.fn()
       let action = submitForm({ data, reset })
       let resp = await action(dispatch, getState, undefined)
       expect(dispatch).toHaveBeenCalledTimes(1 + 2)

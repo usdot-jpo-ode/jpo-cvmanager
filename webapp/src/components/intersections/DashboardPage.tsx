@@ -1,4 +1,4 @@
-import { Box, Container, Grid2 } from '@mui/material'
+import { Box, Grid2 } from '@mui/material'
 import { NotificationsTable } from '../../features/intersections/notifications/notifications-table'
 import { ConnectionOfTravelAssessmentCard } from '../../features/intersections/assessments/connection-of-travel-assessment'
 import { LaneDirectionOfTravelAssessmentCard } from '../../features/intersections/assessments/lane-direction-of-travel-assessment'

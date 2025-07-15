@@ -38,9 +38,11 @@ const AdminAddOrganization = () => {
 
   const onSubmit = (data: AdminAddOrgForm) => {
     dispatch(addOrg({ json: data })).then((data: any) => {
-      data.payload.success
-        ? notifySuccess(data.payload.message)
-        : notifyError('Failed to add organization due to error: ' + data.payload.message)
+      if (data.payload.success) {
+        notifySuccess(data.payload.message)
+      } else {
+        notifyError('Failed to add organization due to error: ' + data.payload.message)
+      }
     })
     setOpen(false)
     navigate('/dashboard/admin/organizations')

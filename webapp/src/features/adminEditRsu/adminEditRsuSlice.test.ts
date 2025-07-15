@@ -204,7 +204,7 @@ describe('async thunks', () => {
       global.setTimeout = jest.fn((cb) => cb()) as any
       try {
         apiHelper._patchData = jest.fn().mockReturnValue({ status: 200, message: 'message', body: 'body' })
-        let resp = await action(dispatch, getState, undefined)
+        const resp = await action(dispatch, getState, undefined)
         expect(resp.payload).toEqual({ success: true, message: 'Changes were successfully applied!' })
         expect(apiHelper._patchData).toHaveBeenCalledWith({
           url: EnvironmentVars.adminRsu,
@@ -215,7 +215,7 @@ describe('async thunks', () => {
         })
         expect(dispatch).toHaveBeenCalledTimes(1 + 2)
       } catch (e) {
-        ;(global.setTimeout as any).mockClear()
+        (global.setTimeout as any).mockClear()
         throw e
       }
 
@@ -223,7 +223,7 @@ describe('async thunks', () => {
       global.setTimeout = jest.fn((cb) => cb()) as any
       try {
         apiHelper._patchData = jest.fn().mockReturnValue({ status: 500, message: 'message' })
-        let resp = await action(dispatch, getState, undefined)
+        const resp = await action(dispatch, getState, undefined)
         expect(resp.payload).toEqual({ success: false, message: 'message' })
         expect(apiHelper._patchData).toHaveBeenCalledWith({
           url: EnvironmentVars.adminRsu,
@@ -235,7 +235,7 @@ describe('async thunks', () => {
         expect(setTimeout).not.toHaveBeenCalled()
         expect(dispatch).toHaveBeenCalledTimes(0 + 2)
       } catch (e) {
-        ;(global.setTimeout as any).mockClear()
+        (global.setTimeout as any).mockClear()
         throw e
       }
     })
@@ -558,8 +558,8 @@ describe('reducers', () => {
   }
 
   it('clear reducer updates state correctly', async () => {
-    let selectedRoute = 'selectedRoute'
-    let otherRouteDisabled = false
+    const selectedRoute = 'selectedRoute'
+    const otherRouteDisabled = false
 
     expect(
       reducer({ ...initialState, value: { ...initialState.value, selectedRoute, otherRouteDisabled } }, clear())

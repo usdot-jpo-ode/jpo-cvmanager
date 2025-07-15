@@ -66,7 +66,7 @@ export const intersectionApiSlice = createApi({
           500 //milliseconds
         )
       },
-      transformResponse: (response: any, meta: any) => response as Config,
+      transformResponse: (response: any) => response as Config,
       //   invalidatesTags: ['defaultConfigs', 'intersectionConfigs'],
     }),
     updateIntersectionParameter: builder.mutation<IntersectionConfig | undefined, Config>({
@@ -76,7 +76,7 @@ export const intersectionApiSlice = createApi({
         headers: { 'Content-Type': 'application/json' },
         body: { ...body, roadRegulatorID: -1 }, // necessary for Intersection API deserialization, not used by webapp
       }),
-      transformResponse: (response: any, meta: any) => response as IntersectionConfig,
+      transformResponse: (response: any) => response as IntersectionConfig,
       invalidatesTags: ['intersectionConfigs'],
     }),
     removeOverriddenParameter: builder.mutation<IntersectionConfig | undefined, IntersectionConfig>({
@@ -86,7 +86,7 @@ export const intersectionApiSlice = createApi({
         headers: { 'Content-Type': 'application/json' },
         body: { ...config, roadRegulatorID: -1 }, // necessary for Intersection API deserialization, not used by webapp
       }),
-      transformResponse: (response: any, meta: any) => response as IntersectionConfig,
+      transformResponse: (response: any) => response as IntersectionConfig,
       invalidatesTags: ['intersectionConfigs'],
     }),
   }),

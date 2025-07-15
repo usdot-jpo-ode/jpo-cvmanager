@@ -194,7 +194,7 @@ export const adminOrganizationTabSlice = createSlice({
         if (action.payload.success) {
           const data = action.payload.data
           if (action.payload.all) {
-            let tempData = []
+            const tempData = []
             let i = 0
             const org_data = data?.org_data as AdminOrgSummary[]
             for (const x in org_data) {
@@ -222,7 +222,6 @@ export const adminOrganizationTabSlice = createSlice({
             state.value.intersectionTableData = org_data?.org_intersections
             state.value.userTableData = org_data?.org_users
           }
-        } else {
         }
         state.loading = false
       })
@@ -238,7 +237,7 @@ export const adminOrganizationTabSlice = createSlice({
       .addCase(editOrg.rejected, (state) => {
         state.loading = false
       })
-      .addCase(deleteOrg.fulfilled, (state, action) => {
+      .addCase(deleteOrg.fulfilled, (state) => {
         state.loading = false
       })
   },

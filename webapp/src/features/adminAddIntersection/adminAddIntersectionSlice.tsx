@@ -37,20 +37,20 @@ export const convertApiJsonToKeyedFormat = (
   apiJson: AdminIntersectionCreationInfo
 ): AdminIntersectionKeyedCreationInfo => {
   if (Object.keys(apiJson).length !== 0) {
-    let keyedApiJson = {} as AdminIntersectionKeyedCreationInfo
+    const keyedApiJson = {} as AdminIntersectionKeyedCreationInfo
 
     let data = []
     for (let i = 0; i < apiJson['organizations'].length; i++) {
-      let value = apiJson['organizations'][i]
-      let temp = { id: i, name: value }
+      const value = apiJson['organizations'][i]
+      const temp = { id: i, name: value }
       data.push(temp)
     }
     keyedApiJson.organizations = data
 
     data = []
     for (let i = 0; i < apiJson['rsus'].length; i++) {
-      let value = apiJson['rsus'][i]
-      let temp = { id: i, name: value?.replace('/32', '') }
+      const value = apiJson['rsus'][i]
+      const temp = { id: i, name: value?.replace('/32', '') }
       data.push(temp)
     }
     keyedApiJson.rsus = data
@@ -103,15 +103,15 @@ export const mapFormToRequestJson = (
     }
   }
 
-  let tempOrganizations = []
-  for (var i = 0; i < state.value.selectedOrganizations.length; i++) {
+  const tempOrganizations = []
+  for (let i = 0; i < state.value.selectedOrganizations.length; i++) {
     tempOrganizations.push(state.value.selectedOrganizations[i].name)
   }
 
   json.organizations = tempOrganizations
 
-  let tempRsus = []
-  for (var i = 0; i < state.value.selectedRsus.length; i++) {
+  const tempRsus = []
+  for (let i = 0; i < state.value.selectedRsus.length; i++) {
     tempRsus.push(state.value.selectedRsus[i].name)
   }
 
@@ -204,8 +204,8 @@ export const submitForm = createAsyncThunk(
 
     const currentState = getState() as RootState
     if (validateFormContents(currentState.adminAddIntersection)) {
-      let json = mapFormToRequestJson(data, currentState.adminAddIntersection)
-      let res = await dispatch(createIntersection({ json, reset }))
+      const json = mapFormToRequestJson(data, currentState.adminAddIntersection)
+      const res = await dispatch(createIntersection({ json, reset }))
       if ((res.payload as any).success) {
         return { submitAttempt: false, success: true, message: 'Intersection Created Successfully' }
       } else {
@@ -266,7 +266,7 @@ export const adminAddIntersectionSlice = createSlice({
       .addCase(createIntersection.pending, (state) => {
         state.loading = true
       })
-      .addCase(createIntersection.fulfilled, (state, action) => {
+      .addCase(createIntersection.fulfilled, (state) => {
         state.loading = false
       })
       .addCase(createIntersection.rejected, (state) => {

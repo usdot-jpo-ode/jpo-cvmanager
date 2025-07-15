@@ -30,15 +30,12 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
   FormControl,
-  IconButton,
   InputLabel,
   MenuItem,
   Select,
   Typography,
 } from '@mui/material'
-import CloseIcon from '@mui/icons-material/Close'
 import { useNavigate } from 'react-router-dom'
 import { SideBarHeader } from '../../styles/components/SideBarHeader'
 
@@ -57,7 +54,7 @@ const AdminAddNotification = () => {
   const {
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: {},
   } = useForm<AdminNotificationForm>()
 
   useEffect(() => {

@@ -2,7 +2,7 @@ import { UserManager, LocalStorageManager } from './managers'
 
 class LocalStorageMock {
   store: { [key: string]: any } = {}
-  length: number = 0
+  length = 0
   constructor() {
     this.store = undefined
   }
@@ -27,10 +27,6 @@ class LocalStorageMock {
     return Object.keys(this.store)[index]
   }
 }
-
-try {
-  global.localStorage = new LocalStorageMock()
-} catch {}
 
 test('UserManager correctly checks if login is active', () => {
   let authLoginData: AuthLoginData = undefined

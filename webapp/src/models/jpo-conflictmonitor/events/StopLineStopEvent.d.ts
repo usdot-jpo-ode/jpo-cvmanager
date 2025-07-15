@@ -1,4 +1,4 @@
-/// <reference path="Event.d.ts" />
+import './Event.d.ts'
 type StopLineStopEvent = MessageMonitor.Event & {
   source: string
   ingressLane: number

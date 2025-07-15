@@ -86,7 +86,8 @@ public class PermissionService {
             return false;
         }
 
-        if (intersectionID == -1 || intersectionID == null) {
+        // Must be null check first, otherwise throws null pointer exception (if null)
+        if (intersectionID == null || intersectionID == -1) {
             return true;
         }
 

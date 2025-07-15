@@ -23,8 +23,8 @@ import AdminEditNotification from '../adminEditNotification/AdminEditNotificatio
 import AdminAddNotification from '../adminAddNotification/AdminAddNotification'
 import { AdminEmailNotification } from '../../models/Notifications'
 import { headerTabHeight } from '../../styles/index'
-import { Button, useTheme } from '@mui/material'
-import { AddCircleOutline, DeleteOutline, ModeEditOutline, Refresh } from '@mui/icons-material'
+import { useTheme } from '@mui/material'
+import { DeleteOutline, ModeEditOutline, Refresh } from '@mui/icons-material'
 import toast from 'react-hot-toast'
 
 const AdminNotificationTab = () => {
@@ -39,7 +39,7 @@ const AdminNotificationTab = () => {
   const [columns] = useState([{ title: 'Email Notification Type', field: 'email_type', id: 3 }])
   const loading = useSelector(selectLoading)
 
-  let tableActions: Action<AdminEmailNotification>[] = [
+  const tableActions: Action<AdminEmailNotification>[] = [
     {
       icon: () => <ModeEditOutline sx={{ color: theme.palette.custom.rowActionIcon }} />,
       iconProps: {

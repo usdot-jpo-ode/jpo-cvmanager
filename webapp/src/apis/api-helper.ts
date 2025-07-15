@@ -110,7 +110,7 @@ class ApiHelper {
     tag,
   }: {
     url: string
-    body: Object | string
+    body: object | string
     token?: string
     query_params?: Record<string, string>
     url_ext?: string
@@ -208,7 +208,7 @@ class ApiHelper {
   }: {
     url: string
     token: string
-    body: Object
+    body: object
     query_params?: Record<string, string>
     url_ext?: string
     additional_headers?: Record<string, string>

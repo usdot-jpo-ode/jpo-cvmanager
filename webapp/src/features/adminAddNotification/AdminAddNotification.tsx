@@ -63,7 +63,7 @@ const AdminAddNotification = () => {
 
   const onSubmit = (data: AdminNotificationForm) => {
     if (selectedType.type === '') {
-      return;
+      return
     }
     data.email = userEmail
     dispatch(submitForm({ data, reset })).then((data: any) => {
@@ -120,7 +120,7 @@ const AdminAddNotification = () => {
             </FormControl>
           </Form.Group>
 
-          {(selectedType.type === '') && isSubmitted && (
+          {selectedType.type === '' && isSubmitted && (
             <ErrorMessageText role="alert">Must select at least one email notification type</ErrorMessageText>
           )}
         </Form>

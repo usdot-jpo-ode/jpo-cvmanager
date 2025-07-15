@@ -1,4 +1,4 @@
-import { alpha, createTheme, Theme } from '@mui/material'
+import { createTheme, Theme } from '@mui/material'
 import './fonts/museo-slab.css'
 import '../App.css'
 
@@ -161,7 +161,7 @@ const themeMainLight = createTheme({
       paper: '#FFFFFF',
     },
     custom: {
-      mapLegendBackground: '#c8cfda',
+      mapLegendBackground: '#FFFFFF',
       tableHeaderBackground: '#F3F4F6',
       tableErrorBackground: '#fdc7c7',
       mapStyleFilePath: 'mapbox-styles/main-light.json',

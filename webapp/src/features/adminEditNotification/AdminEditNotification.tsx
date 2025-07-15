@@ -18,7 +18,7 @@ import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
 import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { selectEditNotificationRowData } from '../adminNotificationTab/adminNotificationTabSlice'
 import { AdminNotificationForm } from '../adminAddNotification/adminAddNotificationSlice'
 import { selectEmail } from '../../generalSlices/userSlice'
@@ -48,12 +48,9 @@ const AdminEditNotification = () => {
   const navigate = useNavigate()
 
   const {
-    register,
     handleSubmit,
     formState: { isSubmitted },
   } = useForm<AdminNotificationForm>()
-
-  const { email } = useParams<{ email: string }>()
 
   useEffect(() => {
     dispatch(getNotificationData())
@@ -66,7 +63,7 @@ const AdminEditNotification = () => {
 
   const onSubmit = (data: AdminNotificationForm) => {
     if (selectedType.type === '') {
-      return;
+      return
     }
     data.email = userEmail
     dispatch(submitForm({ data })).then((data: any) => {

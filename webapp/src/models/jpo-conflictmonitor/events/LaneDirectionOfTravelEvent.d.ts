@@ -1,4 +1,4 @@
-/// <reference path="Event.d.ts" />
+import './Event.d.ts'
 type LaneDirectionOfTravelEvent = MessageMonitor.Event & {
   timestamp: number
   laneID: number

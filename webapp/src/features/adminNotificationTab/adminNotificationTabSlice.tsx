@@ -72,7 +72,7 @@ export const deleteNotifications = createAsyncThunk(
     const currentState = getState() as RootState
     const token = selectToken(currentState)
 
-    let promises = []
+    const promises = []
     for (const user of data) {
       promises.push(deleteNotification(user.email, user.email_type, token))
     }

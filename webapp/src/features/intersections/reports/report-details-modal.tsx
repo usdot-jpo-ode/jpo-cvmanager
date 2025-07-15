@@ -78,7 +78,7 @@ const ReportDetailsModal = ({ open, onClose, report }: ReportDetailsModalProps) 
   const abortControllerRef = useRef<AbortController | null>(null)
 
   const generateMergedData = (eventCounts: { id: string; count: number }[], dateRange: string[]) => {
-    const eventCountMap = new Map(eventCounts.map((item: any) => [item.id, item.count]))
+    const eventCountMap = new Map(eventCounts.map((item: { id: string; count: number }) => [item.id, item.count]))
     return dateRange.map((date) => ({
       name: date,
       value: eventCountMap.get(date) || 0,

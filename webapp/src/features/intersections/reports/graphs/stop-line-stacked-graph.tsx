@@ -29,7 +29,7 @@ const CustomTooltip: React.FC<TooltipProps<ValueType, NameType>> = ({ active, pa
 
 const StopLineStackedGraph: React.FC<StopLineStackedGraphProps> = ({ passageData, stopData, getInterval }) => {
   // Combine the data for the stacked bar chart
-  const combinedData = passageData.map((passage, _) => {
+  const combinedData = passageData.map((passage) => {
     const stop = stopData.find((s) => s.name === passage.name) || { name: passage.name, value: 0 }
     return {
       name: passage.name,

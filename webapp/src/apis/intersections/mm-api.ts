@@ -2,7 +2,7 @@ import { authApiHelper } from './api-helper-cviz'
 
 class MessageMonitorApi {
   async getIntersections({ token }): Promise<IntersectionReferenceData[]> {
-    var response = await authApiHelper.invokeApi({
+    const response = await authApiHelper.invokeApi({
       path: '/intersections',
       token: token,
       failureMessage: 'Failed to retrieve intersection list',
@@ -93,7 +93,7 @@ class MessageMonitorApi {
     if (latest) queryParams['latest'] = latest.toString()
     if (compact) queryParams['compact'] = compact.toString()
 
-    var response: PagedResponse<ProcessedSpat> = await authApiHelper.invokeApi({
+    const response: PagedResponse<ProcessedSpat> = await authApiHelper.invokeApi({
       path: '/data/processed-spat',
       token: token,
       queryParams,
@@ -125,7 +125,7 @@ class MessageMonitorApi {
     if (endTime) queryParams['end_time_utc_millis'] = endTime.getTime().toString()
     if (latest !== undefined) queryParams['latest'] = latest.toString()
 
-    var response = await authApiHelper.invokeApi({
+    const response = await authApiHelper.invokeApi({
       path: '/data/processed-map',
       token: token,
       queryParams,
@@ -163,7 +163,7 @@ class MessageMonitorApi {
     if (lat) queryParams['latitude'] = lat.toString()
     if (distance) queryParams['distance'] = distance.toString()
 
-    var response: PagedResponse<OdeBsmData> = await authApiHelper.invokeApi({
+    const response: PagedResponse<OdeBsmData> = await authApiHelper.invokeApi({
       path: '/data/ode-bsm-json',
       token: token,
       queryParams,
@@ -182,7 +182,7 @@ class MessageMonitorApi {
     endTime: Date,
     abortController?: AbortController
   ): Promise<number> {
-    var queryParams: Record<string, string> = {
+    const queryParams: Record<string, string> = {
       start_time_utc_millis: startTime.getTime().toString(),
       end_time_utc_millis: endTime.getTime().toString(),
       test: 'false',

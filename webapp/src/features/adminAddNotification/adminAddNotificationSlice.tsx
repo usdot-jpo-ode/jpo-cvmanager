@@ -116,7 +116,7 @@ export const adminAddNotificationSlice = createSlice({
   reducers: {
     updateEmailTypesApiData: (state) => {
       if (Object.keys(state.value.apiData).length !== 0) {
-        let typeData = [] as { type: string }[]
+        const typeData = [] as { type: string }[]
         state.value.apiData.email_types.forEach((type) => typeData.push({ type }))
         state.value.availableTypes = [...typeData]
       }

@@ -53,7 +53,7 @@ describe('async thunks', () => {
 
   describe('getIntersectionData', () => {
     it('returns and calls the api correctly', async () => {
-      let dispatch = jest.fn()
+      const dispatch = jest.fn()
       const getState = jest.fn().mockReturnValue({
         user: {
           value: {
@@ -97,7 +97,7 @@ describe('async thunks', () => {
 
     it('Updates the state correctly fulfilled', async () => {
       const loading = false
-      let orgName = 'org2'
+      const orgName = 'org2'
       const data = {
         intersection_data: [
           {
@@ -252,7 +252,7 @@ describe('async thunks', () => {
 
   describe('intersectionAddMultiple', () => {
     it('returns and calls the api correctly', async () => {
-      let dispatch = jest.fn()
+      const dispatch = jest.fn()
       const getState = jest.fn().mockReturnValue({
         user: {
           value: {
@@ -263,10 +263,9 @@ describe('async thunks', () => {
       const intersectionList = [{ intersection_id: '1' }, { intersection_id: '2' }, { intersection_id: '3' }] as any
       const selectedOrg = 'selectedOrg'
       const selectedOrgEmail = 'name@email.com'
-      const fetchPatchOrganization = jest.fn()
       const updateTableData = jest.fn()
 
-      let action = intersectionAddMultiple({ intersectionList, selectedOrg, selectedOrgEmail, updateTableData })
+      const action = intersectionAddMultiple({ intersectionList, selectedOrg, selectedOrgEmail, updateTableData })
 
       await action(dispatch, getState, undefined)
       expect(dispatch).toHaveBeenCalledTimes(2 + 2)
@@ -275,7 +274,7 @@ describe('async thunks', () => {
 
   describe('refresh', () => {
     it('returns and calls the api correctly', async () => {
-      let dispatch = jest.fn()
+      const dispatch = jest.fn()
       const getState = jest.fn().mockReturnValue({
         user: {
           value: {
@@ -286,7 +285,7 @@ describe('async thunks', () => {
       const selectedOrg = 'selectedOrg'
       const updateTableData = jest.fn()
 
-      let action = refresh({ selectedOrg, updateTableData })
+      const action = refresh({ selectedOrg, updateTableData })
 
       await action(dispatch, getState, undefined)
       expect(updateTableData).toHaveBeenCalledTimes(1)

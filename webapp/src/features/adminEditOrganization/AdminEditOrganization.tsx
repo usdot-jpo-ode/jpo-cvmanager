@@ -71,9 +71,11 @@ const AdminEditOrganization = () => {
 
   const onSubmit = (data: adminOrgPatch) => {
     dispatch(editOrganization({ json: data, setValue, selectedOrg: selectedOrg?.name })).then((data: any) => {
-      data.payload.success
-        ? toast.success(data.payload.message)
-        : toast.error('Failed to apply changes to organization due to error: ' + data.payload.message)
+      if (data.payload.success) {
+        toast.success(data.payload.message)
+      } else {
+        toast.error('Failed to apply changes to organization due to error: ' + data.payload.message)
+      }
     })
     setOpen(false)
     navigate('..')

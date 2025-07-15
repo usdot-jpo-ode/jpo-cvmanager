@@ -24,7 +24,7 @@ import AdminAddNotification from '../adminAddNotification/AdminAddNotification'
 import { AdminEmailNotification } from '../../models/Notifications'
 import { headerTabHeight } from '../../styles/index'
 import { useTheme } from '@mui/material'
-import { DeleteOutline, ModeEditOutline, Refresh } from '@mui/icons-material'
+import { DeleteOutline, ModeEditOutline } from '@mui/icons-material'
 import toast from 'react-hot-toast'
 
 const AdminNotificationTab = () => {

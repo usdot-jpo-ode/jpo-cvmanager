@@ -23,7 +23,7 @@ const initialState = {
 
 export const refreshSnmpFwdConfig = createAsyncThunk(
   'config/refreshSnmpFwdConfig',
-  async (rsu_ip: string, { getState, dispatch }) => {
+  async (rsu_ip: string, { getState }) => {
     const currentState = getState() as RootState
     const token = selectToken(currentState)
     const organization = selectOrganizationName(currentState)
@@ -34,32 +34,6 @@ export const refreshSnmpFwdConfig = createAsyncThunk(
       msgFwdConfig: response.RsuFwdSnmpwalk,
       errorState: '',
     }
-  }
-)
-
-export const refreshSnmpFwdConfigManual = createAsyncThunk(
-  'config/refreshSnmpFwdConfigManual',
-  async (ipList: string[], { getState, dispatch }) => {
-    const currentState = getState() as RootState
-    const token = selectToken(currentState)
-    const organization = selectOrganizationName(currentState)
-
-    const body: RsuCommandPostBody = {
-      command: 'rsufwdsnmpwalk',
-      rsu_ip: ipList,
-      args: {},
-    }
-
-    const response = await RsuApi.postRsuData(token, organization, body, '')
-
-    return response.status === 200
-      ? { msgFwdConfig: response.body.RsuFwdSnmpwalk, errorState: '' }
-      : {
-          msgFwdConfig: {} as {
-            [id: string]: SnmpFwdWalkConfig
-          },
-          errorState: response.body.RsuFwdSnmpwalk,
-        }
   }
 )
 
@@ -137,7 +111,7 @@ export const rebootRsu = createAsyncThunk('config/rebootRsu', async (ipList: str
 
 export const checkFirmwareUpgrade = createAsyncThunk(
   'config/checkFirmwareUpgrade',
-  async (rsuIp: string[], { getState, dispatch }) => {
+  async (rsuIp: string[], { getState }) => {
     const currentState = getState() as RootState
     const token = selectToken(currentState)
     const organization = selectOrganizationName(currentState)
@@ -158,7 +132,7 @@ export const checkFirmwareUpgrade = createAsyncThunk(
 
 export const startFirmwareUpgrade = createAsyncThunk(
   'config/startFirmwareUpgrade',
-  async (ipList: string[], { getState, dispatch }) => {
+  async (ipList: string[], { getState }) => {
     const currentState = getState() as RootState
     const token = selectToken(currentState)
     const organization = selectOrganizationName(currentState)
@@ -270,7 +244,7 @@ export const configSlice = createSlice({
       .addCase(submitSnmpSet.pending, (state) => {
         state.loading = true
       })
-      .addCase(submitSnmpSet.fulfilled, (state, action) => {
+      .addCase(submitSnmpSet.fulfilled, (state) => {
         state.loading = false
       })
       .addCase(submitSnmpSet.rejected, (state) => {
@@ -289,7 +263,7 @@ export const configSlice = createSlice({
         state.loading = true
         state.value.rebootChangeSuccess = false
       })
-      .addCase(rebootRsu.fulfilled, (state, action) => {
+      .addCase(rebootRsu.fulfilled, (state) => {
         state.loading = false
         state.value.rebootChangeSuccess = true
       })

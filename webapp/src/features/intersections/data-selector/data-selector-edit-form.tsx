@@ -103,7 +103,7 @@ export const DataSelectorEditForm = (props: { onQuery: (query: any) => void; onV
     },
   })
 
-  const onTypeChange = (newType) => {
+  const onTypeChange = () => {
     formik.setFieldValue('eventTypes', [] as Item[])
     formik.setFieldValue('assessmentTypes', [] as Item[])
   }

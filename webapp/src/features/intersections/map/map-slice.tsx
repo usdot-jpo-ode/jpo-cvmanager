@@ -121,12 +121,12 @@ const initialState = {
   spatSignalGroups: undefined as SpatSignalGroups | undefined,
   currentSignalGroups: undefined as SpatSignalGroup[] | undefined,
   currentBsms: {
-    type: 'FeatureCollection' as 'FeatureCollection',
+    type: 'FeatureCollection' as const,
     features: [],
   } as BsmFeatureCollection,
   connectingLanes: undefined as ConnectingLanesFeatureCollection | undefined,
   bsmData: {
-    type: 'FeatureCollection' as 'FeatureCollection',
+    type: 'FeatureCollection' as const,
     features: [],
   } as BsmFeatureCollection,
   surroundingEvents: [] as MessageMonitor.Event[],
@@ -193,7 +193,7 @@ export const generateQueryParams = (
   const endOffset = 1000 * 60 * 1
 
   switch (sourceDataType) {
-    case 'notification':
+    case 'notification': {
       const notification = source as MessageMonitor.Notification
       return {
         startDate: new Date(notification.notificationGeneratedAt - startOffset),
@@ -202,7 +202,8 @@ export const generateQueryParams = (
         vehicleId: undefined,
         isDefault: false,
       }
-    case 'event':
+    }
+    case 'event': {
       const event = source as MessageMonitor.Event
       return {
         startDate: new Date(event.eventGeneratedAt - startOffset),
@@ -211,7 +212,8 @@ export const generateQueryParams = (
         vehicleId: undefined,
         isDefault: false,
       }
-    case 'assessment':
+    }
+    case 'assessment': {
       const assessment = source as Assessment
       return {
         startDate: new Date(assessment.assessmentGeneratedAt - startOffset),
@@ -220,7 +222,8 @@ export const generateQueryParams = (
         vehicleId: undefined,
         isDefault: false,
       }
-    case 'timestamp':
+    }
+    case 'timestamp': {
       const ts = (source as timestamp).timestamp
       return {
         startDate: new Date(ts - startOffset),
@@ -229,6 +232,7 @@ export const generateQueryParams = (
         vehicleId: undefined,
         isDefault: false,
       }
+    }
     default:
       if (decoderModeEnabled) {
         let startDate = undefined as number | undefined
@@ -568,7 +572,7 @@ export const renderEntireMap = createAsyncThunk(
 
 export const updateBsmData = createAsyncThunk(
   'intersectionMap/updateBsmData',
-  async (bsmFC: BsmFeatureCollection, { getState, dispatch }) => {
+  async (bsmFC: BsmFeatureCollection, { dispatch }) => {
     const uniqueIds = new Set(bsmFC.features.map((bsm) => bsm.properties?.id))
     // generate equally spaced unique colors for each uniqueId
     const colors = generateColorDictionary(uniqueIds)
@@ -683,7 +687,7 @@ export const renderIterative_Map = createAsyncThunk(
     }
   },
   {
-    condition: (newMapData: ProcessedMap[], { getState }) => newMapData && newMapData.length != 0,
+    condition: (newMapData: ProcessedMap[]) => newMapData && newMapData.length != 0,
   }
 )
 
@@ -756,7 +760,7 @@ export const renderIterative_Spat = createAsyncThunk(
     return { signalGroups: currentSpatSignalGroupsLocal, raw: currentProcessedSpatDataLocal }
   },
   {
-    condition: (newSpatData: ProcessedSpat[], { getState }) => newSpatData && newSpatData.length != 0,
+    condition: (newSpatData: ProcessedSpat[]) => newSpatData && newSpatData.length != 0,
   }
 )
 
@@ -804,7 +808,7 @@ export const renderIterative_Bsm = createAsyncThunk(
     return currentBsmGeojson
   },
   {
-    condition: (newBsmData: OdeBsmData[], { getState }) => newBsmData && newBsmData.length != 0,
+    condition: (newBsmData: OdeBsmData[]) => newBsmData && newBsmData.length != 0,
   }
 )
 
@@ -920,12 +924,12 @@ export const initializeLiveStreaming = createAsyncThunk(
     }
     console.info('Live streaming data from Intersection API STOMP WebSocket endpoint')
 
-    let protocols = ['v10.stomp', 'v11.stomp']
+    const protocols = ['v10.stomp', 'v11.stomp']
     protocols.push(token)
     const url = combineUrlPaths(EnvironmentVars.CVIZ_API_WS_URL, 'stomp')
 
     // Stomp Client Documentation: https://stomp-js.github.io/stomp-websocket/codo/extra/docs-src/Usage.md.html
-    let client = Stomp.client(url, protocols)
+    const client = Stomp.client(url, protocols)
 
     // Get Current MAP Message
     const currentState = getState() as RootState
@@ -944,10 +948,13 @@ export const initializeLiveStreaming = createAsyncThunk(
     dispatch(renderIterative_Map(await rawMapPromise))
 
     // Topics are in the format /live/{intersectionID}/{spat,map,bsm}
-    let spatTopic = `/live/${intersectionId}/processed-spat`
-    let mapTopic = `/live/${intersectionId}/processed-map`
-    let bsmTopic = `/live/${intersectionId}/ode-bsm-json`
-    let connectionStartTime = Date.now()
+    const spatTopic = `/live/${intersectionId}/processed-spat`
+    const mapTopic = `/live/${intersectionId}/processed-map`
+    const bsmTopic = `/live/${intersectionId}/ode-bsm-json`
+    let spatTime = Date.now()
+    let mapTime = Date.now()
+    let bsmTime = Date.now()
+    const connectionStartTime = Date.now()
     client.connect(
       {},
       () => {
@@ -1210,7 +1217,7 @@ export const intersectionMapSlice = createSlice({
     updateSsmSrmCounts: (state, action: PayloadAction<{ srmSsmList: SsmSrmData; rsuIpv4: string }>) => {
       let localSrmCount = 0
       let localSsmCount = 0
-      let localMsgList = []
+      const localMsgList = []
       for (const elem of action.payload.srmSsmList) {
         if (elem.ip === action.payload.rsuIpv4) {
           localMsgList.push(elem)
@@ -1344,12 +1351,12 @@ export const intersectionMapSlice = createSlice({
         timeWindowSeconds?: number
       }>
     ) => {
-      let { eventTime, timeBefore, timeAfter, timeWindowSeconds } = action.payload
-      eventTime ??= new Date()
+      const { eventTime, timeBefore, timeAfter, timeWindowSeconds } = action.payload
+      const actualEventTime = eventTime ?? new Date()
       const updatedQueryParams = {
-        startDate: new Date(eventTime.getTime() - (timeBefore ?? 0) * 1000),
-        endDate: new Date(eventTime.getTime() + (timeAfter ?? 0) * 1000),
-        eventDate: eventTime,
+        startDate: new Date(actualEventTime.getTime() - (timeBefore ?? 0) * 1000),
+        endDate: new Date(actualEventTime.getTime() + (timeAfter ?? 0) * 1000),
+        eventDate: actualEventTime,
         intersectionId: state.value.queryParams.intersectionId,
         isDefault: state.value.queryParams.isDefault,
       }
@@ -1567,7 +1574,7 @@ export const intersectionMapSlice = createSlice({
       state.value.pullInitialDataAbortControllers = [...state.value.pullInitialDataAbortControllers, action.payload]
     },
     resetInitialDataAbortControllers: (state) => {
-      var controllers = state.value.pullInitialDataAbortControllers
+      const controllers = state.value.pullInitialDataAbortControllers
       state.value.pullInitialDataAbortControllers = []
       state.value.abortAllFutureRequests = true
       controllers.forEach((abortController) => abortController.abort())

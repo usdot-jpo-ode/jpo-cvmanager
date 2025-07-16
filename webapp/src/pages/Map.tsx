@@ -9,7 +9,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
-import Slider from 'rc-slider'
+import Slider from '@mui/material/Slider'
 import {
   selectRsuOnlineStatus,
   selectRsuData,
@@ -99,7 +99,6 @@ import {
   Stack,
 } from '@mui/material'
 
-import 'rc-slider/assets/index.css'
 import './css/MsgMap.css'
 import './css/Map.css'
 import { WZDxFeature, WZDxWorkZoneFeed } from '../models/wzdx/WzdxWorkZoneFeed42'
@@ -121,12 +120,19 @@ import { RoomOutlined } from '@mui/icons-material'
 import MooveAiHardBrakingLegend from '../components/MooveAiHardBrakingLegend'
 import { PrimaryButton } from '../styles/components/PrimaryButton'
 import { ConditionalRenderRsu, evaluateFeatureFlags } from '../feature-flags'
+import { DateTime } from 'luxon'
 
-// @ts-ignore: workerClass does not exist in typed mapboxgl
-// eslint-disable-next-line import/no-webpack-loader-syntax
-mapboxgl.workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default
+// eslint-disable-next-line
+// eslint-disable-next-line import/no-webpack-loader-syntax, @typescript-eslint/no-require-imports
+;(mapboxgl as any).workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default
 
-const { DateTime } = require('luxon')
+const MILLISECONDS_PER_MINUTE = 60000
+
+const calculateTimeWindow = (baseDate: string | Date, offset: number, step: number) => {
+  const start = new Date(new Date(baseDate).getTime() + MILLISECONDS_PER_MINUTE * offset * step)
+  const end = new Date(start.getTime() + MILLISECONDS_PER_MINUTE * step)
+  return { start, end }
+}
 
 function MapPage() {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -187,13 +193,13 @@ function MapPage() {
   })
 
   // baseDate is only used to set the startDate from a Date object
-  const [baseDate, setBaseDate] = useState(new Date(startGeoMsgDate))
+  const [baseDate] = useState(new Date(startGeoMsgDate))
 
   const [msgViewerSliderStartDate, setMsgViewerSliderStartDate] = useState(
-    new Date(baseDate.getTime() + 60000 * filterOffset * filterStep)
+    new Date(baseDate.getTime() + MILLISECONDS_PER_MINUTE * filterOffset * filterStep)
   )
   const [msgViewerSliderEndDate, setMsgViewerSliderEndDate] = useState(
-    new Date(msgViewerSliderStartDate.getTime() + 60000 * filterStep)
+    new Date(msgViewerSliderStartDate.getTime() + MILLISECONDS_PER_MINUTE * filterStep)
   )
 
   // stepOptions is used to set the step options for the message viewer
@@ -206,7 +212,7 @@ function MapPage() {
   ]
 
   function stepValueToOption(val: number) {
-    for (var i = 0; i < stepOptions.length; i++) {
+    for (let i = 0; i < stepOptions.length; i++) {
       if (stepOptions[i].value === val) {
         return stepOptions[i]
       }
@@ -218,7 +224,7 @@ function MapPage() {
   const [selectedWZDxMarkerIndex, setSelectedWZDxMarkerIndex] = useState(null)
   const [selectedWZDxMarker, setSelectedWZDxMarker] = useState(null)
   const [wzdxMarkers, setWzdxMarkers] = useState([])
-  const [pageOpen, setPageOpen] = useState(true)
+  const [pageOpen] = useState(true)
 
   const [expandedLayers, setExpandedLayers] = useState<string[]>([])
 
@@ -234,6 +240,7 @@ function MapPage() {
     setSelectedWZDxMarkerIndex(null)
     setSelectedWZDxMarker(null)
   }
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const mbStyle = require(`../styles/${theme.palette.custom.mapStyleFilePath}`)
 
   // useEffects for Mapbox
@@ -262,9 +269,7 @@ function MapPage() {
 
   // useEffects for BSM layer
   useEffect(() => {
-    const localBaseDate = new Date(startGeoMsgDate)
-    const localStartDate = new Date(localBaseDate.getTime() + 60000 * filterOffset * filterStep)
-    const localEndDate = new Date(new Date(localStartDate).getTime() + 60000 * filterStep)
+    const { start: localStartDate, end: localEndDate } = calculateTimeWindow(startGeoMsgDate, filterOffset, filterStep)
 
     setMsgViewerSliderStartDate(localStartDate)
     setMsgViewerSliderEndDate(localEndDate)
@@ -466,16 +471,41 @@ function MapPage() {
 
   // Helper function to calculate the maximum offset based on the start and end dates and the step
   const calculateMaxOffset = (start: string | Date, end: string | Date, step: number) => {
-    return Math.floor((new Date(end).getTime() - new Date(start).getTime()) / (step * 60000))
+    return Math.floor((new Date(end).getTime() - new Date(start).getTime()) / (step * MILLISECONDS_PER_MINUTE))
   }
 
   const geoMsgFilterMaxOffset = useMemo(() => {
     return calculateMaxOffset(startGeoMsgDate, endGeoMsgDate, filterStep)
   }, [startGeoMsgDate, endGeoMsgDate, filterStep])
 
+  // Helper function to calculate data availability for each time window...
+  // in the v2x message viewer slider.
+  const calculateDataAvailability = useMemo(() => {
+    if (!geoMsgData || geoMsgData.length === 0) return []
+
+    const availability: { offset: number; count: number }[] = []
+
+    // Calculate data for each possible offset
+    for (let offset = 0; offset <= geoMsgFilterMaxOffset; offset++) {
+      const { start: windowStart, end: windowEnd } = calculateTimeWindow(startGeoMsgDate, offset, filterStep)
+
+      // Count messages in this time window
+      const messageCount = geoMsgData.filter((message) => {
+        const messageDate = new Date(message.properties.timeStamp)
+        return isDateInRange(messageDate, windowStart, windowEnd)
+      }).length
+
+      if (messageCount > 0) {
+        availability.push({ offset, count: messageCount })
+      }
+    }
+
+    return availability
+  }, [geoMsgData, startGeoMsgDate, filterStep, geoMsgFilterMaxOffset])
+
   function dateChanged(e: Date, type: 'start' | 'end') {
     try {
-      let date = DateTime.fromISO(e.toISOString())
+      const date = DateTime.fromISO(e.toISOString())
       date.setZone(DateTime.local().zoneName)
       dispatch(updateGeoMsgDate({ type, date: date.toString() }))
     } catch (err) {
@@ -487,7 +517,7 @@ function MapPage() {
     const pointArray = [point.lng, point.lat]
     if (geoMsgCoordinates.length > 1) {
       if (geoMsgCoordinates[0] === geoMsgCoordinates.slice(-1)[0]) {
-        let tmp = [...geoMsgCoordinates]
+        const tmp = [...geoMsgCoordinates]
         tmp.pop()
         dispatch(updateGeoMsgPoints([...tmp, pointArray, geoMsgCoordinates[0]]))
       } else {
@@ -502,7 +532,7 @@ function MapPage() {
     const pointArray = [point.lng, point.lat]
     if (configCoordinates?.length > 1) {
       if (configCoordinates[0] === configCoordinates.slice(-1)[0]) {
-        let tmp = [...configCoordinates]
+        const tmp = [...configCoordinates]
         tmp.pop()
         dispatch(updateConfigPoints([...tmp, pointArray, configCoordinates[0]]))
       } else {
@@ -517,7 +547,7 @@ function MapPage() {
     const pointArray = [point.lng, point.lat]
     if (mooveAiCoordinates.length > 1) {
       if (mooveAiCoordinates[0] === mooveAiCoordinates.slice(-1)[0]) {
-        let tmp = [...mooveAiCoordinates]
+        const tmp = [...mooveAiCoordinates]
         tmp.pop()
         dispatch(updateMooveAiPoints([...tmp, pointArray, mooveAiCoordinates[0]]))
       } else {
@@ -536,12 +566,12 @@ function MapPage() {
 
   useEffect(() => {
     function createPopupTable(data: Array<Array<string>>) {
-      let rows = []
-      for (var i = 0; i < data.length; i++) {
-        let rowID = `row${i}`
-        let cell = []
-        for (var idx = 0; idx < 2; idx++) {
-          let cellID = `cell${i}-${idx}`
+      const rows = []
+      for (let i = 0; i < data.length; i++) {
+        const rowID = `row${i}`
+        const cell = []
+        for (let idx = 0; idx < 2; idx++) {
+          const cellID = `cell${i}-${idx}`
           if (i == 0) {
             cell.push(
               <th key={cellID} id={cellID} style={{ minWidth: '120px' }}>
@@ -572,7 +602,7 @@ function MapPage() {
     }
 
     function getWzdxTable(obj: WZDxFeature): string[][] {
-      let arr = []
+      const arr = []
       arr.push(['road_name', obj['properties']['core_details']['road_names'][0]])
       arr.push(['direction', obj['properties']['core_details']['direction']])
       arr.push(['vehicle_impact', obj['properties']['vehicle_impact']])
@@ -609,12 +639,12 @@ function MapPage() {
 
     const getAllMarkers = (wzdxData: WZDxWorkZoneFeed) => {
       if (wzdxData?.features?.length > 0) {
-        var i = -1
-        var markers = wzdxData.features.map((feature) => {
+        let i = -1
+        const markers = wzdxData.features.map((feature) => {
           const localFeature: WZDxFeature = { ...feature, geometry: { ...feature.geometry, type: 'LineString' } }
-          var center_coords_index = Math.round(feature.geometry.coordinates.length / 2)
-          var lng = feature.geometry.coordinates[0][0]
-          var lat = feature.geometry.coordinates[0][1]
+          const center_coords_index = Math.round(feature.geometry.coordinates.length / 2)
+          let lng = feature.geometry.coordinates[0][0]
+          let lat = feature.geometry.coordinates[0][1]
           if (center_coords_index !== 1) {
             lat = feature.geometry.coordinates[center_coords_index][1]
             lng = feature.geometry.coordinates[center_coords_index][0]
@@ -637,12 +667,12 @@ function MapPage() {
   }, [dispatch, wzdxData])
 
   function break_line(val: string) {
-    var arr = []
-    var remainingData = ''
-    var maxLineLength = 40
-    for (var i = 0; i < val.length; i += maxLineLength) {
-      var data = remainingData + val.substring(i, i + maxLineLength)
-      var index = data.lastIndexOf(' ')
+    const arr = []
+    let remainingData = ''
+    const maxLineLength = 40
+    for (let i = 0; i < val.length; i += maxLineLength) {
+      let data = remainingData + val.substring(i, i + maxLineLength)
+      const index = data.lastIndexOf(' ')
       if (data[0] == ' ') {
         data = data.substring(1, data.length)
         remainingData = data.substring(index, data.length)
@@ -663,8 +693,8 @@ function MapPage() {
 
   function getStops() {
     // populate tmp array with rsuCounts to get max count value
-    let max = Math.max(...Object.entries(rsuCounts).map(([, value]) => value.count))
-    let stopsArray = [[0, 0.25]]
+    const max = Math.max(...Object.entries(rsuCounts).map(([, value]) => (value as { count: number }).count))
+    const stopsArray = [[0, 0.25]]
     let weight = 0.5
     for (let i = 1; i < max; i += 500) {
       stopsArray.push([i, weight])
@@ -674,13 +704,14 @@ function MapPage() {
   }
 
   const isOnline = () => {
-    return rsuIpv4 in rsuOnlineStatus && rsuOnlineStatus[rsuIpv4].hasOwnProperty('last_online')
+    return rsuIpv4 in rsuOnlineStatus && Object.prototype.hasOwnProperty.call(rsuOnlineStatus[rsuIpv4], 'last_online')
       ? rsuOnlineStatus[rsuIpv4].last_online
       : 'No Data'
   }
 
   const getStatus = () => {
-    return rsuIpv4 in rsuOnlineStatus && rsuOnlineStatus[rsuIpv4].hasOwnProperty('current_status')
+    return rsuIpv4 in rsuOnlineStatus &&
+      Object.prototype.hasOwnProperty.call(rsuOnlineStatus[rsuIpv4], 'current_status')
       ? rsuOnlineStatus[rsuIpv4].current_status
       : 'Offline'
   }
@@ -778,40 +809,6 @@ function MapPage() {
     },
   ]
 
-  const mapboxLayers = theme.palette.custom.mapStyleHasTraffic
-    ? [
-        {
-          label: 'Mapbox Traffic',
-          ids: [
-            'traffic-tunnel-link-navigation',
-            'traffic-tunnel-minor-navigation',
-            'traffic-tunnel-street-navigation',
-            'traffic-tunnel-secondary-tertiary-navigation',
-            'traffic-tunnel-primary-navigation',
-            'traffic-tunnel-major-link-navigation',
-            'traffic-tunnel-motorway-trunk-navigation',
-            'traffic-bridge-road-link-navigation',
-            'traffic-bridge-road-minor-navigation',
-            'traffic-bridge-road-street-navigation',
-            'traffic-bridge-road-secondary-tertiary-navigation',
-            'traffic-bridge-road-primary-navigation',
-            'traffic-bridge-road-major-link-navigation',
-            'traffic-bridge-road-motorway-trunk-case-navigation',
-            'traffic-bridge-road-motorway-trunk-navigation',
-          ],
-        },
-        {
-          label: 'Mapbox Incidents',
-          ids: [
-            'incident-closure-lines-navigation',
-            'incident-closure-line-highlights-navigation',
-            'incident-endpoints-navigation',
-            'incident-startpoints-navigation',
-          ],
-        },
-      ]
-    : []
-
   const Legend = () => {
     const toggleLayer = (id: string) => {
       dispatch(toggleLayerActive(id))
@@ -836,6 +833,7 @@ function MapPage() {
             break
           case 'moove-ai-layer':
             if (activeLayers.includes('msg-viewer-layer')) dispatch(toggleLayerActive('msg-viewer-layer'))
+            break
           case 'msg-viewer-layer':
             if (activeLayers.includes('moove-ai-layer')) dispatch(toggleLayerActive('moove-ai-layer'))
         }
@@ -1205,7 +1203,7 @@ function MapPage() {
                     dispatch(clearFirmware()) // TODO: Should remove??
                     dispatch(getRsuLastOnline(rsu.properties.ipv4_address))
                     dispatch(getIssScmsStatus())
-                    if (rsuCounts.hasOwnProperty(rsu.properties.ipv4_address))
+                    if (Object.prototype.hasOwnProperty.call(rsuCounts, rsu.properties.ipv4_address))
                       setSelectedRsuCount(rsuCounts[rsu.properties.ipv4_address].count)
                     else setSelectedRsuCount(0)
                   }}
@@ -1222,7 +1220,7 @@ function MapPage() {
                       setSelectedWZDxMarker(null)
                       dispatch(getRsuLastOnline(rsu.properties.ipv4_address))
                       dispatch(getIssScmsStatus())
-                      if (rsuCounts.hasOwnProperty(rsu.properties.ipv4_address))
+                      if (Object.prototype.hasOwnProperty.call(rsuCounts, rsu.properties.ipv4_address))
                         setSelectedRsuCount(rsuCounts[rsu.properties.ipv4_address].count)
                       else setSelectedRsuCount(0)
                     }}
@@ -1230,12 +1228,12 @@ function MapPage() {
                     <RsuMarker
                       displayType={displayType}
                       onlineStatus={
-                        rsuOnlineStatus.hasOwnProperty(rsu.properties.ipv4_address)
+                        Object.prototype.hasOwnProperty.call(rsuOnlineStatus, rsu.properties.ipv4_address)
                           ? rsuOnlineStatus[rsu.properties.ipv4_address].current_status
                           : 'offline'
                       }
                       scmsStatus={
-                        issScmsStatusData.hasOwnProperty(rsu.properties.ipv4_address) &&
+                        Object.prototype.hasOwnProperty.call(issScmsStatusData, rsu.properties.ipv4_address) &&
                         issScmsStatusData[rsu.properties.ipv4_address]
                           ? issScmsStatusData[rsu.properties.ipv4_address].health
                           : '0'
@@ -1522,14 +1520,26 @@ function MapPage() {
             </div>
             <div id="sliderContainer" style={{ margin: '5px 10px' }}>
               <Slider
-                allowCross={false}
-                included={false}
                 min={0}
                 max={geoMsgFilterMaxOffset}
                 value={filterOffset}
-                onChange={(e) => {
-                  dispatch(setGeoMsgFilterOffset(e as number))
+                onChange={(_: Event, value: number | number[]) => {
+                  dispatch(setGeoMsgFilterOffset(value as number))
                 }}
+                step={1}
+                valueLabelDisplay="auto"
+                valueLabelFormat={() => {
+                  const { start, end } = calculateTimeWindow(startGeoMsgDate, filterOffset, filterStep)
+                  return `${start.toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })} - ${end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+                }}
+                marks={calculateDataAvailability.map(({ offset }) => ({
+                  value: offset,
+                  label: '', // No numbers, just bars
+                }))}
+                style={{ width: '100%' }}
               />
             </div>
             <div id="controlContainer">
@@ -1557,8 +1567,8 @@ function MapPage() {
                 })}
               </Select>
 
-              <Button variant="contained" onClick={() => dispatch(setGeoMsgFilter(false))}>
-                New Search
+              <Button variant="contained" size="small" onClick={() => dispatch(setGeoMsgFilter(false))}>
+                <Typography fontSize="small">New Search</Typography>
               </Button>
             </div>
           </div>
@@ -1601,7 +1611,7 @@ function MapPage() {
                   top: '10px',
                   right: '10px',
                 }}
-                onClick={(e) => {
+                onClick={() => {
                   dispatch(clearGeoMsg())
                 }}
                 className="museo-slab capital-case"
@@ -1666,7 +1676,7 @@ function MapPage() {
               <Button
                 variant="contained"
                 size="small"
-                onClick={(e) => {
+                onClick={() => {
                   if (!addGeoMsgPoint) {
                     dispatch(updateGeoMsgData())
                   } else {
@@ -1724,7 +1734,7 @@ function MapPage() {
                 className="museo-slab capital-case"
                 variant="contained"
                 size="small"
-                onClick={(e) => {
+                onClick={() => {
                   dispatch(clearMooveAiData())
                 }}
               >
@@ -1741,7 +1751,7 @@ function MapPage() {
                 className="museo-slab capital-case"
                 variant="contained"
                 size="small"
-                onClick={(e) => {
+                onClick={() => {
                   if (!addMooveAiPoint) {
                     dispatch(updateMooveAiData())
                   } else {

@@ -1,6 +1,6 @@
 type J2735GenericLane = {
   laneID?: number
-  name?: String
+  name?: string
   ingressApproach?: number
   egressApproach?: number
   laneAttributes?: J2735LaneAttributes

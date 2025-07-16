@@ -1,1 +1,1 @@
-type SignalStateTimestampExtractor = {}
+type SignalStateTimestampExtractor = object

@@ -3,7 +3,7 @@ import { MAP_QUERY_PARAMS, RAW_MESSAGE_DATA_EXPORT } from '../map-slice'
 import FileSaver from 'file-saver'
 
 export const downloadAllData = (rawData: RAW_MESSAGE_DATA_EXPORT, queryParams: MAP_QUERY_PARAMS) => {
-  var zip = new JSZip()
+  const zip = new JSZip()
   zip.file(`intersection_${queryParams.intersectionId}_MAP_data.json`, JSON.stringify(rawData.map))
   zip.file(`intersection_${queryParams.intersectionId}_SPAT_data.json`, JSON.stringify(rawData.spat))
   zip.file(`intersection_${queryParams.intersectionId}_BSM_data.json`, JSON.stringify(rawData.bsm))

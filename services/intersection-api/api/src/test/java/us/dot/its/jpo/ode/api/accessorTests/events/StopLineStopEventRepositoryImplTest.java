@@ -29,7 +29,7 @@ import java.util.List;
 
 import org.bson.Document;
 
-import us.dot.its.jpo.ode.api.accessors.events.StopLineStopEvent.StopLineStopEventRepositoryImpl;
+import us.dot.its.jpo.ode.api.accessors.events.stop_line_stop_event.StopLineStopEventRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
 import org.springframework.boot.test.context.SpringBootTest;

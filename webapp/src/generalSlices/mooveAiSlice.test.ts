@@ -76,7 +76,7 @@ describe('async thunks', () => {
       const action = updateMooveAiData()
 
       RsuApi.postMooveAiData = jest.fn().mockReturnValue('mooveAiData')
-      let resp = await action(dispatch, getState, undefined)
+      const resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual([])
       expect(RsuApi.postMooveAiData).toHaveBeenCalledWith(
         'token',
@@ -104,7 +104,7 @@ describe('async thunks', () => {
       const action = updateMooveAiData()
 
       RsuApi.postMooveAiData = jest.fn().mockReturnValue('mooveAiData')
-      let resp = await action(dispatch, getState, undefined)
+      const resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual(undefined)
       expect(RsuApi.postMooveAiData).not.toHaveBeenCalled()
     })

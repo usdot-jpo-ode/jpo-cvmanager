@@ -13,7 +13,7 @@ WORKDIR $APP_HOME
 COPY api/requirements.txt .
 COPY api/src/* .
 COPY api/src/error_email/* ./error_email/
-COPY common/*.py ./common/
+COPY common/ ./common/
 
 # Install production dependencies.
 RUN pip install --no-cache-dir -r requirements.txt

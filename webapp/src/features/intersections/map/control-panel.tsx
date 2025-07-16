@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent, useMemo } from 'react'
+import React, { useState, useEffect, ChangeEvent } from 'react'
 import Slider from '@mui/material/Slider'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -29,13 +29,10 @@ import {
   BSM_COUNTS_CHART_DATA,
   downloadMapData,
   handleImportedMapMessageData,
-  onTimeQueryChanged,
   selectBsmEventsByMinute,
-  selectBsmTrailLength,
   selectDecoderModeEnabled,
   selectPlaybackModeActive,
   selectSliderTimeValue,
-  setBsmTrailLength,
   setSliderValue,
   setTimeWindowSeconds,
   toggleLiveDataActive,
@@ -78,7 +75,7 @@ const formatMinutesAfterMidnightTime = (minutes: number) => {
   return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`
 }
 
-const TimelineTooltip = ({ active, payload, label }) => {
+const TimelineTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     return (
       <div
@@ -145,7 +142,7 @@ const TimelineAxisTick: React.FC<TimelineAxisTickProps> = ({ x = 0, y = 0, paylo
 }
 
 const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(
-  ({ theme }) => ({})
+  () => ({})
 )
 
 const VisuallyHiddenInput = styled('input')({
@@ -160,7 +157,7 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 })
 
-const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({}))
+const AccordionDetails = styled(MuiAccordionDetails)(() => ({}))
 
 function ControlPanel() {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -171,7 +168,6 @@ function ControlPanel() {
   const mapSpatTimes = useSelector(selectMapSpatTimes)
   const liveDataActive = useSelector(selectLiveDataActive)
   const sliderTimeValue = useSelector(selectSliderTimeValue)
-  const bsmTrailLength = useSelector(selectBsmTrailLength)
   const selectedIntersectionId = useSelector(selectSelectedIntersectionId)
   const intersectionsList = useSelector(selectIntersections)
   const decoderModeEnabled = useSelector(selectDecoderModeEnabled)
@@ -190,7 +186,6 @@ function ControlPanel() {
     }
   }
 
-  const [bsmTrailLengthLocal, setBsmTrailLengthLocal] = useState<string | undefined>(bsmTrailLength.toString())
   const [eventTime, setEventTime] = useState<dayjs.Dayjs | null>(
     dayjs(getQueryParams(queryParams).eventTime.toString())
   )
@@ -202,39 +197,7 @@ function ControlPanel() {
 
   const [isExpandedTimeQuery, setIsExpandedTimeQuery] = useState(true)
   const [isExpandedDownload, setIsExpandedDownload] = useState(false)
-  const [isExpandedSettings, setIsExpandedSettings] = useState(false)
   const [isExpandedDecoder, setIsExpandedDecoder] = useState(false)
-
-  const isQueryParamFormValid = () => {
-    try {
-      const d = eventTime?.toDate().getTime()!
-      return (
-        !isNaN(d) &&
-        getNumber(timeBefore) !== null &&
-        getNumber(timeAfter) !== null &&
-        getNumber(timeWindowSecondsLocal) !== null
-      )
-    } catch (e) {
-      return false
-    }
-  }
-
-  const isNewQueryAllowed = useMemo(() => {
-    if (!isQueryParamFormValid()) return false
-    const eventTimeDate = eventTime?.toDate()
-    const timeBeforeNum = getNumber(timeBefore)
-    const timeAfterNum = getNumber(timeAfter)
-    const currentQueryParams = {
-      eventDate: eventTimeDate,
-      startDate: new Date(eventTimeDate.getTime() - (timeBeforeNum ?? 0) * 1000),
-      endDate: new Date(eventTimeDate.getTime() + (timeAfterNum ?? 0) * 1000),
-    }
-    return (
-      currentQueryParams.eventDate.getTime() !== queryParams.eventDate.getTime() ||
-      currentQueryParams.startDate.getTime() !== queryParams.startDate.getTime() ||
-      currentQueryParams.endDate.getTime() !== queryParams.endDate.getTime()
-    )
-  }, [eventTime, timeBefore, timeAfter, queryParams])
 
   useEffect(() => {
     const newDateParams = getQueryParams(queryParams)
@@ -258,7 +221,7 @@ function ControlPanel() {
   const openMessageData = (files: FileList | null) => {
     if (files == null) return
     const file = files[0]
-    var jsZip = new JSZip()
+    const jsZip = new JSZip()
     const messageData: {
       mapData: ProcessedMap[]
       bsmData: OdeBsmData[]
@@ -323,7 +286,7 @@ function ControlPanel() {
         <Slider
           sx={{ ml: 2, width: 'calc(100% - 80px)' }}
           value={sliderValue}
-          onChange={(event: Event, value: number | number[], activeThumb: number) => dispatch(setSliderValue(value))}
+          onChange={(event: Event, value: number | number[]) => dispatch(setSliderValue(value))}
           min={0}
           max={getTimeRange(queryParams.startDate, queryParams.endDate)}
           valueLabelDisplay="auto"
@@ -538,9 +501,7 @@ function ControlPanel() {
                   <Bar dataKey="count" barSize={10} minPointSize={10}></Bar>
                   <Tooltip
                     cursor={<TimelineCursor bsmEventsByMinute={[]} />}
-                    content={({ active, payload, label }) => (
-                      <TimelineTooltip active={active} payload={payload} label={label} />
-                    )}
+                    content={({ active, payload }) => <TimelineTooltip active={active} payload={payload} />}
                   />
                 </BarChart>
               </ResponsiveContainer>

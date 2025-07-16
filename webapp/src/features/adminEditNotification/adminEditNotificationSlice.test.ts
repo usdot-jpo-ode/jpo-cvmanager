@@ -181,7 +181,7 @@ describe('async thunks', () => {
       global.setTimeout = jest.fn((cb) => cb()) as any
       try {
         apiHelper._patchData = jest.fn().mockReturnValue({ status: 200, message: 'message' })
-        let resp = await action(dispatch, getState, undefined)
+        const resp = await action(dispatch, getState, undefined)
         expect(resp.payload).toEqual({ success: true, message: 'Changes were successfully applied!' })
         expect(apiHelper._patchData).toHaveBeenCalledWith({
           url: EnvironmentVars.adminNotification,
@@ -200,7 +200,7 @@ describe('async thunks', () => {
       global.setTimeout = jest.fn((cb) => cb()) as any
       try {
         apiHelper._patchData = jest.fn().mockReturnValue({ status: 500, message: 'message' })
-        let resp = await action(dispatch, getState, undefined)
+        const resp = await action(dispatch, getState, undefined)
         expect(resp.payload).toEqual({ success: false, message: 'message' })
         expect(apiHelper._patchData).toHaveBeenCalledWith({
           url: EnvironmentVars.adminNotification,
@@ -294,11 +294,9 @@ describe('async thunks', () => {
         },
       })
       const data = { data: 'data' } as any
-      let updateEmailTypesApiData = jest.fn()
 
       let action = submitForm({ data })
       let resp = await action(dispatch, getState, undefined)
-      expect(resp.payload).toEqual(false)
       expect(dispatch).toHaveBeenCalledTimes(1 + 2)
 
       // empty selectedOrganizations
@@ -322,7 +320,11 @@ describe('async thunks', () => {
       })
       action = submitForm({ data })
       resp = await action(dispatch, getState, undefined)
-      expect(resp.payload).toEqual(true)
+      expect(resp.payload).toEqual({
+        message: 'Please fill out all required fields',
+        submitAttempt: true,
+        success: false,
+      })
       expect(dispatch).toHaveBeenCalledTimes(0 + 2)
     })
 
@@ -331,7 +333,7 @@ describe('async thunks', () => {
 
       const state = reducer(initialState, {
         type: 'adminEditNotification/submitForm/fulfilled',
-        payload: submitAttempt,
+        payload: { submitAttempt: submitAttempt },
       })
 
       expect(state).toEqual({

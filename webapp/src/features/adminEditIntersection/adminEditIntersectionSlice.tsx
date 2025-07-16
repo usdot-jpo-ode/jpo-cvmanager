@@ -36,7 +36,7 @@ export type AdminEditIntersectionBody = {
 }
 
 const initialState = {
-  apiData: {} as adminEditIntersectionData,
+  apiData: undefined as adminEditIntersectionData | undefined,
   organizations: [] as { name: string }[],
   selectedOrganizations: [] as { name: string }[],
   rsus: [] as { name: string }[],

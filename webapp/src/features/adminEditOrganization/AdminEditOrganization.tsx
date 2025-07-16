@@ -8,6 +8,7 @@ import {
   updateStates,
   editOrganization,
   setSuccessMsg,
+  selectLoading,
 } from './adminEditOrganizationSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import toast from 'react-hot-toast'
@@ -34,10 +35,10 @@ const AdminEditOrganization = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
   const [open, setOpen] = useState(true)
-  const [unknownOrg, setUnknownOrg] = useState(false)
   const successMsg = useSelector(selectSuccessMsg)
   const selectedOrg = useSelector(selectSelectedOrg)
   const orgData = useSelector(selectOrgData)
+  const loading = useSelector(selectLoading)
   const {
     register,
     handleSubmit,
@@ -69,9 +70,8 @@ const AdminEditOrganization = () => {
   useEffect(() => {
     if (selectedOrg) {
       updateStates(setValue, selectedOrg?.name, selectedOrg?.email)
-      if (unknownOrg) setUnknownOrg(false)
-    } else setUnknownOrg(true)
-  }, [setValue, selectedOrg?.name, selectedOrg?.email, selectedOrg, unknownOrg])
+    }
+  }, [setValue, selectedOrg?.name, selectedOrg?.email, selectedOrg])
 
   const onSubmit = (data: adminOrgPatch) => {
     dispatch(editOrganization({ json: data, setValue, selectedOrg: selectedOrg?.name })).then((data: any) => {
@@ -92,7 +92,7 @@ const AdminEditOrganization = () => {
 
   return (
     <>
-      {Object.keys(selectedOrg ?? {}).length !== 0 && !unknownOrg ? (
+      {selectedOrg && !loading ? (
         <Dialog open={open}>
           <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
             <SideBarHeader
@@ -169,7 +169,7 @@ const AdminEditOrganization = () => {
           </DialogActions>
         </Dialog>
       ) : (
-        unknownOrg && (
+        !loading && (
           <Dialog open={open}>
             <DialogContent>
               <Typography variant={'h4'}>

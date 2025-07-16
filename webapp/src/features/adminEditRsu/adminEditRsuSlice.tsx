@@ -19,7 +19,7 @@ export type adminEditRsuData = {
 }
 
 const initialState = {
-  apiData: {} as adminEditRsuData,
+  apiData: undefined as adminEditRsuData | undefined,
   primaryRoutes: [] as { name: string }[],
   selectedRoute: '',
   otherRouteDisabled: true,

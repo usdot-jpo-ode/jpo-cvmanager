@@ -27,6 +27,7 @@ import {
   setSelectedSnmpGroup,
   setSelectedSnmpVersion,
   setSelectedOrganizations,
+  selectLoading,
 } from './adminEditRsuSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -92,9 +93,9 @@ const AdminEditRsu = () => {
   const selectedOrganizations = useSelector(selectSelectedOrganizations)
   const submitAttempt = useSelector(selectSubmitAttempt)
   const rsuTableData = useSelector(selectTableData)
+  const loading = useSelector(selectLoading)
 
   const [open, setOpen] = useState(true)
-  const [unknownRsu, setUnknownRsu] = useState(false)
 
   const navigate = useNavigate()
 
@@ -136,12 +137,10 @@ const AdminEditRsu = () => {
       setValue('milepost', String(currRsu.milepost))
       setValue('serial_number', currRsu.serial_number)
       setValue('scms_id', currRsu.scms_id)
-      if (unknownRsu) setUnknownRsu(false)
     } else {
-      setUnknownRsu(true)
       console.error('Unknown RSU IP: ', rsuIp)
     }
-  }, [apiData, rsuIp, rsuTableData, setValue, unknownRsu])
+  }, [apiData, rsuIp, rsuTableData, setValue])
 
   useEffect(() => {
     dispatch(updateSelectedRoute(selectedRoute))
@@ -165,7 +164,7 @@ const AdminEditRsu = () => {
 
   return (
     <>
-      {Object.keys(apiData ?? {}).length !== 0 && !unknownRsu ? (
+      {apiData && !loading ? (
         <Dialog open={open}>
           <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
             <SideBarHeader
@@ -584,7 +583,7 @@ const AdminEditRsu = () => {
           </DialogActions>
         </Dialog>
       ) : (
-        unknownRsu && (
+        !loading && (
           <Dialog open={open}>
             <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
               <Typography variant={'h4'}>

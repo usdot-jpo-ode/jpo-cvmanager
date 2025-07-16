@@ -14,6 +14,7 @@ import {
   submitForm,
   setSelectedOrganizations,
   setSelectedRsus,
+  selectLoading,
 } from './adminEditIntersectionSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -58,9 +59,9 @@ const AdminEditIntersection = () => {
   const selectedRsus = useSelector(selectSelectedRsus)
   const submitAttempt = useSelector(selectSubmitAttempt)
   const intersectionTableData = useSelector(selectTableData)
+  const loading = useSelector(selectLoading)
 
   const [open, setOpen] = useState(true)
-  const [unknownIntersection, setUnknownIntersection] = useState(false)
   const navigate = useNavigate()
 
   const {
@@ -108,12 +109,10 @@ const AdminEditIntersection = () => {
       setValue('bbox.longitude2', currIntersection.bbox?.longitude2?.toString())
       setValue('intersection_name', currIntersection.intersection_name)
       setValue('origin_ip', currIntersection.origin_ip)
-      if (unknownIntersection) setUnknownIntersection(false)
     } else {
-      setUnknownIntersection(true)
       console.error('Unknown Intersection ID: ', intersectionId)
     }
-  }, [apiData, intersectionId, intersectionTableData, setValue, unknownIntersection])
+  }, [apiData, intersectionId, intersectionTableData, setValue])
 
   useEffect(() => {
     dispatch(updateTableData())
@@ -133,7 +132,7 @@ const AdminEditIntersection = () => {
 
   return (
     <>
-      {Object.keys(apiData ?? {}).length !== 0 && !unknownIntersection ? (
+      {apiData && !loading ? (
         <Dialog open={open}>
           <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
             <SideBarHeader
@@ -382,7 +381,7 @@ const AdminEditIntersection = () => {
           </DialogActions>
         </Dialog>
       ) : (
-        unknownIntersection && (
+        !loading && (
           <Dialog open={open}>
             <DialogContent>
               <Typography variant={'h4'}>

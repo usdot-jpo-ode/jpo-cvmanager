@@ -13,6 +13,7 @@ import {
   submitForm,
   updateOrganizations,
   UserApiDataOrgs,
+  selectLoading,
 } from './adminEditUserSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -46,8 +47,8 @@ const AdminEditUser = () => {
   const apiData = useSelector(selectApiData)
   const submitAttempt = useSelector(selectSubmitAttempt)
   const userTableData = useSelector(selectTableData)
+  const loading = useSelector(selectLoading)
   const [open, setOpen] = useState(true)
-  const [unknownUser, setUnknownUser] = useState(false)
   const navigate = useNavigate()
   const {
     register,
@@ -81,12 +82,10 @@ const AdminEditUser = () => {
       setValue('first_name', currUser.first_name)
       setValue('last_name', currUser.last_name)
       setValue('super_user', currUser.super_user)
-      if (unknownUser) setUnknownUser(false)
     } else {
-      setUnknownUser(true)
       console.error('Encountered Unknown User: ', email)
     }
-  }, [apiData, email, setValue, unknownUser, userTableData])
+  }, [apiData, email, setValue, userTableData])
 
   const onSubmit = (data: UserApiDataOrgs) => {
     dispatch(submitForm({ data })).then((data: any) => {
@@ -102,7 +101,7 @@ const AdminEditUser = () => {
 
   return (
     <>
-      {Object.keys(apiData ?? {}).length !== 0 && !unknownUser ? (
+      {apiData && !loading ? (
         <Dialog open={open}>
           <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
             <SideBarHeader
@@ -219,12 +218,12 @@ const AdminEditUser = () => {
                 </FormControl>
               </Form.Group>
 
-            {selectedOrganizations.length > 0 && (
-              <Form.Group controlId="roles">
-                <Form.Label className="trebuchet">Roles</Form.Label>
-                <p className="spacer" />
-                {selectedOrganizations.map((organization) => {
-                  const role = { role: organization.role }
+              {selectedOrganizations.length > 0 && (
+                <Form.Group controlId="roles">
+                  <Form.Label className="trebuchet">Roles</Form.Label>
+                  <p className="spacer" />
+                  {selectedOrganizations.map((organization) => {
+                    const role = { role: organization.role }
 
                     return (
                       <Form.Group controlId={organization.id.toString()}>
@@ -283,7 +282,7 @@ const AdminEditUser = () => {
           </DialogActions>
         </Dialog>
       ) : (
-        unknownUser && (
+        !loading && (
           <Dialog open={open}>
             <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
               <Typography variant={'h4'}>

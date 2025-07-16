@@ -23,8 +23,9 @@ import AdminEditNotification from '../adminEditNotification/AdminEditNotificatio
 import AdminAddNotification from '../adminAddNotification/AdminAddNotification'
 import { AdminEmailNotification } from '../../models/Notifications'
 import { headerTabHeight } from '../../styles/index'
-import { Button, useTheme } from '@mui/material'
-import { AddCircleOutline, DeleteOutline, ModeEditOutline, Refresh } from '@mui/icons-material'
+import { useTheme } from '@mui/material'
+import { DeleteOutline, ModeEditOutline } from '@mui/icons-material'
+import toast from 'react-hot-toast'
 
 const AdminNotificationTab = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -38,7 +39,7 @@ const AdminNotificationTab = () => {
   const [columns] = useState([{ title: 'Email Notification Type', field: 'email_type', id: 3 }])
   const loading = useSelector(selectLoading)
 
-  let tableActions: Action<AdminEmailNotification>[] = [
+  const tableActions: Action<AdminEmailNotification>[] = [
     {
       icon: () => <ModeEditOutline sx={{ color: theme.palette.custom.rowActionIcon }} />,
       iconProps: {
@@ -57,7 +58,12 @@ const AdminNotificationTab = () => {
         const buttons = [
           {
             label: 'Yes',
-            onClick: () => dispatch(deleteNotifications([rowData])),
+            onClick: () =>
+              dispatch(deleteNotifications([rowData])).then((data: any) => {
+                data.payload.success
+                  ? toast.success('Notification Deleted Successfully')
+                  : toast.error('Failed to delete notification due to error: ' + data.payload.message)
+              }),
           },
           {
             label: 'No',
@@ -83,7 +89,12 @@ const AdminNotificationTab = () => {
         const buttons = [
           {
             label: 'Yes',
-            onClick: () => dispatch(deleteNotifications(rowData)),
+            onClick: () =>
+              dispatch(deleteNotifications(rowData)).then((data: any) => {
+                data.payload.success
+                  ? toast.success('Notifications Deleted Successfully')
+                  : toast.error('Failed to delete one or more notification due to error: ' + data.payload.message)
+              }),
           },
           {
             label: 'No',

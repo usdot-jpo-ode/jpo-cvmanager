@@ -43,7 +43,7 @@ describe('admin add User reducer', () => {
 })
 
 describe('async thunks', () => {
-  var initialState: RootState['adminAddNotification'] = {
+  const initialState: RootState['adminAddNotification'] = {
     loading: null,
     value: {
       successMsg: null,
@@ -67,7 +67,7 @@ describe('async thunks', () => {
 
   describe('getNotificationData', () => {
     it('returns and calls the api correctly', async () => {
-      let dispatch = jest.fn()
+      const dispatch = jest.fn()
       const getState = jest.fn().mockReturnValue({
         user: {
           value: {
@@ -164,7 +164,7 @@ describe('async thunks', () => {
       })
       const json = { data: 'data' } as any
 
-      let reset = jest.fn()
+      const reset = jest.fn()
       let action = createNotification({ json, reset })
       apiHelper._postData = jest
         .fn()
@@ -249,8 +249,8 @@ describe('async thunks', () => {
 
   describe('resetForm', () => {
     it('returns and calls the api correctly', async () => {
-      let dispatch = jest.fn()
-      let getState = jest.fn().mockReturnValue({
+      const dispatch = jest.fn()
+      const getState = jest.fn().mockReturnValue({
         user: {
           value: {
             authLoginData: { token: 'token' },
@@ -258,16 +258,16 @@ describe('async thunks', () => {
         },
       })
 
-      let reset = jest.fn()
+      const reset = jest.fn()
       global.setTimeout = jest.fn((cb) => cb()) as any
       try {
-        let action = resetForm(reset)
+        const action = resetForm(reset)
         await action(dispatch, getState, undefined)
         expect(reset).toHaveBeenCalledTimes(1)
         expect(global.setTimeout).toHaveBeenCalledTimes(1)
         expect(dispatch).toHaveBeenCalledTimes(2 + 2)
       } catch (e) {
-        ;(global.setTimeout as any).mockClear()
+        (global.setTimeout as any).mockClear()
         throw e
       }
     })
@@ -303,10 +303,9 @@ describe('async thunks', () => {
       })
       const data = { data: 'data' } as any
 
-      let reset = jest.fn()
+      const reset = jest.fn()
       let action = submitForm({ data, reset })
       let resp = await action(dispatch, getState, undefined)
-      expect(resp.payload).toEqual(false)
       expect(dispatch).toHaveBeenCalledTimes(1 + 2)
 
       // invalid checkForm
@@ -325,7 +324,11 @@ describe('async thunks', () => {
       })
       action = submitForm({ data, reset })
       resp = await action(dispatch, getState, undefined)
-      expect(resp.payload).toEqual(true)
+      expect(resp.payload).toEqual({
+        message: 'Please fill out all required fields',
+        submitAttempt: true,
+        success: false,
+      })
       expect(dispatch).toHaveBeenCalledTimes(0 + 2)
     })
 
@@ -334,7 +337,7 @@ describe('async thunks', () => {
 
       const state = reducer(initialState, {
         type: 'adminAddNotification/submitForm/fulfilled',
-        payload: submitAttempt,
+        payload: { submitAttempt: submitAttempt },
       })
 
       expect(state).toEqual({

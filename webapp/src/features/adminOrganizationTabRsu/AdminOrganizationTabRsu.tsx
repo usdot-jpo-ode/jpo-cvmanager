@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import AdminTable from '../../components/AdminTable'
-import { Button, Typography, useTheme } from '@mui/material'
+import { Typography, useTheme } from '@mui/material'
 import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -52,7 +52,7 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
     { title: 'Milepost', field: 'milepost', id: 2, width: '31%' },
   ])
 
-  let rsuActions: Action<AdminOrgRsu>[] = [
+  const rsuActions: Action<AdminOrgRsu>[] = [
     {
       icon: () => <DeleteOutline sx={{ color: theme.palette.custom.rowActionIcon }} />,
       iconProps: {

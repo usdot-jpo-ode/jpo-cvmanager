@@ -21,7 +21,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { Action } from '@material-table/core'
-import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { Route, Routes, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
 import toast from 'react-hot-toast'
 import { DeleteOutline, ModeEditOutline } from '@mui/icons-material'
@@ -123,16 +123,22 @@ const AdminIntersectionTab = () => {
   const onDelete = (row: AdminEditIntersectionFormType) => {
     dispatch(deleteIntersection({ intersection_id: row.intersection_id, shouldUpdateTableData: true })).then(
       (data: any) => {
-        data.payload.success
-          ? toast.success('Intersection Deleted Successfully')
-          : toast.error('Failed to delete Intersection due to error: ' + data.payload)
+        if (data.payload.success) {
+          toast.success('Intersection Deleted Successfully')
+        } else {
+          toast.error('Failed to delete Intersection due to error: ' + data.payload)
+        }
       }
     )
   }
 
   const multiDelete = (rows: AdminEditIntersectionFormType[]) => {
     dispatch(deleteMultipleIntersections(rows)).then((data: any) => {
-      data.payload.success ? toast.success('Intersections Deleted Successfully') : toast.error(data.payload.message)
+      if (data.payload.success) {
+        toast.success('Intersections Deleted Successfully')
+      } else {
+        toast.error(data.payload.message)
+      }
     })
   }
 

@@ -32,7 +32,7 @@ describe('admin organization tab reducer', () => {
         activeDiv: 'organization_table',
         title: 'Organizations',
         orgData: [],
-        selectedOrg: {},
+        selectedOrg: undefined,
         rsuTableData: [],
         userTableData: [],
         intersectionTableData: [],

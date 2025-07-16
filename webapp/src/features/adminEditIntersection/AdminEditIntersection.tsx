@@ -131,9 +131,9 @@ const AdminEditIntersection = () => {
   }
 
   return (
-    <>
+    <Dialog open={open}>
       {apiData && !loading ? (
-        <Dialog open={open}>
+        <>
           <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
             <SideBarHeader
               onClick={() => {
@@ -379,27 +379,25 @@ const AdminEditIntersection = () => {
               Apply Changes
             </Button>
           </DialogActions>
-        </Dialog>
+        </>
       ) : (
         !loading && (
-          <Dialog open={open}>
-            <DialogContent>
-              <Typography variant={'h4'}>
-                Unknown Intersection ID. Either this Intersection does not exist, or you do not have access to it.
-              </Typography>
-              <AdminButton
-                onClick={() => {
-                  setOpen(false)
-                  navigate('/dashboard/admin/intersections')
-                }}
-              >
-                Close
-              </AdminButton>
-            </DialogContent>
-          </Dialog>
+          <DialogContent>
+            <Typography variant={'h4'}>
+              Unknown Intersection ID. Either this Intersection does not exist, or you do not have access to it.
+            </Typography>
+            <AdminButton
+              onClick={() => {
+                setOpen(false)
+                navigate('/dashboard/admin/intersections')
+              }}
+            >
+              Close
+            </AdminButton>
+          </DialogContent>
         )
       )}
-    </>
+    </Dialog>
   )
 }
 

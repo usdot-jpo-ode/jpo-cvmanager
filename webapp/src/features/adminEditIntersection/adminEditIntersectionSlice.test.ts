@@ -33,7 +33,7 @@ describe('admin edit Intersection reducer', () => {
     expect(reducer(undefined, { type: 'unknown' })).toEqual({
       loading: false,
       value: {
-        apiData: {},
+        apiData: undefined,
         organizations: [],
         selectedOrganizations: [],
         rsus: [],
@@ -183,7 +183,7 @@ describe('async thunks', () => {
         })
         expect(dispatch).toHaveBeenCalledTimes(1 + 2)
       } catch (e) {
-        (global.setTimeout as any).mockClear()
+        ;(global.setTimeout as any).mockClear()
         throw e
       }
 
@@ -203,7 +203,7 @@ describe('async thunks', () => {
         expect(setTimeout).not.toHaveBeenCalled()
         expect(dispatch).toHaveBeenCalledTimes(0 + 2)
       } catch (e) {
-        (global.setTimeout as any).mockClear()
+        ;(global.setTimeout as any).mockClear()
         throw e
       }
     })
@@ -435,7 +435,7 @@ describe('reducers', () => {
   const initialState: RootState['adminEditIntersection'] = {
     loading: null,
     value: {
-      apiData: {} as undefined,
+      apiData: undefined,
       organizations: [] as { name: string }[],
       selectedOrganizations: [] as { name: string }[],
       rsus: [] as { name: string }[],

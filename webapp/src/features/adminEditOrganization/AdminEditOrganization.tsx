@@ -91,9 +91,9 @@ const AdminEditOrganization = () => {
   }, [successMsg])
 
   return (
-    <>
+    <Dialog open={open}>
       {selectedOrg && !loading ? (
-        <Dialog open={open}>
+        <>
           <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
             <SideBarHeader
               onClick={() => {
@@ -167,7 +167,7 @@ const AdminEditOrganization = () => {
               Apply Changes
             </Button>
           </DialogActions>
-        </Dialog>
+        </>
       ) : (
         !loading && (
           <Dialog open={open}>
@@ -180,7 +180,7 @@ const AdminEditOrganization = () => {
           </Dialog>
         )
       )}
-    </>
+    </Dialog>
   )
 }
 

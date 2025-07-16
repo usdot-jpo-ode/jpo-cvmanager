@@ -163,9 +163,9 @@ const AdminEditRsu = () => {
   }
 
   return (
-    <>
+    <Dialog open={open}>
       {apiData && !loading ? (
-        <Dialog open={open}>
+        <>
           <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
             <SideBarHeader
               onClick={() => {
@@ -581,20 +581,18 @@ const AdminEditRsu = () => {
               Apply Changes
             </Button>
           </DialogActions>
-        </Dialog>
+        </>
       ) : (
         !loading && (
-          <Dialog open={open}>
-            <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
-              <Typography variant={'h4'}>
-                Unknown RSU IP address. Either this RSU does not exist, or you do not have access to it.{' '}
-                <Link to="../">RSUs</Link>
-              </Typography>
-            </DialogContent>
-          </Dialog>
+          <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
+            <Typography variant={'h4'}>
+              Unknown RSU IP address. Either this RSU does not exist, or you do not have access to it.{' '}
+              <Link to="../">RSUs</Link>
+            </Typography>
+          </DialogContent>
         )
       )}
-    </>
+    </Dialog>
   )
 }
 

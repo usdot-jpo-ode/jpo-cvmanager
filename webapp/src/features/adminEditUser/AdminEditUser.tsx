@@ -100,9 +100,9 @@ const AdminEditUser = () => {
   }
 
   return (
-    <>
+    <Dialog open={open}>
       {apiData && !loading ? (
-        <Dialog open={open}>
+        <>
           <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
             <SideBarHeader
               onClick={() => {
@@ -280,20 +280,18 @@ const AdminEditUser = () => {
               Apply Changes
             </Button>
           </DialogActions>
-        </Dialog>
+        </>
       ) : (
         !loading && (
-          <Dialog open={open}>
-            <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
-              <Typography variant={'h4'}>
-                Unknown email address. Either this user does not exist, or you do not have permissions to view them.{' '}
-                <Link to="../">Users</Link>
-              </Typography>
-            </DialogContent>
-          </Dialog>
+          <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
+            <Typography variant={'h4'}>
+              Unknown email address. Either this user does not exist, or you do not have permissions to view them.{' '}
+              <Link to="../">Users</Link>
+            </Typography>
+          </DialogContent>
         )
       )}
-    </>
+    </Dialog>
   )
 }
 

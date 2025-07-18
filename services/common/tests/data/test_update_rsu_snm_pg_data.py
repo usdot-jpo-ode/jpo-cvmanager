@@ -11,6 +11,7 @@ snmp_config_data = [
         "start_datetime": "2024-02-05 00:00",
         "end_datetime": "2034-02-05 00:00",
         "active": "1",
+        "security": "1",
     },
     {
         "rsu_id": 2,
@@ -22,6 +23,7 @@ snmp_config_data = [
         "start_datetime": "2024-02-05 00:00",
         "end_datetime": "2034-02-05 00:00",
         "active": "1",
+        "security": "1",
     },
 ]
 
@@ -36,6 +38,7 @@ snmp_config_data_msgfwd_type_str = [
         "start_datetime": "2024-02-05 00:00",
         "end_datetime": "2034-02-05 00:00",
         "active": "1",
+        "security": "1",
     },
     {
         "rsu_id": 2,
@@ -47,6 +50,7 @@ snmp_config_data_msgfwd_type_str = [
         "start_datetime": "2024-02-05 00:00",
         "end_datetime": "2034-02-05 00:00",
         "active": "1",
+        "security": "1",
     },
 ]
 
@@ -70,6 +74,7 @@ sample_rsu_snmp_configs_obj_1 = {
             "start_datetime": "2024-02-05 00:00",
             "end_datetime": "2034-02-05 00:00",
             "active": "1",
+            "security": "1",
         },
     ],
     2: [
@@ -83,6 +88,7 @@ sample_rsu_snmp_configs_obj_1 = {
             "start_datetime": "2024-02-05 00:00",
             "end_datetime": "2034-02-05 00:00",
             "active": "1",
+            "security": "1",
         },
     ],
     3: "Unable to retrieve latest SNMP config",
@@ -105,6 +111,7 @@ sample_rsu_snmp_configs_obj_3 = {
             "start_datetime": "2024-02-05 00:00",
             "end_datetime": "2034-02-05 00:00",
             "active": "1",
+            "security": "1",
         },
     ],
 }
@@ -120,6 +127,7 @@ snmp_config_data_msgfwd_type_str_2 = [
         "start_datetime": "2024-02-05 00:00",
         "end_datetime": "2034-02-05 00:00",
         "active": "1",
+        "security": "1",
     },
 ]
 
@@ -168,6 +176,7 @@ side_effect_return_values = [
                         "Start DateTime": "2024-02-05 00:00",
                         "End DateTime": "2034-02-05 00:00",
                         "Config Active": "Enabled",
+                        "Full WSMP": "Enabled",
                     }
                 },
                 "rsuXmitMsgFwdingTable": {},
@@ -186,6 +195,7 @@ side_effect_return_values = [
                         "Start DateTime": "2024-02-05 00:00",
                         "End DateTime": "2034-02-05 00:00",
                         "Config Active": "Enabled",
+                        "Full WSMP": "Enabled",
                     }
                 },
                 "rsuXmitMsgFwdingTable": {
@@ -196,6 +206,7 @@ side_effect_return_values = [
                         "Start DateTime": "2024-02-05 00:00",
                         "End DateTime": "2034-02-05 00:00",
                         "Config Active": "Enabled",
+                        "Full WSMP": "Enabled",
                     }
                 },
             }
@@ -212,6 +223,7 @@ side_effect_return_values = [
                     "Start DateTime": "2024-02-05 00:00",
                     "End DateTime": "2034-02-05 00:00",
                     "Config Active": "Enabled",
+                    "Full WSMP": "Disabled",
                 }
             }
         },
@@ -237,6 +249,7 @@ get_snmp_configs_expected = {
             "start_datetime": "2024-02-05 00:00",
             "end_datetime": "2034-02-05 00:00",
             "active": "1",
+            "security": "1",
         },
     ],
     2: [
@@ -250,6 +263,7 @@ get_snmp_configs_expected = {
             "start_datetime": "2024-02-05 00:00",
             "end_datetime": "2034-02-05 00:00",
             "active": "1",
+            "security": "1",
         },
         {
             "rsu_id": 2,
@@ -261,6 +275,7 @@ get_snmp_configs_expected = {
             "start_datetime": "2024-02-05 00:00",
             "end_datetime": "2034-02-05 00:00",
             "active": "1",
+            "security": "1",
         },
     ],
     3: [
@@ -274,6 +289,7 @@ get_snmp_configs_expected = {
             "start_datetime": "2024-02-05 00:00",
             "end_datetime": "2034-02-05 00:00",
             "active": "1",
+            "security": "0",
         },
     ],
     4: "Unable to retrieve latest SNMP config",

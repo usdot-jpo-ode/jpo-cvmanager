@@ -42,6 +42,7 @@
     "decisecond",
     "dockerized",
     "dont",
+    "Dsrc",
     "formik",
     "geojsonconverter",
     "hamcrest",
@@ -53,6 +54,7 @@
     "JDBC",
     "keyfile",
     "ksession",
+    "ldot",
     "loadercss",
     "LOGLEVEL",
     "luxon",
@@ -71,8 +73,10 @@
     "pytz",
     "rawtypes",
     "reduxjs",
+    "rsufwdsnmpset",
     "rsus",
     "SASL",
+    "Scms",
     "SNMP",
     "Snmpset",
     "Snmpwalk",
@@ -85,11 +89,25 @@
     "usdotjpoode",
     "utctimestamp",
     "wydot",
+    "wzdx",
     "Zabbix"
   ],
   "java.configuration.updateBuildConfiguration": "automatic",
   "files.eol": "\n",
   "[java]": {
     "editor.defaultFormatter": "redhat.java"
-  }
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  },
+  "eslint.validate": [
+    "typescript",
+    "typescriptreact",
+    "javascript",
+    "javascriptreact",
+    "html",
+    "json",
+    "jsonc",
+    "markdown"
+  ]
 }

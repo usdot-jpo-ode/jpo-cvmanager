@@ -1,22 +1,25 @@
 import { Card, CardContent, Grid2, Typography, useTheme } from '@mui/material'
 import React from 'react'
-import { BarChart, CartesianGrid, XAxis, YAxis, Legend, Bar, Tooltip, TooltipProps } from 'recharts'
+import {
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Legend,
+  Bar,
+  Tooltip,
+  TooltipProps,
+  ResponsiveContainer,
+} from 'recharts'
 import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent'
 
 export const LaneDirectionOfTravelAssessmentCard = (props: {
   assessment: LaneDirectionOfTravelAssessment | undefined
+  minWidth: number
 }) => {
   const { assessment } = props
   const theme = useTheme()
 
-  function getWidthFactorFromData(data: any[] | undefined): number {
-    if (!data) return 0.1
-    const maxFactor = 0.9
-    const numRowsForMax = 40
-    return 0.1 + Math.min(maxFactor, data.length / numRowsForMax)
-  }
-
-  const widthFactor = getWidthFactorFromData(assessment?.laneDirectionOfTravelAssessmentGroup)
   const SegColors = [
     ['#d55d01'],
     ['#d59201'],
@@ -58,7 +61,7 @@ export const LaneDirectionOfTravelAssessmentCard = (props: {
     }
   } = {}
   for (let i = 0; i < (assessment?.laneDirectionOfTravelAssessmentGroup ?? []).length; i++) {
-    const group = assessment?.laneDirectionOfTravelAssessmentGroup[i]!
+    const group = assessment?.laneDirectionOfTravelAssessmentGroup[i]
     if (!compressedGroups[group.laneID]) {
       compressedGroups[group.laneID] = {
         laneId: group.laneID,
@@ -89,7 +92,7 @@ export const LaneDirectionOfTravelAssessmentCard = (props: {
                 In Tolerance:{' '}
                 {segmentIds.map((segId) => obj.inTolerance[segId]).reduce((partialSum, a) => partialSum + (a ?? 0), 0)}
               </b>
-              {segmentIds.map((segmentId, index) => {
+              {segmentIds.map((segmentId) => {
                 return (
                   <p>
                     {segmentId}: {obj.inTolerance[segmentId] ?? 0}
@@ -104,7 +107,7 @@ export const LaneDirectionOfTravelAssessmentCard = (props: {
                   .map((segId) => obj.outOfTolerance[segId])
                   .reduce((partialSum, a) => partialSum + (a ?? 0), 0)}
               </b>
-              {segmentIds.map((segmentId, index) => {
+              {segmentIds.map((segmentId) => {
                 return (
                   <p>
                     {segmentId}: {obj.outOfTolerance[segmentId] ?? 0}
@@ -120,84 +123,81 @@ export const LaneDirectionOfTravelAssessmentCard = (props: {
   }
 
   return (
-    <Grid2 width={assessment === undefined ? 200 : 80 + widthFactor * 1200}>
-      <Card sx={{ height: '100%', overflow: 'visible' }}>
+    <Grid2 sx={{ height: '100%', minHeight: assessment === undefined ? 200 : 500 }}>
+      <Card sx={{ height: '100%', overflowX: 'auto' }}>
         <CardContent>
-          <Grid2 container spacing={3} sx={{ justifyContent: 'space-between' }}>
-            <Grid2>
-              <Typography color="textSecondary" gutterBottom variant="overline">
+          <Grid2 container spacing={1} sx={{ justifyContent: 'left' }}>
+            <Grid2 sx={{ width: '100%' }}>
+              <Typography gutterBottom variant="h6">
                 Lane Direction of Travel Assessment
               </Typography>
               {assessment === undefined ? (
-                <Typography color="textPrimary" variant="h5" key={''}>
+                <Typography color="textSecondary" fontSize="small" key={''}>
                   No Data
                 </Typography>
               ) : (
-                <BarChart
-                  width={widthFactor * 1200}
-                  height={400}
-                  data={Object.values(compressedGroups).map((group) => {
-                    return {
-                      name: `${group.laneId}`,
-                      ...group,
-                    }
-                  })}
-                  margin={{
-                    top: 20,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                  }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" label={{ value: 'Lane ID', position: 'insideBottomRight', offset: -5 }} />
-                  <YAxis label={{ value: 'Events', angle: -90, position: 'insideLeft' }} />
-                  <Tooltip content={CustomTooltip} />
-                  <Legend
-                    wrapperStyle={{
-                      paddingTop: '10px',
-                      height: '100px',
-                    }}
-                    payload={segmentIds.map((segmentId, index) => {
+                <ResponsiveContainer width="100%" minWidth={`${props.minWidth}px`} height={350}>
+                  <BarChart
+                    height={350}
+                    data={Object.values(compressedGroups).map((group) => {
                       return {
-                        value: `Segment ${segmentId}`,
-                        id: `inTolerance.${segmentId}`,
-                        color:
-                          SegColors[
-                            (index * Math.max(Math.floor(SegColors.length / maxSegmentId), 1)) % SegColors.length
-                          ][0],
+                        name: `${group.laneId}`,
+                        ...group,
                       }
                     })}
-                  />
-                  {segmentIds.map((segmentId, index) => {
-                    return (
-                      <Bar
-                        dataKey={`inTolerance.${segmentId}`}
-                        stackId={`inTolerance`}
-                        name={`${segmentId}`}
-                        fill={
-                          SegColors[
-                            (index * Math.max(Math.floor(SegColors.length / maxSegmentId), 1)) % SegColors.length
-                          ][0]
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" label={{ value: 'Lane ID', position: 'insideBottom', offset: -15 }} />
+                    <YAxis label={{ value: 'Events', angle: -90, position: 'insideLeft' }} />
+                    <Tooltip content={CustomTooltip} />
+                    <Legend
+                      layout="horizontal"
+                      verticalAlign="bottom"
+                      align="center"
+                      wrapperStyle={{
+                        position: 'relative',
+                      }}
+                      payload={segmentIds.map((segmentId, index) => {
+                        return {
+                          value: `Segment ${segmentId}`,
+                          id: `inTolerance.${segmentId}`,
+                          color:
+                            SegColors[
+                              (index * Math.max(Math.floor(SegColors.length / maxSegmentId), 1)) % SegColors.length
+                            ][0],
                         }
-                      />
-                    )
-                  })}
-                  {segmentIds.map((segmentId, index) => {
-                    return (
-                      <Bar
-                        dataKey={`outOfTolerance.${segmentId}`}
-                        stackId={`outOfTolerance`}
-                        name={`${segmentId}`}
-                        fill={
-                          SegColors[
-                            (index * Math.max(Math.floor(SegColors.length / maxSegmentId), 1)) % SegColors.length
-                          ][0]
-                        }
-                      />
-                    )
-                  })}
-                </BarChart>
+                      })}
+                    />
+                    {segmentIds.map((segmentId, index) => {
+                      return (
+                        <Bar
+                          dataKey={`inTolerance.${segmentId}`}
+                          stackId={`inTolerance`}
+                          name={`${segmentId}`}
+                          fill={
+                            SegColors[
+                              (index * Math.max(Math.floor(SegColors.length / maxSegmentId), 1)) % SegColors.length
+                            ][0]
+                          }
+                        />
+                      )
+                    })}
+                    {segmentIds.map((segmentId, index) => {
+                      return (
+                        <Bar
+                          dataKey={`outOfTolerance.${segmentId}`}
+                          stackId={`outOfTolerance`}
+                          name={`${segmentId}`}
+                          fill={
+                            SegColors[
+                              (index * Math.max(Math.floor(SegColors.length / maxSegmentId), 1)) % SegColors.length
+                            ][0]
+                          }
+                        />
+                      )
+                    })}
+                  </BarChart>
+                </ResponsiveContainer>
               )}
             </Grid2>
           </Grid2>

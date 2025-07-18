@@ -33,7 +33,7 @@ describe('admin edit Intersection reducer', () => {
     expect(reducer(undefined, { type: 'unknown' })).toEqual({
       loading: false,
       value: {
-        apiData: {},
+        apiData: undefined,
         organizations: [],
         selectedOrganizations: [],
         rsus: [],
@@ -172,7 +172,7 @@ describe('async thunks', () => {
       global.setTimeout = jest.fn((cb) => cb()) as any
       try {
         apiHelper._patchData = jest.fn().mockReturnValue({ status: 200, message: 'message', body: 'body' })
-        let resp = await action(dispatch, getState, undefined)
+        const resp = await action(dispatch, getState, undefined)
         expect(resp.payload).toEqual({ success: true, message: 'Changes were successfully applied!' })
         expect(apiHelper._patchData).toHaveBeenCalledWith({
           url: EnvironmentVars.adminIntersection,
@@ -191,7 +191,7 @@ describe('async thunks', () => {
       global.setTimeout = jest.fn((cb) => cb()) as any
       try {
         apiHelper._patchData = jest.fn().mockReturnValue({ status: 500, message: 'message' })
-        let resp = await action(dispatch, getState, undefined)
+        const resp = await action(dispatch, getState, undefined)
         expect(resp.payload).toEqual({ success: false, message: 'message' })
         expect(apiHelper._patchData).toHaveBeenCalledWith({
           url: EnvironmentVars.adminIntersection,
@@ -435,7 +435,7 @@ describe('reducers', () => {
   const initialState: RootState['adminEditIntersection'] = {
     loading: null,
     value: {
-      apiData: {} as undefined,
+      apiData: undefined,
       organizations: [] as { name: string }[],
       selectedOrganizations: [] as { name: string }[],
       rsus: [] as { name: string }[],

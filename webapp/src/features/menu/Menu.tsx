@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { selectCountList, selectSelectedRsu } from '../../generalSlices/rsuSlice'
 import { selectConfigList } from '../../generalSlices/configSlice'
-import { selectDisplayCounts, setSortedCountList, selectDisplayRsuErrors, toggleMapMenuSelection } from './menuSlice'
+import { selectDisplayCounts, setSortedCountList, selectDisplayRsuErrors } from './menuSlice'
 import { SecureStorageManager } from '../../managers'
 import DisplayCounts from './DisplayCounts'
 import DisplayRsuErrors from './DisplayRsuErrors'
@@ -12,19 +12,16 @@ import ConfigureRSU from './ConfigureRSU'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { headerTabHeight } from '../../styles/index'
-import { PositionedToggleIconButton } from '../../styles/components/PositionedToggleButton'
-import CloseIcon from '@mui/icons-material/Close'
 import { useTheme } from '@mui/material'
 
 const menuStyle: React.CSSProperties = {
   textAlign: 'left',
   position: 'absolute',
   zIndex: 90,
-  height: `calc(100vh - ${headerTabHeight}px)`,
-  width: '420px',
-  top: `${headerTabHeight}px`,
-  right: '0%',
-  overflow: 'auto',
+  height: 'fit-content',
+  top: `${headerTabHeight + 91}px`,
+  right: '25px',
+  borderRadius: '4px',
 }
 
 const Menu = () => {
@@ -44,29 +41,28 @@ const Menu = () => {
     <div>
       {displayCounts === true && !selectedRsu && selectedRsuList?.length === 0 && (
         <div
-          style={{ ...menuStyle, backgroundColor: theme.palette.custom.mapLegendBackground }}
-          id="sideBarBlock"
-          className="visibleProp"
+          style={{
+            ...menuStyle,
+            backgroundColor: theme.palette.custom.mapLegendBackground,
+            width: '400px',
+            maxHeight: `calc(100vh - ${headerTabHeight + 185}px)`,
+            overflowY: 'auto',
+            scrollbarColor: `${theme.palette.text.primary} ${theme.palette.background.paper}`,
+          }}
+          className="visibleProp map-control-container"
         >
-          <PositionedToggleIconButton onClick={() => dispatch(toggleMapMenuSelection('Display Message Counts'))}>
-            <CloseIcon />
-          </PositionedToggleIconButton>
           <DisplayCounts />
         </div>
       )}
       {displayRsuErrors === true && !selectedRsu && selectedRsuList?.length === 0 && (
-        <div style={menuStyle} id="sideBarBlock" className="visibleProp">
-          <PositionedToggleIconButton onClick={() => dispatch(toggleMapMenuSelection('Display RSU Status'))}>
-            <CloseIcon />
-          </PositionedToggleIconButton>
+        <div style={{ ...menuStyle, width: '570px' }} className="visibleProp map-control-container">
           <DisplayRsuErrors />
         </div>
       )}
       {SecureStorageManager.getUserRole() === 'admin' && (selectedRsu || selectedRsuList?.length > 0) && (
         <div
-          style={{ ...menuStyle, backgroundColor: theme.palette.custom.mapLegendBackground }}
-          id="sideBarBlock"
-          className="visibleProp"
+          style={{ ...menuStyle, backgroundColor: theme.palette.custom.mapLegendBackground, width: '400px' }}
+          className="visibleProp map-control-container"
         >
           <ConfigureRSU />
         </div>

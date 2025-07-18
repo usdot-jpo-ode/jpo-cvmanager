@@ -1,20 +1,18 @@
-[
-  {
-    "_id": {
-      "$oid": "66c4c176bc6a472adb01a314"
-    },
-    "eventGeneratedAt": {
-      "$date": "2024-08-20T16:16:54.490Z"
-    },
-    "roadRegulatorID": -1,
-    "timePeriod": {
-      "beginTimestamp": 1724170595000,
-      "endTimestamp": 1724170605000
-    },
-    "intersectionID": 12109,
-    "topicName": "topic.ProcessedMap",
-    "eventType": "MapBroadcastRate",
-    "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
-    "numberOfMessages": 2
-  }
-]
+{
+  "_id": {
+    "$oid": "66c4c176bc6a472adb01a314"
+  },
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:16:54.490Z"
+  },
+  "roadRegulatorID": -1,
+  "timePeriod": {
+    "beginTimestamp": 1724170595000,
+    "endTimestamp": 1724170605000
+  },
+  "intersectionID": 12109,
+  "topicName": "topic.ProcessedMap",
+  "eventType": "MapBroadcastRate",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "numberOfMessages": 2
+}

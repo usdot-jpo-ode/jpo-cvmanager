@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Map, { Layer, MapRef, Marker, Popup, Source, SymbolLayer } from 'react-map-gl'
 import mbStyle from '../../../styles/intersectionMapStyle.json'
 
-import { Container, Col } from 'reactstrap'
+import { Container } from 'reactstrap'
 import EnvironmentVars from '../../../EnvironmentVars'
 import {
   selectIntersections,
@@ -39,9 +39,9 @@ const getBoundsForIntersections = (
     }
   }
 
-  var latitude: number, longitude: number
+  let latitude: number, longitude: number
 
-  for (var i = 0; i < intersections.length; i++) {
+  for (let i = 0; i < intersections.length; i++) {
     longitude = intersections[i].longitude
     latitude = intersections[i].latitude
     if (longitude >= bounds.xMin && longitude <= bounds.xMax && latitude <= bounds.yMin && latitude >= bounds.yMax) {
@@ -64,7 +64,7 @@ const getBoundsForIntersections = (
   return [bounds.xMin, bounds.yMin, bounds.xMax, bounds.yMax]
 }
 
-const zoomToBounds = (mapRef: React.RefObject<MapRef>, bounds: number[], padding: number = 50) => {
+const zoomToBounds = (mapRef: React.RefObject<MapRef>, bounds: number[], padding = 50) => {
   if (bounds) {
     const [long1, lat1, long2, lat2] = bounds
     mapRef?.current?.fitBounds(
@@ -165,7 +165,7 @@ const IntersectionMap = () => {
             closeOnClick={false}
             closeButton={false}
           >
-            <div style={{ color: 'black' }}>SELECTED {selectedIntersection.intersectionID}</div>
+            <div>SELECTED {selectedIntersection.intersectionID}</div>
           </Popup>
         )}
         <Source

@@ -21,6 +21,7 @@ import EnvironmentVars from '../../../EnvironmentVars'
 import { downloadAllData } from './utilities/file-utilities'
 import React from 'react'
 import { SsmSrmData } from '../../../models/RsuApi'
+import { combineUrlPaths } from '../../../apis/intersections/api-helper-cviz'
 
 export type MAP_LAYERS =
   | 'map-message'
@@ -37,7 +38,6 @@ export type MAP_QUERY_PARAMS = {
   eventDate: Date
   vehicleId?: string
   intersectionId?: number
-  roadRegulatorId?: number
   isDefault?: boolean
 }
 
@@ -66,7 +66,6 @@ export type MAP_PROPS = {
     | undefined
   sourceDataType: 'notification' | 'event' | 'assessment' | 'timestamp' | undefined
   intersectionId: number | undefined
-  roadRegulatorId: number | undefined
   loadOnNull?: boolean
 }
 
@@ -126,13 +125,11 @@ const initialState = {
     eventDate: new Date(Date.now()),
     vehicleId: undefined,
     intersectionId: undefined,
-    roadRegulatorId: undefined,
   } as MAP_QUERY_PARAMS,
   sourceData: undefined as MAP_PROPS['sourceData'] | undefined,
   initialSourceDataType: undefined as MAP_PROPS['sourceDataType'] | undefined,
   sourceDataType: undefined as MAP_PROPS['sourceDataType'] | undefined,
   intersectionId: undefined as MAP_PROPS['intersectionId'] | undefined,
-  roadRegulatorId: undefined as MAP_PROPS['roadRegulatorId'] | undefined,
   loadOnNull: true as MAP_PROPS['loadOnNull'] | undefined,
   mapData: undefined as ProcessedMap | undefined,
   mapSignalGroups: undefined as SignalStateFeatureCollection | undefined,
@@ -140,12 +137,12 @@ const initialState = {
   spatSignalGroups: undefined as SpatSignalGroups | undefined,
   currentSignalGroups: undefined as SpatSignalGroup[] | undefined,
   currentBsms: {
-    type: 'FeatureCollection' as 'FeatureCollection',
+    type: 'FeatureCollection' as const,
     features: [],
   } as BsmFeatureCollection,
   connectingLanes: undefined as ConnectingLanesFeatureCollection | undefined,
   bsmData: {
-    type: 'FeatureCollection' as 'FeatureCollection',
+    type: 'FeatureCollection' as const,
     features: [],
   } as BsmFeatureCollection,
   surroundingEvents: [] as MessageMonitor.Event[],
@@ -212,7 +209,7 @@ export const generateQueryParams = (
   const endOffset = 1000 * 60 * 1
 
   switch (sourceDataType) {
-    case 'notification':
+    case 'notification': {
       const notification = source as MessageMonitor.Notification
       return {
         startDate: new Date(notification.notificationGeneratedAt - startOffset),
@@ -221,7 +218,8 @@ export const generateQueryParams = (
         vehicleId: undefined,
         isDefault: false,
       }
-    case 'event':
+    }
+    case 'event': {
       const event = source as MessageMonitor.Event
       return {
         startDate: new Date(event.eventGeneratedAt - startOffset),
@@ -230,7 +228,8 @@ export const generateQueryParams = (
         vehicleId: undefined,
         isDefault: false,
       }
-    case 'assessment':
+    }
+    case 'assessment': {
       const assessment = source as Assessment
       return {
         startDate: new Date(assessment.assessmentGeneratedAt - startOffset),
@@ -239,7 +238,8 @@ export const generateQueryParams = (
         vehicleId: undefined,
         isDefault: false,
       }
-    case 'timestamp':
+    }
+    case 'timestamp': {
       const ts = (source as timestamp).timestamp
       return {
         startDate: new Date(ts - startOffset),
@@ -248,6 +248,7 @@ export const generateQueryParams = (
         vehicleId: undefined,
         isDefault: false,
       }
+    }
     default:
       if (decoderModeEnabled) {
         let startDate = undefined as number | undefined
@@ -336,7 +337,6 @@ export const pullInitialData = createAsyncThunk(
             updateQueryParams({
               ...generateQueryParams({ map: [], spat: rawSpat, bsm: [] }, null, decoderModeEnabled),
               intersectionId: rawMap[0].properties.intersectionId,
-              roadRegulatorId: -1,
             })
           )
         }
@@ -350,7 +350,6 @@ export const pullInitialData = createAsyncThunk(
       const latestSpats = await MessageMonitorApi.getSpatMessages({
         token: authToken,
         intersectionId: queryParams.intersectionId,
-        roadRegulatorId: queryParams.roadRegulatorId,
         latest: true,
         abortController,
       })
@@ -364,7 +363,6 @@ export const pullInitialData = createAsyncThunk(
               decoderModeEnabled
             ),
             intersectionId: queryParams.intersectionId,
-            roadRegulatorId: queryParams.roadRegulatorId,
           })
         )
         return
@@ -374,7 +372,6 @@ export const pullInitialData = createAsyncThunk(
             state: currentState.intersectionMap,
             ...generateQueryParams({ timestamp: Date.now() }, 'timestamp', decoderModeEnabled),
             intersectionId: queryParams.intersectionId,
-            roadRegulatorId: queryParams.roadRegulatorId,
           })
         )
         return
@@ -389,7 +386,6 @@ export const pullInitialData = createAsyncThunk(
       const rawMapPromise = MessageMonitorApi.getMapMessages({
         token: authToken,
         intersectionId: queryParams.intersectionId!,
-        roadRegulatorId: queryParams.roadRegulatorId!,
         endTime: queryParams.endDate,
         latest: true,
         abortController,
@@ -442,7 +438,6 @@ export const pullInitialData = createAsyncThunk(
       const rawSpatPromise = MessageMonitorApi.getSpatMessagesWithLatest({
         token: authToken,
         intersectionId: queryParams.intersectionId!,
-        roadRegulatorId: queryParams.roadRegulatorId!,
         startTime: queryParams.startDate,
         endTime: queryParams.endDate,
         abortController,
@@ -507,7 +502,6 @@ export const pullInitialData = createAsyncThunk(
     condition: (_, { getState }) =>
       selectToken(getState() as RootState) != undefined &&
       selectQueryParams(getState() as RootState).intersectionId != undefined &&
-      selectQueryParams(getState() as RootState).roadRegulatorId != undefined &&
       (selectSourceData(getState() as RootState) != undefined || selectLoadOnNull(getState() as RootState) == true),
   }
 )
@@ -594,7 +588,7 @@ export const renderEntireMap = createAsyncThunk(
 
 export const updateBsmData = createAsyncThunk(
   'intersectionMap/updateBsmData',
-  async (bsmFC: BsmFeatureCollection, { getState, dispatch }) => {
+  async (bsmFC: BsmFeatureCollection, { dispatch }) => {
     const uniqueIds = new Set(bsmFC.features.map((bsm) => bsm.properties?.id))
     // generate equally spaced unique colors for each uniqueId
     const colors = generateColorDictionary(uniqueIds)
@@ -652,7 +646,6 @@ export const renderIterative_Map = createAsyncThunk(
     const queryParams = selectQueryParams(currentState)
     const currentMapData: ProcessedMap[] = selectCurrentMapData(currentState)
 
-    const start = Date.now()
     const OLDEST_DATA_TO_KEEP = queryParams.eventDate.getTime() - queryParams.startDate.getTime() // milliseconds
 
     const currTimestamp = getTimestamp(newMapData.at(-1)!.properties.odeReceivedAt) / 1000
@@ -701,19 +694,18 @@ export const renderIterative_Map = createAsyncThunk(
     }
   },
   {
-    condition: (newMapData: ProcessedMap[], { getState }) => newMapData.length != 0,
+    condition: (newMapData: ProcessedMap[]) => newMapData.length != 0,
   }
 )
 
 export const renderIterative_Spat = createAsyncThunk(
   'intersectionMap/renderIterative_Spat',
-  async (newSpatData: ProcessedSpat[], { getState, dispatch }) => {
+  async (newSpatData: ProcessedSpat[], { getState }) => {
     const currentState = getState() as RootState
     const queryParams = selectQueryParams(currentState)
     const currentSpatSignalGroups: SpatSignalGroups = selectSpatSignalGroups(currentState) ?? {}
     const currentProcessedSpatData: ProcessedSpat[] = selectCurrentSpatData(currentState) ?? []
 
-    const start = Date.now()
     const OLDEST_DATA_TO_KEEP = queryParams.eventDate.getTime() - queryParams.startDate.getTime() // milliseconds
     if (newSpatData.length == 0) {
       console.warn('Did not attempt to render map (iterative SPAT), no new SPAT messages available:', newSpatData)
@@ -767,7 +759,7 @@ export const renderIterative_Spat = createAsyncThunk(
     return { signalGroups: currentSpatSignalGroupsLocal, raw: currentProcessedSpatDataLocal }
   },
   {
-    condition: (newSpatData: ProcessedSpat[], { getState }) => newSpatData.length != 0,
+    condition: (newSpatData: ProcessedSpat[]) => newSpatData.length != 0,
   }
 )
 
@@ -800,7 +792,7 @@ export const renderIterative_Bsm = createAsyncThunk(
     return currentBsmGeojson
   },
   {
-    condition: (newBsmData: OdeBsmData[], { getState }) => newBsmData.length != 0,
+    condition: (newBsmData: OdeBsmData[]) => newBsmData.length != 0,
   }
 )
 
@@ -839,8 +831,7 @@ export const getBsmDailyCounts = createAsyncThunk(
   {
     condition: (_, { getState }) =>
       selectToken(getState() as RootState) != undefined &&
-      selectQueryParams(getState() as RootState).intersectionId != undefined &&
-      selectQueryParams(getState() as RootState).roadRegulatorId != undefined,
+      selectQueryParams(getState() as RootState).intersectionId != undefined,
   }
 )
 
@@ -859,7 +850,6 @@ export const getSurroundingEvents = createAsyncThunk(
     const surroundingEventsPromise = EventsApi.getAllEvents(
       authToken,
       queryParams.intersectionId!,
-      queryParams.roadRegulatorId!,
       queryParams.startDate,
       queryParams.endDate,
       abortController
@@ -869,8 +859,7 @@ export const getSurroundingEvents = createAsyncThunk(
   {
     condition: (_, { getState }) =>
       selectToken(getState() as RootState) != undefined &&
-      selectQueryParams(getState() as RootState).intersectionId != undefined &&
-      selectQueryParams(getState() as RootState).roadRegulatorId != undefined,
+      selectQueryParams(getState() as RootState).intersectionId != undefined,
   }
 )
 
@@ -889,7 +878,6 @@ export const getSurroundingNotifications = createAsyncThunk(
     const surroundingNotificationsPromise = NotificationApi.getAllNotifications({
       token: authToken,
       intersectionId: queryParams.intersectionId!,
-      roadRegulatorId: queryParams.roadRegulatorId!,
       startTime: queryParams.startDate,
       endTime: queryParams.endDate,
       abortController,
@@ -899,18 +887,14 @@ export const getSurroundingNotifications = createAsyncThunk(
   {
     condition: (_, { getState }) =>
       selectToken(getState() as RootState) != undefined &&
-      selectQueryParams(getState() as RootState).intersectionId != undefined &&
-      selectQueryParams(getState() as RootState).roadRegulatorId != undefined,
+      selectQueryParams(getState() as RootState).intersectionId != undefined,
   }
 )
 
 export const initializeLiveStreaming = createAsyncThunk(
   'intersectionMap/initializeLiveStreaming',
-  async (
-    args: { token: string; roadRegulatorId: number; intersectionId: number; numRestarts?: number },
-    { getState, dispatch }
-  ) => {
-    const { token, roadRegulatorId, intersectionId, numRestarts = 0 } = args
+  async (args: { token: string; intersectionId: number; numRestarts?: number }, { getState, dispatch }) => {
+    const { token, intersectionId, numRestarts = 0 } = args
     // Connect to WebSocket when component mounts
     const liveDataActive = selectLiveDataActive(getState() as RootState)
     const wsClient = selectWsClient(getState() as RootState)
@@ -924,21 +908,21 @@ export const initializeLiveStreaming = createAsyncThunk(
     }
     console.info('Live streaming data from Intersection API STOMP WebSocket endpoint')
 
-    let protocols = ['v10.stomp', 'v11.stomp']
+    const protocols = ['v10.stomp', 'v11.stomp']
     protocols.push(token)
-    const url = `${EnvironmentVars.CVIZ_API_WS_URL}/stomp`
+    const url = combineUrlPaths(EnvironmentVars.CVIZ_API_WS_URL, 'stomp')
 
     // Stomp Client Documentation: https://stomp-js.github.io/stomp-websocket/codo/extra/docs-src/Usage.md.html
-    let client = Stomp.client(url, protocols)
+    const client = Stomp.client(url, protocols)
 
-    // Topics are in the format /live/{roadRegulatorID}/{intersectionID}/{spat,map,bsm}
-    let spatTopic = `/live/${roadRegulatorId}/${intersectionId}/spat`
-    let mapTopic = `/live/${roadRegulatorId}/${intersectionId}/map`
-    let bsmTopic = `/live/${roadRegulatorId}/${intersectionId}/bsm` // TODO: Filter by road regulator ID
+    // Topics are in the format /live/{intersectionID}/{spat,map,bsm}
+    const spatTopic = `/live/${intersectionId}/processed-spat`
+    const mapTopic = `/live/${intersectionId}/processed-map`
+    const bsmTopic = `/live/${intersectionId}/ode-bsm-json` // TODO: Filter by road regulator ID
     let spatTime = Date.now()
     let mapTime = Date.now()
     let bsmTime = Date.now()
-    let connectionStartTime = Date.now()
+    const connectionStartTime = Date.now()
     client.connect(
       {},
       () => {
@@ -983,7 +967,6 @@ export const initializeLiveStreaming = createAsyncThunk(
           dispatch(
             initializeLiveStreaming({
               token,
-              roadRegulatorId,
               intersectionId,
               numRestarts: 0,
             })
@@ -1126,7 +1109,6 @@ const compareQueryParams = (oldParams: MAP_QUERY_PARAMS, newParams: MAP_QUERY_PA
     oldParams.eventDate.getTime() != newParams.eventDate.getTime() ||
     oldParams.vehicleId != newParams.vehicleId ||
     oldParams.intersectionId != newParams.intersectionId ||
-    oldParams.roadRegulatorId != newParams.roadRegulatorId ||
     oldParams.isDefault != newParams.isDefault
   )
 }
@@ -1152,8 +1134,7 @@ export const downloadMapData = createAsyncThunk(
   {
     condition: (_, { getState }) =>
       selectToken(getState() as RootState) != undefined &&
-      selectQueryParams(getState() as RootState).intersectionId != undefined &&
-      selectQueryParams(getState() as RootState).roadRegulatorId != undefined,
+      selectQueryParams(getState() as RootState).intersectionId != undefined,
   }
 )
 
@@ -1178,8 +1159,7 @@ export const renderRsuData = createAsyncThunk(
   {
     condition: (_, { getState }) =>
       selectToken(getState() as RootState) != undefined &&
-      selectQueryParams(getState() as RootState).intersectionId != undefined &&
-      selectQueryParams(getState() as RootState).roadRegulatorId != undefined,
+      selectQueryParams(getState() as RootState).intersectionId != undefined,
   }
 )
 
@@ -1193,7 +1173,7 @@ export const intersectionMapSlice = createSlice({
     updateSsmSrmCounts: (state, action: PayloadAction<{ srmSsmList: SsmSrmData; rsuIpv4: string }>) => {
       let localSrmCount = 0
       let localSsmCount = 0
-      let localMsgList = []
+      const localMsgList = []
       for (const elem of action.payload.srmSsmList) {
         if (elem.ip === action.payload.rsuIpv4) {
           localMsgList.push(elem)
@@ -1224,7 +1204,6 @@ export const intersectionMapSlice = createSlice({
           eventDate: new Date(Date.now()),
           vehicleId: undefined,
           intersectionId: state.value.queryParams.intersectionId,
-          roadRegulatorId: state.value.queryParams.roadRegulatorId,
         }
         if (compareQueryParams(state.value.queryParams, newQueryParams)) {
           state.value.queryParams = newQueryParams
@@ -1246,7 +1225,6 @@ export const intersectionMapSlice = createSlice({
         eventDate: new Date(Date.now()),
         vehicleId: undefined,
         intersectionId: state.value.queryParams.intersectionId,
-        roadRegulatorId: state.value.queryParams.roadRegulatorId,
       }
       state.value.queryParams = newQueryParams
       state.value.sliderValue = getTimeRange(newQueryParams.startDate, newQueryParams.endDate)
@@ -1282,7 +1260,6 @@ export const intersectionMapSlice = createSlice({
         endDate: endTime,
         eventDate: startTime,
         intersectionId: mapData[0].properties.intersectionId,
-        roadRegulatorId: -1,
       }
       state.value.sliderTimeValue = getNewSliderTimeValue(
         state.value.queryParams.startDate,
@@ -1299,7 +1276,6 @@ export const intersectionMapSlice = createSlice({
         eventDate?: Date
         vehicleId?: string
         intersectionId?: number
-        roadRegulatorId?: number
         isDefault?: boolean
         resetTimeWindow?: boolean
         updateSlider?: boolean
@@ -1311,7 +1287,6 @@ export const intersectionMapSlice = createSlice({
         eventDate: action.payload.eventDate ?? state.value.queryParams.eventDate,
         vehicleId: action.payload.vehicleId ?? state.value.queryParams.vehicleId,
         intersectionId: action.payload.intersectionId ?? state.value.queryParams.intersectionId,
-        roadRegulatorId: action.payload.roadRegulatorId ?? state.value.queryParams.roadRegulatorId,
         isDefault: action.payload.isDefault ?? state.value.queryParams.isDefault,
       }
       if (compareQueryParams(state.value.queryParams, newQueryParams)) {
@@ -1336,14 +1311,13 @@ export const intersectionMapSlice = createSlice({
         timeWindowSeconds?: number
       }>
     ) => {
-      let { eventTime, timeBefore, timeAfter, timeWindowSeconds } = action.payload
-      eventTime ??= new Date()
+      const { eventTime, timeBefore, timeAfter, timeWindowSeconds } = action.payload
+      const actualEventTime = eventTime ?? new Date()
       const updatedQueryParams = {
-        startDate: new Date(eventTime.getTime() - (timeBefore ?? 0) * 1000),
-        endDate: new Date(eventTime.getTime() + (timeAfter ?? 0) * 1000),
-        eventDate: eventTime,
+        startDate: new Date(actualEventTime.getTime() - (timeBefore ?? 0) * 1000),
+        endDate: new Date(actualEventTime.getTime() + (timeAfter ?? 0) * 1000),
+        eventDate: actualEventTime,
         intersectionId: state.value.queryParams.intersectionId,
-        roadRegulatorId: state.value.queryParams.roadRegulatorId,
         isDefault: state.value.queryParams.isDefault,
       }
       if (compareQueryParams(state.value.queryParams, updatedQueryParams)) {
@@ -1478,7 +1452,6 @@ export const intersectionMapSlice = createSlice({
           : state.value.initialSourceDataType
       state.value.sourceDataType = action.payload.sourceDataType
       state.value.intersectionId = action.payload.intersectionId
-      state.value.roadRegulatorId = action.payload.roadRegulatorId
       state.value.loadOnNull = action.payload.loadOnNull
     },
     setCurrentSpatData: (state, action: PayloadAction<ProcessedSpat[]>) => {
@@ -1561,7 +1534,7 @@ export const intersectionMapSlice = createSlice({
       state.value.pullInitialDataAbortControllers = [...state.value.pullInitialDataAbortControllers, action.payload]
     },
     resetInitialDataAbortControllers: (state) => {
-      var controllers = state.value.pullInitialDataAbortControllers
+      const controllers = state.value.pullInitialDataAbortControllers
       state.value.pullInitialDataAbortControllers = []
       state.value.abortAllFutureRequests = true
       controllers.forEach((abortController) => abortController.abort())
@@ -1715,7 +1688,6 @@ export const selectSourceData = (state: RootState) => state.intersectionMap.valu
 export const selectSourceDataType = (state: RootState) => state.intersectionMap.value.sourceDataType
 export const selectInitialSourceDataType = (state: RootState) => state.intersectionMap.value.initialSourceDataType
 export const selectIntersectionId = (state: RootState) => state.intersectionMap.value.intersectionId
-export const selectRoadRegulatorId = (state: RootState) => state.intersectionMap.value.roadRegulatorId
 export const selectLoadOnNull = (state: RootState) => state.intersectionMap.value.loadOnNull
 export const selectMapData = (state: RootState) => state.intersectionMap.value.mapData
 export const selectBsmData = (state: RootState) => state.intersectionMap.value.bsmData

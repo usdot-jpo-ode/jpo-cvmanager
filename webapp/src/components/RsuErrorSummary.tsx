@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 
@@ -6,6 +6,7 @@ import 'react-widgets/styles.css'
 import RsuApi from '../apis/rsu-api'
 
 import './css/ContactSupportMenu.css'
+import '../styles/fonts/museo-slab.css'
 import toast from 'react-hot-toast'
 import Dialog from '@mui/material/Dialog'
 import { DialogActions, DialogContent, DialogTitle } from '@mui/material'
@@ -28,7 +29,7 @@ const RsuErrorSummary = (props: RsuErrorSummaryType) => {
     formState: { errors },
   } = useForm()
 
-  const onSubmit = async (data: Object) => {
+  const onSubmit = async (data: object) => {
     try {
       const res = await RsuApi.postRsuErrorSummary(data)
       const status = res.status
@@ -39,6 +40,7 @@ const RsuErrorSummary = (props: RsuErrorSummaryType) => {
         toast.error('Something went wrong: ' + status)
       }
     } catch (exception_var) {
+      console.error('Error in RsuErrorSummary onSubmit', exception_var)
       toast.error('An exception occurred, please try again later')
     }
     props.setHidden()
@@ -72,7 +74,7 @@ const RsuErrorSummary = (props: RsuErrorSummaryType) => {
         <Form
           id="rsu-error-summary-form"
           onSubmit={handleSubmit(onSubmit)}
-          style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
+          style={{ fontFamily: '"museo-slab", Arial, Helvetica, sans-serif' }}
         >
           <Form.Group className="mb-3" controlId="email">
             <Form.Label className="label">Send To</Form.Label>

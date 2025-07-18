@@ -8,12 +8,14 @@ import {
   updateStates,
   editOrganization,
   setSuccessMsg,
+  selectLoading,
 } from './adminEditOrganizationSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import toast from 'react-hot-toast'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
+import '../../styles/fonts/museo-slab.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import {
@@ -25,9 +27,9 @@ import {
   setSelectedOrg,
 } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import { Link, useParams, useNavigate } from 'react-router-dom'
-import { DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
+import { Button, DialogActions, DialogContent, FormControl, TextField, Typography } from '@mui/material'
 import Dialog from '@mui/material/Dialog'
-import { AdminButton } from '../../styles/components/AdminButton'
+import { SideBarHeader } from '../../styles/components/SideBarHeader'
 
 const AdminEditOrganization = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -36,6 +38,7 @@ const AdminEditOrganization = () => {
   const successMsg = useSelector(selectSuccessMsg)
   const selectedOrg = useSelector(selectSelectedOrg)
   const orgData = useSelector(selectOrgData)
+  const loading = useSelector(selectLoading)
   const {
     register,
     handleSubmit,
@@ -65,14 +68,18 @@ const AdminEditOrganization = () => {
   }, [dispatch])
 
   useEffect(() => {
-    updateStates(setValue, selectedOrg?.name, selectedOrg?.email)
-  }, [setValue, selectedOrg?.name])
+    if (selectedOrg) {
+      updateStates(setValue, selectedOrg?.name, selectedOrg?.email)
+    }
+  }, [setValue, selectedOrg?.name, selectedOrg?.email, selectedOrg])
 
   const onSubmit = (data: adminOrgPatch) => {
     dispatch(editOrganization({ json: data, setValue, selectedOrg: selectedOrg?.name })).then((data: any) => {
-      data.payload.success
-        ? toast.success(data.payload.message)
-        : toast.error('Failed to apply changes to organization due to error: ' + data.payload.message)
+      if (data.payload.success) {
+        toast.success(data.payload.message)
+      } else {
+        toast.error('Failed to apply changes to organization due to error: ' + data.payload.message)
+      }
     })
     setOpen(false)
     navigate('..')
@@ -85,52 +92,94 @@ const AdminEditOrganization = () => {
 
   return (
     <Dialog open={open}>
-      <DialogTitle>Edit Organization</DialogTitle>
-      <DialogContent>
-        {Object.keys(selectedOrg ?? {}).length != 0 ? (
-          <Form
-            id="admin-edit-org"
-            onSubmit={handleSubmit((data) => onSubmit(data))}
-            style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
-          >
-            <Form.Group className="mb-3" controlId="name">
-              <Form.Label>Organization Name *</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter organization name"
-                {...register('name', {
-                  required: 'Please enter the organization name',
-                })}
-              />
-              <Form.Label>Organization Email</Form.Label>
-              <Form.Control type="text" placeholder="Enter organization email" {...register('email')} />
-              {errors.name && (
-                <p className="errorMsg" role="alert">
-                  {errors.name.message}
-                </p>
-              )}
-            </Form.Group>
-          </Form>
-        ) : (
-          <Typography variant={'h4'}>
-            Unknown organization. Either this organization does not exist, or you do not have access to it.{' '}
-            <Link to="../">Organizations</Link>
-          </Typography>
-        )}
-      </DialogContent>
-      <DialogActions>
-        <AdminButton
-          onClick={() => {
-            setOpen(false)
-            navigate('..')
-          }}
-        >
-          Close
-        </AdminButton>
-        <AdminButton form="admin-edit-org" type="submit">
-          Apply Changes
-        </AdminButton>
-      </DialogActions>
+      {selectedOrg && !loading ? (
+        <>
+          <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
+            <SideBarHeader
+              onClick={() => {
+                setOpen(false)
+                navigate('..')
+              }}
+              title="Edit Organization"
+            />
+            <Form id="admin-edit-org" onSubmit={handleSubmit((data) => onSubmit(data))}>
+              <Form.Group controlId="name">
+                <FormControl fullWidth margin="normal">
+                  <TextField
+                    label="Organization Name"
+                    placeholder="Enter Organization Name"
+                    color="info"
+                    variant="outlined"
+                    required
+                    {...register('name', {
+                      required: 'Please enter the organization name',
+                    })}
+                    slotProps={{
+                      inputLabel: {
+                        shrink: true,
+                      },
+                    }}
+                  />
+                </FormControl>
+                <FormControl fullWidth margin="normal">
+                  <TextField
+                    label="Organization Email"
+                    placeholder="Enter Organization Email"
+                    color="info"
+                    variant="outlined"
+                    required
+                    {...register('email')}
+                    slotProps={{
+                      inputLabel: {
+                        shrink: true,
+                      },
+                    }}
+                  />
+                </FormControl>
+                {errors.name && (
+                  <p className="errorMsg" role="alert">
+                    {errors.name.message}
+                  </p>
+                )}
+              </Form.Group>
+            </Form>
+          </DialogContent>
+          <DialogActions sx={{ padding: '20px' }}>
+            <Button
+              onClick={() => {
+                setOpen(false)
+                navigate('/dashboard/admin/organizations')
+              }}
+              variant="outlined"
+              color="info"
+              style={{ position: 'absolute', bottom: 10, left: 10 }}
+              className="museo-slab capital-case"
+            >
+              Cancel
+            </Button>
+            <Button
+              form="admin-edit-org"
+              type="submit"
+              variant="contained"
+              style={{ position: 'absolute', bottom: 10, right: 10 }}
+              className="museo-slab capital-case"
+            >
+              Apply Changes
+            </Button>
+          </DialogActions>
+        </>
+      ) : (
+        !loading && (
+          <Dialog open={open}>
+            <DialogContent>
+              <Typography variant={'h4'}>
+                Unknown organization. Either this organization does not exist, or you do not have access to it.{' '}
+                <Link to="../">Organizations</Link>
+              </Typography>
+            </DialogContent>
+          </Dialog>
+        )
+      )}
     </Dialog>
   )
 }

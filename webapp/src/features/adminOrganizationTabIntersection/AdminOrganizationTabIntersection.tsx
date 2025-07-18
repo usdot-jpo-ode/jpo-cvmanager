@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import AdminTable from '../../components/AdminTable'
-import { AiOutlinePlusCircle } from 'react-icons/ai'
 import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -28,8 +27,8 @@ import { RootState } from '../../store'
 import { Action, Column } from '@material-table/core'
 import { AdminOrgIntersection } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import toast from 'react-hot-toast'
-import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
-import { Divider } from '@mui/material'
+import { useTheme } from '@mui/material'
+import { AddCircleOutline, DeleteOutline } from '@mui/icons-material'
 
 interface AdminOrganizationTabIntersectionProps {
   selectedOrg: string
@@ -41,19 +40,22 @@ interface AdminOrganizationTabIntersectionProps {
 const AdminOrganizationTabIntersection = (props: AdminOrganizationTabIntersectionProps) => {
   const { selectedOrg, selectedOrgEmail, updateTableData } = props
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const theme = useTheme()
 
   const availableIntersectionList = useSelector(selectAvailableIntersectionList)
   const selectedIntersectionList = useSelector(selectSelectedIntersectionList)
   const loadingGlobal = useSelector(selectLoadingGlobal)
   const [intersectionColumns] = useState<Column<any>[]>([
-    { title: 'ID', field: 'intersection_id', id: 0, width: '31%' },
-    { title: 'Name', field: 'intersection_name', id: 1, width: '31%' },
+    { title: 'ID', field: 'intersection_id', id: 0, width: '45%' },
+    { title: 'Name', field: 'intersection_name', id: 1, width: '45%' },
   ])
 
-  let intersectionActions: Action<AdminOrgIntersection>[] = [
+  const intersectionActions: Action<AdminOrgIntersection>[] = [
     {
-      icon: 'delete',
-      tooltip: 'Remove From Organization',
+      icon: () => <DeleteOutline sx={{ color: theme.palette.custom.rowActionIcon }} />,
+      iconProps: {
+        itemType: 'rowAction',
+      },
       position: 'row',
       onClick: (event, rowData: AdminOrgIntersection) => {
         const buttons = [
@@ -71,6 +73,10 @@ const AdminOrganizationTabIntersection = (props: AdminOrganizationTabIntersectio
     {
       tooltip: 'Remove All Selected From Organization',
       icon: 'delete',
+      position: 'toolbarOnSelect',
+      iconProps: {
+        itemType: 'rowAction',
+      },
       onClick: (event, rowData: AdminOrgIntersection[]) => {
         const buttons = [
           { label: 'Yes', onClick: () => intersectionMultiDelete(rowData) },
@@ -83,6 +89,39 @@ const AdminOrganizationTabIntersection = (props: AdminOrganizationTabIntersectio
         )
         confirmAlert(alertOptions)
       },
+    },
+    {
+      position: 'toolbar',
+      iconProps: {
+        itemType: 'displayIcon',
+      },
+      icon: () => (
+        <Multiselect
+          dataKey="id"
+          textField="intersection_id"
+          placeholder="Click to add Intersections"
+          data={availableIntersectionList}
+          value={selectedIntersectionList}
+          onChange={(value) => {
+            dispatch(setSelectedIntersectionList(value))
+          }}
+          style={{
+            fontSize: '1rem',
+          }}
+        />
+      ),
+      onClick: () => {},
+    },
+    {
+      tooltip: 'Add Intersections To Organization',
+      position: 'toolbar',
+      iconProps: {
+        title: 'Add Intersection',
+        color: 'primary',
+        itemType: 'contained',
+      },
+      icon: () => <AddCircleOutline />,
+      onClick: () => intersectionMultiAdd(selectedIntersectionList),
     },
   ]
 
@@ -131,41 +170,15 @@ const AdminOrganizationTabIntersection = (props: AdminOrganizationTabIntersectio
 
   return (
     <div className="accordion">
-      <Accordion className="accordion-content">
+      <Accordion className="accordion-content" elevation={0}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
-          <Typography variant="h6">{selectedOrg} Intersections</Typography>
+          <Typography variant="h6">Intersections</Typography>
         </AccordionSummary>
-        <AccordionDetails>
+        <AccordionDetails sx={{ padding: '8px 0px' }}>
           {loadingGlobal === false && [
-            <div key="accordion" style={{ marginBottom: 10 }}>
-              <div className="spacer-large-intersection">
-                <div style={{ display: 'flex' }}>
-                  <Multiselect
-                    className="org-multiselect"
-                    dataKey="id"
-                    textField="intersection_id"
-                    placeholder="Click to add Intersections"
-                    data={availableIntersectionList}
-                    value={selectedIntersectionList}
-                    onChange={(value) => {
-                      dispatch(setSelectedIntersectionList(value))
-                    }}
-                  />
-
-                  <ContainedIconButton
-                    key="intersection_plus_button"
-                    onClick={() => intersectionMultiAdd(selectedIntersectionList)}
-                    title="Add Intersections To Organization"
-                  >
-                    <AiOutlinePlusCircle size={20} />
-                  </ContainedIconButton>
-                </div>
-              </div>
-            </div>,
-            <Divider />,
             <div key="adminTable">
               <AdminTable
-                title={'Modify Intersection-Organization Assignment'}
+                title={''}
                 data={props.tableData}
                 columns={intersectionColumns}
                 actions={intersectionActions}

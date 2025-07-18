@@ -1,85 +1,56 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Box, Button, Stack, Typography } from '@mui/material'
-import { styled } from '@mui/material/styles'
-import { FilterAlt } from '@mui/icons-material'
+import { Box, Grid2, Typography } from '@mui/material'
+import { StyledEngineProvider, ThemeProvider, useTheme } from '@mui/material/styles'
 import { ReportListFilters } from '../../features/intersections/reports/report-list-filters'
 import { ReportListTable } from '../../features/intersections/reports/report-list-table'
 import ReportsApi, { ReportMetadata } from '../../apis/intersections/reports-api'
 import { ReportGenerationDialog } from '../../features/intersections/reports/report-generation-dialog'
-import { selectSelectedIntersectionId, selectSelectedRoadRegulatorId } from '../../generalSlices/intersectionSlice'
+import { selectSelectedIntersectionId } from '../../generalSlices/intersectionSlice'
 import { selectToken } from '../../generalSlices/userSlice'
 import { useSelector } from 'react-redux'
+import ReportDetailsModal from '../../features/intersections/reports/report-details-modal'
+import { ReportTheme } from '../../styles/report-theme'
 
 const applyPagination = (logs, page, rowsPerPage) => logs.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-
-const LogsListInner = styled('div', { shouldForwardProp: (prop) => prop !== 'open' })(
-  ({ theme, open }: { theme: any; open: boolean }) => ({
-    flexGrow: 1,
-    overflow: 'hidden',
-    paddingLeft: theme.spacing(3),
-    paddingRight: theme.spacing(3),
-    paddingTop: theme.spacing(8),
-    paddingBottom: theme.spacing(8),
-    zIndex: 1,
-    marginLeft: -380,
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    ...(open && {
-      marginLeft: 0,
-      transition: theme.transitions.create('margin', {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-    }),
-  })
-) as React.FC<{ open: boolean; theme: any }>
+const WEEK_IN_MILLISECONDS = 7 * 24 * 60 * 60 * 1000
 
 const Page = () => {
   const rootRef = useRef(null)
   const intersectionId = useSelector(selectSelectedIntersectionId)
-  const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
   const token = useSelector(selectToken)
+  const theme = useTheme()
 
-  const [group, setGroup] = useState(true)
   const [logs, setLogs] = useState<ReportMetadata[]>([])
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
-  const [openFilters, setOpenFilters] = useState(true)
   const [loading, setLoading] = useState(false)
   const [filters, setFilters] = useState({
     query: '',
     endDate: new Date(),
-    startDate: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
+    startDate: new Date(new Date().getTime() - WEEK_IN_MILLISECONDS),
     logLevel: 'ERROR',
     customer: [],
   })
   const [openReportGenerationDialog, setOpenReportGenerationDialog] = useState(false)
 
+  // Sort reports by age, newest first
   function sortReportByAge(a: ReportMetadata, b: ReportMetadata) {
     if (a.reportGeneratedAt < b.reportGeneratedAt) {
-      return -1
+      return 1
     }
     if (a.reportGeneratedAt > b.reportGeneratedAt) {
-      return 1
+      return -1
     }
     return 0
   }
 
-  const listReports = async (
-    start_timestamp: Date,
-    end_timestamp: Date,
-    intersectionId: number,
-    roadRegulatorId: number
-  ) => {
+  const listReports = async (start_timestamp: Date, end_timestamp: Date, intersectionId: number) => {
     try {
       setLoading(true)
       let data =
         (await ReportsApi.listReports({
           token: token,
           intersectionId,
-          roadRegulatorId,
           startTime: start_timestamp,
           endTime: end_timestamp,
         })) ?? []
@@ -92,30 +63,14 @@ const Page = () => {
     }
   }
 
-  useEffect(
-    () => {
-      setLoading(true)
-      setTimeout(() => listReports(filters.startDate, filters.endDate, intersectionId, roadRegulatorId), 300)
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [filters, intersectionId]
-  )
-
-  const handleChangeGroup = (event) => {
-    setGroup(event.target.checked)
-  }
-
-  const handleToggleFilters = () => {
-    setOpenFilters((prevState) => !prevState)
-  }
+  useEffect(() => {
+    setLoading(true)
+    setTimeout(() => listReports(filters.startDate, filters.endDate, intersectionId), 300)
+  }, [filters, intersectionId])
 
   const handleChangeFilters = (newFilters) => {
     setFilters(newFilters)
     setPage(0)
-  }
-
-  const handleCloseFilters = () => {
-    setOpenFilters(false)
   }
 
   const handlePageChange = (event, newPage) => {
@@ -126,74 +81,89 @@ const Page = () => {
     setRowsPerPage(parseInt(event.target.value, 10))
   }
 
+  const refreshReportData = () => {
+    setFilters({
+      ...filters,
+      startDate: new Date(new Date().getTime() - WEEK_IN_MILLISECONDS),
+      endDate: new Date(),
+    })
+  }
+
   // Usually query is done on backend with indexing solutions
   const paginatedLogs = applyPagination(logs, page, rowsPerPage)
 
+  // Inside the parent component
+  const [selectedReport, setSelectedReport] = useState<ReportMetadata | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const handleViewReport = (report: ReportMetadata) => {
+    setSelectedReport(report)
+    setIsModalOpen(true)
+  }
+
+  const handleCloseReportModal = () => {
+    setIsModalOpen(false)
+    setSelectedReport(null)
+  }
+
+  const handleReportGenerated = () => {
+    setOpenReportGenerationDialog(false)
+    refreshReportData()
+  }
+
   return (
-    <>
-      <Box
+    <Box>
+      <Grid2
+        container
         component="main"
         ref={rootRef}
         sx={{
-          backgroundColor: 'background.default',
+          backgroundColor: theme.palette.background.paper,
           display: 'flex',
           flexGrow: 1,
           overflow: 'hidden',
         }}
+        justifyContent="flex-start"
       >
-        <ReportListFilters
-          containerRef={rootRef}
-          filters={filters}
-          onChange={handleChangeFilters}
-          onClose={handleCloseFilters}
-          open={openFilters}
-          loading={loading}
-          setOpenReportGenerationDialog={setOpenReportGenerationDialog}
-        />
-        <LogsListInner open={openFilters} theme={undefined}>
-          <Box sx={{ mb: 3 }}>
-            <Stack spacing={3} maxWidth="sm">
-              <Typography noWrap variant="h4" color="text.secondary">
-                Reports
-              </Typography>
-              <Box>
-                <Button
-                  endIcon={<FilterAlt fontSize="small" />}
-                  onClick={handleToggleFilters}
-                  variant="outlined"
-                  fullWidth={false}
-                  size="small"
-                >
-                  Filters
-                </Button>
-              </Box>
-            </Stack>
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                mt: 3,
-              }}
-            ></Box>
-          </Box>
+        <Grid2 size={12}>
+          <Typography variant="h6" sx={{ m: 2 }}>
+            Generate Report
+          </Typography>
+        </Grid2>
+        <Grid2 size={12}>
+          <ReportListFilters
+            containerRef={rootRef}
+            filters={filters}
+            onChange={handleChangeFilters}
+            loading={loading}
+            setOpenReportGenerationDialog={setOpenReportGenerationDialog}
+          />
+        </Grid2>
+        <Grid2 size={12} sx={{ my: 3 }}>
           <ReportListTable
-            group={group}
             reports={paginatedLogs}
             reportsCount={logs.length}
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleRowsPerPageChange}
             page={page}
             rowsPerPage={rowsPerPage}
+            onViewReport={handleViewReport}
           />
-        </LogsListInner>
-      </Box>
+        </Grid2>
+      </Grid2>
       <ReportGenerationDialog
         open={openReportGenerationDialog}
         onClose={() => {
           setOpenReportGenerationDialog(false)
         }}
+        onReportGenerated={handleReportGenerated}
       />
-    </>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={ReportTheme}>
+          <ReportDetailsModal open={isModalOpen} onClose={handleCloseReportModal} report={selectedReport} />
+        </ThemeProvider>
+      </StyledEngineProvider>
+    </Box>
   )
 }
 

@@ -45,10 +45,10 @@ export type RsuCounts = {
 }
 
 // No response used, this method does not appear to be used
-export type GetRsuUserAuthResp = {}
+export type GetRsuUserAuthResp = object
 
 // No response used, this method does not appear to be used
-export type GetRsuCommandResp = {}
+export type GetRsuCommandResp = object
 
 export type RsuMapInfo = {
   geojson: GeoJSON.FeatureCollection<GeoJSON.Geometry>
@@ -83,16 +83,9 @@ export type GeoMsgDataPostBody = {
 }
 
 export type RsuCommandPostBody = {
-  command:
-    | 'rsufwdsnmpwalk'
-    | 'rsufwdsnmpset'
-    | 'rsufwdsnmpset-del'
-    | 'snmpFilter'
-    | 'reboot'
-    | 'upgrade-rsu'
-    | 'upgrade-check'
+  command: 'rsufwdsnmpwalk' | 'rsufwdsnmpset' | 'rsufwdsnmpset-del' | 'reboot' | 'upgrade-rsu' | 'upgrade-check'
   rsu_ip: string[]
-  args: Object
+  args: object
 }
 
 export type ApiMsgResp = { message: string }

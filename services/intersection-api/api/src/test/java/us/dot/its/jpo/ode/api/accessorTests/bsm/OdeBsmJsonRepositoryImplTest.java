@@ -29,9 +29,11 @@ import org.springframework.data.mongodb.core.query.Criteria;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.assertj.core.api.Assertions.within;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -41,10 +43,10 @@ import us.dot.its.jpo.ode.api.models.AggregationResultCount;
 import us.dot.its.jpo.ode.model.OdeBsmData;
 
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
@@ -55,307 +57,322 @@ import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 @AutoConfigureEmbeddedDatabase
 public class OdeBsmJsonRepositoryImplTest {
 
-        @Mock
-        private MongoTemplate mongoTemplate;
+    @SpyBean
+    private MongoTemplate mongoTemplate;
 
-        @Mock
-        private AggregationResults<AggregationResult> mockAggregationResult;
+    @Mock
+    private AggregationResults<AggregationResult> mockAggregationResult;
 
-        @Mock
-        private Page<Document> mockDocumentPage;
+    @Mock
+    private Page<Document> mockDocumentPage;
 
-        @Mock
-        private Page<OdeBsmData> mockPage;
+    @InjectMocks
+    private OdeBsmJsonRepositoryImpl repository;
 
-        @InjectMocks
-        private OdeBsmJsonRepositoryImpl repository;
+    String originIp = "172.250.250.181";
+    String vehicleId = "B0AT";
+    Long startTime = 1724170658205L;
+    String startTimeString = "2024-08-20T16:17:38.205Z";
+    Long endTime = 1724170778205L;
+    String endTimeString = "2024-08-20T16:19:38.205Z";
+    Double longitude = 10.0;
+    Double latitude = 10.0;
+    Double distance = 500.0;
 
-        String originIp = "172.250.250.181";
-        String vehicleId = "B0AT";
-        Long startTime = 1724170658205L;
-        String startTimeString = "2024-08-20T16:17:38.205Z";
-        Long endTime = 1724170778205L;
-        String endTimeString = "2024-08-20T16:19:38.205Z";
-        Double longitude = 10.0;
-        Double latitude = 10.0;
-        Double distance = 500.0;
+    ObjectMapper objectMapper = new ObjectMapper();
 
-        @BeforeEach
-        void setUp() {
-                MockitoAnnotations.openMocks(this);
-                repository = new OdeBsmJsonRepositoryImpl(mongoTemplate);
-        }
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        repository = new OdeBsmJsonRepositoryImpl(mongoTemplate);
+        objectMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule()); // Register
+                                                                                                 // JavaTimeModule
+    }
 
-        @Test
-        public void testFindBsmsGeo() {
-                OdeBsmJsonRepositoryImpl repo = mock(OdeBsmJsonRepositoryImpl.class);
+    @Test
+    public void testFindBsmsGeo() throws IOException {
+        OdeBsmJsonRepositoryImpl repo = mock(OdeBsmJsonRepositoryImpl.class);
+        ArgumentCaptor<Criteria> criteriaCaptor = ArgumentCaptor.forClass(Criteria.class);
 
-                when(repo.findPage(
-                                any(),
-                                any(),
-                                any(PageRequest.class),
-                                any(Criteria.class),
-                                any(Sort.class),
-                                any(),
-                                eq(OdeBsmData.class))).thenReturn(mockPage);
-                PageRequest pageRequest = PageRequest.of(0, 1);
-                doCallRealMethod().when(repo).find("ip", "id", startTime, endTime, longitude, latitude,
-                                distance, pageRequest);
+        PageRequest pageRequest = PageRequest.of(0, 1);
 
-                Page<OdeBsmData> resultBsms = repo.find("ip", "id", startTime, endTime, longitude, latitude,
-                                distance, pageRequest);
+        when(repo.findDocumentsWithPagination(
+                any(),
+                any(),
+                any(PageRequest.class),
+                criteriaCaptor.capture(),
+                any(Sort.class),
+                any())).thenReturn(mockDocumentPage);
+        doCallRealMethod().when(repo).find(originIp, vehicleId, startTime, endTime, longitude, latitude,
+                distance, pageRequest);
 
-                assertThat(resultBsms).isEqualTo(mockPage);
-        }
+        repo.find(originIp, vehicleId, startTime, endTime, longitude, latitude,
+                distance, pageRequest);
 
-        @Test
-        public void testFindWithAllParameters() {
-                PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "metadata.odeReceivedAt"));
-                OdeBsmJsonRepositoryImpl repo = mock(OdeBsmJsonRepositoryImpl.class);
+        // Extract the captured Aggregation
+        Criteria capturedCriteria = criteriaCaptor.getValue();
 
-                when(repo.findPage(
-                                any(),
-                                any(),
-                                any(PageRequest.class),
-                                any(Criteria.class),
-                                any(Sort.class),
-                                any(),
-                                eq(OdeBsmData.class))).thenReturn(mockPage);
+        // Assert the Match operation Criteria
+        assertThat(capturedCriteria.getCriteriaObject().toJson())
+                .isEqualTo(String.format(
+                        "{\"metadata.originIp\": \"%s\", \"payload.data.coreData.id\": \"%s\", \"metadata.odeReceivedAt\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}, \"payload.data.coreData.position.latitude\": {\"$gte\": 9.995479521105077, \"$lte\": 10.004520477669782}, \"payload.data.coreData.position.longitude\": {\"$gte\": 9.995439594125543, \"$lte\": 10.004560405874457}}",
+                        originIp, vehicleId, startTimeString, endTimeString));
+    }
 
-                doCallRealMethod().when(repo).find(originIp, vehicleId, startTime, endTime, longitude, latitude,
-                                distance, pageRequest);
+    @Test
+    public void testFindWithAllParameters() throws IOException {
+        OdeBsmJsonRepositoryImpl repo = mock(OdeBsmJsonRepositoryImpl.class);
+        ArgumentCaptor<Criteria> criteriaCaptor = ArgumentCaptor.forClass(Criteria.class);
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "metadata.odeReceivedAt"));
 
-                // Act
-                Page<OdeBsmData> result = repo.find(originIp, vehicleId, startTime, endTime, longitude, latitude,
-                                distance, pageRequest);
+        when(repo.findDocumentsWithPagination(
+                any(),
+                any(),
+                any(PageRequest.class),
+                criteriaCaptor.capture(),
+                any(Sort.class),
+                any())).thenReturn(mockDocumentPage);
 
-                // Assert
-                assertThat(result).isEqualTo(mockPage);
+        doCallRealMethod().when(repo).find(originIp, vehicleId, startTime, endTime, longitude, latitude,
+                distance, pageRequest);
 
-                // Verify the Criteria passed to findPage
-                Mockito.verify(repo).findPage(
-                                any(),
-                                any(),
-                                eq(pageRequest),
-                                Mockito.argThat(criteria -> {
-                                        // Verify ORIGIN_IP_FIELD
-                                        assertThat(criteria.getCriteriaObject().get("metadata.originIp"))
-                                                        .isEqualTo(originIp);
+        repo.find(originIp, vehicleId, startTime, endTime, longitude, latitude,
+                distance, pageRequest);
 
-                                        // Verify VEHICLE_ID_FIELD
-                                        assertThat(criteria.getCriteriaObject().get("payload.data.coreData.id"))
-                                                        .isEqualTo(vehicleId);
+        // Extract the captured Aggregation
+        Criteria capturedCriteria = criteriaCaptor.getValue();
 
-                                        // Verify DATE_FIELD
-                                        Document dateField = (Document) criteria.getCriteriaObject()
-                                                        .get("metadata.odeReceivedAt");
-                                        assertThat(dateField.get("$gte"))
-                                                        .isEqualTo(Instant.ofEpochMilli(startTime).toString());
-                                        assertThat(dateField.get("$lte"))
-                                                        .isEqualTo(Instant.ofEpochMilli(endTime).toString());
+        // Assert the Match operation Criteria
+        assertThat(capturedCriteria.getCriteriaObject().toJson())
+                .isEqualTo(String.format(
+                        "{\"metadata.originIp\": \"%s\", \"payload.data.coreData.id\": \"%s\", \"metadata.odeReceivedAt\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}, \"payload.data.coreData.position.latitude\": {\"$gte\": 9.995479521105077, \"$lte\": 10.004520477669782}, \"payload.data.coreData.position.longitude\": {\"$gte\": 9.995439594125543, \"$lte\": 10.004560405874457}}",
+                        originIp, vehicleId, startTimeString, endTimeString));
 
-                                        // Verify latitude
-                                        Document latitudeField = (Document) criteria.getCriteriaObject()
-                                                        .get("payload.data.coreData.position.latitude");
-                                        assertThat((Double) latitudeField.get("$gte")).isCloseTo(9.995, within(0.001));
-                                        assertThat((Double) latitudeField.get("$lte")).isCloseTo(10.005, within(0.001));
+        // Verify the Criteria passed to findPage
+        Mockito.verify(repo).findDocumentsWithPagination(
+                any(),
+                any(),
+                eq(pageRequest),
+                Mockito.argThat(criteria -> {
+                    // Verify ORIGIN_IP_FIELD
+                    assertThat(criteria.getCriteriaObject().get("metadata.originIp"))
+                            .isEqualTo(originIp);
 
-                                        // Verify longitude with tolerance
-                                        Document longitudeField = (Document) criteria.getCriteriaObject()
-                                                        .get("payload.data.coreData.position.longitude");
-                                        assertThat((Double) longitudeField.get("$gte")).isCloseTo(9.995, within(0.001));
-                                        assertThat((Double) longitudeField.get("$lte")).isCloseTo(10.005,
-                                                        within(0.001));
+                    // Verify VEHICLE_ID_FIELD
+                    assertThat(criteria.getCriteriaObject().get("payload.data.coreData.id"))
+                            .isEqualTo(vehicleId);
 
-                                        return true;
-                                }),
-                                eq(Sort.by(Sort.Direction.DESC, "metadata.odeReceivedAt")),
-                                any(),
-                                any());
-        }
+                    // Verify DATE_FIELD
+                    Document dateField = (Document) criteria.getCriteriaObject()
+                            .get("metadata.odeReceivedAt");
+                    assertThat(dateField.get("$gte"))
+                            .isEqualTo(Instant.ofEpochMilli(startTime).toString());
+                    assertThat(dateField.get("$lte"))
+                            .isEqualTo(Instant.ofEpochMilli(endTime).toString());
 
-        @Test
-        public void testFindWithNullBoundingBox() {
-                PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "metadata.odeReceivedAt"));
-                OdeBsmJsonRepositoryImpl repo = mock(OdeBsmJsonRepositoryImpl.class);
+                    // Verify latitude
+                    Document latitudeField = (Document) criteria.getCriteriaObject()
+                            .get("payload.data.coreData.position.latitude");
+                    assertThat((Double) latitudeField.get("$gte")).isCloseTo(9.995, within(0.001));
+                    assertThat((Double) latitudeField.get("$lte")).isCloseTo(10.005, within(0.001));
 
-                when(repo.findPage(
-                                any(),
-                                any(),
-                                any(PageRequest.class),
-                                any(Criteria.class),
-                                any(Sort.class),
-                                any(),
-                                eq(OdeBsmData.class))).thenReturn(mockPage);
+                    // Verify longitude with tolerance
+                    Document longitudeField = (Document) criteria.getCriteriaObject()
+                            .get("payload.data.coreData.position.longitude");
+                    assertThat((Double) longitudeField.get("$gte")).isCloseTo(9.995, within(0.001));
+                    assertThat((Double) longitudeField.get("$lte")).isCloseTo(10.005,
+                            within(0.001));
 
-                doCallRealMethod().when(repo).find(originIp, vehicleId, startTime, endTime, null, null, null,
-                                pageRequest);
-                // Act
-                Page<OdeBsmData> result = repo.find(originIp, vehicleId, startTime, endTime, null, null, null,
-                                pageRequest);
+                    return true;
+                }),
+                eq(Sort.by(Sort.Direction.DESC, "metadata.odeReceivedAt")),
+                any());
+    }
 
-                // Assert
-                assertThat(result).isEqualTo(mockPage);
+    @Test
+    public void testFindWithNullBoundingBox() throws IOException {
+        OdeBsmJsonRepositoryImpl repo = mock(OdeBsmJsonRepositoryImpl.class);
+        ArgumentCaptor<Criteria> criteriaCaptor = ArgumentCaptor.forClass(Criteria.class);
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "metadata.odeReceivedAt"));
 
-                // Verify the Criteria passed to findPage
-                Mockito.verify(repo).findPage(
-                                any(),
-                                any(),
-                                eq(pageRequest),
-                                Mockito.argThat(criteria -> {
-                                        // Verify ORIGIN_IP_FIELD
-                                        assertThat(criteria.getCriteriaObject().get("metadata.originIp"))
-                                                        .isEqualTo(originIp);
+        when(repo.findDocumentsWithPagination(
+                any(),
+                any(),
+                any(PageRequest.class),
+                criteriaCaptor.capture(),
+                any(Sort.class),
+                any())).thenReturn(mockDocumentPage);
 
-                                        // Verify VEHICLE_ID_FIELD
-                                        assertThat(criteria.getCriteriaObject().get("payload.data.coreData.id"))
-                                                        .isEqualTo(vehicleId);
+        doCallRealMethod().when(repo).find(originIp, vehicleId, startTime, endTime, null, null, null,
+                pageRequest);
 
-                                        // Verify DATE_FIELD
-                                        Document dateField = (Document) criteria.getCriteriaObject()
-                                                        .get("metadata.odeReceivedAt");
-                                        assertThat(dateField.get("$gte"))
-                                                        .isEqualTo(Instant.ofEpochMilli(startTime).toString());
-                                        assertThat(dateField.get("$lte"))
-                                                        .isEqualTo(Instant.ofEpochMilli(endTime).toString());
+        repo.find(originIp, vehicleId, startTime, endTime, null, null, null,
+                pageRequest);
 
-                                        // Verify latitude
-                                        assertThat(criteria.getCriteriaObject()
-                                                        .get("payload.data.coreData.position.latitude")).isNull();
+        // Extract the captured Aggregation
+        Criteria capturedCriteria = criteriaCaptor.getValue();
 
-                                        // Verify longitude with tolerance
-                                        assertThat(criteria.getCriteriaObject()
-                                                        .get("payload.data.coreData.position.longitude")).isNull();
+        // Assert the Match operation Criteria
+        assertThat(capturedCriteria.getCriteriaObject().toJson())
+                .isEqualTo(String.format(
+                        "{\"metadata.originIp\": \"%s\", \"payload.data.coreData.id\": \"%s\", \"metadata.odeReceivedAt\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}}",
+                        originIp, vehicleId, startTimeString, endTimeString));
 
-                                        return true;
-                                }),
-                                eq(Sort.by(Sort.Direction.DESC, "metadata.odeReceivedAt")),
-                                any(),
-                                any());
-        }
+        // Verify the Criteria passed to findPage
+        Mockito.verify(repo).findDocumentsWithPagination(
+                any(),
+                any(),
+                eq(pageRequest),
+                Mockito.argThat(criteria -> {
+                    // Verify ORIGIN_IP_FIELD
+                    assertThat(criteria.getCriteriaObject().get("metadata.originIp"))
+                            .isEqualTo(originIp);
 
-        @Test
-        public void testFindWithNullOptionalParameters() {
-                PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "metadata.odeReceivedAt"));
-                OdeBsmJsonRepositoryImpl repo = mock(OdeBsmJsonRepositoryImpl.class);
+                    // Verify VEHICLE_ID_FIELD
+                    assertThat(criteria.getCriteriaObject().get("payload.data.coreData.id"))
+                            .isEqualTo(vehicleId);
 
-                when(repo.findPage(
-                                any(),
-                                any(),
-                                any(PageRequest.class),
-                                any(Criteria.class),
-                                any(Sort.class),
-                                any(),
-                                eq(OdeBsmData.class))).thenReturn(mockPage);
+                    // Verify DATE_FIELD
+                    Document dateField = (Document) criteria.getCriteriaObject()
+                            .get("metadata.odeReceivedAt");
+                    assertThat(dateField.get("$gte"))
+                            .isEqualTo(Instant.ofEpochMilli(startTime).toString());
+                    assertThat(dateField.get("$lte"))
+                            .isEqualTo(Instant.ofEpochMilli(endTime).toString());
 
-                doCallRealMethod().when(repo).find(null, null, startTime, endTime, null, null, null, pageRequest);
+                    // Verify latitude
+                    assertThat(criteria.getCriteriaObject()
+                            .get("payload.data.coreData.position.latitude")).isNull();
 
-                // Act
-                Page<OdeBsmData> result = repo.find(null, null, startTime, endTime, null, null, null, pageRequest);
+                    // Verify longitude with tolerance
+                    assertThat(criteria.getCriteriaObject()
+                            .get("payload.data.coreData.position.longitude")).isNull();
 
-                // Assert
-                assertThat(result).isEqualTo(mockPage);
+                    return true;
+                }),
+                eq(Sort.by(Sort.Direction.DESC, "metadata.odeReceivedAt")),
+                any());
+    }
 
-                // Verify the Criteria passed to findPage
-                Mockito.verify(repo).findPage(
-                                any(),
-                                any(),
-                                eq(pageRequest),
-                                Mockito.argThat(criteria -> {
-                                        // Verify ORIGIN_IP_FIELD
-                                        assertThat(criteria.getCriteriaObject().get("metadata.originIp")).isNull();
+    @Test
+    public void testFindWithNullOptionalParameters() throws IOException {
+        OdeBsmJsonRepositoryImpl repo = mock(OdeBsmJsonRepositoryImpl.class);
+        ArgumentCaptor<Criteria> criteriaCaptor = ArgumentCaptor.forClass(Criteria.class);
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "metadata.odeReceivedAt"));
 
-                                        // Verify VEHICLE_ID_FIELD
-                                        assertThat(criteria.getCriteriaObject().get("payload.data.coreData.id"))
-                                                        .isNull();
+        when(repo.findDocumentsWithPagination(
+                any(),
+                any(),
+                any(PageRequest.class),
+                criteriaCaptor.capture(),
+                any(Sort.class),
+                any())).thenReturn(mockDocumentPage);
 
-                                        // Verify DATE_FIELD
-                                        Document dateField = (Document) criteria.getCriteriaObject()
-                                                        .get("metadata.odeReceivedAt");
-                                        assertThat(dateField.get("$gte"))
-                                                        .isEqualTo(Instant.ofEpochMilli(startTime).toString());
-                                        assertThat(dateField.get("$lte"))
-                                                        .isEqualTo(Instant.ofEpochMilli(endTime).toString());
+        doCallRealMethod().when(repo).find(null, null, startTime, endTime, null, null, null, pageRequest);
 
-                                        // Verify latitude
-                                        assertThat(criteria.getCriteriaObject()
-                                                        .get("payload.data.coreData.position.latitude")).isNull();
+        repo.find(null, null, startTime, endTime, null, null, null, pageRequest);
 
-                                        // Verify longitude with tolerance
-                                        assertThat(criteria.getCriteriaObject()
-                                                        .get("payload.data.coreData.position.longitude")).isNull();
+        // Extract the captured Aggregation
+        Criteria capturedCriteria = criteriaCaptor.getValue();
 
-                                        return true;
-                                }),
-                                eq(Sort.by(Sort.Direction.DESC, "metadata.odeReceivedAt")),
-                                any(),
-                                any());
-        }
+        // Assert the Match operation Criteria
+        assertThat(capturedCriteria.getCriteriaObject().toJson())
+                .isEqualTo(String.format(
+                        "{\"metadata.odeReceivedAt\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}}",
+                        startTimeString, endTimeString)); // Verify the Criteria passed to findPage
+        Mockito.verify(repo).findDocumentsWithPagination(
+                any(),
+                any(),
+                eq(pageRequest),
+                Mockito.argThat(criteria -> {
+                    // Verify ORIGIN_IP_FIELD
+                    assertThat(criteria.getCriteriaObject().get("metadata.originIp")).isNull();
 
-        @Test
-        public void testFindWithData() throws IOException {
-                // Load sample JSON data
-                TypeReference<List<Document>> hashMapList = new TypeReference<>() {
-                };
-                String json = new String(
-                                Files.readAllBytes(
-                                                Paths.get("src/test/resources/json/ConflictMonitor.OdeBsmJson.json")));
-                ObjectMapper objectMapper = new ObjectMapper();
-                objectMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule()); // Register
-                                                                                                         // JavaTimeModule
+                    // Verify VEHICLE_ID_FIELD
+                    assertThat(criteria.getCriteriaObject().get("payload.data.coreData.id"))
+                            .isNull();
 
-                List<Document> sampleDocuments = objectMapper.readValue(json, hashMapList);
+                    // Verify DATE_FIELD
+                    Document dateField = (Document) criteria.getCriteriaObject()
+                            .get("metadata.odeReceivedAt");
+                    assertThat(dateField.get("$gte"))
+                            .isEqualTo(Instant.ofEpochMilli(startTime).toString());
+                    assertThat(dateField.get("$lte"))
+                            .isEqualTo(Instant.ofEpochMilli(endTime).toString());
 
-                // Mock dependencies
-                when(mockDocumentPage.getContent()).thenReturn(sampleDocuments);
-                when(mockDocumentPage.getTotalElements()).thenReturn(1L);
+                    // Verify latitude
+                    assertThat(criteria.getCriteriaObject()
+                            .get("payload.data.coreData.position.latitude")).isNull();
 
-                AggregationResult aggregationResult = new AggregationResult();
-                aggregationResult.setResults(sampleDocuments);
-                AggregationResultCount aggregationResultCount = new AggregationResultCount();
-                aggregationResultCount.setCount(1L);
-                aggregationResult.setMetadata(List.of(aggregationResultCount));
+                    // Verify longitude with tolerance
+                    assertThat(criteria.getCriteriaObject()
+                            .get("payload.data.coreData.position.longitude")).isNull();
 
-                when(mockAggregationResult.getUniqueMappedResult()).thenReturn(aggregationResult);
+                    return true;
+                }),
+                eq(Sort.by(Sort.Direction.DESC, "metadata.odeReceivedAt")),
+                any());
+    }
 
-                ArgumentCaptor<Aggregation> aggregationCaptor = ArgumentCaptor.forClass(Aggregation.class);
-                when(mongoTemplate.aggregate(aggregationCaptor.capture(), Mockito.<String>any(),
-                                eq(AggregationResult.class)))
-                                .thenReturn(mockAggregationResult);
+    @Test
+    public void testFindWithData() throws IOException {
+        // Load sample JSON data
+        String json = new String(
+                Files.readAllBytes(
+                        Paths.get("src/test/resources/json/ConflictMonitor.OdeBsmJson.json")));
 
-                // Call the repository find method
-                PageRequest pageRequest = PageRequest.of(0, 1);
-                Page<OdeBsmData> findResponse = repository.find(originIp, vehicleId, startTime, endTime, -104.1, 36.8,
-                                50.0,
-                                pageRequest);
+        List<Document> sampleDocuments = List.of(Document.parse(json));
 
-                // Extract the captured Aggregation
-                Aggregation capturedAggregation = aggregationCaptor.getValue();
+        // Mock dependencies
+        when(mockDocumentPage.getContent()).thenReturn(sampleDocuments);
+        when(mockDocumentPage.getTotalElements()).thenReturn(1L);
 
-                // Extract the MatchOperation from the Aggregation pipeline
-                Document pipeline = capturedAggregation.toPipeline(Aggregation.DEFAULT_CONTEXT).get(0);
+        AggregationResult aggregationResult = new AggregationResult();
+        aggregationResult.setResults(sampleDocuments);
+        AggregationResultCount aggregationResultCount = new AggregationResultCount();
+        aggregationResultCount.setCount(1L);
+        aggregationResult.setMetadata(List.of(aggregationResultCount));
 
-                // Assert the Match operation Criteria
-                assertThat(pipeline.toJson())
-                                .isEqualTo(String.format(
-                                                "{\"$match\": {\"metadata.originIp\": \"%s\", \"payload.data.coreData.id\": \"%s\", \"metadata.odeReceivedAt\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}, \"payload.data.coreData.position.latitude\": {\"$gte\": 36.799549443581746, \"$lte\": 36.80045055638405}, \"payload.data.coreData.position.longitude\": {\"$gte\": -104.10056026011259, \"$lte\": -104.0994397398874}}}",
-                                                originIp, vehicleId, startTimeString, endTimeString));
+        when(mockAggregationResult.getUniqueMappedResult()).thenReturn(aggregationResult);
 
-                // Serialize results to JSON and compare with the original JSON
-                String resultJson = objectMapper.writeValueAsString(findResponse.getContent().get(0));
+        ArgumentCaptor<Aggregation> aggregationCaptor = ArgumentCaptor.forClass(Aggregation.class);
+        doReturn(mockAggregationResult).when(mongoTemplate).aggregate(aggregationCaptor.capture(),
+                anyString(),
+                eq(AggregationResult.class));
 
-                // Remove unused fields from each entry
-                List<Document> expectedResult = sampleDocuments.stream().map(doc -> {
-                        doc.remove("_id");
-                        doc.remove("recordGeneratedAt");
-                        return doc;
-                }).toList();
-                String expectedJson = objectMapper.writeValueAsString(expectedResult.get(0));
+        // Call the repository find method
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        Page<OdeBsmData> findResponse = repository.find(originIp, vehicleId, startTime, endTime, -104.1, 36.8,
+                50.0,
+                pageRequest);
 
-                // Compare JSON with ignored fields
-                JSONAssert.assertEquals(expectedJson, resultJson, new CustomComparator(
-                                JSONCompareMode.LENIENT, // Allows different key orders
-                                new Customization("properties.timeStamp", (o1, o2) -> true),
-                                new Customization("properties.odeReceivedAt", (o1, o2) -> true)));
-        }
+        // Extract the captured Aggregation
+        Aggregation capturedAggregation = aggregationCaptor.getValue();
+
+        // Extract the MatchOperation from the Aggregation pipeline
+        Document pipeline = capturedAggregation.toPipeline(Aggregation.DEFAULT_CONTEXT).get(0);
+
+        // Assert the Match operation Criteria
+        assertThat(pipeline.toJson())
+                .isEqualTo(String.format(
+                        "{\"$match\": {\"metadata.originIp\": \"%s\", \"payload.data.coreData.id\": \"%s\", \"metadata.odeReceivedAt\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}, \"payload.data.coreData.position.latitude\": {\"$gte\": 36.799549443581746, \"$lte\": 36.80045055638405}, \"payload.data.coreData.position.longitude\": {\"$gte\": -104.10056026011259, \"$lte\": -104.0994397398874}}}",
+                        originIp, vehicleId, startTimeString, endTimeString));
+
+        // Serialize results to JSON and compare with the original JSON
+        String resultJson = objectMapper.writeValueAsString(findResponse.getContent().get(0));
+
+        // Remove unused fields from each entry
+        List<Document> expectedResult = sampleDocuments.stream().map(doc -> {
+            doc.remove("_id");
+            doc.remove("recordGeneratedAt");
+            return doc;
+        }).toList();
+        String expectedJson = objectMapper.writeValueAsString(expectedResult.get(0));
+
+        // Compare JSON with ignored fields
+        JSONAssert.assertEquals(expectedJson, resultJson, new CustomComparator(
+                JSONCompareMode.LENIENT, // Allows different key orders
+                new Customization("properties.timeStamp", (o1, o2) -> true),
+                new Customization("properties.odeReceivedAt", (o1, o2) -> true)));
+    }
 }

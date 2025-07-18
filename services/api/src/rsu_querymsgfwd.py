@@ -1,5 +1,5 @@
 import common.pgquery as pgquery
-import common.snmpwalk_helpers as snmpwalk_helpers
+import common.snmp.rsu_message_forward_helpers as rsu_message_forward_helpers
 import common.util as util
 import os
 import logging
@@ -12,7 +12,7 @@ def query_snmp_msgfwd(rsu_ip, organization):
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
-        "SELECT smt.name msgfwd_type, snmp_index, message_type, dest_ipv4, dest_port, start_datetime, end_datetime, active "
+        "SELECT smt.name msgfwd_type, snmp_index, message_type, dest_ipv4, dest_port, start_datetime, end_datetime, active, security "
         "FROM public.snmp_msgfwd_config smc "
         "JOIN public.snmp_msgfwd_type smt ON smc.msgfwd_type = smt.snmp_msgfwd_type_id "
         "JOIN ("
@@ -39,7 +39,8 @@ def query_snmp_msgfwd(rsu_ip, organization):
             "Port": row["dest_port"],
             "Start DateTime": util.format_date_denver_iso(row["start_datetime"]),
             "End DateTime": util.format_date_denver_iso(row["end_datetime"]),
-            "Config Active": snmpwalk_helpers.active(row["active"]),
+            "Config Active": rsu_message_forward_helpers.active(row["active"]),
+            "Full WSMP": rsu_message_forward_helpers.active(row["security"]),
         }
 
         # Based on the value of msgfwd_type, store the configuration data to match the response object of rsufwdsnmpwalk
@@ -55,7 +56,7 @@ def query_snmp_msgfwd(rsu_ip, organization):
             msgfwd_configs_dict["rsuXmitMsgFwdingTable"][row["snmp_index"]] = config_row
         else:
             # changed the double quotes around msgfwd_type to single quotes to allow for vscode debugging to work properly
-            logging.warn(
+            logging.warning(
                 f"Encountered unknown message forwarding configuration type '{row['msgfwd_type']}' for RSU '{rsu_ip}'"
             )
 

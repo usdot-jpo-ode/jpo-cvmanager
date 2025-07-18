@@ -52,7 +52,7 @@ jobs:
   webapp:
     runs-on: ubuntu-latest
     container:
-      image: node:16.16.0
+      image: node:19.8.1
       options: --user root
       env:
         CI: true
@@ -156,6 +156,7 @@ jobs:
           rm -rf $GITHUB_WORKSPACE/services/intersection-api/api/target
 
   sonar:
+    if: github.event.pull_request.base.repo.owner.login == 'usdot-jpo-ode'
     needs: [build_api, webapp]
     runs-on: ubuntu-latest
     steps:

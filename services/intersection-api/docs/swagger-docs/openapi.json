@@ -1480,10 +1480,10 @@
         }
       }
     },
-    "/events/signal_state_stop": {
+    "/events/stop_line_stop": {
       "get": {
         "tags": ["event-controller"],
-        "operationId": "findSignalStateStopEvent",
+        "operationId": "findStopLineStopEvent",
         "parameters": [
           {
             "name": "intersection_id",
@@ -1518,10 +1518,10 @@
         }
       }
     },
-    "/events/signal_state_stop/daily_counts": {
+    "/events/stop_line_stop/daily_counts": {
       "get": {
         "tags": ["event-controller"],
-        "operationId": "getDailySignalStateStopEventCounts",
+        "operationId": "getDailyStopLineStopEventCounts",
         "parameters": [
           {
             "name": "intersection_id",
@@ -1553,10 +1553,10 @@
         }
       }
     },
-    "/events/signal_state_stop/count": {
+    "/events/stop_line_stop/count": {
       "get": {
         "tags": ["event-controller"],
-        "operationId": "countSignalStateStopEvent",
+        "operationId": "countStopLineStopEvent",
         "parameters": [
           {
             "name": "intersection_id",
@@ -1694,10 +1694,10 @@
         }
       }
     },
-    "/events/signal_state": {
+    "/events/stop_line_passage": {
       "get": {
         "tags": ["event-controller"],
-        "operationId": "findSignalStateEvent",
+        "operationId": "findStopLinePassageEvent",
         "parameters": [
           {
             "name": "intersection_id",
@@ -1732,10 +1732,10 @@
         }
       }
     },
-    "/events/signal_state/daily_counts": {
+    "/events/stop_line_passage/daily_counts": {
       "get": {
         "tags": ["event-controller"],
-        "operationId": "getDailySignalStateEventCounts",
+        "operationId": "getDailyStopLinePassageEventCounts",
         "parameters": [
           {
             "name": "intersection_id",
@@ -1767,10 +1767,10 @@
         }
       }
     },
-    "/events/signal_state/count": {
+    "/events/stop_line_passage/count": {
       "get": {
         "tags": ["event-controller"],
-        "operationId": "countSignalStateEvent",
+        "operationId": "countStopLinePassageEvent",
         "parameters": [
           {
             "name": "intersection_id",
@@ -2732,10 +2732,10 @@
         }
       }
     },
-    "/assessments/signal_state_event_assessment": {
+    "/assessments/stop_line_passage_assessment": {
       "get": {
         "tags": ["assessment-controller"],
-        "operationId": "findSignalStateEventAssessment",
+        "operationId": "findStopLinePassageAssessment",
         "parameters": [
           {
             "name": "road_regulator_id",
@@ -2776,10 +2776,10 @@
         }
       }
     },
-    "/assessments/signal_state_event_assessment/count": {
+    "/assessments/stop_line_passage_assessment/count": {
       "get": {
         "tags": ["assessment-controller"],
-        "operationId": "countSignalStateEventAssessment",
+        "operationId": "countStopLinePassageAssessment",
         "parameters": [
           {
             "name": "road_regulator_id",
@@ -2816,10 +2816,10 @@
         }
       }
     },
-    "/assessments/signal_state_assessment": {
+    "/assessments/stop_line_stop_assessment": {
       "get": {
         "tags": ["assessment-controller"],
-        "operationId": "findSignalStateAssessment",
+        "operationId": "findStopLineStopAssessment",
         "parameters": [
           {
             "name": "road_regulator_id",
@@ -2860,10 +2860,10 @@
         }
       }
     },
-    "/assessments/signal_state_assessment/count": {
+    "/assessments/stop_line_stop_assessment/count": {
       "get": {
         "tags": ["assessment-controller"],
-        "operationId": "countSignalStateAssessment",
+        "operationId": "countStopLineStopAssessment",
         "parameters": [
           {
             "name": "road_regulator_id",
@@ -3335,8 +3335,8 @@
           },
           "connectionOfTravelEventCounts": { "type": "array", "items": { "$ref": "#/components/schemas/IDCount" } },
           "signalStateConflictEventCount": { "type": "array", "items": { "$ref": "#/components/schemas/IDCount" } },
-          "signalStateEventCounts": { "type": "array", "items": { "$ref": "#/components/schemas/IDCount" } },
-          "signalStateStopEventCounts": { "type": "array", "items": { "$ref": "#/components/schemas/IDCount" } },
+          "stopLinePassageEventCounts": { "type": "array", "items": { "$ref": "#/components/schemas/IDCount" } },
+          "stopLineStopEventCounts": { "type": "array", "items": { "$ref": "#/components/schemas/IDCount" } },
           "timeChangeDetailsEventCount": { "type": "array", "items": { "$ref": "#/components/schemas/IDCount" } },
           "intersectionReferenceAlignmentEventCounts": {
             "type": "array",
@@ -3487,7 +3487,7 @@
           "roadRegulatorID": { "type": "integer", "format": "int32" },
           "source": { "type": "string" },
           "timestamp": { "type": "integer", "format": "int64" },
-          "signalStateEventAssessmentGroup": {
+          "stopLinePassageAssessmentGroup": {
             "type": "array",
             "items": { "$ref": "#/components/schemas/StopLinePassageAssessmentGroup" }
           }

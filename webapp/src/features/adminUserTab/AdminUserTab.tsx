@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react'
 import AdminAddUser from '../adminAddUser/AdminAddUser'
 import AdminEditUser from '../adminEditUser/AdminEditUser'
 import AdminTable from '../../components/AdminTable'
-import { IoChevronBackCircleOutline, IoRefresh } from 'react-icons/io5'
-import { AiOutlinePlusCircle } from 'react-icons/ai'
 import { confirmAlert } from 'react-confirm-alert'
 import { Options } from '../../components/AdminDeletionOptions'
 import { selectLoading } from '../../generalSlices/rsuSlice'
@@ -27,26 +25,16 @@ import { Action } from '@material-table/core'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
 import toast from 'react-hot-toast'
-import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
-
-const getTitle = (activeTab: string) => {
-  if (activeTab === undefined) {
-    return 'CV Manager Users'
-  } else if (activeTab === 'editUser') {
-    return ''
-  } else if (activeTab === 'addUser') {
-    return ''
-  }
-  return 'Unknown'
-}
+import { DeleteOutline, ModeEditOutline } from '@mui/icons-material'
+import { useTheme } from '@mui/material'
 
 const AdminUserTab = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const navigate = useNavigate()
   const location = useLocation()
+  const theme = useTheme()
 
   const activeTab = location.pathname.split('/')[4]
-  const title = getTitle(activeTab)
 
   const tableData = useSelector(selectTableData)
   const [columns] = useState([
@@ -62,10 +50,20 @@ const AdminUserTab = () => {
   ])
   const loading = useSelector(selectLoading)
 
-  let tableActions: Action<AdminUserWithId>[] = [
+  const tableActions: Action<AdminUserWithId>[] = [
     {
-      icon: 'delete',
-      tooltip: 'Delete User',
+      icon: () => <ModeEditOutline sx={{ color: theme.palette.custom.rowActionIcon }} />,
+      iconProps: {
+        itemType: 'rowAction',
+      },
+      position: 'row',
+      onClick: (event, rowData: AdminUserWithId) => onEdit(rowData),
+    },
+    {
+      icon: () => <DeleteOutline sx={{ color: theme.palette.custom.rowActionIcon }} />,
+      iconProps: {
+        itemType: 'rowAction',
+      },
       position: 'row',
       onClick: (event, rowData: AdminUserWithId) => {
         const buttons = [
@@ -83,14 +81,12 @@ const AdminUserTab = () => {
       },
     },
     {
-      icon: 'edit',
-      tooltip: 'Edit User',
-      position: 'row',
-      onClick: (event, rowData: AdminUserWithId) => onEdit(rowData),
-    },
-    {
       tooltip: 'Remove All Selected Users',
       icon: 'delete',
+      position: 'toolbarOnSelect',
+      iconProps: {
+        itemType: 'rowAction',
+      },
       onClick: (event, rowData: AdminUserWithId[]) => {
         const buttons = [
           {
@@ -110,11 +106,39 @@ const AdminUserTab = () => {
         confirmAlert(alertOptions)
       },
     },
+    {
+      icon: () => null,
+      position: 'toolbar',
+      iconProps: {
+        title: 'Refresh',
+        color: 'info',
+        itemType: 'outlined',
+      },
+      onClick: () => {
+        updateTableData()
+      },
+    },
+    {
+      icon: () => null,
+      position: 'toolbar',
+      iconProps: {
+        title: 'New',
+        color: 'primary',
+        itemType: 'contained',
+      },
+      onClick: () => {
+        navigate('addUser')
+      },
+    },
   ]
 
   const handleDelete = (rowData: AdminUserWithId[]) => {
     dispatch(deleteUsers(rowData)).then((data: any) => {
-      data.payload.success ? toast.success('User(s) Deleted Successfully') : toast.error(data.message.payload)
+      if (data.payload.success) {
+        toast.success('User(s) Deleted Successfully')
+      } else {
+        toast.error(data.message.payload)
+      }
     })
   }
 
@@ -141,44 +165,6 @@ const AdminUserTab = () => {
 
   return (
     <div>
-      <div>
-        <h3 className="panel-header" key="adminUserTab">
-          {title}
-          {activeTab === undefined && [
-            <>
-              <ContainedIconButton
-                key="plus_button"
-                title="Add User"
-                onClick={() => navigate('addUser')}
-                sx={{
-                  float: 'right',
-                  margin: 2,
-                  mt: -0.5,
-                  mr: 0,
-                  ml: 0.5,
-                }}
-              >
-                <AiOutlinePlusCircle size={20} />
-              </ContainedIconButton>
-
-              <ContainedIconButton
-                key="refresh_button"
-                title="Refresh Users"
-                onClick={() => updateTableData()}
-                sx={{
-                  float: 'right',
-                  margin: 2,
-                  mt: -0.5,
-                  mr: 0,
-                  ml: 0.5,
-                }}
-              >
-                <IoRefresh size={20} />
-              </ContainedIconButton>
-            </>,
-          ]}
-        </h3>
-      </div>
       <Routes>
         <Route
           path="/"

@@ -1,15 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import AdminAddRsu from '../adminAddRsu/AdminAddRsu'
 import AdminEditRsu, { AdminEditRsuFormType } from '../adminEditRsu/AdminEditRsu'
 import AdminTable from '../../components/AdminTable'
-import { IoChevronBackCircleOutline, IoRefresh } from 'react-icons/io5'
-import { AiOutlinePlusCircle } from 'react-icons/ai'
 import { confirmAlert } from 'react-confirm-alert'
 import { Options } from '../../components/AdminDeletionOptions'
 import {
   selectLoading,
   selectTableData,
-  selectEditRsuRowData,
 
   // actions
   updateTableData,
@@ -24,29 +21,16 @@ import './Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { Action } from '@material-table/core'
-import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { Route, Routes, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
 import toast from 'react-hot-toast'
-import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
-
-const getTitle = (activeTab: string) => {
-  if (activeTab === undefined) {
-    return 'CV Manager RSUs'
-  } else if (activeTab === 'editRsu') {
-    return ''
-  } else if (activeTab === 'addRsu') {
-    return ''
-  }
-  return 'Unknown'
-}
+import { useTheme } from '@mui/material'
+import { DeleteOutline, ModeEditOutline } from '@mui/icons-material'
 
 const AdminRsuTab = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const navigate = useNavigate()
-  const location = useLocation()
-
-  const activeTab = location.pathname.split('/')[4]
-  const title = getTitle(activeTab)
+  const theme = useTheme()
 
   const tableData = useSelector(selectTableData)
   const [columns] = useState([
@@ -61,9 +45,23 @@ const AdminRsuTab = () => {
 
   const tableActions: Action<AdminEditRsuFormType>[] = [
     {
-      icon: 'delete',
+      icon: () => <ModeEditOutline sx={{ color: theme.palette.custom.rowActionIcon }} />,
+      tooltip: 'Edit RSU',
+      position: 'row',
+      iconProps: {
+        itemType: 'rowAction',
+      },
+      onClick: (event, rowData: AdminEditRsuFormType) => {
+        onEdit(rowData)
+      },
+    },
+    {
+      icon: () => <DeleteOutline sx={{ color: theme.palette.custom.rowActionIcon }} />,
       tooltip: 'Delete RSU',
       position: 'row',
+      iconProps: {
+        itemType: 'rowAction',
+      },
       onClick: (event, rowData: AdminEditRsuFormType) => {
         const buttons = [
           { label: 'Yes', onClick: () => onDelete(rowData) },
@@ -74,14 +72,12 @@ const AdminRsuTab = () => {
       },
     },
     {
-      icon: 'edit',
-      tooltip: 'Edit RSU',
-      position: 'row',
-      onClick: (event, rowData: AdminEditRsuFormType) => onEdit(rowData),
-    },
-    {
       tooltip: 'Remove All Selected From Organization',
       icon: 'delete',
+      iconProps: {
+        itemType: 'rowAction',
+      },
+      position: 'toolbarOnSelect',
       onClick: (event, rowData: AdminEditRsuFormType[]) => {
         const buttons = [
           { label: 'Yes', onClick: () => multiDelete(rowData) },
@@ -93,6 +89,30 @@ const AdminRsuTab = () => {
           buttons
         )
         confirmAlert(alertOptions)
+      },
+    },
+    {
+      icon: () => null,
+      iconProps: {
+        title: 'Refresh',
+        color: 'info',
+        itemType: 'outlined',
+      },
+      position: 'toolbar',
+      onClick: () => {
+        updateTableData()
+      },
+    },
+    {
+      icon: () => null,
+      position: 'toolbar',
+      iconProps: {
+        title: 'New',
+        color: 'primary',
+        itemType: 'contained',
+      },
+      onClick: () => {
+        navigate('addRsu')
       },
     },
   ]
@@ -108,57 +128,26 @@ const AdminRsuTab = () => {
 
   const onDelete = (row: AdminEditRsuFormType) => {
     dispatch(deleteRsu({ rsu_ip: row.ip, shouldUpdateTableData: true })).then((data: any) => {
-      data.payload.success
-        ? toast.success('RSU Deleted Successfully')
-        : toast.error('Failed to delete RSU due to error: ' + data.payload)
+      if (data.payload.success) {
+        toast.success('RSU Deleted Successfully')
+      } else {
+        toast.error('Failed to delete RSU due to error: ' + data.payload)
+      }
     })
   }
 
   const multiDelete = (rows: AdminEditRsuFormType[]) => {
     dispatch(deleteMultipleRsus(rows)).then((data: any) => {
-      data.payload.success ? toast.success('RSUs Deleted Successfully') : toast.error(data.payload.message)
+      if (data.payload.success) {
+        toast.success('RSUs Deleted Successfully')
+      } else {
+        toast.error(data.payload.message)
+      }
     })
   }
 
   return (
     <div>
-      <div>
-        <h3 className="panel-header" key="adminRsuTab">
-          {title}
-          {activeTab === undefined && [
-            <>
-              <ContainedIconButton
-                key="plus_button"
-                title="Add RSU"
-                onClick={() => navigate('addRsu')}
-                sx={{
-                  float: 'right',
-                  margin: 2,
-                  mt: -0.5,
-                  mr: 0,
-                  ml: 0.5,
-                }}
-              >
-                <AiOutlinePlusCircle size={20} />
-              </ContainedIconButton>
-              <ContainedIconButton
-                key="refresh_button"
-                title="Refresh RSUs"
-                onClick={() => dispatch(updateTableData())}
-                sx={{
-                  float: 'right',
-                  margin: 2,
-                  mt: -0.5,
-                  mr: 0,
-                  ml: 0.5,
-                }}
-              >
-                <IoRefresh size={20} />
-              </ContainedIconButton>
-            </>,
-          ]}
-        </h3>
-      </div>
       <Routes>
         <Route
           path="/"

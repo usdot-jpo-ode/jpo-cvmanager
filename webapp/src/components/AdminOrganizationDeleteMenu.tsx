@@ -1,11 +1,12 @@
 import React from 'react'
 import { confirmAlert } from 'react-confirm-alert'
-import DeleteIcon from '@mui/icons-material/Delete'
 import 'react-confirm-alert/src/react-confirm-alert.css'
 import { Options } from './AdminDeletionOptions'
 
 import '../features/adminRsuTab/Admin.css'
 import { ContainedIconButton } from '../styles/components/ContainedIconButton'
+import { alpha, useTheme } from '@mui/material/styles'
+import { DeleteOutline } from '@mui/icons-material'
 
 interface AdminOrganizationDeleteMenuProps {
   selectedOrganization: string
@@ -13,6 +14,7 @@ interface AdminOrganizationDeleteMenuProps {
 }
 
 const AdminOrganizationDeleteMenu = (props: AdminOrganizationDeleteMenuProps) => {
+  const theme = useTheme()
   const handleDelete = () => {
     const buttons = [
       {
@@ -36,14 +38,14 @@ const AdminOrganizationDeleteMenu = (props: AdminOrganizationDeleteMenuProps) =>
         title="Delete Organization"
         onClick={handleDelete}
         sx={{
-          float: 'left',
-          margin: 2,
-          mt: 0.5,
-          mr: 0,
-          ml: 0.5,
+          backgroundColor: 'transparent',
+          borderRadius: '2px',
+          '&:hover': {
+            backgroundColor: alpha(theme.palette.text.primary, 0.1),
+          },
         }}
       >
-        <DeleteIcon component={undefined} size={20} />
+        <DeleteOutline sx={{ color: theme.palette.custom.rowActionIcon, fontSize: '1.5rem' }} component={undefined} />
       </ContainedIconButton>
     </div>
   )

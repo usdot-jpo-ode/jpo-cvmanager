@@ -34,13 +34,13 @@ export const organizationParser = (
   submitOrgs: Array<{ name: string; role: string }>,
   apiData: UserApiData
 ) => {
-  let orgsToAdd = []
-  let orgsToModify = []
-  let orgsToRemove = []
+  const orgsToAdd = []
+  const orgsToModify = []
+  const orgsToRemove = []
 
   for (const org of apiData.user_data.organizations) {
     if (submitOrgs.some((e) => e.name === org.name)) {
-      var index = submitOrgs.findIndex(function (item, i) {
+      const index = submitOrgs.findIndex(function (item) {
         return item.name === org.name
       })
       if (submitOrgs[index].role !== org.role) {
@@ -92,7 +92,7 @@ export const getUserData = createAsyncThunk(
 
 export const editUser = createAsyncThunk(
   'adminEditUser/editUser',
-  async (payload: { json: Object }, { getState, dispatch }) => {
+  async (payload: { json: object }, { getState, dispatch }) => {
     const { json } = payload
     const currentState = getState() as RootState
     const token = selectToken(currentState)
@@ -123,10 +123,10 @@ export const submitForm = createAsyncThunk(
     const apiData = selectApiData(currentState)
 
     if (selectedOrganizations.length !== 0) {
-      let submitOrgs = [...selectedOrganizations].map((org) => ({ ...org }))
+      const submitOrgs = [...selectedOrganizations].map((org) => ({ ...org }))
       submitOrgs.forEach((elm) => delete elm.id)
       const tempData = organizationParser(data, submitOrgs, apiData)
-      let res = await dispatch(editUser({ json: tempData }))
+      const res = await dispatch(editUser({ json: tempData }))
       if ((res.payload as any).success) {
         return { submitAttempt: false, success: true, message: 'User Updated Successfully' }
       } else {
@@ -149,7 +149,7 @@ export const adminEditUserSlice = createSlice({
       state.value = initialState
     },
     updateOrganizations: (state, action) => {
-      let newOrganizations = []
+      const newOrganizations = []
       for (const name of action.payload) {
         if (state.value.selectedOrganizations.some((e) => e.name === name.name)) {
           newOrganizations.push(state.value.selectedOrganizations.find((e) => e.name === name.name))
@@ -172,18 +172,18 @@ export const adminEditUserSlice = createSlice({
     updateStates: (state, action) => {
       const data = action.payload
       if (Object.keys(data).length !== 0) {
-        let orgData: Array<{ id: number; name: string }> = []
+        const orgData: Array<{ id: number; name: string }> = []
         data.allowed_selections.organizations.forEach((org: string, index: number) =>
           orgData.push({ id: index, name: org })
         )
         state.value.organizationNames = orgData
 
-        let roleData: Array<{ role: string }> = []
+        const roleData: Array<{ role: string }> = []
         data.allowed_selections.roles.forEach((role: string) => roleData.push({ role }))
         state.value.availableRoles = roleData
 
-        let tempOrganizations: Array<{ id: number; name: string; role: string }> = []
-        let tempOrganizationNames: Array<{ id: number; name: string }> = []
+        const tempOrganizations: Array<{ id: number; name: string; role: string }> = []
+        const tempOrganizationNames: Array<{ id: number; name: string }> = []
 
         data.user_data.organizations.forEach((org: { name: string; role: string }, index: number) => {
           tempOrganizations.push({ id: index, name: org.name, role: org.role })
@@ -212,7 +212,7 @@ export const adminEditUserSlice = createSlice({
       .addCase(editUser.pending, (state) => {
         state.loading = true
       })
-      .addCase(editUser.fulfilled, (state, action) => {
+      .addCase(editUser.fulfilled, (state) => {
         state.loading = false
       })
       .addCase(editUser.rejected, (state) => {

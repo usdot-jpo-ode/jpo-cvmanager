@@ -4,42 +4,20 @@
   padding: 10px;
   position: absolute;
   z-index: 90;
-  left: 310px;
-  top: 175px;
-  border-radius: 10px;
-}
-
-.expandedControl {
-  height: fit-content;
-  width: 250px;
-  padding: 10px;
-  position: absolute;
-  z-index: 90;
-  left: 310px;
-  top: 330px;
-  border-radius: 10px;
+  left: 340px;
+  top: 144px;
+  border-radius: 4px;
 }
 
 .filterControl {
   height: fit-content;
-  width: 250px;
+  width: 300px;
   padding: 10px;
   position: absolute;
   z-index: 90;
-  left: 310px;
-  top: 175px;
-  border-radius: 10px;
-}
-
-.expandedFilterControl {
-  height: fit-content;
-  width: 250px;
-  padding: 10px;
-  position: absolute;
-  z-index: 90;
-  left: 310px;
-  top: 330px;
-  border-radius: 10px;
+  left: 340px;
+  top: 144px;
+  border-radius: 4px;
 }
 
 .buttonContainer {
@@ -48,6 +26,7 @@
   height: fit-content;
   justify-content: space-evenly;
   align-content: center;
+  margin-bottom: 50px;
 }
 
 .submitContainer {
@@ -68,4 +47,18 @@
 
 #stepSelect {
   width: fit-content;
+}
+
+#sliderContainer .MuiSlider-mark {
+  background-color: var(--mui-palette-primary-main) !important;
+  height: 6px !important;
+  width: 4px !important;
+  border-radius: 2px !important;
+  z-index: 0 !important;
+}
+
+/* hides the track line */
+#sliderContainer .MuiSlider-track {
+  background: transparent !important;
+  border: none !important;
 }

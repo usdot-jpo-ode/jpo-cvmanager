@@ -1,12 +1,7 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
-import { DropdownList } from 'react-widgets'
 import {
-  selectSuccessMsg,
-  selectErrorState,
-  selectErrorMsg,
-  selectSubmitAttempt,
   selectApiData,
   setSelectedType,
 
@@ -23,31 +18,39 @@ import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
 import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
-import { Link, useParams } from 'react-router-dom'
-import { selectEditNotificationRowData, selectTableData } from '../adminNotificationTab/adminNotificationTabSlice'
+import { useNavigate } from 'react-router-dom'
+import { selectEditNotificationRowData } from '../adminNotificationTab/adminNotificationTabSlice'
 import { AdminNotificationForm } from '../adminAddNotification/adminAddNotificationSlice'
 import { selectEmail } from '../../generalSlices/userSlice'
-import { AdminButton } from '../../styles/components/AdminButton'
-import { ErrorMessageText, SuccessMessageText } from '../../styles/components/Messages'
+import { ErrorMessageText } from '../../styles/components/Messages'
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Typography,
+} from '@mui/material'
+import { SideBarHeader } from '../../styles/components/SideBarHeader'
+import toast from 'react-hot-toast'
 
 const AdminEditNotification = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-  const successMsg = useSelector(selectSuccessMsg)
   const apiData = useSelector(selectApiData)
-  const errorState = useSelector(selectErrorState)
-  const errorMsg = useSelector(selectErrorMsg)
-  const submitAttempt = useSelector(selectSubmitAttempt)
   const selectedType = useSelector(selectSelectedType)
   const availableTypes = useSelector(selectAvailableTypes)
   const notificationEditTableData = useSelector(selectEditNotificationRowData)
   const userEmail = useSelector(selectEmail)
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<AdminNotificationForm>()
+  const [open, setOpen] = useState(true)
+  const navigate = useNavigate()
 
-  const { email } = useParams<{ email: string }>()
+  const {
+    handleSubmit,
+    formState: { isSubmitted },
+  } = useForm<AdminNotificationForm>()
 
   useEffect(() => {
     dispatch(getNotificationData())
@@ -59,47 +62,96 @@ const AdminEditNotification = () => {
   }, [apiData, dispatch])
 
   const onSubmit = (data: AdminNotificationForm) => {
+    if (selectedType.type === '') {
+      return
+    }
     data.email = userEmail
-    dispatch(submitForm({ data }))
+    dispatch(submitForm({ data })).then((data: any) => {
+      if (data.payload.success) {
+        toast.success('Notification updated successfully')
+      } else {
+        toast.error('Failed to update Notification: ' + data.payload.message)
+      }
+      setOpen(false)
+      navigate('..')
+    })
   }
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center' }}>
-      <Form onSubmit={handleSubmit(onSubmit)}>
-        <Form.Group className="mb-3" controlId="email">
-          <Form.Label>Email</Form.Label>
-          <br />
-          <p>{userEmail}</p>
-        </Form.Group>
+    <Dialog
+      open={open}
+      onClose={() => {
+        setOpen(false)
+        navigate('..')
+      }}
+    >
+      <DialogContent sx={{ width: '600px' }}>
+        <SideBarHeader
+          onClick={() => {
+            setOpen(false)
+            navigate('..')
+          }}
+          title="Edit Email Notification"
+        />
+        <Form
+          id="edit-notification-form"
+          onSubmit={handleSubmit(onSubmit)}
+          style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
+        >
+          <Form.Group controlId="email">
+            <InputLabel>Email</InputLabel>
+            <Typography fontSize="small">{userEmail}</Typography>
+          </Form.Group>
 
-        <Form.Group className="mb-3" controlId="email_type">
-          <Form.Label>Email Notification</Form.Label>
-          <DropdownList
-            className="form-dropdown"
-            dataKey="type"
-            textField="type"
-            data={availableTypes}
-            value={selectedType.type === '' ? { type: notificationEditTableData.email_type } : selectedType}
-            onChange={(value) => {
-              dispatch(setSelectedType(value))
-            }}
-          />
-        </Form.Group>
-
-        {selectedType.type === '' && submitAttempt && (
-          <ErrorMessageText role="alert">Must select a new email notification type</ErrorMessageText>
-        )}
-
-        {successMsg && <SuccessMessageText role="status">{successMsg}</SuccessMessageText>}
-        {errorState && (
-          <ErrorMessageText role="alert">Failed to update email notification due to error: {errorMsg}</ErrorMessageText>
-        )}
-        <div className="form-control">
-          <label></label>
-          <AdminButton type="submit">Apply Changes</AdminButton>
-        </div>
-      </Form>
-    </div>
+          <Form.Group controlId="edit_email_type">
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Notification Type</InputLabel>
+              <Select
+                id="edit_email_type"
+                value={selectedType.type === '' ? notificationEditTableData.email_type : selectedType.type}
+                defaultValue={notificationEditTableData.email_type}
+                label="Notification Type"
+                onChange={(event) => {
+                  const value = event.target.value as string
+                  dispatch(setSelectedType({ type: value }))
+                }}
+              >
+                <MenuItem value={notificationEditTableData.email_type}>{notificationEditTableData.email_type}</MenuItem>
+                {availableTypes.map((type) => (
+                  <MenuItem value={type.type}>{type.type}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Form.Group>
+          {selectedType.type === '' && isSubmitted && (
+            <ErrorMessageText role="alert">Must select a new email notification type</ErrorMessageText>
+          )}
+        </Form>
+      </DialogContent>
+      <DialogActions sx={{ padding: '20px' }}>
+        <Button
+          onClick={() => {
+            setOpen(false)
+            navigate('..')
+          }}
+          variant="outlined"
+          color="info"
+          style={{ position: 'absolute', bottom: 10, left: 10 }}
+          className="museo-slab capital-case"
+        >
+          Cancel
+        </Button>
+        <Button
+          form="edit-notification-form"
+          type="submit"
+          variant="contained"
+          style={{ position: 'absolute', bottom: 10, right: 10 }}
+          className="museo-slab capital-case"
+        >
+          Apply Changes
+        </Button>
+      </DialogActions>
+    </Dialog>
   )
 }
 

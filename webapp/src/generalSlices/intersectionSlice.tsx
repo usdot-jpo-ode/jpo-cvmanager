@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 import MessageMonitorApi from '../apis/intersections/mm-api'
 import { selectToken } from './userSlice'
@@ -26,14 +26,12 @@ export const initialState = {
   intersections: [
     {
       intersectionID: -1,
-      roadRegulatorID: -1,
       rsuIP: '0.0.0.0',
       latitude: 0,
       longitude: 0,
     },
   ] as IntersectionReferenceData[],
   selectedIntersection: null as IntersectionReferenceData | null,
-  selectedRoadRegulatorId: -1,
   selectedIntersectionId: -1,
 }
 
@@ -46,7 +44,6 @@ export const getIntersections = createAsyncThunk(
     const intersections = await MessageMonitorApi.getIntersections({ token: authToken })
     intersections.push({
       intersectionID: -1,
-      roadRegulatorID: -1,
       rsuIP: '0.0.0.0',
       latitude: 0,
       longitude: 0,
@@ -80,14 +77,10 @@ export const intersectionSlice = createSlice({
     setSelectedIntersectionId: (state, action: PayloadAction<number>) => {
       state.value.selectedIntersectionId = action.payload
     },
-    setSelectedRoadRegulatorId: (state, action: PayloadAction<number>) => {
-      state.value.selectedRoadRegulatorId = action.payload
-    },
     setIntersectionManual: (state, action: PayloadAction<IntersectionReferenceData>) => {
       state.value.intersections = [action.payload]
       state.value.selectedIntersection = action.payload
       state.value.selectedIntersectionId = action.payload[0].intersectionID
-      state.value.selectedRoadRegulatorId = action.payload[0].roadRegulatorID
     },
   },
   extraReducers: (builder) => {
@@ -108,9 +101,7 @@ export const intersectionSlice = createSlice({
 export const selectIntersections = (state: RootState) => state.intersection.value.intersections
 export const selectSelectedIntersection = (state: RootState) => state.intersection.value.selectedIntersection
 export const selectSelectedIntersectionId = (state: RootState) => state.intersection.value.selectedIntersectionId
-export const selectSelectedRoadRegulatorId = (state: RootState) => state.intersection.value.selectedRoadRegulatorId
 
-export const { setSelectedIntersection, setSelectedIntersectionId, setSelectedRoadRegulatorId } =
-  intersectionSlice.actions
+export const { setSelectedIntersection, setSelectedIntersectionId } = intersectionSlice.actions
 
 export default intersectionSlice.reducer

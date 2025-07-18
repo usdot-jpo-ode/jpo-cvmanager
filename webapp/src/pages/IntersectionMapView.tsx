@@ -10,8 +10,8 @@ function IntersectionMapView() {
   return (
     <Routes>
       <Route path="/" element={<BaseMapPage />} />
-      <Route path="notification/:intersectionId/:roadRegulatorId/:notificationId" element={<NotificationMapPage />} />
-      <Route path="timestamp/:intersectionId/:roadRegulatorId/:timestamp" element={<IntersectionTsMapPage />} />
+      <Route path="notification/:intersectionId/:notificationId" element={<NotificationMapPage />} />
+      <Route path="timestamp/:intersectionId/:timestamp" element={<IntersectionTsMapPage />} />
       <Route
         path="*"
         element={

@@ -61,11 +61,11 @@ export const deleteUsers = createAsyncThunk(
     const currentState = getState() as RootState
     const token = selectToken(currentState)
 
-    let promises = []
+    const promises = []
     for (const user of data) {
       promises.push(deleteUser(user.email, token))
     }
-    var res = await Promise.all(promises)
+    const res = await Promise.all(promises)
     dispatch(getAvailableUsers())
     for (const r of res) {
       if (!r.success) {

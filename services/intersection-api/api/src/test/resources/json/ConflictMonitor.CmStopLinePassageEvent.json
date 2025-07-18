@@ -1,26 +1,24 @@
-[
-  {
-    "_id": {
-      "$oid": "66c4c17ebc6a472adb01a4de"
-    },
-    "heading": 344.9,
-    "latitude": 39.587883958465525,
-    "roadRegulatorID": -1,
-    "eventType": "StopLinePassage",
-    "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='0'}",
-    "speed": 15.47,
-    "egressLane": 5,
-    "ingressLane": 3,
-    "eventState": "PROTECTED_CLEARANCE",
-    "eventGeneratedAt": {
-      "$date": "2024-08-20T16:17:02.845Z"
-    },
-    "intersectionID": 12109,
-    "connectionID": -1,
-    "vehicleID": "B28991AB",
-    "signalGroup": 2,
-    "key": "-1_12109_B28991AB",
-    "timestamp": 1724170607110,
-    "longitude": -105.09079019589092
-  }
-]
+{
+  "_id": {
+    "$oid": "66c4c17ebc6a472adb01a4de"
+  },
+  "heading": 344.9,
+  "latitude": 39.587883958465525,
+  "roadRegulatorID": -1,
+  "eventType": "StopLinePassage",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='0'}",
+  "speed": 15.47,
+  "egressLane": 5,
+  "ingressLane": 3,
+  "eventState": "PROTECTED_CLEARANCE",
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:17:02.845Z"
+  },
+  "intersectionID": 12109,
+  "connectionID": -1,
+  "vehicleID": "B28991AB",
+  "signalGroup": 2,
+  "key": "-1_12109_B28991AB",
+  "timestamp": 1724170607110,
+  "longitude": -105.09079019589092
+}

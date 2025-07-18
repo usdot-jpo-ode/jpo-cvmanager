@@ -1,1 +1,1 @@
-type LaneDirectionOfTravelTimestampExtractor = {}
+type LaneDirectionOfTravelTimestampExtractor = object

@@ -10,8 +10,6 @@ import {
   selectInitialSourceDataType,
   selectIntersectionId,
   selectLoadOnNull,
-  selectRoadRegulatorId,
-  selectSourceDataType,
   setDecoderModeEnabled,
   setMapProps,
 } from '../map/map-slice'
@@ -49,12 +47,14 @@ const getIntersectionId = (decodedResponse: DecoderApiResponseGeneric | undefine
   }
 
   switch (decodedResponse.type) {
-    case 'MAP':
+    case 'MAP': {
       const mapPayload = decodedResponse.processedMap
       return mapPayload?.properties?.intersectionId
-    case 'SPAT':
+    }
+    case 'SPAT': {
       const spatPayload = decodedResponse.processedSpat
       return spatPayload?.intersectionId
+    }
     default:
       return undefined
   }
@@ -98,12 +98,12 @@ export const onTextChanged = createAsyncThunk(
         decodedResponse: undefined,
       },
     }
-    let newEntry = {}
+    const newEntry = {}
     if (
       prevData[id].text != undefined &&
-      Object.values(prevData).find((v) => v.type == type && v.text == '') == undefined
+      Object.values(prevData).find((v: any) => v.type == type && v.text == '') == undefined
     ) {
-      let newId = uuidv4()
+      const newId = uuidv4()
       newEntry[newId] = {
         id: newId,
         type: type,
@@ -134,7 +134,7 @@ export const onFileUploaded = createAsyncThunk(
 
     const keyedContents: { id: string; text: string }[] = contents.map((text) => ({ id: uuidv4(), text: text }))
 
-    let newEntries = {}
+    const newEntries = {}
     keyedContents.forEach(({ id, text }) => {
       promises.push(submitDecoderRequest(token, text, type))
       newEntries[id] = {
@@ -172,27 +172,25 @@ export const updateAllDataOnMap = createAsyncThunk(
     const selectedMapMessage = selectSelectedMapMessage(getState() as RootState)
     const currentBsms = selectCurrentBsms(getState() as RootState)
     const intersectionId = selectIntersectionId(getState() as RootState)
-    const roadRegulatorId = selectRoadRegulatorId(getState() as RootState)
     const loadOnNull = selectLoadOnNull(getState() as RootState)
     dispatch(
       setMapProps({
         sourceData: {
           map: Object.values(data)
-            .filter((v) => v.type === 'MAP' && v.status == 'COMPLETED' && v.id == selectedMapMessage?.id)
-            .map((v) => v.decodedResponse?.processedMap!),
+            .filter((v: any) => v.type === 'MAP' && v.status == 'COMPLETED' && v.id == selectedMapMessage?.id)
+            .map((v: any) => v.decodedResponse?.processedMap),
           spat: Object.values(data)
             .filter(
-              (v) =>
+              (v: any) =>
                 v.type === 'SPAT' &&
                 v.status == 'COMPLETED' &&
                 !isGreyedOut(selectedMapMessage.intersectionId, getIntersectionId(v.decodedResponse))
             )
-            .map((v) => v.decodedResponse?.processedSpat!),
+            .map((v: any) => v.decodedResponse?.processedSpat),
           bsm: currentBsms,
         },
         sourceDataType: null,
         intersectionId,
-        roadRegulatorId,
         loadOnNull,
       })
     )
@@ -204,7 +202,6 @@ export const decoderModeToggled = createAsyncThunk(
   async (enabled: boolean, { getState, dispatch }) => {
     const initialSourceDataType = selectInitialSourceDataType(getState() as RootState)
     const intersectionId = selectIntersectionId(getState() as RootState)
-    const roadRegulatorId = selectRoadRegulatorId(getState() as RootState)
     const loadOnNull = selectLoadOnNull(getState() as RootState)
 
     if (enabled) {
@@ -222,7 +219,6 @@ export const decoderModeToggled = createAsyncThunk(
           },
           sourceDataType: initialSourceDataType,
           intersectionId,
-          roadRegulatorId,
           loadOnNull,
         })
       )
@@ -278,7 +274,7 @@ export const asn1DecoderSlice = createSlice({
         .map(({ id, type }) => (type == 'BSM' ? id : null))
         .filter((id) => id != null)
       const data: { [id: string]: DecoderDataEntry } = {}
-      responses.forEach(({ id, type, response }) => {
+      responses.forEach(({ id, response }) => {
         data[id] = updateRecordWithResponse(state.value.data[id], id, response)
       })
       state.value.selectedBsms = [...state.value.selectedBsms, ...selectedBsms]
@@ -288,19 +284,21 @@ export const asn1DecoderSlice = createSlice({
       const id = action.payload
       const type = state.value.data[id].type
       switch (type) {
-        case 'MAP':
+        case 'MAP': {
           const intersectionId = state.value.data[id]?.decodedResponse?.processedMap?.properties?.intersectionId
           const rsuIp = state.value.data[id]?.decodedResponse?.processedMap?.properties?.originIp
           if (intersectionId) {
             state.value.selectedMapMessage = { id, intersectionId, rsuIp: rsuIp! }
           }
           return
-        case 'BSM':
+        }
+        case 'BSM': {
           if (state.value.selectedBsms.includes(id)) {
             state.value.selectedBsms = state.value.selectedBsms.filter((bsmId) => bsmId !== id)
           } else {
             state.value.selectedBsms = [...state.value.selectedBsms, id]
           }
+        }
       }
     },
     initializeData: (state) => {

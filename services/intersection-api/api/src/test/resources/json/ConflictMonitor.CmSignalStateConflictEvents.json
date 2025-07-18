@@ -1,20 +1,18 @@
-[
-  {
-    "_id": {
-      "$oid": "66c4c16dbc6a472adb01a189"
-    },
-    "secondConflictingSignalGroup": 6,
-    "eventGeneratedAt": {
-      "$date": "2024-08-20T16:16:45.692Z"
-    },
-    "roadRegulatorID": -1,
-    "intersectionID": 12109,
-    "conflictType": "PROTECTED_CLEARANCE",
-    "firstConflictingSignalGroup": 2,
-    "eventType": "SignalStateConflict",
-    "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
-    "firstConflictingSignalState": "PROTECTED_CLEARANCE",
-    "timestamp": 1724170603588,
-    "secondConflictingSignalState": "PROTECTED_CLEARANCE"
-  }
-]
+{
+  "_id": {
+    "$oid": "66c4c16dbc6a472adb01a189"
+  },
+  "secondConflictingSignalGroup": 6,
+  "eventGeneratedAt": {
+    "$date": "2024-08-20T16:16:45.692Z"
+  },
+  "roadRegulatorID": -1,
+  "intersectionID": 12109,
+  "conflictType": "PROTECTED_CLEARANCE",
+  "firstConflictingSignalGroup": 2,
+  "eventType": "SignalStateConflict",
+  "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+  "firstConflictingSignalState": "PROTECTED_CLEARANCE",
+  "timestamp": 1724170603588,
+  "secondConflictingSignalState": "PROTECTED_CLEARANCE"
+}

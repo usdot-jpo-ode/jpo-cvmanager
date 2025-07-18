@@ -1,9 +1,7 @@
 package us.dot.its.jpo.ode.api.accessorTests.notifications;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +39,7 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalGroupAl
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalStateConflictNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.TimeChangeDetailsNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.app_health.KafkaStreamsAnomalyNotification;
-import us.dot.its.jpo.ode.api.accessors.notifications.ActiveNotification.ActiveNotificationRepositoryImpl;
+import us.dot.its.jpo.ode.api.accessors.notifications.active_notification.ActiveNotificationRepositoryImpl;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -56,7 +54,6 @@ public class ActiveNotificationRepositoryImplTest {
     private ActiveNotificationRepositoryImpl repository;
 
     Integer intersectionID = 123;
-    Integer roadRegulatorID = 0;
     String notificationType = "IntersectionReferenceAlignmentNotification";
     String key = "IntersectionReferenceAlignmentNotification_123_0";
 
@@ -80,7 +77,6 @@ public class ActiveNotificationRepositoryImplTest {
     }
 
     @Test
-    @Disabled("TODO: Update for use with typesafe implementation")
     public void testFindWithAllNotificationTypes() {
         MongoTemplate mockMongoTemplate = mock(MongoTemplate.class);
         ActiveNotificationRepositoryImpl repo = spy(new ActiveNotificationRepositoryImpl(mockMongoTemplate));
@@ -90,34 +86,34 @@ public class ActiveNotificationRepositoryImplTest {
 
         // Mock the raw LinkedHashMap data returned by the database
 
-        LinkedHashMap<String, Object> connectionOfTravelData = new LinkedHashMap<>();
+        Document connectionOfTravelData = new Document();
         connectionOfTravelData.put("notificationType",
                 "ConnectionOfTravelNotification");
 
-        LinkedHashMap<String, Object> intersectionReferenceAlignmentData = new LinkedHashMap<>();
+        Document intersectionReferenceAlignmentData = new Document();
         intersectionReferenceAlignmentData.put("notificationType",
                 "IntersectionReferenceAlignmentNotification");
 
-        LinkedHashMap<String, Object> laneDirectionOfTravelData = new LinkedHashMap<>();
+        Document laneDirectionOfTravelData = new Document();
         laneDirectionOfTravelData.put("notificationType",
                 "LaneDirectionOfTravelAssessmentNotification");
 
-        LinkedHashMap<String, Object> signalGroupAlignmentData = new LinkedHashMap<>();
+        Document signalGroupAlignmentData = new Document();
         signalGroupAlignmentData.put("notificationType",
                 "SignalGroupAlignmentNotification");
 
-        LinkedHashMap<String, Object> signalStateConflictData = new LinkedHashMap<>();
+        Document signalStateConflictData = new Document();
         signalStateConflictData.put("notificationType",
                 "SignalStateConflictNotification");
 
-        LinkedHashMap<String, Object> timeChangeDetailsData = new LinkedHashMap<>();
+        Document timeChangeDetailsData = new Document();
         timeChangeDetailsData.put("notificationType",
                 "TimeChangeDetailsNotification");
 
-        LinkedHashMap<String, Object> appHealthData = new LinkedHashMap<>();
+        Document appHealthData = new Document();
         appHealthData.put("notificationType", "AppHealthNotification");
 
-        List<LinkedHashMap<String, Object>> notificationList = List.of(
+        List<Document> notificationList = List.of(
                 connectionOfTravelData,
                 intersectionReferenceAlignmentData,
                 laneDirectionOfTravelData,
@@ -126,7 +122,7 @@ public class ActiveNotificationRepositoryImplTest {
                 timeChangeDetailsData,
                 appHealthData);
 
-        Page<LinkedHashMap<String, Object>> dbObjects = new PageImpl<>(notificationList, pageable,
+        Page<Document> dbObjects = new PageImpl<>(notificationList, pageable,
                 notificationList.size());
 
         // Mock the MongoTemplate and MongoConverter

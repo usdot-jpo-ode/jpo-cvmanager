@@ -1,11 +1,8 @@
 import { styled } from '@mui/material'
 
-export const BorderedImage = styled('img')(({ theme }) => ({
+export const BorderedImage = styled('img')(() => ({
   display: 'block',
   marginLeft: 'auto',
   marginRight: 'auto',
-  width: '40%',
-  marginTop: '4em',
-  marginBottom: '4em',
-  border: `0.5px solid ${theme.palette.text.primary}}`,
+  maxWidth: '900px',
 }))

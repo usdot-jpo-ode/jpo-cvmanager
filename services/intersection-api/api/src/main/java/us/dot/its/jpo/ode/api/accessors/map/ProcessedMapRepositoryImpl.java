@@ -70,7 +70,6 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
      *                       applied
      * @param startTime      the start time to query by, if null will not be applied
      * @param endTime        the end time to query by, if null will not be applied
-     * @param pageable       the pageable object to use for pagination
      * @return the paginated data that matches the given criteria
      */
     public long count(
@@ -103,7 +102,8 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
         Query query = Query.query(criteria);
-        List<String> excludedFields = List.of(RECORD_GENERATED_AT_FIELD);
+        List<String> excludedFields = new ArrayList<>();
+        excludedFields.add(RECORD_GENERATED_AT_FIELD);
         if (compact) {
             excludedFields.add(VALIDATION_MESSAGES_FIELD);
         }
@@ -135,7 +135,8 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
-        List<String> excludedFields = List.of(RECORD_GENERATED_AT_FIELD);
+        List<String> excludedFields = new ArrayList<>();
+        excludedFields.add(RECORD_GENERATED_AT_FIELD);
         if (compact) {
             excludedFields.add(VALIDATION_MESSAGES_FIELD);
         }
@@ -206,7 +207,6 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
             ProcessedMap<LineString> map = mapLookup.get(box.getIntersectionId());
             IntersectionReferenceData data = new IntersectionReferenceData();
             data.setIntersectionID(map.getProperties().getIntersectionId());
-            data.setRoadRegulatorID("-1");
             data.setRsuIP(map.getProperties().getOriginIp());
 
             if (map.getProperties().getIntersectionName() != null

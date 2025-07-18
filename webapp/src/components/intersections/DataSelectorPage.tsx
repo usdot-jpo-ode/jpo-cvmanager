@@ -1,8 +1,7 @@
-import React, { useState, useCallback, useEffect } from 'react'
-import { Box, Container, Typography } from '@mui/material'
+import React from 'react'
+import { Box, Container } from '@mui/material'
 import EventsApi from '../../apis/intersections/events-api'
 import AssessmentsApi from '../../apis/intersections/assessments-api'
-import MessageMonitorApi from '../../apis/intersections/mm-api'
 import GraphsApi from '../../apis/intersections/graphs-api'
 import { DataSelectorEditForm } from '../../features/intersections/data-selector/data-selector-edit-form'
 import { EventDataTable } from '../../features/intersections/data-selector/event-data-table'
@@ -12,11 +11,6 @@ import toast from 'react-hot-toast'
 import MapDialog from '../../features/intersections/intersection-selector/intersection-selector-dialog'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
-import {
-  selectIntersections,
-  selectSelectedIntersectionId,
-  selectSelectedRoadRegulatorId,
-} from '../../generalSlices/intersectionSlice'
 import { selectToken } from '../../generalSlices/userSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -25,13 +19,11 @@ import {
   selectAssessments,
   selectGraphData,
   selectOpenMapDialog,
-  selectRoadRegulatorIntersectionIds,
   setType,
   setEvents,
   setAssessments,
   setGraphData,
   setOpenMapDialog,
-  setRoadRegulatorIntersectionIds,
 } from '../../features/intersections/data-selector/dataSelectorSlice'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
@@ -43,28 +35,24 @@ import { RootState } from '../../store'
 // - "map_broadcast_rate"
 // - "spat_broadcast_rate"
 const valid_counts_event_types: string[] = [
-  'connection_of_travel',
-  'lane_direction_of_travel',
-  'signal_group_alignment',
-  'signal_state_conflict',
-  'signal_state',
-  'signal_state_stop',
-  'time_change_details',
+  'connection-of-travel',
+  'lane-direction-of-travel',
+  'signal-group-alignment',
+  'signal-state-conflict',
+  'stop-line-passage',
+  'stop-line-stop',
+  'time-change-details',
 ]
 
 const DataSelectorPage = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
-  const intersectionId = useSelector(selectSelectedIntersectionId)
-  const roadRegulatorId = useSelector(selectSelectedRoadRegulatorId)
   const token = useSelector(selectToken)
   const type = useSelector(selectType)
   const events = useSelector(selectEvents)
   const assessments = useSelector(selectAssessments)
   const graphData = useSelector(selectGraphData)
   const openMapDialog = useSelector(selectOpenMapDialog)
-  const intersections = useSelector(selectIntersections)
-  const roadRegulatorIntersectionIds = useSelector(selectRoadRegulatorIntersectionIds)
 
   const getPaddedTimestamp = () => {
     const date = new Date()
@@ -78,7 +66,7 @@ const DataSelectorPage = () => {
       .padStart(2, '0')}${date.getSeconds().toString().padStart(2, '0')}`
   }
 
-  const downloadFile = (contents: string, name: string, extension: string = 'txt') => {
+  const downloadFile = (contents: string, name: string, extension = 'txt') => {
     const element = document.createElement('a')
     const file = new Blob([contents], { type: 'text/plain' })
     element.href = URL.createObjectURL(file)
@@ -87,37 +75,17 @@ const DataSelectorPage = () => {
     element.click()
   }
 
-  useEffect(() => {
-    const localRoadRegulatorIntersectionIds: { [roadRegulatorId: number | string]: number[] } = {}
-    for (const intersection of intersections) {
-      if (!localRoadRegulatorIntersectionIds[intersection.roadRegulatorID]) {
-        localRoadRegulatorIntersectionIds[intersection.roadRegulatorID] = []
-      }
-      localRoadRegulatorIntersectionIds[intersection.roadRegulatorID].push(intersection.intersectionID)
-    }
-    dispatch(setRoadRegulatorIntersectionIds(localRoadRegulatorIntersectionIds))
-  }, [intersections])
-
-  const query = async ({
-    type,
-    intersectionId,
-    roadRegulatorId,
-    startDate,
-    endTime,
-    eventTypes,
-    assessmentTypes,
-    bsmVehicleId,
-  }) => {
+  const query = async ({ type, intersectionId, startDate, endTime, eventTypes, assessmentTypes }) => {
     dispatch(setType(type))
     dispatch(setGraphData([]))
     switch (type) {
-      case 'events':
+      case 'events': {
         const events: MessageMonitor.Event[] = []
         // iterate through each event type in a for loop and add the events to events array
         const eventPromises: Promise<MessageMonitor.Event[]>[] = []
         for (let i = 0; i < eventTypes.length; i++) {
           const eventType = eventTypes[i]
-          const promise = EventsApi.getEvents(token, eventType, intersectionId, roadRegulatorId, startDate, endTime)
+          const promise = EventsApi.getEvents(token, eventType, intersectionId, startDate, endTime)
           eventPromises.push(promise)
         }
         const allEventsPromise = Promise.all(eventPromises)
@@ -139,54 +107,48 @@ const DataSelectorPage = () => {
         events.sort((a, b) => a.eventGeneratedAt - b.eventGeneratedAt)
         dispatch(setEvents(events))
         return events
+      }
       case 'assessments':
-        const assessments: Assessment[] = []
-        const assessmentPromises: Promise<Assessment[]>[] = []
-        // iterate through each event type in a for loop and add the events to events array
-        for (let i = 0; i < assessmentTypes.length; i++) {
-          const assessmentType = assessmentTypes[i]
-          const promise = AssessmentsApi.getAssessments(
-            token,
-            assessmentType,
-            intersectionId,
-            roadRegulatorId,
-            startDate,
-            endTime
-          )
-          assessmentPromises.push(promise)
-        }
+        {
+          const assessments: Assessment[] = []
+          const assessmentPromises: Promise<Assessment[]>[] = []
+          // iterate through each event type in a for loop and add the events to events array
+          for (let i = 0; i < assessmentTypes.length; i++) {
+            const assessmentType = assessmentTypes[i]
+            const promise = AssessmentsApi.getAssessments(token, assessmentType, intersectionId, startDate, endTime)
+            assessmentPromises.push(promise)
+          }
 
-        const allAssessmentsPromise = Promise.all(assessmentPromises)
-        toast.promise(allAssessmentsPromise, {
-          loading: `Loading assessment data`,
-          success: `Successfully got assessment data`,
-          error: `Failed to get assessment data`,
-        })
-
-        try {
-          const allAssessments = await allAssessmentsPromise
-          allAssessments.forEach((assessment) => {
-            assessments.push(...assessment)
+          const allAssessmentsPromise = Promise.all(assessmentPromises)
+          toast.promise(allAssessmentsPromise, {
+            loading: `Loading assessment data`,
+            success: `Successfully got assessment data`,
+            error: `Failed to get assessment data`,
           })
-        } catch (e) {
-          console.error(`Failed to load assessment data because ${e}`)
+
+          try {
+            const allAssessments = await allAssessmentsPromise
+            allAssessments.forEach((assessment) => {
+              assessments.push(...assessment)
+            })
+          } catch (e) {
+            console.error(`Failed to load assessment data because ${e}`)
+          }
+          assessments.sort((a, b) => a.assessmentGeneratedAt - b.assessmentGeneratedAt)
+          dispatch(setAssessments(assessments))
+          return assessments
         }
-        assessments.sort((a, b) => a.assessmentGeneratedAt - b.assessmentGeneratedAt)
-        dispatch(setAssessments(assessments))
-        return assessments
+        return
     }
-    return
   }
 
   const onVisualize = async ({
     intersectionId,
-    roadRegulatorId,
     startDate,
     endTime,
     eventTypes,
   }: {
     intersectionId: number
-    roadRegulatorId: number
     startDate: Date
     endTime: Date
     eventTypes: string[]
@@ -196,7 +158,6 @@ const DataSelectorPage = () => {
         await GraphsApi.getGraphData({
           token: token,
           intersectionId: intersectionId,
-          roadRegulatorId: roadRegulatorId,
           startTime: startDate,
           endTime: endTime,
           event_types: eventTypes.filter((e) => valid_counts_event_types.includes(e)),
@@ -245,7 +206,7 @@ const DataSelectorPage = () => {
       csvRows[event.eventType].push(Object.values(event).map(sanitizeCsvString).join(','))
     }
 
-    var zip = new JSZip()
+    const zip = new JSZip()
     for (const eventType in csvRows) {
       zip.file(`cimms_events_${eventType}_export.csv`, csvRows[eventType].join('\n'))
     }
@@ -263,7 +224,7 @@ const DataSelectorPage = () => {
       csvRows[event.assessmentType].push(Object.values(event).map(sanitizeCsvString).join(','))
     }
 
-    var zip = new JSZip()
+    const zip = new JSZip()
     for (const assessmentType in csvRows) {
       zip.file(`cimms_assessments_${assessmentType}_export.csv`, csvRows[assessmentType].join('\n'))
     }
@@ -279,32 +240,16 @@ const DataSelectorPage = () => {
         sx={{
           backgroundColor: 'background.default',
           flexGrow: 1,
+          py: 5,
+          width: '100%',
         }}
       >
-        <Container maxWidth={false}>
-          <Box
-            sx={{
-              alignItems: 'center',
-              display: 'flex',
-              overflow: 'hidden',
-            }}
-          >
-            <div>
-              <Typography noWrap variant="h4" color="text.secondary">
-                Query
-              </Typography>
-            </div>
-          </Box>
+        <Container maxWidth={false} disableGutters>
           <Box mt={3}>
-            <DataSelectorEditForm
-              onQuery={query}
-              onVisualize={onVisualize}
-              roadRegulatorIntersectionIds={roadRegulatorIntersectionIds}
-              dbIntersectionId={intersectionId}
-            />
+            <DataSelectorEditForm onQuery={query} onVisualize={onVisualize} />
           </Box>
         </Container>
-        <Container sx={{ mt: 5, alignItems: 'center', display: 'flex' }}>
+        <Container maxWidth={false} disableGutters sx={{ mt: 5, alignItems: 'center', display: 'flex' }}>
           {type == 'events' && (
             <EventDataTable
               events={events}

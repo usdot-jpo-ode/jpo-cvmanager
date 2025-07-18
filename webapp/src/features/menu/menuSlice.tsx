@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { AnyAction, PayloadAction, ThunkDispatch, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { updateRowData } from '../../generalSlices/rsuSlice'
 import { RootState } from '../../store'
 import { CountsListElement } from '../../models/Rsu'
-import { toggleLayerActive } from '../../pages/mapSlice'
-const { DateTime } = require('luxon')
+import { DateTime } from 'luxon'
 
 const initialState = {
   currentSort: null as null | string,
@@ -15,7 +15,7 @@ const initialState = {
 
 export const sortCountList =
   (key: string, currentSort: string, countList: CountsListElement[]) =>
-  (dispatch: ThunkDispatch<RootState, any, AnyAction>) => {
+  (dispatch: ThunkDispatch<RootState, unknown, AnyAction>) => {
     let sortFn = (
       a: { [key: string]: string | number | void },
       b: { [key: string]: string | number | void }
@@ -41,24 +41,23 @@ export const sortCountList =
       }
     }
 
-    let arrayCopy = [...countList]
+    const arrayCopy = [...countList]
     arrayCopy.sort(sortFn)
     dispatch(setSortedCountList(arrayCopy))
     return arrayCopy
   }
 
-export const changeDate =
-  (e: Date, type: 'start' | 'end', requestOut: boolean) => (dispatch: ThunkDispatch<RootState, any, AnyAction>) => {
-    let mst = DateTime.fromJSDate(e).setZone('America/Denver')
-    let data
-    if (type === 'start') {
-      data = { start: mst.toString() }
-    } else {
-      data = { end: mst.toString() }
-    }
-    dispatch(updateRowData(data))
-    return data
+export const changeDate = (e: Date, type: 'start' | 'end') => (dispatch: ThunkDispatch<RootState, any, AnyAction>) => {
+  const mst = DateTime.fromJSDate(e).setZone('America/Denver')
+  let data
+  if (type === 'start') {
+    data = { start: mst.toString() }
+  } else {
+    data = { end: mst.toString() }
   }
+  dispatch(updateRowData(data))
+  return data
+}
 
 export const toggleMapMenuSelection = createAsyncThunk(
   'menu/toggleMapMenuSelection',
@@ -73,9 +72,6 @@ export const toggleMapMenuSelection = createAsyncThunk(
           break
         case 'Display RSU Status':
           dispatch(setDisplay(null))
-          break
-        case 'V2x Message Viewer':
-          dispatch(toggleLayerActive('msg-viewer-layer'))
       }
     } else {
       menuSelection = [...menuSelection, label]
@@ -91,9 +87,6 @@ export const toggleMapMenuSelection = createAsyncThunk(
             menuSelection = [...menuSelection.filter((item) => item !== 'Display Message Counts'), 'Display RSU Status']
           }
           dispatch(setDisplay('displayRsuErrors'))
-          break
-        case 'V2x Message Viewer':
-          dispatch(toggleLayerActive('msg-viewer-layer'))
       }
     }
     return menuSelection
@@ -113,7 +106,7 @@ export const menuSlice = createSlice({
     setSortedCountList: (state, action) => {
       state.value.sortedCountList = action.payload
     },
-    setDisplay: (state, action: PayloadAction<String>) => {
+    setDisplay: (state, action: PayloadAction<string>) => {
       state.value.displayCounts = action.payload == 'displayCounts'
       state.value.displayRsuErrors = action.payload == 'displayRsuErrors'
     },

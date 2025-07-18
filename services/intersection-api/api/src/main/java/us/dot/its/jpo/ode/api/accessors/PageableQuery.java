@@ -1,6 +1,8 @@
 package us.dot.its.jpo.ode.api.accessors;
 
 import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +25,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 public interface PageableQuery {
+
+    Logger logger = LoggerFactory.getLogger(PageableQuery.class);
 
     /**
      * Find paginated data based on the given criteria and pageable object
@@ -65,18 +69,17 @@ public interface PageableQuery {
             return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }
 
-        // Use Spring's built-in conversion service
-        List<T> data = new ArrayList<>();
-        for (Document result : aggregationResult.getResults()) {
-            T converted = mongoTemplate.getConverter().read(outputType, result);
-            data.add(converted);
-            // List<T> results = result.getList("results", outputType);
-            // if (results != null) {
-            // data.addAll(results);
-            // }
-        }
+        List<T> results = aggregationResult.getResults().stream().map(doc -> {
+            T convertedResult = mongoTemplate.getConverter().read(outputType, doc);
+            if (convertedResult != null) {
+                return convertedResult;
+            } else {
+                logger.error("Failed to convert document to type {}: {}", outputType.getName(), doc);
+                return null;
+            }
+        }).filter(result -> result != null).toList();
 
-        return new PageImpl<>(data, pageable, aggregationResult.getMetadata().getFirst().getCount());
+        return new PageImpl<>(results, pageable, aggregationResult.getMetadata().getFirst().getCount());
     }
 
     /**

@@ -1,4 +1,6 @@
 import { createTheme, Theme } from '@mui/material'
+import './fonts/museo-slab.css'
+import '../App.css'
 
 declare module '@mui/material/styles' {
   interface PaletteOptions {
@@ -13,6 +15,9 @@ declare module '@mui/material/styles' {
       mapMenuItemHoverSelected: string
       mapMenuItemHoverUnselected: string
       mapMenuBackground: string
+      intersectionMapAccordionExpanded: string
+      intersectionMapButtonHover: string
+      rowActionIcon: string
     }
   }
   interface Palette {
@@ -27,11 +32,14 @@ declare module '@mui/material/styles' {
       mapMenuItemHoverSelected: string
       mapMenuItemHoverUnselected: string
       mapMenuBackground: string
+      intersectionMapAccordionExpanded: string
+      intersectionMapButtonHover: string
+      rowActionIcon: string
     }
   }
 }
 
-export const headerTabHeight = 141
+export const headerTabHeight = 119
 
 export const testTheme = createTheme({
   palette: {
@@ -46,80 +54,14 @@ export const testTheme = createTheme({
       mapMenuItemHoverSelected: '#000000',
       mapMenuItemHoverUnselected: '#000000',
       mapMenuBackground: '#000000',
+      intersectionMapAccordionExpanded: '#000000',
+      intersectionMapButtonHover: '#000000',
+      rowActionIcon: '#000000',
     },
   },
 })
 
-// Global Theme
-const themeCdotDark = createTheme({
-  components: {
-    MuiTableHead: {
-      styleOverrides: {
-        root: {
-          backgroundColor: '#252525',
-          borderBottom: 'none',
-          '& .MuiTableCell-root': {
-            borderBottom: 'none',
-            fontSize: '12px',
-            fontWeight: 600,
-            lineHeight: 1,
-            letterSpacing: 0.5,
-            textTransform: 'uppercase',
-          },
-          '& .MuiTableCell-paddingCheckbox': {
-            paddingTop: 4,
-            paddingBottom: 4,
-          },
-        },
-      },
-    },
-  },
-  palette: {
-    mode: 'dark',
-    primary: {
-      main: '#b55e12',
-      light: '#cecece',
-      dark: '#e37120',
-      contrastText: '#fff',
-    },
-    secondary: {
-      main: '#0e2052',
-      light: '#26329f',
-      dark: '#0a0f3f',
-      //   lightButton:
-      contrastText: '#fff',
-    },
-    error: {
-      main: '#FD7C7C',
-    },
-    success: {
-      main: '#90EE90',
-    },
-    text: {
-      primary: '#ffffff',
-      secondary: '#eb8841',
-      disabled: '#acacac',
-    },
-    custom: {
-      mapLegendBackground: '#0e2052',
-      tableHeaderBackground: '#252525',
-      tableErrorBackground: '#4d2e2e',
-      mapStyleFilePath: 'mapbox-styles/cdot-dark.json',
-      mapStyleHasTraffic: false,
-      mapMenuBackground: '#3c3c3c',
-      mapMenuItemBackgroundSelected: '#2b2b2b',
-      mapMenuItemBorderSelected: '1px solid black',
-      mapMenuItemHoverSelected: '#1c1c1c',
-      mapMenuItemHoverUnselected: '#4c4c4c',
-    },
-    divider: '#111',
-    background: {
-      paper: '#333',
-      default: '#1c1d1f',
-    },
-  },
-})
-
+// Please note that the light theme is currently not being maintained.
 // Light Theme - https://www.realtimecolors.com/?colors=0a1424-e7eef8-213e73-7978d9-4431af&fonts=Inter-Inter
 // --text: #0a1424;
 // --background: #e7eef8;
@@ -127,6 +69,28 @@ const themeCdotDark = createTheme({
 // --secondary: #7978d9;
 // --accent: #4431af;
 const themeMainLight = createTheme({
+  cssVariables: true,
+  typography: {
+    fontFamily: '"Trebuchet MS", Arial, Helvetica, sans-serif',
+    h1: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h2: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h3: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h4: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h5: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h6: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+  },
   components: {
     MuiTableHead: {
       styleOverrides: {
@@ -151,20 +115,34 @@ const themeMainLight = createTheme({
         },
       },
     },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundImage: 'unset',
+        },
+      },
+    },
+    MuiDivider: {
+      styleOverrides: {
+        root: {
+          borderColor: '#061731',
+        },
+      },
+    },
   },
   palette: {
     mode: 'light',
     primary: {
-      main: '#5048E5',
-      light: '#a6aef4',
-      dark: '#413bbc',
-      contrastText: '#FFFFFF',
+      main: '#6f69e0',
+      light: '#2e3574',
+      dark: '#a7a3e7',
+      contrastText: '#0b041b',
     },
     secondary: {
       main: '#53aaf1',
-      light: '#91c6f2',
-      dark: '#071f32',
-      contrastText: '#FFFFFF',
+      light: '#114875',
+      dark: '#92bcde',
+      contrastText: '#121212',
     },
     error: {
       main: '#713737',
@@ -183,7 +161,7 @@ const themeMainLight = createTheme({
       paper: '#FFFFFF',
     },
     custom: {
-      mapLegendBackground: '#c8cfda',
+      mapLegendBackground: '#FFFFFF',
       tableHeaderBackground: '#F3F4F6',
       tableErrorBackground: '#fdc7c7',
       mapStyleFilePath: 'mapbox-styles/main-light.json',
@@ -193,17 +171,41 @@ const themeMainLight = createTheme({
       mapMenuItemBorderSelected: '1px solid black',
       mapMenuItemHoverSelected: '#a19f9f',
       mapMenuItemHoverUnselected: '#ffffff',
+      intersectionMapAccordionExpanded: '#d7d7d7',
+      intersectionMapButtonHover: '#d7d7d7',
+      rowActionIcon: '#9DBDD3',
     },
   },
 })
 
-// Dark Theme - https://www.realtimecolors.com/?colors=dbe5f5-070e18-8ca9de-282687-6350ce&fonts=Inter-Inter
 // --text: #dbe5f5;
-// --background: #070e19;
-// --primary: #8ca9de;
-// --secondary: #282688;
+// --background: #1b1d1f;
+// --primary: #4383ad;
+// --secondary: #dbe5f5;
 // --accent: #614fcd;
 const themeMainDark = createTheme({
+  cssVariables: true,
+  typography: {
+    fontFamily: '"Trebuchet MS", Arial, Helvetica, sans-serif',
+    h1: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h2: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h3: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h4: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h5: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+    h6: {
+      fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
+    },
+  },
   components: {
     MuiTableHead: {
       styleOverrides: {
@@ -225,48 +227,74 @@ const themeMainDark = createTheme({
         },
       },
     },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundImage: 'unset',
+        },
+      },
+    },
+    MuiDivider: {
+      styleOverrides: {
+        root: {
+          borderColor: '#c7c7c7',
+        },
+      },
+    },
   },
   palette: {
     mode: 'dark',
     primary: {
-      main: '#315fb6',
-      light: '#cecece',
-      dark: '#23488c',
+      main: '#3B7BA5',
+      light: '#51a2d6',
+      dark: '#3B7BA54D',
       contrastText: '#fff',
     },
     secondary: {
-      main: '#282688',
+      main: '#dbe5f5',
       light: '#535297',
       dark: '#161563',
-      contrastText: '#fff',
+      contrastText: '#FAFAFA',
     },
     error: {
-      main: '#FD7C7C',
+      light: '#FF6D57',
+      main: '#E94F3766',
+      dark: '#6e312a',
     },
     success: {
-      main: '#90EE90',
+      light: '#75BD27',
+      main: '#A0D36466',
+      dark: '#5B7737',
+    },
+    warning: {
+      main: '#D1A711',
     },
     text: {
-      primary: '#dbe5f5',
-      secondary: '#dbe5f5',
+      primary: '#FFFFFF',
+      secondary: '#c7c7c7',
       disabled: '#acacac',
     },
+    info: {
+      main: '#dbe5f5',
+    },
     custom: {
-      mapLegendBackground: '#070e19',
+      mapLegendBackground: '#1b1d1f',
       tableHeaderBackground: '#252525',
       tableErrorBackground: '#4d2e2e',
       mapStyleFilePath: 'mapbox-styles/main-dark.json',
       mapStyleHasTraffic: true,
       mapMenuBackground: '#3c3c3c',
-      mapMenuItemBackgroundSelected: '#2b2b2b',
+      mapMenuItemBackgroundSelected: '#333333',
       mapMenuItemBorderSelected: '1px solid black',
-      mapMenuItemHoverSelected: '#1c1c1c',
-      mapMenuItemHoverUnselected: '#4c4c4c',
+      mapMenuItemHoverSelected: '#333333',
+      mapMenuItemHoverUnselected: '#575757',
+      intersectionMapAccordionExpanded: '#2E2F31',
+      intersectionMapButtonHover: '#2D5F7F',
+      rowActionIcon: '#9DBDD3',
     },
-    divider: '#111',
     background: {
-      paper: '#282828',
-      default: '#070e19',
+      paper: '#1b1d1f',
+      default: '#333333',
     },
   },
 })
@@ -275,18 +303,19 @@ const themeMainDark = createTheme({
 export const THEMES = {
   light: themeMainLight,
   dark: themeMainDark,
-  cdotDark: themeCdotDark,
 }
 
-export const getCurrentTheme = (isDarkTheme: boolean, defaultLightTheme: string, defaultDarkTheme: string) => {
-  let theme = THEMES[defaultLightTheme] ?? THEMES.light
-  if (isDarkTheme) {
-    theme = THEMES[defaultDarkTheme] ?? THEMES.dark
-    if (defaultDarkTheme && !THEMES[defaultDarkTheme]) {
-      console.warn(`Unknown dark theme name: ${defaultDarkTheme}. Defaulting to browser theme.`)
-    }
-  } else if (defaultLightTheme && !THEMES[defaultLightTheme]) {
-    console.warn(`Unknown default theme name: ${defaultLightTheme}. Defaulting to browser theme.`)
+export const getCurrentTheme = (isDarkTheme: boolean, lightThemeName: string, darkThemeName: string): Theme => {
+  // Warnings to user if theme names are not known
+  if (darkThemeName && !THEMES[darkThemeName]) {
+    console.warn(`Unknown dark theme name: ${darkThemeName}`)
   }
-  return theme
+  if (lightThemeName && !THEMES[lightThemeName]) {
+    console.warn(`Unknown light theme name: ${lightThemeName}`)
+  }
+  if (isDarkTheme) {
+    return THEMES[darkThemeName] ?? THEMES.dark
+  } else {
+    return THEMES[lightThemeName] ?? THEMES.light
+  }
 }

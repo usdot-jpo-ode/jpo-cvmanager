@@ -1,4 +1,4 @@
-/// <reference path="Event.d.ts" />
+import './Event.d.ts'
 type IntersectionReferenceAlignmentEvent = MessageMonitor.Event & {
   source: string
   timestamp: number

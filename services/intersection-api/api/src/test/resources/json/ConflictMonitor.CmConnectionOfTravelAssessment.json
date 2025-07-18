@@ -1,23 +1,21 @@
-[
-  {
-    "_id": {
-      "$oid": "66c4c17fbc6a472adb01a4e1"
-    },
-    "assessmentGeneratedAt": {
-      "$date": "2024-08-20T16:17:03.042Z"
-    },
-    "assessmentType": "ConnectionOfTravel",
-    "roadRegulatorID": -1,
-    "intersectionID": 12109,
-    "connectionOfTravelAssessmentGroups": [
-      {
-        "egressLaneID": 5,
-        "ingressLaneID": 3,
-        "connectionID": -1,
-        "eventCount": 1
-      }
-    ],
-    "source": "{\"rsuId\":\"10.11.81.12\",\"intersectionId\":12109,\"region\":0}",
-    "timestamp": 1724170623044
-  }
-]
+{
+  "_id": {
+    "$oid": "66c4c17fbc6a472adb01a4e1"
+  },
+  "assessmentGeneratedAt": {
+    "$date": "2024-08-20T16:17:03.042Z"
+  },
+  "assessmentType": "ConnectionOfTravel",
+  "roadRegulatorID": -1,
+  "intersectionID": 12109,
+  "connectionOfTravelAssessmentGroups": [
+    {
+      "egressLaneID": 5,
+      "ingressLaneID": 3,
+      "connectionID": -1,
+      "eventCount": 1
+    }
+  ],
+  "source": "{\"rsuId\":\"10.11.81.12\",\"intersectionId\":12109,\"region\":0}",
+  "timestamp": 1724170623044
+}

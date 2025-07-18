@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
-import { Multiselect, DropdownList } from 'react-widgets'
 import {
-  selectSelectedOrganizationNames,
   selectSelectedOrganizations,
   selectOrganizationNames,
   selectAvailableRoles,
@@ -15,30 +13,41 @@ import {
   submitForm,
   updateOrganizations,
   UserApiDataOrgs,
+  selectLoading,
 } from './adminEditUserSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { getAvailableUsers, selectTableData } from '../adminUserTab/adminUserTabSlice'
-import { DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
+import {
+  Button,
+  DialogActions,
+  DialogContent,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from '@mui/material'
 import Dialog from '@mui/material/Dialog'
 import toast from 'react-hot-toast'
-import { AdminButton } from '../../styles/components/AdminButton'
 import { ErrorMessageText } from '../../styles/components/Messages'
+import { SideBarHeader } from '../../styles/components/SideBarHeader'
 
 const AdminEditUser = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-  const selectedOrganizationNames = useSelector(selectSelectedOrganizationNames)
   const selectedOrganizations = useSelector(selectSelectedOrganizations)
   const organizationNames = useSelector(selectOrganizationNames)
   const availableRoles = useSelector(selectAvailableRoles)
   const apiData = useSelector(selectApiData)
   const submitAttempt = useSelector(selectSubmitAttempt)
   const userTableData = useSelector(selectTableData)
+  const loading = useSelector(selectLoading)
   const [open, setOpen] = useState(true)
   const navigate = useNavigate()
   const {
@@ -73,8 +82,10 @@ const AdminEditUser = () => {
       setValue('first_name', currUser.first_name)
       setValue('last_name', currUser.last_name)
       setValue('super_user', currUser.super_user)
+    } else {
+      console.error('Encountered Unknown User: ', email)
     }
-  }, [apiData, setValue])
+  }, [apiData, email, setValue, userTableData])
 
   const onSubmit = (data: UserApiDataOrgs) => {
     dispatch(submitForm({ data })).then((data: any) => {
@@ -90,135 +101,196 @@ const AdminEditUser = () => {
 
   return (
     <Dialog open={open}>
-      <DialogTitle>Edit User</DialogTitle>
-      <DialogContent>
-        {Object.keys(apiData ?? {}).length != 0 ? (
-          <Form
-            id="edit-user-form"
-            onSubmit={handleSubmit(onSubmit)}
-            style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
-          >
-            <Form.Group className="mb-3" controlId="email">
-              <Form.Label>Email</Form.Label>
-              <Form.Control
-                type="email"
-                placeholder="Enter user email"
-                {...register('email', {
-                  required: 'Please enter user email',
-                  pattern: {
-                    value: /^[^@ ]+@[^@ ]+\.[^@ .]{2,}$/,
-                    message: 'Please enter a valid email',
-                  },
-                })}
-              />
-              {errors.email && (
-                <p className="errorMsg" role="alert">
-                  {errors.email.message}
-                </p>
-              )}
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="first_name">
-              <Form.Label>First Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter user's first name"
-                {...register('first_name', {
-                  required: "Please enter user's first name",
-                })}
-              />
-              {errors.first_name && (
-                <p className="errorMsg" role="alert">
-                  {errors.first_name.message}
-                </p>
-              )}
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="last_name">
-              <Form.Label>Last Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter user's last name"
-                {...register('last_name', {
-                  required: "Please enter user's last name",
-                })}
-              />
-              {errors.last_name && (
-                <p className="errorMsg" role="alert">
-                  {errors.last_name.message}
-                </p>
-              )}
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="super_user">
-              <Form.Check label=" Super User" type="switch" {...register('super_user')} />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="organizations">
-              <Form.Label>Organizations</Form.Label>
-              <Multiselect
-                className="form-multiselect"
-                dataKey="name"
-                textField="name"
-                data={organizationNames}
-                placeholder="Select organizations"
-                value={selectedOrganizationNames}
-                onChange={(value) => {
-                  dispatch(updateOrganizations(value))
-                }}
-              />
-            </Form.Group>
-
-            {selectedOrganizations.length > 0 && (
-              <Form.Group className="mb-3" controlId="roles">
-                <Form.Label>Roles</Form.Label>
-                <p className="spacer" />
-                {selectedOrganizations.map((organization) => {
-                  let role = { role: organization.role }
-
-                  return (
-                    <Form.Group className="mb-3" controlId={organization.id.toString()}>
-                      <Form.Label>{organization.name}</Form.Label>
-                      <DropdownList
-                        className="form-dropdown"
-                        dataKey="role"
-                        textField="role"
-                        data={availableRoles}
-                        value={role}
-                        onChange={(value) => {
-                          dispatch(setSelectedRole({ ...organization, role: value.role }))
-                        }}
-                      />
-                    </Form.Group>
-                  )
-                })}
+      {apiData && !loading ? (
+        <>
+          <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
+            <SideBarHeader
+              onClick={() => {
+                setOpen(false)
+                navigate('..')
+              }}
+              title="Edit User"
+            />
+            <Form id="edit-user-form" onSubmit={handleSubmit(onSubmit)}>
+              <Form.Group controlId="email">
+                <FormControl fullWidth margin="normal">
+                  <TextField
+                    label="Email"
+                    placeholder="Enter User Email"
+                    color="info"
+                    variant="outlined"
+                    required
+                    {...register('email', {
+                      required: 'Please enter user email',
+                      pattern: {
+                        value: /^[^@ ]+@[^@ ]+\.[^@ .]{2,}$/,
+                        message: 'Please enter a valid email',
+                      },
+                    })}
+                    slotProps={{
+                      inputLabel: {
+                        shrink: true,
+                      },
+                    }}
+                  />
+                  {errors.email && (
+                    <p className="errorMsg" role="alert">
+                      {errors.email.message}
+                    </p>
+                  )}
+                </FormControl>
               </Form.Group>
-            )}
 
-            {selectedOrganizations.length === 0 && submitAttempt && (
-              <ErrorMessageText role="alert">Must select at least one organization</ErrorMessageText>
-            )}
-          </Form>
-        ) : (
-          <Typography variant={'h4'}>
-            Unknown email address. Either this user does not exist, or you do not have permissions to view them.{' '}
-            <Link to="../">Users</Link>
-          </Typography>
-        )}
-      </DialogContent>
-      <DialogActions>
-        <AdminButton
-          onClick={() => {
-            setOpen(false)
-            navigate('/dashboard/admin/users')
-          }}
-        >
-          Close
-        </AdminButton>
-        <AdminButton form="edit-user-form" type="submit">
-          Apply Changes
-        </AdminButton>
-      </DialogActions>
+              <Form.Group controlId="first_name">
+                <FormControl fullWidth margin="normal">
+                  <TextField
+                    label="First Name"
+                    placeholder="Enter First Name"
+                    color="info"
+                    variant="outlined"
+                    required
+                    {...register('first_name', {
+                      required: "Please enter user's first name",
+                    })}
+                    slotProps={{
+                      inputLabel: {
+                        shrink: true,
+                      },
+                    }}
+                  />
+                  {errors.first_name && (
+                    <p className="errorMsg" role="alert">
+                      {errors.first_name.message}
+                    </p>
+                  )}
+                </FormControl>
+              </Form.Group>
+
+              <Form.Group controlId="last_name">
+                <FormControl fullWidth margin="normal">
+                  <TextField
+                    label="Last Name"
+                    placeholder="Enter Last Name"
+                    color="info"
+                    variant="outlined"
+                    required
+                    {...register('last_name', {
+                      required: "Please enter user's last name",
+                    })}
+                    slotProps={{
+                      inputLabel: {
+                        shrink: true,
+                      },
+                    }}
+                  />
+                  {errors.last_name && (
+                    <p className="errorMsg" role="alert">
+                      {errors.last_name.message}
+                    </p>
+                  )}
+                </FormControl>
+              </Form.Group>
+
+              <Form.Group controlId="super_user">
+                <Form.Check label=" Super User" className="trebuchet" type="switch" {...register('super_user')} />
+              </Form.Group>
+
+              <Form.Group controlId="organizations">
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Organizations</InputLabel>
+                  <Select
+                    id="organizations"
+                    label="Organizations"
+                    multiple
+                    value={selectedOrganizations.map((org) => org.name)}
+                    defaultValue={selectedOrganizations.map((org) => org.name)}
+                    onChange={(event) => {
+                      const selectedOrgs = event.target.value as string[]
+                      dispatch(updateOrganizations(organizationNames.filter((org) => selectedOrgs.includes(org.name))))
+                    }}
+                  >
+                    {organizationNames.map((org) => (
+                      <MenuItem key={org.name} value={org.name}>
+                        {org.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Form.Group>
+
+              {selectedOrganizations.length > 0 && (
+                <Form.Group controlId="roles">
+                  <Form.Label className="trebuchet">Roles</Form.Label>
+                  <p className="spacer" />
+                  {selectedOrganizations.map((organization) => {
+                    const role = { role: organization.role }
+
+                    return (
+                      <Form.Group controlId={organization.id.toString()}>
+                        <FormControl fullWidth margin="normal">
+                          <InputLabel>{organization.name}</InputLabel>
+                          <Select
+                            id={organization.id.toString()}
+                            label="Select Role"
+                            value={role.role}
+                            defaultValue={role.role}
+                            onChange={(event) => {
+                              const selectedRole = event.target.value as string
+                              dispatch(setSelectedRole({ ...organization, role: selectedRole }))
+                            }}
+                          >
+                            {availableRoles.map((role) => (
+                              <MenuItem key={role.role} value={role.role}>
+                                {role.role}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Form.Group>
+                    )
+                  })}
+                </Form.Group>
+              )}
+
+              {selectedOrganizations.length === 0 && submitAttempt && (
+                <ErrorMessageText role="alert">Must select at least one organization</ErrorMessageText>
+              )}
+            </Form>
+          </DialogContent>
+          <DialogActions sx={{ padding: '20px' }}>
+            <Button
+              onClick={() => {
+                setOpen(false)
+                navigate('/dashboard/admin/users')
+              }}
+              variant="outlined"
+              color="info"
+              style={{ position: 'absolute', bottom: 10, left: 10 }}
+              className="museo-slab capital-case"
+            >
+              Cancel
+            </Button>
+            <Button
+              form="edit-user-form"
+              type="submit"
+              variant="contained"
+              style={{ position: 'absolute', bottom: 10, right: 10 }}
+              className="museo-slab capital-case"
+            >
+              Apply Changes
+            </Button>
+          </DialogActions>
+        </>
+      ) : (
+        !loading && (
+          <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
+            <Typography variant={'h4'}>
+              Unknown email address. Either this user does not exist, or you do not have permissions to view them.{' '}
+              <Link to="../">Users</Link>
+            </Typography>
+          </DialogContent>
+        )
+      )}
     </Dialog>
   )
 }

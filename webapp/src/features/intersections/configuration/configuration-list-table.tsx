@@ -1,4 +1,3 @@
-import PerfectScrollbar from 'react-perfect-scrollbar'
 import PropTypes from 'prop-types'
 import {
   Box,
@@ -12,6 +11,7 @@ import {
   TableRow,
   Chip,
   Typography,
+  useTheme,
 } from '@mui/material'
 import React from 'react'
 import { PencilAlt as PencilAltIcon } from '../../../icons/pencil-alt'
@@ -22,6 +22,7 @@ import { useNavigate } from 'react-router-dom'
 export const ConfigParamListTable = (props) => {
   const { intersectionId, parameters, parametersCount, onPageChange, onRowsPerPageChange, page, rowsPerPage } = props
   const navigate = useNavigate()
+  const theme = useTheme()
 
   const readOnlyRow = (param) => {
     return (
@@ -80,7 +81,6 @@ export const ConfigParamListTable = (props) => {
           {param.value.toString()}
           {
             <Chip
-              color="secondary"
               sx={{ ml: 3 }}
               label={
                 <Typography
@@ -116,7 +116,12 @@ export const ConfigParamListTable = (props) => {
     <Card>
       <Box sx={{ overflowX: 'auto' }}>
         <Table>
-          <TableHead>
+          <TableHead
+            sx={{
+              backgroundColor: theme.palette.background.paper,
+              '& .MuiTableCell-root': { textTransform: 'capitalize' },
+            }}
+          >
             <TableRow>
               <TableCell sx={{ minWidth: 200 }}>Name</TableCell>
               <TableCell sx={{ minWidth: 120 }}>Value</TableCell>

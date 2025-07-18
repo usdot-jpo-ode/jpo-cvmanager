@@ -1,4 +1,4 @@
-[{
+{
   "_id": {
     "key": "StopLinePassageNotification_12109_-1_2"
   },
@@ -11,7 +11,7 @@
     "roadRegulatorID": -1,
     "intersectionID": 12109,
     "source": "{\"rsuId\":\"10.11.81.12\",\"intersectionId\":12109,\"region\":0}",
-    "signalStateEventAssessmentGroup": [
+    "stopLinePassageAssessmentGroup": [
       {
         "darkEvents": 0,
         "greenEvents": 0,
@@ -29,4 +29,4 @@
   "notificationType": "StopLinePassageNotification",
   "signalGroup": 2,
   "key": "StopLinePassageNotification_12109_-1_2"
-}]
+}

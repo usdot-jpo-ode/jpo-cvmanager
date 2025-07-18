@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -36,15 +37,15 @@ import java.util.List;
 
 import org.bson.Document;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalStateConflictNotification;
-import us.dot.its.jpo.ode.api.accessors.notifications.SignalStateConflictNotification.SignalStateConflictNotificationRepositoryImpl;
+import us.dot.its.jpo.ode.api.accessors.notifications.signal_state_conflict_notification.SignalStateConflictNotificationRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.AggregationResult;
 import us.dot.its.jpo.ode.api.models.AggregationResultCount;
 
@@ -54,7 +55,7 @@ import us.dot.its.jpo.ode.api.models.AggregationResultCount;
 @AutoConfigureEmbeddedDatabase
 public class SignalStateConflictNotificationRepositoryImplTest {
 
-    @Mock
+    @SpyBean
     private MongoTemplate mongoTemplate;
 
     @Mock
@@ -86,8 +87,8 @@ public class SignalStateConflictNotificationRepositoryImplTest {
     public void testCount() {
         long expectedCount = 10;
 
-        when(mongoTemplate.count(any(),
-                Mockito.<String>any())).thenReturn(expectedCount);
+        doReturn(expectedCount).when(mongoTemplate).count(any(),
+                Mockito.<String>any());
 
         long resultCount = repository.count(1, null, null);
 
@@ -118,8 +119,6 @@ public class SignalStateConflictNotificationRepositoryImplTest {
     @Test
     public void testFindWithData() throws IOException {
         // Load sample JSON data
-        TypeReference<List<Document>> hashMapList = new TypeReference<>() {
-        };
         String json = new String(
                 Files.readAllBytes(
                         Paths.get("src/test/resources/json/ConflictMonitor.CmSignalStateConflictNotification.json")));
@@ -127,7 +126,7 @@ public class SignalStateConflictNotificationRepositoryImplTest {
         objectMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule()); // Register
         // JavaTimeModule
 
-        List<Document> sampleDocuments = objectMapper.readValue(json, hashMapList);
+        List<Document> sampleDocuments = List.of(Document.parse(json));
 
         // Mock dependencies
         when(mockDocumentPage.getContent()).thenReturn(sampleDocuments);
@@ -142,8 +141,9 @@ public class SignalStateConflictNotificationRepositoryImplTest {
         when(mockAggregationResult.getUniqueMappedResult()).thenReturn(aggregationResult);
 
         ArgumentCaptor<Aggregation> aggregationCaptor = ArgumentCaptor.forClass(Aggregation.class);
-        when(mongoTemplate.aggregate(aggregationCaptor.capture(), Mockito.<String>any(), eq(AggregationResult.class)))
-                .thenReturn(mockAggregationResult);
+        doReturn(mockAggregationResult).when(mongoTemplate).aggregate(aggregationCaptor.capture(),
+                anyString(),
+                eq(AggregationResult.class));
 
         // Call the repository find method
         PageRequest pageRequest = PageRequest.of(0, 1);

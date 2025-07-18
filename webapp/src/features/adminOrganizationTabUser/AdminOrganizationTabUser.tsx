@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import AdminTable from '../../components/AdminTable'
-import { AiOutlinePlusCircle } from 'react-icons/ai'
 import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -39,8 +38,8 @@ import { Action, Column } from '@material-table/core'
 import { AdminOrgUser } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import toast from 'react-hot-toast'
 
-import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
-import { Divider } from '@mui/material'
+import { useTheme } from '@mui/material'
+import { AddCircleOutline, DeleteOutline } from '@mui/icons-material'
 
 interface AdminOrganizationTabUserProps {
   selectedOrg: string
@@ -51,7 +50,8 @@ interface AdminOrganizationTabUserProps {
 
 const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-  const { selectedOrg, selectedOrgEmail } = props
+  const theme = useTheme()
+  const { selectedOrg } = props
   const availableUserList = useSelector(selectAvailableUserList)
   const selectedUserList = useSelector(selectSelectedUserList)
   const availableRoles = useSelector(selectAvailableRoles)
@@ -64,29 +64,28 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
       field: 'first_name',
       editable: 'never',
       id: 0,
-      width: '23%',
     },
     {
       title: 'Last Name',
       field: 'last_name',
       editable: 'never',
       id: 1,
-      width: '23%',
     },
-    { title: 'Email', field: 'email', editable: 'never', id: 2, width: '24%' },
+    { title: 'Email', field: 'email', editable: 'never', id: 2 },
     {
       title: 'Role',
       field: 'role',
       id: 3,
-      width: '23%',
       lookup: { user: 'User', operator: 'Operator', admin: 'Admin' },
     },
   ])
 
-  let userActions: Action<AdminOrgUser>[] = [
+  const userActions: Action<AdminOrgUser>[] = [
     {
-      icon: 'delete',
-      tooltip: 'Remove From Organization',
+      icon: () => <DeleteOutline sx={{ color: theme.palette.custom.rowActionIcon }} />,
+      iconProps: {
+        itemType: 'rowAction',
+      },
       position: 'row',
       onClick: (event, rowData: AdminOrgUser) => {
         const buttons = [
@@ -110,6 +109,10 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
     {
       tooltip: 'Remove All Selected From Organization',
       icon: 'delete',
+      position: 'toolbarOnSelect',
+      iconProps: {
+        itemType: 'rowAction',
+      },
       onClick: (event, rowData: AdminOrgUser[]) => {
         const buttons = [
           {
@@ -129,9 +132,40 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
         confirmAlert(alertOptions)
       },
     },
+    {
+      position: 'toolbar',
+      iconProps: {
+        itemType: 'displayIcon',
+      },
+      icon: () => (
+        <Multiselect
+          className="org-multiselect"
+          dataKey="id"
+          textField="email"
+          placeholder="Click to add users"
+          data={availableUserList}
+          value={selectedUserList}
+          onChange={(value) => dispatch(setSelectedUserList(value))}
+          style={{
+            fontSize: '1rem',
+          }}
+        />
+      ),
+      onClick: () => {},
+    },
+    {
+      position: 'toolbar',
+      iconProps: {
+        title: 'Add User',
+        color: 'primary',
+        itemType: 'contained',
+      },
+      icon: () => <AddCircleOutline />,
+      onClick: () => userMultiAdd(selectedUserList),
+    },
   ]
 
-  let userTableEditable = {
+  const userTableEditable = {
     onBulkUpdate: (
       changes: Record<
         number,
@@ -141,7 +175,7 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
         }
       >
     ) =>
-      new Promise((resolve, reject) => {
+      new Promise((resolve) => {
         userBulkEdit(changes)
         setTimeout(() => {
           resolve(null)
@@ -257,67 +291,38 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
 
   return (
     <div>
-      <Accordion>
+      <Accordion elevation={0}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
-          <Typography variant="h6">{props.selectedOrg} Users</Typography>
+          <Typography variant="h6">Users</Typography>
         </AccordionSummary>
-        <AccordionDetails>
-          {loadingGlobal === false && [
-            <div key="accordion" style={{ marginBottom: 10 }}>
-              <div style={{ display: 'flex' }}>
-                <Multiselect
-                  className="org-multiselect"
-                  dataKey="id"
-                  textField="email"
-                  placeholder="Click to add users"
-                  data={availableUserList}
-                  value={selectedUserList}
-                  onChange={(value) => dispatch(setSelectedUserList(value))}
-                />
-                <ContainedIconButton
-                  key="user_plus_button"
-                  onClick={() => userMultiAdd(selectedUserList)}
-                  title="Add Users To Organization"
-                >
-                  <AiOutlinePlusCircle size={20} />
-                </ContainedIconButton>
-              </div>
-              {selectedUserList.length > 0 && (
-                <p style={{ marginBottom: 10 }}>
-                  <b>Please select a role for:</b>
-                </p>
-              )}
-              {selectedUserList.length > 0 && [
-                selectedUserList.map((user) => {
-                  return (
-                    <div>
-                      <p>{user.email}</p>
-                      <DropdownList
-                        className="org-form-dropdown"
-                        dataKey="role"
-                        textField="role"
-                        data={availableRoles}
-                        value={user}
-                        onChange={(value) => {
-                          dispatch(setSelectedUserRole({ email: user.email, role: value.role }))
-                        }}
-                      />
-                    </div>
-                  )
-                }),
-              ]}
-            </div>,
-            <Divider />,
-            <div key="adminTable">
+        <AccordionDetails sx={{ padding: '8px 0px' }}>
+          {loadingGlobal === false && (
+            <>
+              {selectedUserList.length > 0 &&
+                selectedUserList.map((user) => (
+                  <div key={user.email}>
+                    <p>{user.email}</p>
+                    <DropdownList
+                      className="org-form-dropdown"
+                      dataKey="role"
+                      textField="role"
+                      data={availableRoles}
+                      value={user}
+                      onChange={(value) => {
+                        dispatch(setSelectedUserRole({ email: user.email, role: value.role }))
+                      }}
+                    />
+                  </div>
+                ))}
               <AdminTable
-                title={'Modify User-Organization Assignment'}
+                title=""
                 data={props.tableData}
                 columns={userColumns}
                 actions={userActions}
                 editable={userTableEditable}
               />
-            </div>,
-          ]}
+            </>
+          )}
         </AccordionDetails>
       </Accordion>
     </div>

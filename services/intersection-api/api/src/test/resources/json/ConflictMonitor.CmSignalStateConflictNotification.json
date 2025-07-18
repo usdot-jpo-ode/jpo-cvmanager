@@ -1,29 +1,27 @@
-[
-  {
-    "_id": {
-      "$oid": "66c4c16ebc6a472adb01a1ef"
-    },
-    "notificationGeneratedAt": {
-      "$date": "2024-08-20T16:16:45.954Z"
-    },
-    "notificationText": "Signal State Conflict Notification, generated because corresponding signal state conflict event was generated.",
-    "notificationHeading": "Signal State Conflict",
+{
+  "_id": {
+    "$oid": "66c4c16ebc6a472adb01a1ef"
+  },
+  "notificationGeneratedAt": {
+    "$date": "2024-08-20T16:16:45.954Z"
+  },
+  "notificationText": "Signal State Conflict Notification, generated because corresponding signal state conflict event was generated.",
+  "notificationHeading": "Signal State Conflict",
+  "roadRegulatorID": -1,
+  "intersectionID": 12109,
+  "notificationType": "SignalStateConflictNotification",
+  "event": {
+    "secondConflictingSignalGroup": 6,
+    "eventGeneratedAt": 1724170605693,
     "roadRegulatorID": -1,
     "intersectionID": 12109,
-    "notificationType": "SignalStateConflictNotification",
-    "event": {
-      "secondConflictingSignalGroup": 6,
-      "eventGeneratedAt": 1724170605693,
-      "roadRegulatorID": -1,
-      "intersectionID": 12109,
-      "conflictType": "PROTECTED_CLEARANCE",
-      "firstConflictingSignalGroup": 2,
-      "eventType": "SignalStateConflict",
-      "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
-      "firstConflictingSignalState": "PROTECTED_CLEARANCE",
-      "timestamp": 1724170603588,
-      "secondConflictingSignalState": "PROTECTED_CLEARANCE"
-    },
-    "key": "SignalStateConflictNotification_2_6_12109_-1"
-  }
-]
+    "conflictType": "PROTECTED_CLEARANCE",
+    "firstConflictingSignalGroup": 2,
+    "eventType": "SignalStateConflict",
+    "source": "{ rsuId='10.11.81.12', intersectionId='12109', region='-1'}",
+    "firstConflictingSignalState": "PROTECTED_CLEARANCE",
+    "timestamp": 1724170603588,
+    "secondConflictingSignalState": "PROTECTED_CLEARANCE"
+  },
+  "key": "SignalStateConflictNotification_2_6_12109_-1"
+}

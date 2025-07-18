@@ -1,33 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { Box, Button, CircularProgress, Drawer, IconButton, Stack, TextField, Typography } from '@mui/material'
-import { styled } from '@mui/material/styles'
+import { Box, Button, CircularProgress, Typography } from '@mui/material'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
-import { Close } from '@mui/icons-material'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import dayjs from 'dayjs'
-
-const FiltersDrawerDesktop = styled(Drawer)({
-  flexShrink: 0,
-  width: 380,
-  '& .MuiDrawer-paper': {
-    position: 'relative',
-    width: 380,
-  },
-})
-
-const FiltersDrawerMobile = styled(Drawer)({
-  maxWidth: '100%',
-  width: 380,
-  '& .MuiDrawer-paper': {
-    height: 'calc(100% - 64px)',
-    maxWidth: '100%',
-    top: 64,
-    width: 380,
-  },
-})
 
 export type ReportListFilter = {
   startDate: Date | null
@@ -37,17 +14,19 @@ export type ReportListFilter = {
 interface ReportListFiltersProps {
   filters: ReportListFilter
   onChange: (filters: ReportListFilter) => void
-  onClose: () => void
-  open: boolean
   loading: boolean
-  containerRef: any
+  containerRef: React.RefObject<Element>
   setOpenReportGenerationDialog: (open: boolean) => void
 }
 
 export const ReportListFilters = (props: ReportListFiltersProps) => {
-  const { containerRef, filters, onChange, onClose, open, loading, setOpenReportGenerationDialog, ...other } = props
+  const { filters, onChange, loading, setOpenReportGenerationDialog } = props
   const [currentFilters, setCurrentFilters] = useState(filters)
   const [filtersValid, setFiltersValid] = useState([true, ''])
+
+  useEffect(() => {
+    setCurrentFilters(filters)
+  }, [filters])
 
   useEffect(() => {
     updateFiltersValid()
@@ -59,10 +38,6 @@ export const ReportListFilters = (props: ReportListFiltersProps) => {
 
   const endDateChange = (date: Date | null) => {
     setCurrentFilters({ ...currentFilters, endDate: date })
-  }
-
-  const updateFilters = () => {
-    onChange?.(currentFilters)
   }
 
   const updateFiltersValid = () => {
@@ -82,27 +57,13 @@ export const ReportListFilters = (props: ReportListFiltersProps) => {
     }
   }
 
-  const content = (
+  return (
     <Box
       sx={{
-        pb: 1,
-        pt: 1,
         px: 3,
       }}
     >
-      <Box
-        sx={{
-          mb: 2,
-        }}
-      >
-        <IconButton onClick={onClose}>
-          <Close fontSize="small" />
-        </IconButton>
-      </Box>
-      <Typography color="textSecondary" sx={{ mt: 3 }} variant="subtitle2">
-        Issue date
-      </Typography>
-      <Stack spacing={2} sx={{ mt: 2 }}>
+      <Box sx={{ my: 2 }}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DateTimePicker
             label="From"
@@ -115,9 +76,12 @@ export const ReportListFilters = (props: ReportListFiltersProps) => {
             onChange={(e) => endDateChange(e?.toDate())}
             value={dayjs(currentFilters.endDate)}
             disabled={loading}
+            sx={{
+              ml: 3,
+            }}
           />
         </LocalizationProvider>
-      </Stack>
+      </Box>
       {!filtersValid[0] && (
         <Typography color="red" sx={{ mt: 3 }} variant="subtitle2">
           Invalid filters: {filtersValid[1]}
@@ -139,25 +103,15 @@ export const ReportListFilters = (props: ReportListFiltersProps) => {
       </Box>
       <Button
         component="a"
+        variant="contained"
         onClick={() => {
           setOpenReportGenerationDialog(true)
         }}
+        className="museo-slab capital-case"
       >
         Generate Manual Report
       </Button>
     </Box>
-  )
-
-  return (
-    <FiltersDrawerDesktop
-      anchor="left"
-      open={open}
-      SlideProps={{ container: containerRef?.current }}
-      variant="persistent"
-      {...other}
-    >
-      {content}
-    </FiltersDrawerDesktop>
   )
 }
 

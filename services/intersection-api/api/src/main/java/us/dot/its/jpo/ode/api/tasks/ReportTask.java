@@ -75,7 +75,7 @@ public class ReportTask {
                     startMillis, endMillis);
 
             // build report and save it back to the database.
-            reportService.buildReport(data.getIntersectionID(), data.getRoadRegulatorID(), startMillis, endMillis);
+            reportService.buildReport(data.getIntersectionID(), startMillis, endMillis);
         }
     }
 }

@@ -28,7 +28,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.TimeChangeDetailsNotification;
-import us.dot.its.jpo.ode.api.accessors.notifications.TimeChangeDetailsNotification.TimeChangeDetailsNotificationRepositoryImpl;
+import us.dot.its.jpo.ode.api.accessors.notifications.time_change_details_notification.TimeChangeDetailsNotificationRepositoryImpl;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)

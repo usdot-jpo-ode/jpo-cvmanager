@@ -1,12 +1,12 @@
 import { styled } from '@mui/material'
 import { Link } from 'react-router-dom'
+import '../../styles/fonts/museo-slab.css'
 
-export const TabListContainer = styled('ol')(({ theme }) => ({
-  fontFamily: 'Arial, Helvetica, sans-serif',
-  fontWeight: 550,
-  borderBottom: `1px solid ${theme.palette.custom.mapLegendBackground}`,
+export const TabListContainer = styled('ol')(() => ({
+  fontFamily: '"museo-slab", Arial, Helvetica, sans-serif',
+  fontWeight: 500,
   paddingLeft: 0,
-  backgroundColor: theme.palette.custom.mapLegendBackground,
+  margin: '8px 24px 0px 24px',
 }))
 
 interface TabItemStyledProps {
@@ -16,18 +16,13 @@ interface TabItemStyledProps {
 export const TabItemStyled = styled(Link)<TabItemStyledProps>(({ theme, isActive }) => ({
   display: 'inline-block',
   listStyle: 'none',
-  marginBottom: '-1px',
-  padding: '0.5rem 0.75rem',
+  padding: '9px 16px',
   cursor: 'pointer',
-  color: theme.palette.text.primary,
+  color: theme.palette.text.secondary,
+  class: 'museo-slab',
   textDecoration: 'none',
   ...(isActive && {
-    fontFamily: 'Arial, Helvetica, sans-serif',
-    fontWeight: 550,
-    backgroundColor: theme.palette.primary.main,
     color: theme.palette.primary.contrastText,
-    border: `solid ${theme.palette.primary.main}`,
-    borderWidth: '1px 1px 0 1px',
-    borderTop: `0.5px solid ${theme.palette.secondary.dark}`,
+    borderBottom: `2px solid ${theme.palette.primary.contrastText}`,
   }),
 }))

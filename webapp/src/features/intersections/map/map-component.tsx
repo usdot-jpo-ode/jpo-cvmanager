@@ -187,7 +187,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
         })
       )
       if (liveDataActive && authToken && props.intersectionId) {
-        cleanUpLiveStreaming()
+        dispatch(cleanUpLiveStreaming())
         dispatch(
           initializeLiveStreaming({
             token: authToken,

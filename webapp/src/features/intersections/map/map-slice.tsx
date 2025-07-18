@@ -900,14 +900,17 @@ export const getSurroundingNotifications = createAsyncThunk(
 
 export const initializeLiveStreaming = createAsyncThunk(
   'intersectionMap/initializeLiveStreaming',
-  async (args: { token: string; intersectionId: number; numRestarts?: number }, { getState, dispatch }) => {
-    const { token, intersectionId, numRestarts = 0 } = args
+  async (
+    args: { token: string; intersectionId: number; numRestarts?: number; shouldResetMapView?: boolean },
+    { getState, dispatch }
+  ) => {
+    const { token, intersectionId, numRestarts = 0, shouldResetMapView = true } = args
     // Connect to WebSocket when component mounts
     const liveDataActive = selectLiveDataActive(getState() as RootState)
     const wsClient = selectWsClient(getState() as RootState)
 
     dispatch(onTimeQueryChanged({ eventTime: new Date(), timeBefore: 10, timeAfter: 0, timeWindowSeconds: 2 }))
-    dispatch(resetMapView())
+    if (shouldResetMapView) dispatch(resetMapView())
 
     if (!liveDataActive) {
       console.debug('Not initializing live streaming because liveDataActive is false')
@@ -976,6 +979,7 @@ export const initializeLiveStreaming = createAsyncThunk(
               token,
               intersectionId,
               numRestarts: 0,
+              shouldResetMapView: false,
             })
           )
         } else {

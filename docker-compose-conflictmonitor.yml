@@ -7,7 +7,7 @@ services:
     profiles:
       - conflictmonitor
       - conflictmonitor_only
-    image: usdotjpoode/jpo-conflictmonitor:latest
+    image: ${DOCKERHUB_HOST:-usdotjpoode}/jpo-conflictmonitor:${DOCKERHUB_RELEASE:-2025-q2}
     restart: ${RESTART_POLICY}
     ports:
       - '8082:8082'
@@ -108,7 +108,7 @@ services:
       ACM_CONFIG_FILE: adm.properties
       ACM_LOG_TO_CONSOLE: false
       ACM_LOG_TO_FILE: true
-      ACM_LOG_LEVEL: INFO
+      ACM_LOG_LEVEL: WARNING
     depends_on:
       kafka:
         condition: service_healthy
@@ -134,7 +134,7 @@ services:
       ACM_CONFIG_FILE: aem.properties
       ACM_LOG_TO_CONSOLE: false
       ACM_LOG_TO_FILE: true
-      ACM_LOG_LEVEL: INFO
+      ACM_LOG_LEVEL: WARNING
     depends_on:
       kafka:
         condition: service_healthy

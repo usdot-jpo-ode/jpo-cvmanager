@@ -59,7 +59,7 @@ const initialState = {
   activeDiv: 'organization_table',
   title: 'Organizations',
   orgData: [] as AdminOrgSummary[],
-  selectedOrg: {} as AdminOrgSummary,
+  selectedOrg: undefined as AdminOrgSummary | undefined,
   rsuTableData: [] as AdminOrgRsu[],
   intersectionTableData: [] as AdminOrgIntersection[],
   userTableData: [] as AdminOrgUser[],

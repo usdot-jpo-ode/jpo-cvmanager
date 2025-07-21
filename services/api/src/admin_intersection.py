@@ -51,7 +51,7 @@ def get_intersection_data(intersection_id):
         rsus = intersection_dict[str(row["intersection_number"])]["rsus"]
         if row["org_name"] not in orgs:
             orgs.append(row["org_name"])
-        if row["rsu_ip"] not in orgs and row["rsu_ip"] is not None:
+        if row["rsu_ip"] not in rsus and row["rsu_ip"] is not None:
             rsus.append(row["rsu_ip"])
 
     intersection_list = list(intersection_dict.values())
@@ -81,7 +81,7 @@ def modify_intersection(intersection_spec):
     # Check for special characters for potential SQL injection
     if not admin_new_intersection.check_safe_input(intersection_spec):
         return {
-            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+            "message": "No special characters are allowed: !\"#$%'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
         }, 500
 
     try:

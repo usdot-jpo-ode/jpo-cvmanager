@@ -22,6 +22,17 @@ import { selectSelectedIntersectionId } from '../../../generalSlices/intersectio
 import { useSelector } from 'react-redux'
 import { Close } from '@mui/icons-material'
 
+export const CeaseBroadcastRecommendationTypes = [
+  'SpatBroadcastRateNotification',
+  'MapBroadcastRateNotification',
+  'StopLinePassageNotification',
+  'StopLineStopNotification',
+  'LaneDirectionOfTravelNotification',
+  'ConnectionOfTravelNotification',
+  'SignalStateConflictNotification',
+  'TimeChangeDetailsNotification',
+]
+
 const tabs = [
   {
     label: 'All',
@@ -30,7 +41,8 @@ const tabs = [
   },
   {
     label: 'Cease Broadcast',
-    value: 'CeaseBroadcast',
+    value: 'ceaseBroadcast',
+    values: CeaseBroadcastRecommendationTypes,
     description: 'Notification Requests to Cease Broadcast of Associated Messages',
   },
 ]
@@ -55,7 +67,8 @@ const applyFilters = (parameters, filter) =>
       return true
     }
 
-    return parameter['notificationType'] == filter.tab
+    const tab = tabs.find((tab) => tab.value === filter.tab)
+    return (tab?.values ?? []).includes(parameter['notificationType'])
   })
 
 const applyPagination = (parameters, page, rowsPerPage) =>
@@ -120,10 +133,11 @@ export const NotificationsTable = (props: { simple: boolean }) => {
   }
 
   const handleQueryChange = (event) => {
+    // console.log('Query changed:', event, queryRef)
     event.preventDefault()
     setFilter((prevState) => ({
       ...prevState,
-      query: queryRef.current?.value as string,
+      query: event.target.value,
     }))
   }
 
@@ -174,7 +188,7 @@ export const NotificationsTable = (props: { simple: boolean }) => {
                 }}
               >
                 {tabs.map((tab) => (
-                  <Tab key={tab.value} label={tab.label} value={tab.value} />
+                  <Tab key={tab.label} label={tab.label} value={tab.value} />
                 ))}
               </Tabs>
               <Box
@@ -200,8 +214,7 @@ export const NotificationsTable = (props: { simple: boolean }) => {
                   <Typography color={theme.palette.text.secondary}>{currentDescription}</Typography>
                 </Box>
                 <Box
-                  component="form"
-                  onSubmit={handleQueryChange}
+                  onChange={handleQueryChange}
                   sx={{
                     flexGrow: 1,
                     m: 1.5,
@@ -212,7 +225,6 @@ export const NotificationsTable = (props: { simple: boolean }) => {
                     variant="standard"
                     slotProps={{
                       input: {
-                        ref: queryRef,
                         startAdornment: (
                           <InputAdornment position="start">
                             <SearchIcon fontSize="small" />

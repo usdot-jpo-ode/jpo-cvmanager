@@ -19,7 +19,7 @@ spring.security.oauth2.resourceserver.jwt:
 
 spring.kafka.bootstrap-servers: ${KAFKA_BROKER_IP:localhost}:${KAFKA_BROKER_PORT:9092}
 logging.level.org.apache.kafka: INFO
-logging.level: DEBUG
+logging.level: INFO
 
 schema.bsm: classpath:schemas/bsm.schema.json
 schema.map: classpath:schemas/map.schema.json

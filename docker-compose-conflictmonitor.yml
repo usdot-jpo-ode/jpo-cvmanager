@@ -170,5 +170,51 @@ services:
         condition: service_healthy
         required: false
 
+  deduplicator:
+    profiles:
+      - conflictmonitor
+      - deduplicator
+    image: ${DOCKERHUB_HOST:-usdotjpoode}/jpo-deduplicator:${DOCKERHUB_RELEASE:-2025-q2}
+    privileged: false # Set true to allow writing to /proc/sys/vm/drop_caches
+    restart: ${RESTART_POLICY}
+    ports:
+      - '10091:10090' # JMX
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS}
+      SPRING_KAFKA_BOOTSTRAPSERVERS: ${KAFKA_BOOTSTRAP_SERVERS}
+      ENABLE_PROCESSED_MAP_DEDUPLICATION: true
+      ENABLE_PROCESSED_MAP_WKT_DEDUPLICATION: true
+      ENABLE_ODE_MAP_DEDUPLICATION: true
+      ENABLE_ODE_TIM_DEDUPLICATION: true
+      ENABLE_ODE_RAW_ENCODED_TIM_DEDUPLICATION: true
+      ENABLE_PROCESSED_SPAT_DEDUPLICATION: true
+      ENABLE_ODE_BSM_DEDUPLICATION: true
+      ENABLE_PROCESSED_BSM_DEDUPLICATION: true
+
+      DEDUPLICATOR_ROCKSDB_TOTAL_OFF_HEAP_MEMORY: 134217728
+      DEDUPLICATOR_ROCKSDB_INDEX_FILTER_BLOCK_RATIO: 0.1
+      DEDUPLICATOR_ROCKSDB_TOTAL_MEMTABLE_MEMORY: 67108864
+      DEDUPLICATOR_ROCKSDB_BLOCK_SIZE: 4096
+      DEDUPLICATOR_ROCKSDB_N_MEMTABLES: 2
+      DEDUPLICATOR_ROCKSDB_MEMTABLE_SIZE: 16777216
+    healthcheck:
+      test: ['CMD', 'java', '-version']
+      interval: 10s
+      timeout: 10s
+      retries: 20
+    logging:
+      options:
+        max-size: '10m'
+        max-file: '5'
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    depends_on:
+      kafka:
+        condition: service_healthy
+        required: false
+
 volumes:
   ode_vol:

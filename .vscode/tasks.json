@@ -35,7 +35,7 @@
         "up": {
           "detached": true,
           "build": true,
-          "profiles": ["intersection_no_api", "cvmanager_api"]
+          "profiles": ["intersection_no_api", "cvmanager_api", "mongo_full", "kafka_full", "kafka_connect_standalone"]
         },
         "files": ["${workspaceFolder}/docker-compose.yml", "${workspaceFolder}/docker-compose-intersection.yml"],
         "envFile": "${workspaceFolder}/.env"

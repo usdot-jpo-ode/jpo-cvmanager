@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Source, Layer, Popup, useMap } from 'react-map-gl'
 import { SymbolLayer } from 'mapbox-gl'
-import { Paper, Typography, FormGroup, FormControlLabel, Switch, Button } from '@mui/material'
+import { Paper, Typography, FormGroup, FormControlLabel, Switch, Button, Box, Grid2, Stack } from '@mui/material'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
@@ -12,6 +12,8 @@ import dayjs from 'dayjs'
 import { getHaasLocationData } from '../generalSlices/haasAlertSlice'
 import { HaasLocationProperties, HaasWebsocketLocationParams } from '../models/haas/HaasWebsocketLocation'
 import { Feature, Point } from 'geojson'
+import { WarningAmber } from '@mui/icons-material'
+import './css/HaasAlertVisualization.css'
 
 interface HaasAlertVisualizationProps {
   menuSelection: string[]
@@ -27,7 +29,6 @@ const haasAlertLayer: SymbolLayer = {
   layout: {
     'icon-image': 'haas-alert-icon',
     'icon-size': 0.15,
-    'icon-allow-overlap': true,
     'icon-anchor': 'top',
   },
   paint: {
@@ -44,7 +45,7 @@ export const HaasAlertVisualization: React.FC<HaasAlertVisualizationProps> = ({
 }) => {
   const { current: map } = useMap()
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-  const [haasActiveOnly, setHaasActiveOnly] = useState(false)
+  const [haasActiveOnly, setHaasActiveOnly] = useState(true)
   const [haasStartDate, setHaasStartDate] = useState(dayjs().subtract(24, 'hour'))
   const [haasEndDate, setHaasEndDate] = useState(dayjs())
 
@@ -159,17 +160,131 @@ export const HaasAlertVisualization: React.FC<HaasAlertVisualizationProps> = ({
           latitude={selectedIncident.geometry.coordinates[1]}
           longitude={selectedIncident.geometry.coordinates[0]}
           onClose={onIncidentClose}
+          maxWidth="350px"
         >
-          <div style={{ color: theme.palette.common.black }}>
-            <h3>HAAS Alert Incident</h3>
-            <p>Type: {selectedIncident.properties.location_type}</p>
-            <p>Street Name: {selectedIncident.properties.street_name}</p>
-            <p>Status: {selectedIncident.properties.is_active ? 'Active' : 'Inactive'}</p>
-            <p>Start Time: {new Date(selectedIncident.properties.start_time).toLocaleString()}</p>
-            {selectedIncident.properties.end_time && (
-              <p>End Time: {new Date(selectedIncident.properties.end_time).toLocaleString()}</p>
-            )}
-          </div>
+          <Stack className="haas-alert-popup">
+            <Grid2 container columnSpacing={0.5} rowSpacing={0} className="haas-alert-header">
+              <Grid2 size={1} className="haas-alert-icon-container">
+                <WarningAmber color="warning" fontSize="large" />
+              </Grid2>
+              <Grid2 size={6} className="haas-alert-title-container">
+                <Typography variant="h6" color="primary" className="haas-alert-title">
+                  HAAS Alert Incident
+                </Typography>
+                <Typography variant="body2" color="secondary" className="haas-alert-subtitle">
+                  {selectedIncident.properties.detailed_type || selectedIncident.properties.location_type}
+                </Typography>
+              </Grid2>
+              <Grid2 size={4} className="haas-alert-status-container">
+                <Box
+                  className={`haas-alert-status-badge ${selectedIncident.properties.is_active ? 'active' : 'inactive'}`}
+                >
+                  {selectedIncident.properties.is_active ? 'Active' : 'Inactive'}
+                </Box>
+              </Grid2>
+            </Grid2>
+
+            <Grid2 id="popup-body" container columnSpacing={1} rowSpacing={1} className="haas-alert-body">
+              <Grid2 size={4} justifyContent="flex-start">
+                <Typography variant="body2" className="haas-alert-label">
+                  Street Name:
+                </Typography>
+              </Grid2>
+              <Grid2 size={8} justifyContent="flex-start">
+                <Typography variant="body2" className="haas-alert-value">
+                  {selectedIncident.properties.street_name || 'N/A'}
+                </Typography>
+              </Grid2>
+
+              <Grid2 size={4} justifyContent="flex-start">
+                <Typography variant="body2" className="haas-alert-label">
+                  Type:
+                </Typography>
+              </Grid2>
+              <Grid2 size={8} justifyContent="flex-start">
+                <Typography variant="body2" sx={{ textTransform: 'capitalize' }}>
+                  {selectedIncident.properties.type || 'N/A'}
+                </Typography>
+              </Grid2>
+
+              <Grid2 size={4} justifyContent="flex-start">
+                <Typography variant="body2" className="haas-alert-label">
+                  Start Time:
+                </Typography>
+              </Grid2>
+              <Grid2 size={8} justifyContent="flex-start">
+                <Typography variant="body2">
+                  {selectedIncident.properties.start_time
+                    ? new Date(selectedIncident.properties.start_time).toLocaleString()
+                    : 'N/A'}
+                </Typography>
+              </Grid2>
+
+              {selectedIncident.properties.end_time && (
+                <>
+                  <Grid2 size={4} justifyContent="flex-start">
+                    <Typography variant="body2" className="haas-alert-label">
+                      End Time:
+                    </Typography>
+                  </Grid2>
+                  <Grid2 size={8} justifyContent="flex-start">
+                    <Typography variant="body2">
+                      {new Date(selectedIncident.properties.end_time).toLocaleString()}
+                    </Typography>
+                  </Grid2>
+                </>
+              )}
+
+              {selectedIncident.properties.alt && (
+                <>
+                  <Grid2 size={4} justifyContent="flex-start">
+                    <Typography variant="body2" className="haas-alert-label">
+                      Altitude:
+                    </Typography>
+                  </Grid2>
+                  <Grid2 size={8} justifyContent="flex-start">
+                    <Typography variant="body2">{selectedIncident.properties.alt.toFixed(0)} m</Typography>
+                  </Grid2>
+                </>
+              )}
+
+              {selectedIncident.properties.things_active && selectedIncident.properties.things_active.length > 0 && (
+                <>
+                  <Grid2 size={4} justifyContent="flex-start">
+                    <Typography variant="body2" sx={{ fontWeight: 600, color: theme.palette.text.primary }}>
+                      Active Things:
+                    </Typography>
+                  </Grid2>
+                  <Grid2 size={8} justifyContent="flex-start">
+                    <Typography variant="body2">{selectedIncident.properties.things_active.length}</Typography>
+                  </Grid2>
+                </>
+              )}
+
+              {selectedIncident.properties.things_inactive &&
+                selectedIncident.properties.things_inactive.length > 0 && (
+                  <>
+                    <Grid2 size={4} justifyContent="flex-start">
+                      <Typography variant="body2" className="haas-alert-label">
+                        Inactive Things:
+                      </Typography>
+                    </Grid2>
+                    <Grid2 size={8} justifyContent="flex-start">
+                      <Typography variant="body2">{selectedIncident.properties.things_inactive.length}</Typography>
+                    </Grid2>
+                  </>
+                )}
+            </Grid2>
+
+            <Box className="haas-alert-footer">
+              <Typography variant="caption" className="haas-alert-footer-label">
+                Incident ID:
+              </Typography>
+              <Typography variant="body2" className="haas-alert-footer-id">
+                {selectedIncident.properties.id || 'Unknown'}
+              </Typography>
+            </Box>
+          </Stack>
         </Popup>
       )}
     </>

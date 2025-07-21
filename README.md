@@ -135,13 +135,11 @@ If any issues occur, try re-building all images, with:
 docker compose up --build -d
 ```
 
-**ConflictMonitor Configuration Scripts**
-
-A set of scripts and data dumps exists in the [./resources/mongo_scripts](./resources/mongo_scripts) and [./resources/mongodumps](./resources/mongodumps) folders, see the included [README](./resources/mongo_scripts/README.md) for more information.
-
 **Re-generating ConflictMonitor Sample Data**
 
-An example script to complete all of these actions is shown below the description
+A set of data dumps exists in the [./resources/mongodumps](./resources/mongodumps) folder, which can each be automatically injected into MongoDB using the `MONGO_SAMPLE_DATA_RELATIVE_PATH` environment variable, such as `MONGO_SAMPLE_DATA_RELATIVE_PATH=../resources/mongodumps/dump_2025_07_21`.
+
+To create a new sample dataset, simply follow the below steps, and see the sample commands below the steps.
 
 1. Configure MongoDB to not restore any data on boot by leaving the env var `MONGO_SAMPLE_DATA_RELATIVE_PATH` blank
 2. Clear all existing docker volumes
@@ -167,7 +165,7 @@ cd ../
 java -jar ./script-runner/target/script-runner-cli.jar ../jpo-conflictmonitor/scripts/IntegrationTestScripts/ConnectionOfTravel-u-turn.csv
 
 # 5
-cs ../../jpo-cvmanager
+cd ../../jpo-cvmanager
 # Update the username and password to match your MongoDB instance (MONGO_READ_WRITE_USER and MONGO_READ_WRITE_PASSWORD)
 docker exec -it jpo-cvmanager-mongo-1 mongodump --db CV --out /dump --username=ode --password=replace_me --authenticationDatabase admin
 # This command requires an unix shell - if running in powershell, replace `$(date +%Y_%m_%d)` with `$formattedDate` where `$formattedDate = Get-Date -Format "yyyy_MM_dd"`.

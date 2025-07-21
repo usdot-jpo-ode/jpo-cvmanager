@@ -131,7 +131,7 @@ services:
           memory: 2G
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      ACM_CONFIG_FILE: adm.properties
+      ACM_CONFIG_FILE: aem.properties
       ACM_LOG_TO_CONSOLE: false
       ACM_LOG_TO_FILE: true
       ACM_LOG_LEVEL: INFO

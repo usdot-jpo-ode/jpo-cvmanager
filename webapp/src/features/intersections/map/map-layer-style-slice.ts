@@ -1,8 +1,6 @@
-import { AnyAction, createAsyncThunk, createSlice, PayloadAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { CircleLayer, LayerProps, LineLayer, SymbolLayer } from 'react-map-gl'
-import { CirclePaint, Layer } from 'mapbox-gl'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { CircleLayer, LineLayer, SymbolLayer } from 'react-map-gl'
 import { RootState } from '../../../store'
-import { createDraft } from 'immer'
 
 const mapMessageLayer: LineLayer = {
   id: 'map-message',

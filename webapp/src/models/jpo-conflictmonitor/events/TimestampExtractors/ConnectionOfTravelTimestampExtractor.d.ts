@@ -1,1 +1,1 @@
-type ConnectionOfTravelTimestampExtractor = {}
+type ConnectionOfTravelTimestampExtractor = object

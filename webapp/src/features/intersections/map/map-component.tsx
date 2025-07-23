@@ -3,7 +3,7 @@ import Map, { Source, Layer, MapRef } from 'react-map-gl'
 
 import { Container, Col } from 'reactstrap'
 
-import { Paper, Box, Fab, useTheme, Button } from '@mui/material'
+import { Paper, Box, Fab, useTheme } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 
 import ControlPanel from './control-panel'
@@ -101,10 +101,6 @@ export const getTimestamp = (dt: any): number => {
   }
 }
 
-type timestamp = {
-  timestamp: number
-}
-
 const IntersectionMap = (props: MAP_PROPS) => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const location = useLocation()
@@ -191,7 +187,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
         })
       )
       if (liveDataActive && authToken && props.intersectionId) {
-        cleanUpLiveStreaming()
+        dispatch(cleanUpLiveStreaming())
         dispatch(
           initializeLiveStreaming({
             token: authToken,
@@ -373,7 +369,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
           cursor={cursor}
           onMouseMove={(e) => dispatch(onMapMouseMove({ features: e.features, lngLat: e.lngLat }))}
           onMouseEnter={(e) => dispatch(onMapMouseEnter({ features: e.features, lngLat: e.lngLat }))}
-          onMouseLeave={(e) => dispatch(onMapMouseLeave())}
+          onMouseLeave={() => dispatch(onMapMouseLeave())}
           onLoad={(e: mapboxgl.MapboxEvent<undefined>) => {
             const map = e.target
             if (!map) return

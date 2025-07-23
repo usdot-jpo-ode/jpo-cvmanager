@@ -1,4 +1,4 @@
-import { alpha, createTheme, Theme } from '@mui/material'
+import { createTheme, Theme } from '@mui/material'
 import './fonts/museo-slab.css'
 import '../App.css'
 

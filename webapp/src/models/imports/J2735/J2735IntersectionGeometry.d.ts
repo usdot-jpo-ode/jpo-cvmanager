@@ -1,5 +1,5 @@
 type J2735IntersectionGeometry = {
-  name?: String
+  name?: string
   id?: J2735IntersectionReferenceID
   revision?: number
   refPoint?: OdePosition3D

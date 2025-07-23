@@ -4,8 +4,6 @@ import EnvironmentVars from '../../EnvironmentVars'
 import apiHelper from '../../apis/api-helper'
 import { updateTableData as updateRsuTableData } from '../adminRsuTab/adminRsuTabSlice'
 import { RootState } from '../../store'
-import { AdminOrgRsu } from '../adminOrganizationTab/adminOrganizationTabSlice'
-import { AdminRsu } from '../../models/Rsu'
 import { AdminAddRsuForm } from './AdminAddRsu'
 
 export type AdminRsuCreationInfo = {
@@ -57,52 +55,52 @@ const initialState = {
 
 export const updateApiJson = (apiJson: AdminRsuCreationInfo): AdminRsuKeyedCreationInfo => {
   if (Object.keys(apiJson).length !== 0) {
-    let keyedApiJson = {} as AdminRsuKeyedCreationInfo
+    const keyedApiJson = {} as AdminRsuKeyedCreationInfo
 
     let data = []
     for (let i = 0; i < apiJson['primary_routes'].length; i++) {
-      let value = apiJson['primary_routes'][i]
-      let temp = { id: i, name: value }
+      const value = apiJson['primary_routes'][i]
+      const temp = { id: i, name: value }
       data.push(temp)
     }
     keyedApiJson.primary_routes = data
 
     data = []
     for (let i = 0; i < apiJson['rsu_models'].length; i++) {
-      let value = apiJson['rsu_models'][i]
-      let temp = { id: i, name: value }
+      const value = apiJson['rsu_models'][i]
+      const temp = { id: i, name: value }
       data.push(temp)
     }
     keyedApiJson.rsu_models = data
 
     data = []
     for (let i = 0; i < apiJson['ssh_credential_groups'].length; i++) {
-      let value = apiJson['ssh_credential_groups'][i]
-      let temp = { id: i, name: value }
+      const value = apiJson['ssh_credential_groups'][i]
+      const temp = { id: i, name: value }
       data.push(temp)
     }
     keyedApiJson.ssh_credential_groups = data
 
     data = []
     for (let i = 0; i < apiJson['snmp_credential_groups'].length; i++) {
-      let value = apiJson['snmp_credential_groups'][i]
-      let temp = { id: i, name: value }
+      const value = apiJson['snmp_credential_groups'][i]
+      const temp = { id: i, name: value }
       data.push(temp)
     }
     keyedApiJson.snmp_credential_groups = data
 
     data = []
     for (let i = 0; i < apiJson['snmp_version_groups'].length; i++) {
-      let value = apiJson['snmp_version_groups'][i]
-      let temp = { id: i, name: value }
+      const value = apiJson['snmp_version_groups'][i]
+      const temp = { id: i, name: value }
       data.push(temp)
     }
     keyedApiJson.snmp_version_groups = data
 
     data = []
     for (let i = 0; i < apiJson['organizations'].length; i++) {
-      let value = apiJson['organizations'][i]
-      let temp = { id: i, name: value }
+      const value = apiJson['organizations'][i]
+      const temp = { id: i, name: value }
       data.push(temp)
     }
     keyedApiJson.organizations = data
@@ -147,8 +145,8 @@ export const updateJson = (data: AdminAddRsuForm, state: RootState['adminAddRsu'
   json.snmp_credential_group = state.value.selectedSnmpGroup
   json.snmp_version_group = state.value.selectedSnmpVersion
 
-  let tempOrganizations = []
-  for (var i = 0; i < state.value.selectedOrganizations.length; i++) {
+  const tempOrganizations = []
+  for (let i = 0; i < state.value.selectedOrganizations.length; i++) {
     tempOrganizations.push(state.value.selectedOrganizations[i].name)
   }
 
@@ -206,8 +204,8 @@ export const submitForm = createAsyncThunk(
 
     const currentState = getState() as RootState
     if (checkForm(currentState.adminAddRsu)) {
-      let json = updateJson(data, currentState.adminAddRsu)
-      let res = await dispatch(createRsu({ json, reset }))
+      const json = updateJson(data, currentState.adminAddRsu)
+      const res = await dispatch(createRsu({ json, reset }))
       if ((res.payload as any).success) {
         return { submitAttempt: false, success: true, message: 'RSU Created Successfully' }
       } else {
@@ -270,7 +268,7 @@ export const adminAddRsuSlice = createSlice({
       .addCase(createRsu.pending, (state) => {
         state.loading = true
       })
-      .addCase(createRsu.fulfilled, (state, action) => {
+      .addCase(createRsu.fulfilled, (state) => {
         state.loading = false
       })
       .addCase(createRsu.rejected, (state) => {

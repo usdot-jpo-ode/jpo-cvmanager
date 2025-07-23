@@ -93,17 +93,18 @@ exports[`should take a snapshot 1`] = `
                   <div
                     class="MuiAccordionDetails-root css-mocked-MuiAccordionDetails-root"
                   >
-                    <div
-                      style="background-color: rgb(0, 0, 0); border-top: 1px solid white; border-bottom: 1px solid white; font-family: \\"museo-slab\\" Arial Helvetica Sans-Serif; width: 90%; padding: 0.5rem 1rem;"
-                    >
-                      <p>
+                    <div>
+                      <p
+                        class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+                      >
                         <b>
                           RSU Online Status: 
                         </b>
                         Offline
                       </p>
-                      <br />
-                      <p>
+                      <p
+                        class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+                      >
                         <b>
                           RSU Last Online: 
                         </b>
@@ -172,17 +173,18 @@ exports[`should take a snapshot 1`] = `
                   <div
                     class="MuiAccordionDetails-root css-mocked-MuiAccordionDetails-root"
                   >
-                    <div
-                      style="background-color: rgb(0, 0, 0); border-top: 1px solid white; border-bottom: 1px solid white; font-family: \\"museo-slab\\" Arial Helvetica Sans-Serif; width: 90%; padding: 0.5rem 1rem;"
-                    >
-                      <p>
+                    <div>
+                      <p
+                        class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+                      >
                         <b>
                           SCMS Status: 
                         </b>
                         Unhealthy
                       </p>
-                      <br />
-                      <p>
+                      <p
+                        class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+                      >
                         <b>
                           SCMS Expiration: 
                         </b>

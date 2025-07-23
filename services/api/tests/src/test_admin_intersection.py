@@ -247,7 +247,7 @@ def test_modify_intersection_check_fail(mock_pgquery, mock_check_safe_input):
 
     assert (
         str(exc_info.value)
-        == "400 Bad Request: No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+        == "400 Bad Request: No special characters are allowed: !\"#$%'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
     )
     mock_pgquery.assert_has_calls([])
 

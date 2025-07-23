@@ -220,6 +220,8 @@ In addition to the groups defined in the table below, each service may also be a
 | intersection_api                   | ❌    | ❌     | ✅           | ❌                  | ❌              | ❌     | ❌      |
 | conflictmonitor                    | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
 | ode                                | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
+| aem                                | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
+| adm                                | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
 | geojsonconverter                   | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
 | deduplicator                       | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
 | connect                            | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |

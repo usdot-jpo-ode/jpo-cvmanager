@@ -12,7 +12,7 @@ class DecoderApi {
     type?: DECODER_MESSAGE_TYPE
     abortController?: AbortController
   }): Promise<DecoderApiResponseGeneric | undefined> {
-    var response = await authApiHelper.invokeApi({
+    const response = await authApiHelper.invokeApi({
       path: 'asn1/decoder/raw',
       token: token,
       method: 'POST',

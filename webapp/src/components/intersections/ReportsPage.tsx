@@ -63,14 +63,10 @@ const Page = () => {
     }
   }
 
-  useEffect(
-    () => {
-      setLoading(true)
-      setTimeout(() => listReports(filters.startDate, filters.endDate, intersectionId), 300)
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [filters, intersectionId]
-  )
+  useEffect(() => {
+    setLoading(true)
+    setTimeout(() => listReports(filters.startDate, filters.endDate, intersectionId), 300)
+  }, [filters, intersectionId])
 
   const handleChangeFilters = (newFilters) => {
     setFilters(newFilters)

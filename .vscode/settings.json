@@ -50,6 +50,7 @@
     "dockerized",
     "dont",
     "drivername",
+    "Dsrc",
     "formik",
     "fromaddr",
     "Fwding",
@@ -105,6 +106,7 @@
     "rxtxfwd",
     "SASL",
     "secretmanager",
+    "Scms",
     "SNMP",
     "snmpcredential",
     "snmperrorcheck",
@@ -128,7 +130,7 @@
     "writedb",
     "WSMP",
     "wydot",
-    "WZDX",
+    "wzdx",
     "Xmit",
     "yunex",
     "Zabbix"
@@ -137,5 +139,18 @@
   "files.eol": "\n",
   "[java]": {
     "editor.defaultFormatter": "redhat.java"
-  }
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  },
+  "eslint.validate": [
+    "typescript",
+    "typescriptreact",
+    "javascript",
+    "javascriptreact",
+    "html",
+    "json",
+    "jsonc",
+    "markdown"
+  ]
 }

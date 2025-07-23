@@ -225,8 +225,6 @@ describe('generatePdf', () => {
 
   it('should handle errors during graph capture gracefully', async () => {
     ;(toPng as jest.Mock).mockRejectedValue(new Error('Graph capture failed'))
-    const pdf = new jsPDF()
-
     await generatePdf(mockReport, mockSetLoading, false, mockIsModalOpen, mockSetProgress, mockSignal)
 
     expect(console.error).toHaveBeenCalledWith('Error capturing graph:', expect.any(Error))
@@ -236,8 +234,6 @@ describe('generatePdf', () => {
     const abortController = new AbortController()
     abortController.abort()
     mockSignal = abortController.signal
-    const pdf = new jsPDF()
-
     await generatePdf(mockReport, mockSetLoading, false, mockIsModalOpen, mockSetProgress, mockSignal)
 
     expect(console.error).not.toHaveBeenCalled()

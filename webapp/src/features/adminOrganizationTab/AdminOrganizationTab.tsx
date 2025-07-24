@@ -101,7 +101,9 @@ const AdminOrganizationTab = () => {
   }
 
   useEffect(() => {
-    getSelectedOrgData()
+    if (selectedOrgName != undefined) {
+      getSelectedOrgData()
+    }
   }, [selectedOrgName, dispatch])
 
   useEffect(() => {

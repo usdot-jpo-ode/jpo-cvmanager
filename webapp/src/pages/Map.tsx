@@ -1392,15 +1392,6 @@ function MapPage() {
               )}
             </div>
           )}
-          {activeLayers.includes('haas-alert-layer') && haasLocationData.data && (
-            <HaasAlertVisualization
-              menuSelection={menuSelection}
-              haasLocationData={haasLocationData}
-              theme={theme}
-              selectedIncident={selectedHaasIncident}
-              onIncidentClose={() => setSelectedHaasIncident(null)}
-            />
-          )}
           {selectedRsu ? (
             <Popup
               latitude={selectedRsu.geometry.coordinates[1]}
@@ -1551,6 +1542,15 @@ function MapPage() {
               </Stack>
             </Popup>
           ) : null}
+          {activeLayers.includes('haas-alert-layer') && haasLocationData.data && (
+            <HaasAlertVisualization
+              menuSelection={menuSelection}
+              haasLocationData={haasLocationData}
+              theme={theme}
+              selectedIncident={selectedHaasIncident}
+              onIncidentClose={() => setSelectedHaasIncident(null)}
+            />
+          )}
         </Map>
       </Container>
 

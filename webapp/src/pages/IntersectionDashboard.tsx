@@ -120,6 +120,11 @@ function IntersectionDashboard() {
           defaultTabIndex={0}
           tabs={[
             {
+              path: '', // Default path, prevent errors
+              title: 'Dashboard',
+              child: <DashboardPage />,
+            },
+            {
               path: 'dashboard',
               title: 'Dashboard',
               child: <DashboardPage />,

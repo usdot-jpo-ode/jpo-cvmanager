@@ -140,6 +140,7 @@ const Header = () => {
                     >
                       {(authLoginData?.data?.organizations ?? []).map((permission) => (
                         <FormControlLabel
+                          key={permission.name}
                           label={permission.name}
                           control={<Radio size="small" />}
                           value={permission.name}

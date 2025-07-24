@@ -47,6 +47,12 @@ function Admin() {
             defaultTabIndex={0}
             tabs={[
               {
+                path: '', // Default path, prevent errors
+                title: 'RSUs',
+                child: <AdminRsuTab />,
+                tag: 'rsu',
+              },
+              {
                 path: 'rsus',
                 title: 'RSUs',
                 child: <AdminRsuTab />,

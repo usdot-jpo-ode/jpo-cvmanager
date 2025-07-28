@@ -143,33 +143,43 @@ To create a new sample dataset, simply follow the below steps, and see the sampl
 
 1. Configure MongoDB to not restore any data on boot by leaving the env var `MONGO_SAMPLE_DATA_RELATIVE_PATH` blank
 2. Clear all existing docker volumes
+
+```sh
+docker compose down -v
+```
+
 3. Bring up the cv-manager including the conflictmonitor components with the env var `COMPOSE_PROFILES=basic,webapp,intersection,conflictmonitor,mongo_full,kafka_full,kafka_connect_standalone`
+
+```sh
+docker compose up -d
+```
+
 4. Clone the ConflictMonitor repository and run the test-message-sender to generate sample data
    1. If data is not being sync'd to mongodb, ensure that you have set your env var `CONNECT_URL=http://${DOCKER_HOST_IP}:8083`
-5. Export the newly generated data to create a new dump of the MongoDB database
-6. Update your `MONGO_SAMPLE_DATA_RELATIVE_PATH` in the `.env` file to point to the new dump folder
-   1. e.x. `MONGO_SAMPLE_DATA_RELATIVE_PATH=../resources/mongodumps/dump_2025_07_21`
 
-```
-# 2
-docker compose down -v
-
-# 3
-docker compose up -d
-
-# 4
+```sh
 git clone https://github.com/usdot-jpo-ode/jpo-conflictmonitor
 cd jpo-conflictmonitor/test-message-sender/script-runner
 mvn clean install
 cd ../
 java -jar ./script-runner/target/script-runner-cli.jar ../jpo-conflictmonitor/scripts/IntegrationTestScripts/ConnectionOfTravel-u-turn.csv
+```
 
-# 5
+5. Export the newly generated data to create a new dump of the MongoDB database
+
+```sh
 cd ../../jpo-cvmanager
 # Update the username and password to match your MongoDB instance (MONGO_READ_WRITE_USER and MONGO_READ_WRITE_PASSWORD)
 docker exec -it jpo-cvmanager-mongo-1 mongodump --db CV --out /dump --username=ode --password=replace_me --authenticationDatabase admin
 # This command requires an unix shell - if running in powershell, replace `$(date +%Y_%m_%d)` with `$formattedDate` where `$formattedDate = Get-Date -Format "yyyy_MM_dd"`.
 docker cp jpo-cvmanager-mongo-1:/dump ./resources/mongodumps/dump_$(date +%Y_%m_%d)
+```
+
+6. Update your `MONGO_SAMPLE_DATA_RELATIVE_PATH` in the `.env` file to point to the new dump folder and restart the docker compose to use the new data dump:
+   1. e.x. `MONGO_SAMPLE_DATA_RELATIVE_PATH=../resources/mongodumps/dump_2025_07_21`
+
+```sh
+docker compose up -d
 ```
 
 #### MongoDB

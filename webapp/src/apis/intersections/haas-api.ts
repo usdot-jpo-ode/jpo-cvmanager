@@ -12,7 +12,7 @@ class HaasApi {
     abortController?: AbortController
   }): Promise<HaasWebsocketLocationResponse> {
     var response = await authApiHelper.invokeApi({
-      path: '/haas/locations',
+      path: '/data/haas/locations',
       token: token,
       queryParams: query_params,
       abortController,

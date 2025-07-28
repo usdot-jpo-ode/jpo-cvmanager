@@ -28,7 +28,7 @@ const haasAlertLayer: SymbolLayer = {
   type: 'symbol',
   layout: {
     'icon-image': 'haas-alert-icon',
-    'icon-size': 0.15,
+    'icon-size': 0.1,
     'icon-anchor': 'top',
   },
   paint: {

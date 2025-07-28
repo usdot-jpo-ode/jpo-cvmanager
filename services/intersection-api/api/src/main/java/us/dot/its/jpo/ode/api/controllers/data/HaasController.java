@@ -1,4 +1,4 @@
-package us.dot.its.jpo.ode.api.controllers;
+package us.dot.its.jpo.ode.api.controllers.data;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ public class HaasController {
         }
 
         @Operation(summary = "HAAS Alert Locations", description = "Returns HAAS alert locations in GeoJSON format with pagination")
-        @RequestMapping(value = "/haas/locations", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+        @RequestMapping(value = "/data/haas/locations", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
         @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "200", description = "Success"),

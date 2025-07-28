@@ -56,11 +56,11 @@
 }
 
 .haas-alert-status-badge.active {
-  background-color: var(--mui-palette-error-dark);
+  background-color: var(--mui-palette-success-dark);
 }
 
 .haas-alert-status-badge.inactive {
-  background-color: var(--mui-palette-success-dark);
+  background-color: var(--mui-palette-error-dark);
 }
 
 .haas-alert-body {

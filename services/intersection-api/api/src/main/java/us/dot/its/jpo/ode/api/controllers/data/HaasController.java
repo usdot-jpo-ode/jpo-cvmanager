@@ -1,10 +1,12 @@
 package us.dot.its.jpo.ode.api.controllers.data;
 
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,7 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.MediaType;
@@ -25,6 +27,7 @@ import us.dot.its.jpo.ode.api.models.haas.HaasLocation;
 @Slf4j
 @RestController
 @ConditionalOnProperty(value = { "enable.api", "enable.haas" }, havingValue = "true", matchIfMissing = false)
+@RequestMapping(value = "/data/haas/")
 @ApiResponses(value = {
                 @ApiResponse(responseCode = "401", description = "Unauthorized"),
                 @ApiResponse(responseCode = "500", description = "Internal Server Error")
@@ -39,7 +42,7 @@ public class HaasController {
         }
 
         @Operation(summary = "HAAS Alert Locations", description = "Returns HAAS alert locations in GeoJSON format with pagination")
-        @RequestMapping(value = "/data/haas/locations", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+        @GetMapping(value = "/locations", produces = MediaType.APPLICATION_JSON_VALUE)
         @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "200", description = "Success"),
@@ -50,11 +53,8 @@ public class HaasController {
                         @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
                         @RequestParam(name = "end_time_utc_millis", required = false) Long endTime,
                         @RequestParam(name = "latest", required = false, defaultValue = "false") boolean latest,
-                        @RequestParam(name = "page", required = false, defaultValue = "0") int page,
-                        @RequestParam(name = "size", required = false, defaultValue = "10000") int size,
-                        @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
+                        @PageableDefault(size = 10000, page = 0) Pageable pageable) {
 
-                PageRequest pageable = PageRequest.of(page, size);
                 Page<HaasLocation> locations = haasLocationDataRepository.find(
                                 activeOnly,
                                 startTime,

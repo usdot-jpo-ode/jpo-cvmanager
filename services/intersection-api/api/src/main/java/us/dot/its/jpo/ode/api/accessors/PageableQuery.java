@@ -21,9 +21,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 public interface PageableQuery {
 
     Logger logger = LoggerFactory.getLogger(PageableQuery.class);
@@ -37,7 +34,6 @@ public interface PageableQuery {
      * @param pageable       the pageable object to use for pagination
      * @param criteria       the criteria object to use for querying
      * @param sort           the sort object to use for sorting
-     * @param groupBy        optional field to group by (can be null)
      * @param outputType     the class type of the output
      * @return the paginated data that matches the given criteria
      */
@@ -49,22 +45,10 @@ public interface PageableQuery {
             @Nonnull Sort sort,
             @Nullable List<String> excludedFields,
             @Nonnull Class<T> outputType) {
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, excludedFields, null, outputType);
-    }
-
-    default <T> Page<T> findPage(
-            @Nonnull MongoTemplate mongoTemplate,
-            @Nonnull String collectionName,
-            @Nonnull Pageable pageable,
-            @Nonnull Criteria criteria,
-            @Nonnull Sort sort,
-            @Nullable List<String> excludedFields,
-            @Nullable String groupBy,
-            @Nonnull Class<T> outputType) {
         List<String> fieldsToExclude = excludedFields != null ? excludedFields : Collections.emptyList();
 
         AggregationResult aggregationResult = getAggregationResult(mongoTemplate, collectionName, pageable, criteria,
-                sort, fieldsToExclude, groupBy);
+                sort, fieldsToExclude);
         if (aggregationResult == null || aggregationResult.getMetadata().isEmpty()) {
             return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }
@@ -99,22 +83,10 @@ public interface PageableQuery {
             @Nonnull Criteria criteria,
             @Nonnull Sort sort,
             @Nullable List<String> excludedFields) {
-        return findDocumentsWithPagination(mongoTemplate, collectionName, pageable, criteria, sort, excludedFields,
-                null);
-    }
-
-    default Page<Document> findDocumentsWithPagination(
-            @Nonnull MongoTemplate mongoTemplate,
-            @Nonnull String collectionName,
-            @Nonnull Pageable pageable,
-            @Nonnull Criteria criteria,
-            @Nonnull Sort sort,
-            @Nullable List<String> excludedFields,
-            @Nullable String groupBy) {
         List<String> fieldsToExclude = excludedFields != null ? excludedFields : Collections.emptyList();
 
         AggregationResult result = getAggregationResult(mongoTemplate, collectionName, pageable, criteria, sort,
-                fieldsToExclude, groupBy);
+                fieldsToExclude);
         if (result == null || result.getMetadata().isEmpty()) {
             return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }
@@ -146,15 +118,8 @@ public interface PageableQuery {
             @Nonnull Pageable pageable,
             @Nonnull Criteria criteria,
             @Nonnull Sort sort,
-            @Nonnull List<String> excludedFields,
-            @Nullable String groupBy) {
+            @Nonnull List<String> excludedFields) {
         List<AggregationOperation> operations = new ArrayList<>();
-
-        // Add group by operation if specified
-        if (groupBy != null && !groupBy.isEmpty()) {
-            GroupOperation groupOperation = Aggregation.group(groupBy);
-            operations.add(groupOperation);
-        }
 
         MatchOperation matchOperation = Aggregation.match(criteria);
         SortOperation sortOperation = Aggregation.sort(sort);

@@ -154,7 +154,7 @@ docker compose down -v
 docker compose up -d
 ```
 
-4. Clone the ConflictMonitor repository and run the test-message-sender to generate sample data
+4. Clone the [ConflictMonitor repository](https://github.com/usdot-jpo-ode/jpo-conflictmonitor) and run the [test-message-sender](https://github.com/usdot-jpo-ode/jpo-conflictmonitor/blob/develop/test-message-sender/README.md) to generate sample data
    1. If data is not being sync'd to mongodb, ensure that you have set your env var `CONNECT_URL=http://${DOCKER_HOST_IP}:8083`
 
 ```sh

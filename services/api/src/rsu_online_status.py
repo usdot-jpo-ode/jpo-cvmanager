@@ -32,9 +32,10 @@ def get_ping_data(user: EnvironWithOrg):
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
         "JOIN ("
         "SELECT * FROM public.ping AS ping_data "
-        f"WHERE ping_data.timestamp >= '{t.strftime('%Y/%m/%dT%H:%M:%S')}'::timestamp"
+        "WHERE ping_data.timestamp >= :timestamp::timestamp"
         ") AS ping_data ON rd.rsu_id = ping_data.rsu_id "
     )
+    params = {"timestamp": t.strftime("%Y/%m/%dT%H:%M:%S")}
 
     "WHERE ron_v.name = 'True' ORDER BY rd.rsu_id, ping_data.timestamp DESC;"
 
@@ -50,7 +51,7 @@ def get_ping_data(user: EnvironWithOrg):
     query += "ORDER BY rd.rsu_id, ping_data.timestamp DESC"
 
     logging.debug(f'Executing query: "{query};"')
-    data = pgquery.query_db(query)
+    data = pgquery.query_db(query, params=params)
 
     logging.info("Parsing results...")
     for row in data:
@@ -84,16 +85,17 @@ def get_last_online_data_authorized(ip: str):
         "SELECT rsus.rsu_id, rsus.ipv4_address "
         "FROM public.rsus "
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rsus.rsu_id "
-        f"WHERE rsus.ipv4_address = '{ip}' "
+        "WHERE rsus.ipv4_address = :rsu_ip "
         ") AS rd ON ping.rsu_id = rd.rsu_id "
         "WHERE ping.rsu_id = rd.rsu_id "
         "AND result = '1' "
         "ORDER BY ping.timestamp DESC "
         "LIMIT 1"
     )
+    params = {"rsu_ip": ip}
 
     logging.debug(f'Executing query: "{query};"')
-    data = pgquery.query_db(query)
+    data = pgquery.query_db(query, params=params)
     result = [value[0] for value in data]
 
     return {

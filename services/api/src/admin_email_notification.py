@@ -23,11 +23,11 @@ def get_notification_data(user_email):
         "FROM public.user_email_notification "
         "JOIN public.users AS u ON u.user_id = user_email_notification.user_id "
         "JOIN public.email_type AS e ON e.email_type_id = user_email_notification.email_type_id "
-        f"WHERE user_email_notification.user_id IN (SELECT user_id FROM public.users WHERE email = '{user_email}')"
+        "WHERE user_email_notification.user_id IN (SELECT user_id FROM public.users WHERE email = :user_email)"
         ") as row"
     )
-
-    data = pgquery.query_db(query)
+    params = {"user_email": user_email}
+    data = pgquery.query_db(query, params=params)
 
     notification_dict = {}
     for row in data:
@@ -52,9 +52,7 @@ def get_notification_data(user_email):
     resource_type=RESOURCE_TYPE.USER,
 )
 def get_modify_notification_data_authorized(user_email):
-    return {
-        "notification_data": get_notification_data(user_email)
-    }
+    return {"notification_data": get_notification_data(user_email)}
 
 
 def check_safe_input(notification_spec):
@@ -95,11 +93,16 @@ def modify_notification_authorized(email, notification_spec):
         # Modify the existing user data
         query = (
             "UPDATE public.user_email_notification SET "
-            f"email_type_id = (SELECT email_type_id FROM public.email_type WHERE email_type = '{notification_spec['new_email_type']}') "
-            f"WHERE user_id = (SELECT user_id FROM public.users WHERE email = '{email}')  "
-            f"AND email_type_id = (SELECT email_type_id FROM public.email_type WHERE email_type = '{notification_spec['old_email_type']}')"
+            "email_type_id = (SELECT email_type_id FROM public.email_type WHERE email_type = :new_email_type) "
+            "WHERE user_id = (SELECT user_id FROM public.users WHERE email = :user_email)  "
+            "AND email_type_id = (SELECT email_type_id FROM public.email_type WHERE email_type = :old_email_type)"
         )
-        pgquery.write_db(query)
+        params = {
+            "new_email_type": notification_spec["new_email_type"],
+            "user_email": email,
+            "old_email_type": notification_spec["old_email_type"],
+        }
+        pgquery.write_db(query, params=params)
 
     except IntegrityError as e:
         if e.orig is None:
@@ -124,10 +127,14 @@ def modify_notification_authorized(email, notification_spec):
 def delete_notification_authorized(user_email, email_type):
     notification_remove_query = (
         "DELETE FROM public.user_email_notification WHERE "
-        f"user_id IN (SELECT user_id FROM public.users WHERE email = '{user_email}') "
-        f"AND email_type_id IN (SELECT email_type_id FROM public.email_type WHERE email_type = '{email_type}')"
+        "user_id IN (SELECT user_id FROM public.users WHERE email = :user_email) "
+        "AND email_type_id IN (SELECT email_type_id FROM public.email_type WHERE email_type = :email_type)"
     )
-    pgquery.write_db(notification_remove_query)
+    params = {
+        "user_email": user_email,
+        "email_type": email_type,
+    }
+    pgquery.write_db(notification_remove_query, params=params)
 
     return {"message": "Email notification successfully deleted"}
 

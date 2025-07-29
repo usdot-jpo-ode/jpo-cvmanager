@@ -18,11 +18,11 @@ def query_org_rsus(orgName):
     query = (
         "SELECT ipv4_address from public.rsus as rd "
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
-        f"WHERE ron_v.name = '{orgName}'"
+        "WHERE ron_v.name = :org_name"
     )
-
+    params = {"org_name": orgName}
     logging.debug(query)
-    data = pgquery.query_db(query)
+    data = pgquery.query_db(query, params=params)
 
     result = set()
     for row in data:
@@ -43,30 +43,32 @@ def query_rsu_devices(ipList, pointList, vendor=None):
         geogString += long + " " + lat + ","
 
     geogString = geogString[:-1] + "))"
-    ipList = ", ".join(ipList)
+    params = {"ip_list": "{" + ", ".join(ipList) + "}"}
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
         "SELECT ipv4_address as ip, "
-        f"ST_X(geography::geometry) AS long, "
-        f"ST_Y(geography::geometry) AS lat "
-        f"FROM rsus "
-        f"WHERE ipv4_address = ANY('{{{ipList}}}'::inet[]) "
+        "ST_X(geography::geometry) AS long, "
+        "ST_Y(geography::geometry) AS lat "
+        "FROM rsus "
+        "WHERE ipv4_address = ANY(:ip_list::inet[]) "
     )
     if vendor is not None:
         query += (
-            f" AND ipv4_address IN (SELECT rd.ipv4_address "
+            " AND ipv4_address IN (SELECT rd.ipv4_address "
             "FROM public.rsus as rd "
             "JOIN public.rsu_models as rm ON rm.rsu_model_id = rd.model "
             "JOIN public.manufacturers as man on man.manufacturer_id = rm.manufacturer "
-            f"WHERE man.name = '{vendor}') "
+            "WHERE man.name = :vendor) "
         )
-    query += f"AND ST_Contains(ST_SetSRID(ST_GeomFromText('{geogString}'), 4326), rsus.geography::geometry)) as row"
+        params["vendor"] = vendor
+    query += "AND ST_Contains(ST_SetSRID(ST_GeomFromText(:polygon), 4326), rsus.geography::geometry)) as row"
+    params["polygon"] = geogString
 
     logging.debug(query)
     logging.info("Running query_rsu_devices")
 
-    query_job = pgquery.query_db(query)
+    query_job = pgquery.query_db(query, params=params)
 
     result = []
     count = 0

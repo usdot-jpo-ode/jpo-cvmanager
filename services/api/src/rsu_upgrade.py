@@ -22,10 +22,11 @@ def check_for_upgrade(rsu_ip):
         "FROM public.rsus AS rd "
         "JOIN public.firmware_upgrade_rules fur ON fur.from_id = rd.firmware_version "
         "JOIN public.firmware_images fi2 ON fi2.firmware_id = fur.to_id "
-        f"WHERE rd.ipv4_address = '{rsu_ip}'"
+        "WHERE rd.ipv4_address = :rsu_ip"
         ") as row"
     )
-    data = pgquery.query_db(query)
+    params = {"rsu_ip": rsu_ip}
+    data = pgquery.query_db(query, params=params)
 
     if len(data) > 0:
         # Grab the first result, it should be the only result if the 'firmware_upgrade_rules' table is populated properly

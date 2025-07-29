@@ -107,9 +107,13 @@ def test_get_all_orgs(mock_query_db):
     mock_query_db.return_value = admin_org_data.get_all_orgs_pgdb_return
     expected_result = admin_org_data.get_all_orgs_result
     expected_query = admin_org_data.get_all_orgs_sql
-    actual_result = admin_org.get_all_orgs(user_valid.user_info.organizations)
+    actual_result = admin_org.get_all_orgs(
+        list(user_valid.user_info.organizations.keys())
+    )
 
-    mock_query_db.assert_called_with(expected_query)
+    mock_query_db.assert_called_with(
+        expected_query, params={"org_list": ["Test Org", "Test Org 2", "Test Org 3"]}
+    )
     assert actual_result == expected_result
 
 
@@ -125,9 +129,12 @@ def test_get_org_data(mock_query_db):
     actual_result = admin_org.get_org_data("Test Org", user_valid)
 
     calls = [
-        call(admin_org_data.get_org_data_user_sql),
-        call(admin_org_data.get_org_data_rsu_sql),
-        call(admin_org_data.get_org_data_intersection_sql),
+        call(admin_org_data.get_org_data_user_sql, params={"org_name": "Test Org"}),
+        call(admin_org_data.get_org_data_rsu_sql, params={"org_name": "Test Org"}),
+        call(
+            admin_org_data.get_org_data_intersection_sql,
+            params={"org_name": "Test Org"},
+        ),
     ]
     mock_query_db.assert_has_calls(calls)
     assert actual_result == expected_result
@@ -199,14 +206,35 @@ def test_modify_organization_success(mock_pgquery, mock_check_safe_input):
     )
 
     calls = [
-        call(admin_org_data.modify_org_sql),
-        call(admin_org_data.modify_org_add_user_sql),
-        call(admin_org_data.modify_org_modify_user_sql),
-        call(admin_org_data.modify_org_remove_user_sql),
-        call(admin_org_data.modify_org_add_rsu_sql),
-        call(admin_org_data.modify_org_remove_rsu_sql),
-        call(admin_org_data.modify_org_add_intersection_sql),
-        call(admin_org_data.modify_org_remove_intersection_sql),
+        call(admin_org_data.modify_org_sql[0], params=admin_org_data.modify_org_sql[1]),
+        call(
+            admin_org_data.modify_org_add_user_sql[0],
+            params=admin_org_data.modify_org_add_user_sql[1],
+        ),
+        call(
+            admin_org_data.modify_org_modify_user_sql[0],
+            params=admin_org_data.modify_org_modify_user_sql[1],
+        ),
+        call(
+            admin_org_data.modify_org_remove_user_sql[0],
+            params=admin_org_data.modify_org_remove_user_sql[1],
+        ),
+        call(
+            admin_org_data.modify_org_add_rsu_sql[0],
+            params=admin_org_data.modify_org_add_rsu_sql[1],
+        ),
+        call(
+            admin_org_data.modify_org_remove_rsu_sql[0],
+            params=admin_org_data.modify_org_remove_rsu_sql[1],
+        ),
+        call(
+            admin_org_data.modify_org_add_intersection_sql[0],
+            params=admin_org_data.modify_org_add_intersection_sql[1],
+        ),
+        call(
+            admin_org_data.modify_org_remove_intersection_sql[0],
+            params=admin_org_data.modify_org_remove_intersection_sql[1],
+        ),
     ]
     mock_pgquery.assert_has_calls(calls)
     assert actual_msg == expected_msg
@@ -264,9 +292,18 @@ def test_delete_org(mock_query_db, mock_write_db):
     actual_result = admin_org.delete_org_authorized("Test Org")
 
     calls = [
-        call(admin_org_data.delete_org_calls[0]),
-        call(admin_org_data.delete_org_calls[1]),
-        call(admin_org_data.delete_org_calls[2]),
+        call(
+            admin_org_data.delete_org_calls[0][0],
+            params=admin_org_data.delete_org_calls[0][1],
+        ),
+        call(
+            admin_org_data.delete_org_calls[1][0],
+            params=admin_org_data.delete_org_calls[1][1],
+        ),
+        call(
+            admin_org_data.delete_org_calls[2][0],
+            params=admin_org_data.delete_org_calls[2][1],
+        ),
     ]
     mock_write_db.assert_has_calls(calls)
     assert actual_result == expected_result

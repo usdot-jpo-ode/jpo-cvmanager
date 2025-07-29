@@ -25,12 +25,12 @@ def get_iss_scms_status(organization: str) -> dict:
         ") AS a "
         "WHERE a.row_id <= 1 ORDER BY rsu_id"
         ") AS scms_health_data ON rd.rsu_id = scms_health_data.rsu_id "
-        f"WHERE ron_v.name = '{organization}' "
+        "WHERE ron_v.name = :org_name "
         "ORDER BY rd.ipv4_address"
     )
-
+    params = {"org_name": organization}
     logging.debug(f'Executing query "{query};"')
-    data = pgquery.query_db(query)
+    data = pgquery.query_db(query, params=params)
 
     logging.info("Parsing results...")
     result = {}

@@ -70,20 +70,22 @@ def test_request_get_last_online_data_schema():
 @patch("api.src.rsu_online_status.pgquery")
 def test_ping_data_query(mock_pgquery):
     t = datetime.now(pytz.utc) - timedelta(minutes=20)
-    organization = "Test"
+
     expected_query = (
         "SELECT jsonb_build_object('id', rd.rsu_id, 'ip', rd.ipv4_address, 'datetime', ping_data.timestamp, 'online_status', ping_data.result) "
         "FROM public.rsus AS rd "
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
         "JOIN ("
         "SELECT * FROM public.ping AS ping_data "
-        f"WHERE ping_data.timestamp >= '{t.strftime('%Y/%m/%dT%H:%M:%S')}'::timestamp"
+        "WHERE ping_data.timestamp >= :timestamp::timestamp"
         ") AS ping_data ON rd.rsu_id = ping_data.rsu_id "
         "ORDER BY rd.rsu_id, ping_data.timestamp DESC"
     )
 
     rsu_online_status.get_ping_data(user_valid)
-    mock_pgquery.query_db.assert_called_with(expected_query)
+    mock_pgquery.query_db.assert_called_with(
+        expected_query, params={"timestamp": t.strftime("%Y/%m/%dT%H:%M:%S")}
+    )
 
 
 @patch("api.src.rsu_online_status.pgquery")
@@ -115,7 +117,9 @@ def test_ping_data_multiple_result(mock_pgquery):
 def test_last_online_query(mock_pgquery):
     expected_query = data.last_online_query
     rsu_online_status.get_last_online_data_authorized("10.0.0.1")
-    mock_pgquery.query_db.assert_called_with(expected_query)
+    mock_pgquery.query_db.assert_called_with(
+        expected_query, params={"rsu_ip": "10.0.0.1"}
+    )
 
 
 @patch("api.src.rsu_online_status.pgquery")

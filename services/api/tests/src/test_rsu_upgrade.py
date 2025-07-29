@@ -31,7 +31,7 @@ def test_check_for_upgrade_true(mock_query_db):
         "FROM public.rsus AS rd "
         "JOIN public.firmware_upgrade_rules fur ON fur.from_id = rd.firmware_version "
         "JOIN public.firmware_images fi2 ON fi2.firmware_id = fur.to_id "
-        f"WHERE rd.ipv4_address = '192.168.0.10'"
+        "WHERE rd.ipv4_address = :rsu_ip"
         ") as row"
     )
 
@@ -42,7 +42,7 @@ def test_check_for_upgrade_true(mock_query_db):
         "upgrade_version": "1.0.0",
     }
 
-    mock_query_db.assert_called_with(expected_query)
+    mock_query_db.assert_called_with(expected_query, params={"rsu_ip": "192.168.0.10"})
     assert actual_response == expected_response
 
 
@@ -62,7 +62,7 @@ def test_check_for_upgrade_false(mock_query_db):
         "FROM public.rsus AS rd "
         "JOIN public.firmware_upgrade_rules fur ON fur.from_id = rd.firmware_version "
         "JOIN public.firmware_images fi2 ON fi2.firmware_id = fur.to_id "
-        f"WHERE rd.ipv4_address = '192.168.0.10'"
+        "WHERE rd.ipv4_address = :rsu_ip"
         ") as row"
     )
 
@@ -73,7 +73,7 @@ def test_check_for_upgrade_false(mock_query_db):
         "upgrade_version": "",
     }
 
-    mock_query_db.assert_called_with(expected_query)
+    mock_query_db.assert_called_with(expected_query, params={"rsu_ip": "192.168.0.10"})
     assert actual_response == expected_response
 
 

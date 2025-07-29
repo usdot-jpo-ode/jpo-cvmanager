@@ -136,7 +136,7 @@ def test_get_rsu_data_all(mock_query_db):
     expected_query = admin_rsu_data.expected_get_rsu_query_all
     actual_result = admin_rsu.get_rsu_data("all", user_valid, qualified_orgs=[])
 
-    mock_query_db.assert_called_with(expected_query)
+    mock_query_db.assert_called_with(expected_query, params={})
     assert actual_result == expected_rsu_data
 
 
@@ -147,7 +147,7 @@ def test_get_rsu_data_rsu(mock_query_db):
     expected_query = admin_rsu_data.expected_get_rsu_query_one
     actual_result = admin_rsu.get_rsu_data("10.11.81.12", user_valid, qualified_orgs=[])
 
-    mock_query_db.assert_called_with(expected_query)
+    mock_query_db.assert_called_with(expected_query, params={"rsu_ip": "10.11.81.12"})
     assert actual_result == expected_rsu_data
 
 
@@ -159,7 +159,7 @@ def test_get_rsu_data_none(mock_query_db):
     expected_query = admin_rsu_data.expected_get_rsu_query_one
     actual_result = admin_rsu.get_rsu_data("10.11.81.12", user_valid, qualified_orgs=[])
 
-    mock_query_db.assert_called_with(expected_query)
+    mock_query_db.assert_called_with(expected_query, params={"rsu_ip": "10.11.81.12"})
     assert actual_result == expected_rsu_data
 
 
@@ -200,9 +200,9 @@ def test_modify_rsu_success(mock_pgquery, mock_check_safe_input):
     )
 
     calls = [
-        call(admin_rsu_data.modify_rsu_sql),
-        call(admin_rsu_data.add_org_sql),
-        call(admin_rsu_data.remove_org_sql),
+        call(admin_rsu_data.modify_rsu_sql[0], params=admin_rsu_data.modify_rsu_sql[1]),
+        call(admin_rsu_data.add_org_sql[0], params=admin_rsu_data.add_org_sql[1]),
+        call(admin_rsu_data.remove_org_sql[0], params=admin_rsu_data.remove_org_sql[1]),
     ]
     mock_pgquery.assert_has_calls(calls)
     assert actual_msg == expected_msg
@@ -265,11 +265,26 @@ def test_delete_rsu(mock_write_db):
     actual_result = admin_rsu.delete_rsu_authorized("10.11.81.12")
 
     calls = [
-        call(admin_rsu_data.delete_rsu_calls[0]),
-        call(admin_rsu_data.delete_rsu_calls[1]),
-        call(admin_rsu_data.delete_rsu_calls[2]),
-        call(admin_rsu_data.delete_rsu_calls[3]),
-        call(admin_rsu_data.delete_rsu_calls[4]),
+        call(
+            admin_rsu_data.delete_rsu_calls[0][0],
+            params=admin_rsu_data.delete_rsu_calls[0][1],
+        ),
+        call(
+            admin_rsu_data.delete_rsu_calls[1][0],
+            params=admin_rsu_data.delete_rsu_calls[1][1],
+        ),
+        call(
+            admin_rsu_data.delete_rsu_calls[2][0],
+            params=admin_rsu_data.delete_rsu_calls[2][1],
+        ),
+        call(
+            admin_rsu_data.delete_rsu_calls[3][0],
+            params=admin_rsu_data.delete_rsu_calls[3][1],
+        ),
+        call(
+            admin_rsu_data.delete_rsu_calls[4][0],
+            params=admin_rsu_data.delete_rsu_calls[4][1],
+        ),
     ]
     mock_write_db.assert_has_calls(calls)
     assert actual_result == expected_result

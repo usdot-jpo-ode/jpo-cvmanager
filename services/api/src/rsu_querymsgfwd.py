@@ -32,15 +32,15 @@ def query_snmp_msgfwd_authorized(rsu_ip: str, organization: ORG_ROLE_LITERAL):
         "SELECT rd.rsu_id, rd.ipv4_address "
         "FROM public.rsus rd "
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
-        f"WHERE ron_v.name = '{organization}'"
+        "WHERE ron_v.name = :org_name"
         ") rdo ON smc.rsu_id = rdo.rsu_id "
-        f"WHERE rdo.ipv4_address = '{rsu_ip}' "
+        "WHERE rdo.ipv4_address = :rsu_ip "
         "ORDER BY smt.name, snmp_index ASC"
         ") as row"
     )
-
+    params = {"org_name": organization, "rsu_ip": rsu_ip}
     logging.debug(f'Executing query: "{query};"')
-    data = pgquery.query_db(query)
+    data = pgquery.query_db(query, params=params)
 
     msgfwd_configs_dict = {}
     for row in data:

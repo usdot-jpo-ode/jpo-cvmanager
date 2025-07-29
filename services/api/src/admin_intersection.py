@@ -1,3 +1,4 @@
+from typing import Any
 from flask import request, abort
 from flask_restful import Resource
 from marshmallow import Schema, fields
@@ -54,15 +55,18 @@ def get_intersection_data(
     )
 
     where_clauses = []
+    params: dict[str, Any] = {}
     if not user.user_info.super_user:
-        where_clauses.append(f"org.name IN ({', '.join(qualified_orgs)})")
+        where_clauses.append("org.name IN (:qualified_orgs)")
+        params["qualified_orgs"] = qualified_orgs
     if intersection_id != "all":
-        where_clauses.append(f"intersection_number = '{intersection_id}'")
+        where_clauses.append("intersection_number = :intersection_id")
+        params["intersection_id"] = intersection_id
     if where_clauses:
         query += " WHERE " + " AND ".join(where_clauses)
     query += ") as row"
 
-    data = pgquery.query_db(query)
+    data = pgquery.query_db(query, params=params)
 
     intersection_dict = {}
     for row in data:
@@ -153,65 +157,73 @@ def modify_intersection_authorized(
         # Modify the existing Intersection data
         query = (
             "UPDATE public.intersections SET "
-            f"intersection_number='{intersection_id}', "
-            f"ref_pt=ST_GeomFromText('POINT({str(intersection_spec['ref_pt']['longitude'])} {str(intersection_spec['ref_pt']['latitude'])})')"
+            "intersection_number=:intersection_id, "
+            "ref_pt=ST_GeomFromText('POINT(:ref_pt_longitude :ref_pt_latitude)')"
         )
+        params = {
+            "intersection_id": intersection_id,
+            "ref_pt_longitude": intersection_spec["ref_pt"]["longitude"],
+            "ref_pt_latitude": intersection_spec["ref_pt"]["latitude"],
+        }
         if "bbox" in intersection_spec:
-            query += f", bbox=ST_MakeEnvelope({str(intersection_spec['bbox']['longitude1'])},{str(intersection_spec['bbox']['latitude1'])},{str(intersection_spec['bbox']['longitude2'])},{str(intersection_spec['bbox']['latitude2'])})"
+            query += ", bbox=ST_MakeEnvelope(:bbox_longitude1,:bbox_latitude1,:bbox_longitude2,:bbox_latitude2)"
+            params["bbox_longitude1"] = intersection_spec["bbox"]["longitude1"]
+            params["bbox_latitude1"] = intersection_spec["bbox"]["latitude1"]
+            params["bbox_longitude2"] = intersection_spec["bbox"]["longitude2"]
+            params["bbox_latitude2"] = intersection_spec["bbox"]["latitude2"]
         if "intersection_name" in intersection_spec:
-            query += f", intersection_name='{intersection_spec['intersection_name']}'"
+            query += ", intersection_name=:intersection_name"
+            params["intersection_name"] = intersection_spec.get("intersection_name", "")
         if "origin_ip" in intersection_spec:
-            query += f", origin_ip='{intersection_spec['origin_ip']}'"
-        query += (
-            f" WHERE intersection_number='{intersection_spec['orig_intersection_id']}'"
-        )
-        pgquery.write_db(query)
+            query += ", origin_ip=:origin_ip"
+            params["origin_ip"] = intersection_spec.get("origin_ip", "")
+        query += " WHERE intersection_number=:orig_intersection_id"
+        params["orig_intersection_id"] = intersection_spec["orig_intersection_id"]
+        pgquery.write_db(query, params=params)
 
         # Add the intersection-to-organization relationships for the organizations to add
         if len(intersection_spec["organizations_to_add"]) > 0:
-            org_add_query = "INSERT INTO public.intersection_organization(intersection_id, organization_id) VALUES"
             for organization in intersection_spec["organizations_to_add"]:
-                org_add_query += (
-                    " ("
-                    f"(SELECT intersection_id FROM public.intersections WHERE intersection_number = '{intersection_id}'), "
-                    f"(SELECT organization_id FROM public.organizations WHERE name = '{organization}')"
-                    "),"
+                org_add_query = (
+                    "INSERT INTO public.intersection_organization(intersection_id, organization_id) VALUES ("
+                    "(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id), "
+                    "(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
+                    ")"
                 )
-            org_add_query = org_add_query[:-1]
-            pgquery.write_db(org_add_query)
+                params = {"intersection_id": intersection_id, "org_name": organization}
+                pgquery.write_db(org_add_query, params=params)
 
         # Remove the intersection-to-organization relationships for the organizations to remove
         for organization in intersection_spec["organizations_to_remove"]:
             org_remove_query = (
                 "DELETE FROM public.intersection_organization WHERE "
-                f"intersection_id=(SELECT intersection_id FROM public.intersections WHERE intersection_number = '{intersection_id}') "
-                f"AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = '{organization}')"
+                "intersection_id=(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id) "
+                "AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
             )
-            pgquery.write_db(org_remove_query)
+            params = {"intersection_id": intersection_id, "org_name": organization}
+            pgquery.write_db(org_remove_query, params=params)
 
         # Add the rsu-to-intersection relationships for the rsus to add
         if len(intersection_spec["rsus_to_add"]) > 0:
-            rsu_add_query = (
-                "INSERT INTO public.rsu_intersection(rsu_id, intersection_id) VALUES"
-            )
             for ip in intersection_spec["rsus_to_add"]:
-                rsu_add_query += (
-                    " ("
-                    f"(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{ip}'), "
-                    f"(SELECT intersection_id FROM public.intersections WHERE intersection_number = '{intersection_id}')"
-                    "),"
+                rsu_add_query = (
+                    "INSERT INTO public.rsu_intersection(rsu_id, intersection_id) VALUES ("
+                    "(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip), "
+                    "(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id)"
+                    ")"
                 )
-            rsu_add_query = rsu_add_query[:-1]
-            pgquery.write_db(rsu_add_query)
+                params = {"rsu_ip": ip, "intersection_id": intersection_id}
+                pgquery.write_db(rsu_add_query, params=params)
 
         # Remove the rsu-to-intersection relationships for the rsus to remove
         for ip in intersection_spec["rsus_to_remove"]:
             rsu_remove_query = (
                 "DELETE FROM public.rsu_intersection WHERE "
-                f"intersection_id=(SELECT intersection_id FROM public.intersections WHERE intersection_number = '{intersection_id}') "
-                f"AND rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{ip}')"
+                "intersection_id=(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id) "
+                "AND rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip)"
             )
-            pgquery.write_db(rsu_remove_query)
+            params = {"intersection_id": intersection_id, "rsu_ip": ip}
+            pgquery.write_db(rsu_remove_query, params=params)
     except IntegrityError as e:
         if e.orig is None:
             raise InternalServerError("Encountered unknown issue") from e
@@ -237,22 +249,25 @@ def delete_intersection_authorized(intersection_id: str):
     # Delete Intersection to Organization relationships
     org_remove_query = (
         "DELETE FROM public.intersection_organization WHERE "
-        f"intersection_id=(SELECT intersection_id FROM public.intersections WHERE intersection_number = '{intersection_id}')"
+        "intersection_id=(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id)"
     )
-    pgquery.write_db(org_remove_query)
+    pgquery.write_db(org_remove_query, params={"intersection_id": intersection_id})
 
     rsu_intersection_remove_query = (
         "DELETE FROM public.rsu_intersection WHERE "
-        f"intersection_id=(SELECT intersection_id FROM public.intersections WHERE intersection_number = '{intersection_id}')"
+        "intersection_id=(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id)"
     )
-    pgquery.write_db(rsu_intersection_remove_query)
+    pgquery.write_db(
+        rsu_intersection_remove_query, params={"intersection_id": intersection_id}
+    )
 
     # Delete Intersection data
     intersection_remove_query = (
-        "DELETE FROM public.intersections WHERE "
-        f"intersection_number = '{intersection_id}'"
+        "DELETE FROM public.intersections WHERE intersection_number = :intersection_id"
     )
-    pgquery.write_db(intersection_remove_query)
+    pgquery.write_db(
+        intersection_remove_query, params={"intersection_id": intersection_id}
+    )
 
     return {"message": "Intersection successfully deleted"}
 

@@ -1,3 +1,4 @@
+from typing import Any
 from flask import request, abort
 from flask_restful import Resource
 from marshmallow import Schema, fields
@@ -35,16 +36,18 @@ def get_rsu_data(rsu_ip: str, user: EnvironWithOrg, qualified_orgs: list[str]):
     )
 
     where_clauses = []
+    params: dict[str, Any] = {}
     if not user.user_info.super_user:
-        qualified_orgs_str = ", ".join(f"'{org}'" for org in qualified_orgs)
-        where_clauses.append(f"org.name = ANY (ARRAY[{qualified_orgs_str}])")
+        where_clauses.append("org.name IN (:qualified_orgs)")
+        params["qualified_orgs"] = qualified_orgs
     if rsu_ip != "all":
-        where_clauses.append(f"ipv4_address = '{rsu_ip}'")
+        where_clauses.append("ipv4_address = :rsu_ip")
+        params["rsu_ip"] = rsu_ip
     if where_clauses:
         query += " WHERE " + " AND ".join(where_clauses)
     query += ") as row"
 
-    data = pgquery.query_db(query)
+    data = pgquery.query_db(query, params=params)
 
     rsu_dict = {}
     for row in data:
@@ -123,43 +126,55 @@ def modify_rsu_authorized(
         # Modify the existing RSU data
         query = (
             "UPDATE public.rsus SET "
-            f"geography=ST_GeomFromText('POINT({str(rsu_spec['geo_position']['longitude'])} {str(rsu_spec['geo_position']['latitude'])})'), "
-            f"milepost={str(rsu_spec['milepost'])}, "
-            f"ipv4_address='{rsu_ip}', "
-            f"serial_number='{rsu_spec['serial_number']}', "
-            f"primary_route='{rsu_spec['primary_route']}', "
-            f"model=(SELECT rsu_model_id FROM public.rsu_models WHERE name = '{model}'), "
-            f"credential_id=(SELECT credential_id FROM public.rsu_credentials WHERE nickname = '{rsu_spec['ssh_credential_group']}'), "
-            f"snmp_credential_id=(SELECT snmp_credential_id FROM public.snmp_credentials WHERE nickname = '{rsu_spec['snmp_credential_group']}'), "
-            f"snmp_protocol_id=(SELECT snmp_protocol_id FROM public.snmp_protocols WHERE nickname = '{rsu_spec['snmp_version_group']}'), "
-            f"iss_scms_id='{rsu_spec['scms_id']}' "
-            f"WHERE ipv4_address='{orig_ip}'"
+            "geography=ST_GeomFromText('POINT(:geo_position_longitude :geo_position_latitude)'), "
+            "milepost=:milepost, "
+            "ipv4_address=:rsu_ip, "
+            "serial_number=:serial_number, "
+            "primary_route=:primary_route, "
+            "model=(SELECT rsu_model_id FROM public.rsu_models WHERE name = :model), "
+            "credential_id=(SELECT credential_id FROM public.rsu_credentials WHERE nickname = :ssh_credential_group), "
+            "snmp_credential_id=(SELECT snmp_credential_id FROM public.snmp_credentials WHERE nickname = :snmp_credential_group), "
+            "snmp_protocol_id=(SELECT snmp_protocol_id FROM public.snmp_protocols WHERE nickname = :snmp_version_group), "
+            "iss_scms_id=:scms_id "
+            "WHERE ipv4_address=:orig_ip"
         )
-        pgquery.write_db(query)
+        params = {
+            "rsu_ip": rsu_ip,
+            "geo_position_longitude": rsu_spec["geo_position"]["longitude"],
+            "geo_position_latitude": rsu_spec["geo_position"]["latitude"],
+            "milepost": rsu_spec["milepost"],
+            "serial_number": rsu_spec["serial_number"],
+            "primary_route": rsu_spec["primary_route"],
+            "model": model,
+            "ssh_credential_group": rsu_spec["ssh_credential_group"],
+            "snmp_credential_group": rsu_spec["snmp_credential_group"],
+            "snmp_version_group": rsu_spec["snmp_version_group"],
+            "scms_id": rsu_spec["scms_id"],
+            "orig_ip": orig_ip,
+        }
+        pgquery.write_db(query, params=params)
 
         # Add the rsu-to-organization relationships for the organizations to add
         if len(rsu_spec["organizations_to_add"]) > 0:
-            org_add_query = (
-                "INSERT INTO public.rsu_organization(rsu_id, organization_id) VALUES"
-            )
             for organization in rsu_spec["organizations_to_add"]:
-                org_add_query += (
-                    " ("
-                    f"(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{rsu_ip}'), "
-                    f"(SELECT organization_id FROM public.organizations WHERE name = '{organization}')"
-                    "),"
+                org_add_query = (
+                    "INSERT INTO public.rsu_organization(rsu_id, organization_id) VALUES ("
+                    "(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip), "
+                    "(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
+                    ")"
                 )
-            org_add_query = org_add_query[:-1]
-            pgquery.write_db(org_add_query)
+                params = {"rsu_ip": rsu_ip, "org_name": organization}
+                pgquery.write_db(org_add_query, params=params)
 
         # Remove the rsu-to-organization relationships for the organizations to remove
         for organization in rsu_spec["organizations_to_remove"]:
             org_remove_query = (
                 "DELETE FROM public.rsu_organization WHERE "
-                f"rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{rsu_ip}') "
-                f"AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = '{organization}')"
+                "rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip) "
+                "AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
             )
-            pgquery.write_db(org_remove_query)
+            params = {"rsu_ip": rsu_ip, "org_name": organization}
+            pgquery.write_db(org_remove_query, params=params)
     except IntegrityError as e:
         if e.orig is None:
             raise InternalServerError("Encountered unknown issue") from e
@@ -184,34 +199,34 @@ def delete_rsu_authorized(rsu_ip: str):
     # Delete RSU to Organization relationships
     org_remove_query = (
         "DELETE FROM public.rsu_organization WHERE "
-        f"rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{rsu_ip}')"
+        "rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip)"
     )
-    pgquery.write_db(org_remove_query)
+    pgquery.write_db(org_remove_query, params={"rsu_ip": rsu_ip})
 
     # Delete recorded RSU ping data
     ping_remove_query = (
         "DELETE FROM public.ping WHERE "
-        f"rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{rsu_ip}')"
+        "rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip)"
     )
-    pgquery.write_db(ping_remove_query)
+    pgquery.write_db(ping_remove_query, params={"rsu_ip": rsu_ip})
 
     # Delete recorded RSU SCMS health data
     scms_remove_query = (
         "DELETE FROM public.scms_health WHERE "
-        f"rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{rsu_ip}')"
+        "rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip)"
     )
-    pgquery.write_db(scms_remove_query)
+    pgquery.write_db(scms_remove_query, params={"rsu_ip": rsu_ip})
 
     # Delete snmp message forward config data
     msg_config_remove_query = (
         "DELETE FROM public.snmp_msgfwd_config WHERE "
-        f"rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{rsu_ip}')"
+        "rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip)"
     )
-    pgquery.write_db(msg_config_remove_query)
+    pgquery.write_db(msg_config_remove_query, params={"rsu_ip": rsu_ip})
 
     # Delete RSU data
-    rsu_remove_query = f"DELETE FROM public.rsus WHERE ipv4_address = '{rsu_ip}'"
-    pgquery.write_db(rsu_remove_query)
+    rsu_remove_query = "DELETE FROM public.rsus WHERE ipv4_address = :rsu_ip"
+    pgquery.write_db(rsu_remove_query, params={"rsu_ip": rsu_ip})
 
     return {"message": "RSU successfully deleted"}
 

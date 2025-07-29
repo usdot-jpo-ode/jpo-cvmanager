@@ -57,7 +57,9 @@ def test_query_org_rsus(mock_pgquery):
         ({"10.11.81.14"},),
     ]
     actual_result = rsu_geo_query.query_org_rsus("Test")
-    mock_pgquery.query_db.assert_called_with(rsu_geo_query_data.rsu_org_query)
+    mock_pgquery.query_db.assert_called_with(
+        rsu_geo_query_data.rsu_org_query, params={"org_name": "Test"}
+    )
 
     assert actual_result == {"{10.11.81.12}", "{10.11.81.13}", "{10.11.81.14}"}
 
@@ -80,7 +82,10 @@ def test_query_rsu_devices(mock_query_db):
         {"10.11.81.12"},
         rsu_geo_query_data.point_list,
     )
-    mock_query_db.assert_called_with(rsu_geo_query_data.rsu_devices_query)
+    mock_query_db.assert_called_with(
+        rsu_geo_query_data.rsu_devices_query[0],
+        params=rsu_geo_query_data.rsu_devices_query[1],
+    )
 
     assert actual_result == ["10.11.81.12"]
 
@@ -93,6 +98,9 @@ def test_query_rsu_devices_with_vendor(mock_query_db):
     actual_result = rsu_geo_query.query_rsu_devices(
         {"10.11.81.12"}, rsu_geo_query_data.point_list_vendor, vendor="Test"
     )
-    mock_query_db.assert_called_with(rsu_geo_query_data.rsu_devices_query_vendor)
+    mock_query_db.assert_called_with(
+        rsu_geo_query_data.rsu_devices_query_vendor[0],
+        params=rsu_geo_query_data.rsu_devices_query_vendor[1],
+    )
 
     assert actual_result == ["10.11.81.12"]

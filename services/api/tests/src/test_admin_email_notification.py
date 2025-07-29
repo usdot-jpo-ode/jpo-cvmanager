@@ -134,7 +134,9 @@ def test_get_all_notifications(mock_query_db):
     expected_query = admin_notification_data.get_notification_data_sql
     actual_result = admin_notification.get_notification_data("test@gmail.com")
 
-    mock_query_db.assert_called_with(expected_query)
+    mock_query_db.assert_called_with(
+        expected_query, params=admin_notification_data.get_notification_data_sql_params
+    )
     assert actual_result == expected_result
 
 
@@ -206,7 +208,12 @@ def test_modify_notification_success(mock_pgquery, mock_check_safe_input):
         admin_notification_data.request_json_good,
     )
 
-    calls = [call(admin_notification_data.modify_notification_sql)]
+    calls = [
+        call(
+            admin_notification_data.modify_notification_sql,
+            params=admin_notification_data.modify_notification_params,
+        )
+    ]
     mock_pgquery.assert_has_calls(calls)
     assert actual_msg == expected_msg
 
@@ -284,7 +291,10 @@ def test_delete_notification(mock_write_db):
     actual_result = admin_notification.delete_notification_authorized(
         "test@gmail.com", "test type"
     )
-    mock_write_db.assert_called_with(admin_notification_data.delete_notification_call)
+    mock_write_db.assert_called_with(
+        admin_notification_data.delete_notification_call,
+        params=admin_notification_data.delete_notification_params,
+    )
     assert actual_result == expected_result
 
 

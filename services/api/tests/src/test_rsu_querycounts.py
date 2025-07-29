@@ -109,7 +109,7 @@ def test_rsu_counts_get_organization_rsus(mock_pgquery):
 
     actual_result = rsu_querycounts.get_organization_rsus(user_valid, [])
 
-    mock_pgquery.query_db.assert_called_with(expected_query)
+    mock_pgquery.query_db.assert_called_with(expected_query, params={})
     assert actual_result == {
         "10.11.81.12": "Route 1",
         "10.11.81.13": "Route 1",
@@ -130,7 +130,7 @@ def test_rsu_counts_get_organization_rsus_empty(mock_pgquery):
         ") as row"
     )
     actual_result = rsu_querycounts.get_organization_rsus(user_valid, [])
-    mock_pgquery.query_db.assert_called_with(expected_query)
+    mock_pgquery.query_db.assert_called_with(expected_query, params={})
 
     assert actual_result == {}
 

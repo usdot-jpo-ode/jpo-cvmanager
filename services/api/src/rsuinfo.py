@@ -26,16 +26,19 @@ def get_rsu_data(user: EnvironWithOrg, qualified_orgs: list[str]):
     )
 
     where_clause = None
+    params: dict[str, Any] = {}
     if user.organization:
-        where_clause = f"ron_v.name = '{user.organization}'"
+        where_clause = "ron_v.name = :user_org"
+        params["user_org"] = user.organization
     if not user.user_info.super_user:
-        where_clause = f"ron_v.name IN ({','.join(qualified_orgs)})"
+        where_clause = "ron_v.name IN (:qualified_orgs)"
+        params["qualified_orgs"] = qualified_orgs
     if where_clause:
         query += f" WHERE {where_clause}"
     query += ") as row"
 
     logging.debug(f'Executing query "{query};"')
-    data = pgquery.query_db(query)
+    data = pgquery.query_db(query, params=params)
 
     logging.info("Parsing results...")
     result: dict[str, Any] = {"rsuList": []}

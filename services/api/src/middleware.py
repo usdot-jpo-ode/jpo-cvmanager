@@ -43,7 +43,6 @@ def get_user_role(token) -> UserInfo | None:
         client_id=os.getenv("KEYCLOAK_API_CLIENT_ID"),
         client_secret_key=os.getenv("KEYCLOAK_API_CLIENT_SECRET_KEY"),
     )
-    logging.debug(f"Middleware get_user_role introspect token {token}")
     introspect = keycloak_openid.introspect(token)
     data = None
 
@@ -57,7 +56,7 @@ def get_user_role(token) -> UserInfo | None:
 
         logging.debug(f"Middleware get_user_role get user info of {data.email}")
     else:
-        logging.error("User token does not exist", token)
+        logging.error(f"Failed to decode token: {token}")
 
     return data
 

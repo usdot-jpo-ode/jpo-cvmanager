@@ -82,7 +82,7 @@ last_online_query = (
     "SELECT rsus.rsu_id, rsus.ipv4_address "
     "FROM public.rsus "
     "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rsus.rsu_id "
-    f"WHERE rsus.ipv4_address = '10.0.0.1' "
+    "WHERE rsus.ipv4_address = :rsu_ip "
     ") AS rd ON ping.rsu_id = rd.rsu_id "
     "WHERE ping.rsu_id = rd.rsu_id "
     "AND result = '1' "

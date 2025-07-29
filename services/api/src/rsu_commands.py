@@ -93,11 +93,11 @@ def fetch_rsu_info(rsu_ip, organization):
         "LEFT JOIN public.rsu_credentials AS rsu_creds ON rsu_creds.credential_id = rd.credential_id "
         "LEFT JOIN public.snmp_credentials AS snmp ON snmp.snmp_credential_id = rd.snmp_credential_id "
         "LEFT JOIN public.snmp_protocols AS snmp_ver ON snmp_ver.snmp_protocol_id = rd.snmp_protocol_id "
-        f"WHERE ron_v.name = '{organization}' AND rd.ipv4_address = '{rsu_ip}'"
+        "WHERE ron_v.name = :org_name AND rd.ipv4_address = :rsu_ip"
         ") as row"
     )
-
-    data = pgquery.query_db(query)
+    params = {"org_name": organization, "rsu_ip": rsu_ip}
+    data = pgquery.query_db(query, params=params)
     logging.info("Parsing results...")
     if len(data) > 0:
         # Grab the first result, it should be the only result

@@ -151,7 +151,7 @@ def test_get_intersection_data_all(mock_query_db):
     expected_query = admin_intersection_data.expected_get_intersection_query_all
     actual_result = admin_intersection.get_intersection_data("all", user_valid, [])
 
-    mock_query_db.assert_called_with(expected_query)
+    mock_query_db.assert_called_with(expected_query, params={})
     assert actual_result == expected_intersection_data
 
 
@@ -164,7 +164,10 @@ def test_get_intersection_data_intersection(mock_query_db):
     expected_query = admin_intersection_data.expected_get_intersection_query_one
     actual_result = admin_intersection.get_intersection_data("1123", user_valid, [])
 
-    mock_query_db.assert_called_with(expected_query)
+    mock_query_db.assert_called_with(
+        expected_query,
+        params=admin_intersection_data.expected_get_intersection_query_one_params,
+    )
     assert actual_result == expected_intersection_data
 
 
@@ -176,7 +179,10 @@ def test_get_intersection_data_none(mock_query_db):
     expected_query = admin_intersection_data.expected_get_intersection_query_one
     actual_result = admin_intersection.get_intersection_data("1123", user_valid, [])
 
-    mock_query_db.assert_called_with(expected_query)
+    mock_query_db.assert_called_with(
+        expected_query,
+        params=admin_intersection_data.expected_get_intersection_query_one_params,
+    )
     assert actual_result == expected_intersection_data
 
 
@@ -222,13 +228,42 @@ def test_modify_intersection_success(mock_pgquery, mock_check_safe_input):
     )
 
     calls = [
-        call(admin_intersection_data.modify_intersection_sql),
-        call(admin_intersection_data.add_org_sql),
-        call(admin_intersection_data.remove_org_sql_3),
-        call(admin_intersection_data.remove_org_sql_4),
-        call(admin_intersection_data.add_rsu_sql),
-        call(admin_intersection_data.remove_rsu_sql_3),
-        call(admin_intersection_data.remove_rsu_sql_4),
+        call(
+            admin_intersection_data.modify_intersection_sql[0],
+            params=admin_intersection_data.modify_intersection_sql[1],
+        ),
+        call(
+            admin_intersection_data.add_org_sql_1[0],
+            params=admin_intersection_data.add_org_sql_1[1],
+        ),
+        call(
+            admin_intersection_data.add_org_sql_2[0],
+            params=admin_intersection_data.add_org_sql_2[1],
+        ),
+        call(
+            admin_intersection_data.remove_org_sql_3[0],
+            params=admin_intersection_data.remove_org_sql_3[1],
+        ),
+        call(
+            admin_intersection_data.remove_org_sql_4[0],
+            params=admin_intersection_data.remove_org_sql_4[1],
+        ),
+        call(
+            admin_intersection_data.add_rsu_sql_1[0],
+            params=admin_intersection_data.add_rsu_sql_1[1],
+        ),
+        call(
+            admin_intersection_data.add_rsu_sql_2[0],
+            params=admin_intersection_data.add_rsu_sql_2[1],
+        ),
+        call(
+            admin_intersection_data.remove_rsu_sql_3[0],
+            params=admin_intersection_data.remove_rsu_sql_3[1],
+        ),
+        call(
+            admin_intersection_data.remove_rsu_sql_4[0],
+            params=admin_intersection_data.remove_rsu_sql_4[1],
+        ),
     ]
     mock_pgquery.assert_has_calls(calls)
     assert actual_msg == expected_msg
@@ -294,9 +329,18 @@ def test_delete_intersection(mock_write_db):
     actual_result = admin_intersection.delete_intersection_authorized("1111")
 
     calls = [
-        call(admin_intersection_data.delete_intersection_calls[0]),
-        call(admin_intersection_data.delete_intersection_calls[1]),
-        call(admin_intersection_data.delete_intersection_calls[2]),
+        call(
+            admin_intersection_data.delete_intersection_calls[0][0],
+            params=admin_intersection_data.delete_intersection_calls[0][1],
+        ),
+        call(
+            admin_intersection_data.delete_intersection_calls[1][0],
+            params=admin_intersection_data.delete_intersection_calls[1][1],
+        ),
+        call(
+            admin_intersection_data.delete_intersection_calls[2][0],
+            params=admin_intersection_data.delete_intersection_calls[2][1],
+        ),
     ]
     mock_write_db.assert_has_calls(calls)
     assert actual_result == expected_result

@@ -79,7 +79,7 @@ get_all_orgs_sql = (
     "(SELECT COUNT(*) FROM public.user_organization uo WHERE uo.organization_id = org.organization_id) num_users, "
     "(SELECT COUNT(*) FROM public.rsu_organization ro WHERE ro.organization_id = org.organization_id) num_rsus, "
     "(SELECT COUNT(*) FROM public.intersection_organization io WHERE io.organization_id = org.organization_id) num_intersections "
-    "FROM public.organizations org WHERE org.name IN ('Test Org', 'Test Org 2', 'Test Org 3') "
+    "FROM public.organizations org WHERE org.name IN (:org_list) "
     ") as row"
 )
 
@@ -140,7 +140,7 @@ get_org_data_user_sql = (
     "JOIN public.users ON uo.user_id = users.user_id "
     "JOIN public.roles ON uo.role_id = roles.role_id"
     ") u ON u.organization_id = org.organization_id "
-    f"WHERE org.name = 'Test Org'"
+    "WHERE org.name = :org_name"
     ") as row"
 )
 
@@ -154,7 +154,7 @@ get_org_data_rsu_sql = (
     "FROM public.rsu_organization ro "
     "JOIN public.rsus ON ro.rsu_id = rsus.rsu_id"
     ") r ON r.organization_id = org.organization_id "
-    f"WHERE org.name = 'Test Org'"
+    "WHERE org.name = :org_name"
     ") as row"
 )
 
@@ -168,7 +168,7 @@ get_org_data_intersection_sql = (
     "FROM public.intersection_organization io "
     "JOIN public.intersections ON io.intersection_id = intersections.intersection_id"
     ") i ON i.organization_id = org.organization_id "
-    f"WHERE org.name = 'Test Org'"
+    "WHERE org.name = :org_name"
     ") as row"
 )
 
@@ -188,67 +188,106 @@ get_allowed_selections_sql = (
 # modify_org
 
 modify_org_sql = (
-    "UPDATE public.organizations SET "
-    "name = 'Test Org', "
-    "email = 'test@gmail.com' "
-    "WHERE name = 'Test Org'"
+    (
+        "UPDATE public.organizations SET "
+        "name = :name, "
+        "email = :email "
+        "WHERE name = :orig_name"
+    ),
+    {
+        "name": "Test Org",
+        "email": "test@gmail.com",
+        "orig_name": "Test Org",
+    },
 )
 
 modify_org_add_user_sql = (
-    "INSERT INTO public.user_organization(user_id, organization_id, role_id) VALUES"
-    " ("
-    f"(SELECT user_id FROM public.users WHERE email = 'test1@email.com'), "
-    f"(SELECT organization_id FROM public.organizations WHERE name = 'Test Org'), "
-    f"(SELECT role_id FROM public.roles WHERE name = 'admin')"
-    ")"
+    (
+        "INSERT INTO public.user_organization(user_id, organization_id, role_id) VALUES"
+        " ("
+        "(SELECT user_id FROM public.users WHERE email = :email), "
+        "(SELECT organization_id FROM public.organizations WHERE name = :org_name), "
+        "(SELECT role_id FROM public.roles WHERE name = :role)"
+        ")"
+    ),
+    {"email": "test1@email.com", "org_name": "Test Org", "role": "admin"},
 )
 
 modify_org_modify_user_sql = (
-    "UPDATE public.user_organization "
-    "SET role_id = (SELECT role_id FROM public.roles WHERE name = 'user') "
-    "WHERE user_id = (SELECT user_id FROM public.users WHERE email = 'test2@email.com') "
-    "AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = 'Test Org')"
+    (
+        "UPDATE public.user_organization "
+        "SET role_id = (SELECT role_id FROM public.roles WHERE name = :role) "
+        "WHERE user_id = (SELECT user_id FROM public.users WHERE email = :email) "
+        "AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = :org_name)"
+    ),
+    {"role": "user", "email": "test2@email.com", "org_name": "Test Org"},
 )
 
 modify_org_remove_user_sql = (
-    "DELETE FROM public.user_organization WHERE "
-    "user_id = (SELECT user_id FROM public.users WHERE email = 'test3@email.com') "
-    "AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = 'Test Org')"
+    (
+        "DELETE FROM public.user_organization WHERE "
+        "user_id = (SELECT user_id FROM public.users WHERE email = :email) "
+        "AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = :org_name)"
+    ),
+    {"email": "test3@email.com", "org_name": "Test Org"},
 )
 
 modify_org_add_rsu_sql = (
-    "INSERT INTO public.rsu_organization(rsu_id, organization_id) VALUES"
-    " ("
-    "(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '10.0.0.2'), "
-    "(SELECT organization_id FROM public.organizations WHERE name = 'Test Org')"
-    ")"
+    (
+        "INSERT INTO public.rsu_organization(rsu_id, organization_id) VALUES"
+        " ("
+        "(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip), "
+        "(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
+        ")"
+    ),
+    {"rsu_ip": "10.0.0.2", "org_name": "Test Org"},
 )
 
 modify_org_remove_rsu_sql = (
-    "DELETE FROM public.rsu_organization WHERE "
-    "rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '10.0.0.1') "
-    "AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = 'Test Org')"
+    (
+        "DELETE FROM public.rsu_organization WHERE "
+        "rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip) "
+        "AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
+    ),
+    {"rsu_ip": "10.0.0.1", "org_name": "Test Org"},
 )
 
 modify_org_add_intersection_sql = (
-    "INSERT INTO public.intersection_organization(intersection_id, organization_id) VALUES"
-    " ("
-    "(SELECT intersection_id FROM public.intersections WHERE intersection_number = '1111'), "
-    "(SELECT organization_id FROM public.organizations WHERE name = 'Test Org')"
-    ")"
+    (
+        "INSERT INTO public.intersection_organization(intersection_id, organization_id) VALUES ("
+        "(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id), "
+        "(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
+        ")"
+    ),
+    {"intersection_id": "1111", "org_name": "Test Org"},
 )
 
 modify_org_remove_intersection_sql = (
-    "DELETE FROM public.intersection_organization WHERE "
-    "intersection_id=(SELECT intersection_id FROM public.intersections WHERE intersection_number = '1112') "
-    "AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = 'Test Org')"
+    (
+        "DELETE FROM public.intersection_organization WHERE "
+        "intersection_id=(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id) "
+        "AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
+    ),
+    {"intersection_id": "1112", "org_name": "Test Org"},
 )
 
 # delete_org
 
 delete_org_calls = [
-    "DELETE FROM public.user_organization WHERE organization_id = (SELECT organization_id FROM public.organizations WHERE name = 'Test Org')",
-    "DELETE FROM public.rsu_organization WHERE organization_id = (SELECT organization_id FROM public.organizations WHERE name = 'Test Org')",
-    "DELETE FROM public.intersection_organization WHERE organization_id = (SELECT organization_id FROM public.organizations WHERE name = 'Test Org')",
-    "DELETE FROM public.organizations WHERE name = 'Test Org'",
+    (
+        "DELETE FROM public.user_organization WHERE organization_id = (SELECT organization_id FROM public.organizations WHERE name = :org_name)",
+        {"org_name": "Test Org"},
+    ),
+    (
+        "DELETE FROM public.rsu_organization WHERE organization_id = (SELECT organization_id FROM public.organizations WHERE name = :org_name)",
+        {"org_name": "Test Org"},
+    ),
+    (
+        "DELETE FROM public.intersection_organization WHERE organization_id = (SELECT organization_id FROM public.organizations WHERE name = :org_name)",
+        {"org_name": "Test Org"},
+    ),
+    (
+        "DELETE FROM public.organizations WHERE name = :org_name",
+        {"org_name": "Test Org"},
+    ),
 ]

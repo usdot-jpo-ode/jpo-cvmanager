@@ -41,11 +41,13 @@ def test_get_iss_status_no_data(mock_pgquery):
         ") AS a "
         "WHERE a.row_id <= 1 ORDER BY rsu_id"
         ") AS scms_health_data ON rd.rsu_id = scms_health_data.rsu_id "
-        f"WHERE ron_v.name = 'Test' "
+        "WHERE ron_v.name = :org_name "
         "ORDER BY rd.ipv4_address"
     )
     actual_result = iss_scms_status.get_iss_scms_status("Test")
-    mock_pgquery.query_db.assert_called_with(expected_query)
+    mock_pgquery.query_db.assert_called_with(
+        expected_query, params={"org_name": "Test"}
+    )
 
     assert actual_result == expected_rsu_data
 
@@ -95,5 +97,5 @@ def test_get_iss_scms_status_query(mock_query_db):
     result = iss_scms_status.get_iss_scms_status("Test")
     assert result == iss_scms_status_data.expected_rsu_data_single_result
     iss_scms_status.pgquery.query_db.assert_called_once_with(
-        iss_scms_status_data.expectedQuery
+        iss_scms_status_data.expectedQuery, params={"org_name": "Test"}
     )

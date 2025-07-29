@@ -43,7 +43,7 @@ def test_get_rsu_data_no_data(mock_pgquery):
         ") as row"
     )
     actual_result = rsuinfo.get_rsu_data(user_valid, [])
-    mock_pgquery.query_db.assert_called_with(expected_query)
+    mock_pgquery.query_db.assert_called_with(expected_query, params={})
 
     assert actual_result == expected_rsu_data
 
@@ -95,7 +95,7 @@ def test_get_rsu_data(mock_pgquery_query_db):
         ") as row"
     )
     # check that pgquery.query_db was called with expected arguments
-    rsuinfo.pgquery.query_db.assert_called_once_with(expectedQuery)
+    rsuinfo.pgquery.query_db.assert_called_once_with(expectedQuery, params={})
 
 
 # TODO: add more tests here

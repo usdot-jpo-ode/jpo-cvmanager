@@ -1,3 +1,4 @@
+from typing import Any
 from flask import request, abort
 from flask_restful import Resource
 from marshmallow import Schema, fields
@@ -26,13 +27,15 @@ def get_all_orgs(organizations: list[str] | None):
         "(SELECT COUNT(*) FROM public.rsu_organization ro WHERE ro.organization_id = org.organization_id) num_rsus, "
         "(SELECT COUNT(*) FROM public.intersection_organization io WHERE io.organization_id = org.organization_id) num_intersections "
     )
+    params: dict[str, Any] = {}
     if organizations is None:
         query += "FROM public.organizations org "
     else:
-        org_list_str = ", ".join([f"'{org}'" for org in organizations])
-        query += f"FROM public.organizations org WHERE org.name IN ({org_list_str}) "
+        query += "FROM public.organizations org WHERE org.name IN (:org_list) "
+        params["org_list"] = organizations
     query += ") as row"
-    data = pgquery.query_db(query)
+
+    data = pgquery.query_db(query, params=params)
 
     return_obj = []
     for row in data:
@@ -64,10 +67,11 @@ def get_org_data(org_name: str, is_admin_in_org: bool):
             "JOIN public.users ON uo.user_id = users.user_id "
             "JOIN public.roles ON uo.role_id = roles.role_id"
             ") u ON u.organization_id = org.organization_id "
-            f"WHERE org.name = '{org_name}'"
+            "WHERE org.name = :org_name"
             ") as row"
         )
-        data = pgquery.query_db(user_query)
+        params = {"org_name": org_name}
+        data = pgquery.query_db(user_query, params=params)
         for row in data:
             row = dict(row[0])
             user_obj = {}
@@ -88,10 +92,11 @@ def get_org_data(org_name: str, is_admin_in_org: bool):
         "FROM public.rsu_organization ro "
         "JOIN public.rsus ON ro.rsu_id = rsus.rsu_id"
         ") r ON r.organization_id = org.organization_id "
-        f"WHERE org.name = '{org_name}'"
+        "WHERE org.name = :org_name"
         ") as row"
     )
-    data = pgquery.query_db(rsu_query)
+    params = {"org_name": org_name}
+    data = pgquery.query_db(rsu_query, params=params)
     for row in data:
         row = dict(row[0])
         rsu_obj = {}
@@ -111,10 +116,11 @@ def get_org_data(org_name: str, is_admin_in_org: bool):
         "FROM public.intersection_organization io "
         "JOIN public.intersections ON io.intersection_id = intersections.intersection_id"
         ") i ON i.organization_id = org.organization_id "
-        f"WHERE org.name = '{org_name}'"
+        "WHERE org.name = :org_name"
         ") as row"
     )
-    data = pgquery.query_db(intersection_query)
+    params = {"org_name": org_name}
+    data = pgquery.query_db(intersection_query, params=params)
     for row in data:
         row = dict(row[0])
         intersection_obj = {}
@@ -214,90 +220,111 @@ def modify_org_authorized(orig_name: str, org_spec: dict):
         # Modify the existing organization data
         query = (
             "UPDATE public.organizations SET "
-            f"name = '{org_spec['name']}', "
-            f"email = '{org_spec['email']}' "
-            f"WHERE name = '{orig_name}'"
+            "name = :name, "
+            "email = :email "
+            "WHERE name = :orig_name"
         )
-        pgquery.write_db(query)
+        params = {
+            "name": org_spec["name"],
+            "email": org_spec["email"],
+            "orig_name": orig_name,
+        }
+        pgquery.write_db(query, params=params)
 
         # Add the user-to-organization relationships
         if len(org_spec["users_to_add"]) > 0:
-            user_add_query = "INSERT INTO public.user_organization(user_id, organization_id, role_id) VALUES"
             for user in org_spec["users_to_add"]:
-                user_add_query += (
-                    " ("
-                    f"(SELECT user_id FROM public.users WHERE email = '{user['email']}'), "
-                    f"(SELECT organization_id FROM public.organizations WHERE name = '{org_spec['name']}'), "
-                    f"(SELECT role_id FROM public.roles WHERE name = '{user['role']}')"
-                    "),"
+                user_add_query = (
+                    "INSERT INTO public.user_organization(user_id, organization_id, role_id) VALUES ("
+                    "(SELECT user_id FROM public.users WHERE email = :email), "
+                    "(SELECT organization_id FROM public.organizations WHERE name = :org_name), "
+                    "(SELECT role_id FROM public.roles WHERE name = :role)"
+                    ")"
                 )
-            user_add_query = user_add_query[:-1]
-            pgquery.write_db(user_add_query)
+                params = {
+                    "email": user["email"],
+                    "org_name": org_spec["name"],
+                    "role": user["role"],
+                }
+                pgquery.write_db(user_add_query, params=params)
 
         # Modify the user-to-organization relationships
         for user in org_spec["users_to_modify"]:
             user_modify_query = (
                 "UPDATE public.user_organization "
-                f"SET role_id = (SELECT role_id FROM public.roles WHERE name = '{user['role']}') "
-                f"WHERE user_id = (SELECT user_id FROM public.users WHERE email = '{user['email']}') "
-                f"AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = '{org_spec['name']}')"
+                "SET role_id = (SELECT role_id FROM public.roles WHERE name = :role) "
+                "WHERE user_id = (SELECT user_id FROM public.users WHERE email = :email) "
+                "AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = :org_name)"
             )
-            pgquery.write_db(user_modify_query)
+            params = {
+                "role": user["role"],
+                "email": user["email"],
+                "org_name": org_spec["name"],
+            }
+            pgquery.write_db(user_modify_query, params=params)
 
         # Remove the user-to-organization relationships
         for user in org_spec["users_to_remove"]:
             user_remove_query = (
                 "DELETE FROM public.user_organization WHERE "
-                f"user_id = (SELECT user_id FROM public.users WHERE email = '{user['email']}') "
-                f"AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = '{org_spec['name']}')"
+                "user_id = (SELECT user_id FROM public.users WHERE email = :email) "
+                "AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = :org_name)"
             )
-            pgquery.write_db(user_remove_query)
+            params = {
+                "email": user["email"],
+                "org_name": org_spec["name"],
+            }
+            pgquery.write_db(user_remove_query, params=params)
 
         # Add the rsu-to-organization relationships
         if len(org_spec["rsus_to_add"]) > 0:
-            rsu_add_query = (
-                "INSERT INTO public.rsu_organization(rsu_id, organization_id) VALUES"
-            )
             for rsu in org_spec["rsus_to_add"]:
-                rsu_add_query += (
-                    " ("
-                    f"(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{rsu}'), "
-                    f"(SELECT organization_id FROM public.organizations WHERE name = '{org_spec['name']}')"
-                    "),"
+                rsu_add_query = (
+                    "INSERT INTO public.rsu_organization(rsu_id, organization_id) VALUES ("
+                    "(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip), "
+                    "(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
+                    ")"
                 )
-            rsu_add_query = rsu_add_query[:-1]
-            pgquery.write_db(rsu_add_query)
+                params = {"rsu_ip": rsu, "org_name": org_spec["name"]}
+                pgquery.write_db(rsu_add_query, params=params)
 
         # Remove the rsu-to-organization relationships
         for rsu in org_spec["rsus_to_remove"]:
             rsu_remove_query = (
                 "DELETE FROM public.rsu_organization WHERE "
-                f"rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{rsu}') "
-                f"AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = '{org_spec['name']}')"
+                "rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip) "
+                "AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
             )
-            pgquery.write_db(rsu_remove_query)
+            params = {"rsu_ip": rsu, "org_name": org_spec["name"]}
+            pgquery.write_db(rsu_remove_query, params=params)
 
         # Add the intersection-to-organization relationships
         if len(org_spec["intersections_to_add"]) > 0:
-            intersection_add_query = "INSERT INTO public.intersection_organization(intersection_id, organization_id) VALUES"
             for intersection_id in org_spec["intersections_to_add"]:
-                intersection_add_query += (
-                    " ("
-                    f"(SELECT intersection_id FROM public.intersections WHERE intersection_number = '{intersection_id}'), "
-                    f"(SELECT organization_id FROM public.organizations WHERE name = '{org_spec['name']}')"
-                    "),"
+                intersection_add_query = (
+                    "INSERT INTO public.intersection_organization(intersection_id, organization_id) VALUES ("
+                    "(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id), "
+                    "(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
+                    ")"
                 )
-            intersection_add_query = intersection_add_query[:-1]
-            pgquery.write_db(intersection_add_query)
+                params = {
+                    "intersection_id": str(intersection_id),
+                    "org_name": org_spec["name"],
+                }
+                pgquery.write_db(intersection_add_query, params=params)
 
         # Remove the intersection-to-organization relationships
         for intersection_id in org_spec["intersections_to_remove"]:
             intersection_remove_query = (
                 "DELETE FROM public.intersection_organization WHERE "
-                f"intersection_id=(SELECT intersection_id FROM public.intersections WHERE intersection_number = '{intersection_id}') "
-                f"AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = '{org_spec['name']}')"
+                "intersection_id=(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id) "
+                "AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
             )
-            pgquery.write_db(intersection_remove_query)
+            params = {
+                "intersection_id": str(intersection_id),
+                "org_name": org_spec["name"],
+            }
+            pgquery.write_db(intersection_remove_query, params=params)
     except IntegrityError as e:
         if e.orig is None:
             raise InternalServerError("Encountered unknown issue") from e
@@ -337,27 +364,27 @@ def delete_org_authorized(org_name: str):
     # Delete user-to-organization relationships
     user_org_remove_query = (
         "DELETE FROM public.user_organization WHERE "
-        f"organization_id = (SELECT organization_id FROM public.organizations WHERE name = '{org_name}')"
+        "organization_id = (SELECT organization_id FROM public.organizations WHERE name = :org_name)"
     )
-    pgquery.write_db(user_org_remove_query)
+    pgquery.write_db(user_org_remove_query, params={"org_name": org_name})
 
     # Delete rsu-to-organization relationships
     rsu_org_remove_query = (
         "DELETE FROM public.rsu_organization WHERE "
-        f"organization_id = (SELECT organization_id FROM public.organizations WHERE name = '{org_name}')"
+        "organization_id = (SELECT organization_id FROM public.organizations WHERE name = :org_name)"
     )
-    pgquery.write_db(rsu_org_remove_query)
+    pgquery.write_db(rsu_org_remove_query, params={"org_name": org_name})
 
     # Delete intersection-to-organization relationships
     intersection_org_remove_query = (
         "DELETE FROM public.intersection_organization WHERE "
-        f"organization_id = (SELECT organization_id FROM public.organizations WHERE name = '{org_name}')"
+        "organization_id = (SELECT organization_id FROM public.organizations WHERE name = :org_name)"
     )
-    pgquery.write_db(intersection_org_remove_query)
+    pgquery.write_db(intersection_org_remove_query, params={"org_name": org_name})
 
     # Delete organization data
-    org_remove_query = f"DELETE FROM public.organizations WHERE name = '{org_name}'"
-    pgquery.write_db(org_remove_query)
+    org_remove_query = "DELETE FROM public.organizations WHERE name = :org_name"
+    pgquery.write_db(org_remove_query, params={"org_name": org_name})
 
     return {"message": "Organization successfully deleted"}
 
@@ -366,9 +393,10 @@ def check_orphan_rsus(org):
     rsu_query = (
         "SELECT to_jsonb(row) "
         "FROM (SELECT rsu_id, count(organization_id) count FROM rsu_organization WHERE rsu_id IN (SELECT rsu_id FROM rsu_organization WHERE organization_id = "
-        f"(SELECT organization_id FROM organizations WHERE name = '{org}')) GROUP BY rsu_id) as row"
+        "(SELECT organization_id FROM organizations WHERE name = :org_name)) GROUP BY rsu_id) as row"
     )
-    rsu_count = pgquery.query_db(rsu_query)
+    params = {"org_name": org}
+    rsu_count = pgquery.query_db(rsu_query, params=params)
     for row in rsu_count:
         rsu = dict(row[0])
         if rsu["count"] == 1:
@@ -380,9 +408,10 @@ def check_orphan_intersections(org):
     intersection_query = (
         "SELECT to_jsonb(row) "
         "FROM (SELECT intersection_id, count(organization_id) count FROM intersection_organization WHERE intersection_id IN (SELECT intersection_id FROM intersection_organization WHERE organization_id = "
-        f"(SELECT organization_id FROM organizations WHERE name = '{org}')) GROUP BY intersection_id) as row"
+        "(SELECT organization_id FROM organizations WHERE name = :org_name)) GROUP BY intersection_id) as row"
     )
-    intersection_count = pgquery.query_db(intersection_query)
+    params = {"org_name": org}
+    intersection_count = pgquery.query_db(intersection_query, params=params)
     for row in intersection_count:
         intersection = dict(row[0])
         if intersection["count"] == 1:
@@ -394,9 +423,10 @@ def check_orphan_users(org):
     user_query = (
         "SELECT to_jsonb(row) "
         "FROM (SELECT user_id, count(organization_id) count FROM user_organization WHERE user_id IN (SELECT user_id FROM user_organization WHERE organization_id = "
-        f"(SELECT organization_id FROM organizations WHERE name = '{org}')) GROUP BY user_id) as row"
+        "(SELECT organization_id FROM organizations WHERE name = :org_name)) GROUP BY user_id) as row"
     )
-    user_count = pgquery.query_db(user_query)
+    params = {"org_name": org}
+    user_count = pgquery.query_db(user_query, params=params)
     for row in user_count:
         user = dict(row[0])
         if user["count"] == 1:

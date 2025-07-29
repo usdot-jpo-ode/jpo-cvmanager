@@ -38,9 +38,10 @@ class HaasLocationConverterTest {
         var feature = result.getFeatures().get(0);
         assertNotNull(feature.getGeometry());
         assertEquals("Point", feature.getGeometry().getType());
+        List<Double> coords = feature.getGeometry().getCoordinates();
         assertArrayEquals(
                 new double[] { -100.00, 10.00 },
-                feature.getGeometry().getCoordinates(),
+                new double[] { coords.get(0), coords.get(1) },
                 0.0001);
         assertEquals(location, feature.getProperties());
     }
@@ -68,18 +69,20 @@ class HaasLocationConverterTest {
         var feature1 = result.getFeatures().get(0);
         assertNotNull(feature1.getGeometry());
         assertEquals("Point", feature1.getGeometry().getType());
+        List<Double> coords1 = feature1.getGeometry().getCoordinates();
         assertArrayEquals(
                 new double[] { -100.00, 10.00 },
-                feature1.getGeometry().getCoordinates(),
+                new double[] { coords1.get(0), coords1.get(1) },
                 0.0001);
         assertEquals(location1, feature1.getProperties());
 
         var feature2 = result.getFeatures().get(1);
         assertNotNull(feature2.getGeometry());
         assertEquals("Point", feature2.getGeometry().getType());
+        List<Double> coords2 = feature2.getGeometry().getCoordinates();
         assertArrayEquals(
                 new double[] { -74.0060, 40.7128 },
-                feature2.getGeometry().getCoordinates(),
+                new double[] { coords2.get(0), coords2.get(1) },
                 0.0001);
         assertEquals(location2, feature2.getProperties());
     }

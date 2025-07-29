@@ -1,29 +1,32 @@
 package us.dot.its.jpo.ode.api.converters;
 
-import us.dot.its.jpo.ode.api.models.geojson.*;
 import us.dot.its.jpo.ode.api.models.haas.HaasLocation;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
+import us.dot.its.jpo.ode.api.models.geojson.GeoJsonFeature;
+import us.dot.its.jpo.ode.api.models.geojson.GeoJsonFeatureCollection;
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class HaasLocationConverter {
+
+    /**
+     * Converts a list of HaasLocation objects to a GeoJsonFeatureCollection.
+     * Each HaasLocation is represented as a GeoJsonFeature with a GeoJsonPoint
+     * geometry and the HaasLocation object as properties.
+     *
+     * @param locations The list of HaasLocation objects to convert.
+     * @return A GeoJsonFeatureCollection containing the converted features.
+     */
     public static GeoJsonFeatureCollection toGeoJson(List<HaasLocation> locations) {
         List<GeoJsonFeature> features = locations.stream()
-                .flatMap(location -> {
-                    List<GeoJsonFeature> allFeatures = new ArrayList<>();
+                .map(location -> {
+                    GeoJsonPoint geometry = new GeoJsonPoint(location.getLon(), location.getLat());
 
-                    // Add main location point
-                    GeoJsonFeature mainFeature = new GeoJsonFeature();
-                    GeoJsonGeometry geometry = new GeoJsonGeometry();
-                    geometry.setType("Point");
-                    geometry.setCoordinates(new double[] { location.getLon(), location.getLat() });
-                    mainFeature.setGeometry(geometry);
-
-                    mainFeature.setProperties(location);
-                    allFeatures.add(mainFeature);
-
-                    return allFeatures.stream();
+                    GeoJsonFeature feature = new GeoJsonFeature();
+                    feature.setGeometry(geometry);
+                    feature.setProperties(location);
+                    return feature;
                 })
                 .collect(Collectors.toList());
 

@@ -31,8 +31,8 @@ def get_all_orgs(organizations: list[str] | None):
     if organizations is None:
         query += "FROM public.organizations org "
     else:
-        query += "FROM public.organizations org WHERE org.name IN (:org_list) "
-        params["org_list"] = organizations
+        org_list_str = ", ".join([f"'{org}'" for org in organizations])
+        query += f"FROM public.organizations org WHERE org.name IN ({org_list_str}) "
     query += ") as row"
 
     data = pgquery.query_db(query, params=params)

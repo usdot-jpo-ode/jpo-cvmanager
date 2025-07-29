@@ -111,9 +111,7 @@ def test_get_all_orgs(mock_query_db):
         list(user_valid.user_info.organizations.keys())
     )
 
-    mock_query_db.assert_called_with(
-        expected_query, params={"org_list": ["Test Org", "Test Org 2", "Test Org 3"]}
-    )
+    mock_query_db.assert_called_with(expected_query, params={})
     assert actual_result == expected_result
 
 

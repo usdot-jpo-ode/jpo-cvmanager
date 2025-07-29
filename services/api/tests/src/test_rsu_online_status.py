@@ -11,6 +11,7 @@ import pytest
 from api.tests.data import auth_data
 
 user_valid = auth_data.get_request_environ()
+user_valid_no_super = auth_data.get_request_environ_user()
 
 
 # ####################################### Test Request Handling ##################################
@@ -77,15 +78,14 @@ def test_ping_data_query(mock_pgquery):
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
         "JOIN ("
         "SELECT * FROM public.ping AS ping_data "
-        "WHERE ping_data.timestamp >= :timestamp::timestamp"
+        f"WHERE ping_data.timestamp >= {t.strftime("%Y/%m/%dT%H:%M:%S")}::timestamp"
         ") AS ping_data ON rd.rsu_id = ping_data.rsu_id "
+        "WHERE ron_v.name IN ('Test Org', 'Test Org 2', 'Test Org 3') "
         "ORDER BY rd.rsu_id, ping_data.timestamp DESC"
     )
 
-    rsu_online_status.get_ping_data(user_valid)
-    mock_pgquery.query_db.assert_called_with(
-        expected_query, params={"timestamp": t.strftime("%Y/%m/%dT%H:%M:%S")}
-    )
+    rsu_online_status.get_ping_data(user_valid_no_super)
+    mock_pgquery.query_db.assert_called_with(expected_query, params={})
 
 
 @patch("api.src.rsu_online_status.pgquery")

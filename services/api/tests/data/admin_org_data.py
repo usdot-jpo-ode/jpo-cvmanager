@@ -79,11 +79,9 @@ get_all_orgs_sql = (
     "(SELECT COUNT(*) FROM public.user_organization uo WHERE uo.organization_id = org.organization_id) num_users, "
     "(SELECT COUNT(*) FROM public.rsu_organization ro WHERE ro.organization_id = org.organization_id) num_rsus, "
     "(SELECT COUNT(*) FROM public.intersection_organization io WHERE io.organization_id = org.organization_id) num_intersections "
-    "FROM public.organizations org WHERE org.name IN (:org_list) "
+    "FROM public.organizations org WHERE org.name IN ('Test Org', 'Test Org 2', 'Test Org 3') "
     ") as row"
 )
-
-# get_org_data
 
 get_org_data_user_return = [
     (

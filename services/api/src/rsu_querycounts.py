@@ -89,7 +89,8 @@ def get_organization_rsus(user: EnvironWithOrg, qualified_orgs: list[str]):
         where_clause = "ron_v.name = :user_org"
         params["user_org"] = user.organization
     if not user.user_info.super_user:
-        where_clause = "ron_v.name IN (:qualified_orgs)"
+        qualified_orgs_str = ", ".join(f"'{org}'" for org in qualified_orgs)
+        where_clause = f"ron_v.name IN ({qualified_orgs_str})"
         params["qualified_orgs"] = qualified_orgs
     if where_clause:
         query += f" WHERE {where_clause}"

@@ -15,7 +15,7 @@ from common.auth_tools import (
     PermissionResult,
     enforce_organization_restrictions,
     require_permission,
-    generate_placeholders_for_list,
+    generate_sql_placeholders_for_list,
 )
 
 
@@ -39,7 +39,7 @@ def get_rsu_data(rsu_ip: str, user: EnvironWithOrg, qualified_orgs: list[str]):
     where_clauses = []
     params: dict[str, Any] = {}
     if not user.user_info.super_user:
-        org_names_placeholder, _ = generate_placeholders_for_list(
+        org_names_placeholder, _ = generate_sql_placeholders_for_list(
             qualified_orgs, params_to_update=params
         )
         where_clauses.append(f"org.name IN ({org_names_placeholder})")

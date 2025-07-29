@@ -26,7 +26,7 @@ class UserInfo:
     def __init__(self, token_user_info: dict):
         self.email = token_user_info.get("email")
         self.organizations: dict[str, ORG_ROLE_LITERAL] = {
-            org["org"]: ORG_ROLE_LITERAL(org["role"])
+            org["org"]: ORG_ROLE_LITERAL(org["role"].lower())
             for org in token_user_info.get("cvmanager_data", {}).get(
                 "organizations", []
             )
@@ -85,16 +85,16 @@ def get_rsu_set_for_org(organizations: list[str]) -> set[str]:
     if not organizations:
         return set()
 
+    allowed_orgs_placeholder, params = generate_sql_placeholders_for_list(organizations)
     query = (
         "SELECT rsu.ipv4_address::text AS ipv4_address "
         "FROM public.rsus rsu "
         "JOIN public.rsu_organization AS rsu_org ON rsu_org.rsu_id = rsu.rsu_id "
         "JOIN public.organizations AS org ON org.organization_id = rsu_org.organization_id "
-        "WHERE org.name = ANY (:allowed_orgs)"
+        f"WHERE org.name = ANY ({allowed_orgs_placeholder})"
     )
 
     logging.debug(f'Executing query: "{query};"')
-    params = {"allowed_orgs": organizations}
     data = pgquery.query_db(query, params=params)
 
     return set([rsu["ipv4_address"] for rsu in data])
@@ -104,17 +104,20 @@ def check_rsu_with_org(rsu_ip: str, organizations: list[str]) -> bool:
     if not organizations:
         return False
 
+    params = {"rsu_ip": rsu_ip}
+    allowed_orgs_placeholder, _ = generate_sql_placeholders_for_list(
+        organizations, params_to_update=params
+    )
     query = (
         "SELECT rsu.ipv4_address::text AS ipv4_address "
         "FROM public.rsus rsu "
         "JOIN public.rsu_organization AS rsu_org ON rsu_org.rsu_id = rsu.rsu_id "
         "JOIN public.organizations AS org ON org.organization_id = rsu_org.organization_id "
-        "WHERE org.name = ANY (:allowed_orgs) "
+        f"WHERE org.name = ANY ({allowed_orgs_placeholder}) "
         "AND rsu.ipv4_address = :rsu_ip"
     )
 
     logging.debug(f'Executing query: "{query};"')
-    params = {"allowed_orgs": organizations, "rsu_ip": rsu_ip}
     data = pgquery.query_db(query, params=params)
 
     return data[0]["ipv4_address"] == rsu_ip if data else False
@@ -123,17 +126,21 @@ def check_rsu_with_org(rsu_ip: str, organizations: list[str]) -> bool:
 def check_intersection_with_org(intersection_id: str, organizations: list[str]) -> bool:
     if not organizations:
         return False
+
+    params = {"intersection_id": intersection_id}
+    allowed_orgs_placeholder, _ = generate_sql_placeholders_for_list(
+        organizations, params_to_update=params
+    )
     query = (
         "SELECT intersection.intersection_number as intersection_number "
         "FROM public.intersections intersection "
         "JOIN public.intersection_organization AS intersection_org ON intersection_org.intersection_id = intersection.intersection_id "
         "JOIN public.organizations AS org ON org.organization_id = intersection_org.organization_id "
-        "WHERE org.name = ANY (:allowed_orgs)"
+        f"WHERE org.name = ANY ({allowed_orgs_placeholder}) "
         "AND intersection.intersection_number = :intersection_id"
     )
 
     logging.debug(f'Executing query: "{query};"')
-    params = {"allowed_orgs": organizations, "intersection_id": intersection_id}
     data = pgquery.query_db(query, params=params)
 
     return data[0]["intersection_number"] == intersection_id if data else False
@@ -142,17 +149,21 @@ def check_intersection_with_org(intersection_id: str, organizations: list[str]) 
 def check_user_with_org(user_email: str, organizations: list[str]) -> bool:
     if not organizations:
         return False
+
+    params = {"user_email": user_email}
+    allowed_orgs_placeholder, _ = generate_sql_placeholders_for_list(
+        organizations, params_to_update=params
+    )
     query = (
         "SELECT u.email as email "
         "FROM public.users u "
         "JOIN public.user_organization AS user_org ON user_org.user_id = u.user_id "
         "JOIN public.organizations AS org ON org.organization_id = user_org.organization_id "
-        "WHERE org.name = ANY (:allowed_orgs)"
+        f"WHERE org.name = ANY ({allowed_orgs_placeholder}) "
         "AND u.email = :user_email"
     )
 
     logging.debug(f'Executing query: "{query};"')
-    params = {"allowed_orgs": organizations, "user_email": user_email}
     data = pgquery.query_db(query, params=params)
 
     return data[0]["email"] == user_email if data else False
@@ -181,13 +192,15 @@ def get_user_info(email: str) -> Optional[UserInfo]:
     )
     org_rows = pgquery.query_db(org_query, params={"email": email})
     # Combine into JWT token-like structure for UserInfo constructor
+    print(org_rows)
     user_info_dict["cvmanager_data"] = {
-        "organizations": [dict(row[0]) for row in org_rows]
+        "super_user": user_info_dict.get("super_user", "0"),
+        "organizations": [dict(row[0]) for row in org_rows],
     }
     return UserInfo(user_info_dict)
 
 
-def generate_placeholders_for_list(
+def generate_sql_placeholders_for_list(
     lst: list[str], params_to_update: Optional[dict] = None
 ) -> tuple[str, dict]:
     """

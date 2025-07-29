@@ -1,4 +1,4 @@
-from mock import MagicMock, Mock, patch
+from mock import MagicMock, patch
 import pytest
 from common import auth_tools
 from common.auth_tools import (
@@ -52,8 +52,8 @@ def test_get_rsu_set_for_org(mock_query_db):
 
     assert mock_query_db.call_count == 1
     mock_query_db.assert_called_with(
-        auth_tools_data.rsu_query_statement,
-        params=auth_tools_data.rsu_query_params,
+        auth_tools_data.rsu_set_for_org_query_statement[0],
+        params=auth_tools_data.rsu_set_for_org_query_statement[1],
     )
 
 
@@ -72,6 +72,10 @@ def test_check_rsu_with_org(mock_query_db):
 
     # Valid RSUs
     assert auth_tools.check_rsu_with_org("1.1.1.1", ["a"])
+    mock_query_db.assert_called_with(
+        auth_tools_data.rsu_query_statement[0],
+        params=auth_tools_data.rsu_query_statement[1],
+    )
 
     # Invalid RSUs
     assert not auth_tools.check_rsu_with_org("1.1.1.1a", ["a"])
@@ -88,6 +92,10 @@ def test_check_intersection_with_org(mock_query_db):
 
     # Valid intersections
     assert auth_tools.check_intersection_with_org("1", ["a"])
+    mock_query_db.assert_called_with(
+        auth_tools_data.intersection_query_statement[0],
+        params=auth_tools_data.intersection_query_statement[1],
+    )
 
     # Invalid intersections
     assert not auth_tools.check_intersection_with_org("a", ["a"])
@@ -102,6 +110,10 @@ def test_check_user_with_org(mock_query_db):
 
     # Valid users
     assert auth_tools.check_user_with_org("test1@gmail.com", ["a"])
+    mock_query_db.assert_called_with(
+        auth_tools_data.user_query_statement[0],
+        params=auth_tools_data.user_query_statement[1],
+    )
 
     # Invalid users
     assert not auth_tools.check_user_with_org("invalid@gmail.com", ["a"])
@@ -115,16 +127,18 @@ def test_get_user_info_valid_user(mock_query_db):
     # Mock the response for the user_info_query
     mock_query_db.side_effect = [
         [
-            {
-                "email": "test@gmail.com",
-                "given_name": "Test",
-                "family_name": "User",
-                "super_user": True,
-            }
+            [
+                {
+                    "email": "test@gmail.com",
+                    "given_name": "Test",
+                    "family_name": "User",
+                    "super_user": "1",
+                }
+            ]
         ],  # user_info_query
         [
-            {"org": "Test Org", "role": "ADMIN"},
-            {"org": "Test Org 2", "role": "OPERATOR"},
+            [{"org": "Test Org", "role": "ADMIN"}],
+            [{"org": "Test Org 2", "role": "OPERATOR"}],
         ],  # org_query
     ]
 
@@ -136,10 +150,10 @@ def test_get_user_info_valid_user(mock_query_db):
     assert user_info.first_name == "Test"
     assert user_info.last_name == "User"
     assert user_info.super_user is True
-    assert user_info.organizations == [
-        {"org": "Test Org", "role": "ADMIN"},
-        {"org": "Test Org 2", "role": "OPERATOR"},
-    ]
+    assert user_info.organizations == {
+        "Test Org": ORG_ROLE_LITERAL.ADMIN,
+        "Test Org 2": ORG_ROLE_LITERAL.OPERATOR,
+    }
 
 
 @patch("common.pgquery.query_db")
@@ -159,12 +173,14 @@ def test_get_user_info_no_organizations(mock_query_db):
     # Mock the response for the user_info_query
     mock_query_db.side_effect = [
         [
-            {
-                "email": "test@gmail.com",
-                "given_name": "Test",
-                "family_name": "User",
-                "super_user": False,
-            }
+            [
+                {
+                    "email": "test@gmail.com",
+                    "given_name": "Test",
+                    "family_name": "User",
+                    "super_user": False,
+                }
+            ]
         ],  # user_info_query
         [],  # org_query (no organizations found)
     ]
@@ -177,7 +193,7 @@ def test_get_user_info_no_organizations(mock_query_db):
     assert user_info.first_name == "Test"
     assert user_info.last_name == "User"
     assert user_info.super_user is False
-    assert user_info.organizations == []
+    assert user_info.organizations == {}
 
 
 @patch("common.pgquery.query_db")
@@ -188,6 +204,58 @@ def test_get_user_info_query_error(mock_query_db):
     # Call the function and assert that it raises an exception
     with pytest.raises(Exception, match="Database error"):
         auth_tools.get_user_info("test@gmail.com")
+
+
+######################### Generate Placeholders For List #########################
+def test_generate_placeholders_for_list_basic():
+    # Arrange
+    lst = ["item1", "item2", "item3"]
+
+    # Act
+    placeholders, params = auth_tools.generate_sql_placeholders_for_list(lst)
+
+    # Assert
+    assert placeholders == ":item_0, :item_1, :item_2"
+    assert params == {
+        "item_0": "item1",
+        "item_1": "item2",
+        "item_2": "item3",
+    }
+
+
+def test_generate_placeholders_for_list_empty():
+    # Arrange
+    lst = []
+
+    # Act
+    placeholders, params = auth_tools.generate_sql_placeholders_for_list(lst)
+
+    # Assert
+    assert placeholders == ""
+    assert params == {}
+
+
+def test_generate_placeholders_for_list_with_params_to_update():
+    # Arrange
+    lst = ["item1", "item2"]
+    existing_params = {"existing_key": "existing_value"}
+
+    # Act
+    placeholders, params = auth_tools.generate_sql_placeholders_for_list(
+        lst, params_to_update=existing_params
+    )
+
+    # Assert
+    assert placeholders == ":item_0, :item_1"
+    assert params == {
+        "item_0": "item1",
+        "item_1": "item2",
+    }
+    assert existing_params == {
+        "existing_key": "existing_value",
+        "item_0": "item1",
+        "item_1": "item2",
+    }
 
 
 ######################### Role Checks #########################

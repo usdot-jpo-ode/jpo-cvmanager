@@ -1,4 +1,4 @@
-from common.auth_tools import ORG_ROLE_LITERAL, EnvironWithOrg, UserInfo
+from common.auth_tools import EnvironWithOrg, UserInfo
 
 
 jwt_token_data_good = {

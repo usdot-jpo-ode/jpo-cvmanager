@@ -15,7 +15,7 @@ from common.auth_tools import (
     EnvironWithOrg,
     PermissionResult,
     require_permission,
-    generate_placeholders_for_list,
+    generate_sql_placeholders_for_list,
 )
 
 message_types = {
@@ -90,7 +90,7 @@ def get_organization_rsus(user: EnvironWithOrg, qualified_orgs: list[str]):
         where_clause = "ron_v.name = :user_org"
         params["user_org"] = user.organization
     if not user.user_info.super_user:
-        org_names_placeholder, _ = generate_placeholders_for_list(
+        org_names_placeholder, _ = generate_sql_placeholders_for_list(
             qualified_orgs, params_to_update=params
         )
         where_clause = f"ron_v.name IN ({org_names_placeholder})"

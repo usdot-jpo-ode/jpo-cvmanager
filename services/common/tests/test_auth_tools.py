@@ -109,6 +109,87 @@ def test_check_user_with_org(mock_query_db):
     assert not auth_tools.check_user_with_org(None, ["a"])
 
 
+########################## Get User Info ##########################
+@patch("common.pgquery.query_db")
+def test_get_user_info_valid_user(mock_query_db):
+    # Mock the response for the user_info_query
+    mock_query_db.side_effect = [
+        [
+            {
+                "email": "test@gmail.com",
+                "given_name": "Test",
+                "family_name": "User",
+                "super_user": True,
+            }
+        ],  # user_info_query
+        [
+            {"org": "Test Org", "role": "ADMIN"},
+            {"org": "Test Org 2", "role": "OPERATOR"},
+        ],  # org_query
+    ]
+
+    # Call the function
+    user_info = auth_tools.get_user_info("test@gmail.com")
+
+    # Assertions
+    assert user_info.email == "test@gmail.com"
+    assert user_info.first_name == "Test"
+    assert user_info.last_name == "User"
+    assert user_info.super_user is True
+    assert user_info.organizations == [
+        {"org": "Test Org", "role": "ADMIN"},
+        {"org": "Test Org 2", "role": "OPERATOR"},
+    ]
+
+
+@patch("common.pgquery.query_db")
+def test_get_user_info_no_user(mock_query_db):
+    # Mock the response for the user_info_query (no user found)
+    mock_query_db.side_effect = [[], []]  # Empty results for both queries
+
+    # Call the function
+    user_info = auth_tools.get_user_info("nonexistent@gmail.com")
+
+    # Assertions
+    assert user_info is None
+
+
+@patch("common.pgquery.query_db")
+def test_get_user_info_no_organizations(mock_query_db):
+    # Mock the response for the user_info_query
+    mock_query_db.side_effect = [
+        [
+            {
+                "email": "test@gmail.com",
+                "given_name": "Test",
+                "family_name": "User",
+                "super_user": False,
+            }
+        ],  # user_info_query
+        [],  # org_query (no organizations found)
+    ]
+
+    # Call the function
+    user_info = auth_tools.get_user_info("test@gmail.com")
+
+    # Assertions
+    assert user_info.email == "test@gmail.com"
+    assert user_info.first_name == "Test"
+    assert user_info.last_name == "User"
+    assert user_info.super_user is False
+    assert user_info.organizations == []
+
+
+@patch("common.pgquery.query_db")
+def test_get_user_info_query_error(mock_query_db):
+    # Mock the response for the user_info_query to raise an exception
+    mock_query_db.side_effect = Exception("Database error")
+
+    # Call the function and assert that it raises an exception
+    with pytest.raises(Exception, match="Database error"):
+        auth_tools.get_user_info("test@gmail.com")
+
+
 ######################### Role Checks #########################
 def test_check_role_above():
     assert auth_tools.check_role_above(ORG_ROLE_LITERAL.ADMIN, ORG_ROLE_LITERAL.USER)

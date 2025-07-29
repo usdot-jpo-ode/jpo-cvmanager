@@ -14,6 +14,7 @@ from common.auth_tools import (
     EnvironWithOrg,
     EnvironWithoutOrg,
     UserInfo,
+    get_user_info,
 )
 
 
@@ -50,9 +51,10 @@ def get_user_role(token) -> UserInfo | None:
         # Pull all user data from authenticated token
 
         decodedToken = jwt.decode(token, options={"verify_signature": False})
-        data = UserInfo(
-            decodedToken
-        )  # Need to use decoded token because introspect strips the custom mapped field cvmanager_data
+        data = get_user_info(decodedToken.get("email"))
+        if data is None:
+            logging.error(f"User {decodedToken.get('email')} not found in database")
+            return None
 
         logging.debug(f"Middleware get_user_role get user info of {data.email}")
     else:

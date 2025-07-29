@@ -158,6 +158,32 @@ def check_user_with_org(user_email: str, organizations: list[str]) -> bool:
     return data[0]["email"] == user_email if data else False
 
 
+def get_user_info(email: str) -> Optional[UserInfo]:
+    user_info_query = (
+        "SELECT jsonb_build_object('email', email, 'given_name', first_name, 'family_name', last_name, 'super_user', super_user) "
+        "FROM public.users "
+        "WHERE email = :email"
+    )
+    user_info_rows = pgquery.query_db(user_info_query, params={"email": email})
+    if not user_info_rows:
+        return None
+    print(f"User info for {email} found: {user_info_rows[0][0]}")
+    user_info_dict = dict(user_info_rows[0][0])
+    org_query = (
+        "SELECT jsonb_build_object('org', org.name, 'role', roles.name) "
+        "FROM public.users u "
+        "JOIN public.user_organization uo on u.user_id = uo.user_id "
+        "JOIN public.organizations org on uo.organization_id = org.organization_id "
+        "JOIN public.roles on uo.role_id = roles.role_id "
+        "WHERE u.email = :email"
+    )
+    org_rows = pgquery.query_db(org_query, params={"email": email})
+    user_info_dict["cvmanager_data"] = {
+        "organizations": [dict(row[0]) for row in org_rows]
+    }  # matching the structure in jwt the JWT token UserInfo is designed to read from
+    return UserInfo(user_info_dict)
+
+
 def get_index_or_default(
     lst: list[ORG_ROLE_LITERAL], item: ORG_ROLE_LITERAL, default=-1
 ) -> int:

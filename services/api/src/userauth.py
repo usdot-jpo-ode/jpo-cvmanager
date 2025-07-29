@@ -1,12 +1,8 @@
-import json
 import os
 
 from flask_restful import Resource
 
-from common.auth_tools import (
-    PermissionResult,
-    require_permission,
-)
+from common.auth_tools import PermissionResult, require_permission
 
 
 class UserAuth(Resource):

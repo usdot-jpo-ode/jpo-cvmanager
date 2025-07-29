@@ -115,7 +115,7 @@ expected_get_rsu_query_one = (
 
 modify_rsu_sql = (
     "UPDATE public.rsus SET "
-    "geography=ST_GeomFromText('POINT(:geo_position_longitude :geo_position_latitude)'), "
+    "geography=ST_GeomFromText('POINT(' || :geo_position_longitude || ' ' || :geo_position_latitude || ')'), "
     "milepost=:milepost, "
     "ipv4_address=:rsu_ip, "
     "serial_number=:serial_number, "

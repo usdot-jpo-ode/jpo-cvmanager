@@ -126,7 +126,7 @@ def modify_rsu_authorized(
         # Modify the existing RSU data
         query = (
             "UPDATE public.rsus SET "
-            "geography=ST_GeomFromText('POINT(:geo_position_longitude :geo_position_latitude)'), "
+            "geography=ST_GeomFromText('POINT(' || :geo_position_longitude || ' ' || :geo_position_latitude || ')'), "
             "milepost=:milepost, "
             "ipv4_address=:rsu_ip, "
             "serial_number=:serial_number, "

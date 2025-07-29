@@ -156,7 +156,7 @@ def add_intersection(intersection_spec: dict):
         # Add the mandatory fields
         query += (
             f"'{intersection_spec['intersection_id']}', "
-            f"ST_GeomFromText('POINT({str(intersection_spec['ref_pt']['longitude'])} {str(intersection_spec['ref_pt']['latitude'])})')"
+            f"ST_GeomFromText('POINT(' || {str(intersection_spec['ref_pt']['longitude'])} || ' ' || {str(intersection_spec['ref_pt']['latitude'])} || ')')"
         )
 
         # Add optional values if they are present

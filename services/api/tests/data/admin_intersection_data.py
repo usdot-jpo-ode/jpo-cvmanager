@@ -123,7 +123,7 @@ modify_intersection_sql = (
     (
         "UPDATE public.intersections SET "
         "intersection_number=:intersection_id, "
-        "ref_pt=ST_GeomFromText('POINT(:ref_pt_longitude :ref_pt_latitude)')"
+        "ref_pt=ST_GeomFromText('POINT(' || :ref_pt_longitude || ' ' || :ref_pt_latitude || ')')"
         ", bbox=ST_MakeEnvelope(:bbox_longitude1,:bbox_latitude1,:bbox_longitude2,:bbox_latitude2)"
         ", intersection_name=:intersection_name"
         ", origin_ip=:origin_ip "

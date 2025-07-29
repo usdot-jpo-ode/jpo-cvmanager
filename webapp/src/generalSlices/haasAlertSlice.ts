@@ -7,7 +7,7 @@ import { toast } from 'react-hot-toast'
 
 const initialState: HaasWebsocketLocationResponse = {
   data: { type: 'FeatureCollection', features: [] },
-  pagination: { page: 0, page_size: 0, total: 0 },
+  metadata: { limit: 1000, returnedCount: 0, truncated: false, message: 'No data loaded' },
 }
 
 export const getHaasLocationData = createAsyncThunk(
@@ -20,9 +20,10 @@ export const getHaasLocationData = createAsyncThunk(
         active_only: params.active_only.toString(),
         start_time_utc_millis: params.start_time_utc_millis.toString(),
         end_time_utc_millis: params.end_time_utc_millis.toString(),
+        ...(params.limit && { limit: params.limit.toString() }),
       }
       const response = await HaasApi.getHaasLocationData({ token, query_params })
-
+      console.debug(response)
       // Validate response structure
       if (!response?.data?.features) {
         throw new Error('Invalid response format from server')
@@ -52,7 +53,16 @@ export const haasSlice = createSlice({
         state.loading = false
         state.value = action.payload
         const featureCount = action.payload.data?.features?.length ?? 0
-        toast.success(`Found ${featureCount} incidents`)
+        const truncated = action.payload.metadata?.truncated ?? false
+
+        // Show warning toast if results are truncated
+        if (truncated) {
+          toast.error(`Found ${featureCount} incidents (truncated due to limit)`, {
+            duration: 5000,
+          })
+        } else {
+          toast.success(`Found ${featureCount} incidents`)
+        }
       })
       .addCase(getHaasLocationData.rejected, (state, action) => {
         state.loading = false

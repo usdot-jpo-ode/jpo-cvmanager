@@ -1,7 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import { Source, Layer, Popup, useMap } from 'react-map-gl'
 import { SymbolLayer } from 'mapbox-gl'
-import { Paper, Typography, FormGroup, FormControlLabel, Switch, Button, Box, Grid2, Stack } from '@mui/material'
+import {
+  Paper,
+  Typography,
+  FormGroup,
+  FormControlLabel,
+  Switch,
+  Button,
+  Box,
+  Grid2,
+  Stack,
+  TextField,
+} from '@mui/material'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
@@ -48,6 +59,7 @@ export const HaasAlertVisualization: React.FC<HaasAlertVisualizationProps> = ({
   const [haasActiveOnly, setHaasActiveOnly] = useState(true)
   const [haasStartDate, setHaasStartDate] = useState(dayjs().subtract(24, 'hour'))
   const [haasEndDate, setHaasEndDate] = useState(dayjs())
+  const [haasLimit, setHaasLimit] = useState(1000)
 
   useEffect(() => {
     if (map) {
@@ -134,6 +146,25 @@ export const HaasAlertVisualization: React.FC<HaasAlertVisualizationProps> = ({
             </LocalizationProvider>
           </div>
 
+          <TextField
+            label="Result Limit"
+            type="number"
+            value={haasLimit}
+            onChange={(e) => setHaasLimit(parseInt(e.target.value) || 1000)}
+            inputProps={{ min: 1, max: 10000 }}
+            sx={{
+              width: '100%',
+              marginBottom: '10px',
+              '& .MuiInputLabel-root': {
+                fontSize: '0.875rem',
+              },
+              '& .MuiInputBase-input': {
+                fontSize: '0.875rem',
+                padding: '8px',
+              },
+            }}
+          />
+
           <Button
             variant="contained"
             size="small"
@@ -142,6 +173,7 @@ export const HaasAlertVisualization: React.FC<HaasAlertVisualizationProps> = ({
                 active_only: haasActiveOnly,
                 start_time_utc_millis: haasStartDate.valueOf(),
                 end_time_utc_millis: haasEndDate.valueOf(),
+                limit: haasLimit,
               }
               dispatch(getHaasLocationData(params))
             }}

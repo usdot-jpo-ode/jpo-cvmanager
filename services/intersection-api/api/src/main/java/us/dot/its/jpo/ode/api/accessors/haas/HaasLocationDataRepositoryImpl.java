@@ -1,32 +1,26 @@
 package us.dot.its.jpo.ode.api.accessors.haas;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import us.dot.its.jpo.ode.api.accessors.IntersectionCriteria;
-import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 import us.dot.its.jpo.ode.api.models.haas.HaasLocation;
+import us.dot.its.jpo.ode.api.models.haas.HaasLocationResult;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.bson.Document;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 
 @Component
 public class HaasLocationDataRepositoryImpl
-                implements HaasLocationDataRepository, PageableQuery {
+                implements HaasLocationDataRepository {
 
         private final MongoTemplate mongoTemplate;
 
@@ -41,62 +35,43 @@ public class HaasLocationDataRepositoryImpl
         }
 
         /**
-         * Get a page representing the count of data for a given intersectionID,
-         * startTime, and endTime
+         * Get a limited list of HAAS locations with the given criteria
          *
-         * @param intersectionID the intersection ID to query by, if null will not be
-         *                       applied
-         * @param startTime      the start time to query by, if null will not be applied
-         * @param endTime        the end time to query by, if null will not be applied
-         * @param pageable       the pageable object to use for pagination
-         * @return the paginated data that matches the given criteria
+         * @param activeOnly the active only filter, if true will only return active
+         *                   records
+         * @param startTime  the start time to query by, if null will not be applied
+         * @param endTime    the end time to query by, if null will not be applied
+         * @param limit      the maximum number of records to return
+         * @return the HaasLocationResult containing locations and truncation info
          */
-        public long count(
+        public HaasLocationResult findWithLimit(
                         boolean activeOnly,
                         Long startTime,
                         Long endTime,
-                        Pageable pageable) {
-                Criteria criteria = new IntersectionCriteria()
-                                .whereOptional(IS_ACTIVE_FIELD, activeOnly)
-                                .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
-                Query query = Query.query(criteria);
-                return mongoTemplate.count(query, collectionName);
-        }
-
-        /**
-         * Get a page containing the single most recent record for a given
-         * intersectionID, startTime, and endTime
-         *
-         * @param intersectionID the intersection ID to query by, if null will not be
-         *                       applied
-         * @param startTime      the start time to query by, if null will not be applied
-         * @param endTime        the end time to query by, if null will not be applied
-         * @return the paginated data that matches the given criteria
-         */
-        public Page<HaasLocation> find(
-                        boolean activeOnly,
-                        Long startTime,
-                        Long endTime,
-                        Pageable pageable) {
+                        int limit) {
                 Criteria timeCriteria = new IntersectionCriteria()
                                 .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
 
                 // Create base aggregation pipeline
                 List<AggregationOperation> pipeline = buildBasePipeline(timeCriteria, activeOnly);
 
-                // Add pagination operations
-                List<AggregationOperation> paginatedPipeline = addPaginationOperations(pipeline, pageable);
+                // Add limit operation (request one more to check if there are more results)
+                pipeline.add(Aggregation.limit(limit + 1));
 
                 // Execute aggregation
-                Aggregation aggregation = Aggregation.newAggregation(paginatedPipeline);
+                Aggregation aggregation = Aggregation.newAggregation(pipeline);
                 AggregationResults<HaasLocation> results = mongoTemplate.aggregate(
                                 aggregation, collectionName, HaasLocation.class);
 
-                // Count total documents for pagination
-                long total = countTotalDocuments(pipeline);
+                List<HaasLocation> allResults = results.getMappedResults();
 
-                List<HaasLocation> content = results.getMappedResults();
-                return new PageImpl<>(content, pageable, total);
+                // Check if there are more results available
+                boolean hasMoreResults = allResults.size() > limit;
+
+                // If we got more results than the limit, trim to the limit
+                List<HaasLocation> finalResults = hasMoreResults ? allResults.subList(0, limit) : allResults;
+
+                return new HaasLocationResult(finalResults, hasMoreResults);
         }
 
         /**
@@ -149,28 +124,6 @@ public class HaasLocationDataRepositoryImpl
                 return inactiveResults.getMappedResults().stream()
                                 .map(doc -> doc.get("_id"))
                                 .toList();
-        }
-
-        /**
-         * Adds pagination operations (skip and limit) to the pipeline
-         */
-        private List<AggregationOperation> addPaginationOperations(List<AggregationOperation> basePipeline,
-                        Pageable pageable) {
-                List<AggregationOperation> paginatedPipeline = new ArrayList<>(basePipeline);
-                paginatedPipeline.add(Aggregation.skip((long) pageable.getPageNumber() * pageable.getPageSize()));
-                paginatedPipeline.add(Aggregation.limit(pageable.getPageSize()));
-                return paginatedPipeline;
-        }
-
-        /**
-         * Counts the total number of documents for pagination
-         */
-        private long countTotalDocuments(List<AggregationOperation> pipeline) {
-                Aggregation countAggregation = Aggregation.newAggregation(
-                                pipeline.toArray(new AggregationOperation[0]));
-                AggregationResults<HaasLocation> countResults = mongoTemplate.aggregate(
-                                countAggregation, collectionName, HaasLocation.class);
-                return countResults.getMappedResults().size();
         }
 
         @Override

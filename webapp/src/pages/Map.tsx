@@ -92,8 +92,6 @@ import {
   RadioGroup,
   Radio,
   Collapse,
-  FormLabel,
-  TextField,
   InputLabel,
   Box,
   Divider,
@@ -120,8 +118,8 @@ import { MapLayer } from '../models/MapLayer'
 import { toast } from 'react-hot-toast'
 import { RoomOutlined } from '@mui/icons-material'
 import MooveAiHardBrakingLegend from '../components/MooveAiHardBrakingLegend'
-import { selectHaasLocationData, getHaasLocationData } from '../generalSlices/haasAlertSlice'
-import { HaasLocationProperties, HaasWebsocketLocationParams } from '../models/haas/HaasWebsocketLocation'
+import { selectHaasLocationData } from '../generalSlices/haasAlertSlice'
+import { HaasLocationProperties } from '../models/haas/HaasWebsocketLocation'
 import { HaasAlertVisualization } from '../components/HaasAlertVisualization'
 import { Feature, Point } from 'geojson'
 import { PrimaryButton } from '../styles/components/PrimaryButton'

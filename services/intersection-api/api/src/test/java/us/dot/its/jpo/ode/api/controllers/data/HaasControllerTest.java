@@ -6,22 +6,21 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.ode.api.accessors.haas.HaasLocationDataRepository;
-import us.dot.its.jpo.ode.api.models.PaginatedGeoJsonResponse;
+import us.dot.its.jpo.ode.api.models.LimitedGeoJsonResponse;
 import us.dot.its.jpo.ode.api.models.haas.HaasLocation;
+import us.dot.its.jpo.ode.api.models.haas.HaasLocationResult;
 import us.dot.its.jpo.ode.api.services.PermissionService;
 import us.dot.its.jpo.ode.mockdata.MockHaasGenerator;
 
@@ -53,13 +52,36 @@ public class HaasControllerTest {
 
         when(permissionService.isSuperUser()).thenReturn(true);
 
-        PageRequest page = PageRequest.of(0, 10000);
-        when(haasLocationDataRepository.find(true, null, null, page))
-                .thenReturn(new PageImpl<>(locations, page, 1L));
+        HaasLocationResult mockResult = new HaasLocationResult(locations, false);
+        when(haasLocationDataRepository.findWithLimit(true, null, null, 1000))
+                .thenReturn(mockResult);
 
-        ResponseEntity<PaginatedGeoJsonResponse> result = controller
-                .getLocations(true, null, null, false, 0, 10000, false);
+        ResponseEntity<LimitedGeoJsonResponse> result = controller
+                .getLocations(true, null, null, false, 1000);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody().getData().getFeatures()).hasSize(1);
+        assertThat(result.getBody().getMetadata().isTruncated()).isFalse();
+    }
+
+    @Test
+    public void testGetLocationsWithTruncation() {
+        HaasLocation location = MockHaasGenerator.getHaasLocations().getFirst();
+
+        List<HaasLocation> locations = new ArrayList<>();
+        locations.add(location);
+
+        when(permissionService.isSuperUser()).thenReturn(true);
+
+        HaasLocationResult mockResult = new HaasLocationResult(locations, true);
+        when(haasLocationDataRepository.findWithLimit(true, null, null, 1))
+                .thenReturn(mockResult);
+
+        ResponseEntity<LimitedGeoJsonResponse> result = controller
+                .getLocations(true, null, null, false, 1);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(result.getBody().getData().getFeatures()).hasSize(1);
+        assertThat(result.getBody().getMetadata().isTruncated()).isTrue();
+        assertThat(result.getBody().getMetadata().getLimit()).isEqualTo(1);
+        assertThat(result.getBody().getMetadata().getReturnedCount()).isEqualTo(1);
     }
 }

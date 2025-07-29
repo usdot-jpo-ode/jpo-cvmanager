@@ -4,17 +4,19 @@ export interface HaasWebsocketLocationParams {
   active_only: boolean
   start_time_utc_millis: number
   end_time_utc_millis: number
+  limit?: number
 }
 
 export interface HaasWebsocketLocationResponse {
   data: HaasWebsocketLocationFeatureCollection
-  pagination: HaasWebsocketLocationPagination
+  metadata: HaasWebsocketLocationMetadata
 }
 
-export interface HaasWebsocketLocationPagination {
-  page: number
-  page_size: number
-  total: number
+export interface HaasWebsocketLocationMetadata {
+  limit: number
+  returnedCount: number
+  truncated: boolean
+  message: string
 }
 
 export interface HaasWebsocketLocationFeatureCollection {

@@ -15,6 +15,7 @@ from common.auth_tools import (
     PermissionResult,
     enforce_organization_restrictions,
     require_permission,
+    generate_placeholders_for_list,
 )
 
 
@@ -57,8 +58,11 @@ def get_intersection_data(
     where_clauses = []
     params: dict[str, Any] = {}
     if not user.user_info.super_user:
-        org_list_str = ", ".join([f"'{org}'" for org in qualified_orgs])
-        where_clauses.append(f"org.name IN ({org_list_str})")
+        org_names_placeholder, _ = generate_placeholders_for_list(
+            qualified_orgs, params_to_update=params
+        )
+        where_clauses.append(f"org.name IN ({org_names_placeholder})")
+
     if intersection_id != "all":
         where_clauses.append("intersection_number = :intersection_id")
         params["intersection_id"] = intersection_id

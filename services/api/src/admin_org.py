@@ -15,6 +15,7 @@ from common.auth_tools import (
     PermissionResult,
     check_role_above,
     require_permission,
+    generate_placeholders_for_list,
 )
 
 
@@ -31,8 +32,10 @@ def get_all_orgs(organizations: list[str] | None):
     if organizations is None:
         query += "FROM public.organizations org "
     else:
-        org_list_str = ", ".join([f"'{org}'" for org in organizations])
-        query += f"FROM public.organizations org WHERE org.name IN ({org_list_str}) "
+        org_names_placeholder, _ = generate_placeholders_for_list(
+            organizations, params_to_update=params
+        )
+        query += f"FROM public.organizations org WHERE org.name IN ({org_names_placeholder}) "
     query += ") as row"
 
     data = pgquery.query_db(query, params=params)
@@ -508,10 +511,10 @@ class AdminOrg(Resource):
         logging.debug("AdminOrg DELETE requested")
 
         schema = AdminOrgGetDeleteSchema()
-        errors = schema.validate(request.json)
+        errors = schema.validate(request.args)
         if errors:
             logging.error(errors)
             abort(400, errors)
 
-        org_name = urllib.request.unquote(request.json["org_name"])
+        org_name = urllib.request.unquote(request.args["org_name"])
         return (delete_org_authorized(org_name), 200, self.headers)

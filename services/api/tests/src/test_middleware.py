@@ -109,9 +109,12 @@ def test_middleware_class_call_user_authorized(mock_request, mock_get_user_role)
     app.assert_called_once_with(environ, start_response)
 
 
+@patch("api.src.middleware.get_user_info")
 @patch("api.src.middleware.Request")
 @patch("api.src.middleware.KeycloakOpenID")
-def test_middleware_class_call_exception(mock_keycloak, mock_request):
+def test_middleware_class_call_exception(
+    mock_keycloak, mock_request, mock_get_user_info
+):
     # create instance
     app = Mock()
     mock_request.return_value.method = "GET"
@@ -121,6 +124,7 @@ def test_middleware_class_call_exception(mock_keycloak, mock_request):
     # call
     mock_keycloak_instance = mock_keycloak.return_value
     mock_keycloak_instance.introspect.side_effect = Unauthorized("test")
+    mock_get_user_info.return_value = None
 
     environ = {"REQUEST_METHOD": "GET", "PATH_INFO": "/user-auth"}
     start_response = Mock()

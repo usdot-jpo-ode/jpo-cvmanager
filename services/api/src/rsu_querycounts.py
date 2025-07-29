@@ -15,6 +15,7 @@ from common.auth_tools import (
     EnvironWithOrg,
     PermissionResult,
     require_permission,
+    generate_placeholders_for_list,
 )
 
 message_types = {
@@ -89,9 +90,10 @@ def get_organization_rsus(user: EnvironWithOrg, qualified_orgs: list[str]):
         where_clause = "ron_v.name = :user_org"
         params["user_org"] = user.organization
     if not user.user_info.super_user:
-        qualified_orgs_str = ", ".join(f"'{org}'" for org in qualified_orgs)
-        where_clause = f"ron_v.name IN ({qualified_orgs_str})"
-        params["qualified_orgs"] = qualified_orgs
+        org_names_placeholder, _ = generate_placeholders_for_list(
+            qualified_orgs, params_to_update=params
+        )
+        where_clause = f"ron_v.name IN ({org_names_placeholder})"
     if where_clause:
         query += f" WHERE {where_clause}"
     query += "ORDER BY primary_route ASC, milepost ASC"

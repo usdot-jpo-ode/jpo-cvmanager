@@ -80,7 +80,7 @@ def test_ping_data_query(mock_pgquery):
         "SELECT * FROM public.ping AS ping_data "
         f"WHERE ping_data.timestamp >= {t.strftime("%Y/%m/%dT%H:%M:%S")}::timestamp"
         ") AS ping_data ON rd.rsu_id = ping_data.rsu_id "
-        "WHERE ron_v.name IN ('Test Org', 'Test Org 2', 'Test Org 3') "
+        "WHERE ron_v.name IN (:item_0, :item_1, :item_2) "
         "ORDER BY rd.rsu_id, ping_data.timestamp DESC"
     )
 

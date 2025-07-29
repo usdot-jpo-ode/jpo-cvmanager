@@ -159,6 +159,7 @@ def check_user_with_org(user_email: str, organizations: list[str]) -> bool:
 
 
 def get_user_info(email: str) -> Optional[UserInfo]:
+    # Get User Info
     user_info_query = (
         "SELECT jsonb_build_object('email', email, 'given_name', first_name, 'family_name', last_name, 'super_user', super_user) "
         "FROM public.users "
@@ -167,8 +168,9 @@ def get_user_info(email: str) -> Optional[UserInfo]:
     user_info_rows = pgquery.query_db(user_info_query, params={"email": email})
     if not user_info_rows:
         return None
-    print(f"User info for {email} found: {user_info_rows[0][0]}")
     user_info_dict = dict(user_info_rows[0][0])
+
+    # Get Organization and Role Info
     org_query = (
         "SELECT jsonb_build_object('org', org.name, 'role', roles.name) "
         "FROM public.users u "
@@ -178,10 +180,36 @@ def get_user_info(email: str) -> Optional[UserInfo]:
         "WHERE u.email = :email"
     )
     org_rows = pgquery.query_db(org_query, params={"email": email})
+    # Combine into JWT token-like structure for UserInfo constructor
     user_info_dict["cvmanager_data"] = {
         "organizations": [dict(row[0]) for row in org_rows]
-    }  # matching the structure in jwt the JWT token UserInfo is designed to read from
+    }
     return UserInfo(user_info_dict)
+
+
+def generate_placeholders_for_list(
+    lst: list[str], params_to_update: Optional[dict] = None
+) -> tuple[str, dict]:
+    """
+    Generates a string of placeholders for a SQL query based on the length of the provided list.
+    The placeholder string is explicitly defined to be safe to sql injection
+
+    Args:
+        lst (list[str]): The list of items for which placeholders are to be generated.
+        params_to_update (dict, optional): A dictionary to update with the generated parameters.
+
+    Returns:
+        str: A string of placeholders formatted for use in a SQL query.
+        dict: Parameters to be used with the placeholders in the SQL query.
+    """
+    placeholders = ", ".join(f":item_{i}" for i in range(len(lst)))
+    params = {f"item_{i}": item for i, item in enumerate(lst)}
+    if params_to_update is not None:
+        params_to_update.update(params)
+    return (
+        placeholders,
+        params,
+    )
 
 
 def get_index_or_default(

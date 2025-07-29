@@ -16,6 +16,7 @@ from common.auth_tools import (
     PermissionResult,
     enforce_organization_restrictions,
     require_permission,
+    generate_placeholders_for_list,
 )
 
 
@@ -33,8 +34,10 @@ def get_user_data(user_email: str, user: EnvironWithOrg, qualified_orgs: list[st
     where_clauses = []
     params: dict[str, Any] = {}
     if not user.user_info.super_user:
-        qualified_orgs_str = ", ".join(f"'{org}'" for org in qualified_orgs)
-        where_clauses.append(f"org.name IN ({qualified_orgs_str})")
+        org_names_placeholder, _ = generate_placeholders_for_list(
+            qualified_orgs, params_to_update=params
+        )
+        where_clauses.append(f"org.name IN ({org_names_placeholder})")
     if user_email != "all":
         where_clauses.append("u.email = :user_email")
         params["user_email"] = user_email

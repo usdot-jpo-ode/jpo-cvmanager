@@ -37,6 +37,8 @@ ENABLE_MOOVE_AI_FEATURES = (
 
 
 def get_user_role(token) -> UserInfo | None:
+    get_user_info("test@gmail.com")
+
     # TODO: Consider using pythjon-jose or PyJWT to locally validate the token, instead of calling the Keycloak server
     keycloak_openid = KeycloakOpenID(
         server_url=os.getenv("KEYCLOAK_ENDPOINT"),

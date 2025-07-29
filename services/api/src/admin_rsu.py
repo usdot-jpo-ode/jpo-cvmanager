@@ -15,6 +15,7 @@ from common.auth_tools import (
     PermissionResult,
     enforce_organization_restrictions,
     require_permission,
+    generate_placeholders_for_list,
 )
 
 
@@ -38,8 +39,10 @@ def get_rsu_data(rsu_ip: str, user: EnvironWithOrg, qualified_orgs: list[str]):
     where_clauses = []
     params: dict[str, Any] = {}
     if not user.user_info.super_user:
-        qualified_orgs_str = ", ".join(f"'{org}'" for org in qualified_orgs)
-        where_clauses.append(f"org.name IN ({qualified_orgs_str})")
+        org_names_placeholder, _ = generate_placeholders_for_list(
+            qualified_orgs, params_to_update=params
+        )
+        where_clauses.append(f"org.name IN ({org_names_placeholder})")
     if rsu_ip != "all":
         where_clauses.append("ipv4_address = :rsu_ip")
         params["rsu_ip"] = rsu_ip

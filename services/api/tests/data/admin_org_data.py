@@ -4,9 +4,9 @@ import multidict
 
 request_environ = multidict.MultiDict([])
 
-request_json_get_delete_good = {"org_name": "Test Org"}
+request_args_get_delete_good = {"org_name": "Test Org"}
 
-request_json_get_delete_bad = {"org_name": 5}
+request_args_get_delete_bad = {"org_name": 5}
 
 request_json_good = {
     "orig_name": "Test Org",
@@ -79,8 +79,9 @@ get_all_orgs_sql = (
     "(SELECT COUNT(*) FROM public.user_organization uo WHERE uo.organization_id = org.organization_id) num_users, "
     "(SELECT COUNT(*) FROM public.rsu_organization ro WHERE ro.organization_id = org.organization_id) num_rsus, "
     "(SELECT COUNT(*) FROM public.intersection_organization io WHERE io.organization_id = org.organization_id) num_intersections "
-    "FROM public.organizations org WHERE org.name IN ('Test Org', 'Test Org 2', 'Test Org 3') "
-    ") as row"
+    "FROM public.organizations org WHERE org.name IN (:item_0, :item_1, :item_2) "
+    ") as row",
+    {"item_0": "Test Org", "item_1": "Test Org 2", "item_2": "Test Org 3"},
 )
 
 get_org_data_user_return = [

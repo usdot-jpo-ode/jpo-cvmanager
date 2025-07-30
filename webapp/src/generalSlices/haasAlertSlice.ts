@@ -75,6 +75,4 @@ export const haasSlice = createSlice({
 export const selectHaasLocationData = (state: RootState) => state.haas.value
 export const selectLoading = (state: RootState) => state.haas.loading
 
-// export const { updateHaasLocationData } = haasSlice.actions
-
 export default haasSlice.reducer

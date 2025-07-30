@@ -40,6 +40,15 @@
       "args": ["run"],
       "envFile": "${workspaceRoot}/services/api/.env",
       "preLaunchTask": "build-python-services"
+    },
+    {
+      "type": "java",
+      "name": "Launch Intersection API",
+      "request": "launch",
+      "mainClass": "us.dot.its.jpo.ode.api.ConflictApiApplication",
+      "projectName": "intersection-api",
+      "envFile": "${workspaceFolder}/.env",
+      "preLaunchTask": "run-docker-compose-intersection-no-api"
     }
   ],
   "compounds": [

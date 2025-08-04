@@ -81,6 +81,7 @@ enable:
   api: ${INTERSECTION_API_ENABLE_API:true}
   email: ${INTERSECTION_API_ENABLE_EMAILER:true}
   report: ${INTERSECTION_API_ENABLE_REPORTS:true}
+  haas: ${INTERSECTION_API_ENABLE_HAAS:true}
 
 cmServerURL: ${CM_SERVER_URL:http://localhost:8082}
 mongoTimeoutMs: ${CM_MONGO_TIMEOUT_MS:5000}

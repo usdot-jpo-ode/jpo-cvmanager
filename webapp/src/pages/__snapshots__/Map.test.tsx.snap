@@ -284,8 +284,8 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                       </div>
                     </div>
                     <div>
-                      <p
-                        class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+                      <div
+                        style="font-size: small; display: flex; align-items: center;"
                       >
                         <label
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
@@ -316,7 +316,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                             HAAS Alert Viewer
                           </p>
                         </label>
-                      </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -871,8 +871,8 @@ exports[`snapshot bsmData clicked 1`] = `
                       </div>
                     </div>
                     <div>
-                      <p
-                        class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+                      <div
+                        style="font-size: small; display: flex; align-items: center;"
                       >
                         <label
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
@@ -903,7 +903,7 @@ exports[`snapshot bsmData clicked 1`] = `
                             HAAS Alert Viewer
                           </p>
                         </label>
-                      </p>
+                      </div>
                     </div>
                   </div>
                 </div>

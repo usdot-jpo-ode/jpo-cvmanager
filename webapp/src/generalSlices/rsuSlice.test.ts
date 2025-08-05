@@ -82,7 +82,7 @@ jest.mock('luxon', () => {
   }
 })
 
-const { DateTime } = require('luxon')
+import { DateTime } from 'luxon'
 const currentDate = DateTime.local()
 
 describe('rsu reducer', () => {
@@ -203,11 +203,11 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly pending', async () => {
-      let loading = true
-      let rsuData = [] as any
-      let rsuOnlineStatus = {}
-      let rsuCounts = {}
-      let countList = [] as any
+      const loading = true
+      const rsuData = [] as any
+      const rsuOnlineStatus = {}
+      const rsuCounts = {}
+      const countList = [] as any
       const state = reducer(initialState, {
         type: 'rsu/getRsuData/pending',
       })
@@ -225,9 +225,9 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly fulfilled', async () => {
-      let loading = false
-      let rsuCounts = { ipv4_address: { count: 4 } } as any
-      let rsuData = [
+      const loading = false
+      const rsuCounts = { ipv4_address: { count: 4 } } as any
+      const rsuData = [
         {
           properties: {
             ipv4_address: 'ipv4_address',
@@ -244,7 +244,7 @@ describe('async thunks', () => {
         }
       )
 
-      let heatMapData = {
+      const heatMapData = {
         features: [
           {
             type: 'Feature',
@@ -268,7 +268,7 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly rejected', async () => {
-      let loading = false
+      const loading = false
       const state = reducer(initialState, {
         type: 'rsu/getRsuData/rejected',
       })
@@ -291,13 +291,13 @@ describe('async thunks', () => {
 
       const rsuData = ['1.1.1.1']
       RsuApi.getRsuInfo = jest.fn().mockReturnValue({ rsuList: rsuData })
-      let resp = await action(dispatch, getState, undefined)
+      const resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual(rsuData)
       expect(RsuApi.getRsuInfo).toHaveBeenCalledWith('token', 'name')
     })
 
     it('Updates the state correctly pending', async () => {
-      let loading = true
+      const loading = true
       const state = reducer(initialState, {
         type: 'rsu/getRsuInfoOnly/pending',
       })
@@ -309,7 +309,7 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly fulfilled', async () => {
-      let loading = false
+      const loading = false
       const state = reducer(initialState, {
         type: 'rsu/getRsuInfoOnly/fulfilled',
       })
@@ -317,7 +317,7 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly rejected', async () => {
-      let loading = false
+      const loading = false
       const state = reducer(initialState, {
         type: 'rsu/getRsuInfoOnly/rejected',
       })
@@ -340,13 +340,13 @@ describe('async thunks', () => {
       const action = getRsuLastOnline(rsu_ip)
 
       RsuApi.getRsuOnline = jest.fn().mockReturnValue(rsu_ip)
-      let resp = await action(dispatch, getState, undefined)
+      const resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual(rsu_ip)
       expect(RsuApi.getRsuOnline).toHaveBeenCalledWith('token', 'name', '', { rsu_ip })
     })
 
     it('Updates the state correctly pending', async () => {
-      let loading = true
+      const loading = true
       const state = reducer(initialState, {
         type: 'rsu/getRsuLastOnline/pending',
       })
@@ -358,7 +358,7 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly fulfilled', async () => {
-      let loading = false
+      const loading = false
       let rsuOnlineStatus = { '1.1.1.1': {} as any }
       const payload = { last_online: '2021-03-01T00:00:00.000000Z', ip: '1.1.1.1' }
       const state = reducer(
@@ -381,7 +381,7 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly rejected', async () => {
-      let loading = false
+      const loading = false
       const state = reducer(initialState, {
         type: 'rsu/getRsuLastOnline/rejected',
       })
@@ -404,7 +404,7 @@ describe('async thunks', () => {
 
       const rsuList = ['1.1.1.1']
       RsuApi.getRsuInfo = jest.fn().mockReturnValue({ rsuList })
-      let resp = await action(dispatch, getState, undefined)
+      const resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual(rsuList)
       expect(RsuApi.getRsuInfo).toHaveBeenCalledWith('token', 'name')
     })
@@ -436,7 +436,7 @@ describe('async thunks', () => {
 
       const rsuOnlineStatus = 'rsuOnlineStatus'
       RsuApi.getRsuOnline = jest.fn().mockReturnValue(rsuOnlineStatus)
-      let resp = await action(dispatch, getState, undefined)
+      const resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual(rsuOnlineStatus)
       expect(RsuApi.getRsuOnline).toHaveBeenCalledWith('token', 'name')
     })
@@ -455,7 +455,7 @@ describe('async thunks', () => {
 
       const rsuOnlineStatus = null as any
       RsuApi.getRsuOnline = jest.fn().mockReturnValue(rsuOnlineStatus)
-      let resp = await action(dispatch, getState, undefined)
+      const resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual('rsuOnlineStatusState')
       expect(RsuApi.getRsuOnline).toHaveBeenCalledWith('token', 'name')
     })
@@ -502,7 +502,7 @@ describe('async thunks', () => {
         },
       ]
       RsuApi.getRsuCounts = jest.fn().mockReturnValue(rsuCounts)
-      let resp = await action(dispatch, getState, undefined)
+      const resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual({ rsuCounts, countList })
       expect(RsuApi.getRsuCounts).toHaveBeenCalledWith('token', 'name', '', {
         message: 'BSM',
@@ -543,7 +543,7 @@ describe('async thunks', () => {
         },
       ]
       RsuApi.getRsuCounts = jest.fn().mockReturnValue(null)
-      let resp = await action(dispatch, getState, undefined)
+      const resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual({ rsuCounts, countList })
       expect(RsuApi.getRsuCounts).toHaveBeenCalledWith('token', 'name', '', {
         message: 'BSM',
@@ -553,8 +553,8 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly fulfilled', async () => {
-      let rsuCounts = 'rsuCounts'
-      let countList = 'countList'
+      const rsuCounts = 'rsuCounts'
+      const countList = 'countList'
       const payload = { rsuCounts, countList }
       const state = reducer(initialState, {
         type: 'rsu/_getRsuCounts/fulfilled',
@@ -581,7 +581,7 @@ describe('async thunks', () => {
       const action = getSsmSrmData()
 
       RsuApi.getSsmSrmData = jest.fn().mockReturnValue('srmSsmList')
-      let resp = await action(dispatch, getState, undefined)
+      const resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual('srmSsmList')
       expect(RsuApi.getSsmSrmData).toHaveBeenCalledWith('token')
     })
@@ -614,7 +614,7 @@ describe('async thunks', () => {
       const action = getIssScmsStatus()
 
       RsuApi.getIssScmsStatus = jest.fn().mockReturnValue('issScmsStatus')
-      let resp = await action(dispatch, getState, undefined)
+      const resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual('issScmsStatus')
       expect(RsuApi.getIssScmsStatus).toHaveBeenCalledWith('token', 'name')
     })
@@ -679,7 +679,7 @@ describe('async thunks', () => {
         },
       ]
       RsuApi.getRsuCounts = jest.fn().mockReturnValue(rsuCounts)
-      let resp = await action(dispatch, getState, undefined)
+      const resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual({
         countsMsgType: 'message',
         startDate: 1,
@@ -723,7 +723,7 @@ describe('async thunks', () => {
         },
       ]
       RsuApi.getRsuCounts = jest.fn().mockReturnValue(rsuCounts)
-      let resp = await action(dispatch, getState, undefined)
+      const resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual({
         countsMsgType: 'message',
         startDate: 1,
@@ -855,7 +855,7 @@ describe('async thunks', () => {
       const action = updateGeoMsgData()
 
       RsuApi.postGeoMsgData = jest.fn().mockReturnValue('msgCounts')
-      let resp = await action(dispatch, getState, undefined)
+      const resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual({ body: [] })
       expect(RsuApi.postGeoMsgData).toHaveBeenCalledWith(
         'token',
@@ -888,7 +888,7 @@ describe('async thunks', () => {
       const action = updateGeoMsgData()
 
       RsuApi.postGeoMsgData = jest.fn().mockReturnValue('msgCounts')
-      let resp = await action(dispatch, getState, undefined)
+      const resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual(undefined)
       expect(RsuApi.postGeoMsgData).not.toHaveBeenCalled()
     })
@@ -1029,9 +1029,9 @@ describe('reducers', () => {
   it('selectRsu reducer updates state correctly', async () => {
     const selectedRsu = {
       id: 1,
-      type: 'Feature' as 'Feature',
+      type: 'Feature' as const,
       geometry: {
-        type: 'Point' as 'Point',
+        type: 'Point' as const,
         coordinates: [],
       },
       properties: null,
@@ -1073,7 +1073,7 @@ describe('reducers', () => {
   })
 
   it('setSelectedSrm reducer updates state correctly', async () => {
-    let selectedSrm = {
+    const selectedSrm = {
       time: 'a',
       requestedId: 'b',
       role: 'c',

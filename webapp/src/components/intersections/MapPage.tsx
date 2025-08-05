@@ -5,7 +5,6 @@ import { selectSelectedIntersectionId } from '../../generalSlices/intersectionSl
 import { useSelector } from 'react-redux'
 
 const Map = () => {
-  const currentDate = new Date()
   const intersectionId = useSelector(selectSelectedIntersectionId)
   return (
     <>

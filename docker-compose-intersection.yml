@@ -1,5 +1,6 @@
 include:
   - ./jpo-utils/docker-compose-kafka.yml
+  - ./jpo-utils/docker-compose-mongo.yml
 
 services:
   intersection_api:
@@ -19,7 +20,7 @@ services:
       ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
       ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
     environment:
-      AUTH_SERVER_URL: http://${KEYCLOAK_DOMAIN}:8084
+      AUTH_SERVER_URL: ${KEYCLOAK_ENDPOINT}
       DB_HOST_IP: ${DB_HOST_IP}
       DB_HOST_PORT: ${DB_HOST_PORT}
       SPRING_KAFKA_BOOTSTRAPSERVERS: ${KAFKA_BOOTSTRAP_SERVERS}
@@ -30,10 +31,10 @@ services:
       ACM_LOG_TO_CONSOLE: true
       ACM_LOG_TO_FILE: false
       ACM_LOG_LEVEL: DEBUG
-      CM_MONGO_API_USERNAME: ${CM_MONGO_API_USERNAME}
-      CM_MONGO_API_PASSWORD: ${CM_MONGO_API_PASSWORD}
-      CM_MONGO_AUTH_DB: ${CM_MONGO_AUTH_DB}
+      MONGO_READ_WRITE_USER: ${MONGO_READ_WRITE_USER}
+      MONGO_READ_WRITE_PASS: ${MONGO_READ_WRITE_PASS}
       CM_MAXIMUM_RESPONSE_SIZE: ${CM_MAXIMUM_RESPONSE_SIZE}
+      SPRING_DATA_MONGODB_DATABASE: ${CM_DATABASE_NAME}
 
       KEYCLOAK_CLIENT_API_ID: ${KEYCLOAK_API_CLIENT_ID}
       KEYCLOAK_CLIENT_API_SECRET: ${KEYCLOAK_API_CLIENT_SECRET_KEY}
@@ -63,89 +64,9 @@ services:
       cvmanager_keycloak:
         condition: service_healthy
         required: false
-      mongodb_container:
+      mongo:
         condition: service_healthy
         required: false
       kafka-setup:
         condition: service_started
         required: false
-
-  mongodb_container:
-    profiles:
-      - intersection
-      - intersection_no_api
-      - conflictmonitor
-      - mongodb_container
-    image: mongo:8
-    container_name: jpo-conflictmonitor-mongodb-container
-    restart: always
-    environment:
-      - MONGO_REPLICA_SET_NAME=rs0
-      - DB_HOST_IP=${DB_HOST_IP}
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
-      - CM_MONGO_CONNECTOR_USERNAME=${CM_MONGO_CONNECTOR_USERNAME}
-      - CM_MONGO_CONNECTOR_PASSWORD=${CM_MONGO_CONNECTOR_PASSWORD}
-      - CM_MONGO_API_USERNAME=${CM_MONGO_API_USERNAME}
-      - CM_MONGO_API_PASSWORD=${CM_MONGO_API_PASSWORD}
-      - CM_MONGO_USER_USERNAME=${CM_MONGO_USER_USERNAME}
-      - CM_MONGO_USER_PASSWORD=${CM_MONGO_USER_PASSWORD}
-      - CM_DATABASE_NAME=${CM_DATABASE_NAME}
-      - CM_DATABASE_STORAGE_COLLECTION_NAME=${CM_DATABASE_STORAGE_COLLECTION_NAME}
-      - CM_DATABASE_SIZE_GB=${CM_DATABASE_SIZE_GB}
-      - CM_DATABASE_SIZE_TARGET_PERCENT=${CM_DATABASE_SIZE_TARGET_PERCENT}
-      - CM_DATABASE_DELETE_THRESHOLD_PERCENT=${CM_DATABASE_DELETE_THRESHOLD_PERCENT}
-      - CM_DATABASE_MAX_TTL_RETENTION_SECONDS=${CM_DATABASE_MAX_TTL_RETENTION_SECONDS}
-      - CM_DATABASE_MIN_TTL_RETENTION_SECONDS=${CM_DATABASE_MIN_TTL_RETENTION_SECONDS}
-      - CM_DATABASE_COMPACTION_TRIGGER_PERCENT=${CM_DATABASE_COMPACTION_TRIGGER_PERCENT}
-      - INTERSECTION_API_ENABLE_API=${INTERSECTION_API_ENABLE_API}
-      - INTERSECTION_API_ENABLE_EMAILER=${INTERSECTION_API_ENABLE_EMAILER}
-      - INTERSECTION_API_ENABLE_REPORTS=${INTERSECTION_API_ENABLE_REPORTS}
-      - INSERT_SAMPLE_DATA=${INSERT_SAMPLE_DATA}
-    ports:
-      - '27017:27017'
-    volumes:
-      - mongodb_data_container:/data/db
-      - ./resources/mongo_scripts/manage-volume-cron:/docker-entrypoint-initdb.d/manage-volume-cron
-      - ./resources/mongo_scripts/keyfile.txt:/data/keyfile-import.txt
-      - ./resources/mongo_scripts/a_init_replicas.js:/docker-entrypoint-initdb.d/a_init_replicas.js
-      - ./resources/mongo_scripts/b_create_indexes.js:/docker-entrypoint-initdb.d/b_create_indexes.js
-      - ./resources/mongo_scripts/c_insert_data.js:/docker-entrypoint-initdb.d/c_insert_data.js
-      - ./resources/mongo_scripts/manage_volume.js:/docker-entrypoint-initdb.d/manage_volume.js
-      - ./resources/mongo_scripts/mongorestore.sh:/docker-entrypoint-initdb.d/mongorestore.sh
-      - ./resources/mongodumps/dump_2024_08_20:/dump
-    healthcheck:
-      test: |
-        test $$(mongosh --username ${MONGO_INITDB_ROOT_USERNAME} --password ${MONGO_INITDB_ROOT_PASSWORD}  --quiet --eval "try { rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: '${DB_HOST_IP}' }] }).ok } catch (_) { rs.status().ok }") -eq 1
-      interval: 20s
-      start_period: 60s
-    entrypoint:
-      - bash
-      - -c
-      - |
-        apt update
-        apt install -y cron gettext systemctl dos2unix
-        systemctl start cron
-        systemctl enable cron
-        envsubst < /docker-entrypoint-initdb.d/manage-volume-cron > /etc/cron.d/manage-volume-cron
-        dos2unix /etc/cron.d/manage-volume-cron
-        chmod 644 /etc/cron.d/manage-volume-cron
-        systemctl restart cron
-        cp /data/keyfile-import.txt /data/keyfile.txt
-        chmod 400 /data/keyfile.txt
-        chown 999:999 /data/keyfile.txt
-
-        exec docker-entrypoint.sh $$@
-
-    command: ['mongod', '--replSet', 'rs0', '--bind_ip_all', '--keyFile', '/data/keyfile.txt']
-    logging:
-      options:
-        max-size: '10m'
-        max-file: '5'
-    deploy:
-      resources:
-        limits:
-          memory: 3G
-
-volumes:
-  mongodb_data_container:

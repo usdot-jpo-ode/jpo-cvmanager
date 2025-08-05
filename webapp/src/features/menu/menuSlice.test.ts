@@ -17,7 +17,7 @@ import {
 } from './menuSlice'
 import apiHelper from '../../apis/api-helper'
 import { RootState } from '../../store'
-const { DateTime } = require('luxon')
+import { DateTime } from 'luxon'
 
 describe('menu reducer', () => {
   it('should handle initial state', () => {
@@ -77,7 +77,7 @@ describe('reducers', () => {
 
 describe('functions', () => {
   it('sortCountList ascending', async () => {
-    let dispatch = jest.fn()
+    const dispatch = jest.fn()
     const key = 'key'
     const currentSort = 'keydesc'
     const countList = [{ key: 1 }, { key: 2 }] as any
@@ -87,7 +87,7 @@ describe('functions', () => {
   })
 
   it('sortCountList descending', async () => {
-    let dispatch = jest.fn()
+    const dispatch = jest.fn()
     const key = 'key'
     const currentSort = 'key'
     const countList = [{ key: 1 }, { key: 2 }] as any
@@ -97,7 +97,7 @@ describe('functions', () => {
   })
 
   it('changeDate start', async () => {
-    let dispatch = jest.fn()
+    const dispatch = jest.fn()
     const e = DateTime.fromISO('2021-01-01T07:00:00.000Z').toJSDate()
     const expected = { start: '2021-01-01T00:00:00.000-07:00' }
     const type = 'start'
@@ -109,7 +109,7 @@ describe('functions', () => {
   })
 
   it('changeDate end', async () => {
-    let dispatch = jest.fn()
+    const dispatch = jest.fn()
     const e = DateTime.fromISO('2021-01-01T07:00:00.000Z').toJSDate()
     const expected = { end: '2021-01-01T00:00:00.000-07:00' }
     const type = 'end'

@@ -119,20 +119,15 @@ public interface PageableQuery {
             @Nonnull Criteria criteria,
             @Nonnull Sort sort,
             @Nonnull List<String> excludedFields) {
+        List<AggregationOperation> operations = new ArrayList<>();
 
         MatchOperation matchOperation = Aggregation.match(criteria);
         SortOperation sortOperation = Aggregation.sort(sort);
 
-        // Create a facet operation that gets both results and count in one query
-        AggregationOperation facetOperation = context -> new Document("$facet",
-                new Document("metadata", List.of(new Document("$count", "count")))
-                        .append("results",
-                                Arrays.asList(
-                                        new Document("$skip", pageable.getPageNumber() * pageable.getPageSize()),
-                                        new Document("$limit", pageable.getPageSize()))));
+        operations.add(matchOperation);
+        operations.add(sortOperation);
 
         // Add project operation if we need to exclude fields
-        Aggregation aggregation;
         if (!excludedFields.isEmpty()) {
             AggregationOperation projectOperation = context -> {
                 Document projectFields = new Document();
@@ -141,19 +136,20 @@ public interface PageableQuery {
                 }
                 return new Document("$project", projectFields);
             };
-            aggregation = Aggregation.newAggregation(
-                    matchOperation,
-                    sortOperation,
-                    projectOperation,
-                    facetOperation);
-        } else {
-            aggregation = Aggregation.newAggregation(
-                    matchOperation,
-                    sortOperation,
-                    facetOperation);
+            operations.add(projectOperation);
         }
 
+        // Create a facet operation that gets both results and count in one query
+        AggregationOperation facetOperation = context -> new Document("$facet",
+                new Document("metadata", List.of(new Document("$count", "count")))
+                        .append("results",
+                                Arrays.asList(
+                                        new Document("$skip", pageable.getPageNumber() * pageable.getPageSize()),
+                                        new Document("$limit", pageable.getPageSize()))));
+        operations.add(facetOperation);
+
         // Execute the aggregation
+        Aggregation aggregation = Aggregation.newAggregation(operations);
         AggregationResults<AggregationResult> results = mongoTemplate
                 .aggregate(aggregation, collectionName, AggregationResult.class);
 

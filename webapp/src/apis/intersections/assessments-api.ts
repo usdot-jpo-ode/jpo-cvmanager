@@ -15,7 +15,7 @@ class AssessmentsApi {
     if (startTime) queryParams['start_time_utc_millis'] = startTime.getTime().toString()
     if (endTime) queryParams['end_time_utc_millis'] = endTime.getTime().toString()
 
-    var response =
+    const response =
       (
         (await authApiHelper.invokeApi({
           path: `/data/cm-assessments/${assessmentType}`,

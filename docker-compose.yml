@@ -49,7 +49,7 @@ services:
       ENABLE_MOOVE_AI_FEATURES: ${ENABLE_MOOVE_AI_FEATURES}
 
       CORS_DOMAIN: ${CORS_DOMAIN}
-      KEYCLOAK_ENDPOINT: http://${KEYCLOAK_DOMAIN}:8084/
+      KEYCLOAK_ENDPOINT: ${KEYCLOAK_ENDPOINT}
       KEYCLOAK_REALM: ${KEYCLOAK_REALM}
       KEYCLOAK_API_CLIENT_ID: ${KEYCLOAK_API_CLIENT_ID}
       KEYCLOAK_API_CLIENT_SECRET_KEY: ${KEYCLOAK_API_CLIENT_SECRET_KEY}
@@ -88,9 +88,9 @@ services:
       context: webapp
       dockerfile: Dockerfile
       args:
-        API_URI: http://${WEBAPP_DOMAIN}:8081
+        API_URI: ${API_ENDPOINT}
         MAPBOX_TOKEN: ${MAPBOX_TOKEN}
-        KEYCLOAK_HOST_URL: http://${KEYCLOAK_DOMAIN}:8084/
+        KEYCLOAK_HOST_URL: ${KEYCLOAK_ENDPOINT}
         KEYCLOAK_REALM: ${KEYCLOAK_REALM}
         KEYCLOAK_CLIENT_ID: ${KEYCLOAK_GUI_CLIENT_ID}
         COUNT_MESSAGE_TYPES: ${COUNTS_MSG_TYPES}
@@ -107,6 +107,7 @@ services:
         ENABLE_MOOVE_AI_FEATURES: ${ENABLE_MOOVE_AI_FEATURES}
         WEBAPP_THEME_LIGHT: ${WEBAPP_THEME_LIGHT}
         WEBAPP_THEME_DARK: ${WEBAPP_THEME_DARK}
+        ENABLE_HAAS_FEATURES: ${ENABLE_HAAS_FEATURES}
     image: jpo_cvmanager_webapp:latest
     restart: always
     volumes:
@@ -129,6 +130,7 @@ services:
     profiles:
       - basic
       - cvmanager_postgres
+      - intersection_no_api
     image: postgis/postgis:15-master
     restart: always
     ports:
@@ -148,6 +150,7 @@ services:
       - basic
       - keycloak
       - cvmanager_keycloak
+      - intersection_no_api
     build:
       context: ./resources/keycloak
       dockerfile: Dockerfile
@@ -167,11 +170,13 @@ services:
       - '8084:8080'
       - '9000:9000'
     environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      WEBAPP_ORIGIN: ${WEBAPP_ENDPOINT}
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
-      WEBAPP_ORIGIN: http://${WEBAPP_DOMAIN}
       KC_HEALTH_ENABLED: 'true'
-      KC_LOGGING_LEVEL: ${KC_LOGGING_LEVEL}
+      KC_LOG_LEVEL: ${KC_LOGGING_LEVEL}
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://${PG_DB_HOST}/postgres?currentSchema=keycloak
       KC_DB_USERNAME: ${PG_DB_USER}

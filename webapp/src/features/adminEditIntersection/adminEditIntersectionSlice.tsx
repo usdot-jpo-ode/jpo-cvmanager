@@ -36,7 +36,7 @@ export type AdminEditIntersectionBody = {
 }
 
 const initialState = {
-  apiData: {} as adminEditIntersectionData,
+  apiData: undefined as adminEditIntersectionData | undefined,
   organizations: [] as { name: string }[],
   selectedOrganizations: [] as { name: string }[],
   rsus: [] as { name: string }[],
@@ -75,7 +75,7 @@ export const mapFormToRequestJson = (
   data: AdminEditIntersectionFormType,
   state: RootState['adminEditIntersection']
 ): AdminEditIntersectionBody => {
-  let json = data
+  const json = data
 
   if (!json.bbox || !json.bbox.latitude1 || !json.bbox.longitude1 || !json.bbox.latitude2 || !json.bbox.longitude2) {
     delete json.bbox
@@ -87,8 +87,8 @@ export const mapFormToRequestJson = (
     delete json.origin_ip
   }
 
-  let organizationsToAdd = []
-  let organizationsToRemove = []
+  const organizationsToAdd = []
+  const organizationsToRemove = []
   for (const org of state.value.apiData.allowed_selections.organizations) {
     if (
       state.value.selectedOrganizations.some((e) => e.name === org) &&
@@ -107,8 +107,8 @@ export const mapFormToRequestJson = (
   json.organizations_to_add = organizationsToAdd
   json.organizations_to_remove = organizationsToRemove
 
-  let rsusToAdd = []
-  let rsusToRemove = []
+  const rsusToAdd = []
+  const rsusToRemove = []
   for (const rsu of state.value.apiData.allowed_selections.rsus) {
     const formattedRsu = rsu?.replace('/32', '') // Remove /32 from the end of the RSU name for comparison
     if (
@@ -206,8 +206,8 @@ export const submitForm = createAsyncThunk(
   async (data: AdminEditIntersectionFormType, { getState, dispatch }) => {
     const currentState = getState() as RootState
     if (validateFormContents(currentState.adminEditIntersection)) {
-      let json = mapFormToRequestJson(data, currentState.adminEditIntersection)
-      let res = await dispatch(editIntersection(json))
+      const json = mapFormToRequestJson(data, currentState.adminEditIntersection)
+      const res = await dispatch(editIntersection(json))
       if ((res.payload as any).success) {
         return { submitAttempt: false, success: true, message: 'Intersection Updated Successfully' }
       } else {
@@ -273,7 +273,7 @@ export const adminEditIntersectionSlice = createSlice({
       .addCase(editIntersection.pending, (state) => {
         state.loading = true
       })
-      .addCase(editIntersection.fulfilled, (state, action) => {
+      .addCase(editIntersection.fulfilled, (state) => {
         state.loading = false
       })
       .addCase(editIntersection.rejected, (state) => {

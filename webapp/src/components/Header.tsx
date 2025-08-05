@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import Grid2 from '@mui/material/Grid2'
 import { useSelector, useDispatch } from 'react-redux'
 import EnvironmentVars from '../EnvironmentVars'
@@ -27,7 +27,6 @@ import {
   FormControl,
   FormControlLabel,
   Menu,
-  MenuItem,
   Paper,
   Radio,
   RadioGroup,

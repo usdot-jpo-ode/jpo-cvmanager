@@ -1,4 +1,4 @@
-import { Action, ThunkAction, configureStore } from '@reduxjs/toolkit'
+import { configureStore } from '@reduxjs/toolkit'
 import rsuReducer from './generalSlices/rsuSlice'
 import userReducer from './generalSlices/userSlice'
 import wzdxReducer from './generalSlices/wzdxSlice'
@@ -30,8 +30,9 @@ import intersectionMapLayerStyleReducer from './features/intersections/map/map-l
 import dataSelectorReducer from './features/intersections/data-selector/dataSelectorSlice'
 import { intersectionApiSlice } from './features/api/intersectionApiSlice'
 import mapSliceReducer from './pages/mapSlice'
+import haasSliceReducer from './generalSlices/haasAlertSlice'
 
-export const setupStore = (preloadedState: any) => {
+export const setupStore = (preloadedState?: Partial<any>) => {
   return configureStore({
     reducer: {
       rsu: rsuReducer,
@@ -64,6 +65,7 @@ export const setupStore = (preloadedState: any) => {
       dataSelector: dataSelectorReducer,
       map: mapSliceReducer,
       asn1Decoder: asn1DecoderSlice,
+      haas: haasSliceReducer,
       [intersectionApiSlice.reducerPath]: intersectionApiSlice.reducer,
     },
     preloadedState,
@@ -79,7 +81,6 @@ export const setupStore = (preloadedState: any) => {
 
 type AppStore = ReturnType<typeof setupStore>
 export type AppState = ReturnType<AppStore['getState']>
-type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppState, unknown, Action>
 
 export type AppDispatch = ReturnType<typeof setupStore>['dispatch']
 

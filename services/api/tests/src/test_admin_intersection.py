@@ -206,7 +206,7 @@ def test_modify_intersection_success(mock_pgquery, mock_check_safe_input):
 def test_modify_intersection_check_fail(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = False
     expected_msg, expected_code = {
-        "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+        "message": "No special characters are allowed: !\"#$%'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
     }, 500
     actual_msg, actual_code = admin_intersection.modify_intersection(
         admin_intersection_data.request_json_good

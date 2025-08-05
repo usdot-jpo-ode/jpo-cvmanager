@@ -1,8 +1,7 @@
-import React, { useState, useCallback, useEffect } from 'react'
-import { Box, Container, Typography } from '@mui/material'
+import React from 'react'
+import { Box, Container } from '@mui/material'
 import EventsApi from '../../apis/intersections/events-api'
 import AssessmentsApi from '../../apis/intersections/assessments-api'
-import MessageMonitorApi from '../../apis/intersections/mm-api'
 import GraphsApi from '../../apis/intersections/graphs-api'
 import { DataSelectorEditForm } from '../../features/intersections/data-selector/data-selector-edit-form'
 import { EventDataTable } from '../../features/intersections/data-selector/event-data-table'
@@ -12,7 +11,6 @@ import toast from 'react-hot-toast'
 import MapDialog from '../../features/intersections/intersection-selector/intersection-selector-dialog'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
-import { selectSelectedIntersectionId } from '../../generalSlices/intersectionSlice'
 import { selectToken } from '../../generalSlices/userSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -49,7 +47,6 @@ const valid_counts_event_types: string[] = [
 const DataSelectorPage = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
-  const intersectionId = useSelector(selectSelectedIntersectionId)
   const token = useSelector(selectToken)
   const type = useSelector(selectType)
   const events = useSelector(selectEvents)
@@ -69,7 +66,7 @@ const DataSelectorPage = () => {
       .padStart(2, '0')}${date.getSeconds().toString().padStart(2, '0')}`
   }
 
-  const downloadFile = (contents: string, name: string, extension: string = 'txt') => {
+  const downloadFile = (contents: string, name: string, extension = 'txt') => {
     const element = document.createElement('a')
     const file = new Blob([contents], { type: 'text/plain' })
     element.href = URL.createObjectURL(file)
@@ -78,11 +75,11 @@ const DataSelectorPage = () => {
     element.click()
   }
 
-  const query = async ({ type, intersectionId, startDate, endTime, eventTypes, assessmentTypes, bsmVehicleId }) => {
+  const query = async ({ type, intersectionId, startDate, endTime, eventTypes, assessmentTypes }) => {
     dispatch(setType(type))
     dispatch(setGraphData([]))
     switch (type) {
-      case 'events':
+      case 'events': {
         const events: MessageMonitor.Event[] = []
         // iterate through each event type in a for loop and add the events to events array
         const eventPromises: Promise<MessageMonitor.Event[]>[] = []
@@ -110,36 +107,39 @@ const DataSelectorPage = () => {
         events.sort((a, b) => a.eventGeneratedAt - b.eventGeneratedAt)
         dispatch(setEvents(events))
         return events
+      }
       case 'assessments':
-        const assessments: Assessment[] = []
-        const assessmentPromises: Promise<Assessment[]>[] = []
-        // iterate through each event type in a for loop and add the events to events array
-        for (let i = 0; i < assessmentTypes.length; i++) {
-          const assessmentType = assessmentTypes[i]
-          const promise = AssessmentsApi.getAssessments(token, assessmentType, intersectionId, startDate, endTime)
-          assessmentPromises.push(promise)
-        }
+        {
+          const assessments: Assessment[] = []
+          const assessmentPromises: Promise<Assessment[]>[] = []
+          // iterate through each event type in a for loop and add the events to events array
+          for (let i = 0; i < assessmentTypes.length; i++) {
+            const assessmentType = assessmentTypes[i]
+            const promise = AssessmentsApi.getAssessments(token, assessmentType, intersectionId, startDate, endTime)
+            assessmentPromises.push(promise)
+          }
 
-        const allAssessmentsPromise = Promise.all(assessmentPromises)
-        toast.promise(allAssessmentsPromise, {
-          loading: `Loading assessment data`,
-          success: `Successfully got assessment data`,
-          error: `Failed to get assessment data`,
-        })
-
-        try {
-          const allAssessments = await allAssessmentsPromise
-          allAssessments.forEach((assessment) => {
-            assessments.push(...assessment)
+          const allAssessmentsPromise = Promise.all(assessmentPromises)
+          toast.promise(allAssessmentsPromise, {
+            loading: `Loading assessment data`,
+            success: `Successfully got assessment data`,
+            error: `Failed to get assessment data`,
           })
-        } catch (e) {
-          console.error(`Failed to load assessment data because ${e}`)
+
+          try {
+            const allAssessments = await allAssessmentsPromise
+            allAssessments.forEach((assessment) => {
+              assessments.push(...assessment)
+            })
+          } catch (e) {
+            console.error(`Failed to load assessment data because ${e}`)
+          }
+          assessments.sort((a, b) => a.assessmentGeneratedAt - b.assessmentGeneratedAt)
+          dispatch(setAssessments(assessments))
+          return assessments
         }
-        assessments.sort((a, b) => a.assessmentGeneratedAt - b.assessmentGeneratedAt)
-        dispatch(setAssessments(assessments))
-        return assessments
+        return
     }
-    return
   }
 
   const onVisualize = async ({
@@ -206,7 +206,7 @@ const DataSelectorPage = () => {
       csvRows[event.eventType].push(Object.values(event).map(sanitizeCsvString).join(','))
     }
 
-    var zip = new JSZip()
+    const zip = new JSZip()
     for (const eventType in csvRows) {
       zip.file(`cimms_events_${eventType}_export.csv`, csvRows[eventType].join('\n'))
     }
@@ -224,7 +224,7 @@ const DataSelectorPage = () => {
       csvRows[event.assessmentType].push(Object.values(event).map(sanitizeCsvString).join(','))
     }
 
-    var zip = new JSZip()
+    const zip = new JSZip()
     for (const assessmentType in csvRows) {
       zip.file(`cimms_assessments_${assessmentType}_export.csv`, csvRows[assessmentType].join('\n'))
     }

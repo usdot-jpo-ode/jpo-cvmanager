@@ -14,17 +14,6 @@ type AuthLoginData = {
   expires_at: number
 }
 
-// {
-//   "email": "bpayne@trihydro.com",
-//   "first_name": "Brandon",
-//   "last_name": "Payne",
-//   "super_user": true,
-//   "organizations": [
-//     { "name": "CDOT CV", "role": "admin" },
-//     { "name": "Region 1", "role": "admin" }
-//   ]
-// },
-
 type UserAuthResponse = {
   email: string
   first_name: string

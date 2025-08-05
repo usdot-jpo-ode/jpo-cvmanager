@@ -27,7 +27,7 @@ def convert_location_value(val):
 def get(rsu_ip, snmp_creds):
     """
     Retrieves the RSU's latitude and longitude using SNMP NTCIP-1218 OIDs.
-    Rerturns a dictionary with latitude and longitude in degrees.
+    Returns a dictionary with latitude and longitude in degrees.
     """
     snmpget_result = {"latitude": None, "longitude": None}
 

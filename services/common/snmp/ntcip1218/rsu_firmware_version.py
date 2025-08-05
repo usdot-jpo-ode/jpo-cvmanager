@@ -33,12 +33,17 @@ def get(rsu_ip, snmp_creds):
         return {"RsuStatus": err_message}, 500
 
     if len(output) == 1:
-        # Parse each line of the output to build out readable SNMP configurations
-        for line in output:
-            # split configuration line into a property and value
-            # take the value, element 1, and split it by ": " to remove "STRING: "
-            value = line.strip().split(" = ")[1].split(": ")[1]
+        # Parse the line of the output to build out readable SNMP configurations
+        line = output[0].strip()
+        # split configuration line into a property and value
+        # take the value, element 1, and split it by ": " to remove "STRING: "
+        value = line.strip().split(" = ")[1].split(": ")[1]
 
-            snmpget_result = value
+        snmpget_result = value
+    else:
+        logging.error(
+            f"Encountered unexpected number of lines in output while running snmpget NTCIP1218-v01::rsuFirmwareVersion: {output}"
+        )
+        return {"RsuStatus": "Unexpected SNMP output format"}, 500
 
     return {"RsuFirmwareVersion": snmpget_result}, 200

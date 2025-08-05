@@ -71,6 +71,8 @@ class UpdatePostgresRsuHealth(UpdatePostgresSnmpAbstractClass):
 
         if code != 200:
             logging.info(f"SNMP response was unsuccessful for {rsu['rsu_id']}")
+            # Return unknown status if the SNMP request fails
+            return rsu["rsu_id"], 5
 
         # Create an object to represent all RSU health data for PostgreSQL
         config = {

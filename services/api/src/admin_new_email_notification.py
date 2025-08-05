@@ -1,7 +1,6 @@
 from flask import request, abort
 from flask_restful import Resource
 from marshmallow import Schema, fields
-import urllib.request
 import logging
 import common.pgquery as pgquery
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError

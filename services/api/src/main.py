@@ -1,10 +1,7 @@
-import json
-from flask import Flask, Response
+from flask import Flask
 from flask_restful import Api
 import os
 import logging
-
-from werkzeug.exceptions import HTTPException
 
 # Custom script imports
 from middleware import Middleware

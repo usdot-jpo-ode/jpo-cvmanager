@@ -3,6 +3,10 @@ import logging
 import common.snmp.snmpcredential as snmpcredential
 import common.snmp.snmperrorcheck as snmperrorcheck
 
+UNKNOWN_LATITUDE = "900000001"
+UNKNOWN_LONGITUDE = "1800000001"
+DEGREE_DIVISOR = 10000000.0
+
 
 def convert_location_value(val):
     """
@@ -10,15 +14,15 @@ def convert_location_value(val):
     """
     numerical = val.split(" ")[0]
     # rsuLocationLat = 900000001 represents unknown
-    if numerical == "900000001":
+    if numerical == UNKNOWN_LATITUDE:
         return None
     # rsuLocationLon = 1800000001 represents unknown
-    elif numerical == "1800000001":
+    elif numerical == UNKNOWN_LONGITUDE:
         return None
     else:
         # Convert the value to a float and divide by 10^7 to get the latitude/longitude in degrees
         try:
-            return float(numerical) / 10000000.0
+            return float(numerical) / DEGREE_DIVISOR
         except ValueError:
             logging.error(f"Invalid value for latitude/longitude: {val}")
     return None

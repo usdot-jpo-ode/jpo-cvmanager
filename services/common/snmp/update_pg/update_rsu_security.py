@@ -24,13 +24,19 @@ class UpdatePostgresRsuSecurity(UpdatePostgresSnmpAbstractClass):
         query = (
             "INSERT INTO public.scms_health("
             "timestamp, health, expiration, rsu_id) "
-            "VALUES"
+            "VALUES (%s, %s, %s, %s)"
         )
+        values = [
+            (
+                snmp_config["timestamp"],
+                snmp_config["health"],
+                snmp_config["expiration"],
+                snmp_config["rsu_id"],
+            )
+            for snmp_config in snmp_config_list
+        ]
 
-        for snmp_config in snmp_config_list:
-            query += f" ('{snmp_config['timestamp']}', '{snmp_config['health']}', '{snmp_config['expiration']}', {snmp_config['rsu_id']}),"
-
-        pgquery.write_db(query[:-1])
+        pgquery.write_db(query, values)
 
     def update_postgresql(self, rsu_snmp_configs_obj, subset=False):
         """

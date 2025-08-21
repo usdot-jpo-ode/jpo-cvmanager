@@ -21,18 +21,20 @@ public class LaneDirectionOfTravelReportData {
     private double headingDelta;
     private double medianCenterlineDistance;
 
-    public static List<LaneDirectionOfTravelReportData> processLaneDirectionOfTravelData(List<LaneDirectionOfTravelAssessment> assessments) {
+    public static List<LaneDirectionOfTravelReportData> processLaneDirectionOfTravelData(
+            List<LaneDirectionOfTravelAssessment> assessments) {
         List<LaneDirectionOfTravelReportData> reportDataList = new ArrayList<>();
 
         // Sort data by timestamp
         List<LaneDirectionOfTravelAssessment> sortedData = assessments.stream()
-            .sorted(Comparator.comparing(LaneDirectionOfTravelAssessment::getTimestamp))
-            .collect(Collectors.toList());
+                .sorted(Comparator.comparing(LaneDirectionOfTravelAssessment::getAssessmentGeneratedAt))
+                .collect(Collectors.toList());
 
         // Group data by lane ID and segment ID
         Map<Integer, Map<Integer, List<LaneDirectionOfTravelReportData>>> groupedData = new HashMap<>();
         for (LaneDirectionOfTravelAssessment assessment : sortedData) {
-            long minute = Instant.ofEpochMilli(assessment.getTimestamp()).truncatedTo(ChronoUnit.MINUTES).toEpochMilli();
+            long minute = Instant.ofEpochMilli(assessment.getAssessmentGeneratedAt()).truncatedTo(ChronoUnit.MINUTES)
+                    .toEpochMilli();
             for (LaneDirectionOfTravelAssessmentGroup group : assessment.getLaneDirectionOfTravelAssessmentGroup()) {
 
                 LaneDirectionOfTravelReportData reportData = new LaneDirectionOfTravelReportData();
@@ -43,33 +45,35 @@ public class LaneDirectionOfTravelReportData {
                 reportData.setMedianCenterlineDistance(group.getMedianCenterlineDistance());
 
                 groupedData
-                    .computeIfAbsent(group.getLaneID(), k -> new HashMap<>())
-                    .computeIfAbsent(group.getSegmentID(), k -> new ArrayList<>())
-                    .add(reportData);
+                        .computeIfAbsent(group.getLaneID(), k -> new HashMap<>())
+                        .computeIfAbsent(group.getSegmentID(), k -> new ArrayList<>())
+                        .add(reportData);
             }
         }
 
         // Aggregate data by minute for each lane ID and segment ID
-        for (Map.Entry<Integer, Map<Integer, List<LaneDirectionOfTravelReportData>>> laneEntry : groupedData.entrySet()) {
+        for (Map.Entry<Integer, Map<Integer, List<LaneDirectionOfTravelReportData>>> laneEntry : groupedData
+                .entrySet()) {
             int laneID = laneEntry.getKey();
-            for (Map.Entry<Integer, List<LaneDirectionOfTravelReportData>> segmentEntry : laneEntry.getValue().entrySet()) {
+            for (Map.Entry<Integer, List<LaneDirectionOfTravelReportData>> segmentEntry : laneEntry.getValue()
+                    .entrySet()) {
                 int segmentID = segmentEntry.getKey();
                 Map<Long, List<LaneDirectionOfTravelReportData>> aggregatedData = segmentEntry.getValue().stream()
-                    .collect(Collectors.groupingBy(LaneDirectionOfTravelReportData::getTimestamp));
+                        .collect(Collectors.groupingBy(LaneDirectionOfTravelReportData::getTimestamp));
 
                 for (Map.Entry<Long, List<LaneDirectionOfTravelReportData>> minuteEntry : aggregatedData.entrySet()) {
                     long minute = minuteEntry.getKey();
                     List<LaneDirectionOfTravelReportData> minuteData = minuteEntry.getValue();
 
                     double averageHeadingDelta = minuteData.stream()
-                        .mapToDouble(LaneDirectionOfTravelReportData::getHeadingDelta)
-                        .average()
-                        .orElse(0.0);
+                            .mapToDouble(LaneDirectionOfTravelReportData::getHeadingDelta)
+                            .average()
+                            .orElse(0.0);
 
                     double averageCenterlineDistance = minuteData.stream()
-                        .mapToDouble(LaneDirectionOfTravelReportData::getMedianCenterlineDistance)
-                        .average()
-                        .orElse(0.0);
+                            .mapToDouble(LaneDirectionOfTravelReportData::getMedianCenterlineDistance)
+                            .average()
+                            .orElse(0.0);
 
                     LaneDirectionOfTravelReportData aggregatedReportData = new LaneDirectionOfTravelReportData();
                     aggregatedReportData.setTimestamp(minute);

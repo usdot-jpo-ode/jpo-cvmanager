@@ -18,10 +18,10 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import us.dot.its.jpo.asn.j2735.r2024.BasicSafetyMessage.BasicSafetyMessageMessageFrame;
 import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
 import us.dot.its.jpo.ode.api.accessors.IntersectionCriteria;
 import us.dot.its.jpo.ode.api.accessors.PageableQuery;
-import us.dot.its.jpo.ode.model.OdeBsmData;
 
 @Component
 public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQuery {
@@ -95,7 +95,7 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
      * @param distance  the "radius" of the bounding box, in meters (total width is
      *                  2x distance)
      */
-    public Page<OdeBsmData> find(String originIp, String vehicleId, Long startTime, Long endTime,
+    public Page<BasicSafetyMessageMessageFrame> find(String originIp, String vehicleId, Long startTime, Long endTime,
             Double centerLng, Double centerLat, Double distance, Pageable pageable) {
 
         Criteria criteria = new IntersectionCriteria()
@@ -117,8 +117,8 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
         Page<Document> aggregationResult = findDocumentsWithPagination(mongoTemplate, collectionName, pageable,
                 criteria, sort, excludedFields);
 
-        List<OdeBsmData> bsms = aggregationResult.getContent().stream()
-                .map(document -> mapper.convertValue(document, OdeBsmData.class)).toList();
+        List<BasicSafetyMessageMessageFrame> bsms = aggregationResult.getContent().stream()
+                .map(document -> mapper.convertValue(document, BasicSafetyMessageMessageFrame.class)).toList();
 
         return new PageImpl<>(bsms, pageable, aggregationResult.getTotalElements());
     }
@@ -161,10 +161,4 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
         Query query = Query.query(criteria);
         return mongoTemplate.count(query, Map.class, collectionName);
     }
-
-    @Override
-    public void add(OdeBsmData item) {
-        mongoTemplate.insert(item, collectionName);
-    }
-
 }

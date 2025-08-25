@@ -96,7 +96,15 @@ def query_db(query_string):
         return data
 
 
-def write_db(query_string):
+def write_db(query_string, values=None):
+    """
+    Executes a write (INSERT/UPDATE/DELETE) SQL query on the PostgreSQL database.
+
+    Args:
+        query_string (str): The SQL query string to execute.
+        values (dict, optional): Optional parameter for query parameterization. If provided,
+            the query will be executed as a parameterized statement using these values.
+    """
     global db
     if db is None:
         db = init_connection_engine()
@@ -104,5 +112,8 @@ def write_db(query_string):
     logging.info("DB connection starting...")
     with db.connect() as conn:
         logging.debug("Executing insert query...")
-        conn.execute(sqlalchemy.text(query_string))
+        if values:
+            conn.execute(sqlalchemy.text(query_string), values)
+        else:
+            conn.execute(sqlalchemy.text(query_string))
         conn.commit()

@@ -210,7 +210,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
             data.setRsuIP(map.getProperties().getOriginIp());
 
             if (map.getProperties().getIntersectionName() != null
-                    && map.getProperties().getIntersectionName().isEmpty()) {
+                    && !map.getProperties().getIntersectionName().isEmpty()) {
                 data.setIntersectionName(map.getProperties().getIntersectionName());
             }
 

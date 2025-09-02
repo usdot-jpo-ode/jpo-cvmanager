@@ -414,10 +414,10 @@ public class ConflictMonitorApiProperties {
             streamProps.put("security.protocol", "SASL_SSL");
             streamProps.put("sasl.mechanism", "PLAIN");
 
-            if (confluentKey != null && confluentSecret != null) {
+            if (getConfluentKey() != null && getConfluentSecret() != null) {
                 String auth = "org.apache.kafka.common.security.plain.PlainLoginModule required " +
-                        "username=\"" + confluentKey + "\" " +
-                        "password=\"" + confluentSecret + "\";";
+                        "username=\"" + getConfluentKey() + "\" " +
+                        "password=\"" + getConfluentSecret() + "\";";
                 streamProps.put("sasl.jaas.config", auth);
             } else {
                 logger.error(

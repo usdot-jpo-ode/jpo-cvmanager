@@ -77,6 +77,22 @@ To run unit tests, run the following command (ensure docker engine is running):
 mvn test
 ```
 
+It may be useful to run tests with the dev profile (using resources/application-dev.yaml)
+
+```sh
+$env:SPRING_PROFILES_ACTIVE="dev"
+```
+
+### Unit Test Coverage
+
+To generate unit test coverage run:
+
+```sh
+mvn clean verify
+```
+
+Then open the following file in a browser: [index.html](./target/site/jacoco/index.html)
+
 ## Swagger API
 
 The Intersection API utilizes swagger for viewing and testing api endpoints. The Swagger endpoint can be accessed here:

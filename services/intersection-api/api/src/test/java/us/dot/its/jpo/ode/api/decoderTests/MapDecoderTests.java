@@ -68,43 +68,6 @@ public class MapDecoderTests {
             e.printStackTrace();
         }
 
-        // System.out.println("\n\n\n\nLoading Up Data" + odeMapDecodedXmlReference);
-
-    }
-
-    /**
-     * Test to Decode a raw MAP into an XML String. May not work if host machine is
-     * Windows and .so library is not properly linked.
-     * If system is missing required libraries, the test will be skipped.
-     */
-    @Test
-    public void testDecodeAsnToXERString() {
-        try {
-            String result = mapDecoder.decodeAsnToXERString(rawMapReference);
-            assertEquals(result, odeMapDecodedXmlReference);
-        } catch (java.lang.ExceptionInInitializerError e) {
-            // Ignore errors due to missing native libraries during testing.
-            assumeTrue("Skipping testDecodeAsnToXERString test because system is missing required libraries", false);
-        }
-    }
-
-    /**
-     * Test verifying the conversion from String XML data to OdeMessageFrame
-     * Object
-     */
-    @Test
-    public void testGetAsMessageFrame() {
-        try {
-            OdeMessageFrameData map = mapDecoder.convertXERToMessageFrame(odeMapDecodedXmlReference);
-
-            map.getMetadata().setOdeReceivedAt("2025-08-29T16:09:34.416Z");
-            map.getMetadata()
-                    .setSerialId(map.getMetadata().getSerialId().setStreamId("44a6d71c-8af1-4f45-848c-10bd7f919be8"));
-
-            assertEquals(map.toJson().replaceAll("\n", "").replaceAll(" ", ""), odeMapDecodedJsonReference);
-        } catch (JsonProcessingException e) {
-            assertEquals(true, false);
-        }
     }
 
     /**

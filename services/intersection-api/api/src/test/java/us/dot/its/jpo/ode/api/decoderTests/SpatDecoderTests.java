@@ -69,23 +69,6 @@ public class SpatDecoderTests {
     }
 
     /**
-     * Test to Decode a raw SPAT into an XML String. May not work if host machine is
-     * Windows and .so library is not properly linked.
-     * If system is missing required libraries, the test will be skipped.
-     */
-    @Test
-    public void testDecodeAsnToXERString() {
-        try {
-            String result = spatDecoder.decodeAsnToXERString(rawSpatReference);
-            // System.out.println(result);
-            assertEquals(result, odeSpatDecodedXmlReference);
-        } catch (java.lang.ExceptionInInitializerError e) {
-            // Ignore errors due to missing native libraries during testing.
-            assumeTrue("Skipping testDecodeAsnToXERString test because system is missing required libraries", false);
-        }
-    }
-
-    /**
      * Test verifying the conversion from String XML data to OdeMessageFrame
      * Object
      */

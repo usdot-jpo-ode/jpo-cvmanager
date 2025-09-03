@@ -63,7 +63,6 @@ import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.MinuteCount;
 import us.dot.its.jpo.ode.mockdata.MockEventGenerator;
 import us.dot.its.jpo.ode.mockdata.MockIDCountGenerator;
-import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 
 @Slf4j
 @RestController
@@ -1214,20 +1213,20 @@ public class CmEventController {
         Map<Long, Set<String>> bsmEventMap = new HashMap<>();
 
         for (BsmEvent event : events) {
-            J2735Bsm bsm = ((J2735Bsm) event.getStartingBsm().getPayload().getData());
+
             long eventStartMinute = Instant
-                    .from(formatter.parse(event.getStartingBsm().getMetadata().getOdeReceivedAt())).toEpochMilli()
+                    .from(formatter.parse(event.getStartingBsm().getProperties().getOdeReceivedAt())).toEpochMilli()
                     / MILLISECONDS_PER_MINUTE;
             long eventEndMinute = eventStartMinute;
 
             if (event.getEndingBsm() != null) {
                 eventEndMinute = Instant
-                        .from(formatter.parse(event.getEndingBsm().getMetadata().getOdeReceivedAt())).toEpochMilli()
+                        .from(formatter.parse(event.getStartingBsm().getProperties().getOdeReceivedAt())).toEpochMilli()
                         / MILLISECONDS_PER_MINUTE;
             }
 
             for (Long i = eventStartMinute; i <= eventEndMinute; i++) {
-                String bsmID = bsm.getCoreData().getId();
+                String bsmID = event.getStartingBsm().getProperties().getId();
                 if (bsmEventMap.get(i) != null) {
                     bsmEventMap.get(i).add(bsmID);
                 } else {

@@ -5,18 +5,12 @@ import org.apache.commons.lang3.tuple.Pair;
 import us.dot.its.jpo.ode.api.models.MessageType;
 import us.dot.its.jpo.ode.api.models.messages.DecodedMessage;
 import us.dot.its.jpo.ode.api.models.messages.EncodedMessage;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -93,6 +87,8 @@ public class DecoderManager {
                 yield ssmDecoder;
             case MessageType.TIM:
                 yield timDecoder;
+            case MessageType.PSM:
+                yield null; // PSM decoder not implemented yet
             case MessageType.UNKNOWN:
                 yield null;
         };
@@ -212,46 +208,5 @@ public class DecoderManager {
         } else {
             return new EncodedMessage(hexPacket.substring(closestStartIndex), closestMessageType);
         }
-    }
-
-    /**
-     * The input to this function is an XML String containing the asn.1 of an
-     * encoded message as well as ODE metadata fields.
-     * This function passes the XML string to the ACM module which returns back an
-     * XML object representing the J2735 Encoded Message.
-     * 
-     * @return An xml string containing the Decoded ASN.1 from the input xml
-     */
-    public static String decodeXmlWithAcm(String xmlMessage) throws Exception {
-
-        log.info("Decoding message: {}", xmlMessage);
-
-        // Save XML to temp file
-        String tempDir = FileUtils.getTempDirectoryPath();
-        String tempFileName = "asn1-codec-java-" + UUID.randomUUID() + ".xml";
-        log.info("Temp file name: {}", tempFileName);
-        Path tempFilePath = Path.of(tempDir, tempFileName);
-        File tempFile = new File(tempFilePath.toString());
-        FileUtils.writeStringToFile(tempFile, xmlMessage, StandardCharsets.UTF_8);
-
-        try {
-            // Run ACM tool to decode message
-            var pb = new ProcessBuilder(
-                    "/build/acm", "-F", "-c", "/build/config/example.properties", "-T", "decode",
-                    tempFile.getAbsolutePath());
-            pb.directory(new File("/build"));
-            Process process = pb.start();
-            String result = IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8);
-            log.info("Decode Result: {}", result);
-
-            return result;
-        } finally {
-            // Clean up temp file
-            boolean deleteResult = tempFile.delete();
-            if (!deleteResult) {
-                log.error("Failed to delete tempFile: {}", tempFile.getPath());
-            }
-        }
-
     }
 }

@@ -1,12 +1,8 @@
 package us.dot.its.jpo.ode.api.asn1;
 
 import lombok.extern.slf4j.Slf4j;
-
-import java.time.Instant;
-import java.util.ArrayList;
 import java.util.HexFormat;
 
-import org.apache.tomcat.util.buf.HexUtils;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -72,10 +68,9 @@ public class BsmDecoder implements Decoder {
     public DecodedMessage decode(EncodedMessage message) {
 
         String xer = decodeAsnToXERString(message.getAsn1Message());
-        OdeMessageFrameData odeMessageFrameData = null;
 
         try {
-            odeMessageFrameData = convertXERToMessageFrame(xer);
+            OdeMessageFrameData odeMessageFrameData = convertXERToMessageFrame(xer);
             ProcessedBsm<Point> processedBsm = convertMessageFrameToProcessedBsm(odeMessageFrameData);
             return new BsmDecodedMessage(processedBsm, message.getAsn1Message(), "");
 
@@ -91,6 +86,7 @@ public class BsmDecoder implements Decoder {
      * @param asnHex ASN.1 encoded hex string
      * @return XER string representation of the message
      */
+    @Override
     public String decodeAsnToXERString(String asnHex) {
         byte[] bytes = HexFormat.of().parseHex(asnHex);
         String xer = codec.uperToXer(bytes);
@@ -105,6 +101,7 @@ public class BsmDecoder implements Decoder {
      * @throws JsonMappingException    if XML mapping fails
      * @throws JsonProcessingException if XML processing fails
      */
+    @Override
     public OdeMessageFrameData convertXERToMessageFrame(String encodedXml)
             throws JsonMappingException, JsonProcessingException {
         OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();

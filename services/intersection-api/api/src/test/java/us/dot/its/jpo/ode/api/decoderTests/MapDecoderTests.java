@@ -81,7 +81,6 @@ public class MapDecoderTests {
     public void testDecodeAsnToXERString() {
         try {
             String result = mapDecoder.decodeAsnToXERString(rawMapReference);
-            // System.out.println(result);
             assertEquals(result, odeMapDecodedXmlReference);
         } catch (java.lang.ExceptionInInitializerError e) {
             // Ignore errors due to missing native libraries during testing.

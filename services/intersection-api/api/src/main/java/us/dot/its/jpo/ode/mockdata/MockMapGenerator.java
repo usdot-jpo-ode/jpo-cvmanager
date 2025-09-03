@@ -10,9 +10,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import lombok.extern.slf4j.Slf4j;
+import us.dot.its.jpo.asn.j2735.r2024.MapData.MapDataMessageFrame;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
-import us.dot.its.jpo.ode.model.OdeMapData;
 
 @Slf4j
 public class MockMapGenerator {
@@ -41,14 +41,14 @@ public class MockMapGenerator {
         return maps;
     }
 
-    public static List<OdeMapData> getJsonMaps() {
+    public static List<MapDataMessageFrame> getJsonMaps() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 
-        ArrayList<OdeMapData> maps = new ArrayList<>();
+        ArrayList<MapDataMessageFrame> maps = new ArrayList<>();
 
         try {
-            OdeMapData map = objectMapper.readValue(mapString, OdeMapData.class);
+            MapDataMessageFrame map = objectMapper.readValue(mapString, MapDataMessageFrame.class);
             maps.add(map);
         } catch (JsonMappingException e) {
             log.error("JsonMappingException", e);

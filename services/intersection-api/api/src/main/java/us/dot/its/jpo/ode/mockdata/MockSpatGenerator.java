@@ -9,8 +9,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import lombok.extern.slf4j.Slf4j;
+import us.dot.its.jpo.asn.j2735.r2024.SPAT.SPATMessageFrame;
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
-import us.dot.its.jpo.ode.model.OdeSpatData;
 
 @Slf4j
 public class MockSpatGenerator {
@@ -35,14 +35,14 @@ public class MockSpatGenerator {
         return spats;
     }
 
-    public static List<OdeSpatData> getJsonSpats() {
+    public static List<SPATMessageFrame> getJsonSpats() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 
-        ArrayList<OdeSpatData> spats = new ArrayList<>();
+        ArrayList<SPATMessageFrame> spats = new ArrayList<>();
 
         try {
-            OdeSpatData spat = objectMapper.readValue(spatString, OdeSpatData.class);
+            SPATMessageFrame spat = objectMapper.readValue(spatString, SPATMessageFrame.class);
             spats.add(spat);
         } catch (JsonMappingException e) {
             log.error("JsonMappingException", e);

@@ -1,6 +1,9 @@
 package us.dot.its.jpo.ode.api.decoderTests;
 
+import static org.junit.Assume.assumeTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -10,16 +13,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
-import us.dot.its.jpo.ode.api.asn1.SpatDecoder;
-import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
-import us.dot.its.jpo.ode.api.models.messages.SpatDecodedMessage;
-import us.dot.its.jpo.ode.mockdata.MockDecodedMessageGenerator;
-import us.dot.its.jpo.ode.model.OdeSpatData;
-import us.dot.its.jpo.ode.model.OdeData;
-import us.dot.its.jpo.ode.model.OdeMsgMetadata;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
+import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
+import us.dot.its.jpo.ode.api.asn1.SpatDecoder;
+import us.dot.its.jpo.ode.model.OdeMessageFrameData;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -29,43 +33,97 @@ public class SpatDecoderTests {
 
     private final SpatDecoder spatDecoder;
 
-    private String odeSpatDataReference = "{\"metadata\":{\"recordType\":\"spatTx\",\"securityResultCode\":\"success\",\"receivedMessageDetails\":{\"locationData\":{},\"rxSource\":\"NA\"},\"encodings\":[{\"elementName\":\"unsecuredData\",\"elementType\":\"MessageFrame\",\"encodingRule\":\"UPER\"}],\"payloadType\":\"us.dot.its.jpo.ode.model.OdeAsn1Payload\",\"serialId\":{\"streamId\":\"f21c4bce-c04b-4ccb-a854-ca4d2f6da547\",\"bundleSize\":1,\"bundleId\":0,\"recordId\":0,\"serialNumber\":0},\"odeReceivedAt\":\"2024-05-15T19:54:27.056948Z\",\"schemaVersion\":8,\"maxDurationTime\":0,\"sanitized\":false,\"asn1\":\"001338000817a780000089680500204642b342b34802021a15a955a940181190acd0acd20100868555c555c00104342aae2aae002821a155715570\",\"spatSource\":\"V2X\",\"originIp\":\"user-upload\",\"isCertPresent\":false},\"payload\":{\"dataType\":\"us.dot.its.jpo.ode.model.OdeHexByteArray\",\"data\":{\"bytes\":\"001338000817a780000089680500204642b342b34802021a15a955a940181190acd0acd20100868555c555c00104342aae2aae002821a155715570\"}}}";
-    private String odeSpatDecodedXmlReference = "<?xml version=\"1.0\"?><OdeAsn1Data><metadata><logFileName/><recordType>spatTx</recordType><securityResultCode>success</securityResultCode><receivedMessageDetails><locationData><latitude/><longitude/><elevation/><speed/><heading/></locationData><rxSource>NA</rxSource></receivedMessageDetails><encodings><encodings><elementName>unsecuredData</elementName><elementType>MessageFrame</elementType><encodingRule>UPER</encodingRule></encodings></encodings><payloadType>us.dot.its.jpo.ode.model.OdeAsn1Payload</payloadType><serialId><streamId>f1438a60-a06a-42b3-a984-56e4d7153a86</streamId><bundleSize>1</bundleSize><bundleId>0</bundleId><recordId>0</recordId><serialNumber>0</serialNumber></serialId><odeReceivedAt>2024-05-15T19:44:25.476826092Z</odeReceivedAt><schemaVersion>8</schemaVersion><maxDurationTime>0</maxDurationTime><recordGeneratedAt/><recordGeneratedBy/><sanitized>false</sanitized><odePacketID/><odeTimStartDateTime/><spatSource>V2X</spatSource><originIp>1.1.1.1</originIp><isCertPresent>false</isCertPresent></metadata><payload><dataType>MessageFrame</dataType><data><MessageFrame><messageId>19</messageId><value><SPAT><intersections><IntersectionState><id><id>12111</id></id><revision>0</revision><status>0000000000000000</status><timeStamp>35176</timeStamp><states><MovementState><signalGroup>2</signalGroup><state-time-speed><MovementEvent><eventState><protected-Movement-Allowed/></eventState><timing><minEndTime>22120</minEndTime><maxEndTime>22121</maxEndTime></timing></MovementEvent></state-time-speed></MovementState><MovementState><signalGroup>4</signalGroup><state-time-speed><MovementEvent><eventState><stop-And-Remain/></eventState><timing><minEndTime>22181</minEndTime><maxEndTime>22181</maxEndTime></timing></MovementEvent></state-time-speed></MovementState><MovementState><signalGroup>6</signalGroup><state-time-speed><MovementEvent><eventState><protected-Movement-Allowed/></eventState><timing><minEndTime>22120</minEndTime><maxEndTime>22121</maxEndTime></timing></MovementEvent></state-time-speed></MovementState><MovementState><signalGroup>8</signalGroup><state-time-speed><MovementEvent><eventState><stop-And-Remain/></eventState><timing><minEndTime>21852</minEndTime><maxEndTime>21852</maxEndTime></timing></MovementEvent></state-time-speed></MovementState><MovementState><signalGroup>1</signalGroup><state-time-speed><MovementEvent><eventState><stop-And-Remain/></eventState><timing><minEndTime>21852</minEndTime><maxEndTime>21852</maxEndTime></timing></MovementEvent></state-time-speed></MovementState><MovementState><signalGroup>5</signalGroup><state-time-speed><MovementEvent><eventState><stop-And-Remain/></eventState><timing><minEndTime>21852</minEndTime><maxEndTime>21852</maxEndTime></timing></MovementEvent></state-time-speed></MovementState></states></IntersectionState></intersections></SPAT></value></MessageFrame></data></payload></OdeAsn1Data>";
-    private String odeSpatDecodedDataReference = "{\"metadata\":{\"logFileName\":\"\",\"recordType\":\"spatTx\",\"securityResultCode\":\"success\",\"receivedMessageDetails\":{\"rxSource\":\"NA\"},\"payloadType\":\"us.dot.its.jpo.ode.model.OdeSpatPayload\",\"serialId\":{\"streamId\":\"f1438a60-a06a-42b3-a984-56e4d7153a86\",\"bundleSize\":1,\"bundleId\":0,\"recordId\":0,\"serialNumber\":0},\"odeReceivedAt\":\"2024-05-15T19:44:25.476826092Z\",\"schemaVersion\":8,\"maxDurationTime\":0,\"recordGeneratedAt\":\"\",\"sanitized\":false,\"odePacketID\":\"\",\"odeTimStartDateTime\":\"\",\"spatSource\":\"V2X\",\"originIp\":\"1.1.1.1\",\"isCertPresent\":false},\"payload\":{\"data\":{\"intersectionStateList\":{\"intersectionStatelist\":[{\"id\":{\"id\":12111},\"revision\":0,\"status\":{\"failureFlash\":false,\"noValidSPATisAvailableAtThisTime\":false,\"fixedTimeOperation\":false,\"standbyOperation\":false,\"trafficDependentOperation\":false,\"manualControlIsEnabled\":false,\"off\":false,\"stopTimeIsActivated\":false,\"recentChangeInMAPassignedLanesIDsUsed\":false,\"recentMAPmessageUpdate\":false,\"failureMode\":false,\"noValidMAPisAvailableAtThisTime\":false,\"signalPriorityIsActive\":false,\"preemptIsActive\":false},\"timeStamp\":35176,\"states\":{\"movementList\":[{\"signalGroup\":2,\"state_time_speed\":{\"movementEventList\":[{\"eventState\":\"PROTECTED_MOVEMENT_ALLOWED\",\"timing\":{\"minEndTime\":22120,\"maxEndTime\":22121}}]}},{\"signalGroup\":4,\"state_time_speed\":{\"movementEventList\":[{\"eventState\":\"STOP_AND_REMAIN\",\"timing\":{\"minEndTime\":22181,\"maxEndTime\":22181}}]}},{\"signalGroup\":6,\"state_time_speed\":{\"movementEventList\":[{\"eventState\":\"PROTECTED_MOVEMENT_ALLOWED\",\"timing\":{\"minEndTime\":22120,\"maxEndTime\":22121}}]}},{\"signalGroup\":8,\"state_time_speed\":{\"movementEventList\":[{\"eventState\":\"STOP_AND_REMAIN\",\"timing\":{\"minEndTime\":21852,\"maxEndTime\":21852}}]}},{\"signalGroup\":1,\"state_time_speed\":{\"movementEventList\":[{\"eventState\":\"STOP_AND_REMAIN\",\"timing\":{\"minEndTime\":21852,\"maxEndTime\":21852}}]}},{\"signalGroup\":5,\"state_time_speed\":{\"movementEventList\":[{\"eventState\":\"STOP_AND_REMAIN\",\"timing\":{\"minEndTime\":21852,\"maxEndTime\":21852}}]}}]}}]}},\"dataType\":\"us.dot.its.jpo.ode.plugin.j2735.J2735SPAT\"}}";
-    private String processedSpatDataReference = "{\"schemaVersion\":-1,\"messageType\":\"SPAT\",\"odeReceivedAt\":\"2024-05-15T19:44:25.476826092Z\",\"originIp\":\"1.1.1.1\",\"intersectionId\":12111,\"cti4501Conformant\":false,\"validationMessages\":[{\"message\":\"$.metadata.asn1: is missing but it is required\",\"jsonPath\":\"$.metadata\",\"schemaPath\":\"#/$defs/OdeSpatMetadata/required\"},{\"message\":\"$.payload.data.timeStamp: is missing but it is required\",\"jsonPath\":\"$.payload.data\",\"schemaPath\":\"#/$defs/J2735SPAT/required\"},{\"message\":\"$.payload.data.intersectionStateList.intersectionStatelist[0].id.region: is missing but it is required\",\"jsonPath\":\"$.payload.data.intersectionStateList.intersectionStatelist[0].id\",\"schemaPath\":\"#/$defs/J2735IntersectionReferenceID/required\"},{\"message\":\"$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[0].state_time_speed.movementEventList[0].timing.startTime: is missing but it is required\",\"jsonPath\":\"$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[0].state_time_speed.movementEventList[0].timing\",\"schemaPath\":\"#/$defs/J2735TimeChangeDetails/required\"},{\"message\":\"$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[0].state_time_speed.movementEventList[0].timing.nextTime: is missing but it is required\",\"jsonPath\":\"$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[0].state_time_speed.movementEventList[0].timing\",\"schemaPath\":\"#/$defs/J2735TimeChangeDetails/required\"},{\"message\":\"$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[1].state_time_speed.movementEventList[0].timing.startTime: is missing but it is required\",\"jsonPath\":\"$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[1].state_time_speed.movementEventList[0].timing\",\"schemaPath\":\"#/$defs/J2735TimeChangeDetails/required\"},{\"message\":\"$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[1].state_time_speed.movementEventList[0].timing.nextTime: is missing but it is required\",\"jsonPath\":\"$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[1].state_time_speed.movementEventList[0].timing\",\"schemaPath\":\"#/$defs/J2735TimeChangeDetails/required\"},{\"message\":\"$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[2].state_time_speed.movementEventList[0].timing.startTime: is missing but it is required\",\"jsonPath\":\"$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[2].state_time_speed.movementEventList[0].timing\",\"schemaPath\":\"#/$defs/J2735TimeChangeDetails/required\"},{\"message\":\"$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[2].state_time_speed.movementEventList[0].timing.nextTime: is missing but it is required\",\"jsonPath\":\"$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[2].state_time_speed.movementEventList[0].timing\",\"schemaPath\":\"#/$defs/J2735TimeChangeDetails/required\"},{\"message\":\"$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[3].state_time_speed.movementEventList[0].timing.startTime: is missing but it is required\",\"jsonPath\":\"$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[3].state_time_speed.movementEventList[0].timing\",\"schemaPath\":\"#/$defs/J2735TimeChangeDetails/required\"},{\"message\":\"$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[3].state_time_speed.movementEventList[0].timing.nextTime: is missing but it is required\",\"jsonPath\":\"$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[3].state_time_speed.movementEventList[0].timing\",\"schemaPath\":\"#/$defs/J2735TimeChangeDetails/required\"},{\"message\":\"$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[4].state_time_speed.movementEventList[0].timing.startTime: is missing but it is required\",\"jsonPath\":\"$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[4].state_time_speed.movementEventList[0].timing\",\"schemaPath\":\"#/$defs/J2735TimeChangeDetails/required\"},{\"message\":\"$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[4].state_time_speed.movementEventList[0].timing.nextTime: is missing but it is required\",\"jsonPath\":\"$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[4].state_time_speed.movementEventList[0].timing\",\"schemaPath\":\"#/$defs/J2735TimeChangeDetails/required\"},{\"message\":\"$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[5].state_time_speed.movementEventList[0].timing.startTime: is missing but it is required\",\"jsonPath\":\"$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[5].state_time_speed.movementEventList[0].timing\",\"schemaPath\":\"#/$defs/J2735TimeChangeDetails/required\"},{\"message\":\"$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[5].state_time_speed.movementEventList[0].timing.nextTime: is missing but it is required\",\"jsonPath\":\"$.payload.data.intersectionStateList.intersectionStatelist[0].states.movementList[5].state_time_speed.movementEventList[0].timing\",\"schemaPath\":\"#/$defs/J2735TimeChangeDetails/required\"}],\"revision\":0,\"status\":{\"manualControlIsEnabled\":false,\"stopTimeIsActivated\":false,\"failureFlash\":false,\"preemptIsActive\":false,\"signalPriorityIsActive\":false,\"fixedTimeOperation\":false,\"trafficDependentOperation\":false,\"standbyOperation\":false,\"failureMode\":false,\"off\":false,\"recentMAPmessageUpdate\":false,\"recentChangeInMAPassignedLanesIDsUsed\":false,\"noValidMAPisAvailableAtThisTime\":false,\"noValidSPATisAvailableAtThisTime\":false},\"utcTimeStamp\":\"2024-05-15T19:44:35.176Z\",\"states\":[{\"signalGroup\":2,\"stateTimeSpeed\":[{\"eventState\":\"PROTECTED_MOVEMENT_ALLOWED\",\"timing\":{\"minEndTime\":\"2024-05-15T19:36:52Z\",\"maxEndTime\":\"2024-05-15T19:36:52.1Z\"}}]},{\"signalGroup\":4,\"stateTimeSpeed\":[{\"eventState\":\"STOP_AND_REMAIN\",\"timing\":{\"minEndTime\":\"2024-05-15T19:36:58.1Z\",\"maxEndTime\":\"2024-05-15T19:36:58.1Z\"}}]},{\"signalGroup\":6,\"stateTimeSpeed\":[{\"eventState\":\"PROTECTED_MOVEMENT_ALLOWED\",\"timing\":{\"minEndTime\":\"2024-05-15T19:36:52Z\",\"maxEndTime\":\"2024-05-15T19:36:52.1Z\"}}]},{\"signalGroup\":8,\"stateTimeSpeed\":[{\"eventState\":\"STOP_AND_REMAIN\",\"timing\":{\"minEndTime\":\"2024-05-15T19:36:25.2Z\",\"maxEndTime\":\"2024-05-15T19:36:25.2Z\"}}]},{\"signalGroup\":1,\"stateTimeSpeed\":[{\"eventState\":\"STOP_AND_REMAIN\",\"timing\":{\"minEndTime\":\"2024-05-15T19:36:25.2Z\",\"maxEndTime\":\"2024-05-15T19:36:25.2Z\"}}]},{\"signalGroup\":5,\"stateTimeSpeed\":[{\"eventState\":\"STOP_AND_REMAIN\",\"timing\":{\"minEndTime\":\"2024-05-15T19:36:25.2Z\",\"maxEndTime\":\"2024-05-15T19:36:25.2Z\"}}]}]}";
+    private String rawSpatReference = "";
+    private String odeSpatDecodedXmlReference = "";
+    private String odeSpatDecodedJsonReference = "";
+    private String processedSpatReference = "";
+
+    ObjectMapper objectMapper;
 
     @Autowired
     public SpatDecoderTests(SpatDecoder spatDecoder) {
         this.spatDecoder = spatDecoder;
+
+        objectMapper = DateJsonMapper.getInstance();
+
+        try {
+            rawSpatReference = new String(
+                    Files.readAllBytes(Paths.get("src/test/resources/uper/ReferenceSpatUPER.txt")));
+
+            odeSpatDecodedXmlReference = new String(
+                    Files.readAllBytes(Paths.get("src/test/resources/xml/Ode.ReferenceSpatXER.xml")));
+
+            odeSpatDecodedJsonReference = new String(
+                    Files.readAllBytes(Paths
+                            .get("src/test/resources/json/spat/Ode.ReferenceSpatJson.json")))
+                    .replaceAll("\n", "").replaceAll(" ", "");
+
+            processedSpatReference = new String(
+                    Files.readAllBytes(Paths
+                            .get("src/test/resources/json/spat/GJC.ReferenceProcessedSpatJson.json")))
+                    .replaceAll("\n", "").replaceAll(" ", "");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
+    /**
+     * Test to Decode a raw SPAT into an XML String. May not work if host machine is
+     * Windows and .so library is not properly linked.
+     * If system is missing required libraries, the test will be skipped.
+     */
     @Test
-    public void testSpatGetAsOdeData() {
-
-        SpatDecodedMessage spat = MockDecodedMessageGenerator.getSpatDecodedMessage();
-        OdeData data = spatDecoder.getAsOdeData(spat.getAsn1Text());
-
-        OdeMsgMetadata metadata = data.getMetadata();
-
-        // Copy over fields that might be different
-        metadata.setOdeReceivedAt("2024-05-15T19:54:27.056948Z");
-        metadata.setSerialId(metadata.getSerialId().setStreamId("f21c4bce-c04b-4ccb-a854-ca4d2f6da547"));
-
-        assertEquals(data.toJson(), odeSpatDataReference);
-
+    public void testDecodeAsnToXERString() {
+        try {
+            String result = spatDecoder.decodeAsnToXERString(rawSpatReference);
+            // System.out.println(result);
+            assertEquals(result, odeSpatDecodedXmlReference);
+        } catch (java.lang.ExceptionInInitializerError e) {
+            // Ignore errors due to missing native libraries during testing.
+            assumeTrue("Skipping testDecodeAsnToXERString test because system is missing required libraries", false);
+        }
     }
 
+    /**
+     * Test verifying the conversion from String XML data to OdeMessageFrame
+     * Object
+     */
     @Test
-    public void testSpatGetAsOdeJson() throws XmlUtilsException {
-        OdeSpatData spat = spatDecoder.getAsOdeJson(odeSpatDecodedXmlReference);
-        assertEquals(spat.toJson(), odeSpatDecodedDataReference);
+    public void testGetAsMessageFrame() {
+        try {
+            OdeMessageFrameData spat = spatDecoder.convertXERToMessageFrame(odeSpatDecodedXmlReference);
+
+            spat.getMetadata().setOdeReceivedAt("2025-08-29T16:09:34.416Z");
+            spat.getMetadata()
+                    .setSerialId(spat.getMetadata().getSerialId().setStreamId("44a6d71c-8af1-4f45-848c-10bd7f919be8"));
+
+            assertEquals(spat.toJson().replaceAll("\n", "").replaceAll(" ", ""), odeSpatDecodedJsonReference);
+        } catch (JsonProcessingException e) {
+            assertEquals(true, false);
+        }
     }
 
+    /**
+     * Test to verify Conversion from a OdeMessageFrame object to a ProcessedSPAT
+     * Object
+     */
     @Test
-    public void testCreateProcessedSpat() throws XmlUtilsException {
-        OdeSpatData spat = spatDecoder.getAsOdeJson(odeSpatDecodedXmlReference);
-        ProcessedSpat processedSpat = spatDecoder.createProcessedSpat(spat);
-        assertEquals(processedSpat.toString(), processedSpatDataReference);
-    }
+    public void testConvertMessageFrameToProcessedSpat() {
 
+        try {
+            OdeMessageFrameData spatMessageFrame = objectMapper.readValue(odeSpatDecodedJsonReference,
+                    OdeMessageFrameData.class);
+
+            spatMessageFrame.getMetadata().setOdeReceivedAt("2025-08-29T16:09:34.416Z");
+
+            ProcessedSpat spat = spatDecoder.convertMessageFrameToProcessedSpat(spatMessageFrame);
+
+            spat.setOdeReceivedAt("2025-08-29T16:09:34.416Z");
+
+            assertEquals(spat.toString().replaceAll("\n", "").replaceAll(" ", ""), processedSpatReference);
+        } catch (JsonProcessingException e) {
+            assertEquals(true, false);
+        }
+    }
 }

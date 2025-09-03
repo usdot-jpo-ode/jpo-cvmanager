@@ -105,3 +105,9 @@ sendgrid:
 
 ### Postmark Email Settings
 postmark.api.secretKey: ${CM_POSTMARK_SECRET_KEY:""}
+
+j2735.api:
+  text-buffer-size: 262144
+  uper-buffer-size: 8192
+  asn-codec-ctx-max-stack-size: 60000
+  message-frame-allocate-size: 16384

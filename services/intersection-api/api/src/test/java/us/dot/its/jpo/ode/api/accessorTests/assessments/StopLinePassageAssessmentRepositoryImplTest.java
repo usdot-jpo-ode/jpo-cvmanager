@@ -180,4 +180,32 @@ public class StopLinePassageAssessmentRepositoryImplTest {
                                 new Customization("properties.odeReceivedAt", (o1, o2) -> true)));
         }
 
+        @Test
+        void testFindLatest() {
+                StopLinePassageAssessment event = new StopLinePassageAssessment();
+                event.setIntersectionID(intersectionID);
+
+                doReturn(event).when(mongoTemplate).findOne(any(Query.class), eq(StopLinePassageAssessment.class),
+                                anyString());
+
+                Page<StopLinePassageAssessment> page = repository.findLatest(intersectionID, startTime, endTime);
+
+                assertThat(page.getContent()).hasSize(1);
+                assertThat(page.getContent().get(0).getIntersectionID()).isEqualTo(intersectionID);
+                verify(mongoTemplate).findOne(any(Query.class), eq(StopLinePassageAssessment.class),
+                                eq("CmStopLinePassageAssessment"));
+        }
+
+        @Test
+        void testAdd() {
+                StopLinePassageAssessment event = new StopLinePassageAssessment();
+                event.setIntersectionID(intersectionID);
+
+                doReturn(null).when(mongoTemplate).insert(any(StopLinePassageAssessment.class), anyString());
+
+                repository.add(event);
+
+                verify(mongoTemplate).insert(event, "CmStopLinePassageAssessment");
+        }
+
 }

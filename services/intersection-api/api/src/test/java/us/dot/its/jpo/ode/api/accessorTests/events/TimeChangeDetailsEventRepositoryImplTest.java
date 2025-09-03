@@ -20,6 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -124,6 +125,34 @@ public class TimeChangeDetailsEventRepositoryImplTest {
         assertThat(actualResults.get(0).getCount()).isEqualTo(3600);
         assertThat(actualResults.get(1).getId()).isEqualTo("2023-06-26");
         assertThat(actualResults.get(1).getCount()).isEqualTo(7200);
+    }
+
+    @Test
+    void testFindLatest() {
+        TimeChangeDetailsEvent event = new TimeChangeDetailsEvent();
+        event.setIntersectionID(intersectionID);
+
+        doReturn(event).when(mongoTemplate).findOne(any(Query.class), eq(TimeChangeDetailsEvent.class),
+                anyString());
+
+        Page<TimeChangeDetailsEvent> page = repository.findLatest(intersectionID, startTime, endTime);
+
+        assertThat(page.getContent()).hasSize(1);
+        assertThat(page.getContent().get(0).getIntersectionID()).isEqualTo(intersectionID);
+        verify(mongoTemplate).findOne(any(Query.class), eq(TimeChangeDetailsEvent.class),
+                eq("CmSpatTimeChangeDetailsEvent"));
+    }
+
+    @Test
+    void testAdd() {
+        TimeChangeDetailsEvent event = new TimeChangeDetailsEvent();
+        event.setIntersectionID(intersectionID);
+
+        doReturn(null).when(mongoTemplate).insert(any(TimeChangeDetailsEvent.class), anyString());
+
+        repository.add(event);
+
+        verify(mongoTemplate).insert(event, "CmSpatTimeChangeDetailsEvent");
     }
 
 }

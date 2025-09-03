@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -89,6 +90,36 @@ public class IntersectionReferenceAlignmentNotificationRepositoryImplTest {
         Page<IntersectionReferenceAlignmentNotification> results = repo.find(1, null, null, pageRequest);
 
         assertThat(results).isEqualTo(mockPage);
+    }
+
+    @Test
+    void testFindLatest() {
+        IntersectionReferenceAlignmentNotification event = new IntersectionReferenceAlignmentNotification();
+        event.setIntersectionID(intersectionID);
+
+        doReturn(event).when(mongoTemplate).findOne(any(Query.class),
+                eq(IntersectionReferenceAlignmentNotification.class),
+                anyString());
+
+        Page<IntersectionReferenceAlignmentNotification> page = repository.findLatest(intersectionID, startTime,
+                endTime);
+
+        assertThat(page.getContent()).hasSize(1);
+        assertThat(page.getContent().get(0).getIntersectionID()).isEqualTo(intersectionID);
+        verify(mongoTemplate).findOne(any(Query.class), eq(IntersectionReferenceAlignmentNotification.class),
+                eq("CmIntersectionReferenceAlignmentNotification"));
+    }
+
+    @Test
+    void testAdd() {
+        IntersectionReferenceAlignmentNotification event = new IntersectionReferenceAlignmentNotification();
+        event.setIntersectionID(intersectionID);
+
+        doReturn(null).when(mongoTemplate).insert(any(IntersectionReferenceAlignmentNotification.class), anyString());
+
+        repository.add(event);
+
+        verify(mongoTemplate).insert(event, "CmIntersectionReferenceAlignmentNotification");
     }
 
 }

@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -88,6 +89,34 @@ public class MapBroadcastRateNotificationRepositoryImplTest {
         Page<MapBroadcastRateNotification> results = repo.find(1, null, null, pageRequest);
 
         assertThat(results).isEqualTo(mockPage);
+    }
+
+    @Test
+    void testFindLatest() {
+        MapBroadcastRateNotification event = new MapBroadcastRateNotification();
+        event.setIntersectionID(intersectionID);
+
+        doReturn(event).when(mongoTemplate).findOne(any(Query.class), eq(MapBroadcastRateNotification.class),
+                anyString());
+
+        Page<MapBroadcastRateNotification> page = repository.findLatest(intersectionID, startTime, endTime);
+
+        assertThat(page.getContent()).hasSize(1);
+        assertThat(page.getContent().get(0).getIntersectionID()).isEqualTo(intersectionID);
+        verify(mongoTemplate).findOne(any(Query.class), eq(MapBroadcastRateNotification.class),
+                eq("CmMapBroadcastRateNotification"));
+    }
+
+    @Test
+    void testAdd() {
+        MapBroadcastRateNotification event = new MapBroadcastRateNotification();
+        event.setIntersectionID(intersectionID);
+
+        doReturn(null).when(mongoTemplate).insert(any(MapBroadcastRateNotification.class), anyString());
+
+        repository.add(event);
+
+        verify(mongoTemplate).insert(event, "CmMapBroadcastRateNotification");
     }
 
 }

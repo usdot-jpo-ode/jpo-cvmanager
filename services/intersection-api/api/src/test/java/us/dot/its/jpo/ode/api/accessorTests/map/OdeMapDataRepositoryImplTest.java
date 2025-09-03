@@ -101,4 +101,29 @@ public class OdeMapDataRepositoryImplTest {
 
         assertThat(results).isEqualTo(mockPage);
     }
+
+    @Test
+    void testFindLatest() {
+        OdeMapData event = new OdeMapData();
+
+        doReturn(event).when(mongoTemplate).findOne(any(Query.class), eq(OdeMapData.class),
+                anyString());
+
+        Page<OdeMapData> page = repository.findLatest(intersectionID, startTime, endTime);
+
+        assertThat(page.getContent()).hasSize(1);
+        verify(mongoTemplate).findOne(any(Query.class), eq(OdeMapData.class),
+                eq("OdeMapJson"));
+    }
+
+    @Test
+    void testAdd() {
+        OdeMapData event = new OdeMapData();
+
+        doReturn(null).when(mongoTemplate).insert(any(OdeMapData.class), anyString());
+
+        repository.add(event);
+
+        verify(mongoTemplate).insert(event, "OdeMapJson");
+    }
 }

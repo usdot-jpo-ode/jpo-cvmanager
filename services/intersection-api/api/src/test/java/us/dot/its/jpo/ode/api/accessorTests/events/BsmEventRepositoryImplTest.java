@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -18,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,6 +30,7 @@ import java.util.List;
 
 import org.bson.Document;
 
+import us.dot.its.jpo.conflictmonitor.monitor.models.bsm.BsmEvent;
 import us.dot.its.jpo.ode.api.accessors.events.bsm_event.BsmEventRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
@@ -307,6 +310,34 @@ public class BsmEventRepositoryImplTest {
         // Verify time window condition
         Document timeCondition = (Document) queryObject.get("startingBsmTimestamp");
         assertThat(timeCondition).isNull();
+    }
+
+    @Test
+    void testFindLatest() {
+        BsmEvent event = new BsmEvent();
+        event.setIntersectionID(intersectionID);
+
+        doReturn(event).when(mongoTemplate).findOne(any(Query.class), eq(BsmEvent.class),
+                anyString());
+
+        Page<BsmEvent> page = repository.findLatest(intersectionID, startTime, endTime);
+
+        assertThat(page.getContent()).hasSize(1);
+        assertThat(page.getContent().get(0).getIntersectionID()).isEqualTo(intersectionID);
+        verify(mongoTemplate).findOne(any(Query.class), eq(BsmEvent.class),
+                eq("CmBsmEvents"));
+    }
+
+    @Test
+    void testAdd() {
+        BsmEvent event = new BsmEvent();
+        event.setIntersectionID(intersectionID);
+
+        doReturn(null).when(mongoTemplate).insert(any(BsmEvent.class), anyString());
+
+        repository.add(event);
+
+        verify(mongoTemplate).insert(event, "CmBsmEvents");
     }
 
 }

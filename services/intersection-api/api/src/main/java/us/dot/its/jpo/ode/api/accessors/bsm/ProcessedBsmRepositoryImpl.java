@@ -1,7 +1,7 @@
 package us.dot.its.jpo.ode.api.accessors.bsm;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.bson.Document;
 import org.springframework.data.domain.Page;
@@ -14,6 +14,8 @@ import us.dot.its.jpo.geojsonconverter.pojos.geojson.Point;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.bsm.ProcessedBsm;
 import us.dot.its.jpo.ode.api.accessors.IntersectionCriteria;
 import us.dot.its.jpo.ode.api.accessors.PageableQuery;
+import us.dot.its.jpo.ode.api.utils.GeographyCalculator;
+
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -29,10 +31,12 @@ public class ProcessedBsmRepositoryImpl implements ProcessedBsmRepository, Pagea
     private final MongoTemplate mongoTemplate;
 
     private final String collectionName = "ProcessedBsm";
-    private final String DATE_FIELD = "utcTimeStamp";
-    private final String INTERSECTION_ID_FIELD = "intersectionId";
+    private final String DATE_FIELD = "properties.odeReceivedAt";
+    private final String ORIGIN_IP_FIELD = "properties.originIp";
+    private final String VEHICLE_ID_FIELD = "properties.id";
+    private final String LONGITUDE_FIELD = "geometry.coordinates.0";
+    private final String LATITUDE_FIELD = "geometry.coordinates.1";
     private final String RECORD_GENERATED_AT_FIELD = "recordGeneratedAt";
-    private final String VALIDATION_MESSAGES_FIELD = "properties.validationMessages";
 
     TypeReference<ProcessedBsm<Point>> processedBsmTypeReference = new TypeReference<>() {
     };
@@ -45,89 +49,82 @@ public class ProcessedBsmRepositoryImpl implements ProcessedBsmRepository, Pagea
     }
 
     /**
-     * Get a page representing the count of data for a given intersectionID,
-     * startTime, and endTime
-     *
-     * @param intersectionID the intersection ID to query by, if null will not be
-     *                       applied
-     * @param startTime      the start time to query by, if null will not be applied
-     * @param endTime        the end time to query by, if null will not be applied
-     * @return the paginated data that matches the given criteria
+     * Filter OdeBsmData by originIp, vehicleId, startTime, endTime, and a bounding
+     * box
+     * 
+     * @param originIp  the origin IP
+     * @param vehicleId the vehicle ID
+     * @param startTime the start time
+     * @param endTime   the end time
+     * @param centerLng the longitude (in degrees) of the center of the bounding box
+     * @param centerLat the latitude (in degrees) of the center of the bounding box
+     * @param distance  the "radius" of the bounding box, in meters (total width is
+     *                  2x distance)
+     */
+    public Page<ProcessedBsm<Point>> find(String originIp, String vehicleId, Long startTime, Long endTime,
+            Double centerLng, Double centerLat, Double distance, Pageable pageable) {
+
+        Criteria criteria = new IntersectionCriteria()
+                .whereOptional(ORIGIN_IP_FIELD, originIp)
+                .whereOptional(VEHICLE_ID_FIELD, vehicleId)
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
+
+        if (centerLng != null && centerLat != null && distance != null) {
+            double[] latitudes = GeographyCalculator.calculateLatitudes(centerLng, centerLat, distance);
+            double[] longitudes = GeographyCalculator.calculateLongitudes(centerLng, centerLat, distance);
+            criteria = criteria.and(LATITUDE_FIELD)
+                    .gte(Math.min(latitudes[0], latitudes[1])).lte(Math.max(latitudes[0], latitudes[1]))
+                    .and(LONGITUDE_FIELD)
+                    .gte(Math.min(longitudes[0], longitudes[1])).lte(Math.max(longitudes[0], longitudes[1]));
+        }
+        Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
+        List<String> excludedFields = List.of(RECORD_GENERATED_AT_FIELD);
+
+        Page<Document> aggregationResult = findDocumentsWithPagination(mongoTemplate, collectionName, pageable,
+                criteria, sort, excludedFields);
+
+        List<ProcessedBsm<Point>> bsms = aggregationResult.getContent().stream()
+                .map(document -> mapper.convertValue(document, processedBsmTypeReference)).toList();
+
+        return new PageImpl<ProcessedBsm<Point>>(bsms, pageable, aggregationResult.getTotalElements());
+    }
+
+    /**
+     * Count filtered OdeBsmData by originIp, vehicleId, startTime, endTime, and a
+     * bounding box
+     * 
+     * @param originIp  the origin IP
+     * @param vehicleId the vehicle ID
+     * @param startTime the start time
+     * @param endTime   the end time
+     * @param centerLng the longitude (in degrees) of the center of the bounding box
+     * @param centerLat the latitude (in degrees) of the center of the bounding box
+     * @param distance  the "radius" of the bounding box, in meters (total width is
+     *                  2x distance)
      */
     public long count(
-            Integer intersectionID,
-            Long startTime,
-            Long endTime) {
-        Criteria criteria = new IntersectionCriteria()
-                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
-        Query query = Query.query(criteria);
-        return mongoTemplate.count(query, collectionName);
-    }
-
-    /**
-     * Get a page containing the single most recent record for a given
-     * intersectionID, startTime, and endTime
-     *
-     * @param intersectionID the intersection ID to query by, if null will not be
-     *                       applied
-     * @param startTime      the start time to query by, if null will not be applied
-     * @param endTime        the end time to query by, if null will not be applied
-     * @return the paginated data that matches the given criteria
-     */
-    public Page<ProcessedBsm<Point>> findLatest(
-            Integer intersectionID,
+            String originIp,
+            String vehicleId,
             Long startTime,
             Long endTime,
-            boolean compact) {
+            Double centerLng,
+            Double centerLat,
+            Double distance) {
+
         Criteria criteria = new IntersectionCriteria()
-                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
+                .whereOptional(ORIGIN_IP_FIELD, originIp)
+                .whereOptional(VEHICLE_ID_FIELD, vehicleId)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
+
+        if (centerLng != null && centerLat != null && distance != null) {
+            double[] latitudes = GeographyCalculator.calculateLatitudes(centerLng, centerLat, distance);
+            double[] longitudes = GeographyCalculator.calculateLongitudes(centerLng, centerLat, distance);
+            criteria = criteria.and(LATITUDE_FIELD)
+                    .gte(Math.min(latitudes[0], latitudes[1])).lte(Math.max(latitudes[0], latitudes[1]))
+                    .and(LONGITUDE_FIELD)
+                    .gte(Math.min(longitudes[0], longitudes[1])).lte(Math.max(longitudes[0], longitudes[1]));
+        }
         Query query = Query.query(criteria);
-        List<String> excludedFields = new ArrayList<>();
-        excludedFields.add(RECORD_GENERATED_AT_FIELD);
-        if (compact) {
-            excludedFields.add(VALIDATION_MESSAGES_FIELD);
-        }
-        Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-
-        Document document = mongoTemplate.findOne(
-                query.with(sort),
-                Document.class,
-                collectionName);
-        ProcessedBsm<Point> message = mapper.convertValue(document, processedBsmTypeReference);
-        return wrapSingleResultWithPage(message);
-    }
-
-    /**
-     * Get paginated data from a given intersectionID, startTime, and endTime
-     *
-     * @param intersectionID the intersection ID to query by, if null will not be
-     *                       applied
-     * @param startTime      the start time to query by, if null will not be applied
-     * @param endTime        the end time to query by, if null will not be applied
-     * @param pageable       the pageable object to use for pagination
-     * @return the paginated data that matches the given criteria
-     */
-    public Page<ProcessedBsm<Point>> find(
-            Integer intersectionID,
-            Long startTime,
-            Long endTime,
-            boolean compact,
-            Pageable pageable) {
-        Criteria criteria = new IntersectionCriteria()
-                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
-        List<String> excludedFields = new ArrayList<>();
-        excludedFields.add(RECORD_GENERATED_AT_FIELD);
-        if (compact) {
-            excludedFields.add(VALIDATION_MESSAGES_FIELD);
-        }
-        Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        Page<Document> hashMap = findDocumentsWithPagination(mongoTemplate, collectionName, pageable,
-                criteria, sort, excludedFields);
-        List<ProcessedBsm<Point>> processedBsms = hashMap.getContent().stream()
-                .map(document -> mapper.convertValue(document, processedBsmTypeReference)).toList();
-        return new PageImpl<>(processedBsms, pageable, hashMap.getTotalElements());
+        return mongoTemplate.count(query, Map.class, collectionName);
     }
 }

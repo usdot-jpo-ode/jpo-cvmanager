@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.bson.Document;
-import org.geotools.referencing.GeodeticCalculator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -22,6 +21,7 @@ import us.dot.its.jpo.asn.j2735.r2024.BasicSafetyMessage.BasicSafetyMessage;
 import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
 import us.dot.its.jpo.ode.api.accessors.IntersectionCriteria;
 import us.dot.its.jpo.ode.api.accessors.PageableQuery;
+import us.dot.its.jpo.ode.api.utils.GeographyCalculator;
 
 @Component
 public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQuery {
@@ -34,52 +34,13 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
     private final String DATE_FIELD = "metadata.odeReceivedAt";
     private final String ORIGIN_IP_FIELD = "metadata.originIp";
     private final String VEHICLE_ID_FIELD = "payload.data.coreData.id";
+    private final String LONGITUDE_FIELD = "payload.data.coreData.position.longitude";
+    private final String LATITUDE_FIELD = "payload.data.coreData.position.latitude";
+    private final String RECORD_GENERATED_AT_FIELD = "recordGeneratedAt";
 
     @Autowired
     public OdeBsmJsonRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
-    }
-
-    /**
-     * Calculate the latitude range for a given center point and distance
-     * 
-     * @param centerLng the center longitude
-     * @param centerLat the center latitude
-     * @param distance  the distance in meters
-     * @return double[] containing the min and max latitudes
-     */
-    private double[] calculateLatitudes(double centerLng, double centerLat, double distance) {
-        GeodeticCalculator calculator = new GeodeticCalculator();
-        calculator.setStartingGeographicPoint(centerLng, centerLat);
-
-        calculator.setDirection(0, distance);
-        double maxLat = calculator.getDestinationGeographicPoint().getY();
-
-        calculator.setDirection(180, distance);
-        double minLat = calculator.getDestinationGeographicPoint().getY();
-
-        return new double[] { minLat, maxLat };
-    }
-
-    /**
-     * Calculate the longitude range for a given center point and distance
-     * 
-     * @param centerLng the center longitude
-     * @param centerLat the center latitude
-     * @param distance  the distance in meters
-     * @return double[] containing the min and max longitudes
-     */
-    private double[] calculateLongitudes(double centerLng, double centerLat, double distance) {
-        GeodeticCalculator calculator = new GeodeticCalculator();
-        calculator.setStartingGeographicPoint(centerLng, centerLat);
-
-        calculator.setDirection(90, distance);
-        double maxLng = calculator.getDestinationGeographicPoint().getX();
-
-        calculator.setDirection(270, distance);
-        double minLng = calculator.getDestinationGeographicPoint().getX();
-
-        return new double[] { minLng, maxLng };
     }
 
     /**
@@ -104,15 +65,15 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
 
         if (centerLng != null && centerLat != null && distance != null) {
-            double[] latitudes = calculateLatitudes(centerLng, centerLat, distance);
-            double[] longitudes = calculateLongitudes(centerLng, centerLat, distance);
-            criteria = criteria.and("payload.data.coreData.position.latitude")
+            double[] latitudes = GeographyCalculator.calculateLatitudes(centerLng, centerLat, distance);
+            double[] longitudes = GeographyCalculator.calculateLongitudes(centerLng, centerLat, distance);
+            criteria = criteria.and(LATITUDE_FIELD)
                     .gte(Math.min(latitudes[0], latitudes[1])).lte(Math.max(latitudes[0], latitudes[1]))
-                    .and("payload.data.coreData.position.longitude")
+                    .and(LONGITUDE_FIELD)
                     .gte(Math.min(longitudes[0], longitudes[1])).lte(Math.max(longitudes[0], longitudes[1]));
         }
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        List<String> excludedFields = List.of("recordGeneratedAt");
+        List<String> excludedFields = List.of(RECORD_GENERATED_AT_FIELD);
 
         Page<Document> aggregationResult = findDocumentsWithPagination(mongoTemplate, collectionName, pageable,
                 criteria, sort, excludedFields);
@@ -151,11 +112,11 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
 
         if (centerLng != null && centerLat != null && distance != null) {
-            double[] latitudes = calculateLatitudes(centerLng, centerLat, distance);
-            double[] longitudes = calculateLongitudes(centerLng, centerLat, distance);
-            criteria = criteria.and("payload.data.coreData.position.latitude")
+            double[] latitudes = GeographyCalculator.calculateLatitudes(centerLng, centerLat, distance);
+            double[] longitudes = GeographyCalculator.calculateLongitudes(centerLng, centerLat, distance);
+            criteria = criteria.and(LATITUDE_FIELD)
                     .gte(Math.min(latitudes[0], latitudes[1])).lte(Math.max(latitudes[0], latitudes[1]))
-                    .and("payload.data.coreData.position.longitude")
+                    .and(LONGITUDE_FIELD)
                     .gte(Math.min(longitudes[0], longitudes[1])).lte(Math.max(longitudes[0], longitudes[1]));
         }
         Query query = Query.query(criteria);

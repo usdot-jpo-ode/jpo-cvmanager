@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.api.decoderTests;
 
-import static org.junit.Assume.assumeTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
@@ -33,7 +32,6 @@ public class SpatDecoderTests {
 
     private final SpatDecoder spatDecoder;
 
-    private String rawSpatReference = "";
     private String odeSpatDecodedXmlReference = "";
     private String odeSpatDecodedJsonReference = "";
     private String processedSpatReference = "";
@@ -47,8 +45,6 @@ public class SpatDecoderTests {
         objectMapper = DateJsonMapper.getInstance();
 
         try {
-            rawSpatReference = new String(
-                    Files.readAllBytes(Paths.get("src/test/resources/uper/ReferenceSpatUPER.txt")));
 
             odeSpatDecodedXmlReference = new String(
                     Files.readAllBytes(Paths.get("src/test/resources/xml/Ode.ReferenceSpatXER.xml")));

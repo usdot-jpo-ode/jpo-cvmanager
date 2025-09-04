@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.api.decoderTests;
 
-import static org.junit.Assume.assumeTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
@@ -35,7 +34,6 @@ public class MapDecoderTests {
 
     private final MapDecoder mapDecoder;
 
-    private String rawMapReference = "";
     private String odeMapDecodedXmlReference = "";
     private String odeMapDecodedJsonReference = "";
     private String processedMapReference = "";
@@ -49,8 +47,6 @@ public class MapDecoderTests {
         objectMapper = DateJsonMapper.getInstance();
 
         try {
-            rawMapReference = new String(
-                    Files.readAllBytes(Paths.get("src/test/resources/uper/ReferenceMapUPER.txt")));
 
             odeMapDecodedXmlReference = new String(
                     Files.readAllBytes(Paths.get("src/test/resources/xml/Ode.ReferenceMapXER.xml")));
@@ -68,6 +64,25 @@ public class MapDecoderTests {
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * Test verifying the conversion from String XML data to OdeMessageFrame
+     * Object
+     */
+    @Test
+    public void testGetAsMessageFrame() {
+        try {
+            OdeMessageFrameData spat = mapDecoder.convertXERToMessageFrame(odeMapDecodedXmlReference);
+
+            spat.getMetadata().setOdeReceivedAt("2025-08-29T16:09:34.416Z");
+            spat.getMetadata()
+                    .setSerialId(spat.getMetadata().getSerialId().setStreamId("44a6d71c-8af1-4f45-848c-10bd7f919be8"));
+
+            assertEquals(spat.toJson().replaceAll("\n", "").replaceAll(" ", ""), odeMapDecodedJsonReference);
+        } catch (JsonProcessingException e) {
+            assertEquals(true, false);
+        }
     }
 
     /**

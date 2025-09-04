@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.api.decoderTests;
 
-import static org.junit.Assume.assumeTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
@@ -31,7 +30,6 @@ public class TimDecoderTests {
 
     private final TimDecoder timDecoder;
 
-    private String rawTimReference = "";
     private String odeTimDecodedXmlReference = "";
     private String odeTimDecodedJsonReference = "";
 
@@ -44,8 +42,6 @@ public class TimDecoderTests {
         objectMapper = DateJsonMapper.getInstance();
 
         try {
-            rawTimReference = new String(
-                    Files.readAllBytes(Paths.get("src/test/resources/uper/ReferenceTimUPER.txt")));
             odeTimDecodedXmlReference = new String(
                     Files.readAllBytes(Paths.get("src/test/resources/xml/Ode.ReferenceTimXER.xml")));
 

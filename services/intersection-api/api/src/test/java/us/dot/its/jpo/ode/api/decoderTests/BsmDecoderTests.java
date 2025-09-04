@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.api.decoderTests;
 
-import static org.junit.Assume.assumeTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
@@ -33,7 +32,6 @@ public class BsmDecoderTests {
 
     private final BsmDecoder bsmDecoder;
 
-    private String rawBsmReference = "";
     private String odeBsmDecodedXmlReference = "";
     private String odeBsmDecodedJsonReference = "";
     private String processedBsmReference = "";
@@ -47,8 +45,6 @@ public class BsmDecoderTests {
         objectMapper = DateJsonMapper.getInstance();
 
         try {
-            rawBsmReference = new String(
-                    Files.readAllBytes(Paths.get("src/test/resources/uper/ReferenceBsmUPER.txt")));
             odeBsmDecodedXmlReference = new String(
                     Files.readAllBytes(Paths.get("src/test/resources/xml/Ode.ReferenceBsmXER.xml")));
 

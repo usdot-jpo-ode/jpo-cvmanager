@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.api.decoderTests;
 
-import static org.junit.Assume.assumeTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
@@ -31,7 +30,6 @@ public class SrmDecoderTests {
 
     private final SrmDecoder srmDecoder;
 
-    private String rawSrmReference = "";
     private String odeSrmDecodedXmlReference = "";
     private String odeSrmDecodedJsonReference = "";
 
@@ -44,8 +42,6 @@ public class SrmDecoderTests {
         objectMapper = DateJsonMapper.getInstance();
 
         try {
-            rawSrmReference = new String(
-                    Files.readAllBytes(Paths.get("src/test/resources/uper/ReferenceSrmUPER.txt")));
             odeSrmDecodedXmlReference = new String(
                     Files.readAllBytes(Paths.get("src/test/resources/xml/Ode.ReferenceSrmXER.xml")));
 

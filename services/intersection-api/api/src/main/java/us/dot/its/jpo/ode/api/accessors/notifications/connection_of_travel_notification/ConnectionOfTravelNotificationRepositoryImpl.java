@@ -97,8 +97,4 @@ public class ConnectionOfTravelNotificationRepositoryImpl
         return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null,
                 ConnectionOfTravelNotification.class);
     }
-
-    public void add(ConnectionOfTravelNotification item) {
-        mongoTemplate.insert(item, collectionName);
-    }
 }

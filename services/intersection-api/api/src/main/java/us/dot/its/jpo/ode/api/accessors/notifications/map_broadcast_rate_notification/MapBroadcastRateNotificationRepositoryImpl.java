@@ -17,91 +17,86 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rat
 
 @Component
 public class MapBroadcastRateNotificationRepositoryImpl
-        implements MapBroadcastRateNotificationRepository, PageableQuery {
+                implements MapBroadcastRateNotificationRepository, PageableQuery {
 
-    private final MongoTemplate mongoTemplate;
+        private final MongoTemplate mongoTemplate;
 
-    private final String collectionName = "CmMapBroadcastRateNotification";
-    private final String DATE_FIELD = "notificationGeneratedAt";
-    private final String INTERSECTION_ID_FIELD = "intersectionID";
+        private final String collectionName = "CmMapBroadcastRateNotification";
+        private final String DATE_FIELD = "notificationGeneratedAt";
+        private final String INTERSECTION_ID_FIELD = "intersectionID";
 
-    @Autowired
-    public MapBroadcastRateNotificationRepositoryImpl(MongoTemplate mongoTemplate) {
-        this.mongoTemplate = mongoTemplate;
-    }
+        @Autowired
+        public MapBroadcastRateNotificationRepositoryImpl(MongoTemplate mongoTemplate) {
+                this.mongoTemplate = mongoTemplate;
+        }
 
-    /**
-     * Get a page representing the count of data for a given intersectionID,
-     * startTime, and endTime
-     *
-     * @param intersectionID the intersection ID to query by, if null will not be
-     *                       applied
-     * @param startTime      the start time to query by, if null will not be applied
-     * @param endTime        the end time to query by, if null will not be applied
-     * @return the paginated data that matches the given criteria
-     */
-    public long count(
-            Integer intersectionID,
-            Long startTime,
-            Long endTime) {
-        Criteria criteria = new IntersectionCriteria()
-                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
-        Query query = Query.query(criteria);
-        return mongoTemplate.count(query, collectionName);
-    }
+        /**
+         * Get a page representing the count of data for a given intersectionID,
+         * startTime, and endTime
+         *
+         * @param intersectionID the intersection ID to query by, if null will not be
+         *                       applied
+         * @param startTime      the start time to query by, if null will not be applied
+         * @param endTime        the end time to query by, if null will not be applied
+         * @return the paginated data that matches the given criteria
+         */
+        public long count(
+                        Integer intersectionID,
+                        Long startTime,
+                        Long endTime) {
+                Criteria criteria = new IntersectionCriteria()
+                                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
+                                .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
+                Query query = Query.query(criteria);
+                return mongoTemplate.count(query, collectionName);
+        }
 
-    /**
-     * Get a page containing the single most recent record for a given
-     * intersectionID, startTime, and endTime
-     *
-     * @param intersectionID the intersection ID to query by, if null will not be
-     *                       applied
-     * @param startTime      the start time to query by, if null will not be applied
-     * @param endTime        the end time to query by, if null will not be applied
-     * @return the paginated data that matches the given criteria
-     */
-    public Page<MapBroadcastRateNotification> findLatest(
-            Integer intersectionID,
-            Long startTime,
-            Long endTime) {
-        Criteria criteria = new IntersectionCriteria()
-                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
-        Query query = Query.query(criteria);
-        Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        return wrapSingleResultWithPage(
-                mongoTemplate.findOne(
-                        query.with(sort),
-                        MapBroadcastRateNotification.class,
-                        collectionName));
-    }
+        /**
+         * Get a page containing the single most recent record for a given
+         * intersectionID, startTime, and endTime
+         *
+         * @param intersectionID the intersection ID to query by, if null will not be
+         *                       applied
+         * @param startTime      the start time to query by, if null will not be applied
+         * @param endTime        the end time to query by, if null will not be applied
+         * @return the paginated data that matches the given criteria
+         */
+        public Page<MapBroadcastRateNotification> findLatest(
+                        Integer intersectionID,
+                        Long startTime,
+                        Long endTime) {
+                Criteria criteria = new IntersectionCriteria()
+                                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
+                                .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
+                Query query = Query.query(criteria);
+                Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
+                return wrapSingleResultWithPage(
+                                mongoTemplate.findOne(
+                                                query.with(sort),
+                                                MapBroadcastRateNotification.class,
+                                                collectionName));
+        }
 
-    /**
-     * Get paginated data from a given intersectionID, startTime, and endTime
-     *
-     * @param intersectionID the intersection ID to query by, if null will not be
-     *                       applied
-     * @param startTime      the start time to query by, if null will not be applied
-     * @param endTime        the end time to query by, if null will not be applied
-     * @param pageable       the pageable object to use for pagination
-     * @return the paginated data that matches the given criteria
-     */
-    public Page<MapBroadcastRateNotification> find(
-            Integer intersectionID,
-            Long startTime,
-            Long endTime,
-            Pageable pageable) {
-        Criteria criteria = new IntersectionCriteria()
-                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
-        Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null,
-                MapBroadcastRateNotification.class);
-    }
-
-    @Override
-    public void add(MapBroadcastRateNotification item) {
-        mongoTemplate.insert(item, collectionName);
-    }
+        /**
+         * Get paginated data from a given intersectionID, startTime, and endTime
+         *
+         * @param intersectionID the intersection ID to query by, if null will not be
+         *                       applied
+         * @param startTime      the start time to query by, if null will not be applied
+         * @param endTime        the end time to query by, if null will not be applied
+         * @param pageable       the pageable object to use for pagination
+         * @return the paginated data that matches the given criteria
+         */
+        public Page<MapBroadcastRateNotification> find(
+                        Integer intersectionID,
+                        Long startTime,
+                        Long endTime,
+                        Pageable pageable) {
+                Criteria criteria = new IntersectionCriteria()
+                                .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
+                                .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
+                Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
+                return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null,
+                                MapBroadcastRateNotification.class);
+        }
 }

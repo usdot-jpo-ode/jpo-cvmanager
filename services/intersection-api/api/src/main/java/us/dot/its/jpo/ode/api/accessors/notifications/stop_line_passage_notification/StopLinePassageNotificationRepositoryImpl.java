@@ -97,10 +97,4 @@ public class StopLinePassageNotificationRepositoryImpl
         return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null,
                 StopLinePassageNotification.class);
     }
-
-    @Override
-    public void add(StopLinePassageNotification item) {
-        mongoTemplate.insert(item, collectionName);
-    }
-
 }

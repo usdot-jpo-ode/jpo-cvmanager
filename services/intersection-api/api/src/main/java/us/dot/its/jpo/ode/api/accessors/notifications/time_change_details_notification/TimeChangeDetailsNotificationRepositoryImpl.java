@@ -98,10 +98,4 @@ public class TimeChangeDetailsNotificationRepositoryImpl
         return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null,
                 TimeChangeDetailsNotification.class);
     }
-
-    @Override
-    public void add(TimeChangeDetailsNotification item) {
-        mongoTemplate.insert(item, collectionName);
-    }
-
 }

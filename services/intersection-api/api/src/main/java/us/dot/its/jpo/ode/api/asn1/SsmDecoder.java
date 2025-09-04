@@ -60,7 +60,8 @@ public class SsmDecoder implements Decoder {
 
         try {
             OdeMessageFrameData odeMessageFrameData = convertXERToMessageFrame(xer);
-            return new SsmDecodedMessage((SignalStatusMessageMessageFrame) odeMessageFrameData.getPayload().getData(),
+            return new SsmDecodedMessage(
+                    ((SignalStatusMessageMessageFrame) odeMessageFrameData.getPayload().getData()).getValue(),
                     message.getAsn1Message(), "");
 
         } catch (JsonProcessingException e) {

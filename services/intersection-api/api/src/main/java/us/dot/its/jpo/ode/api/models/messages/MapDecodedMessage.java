@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.api.models.messages;
 
-import us.dot.its.jpo.asn.j2735.r2024.MapData.MapDataMessageFrame;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.ode.api.models.MessageType;
@@ -10,7 +9,6 @@ import lombok.Setter;
 @Setter
 @Getter
 public class MapDecodedMessage extends DecodedMessage {
-    private MapDataMessageFrame map;
     private ProcessedMap<LineString> processedMap;
 
     public MapDecodedMessage(ProcessedMap<LineString> processedMap, String asn1Text,

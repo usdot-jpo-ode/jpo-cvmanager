@@ -60,7 +60,8 @@ public class TimDecoder implements Decoder {
 
         try {
             OdeMessageFrameData odeMessageFrameData = convertXERToMessageFrame(xer);
-            return new TimDecodedMessage((TravelerInformationMessageFrame) odeMessageFrameData.getPayload().getData(),
+            return new TimDecodedMessage(
+                    ((TravelerInformationMessageFrame) odeMessageFrameData.getPayload().getData()).getValue(),
                     message.getAsn1Message(), "");
 
         } catch (JsonProcessingException e) {

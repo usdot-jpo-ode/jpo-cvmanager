@@ -60,7 +60,8 @@ public class SrmDecoder implements Decoder {
 
         try {
             OdeMessageFrameData odeMessageFrameData = convertXERToMessageFrame(xer);
-            return new SrmDecodedMessage((SignalRequestMessageMessageFrame) odeMessageFrameData.getPayload().getData(),
+            return new SrmDecodedMessage(
+                    ((SignalRequestMessageMessageFrame) odeMessageFrameData.getPayload().getData()).getValue(),
                     message.getAsn1Message(), "");
 
         } catch (JsonProcessingException e) {

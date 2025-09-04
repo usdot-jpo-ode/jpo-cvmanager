@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import us.dot.its.jpo.asn.j2735.r2024.BasicSafetyMessage.BasicSafetyMessageMessageFrame;
+import us.dot.its.jpo.asn.j2735.r2024.BasicSafetyMessage.BasicSafetyMessage;
 import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
 import us.dot.its.jpo.ode.api.accessors.IntersectionCriteria;
 import us.dot.its.jpo.ode.api.accessors.PageableQuery;
@@ -95,7 +95,7 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
      * @param distance  the "radius" of the bounding box, in meters (total width is
      *                  2x distance)
      */
-    public Page<BasicSafetyMessageMessageFrame> find(String originIp, String vehicleId, Long startTime, Long endTime,
+    public Page<BasicSafetyMessage> find(String originIp, String vehicleId, Long startTime, Long endTime,
             Double centerLng, Double centerLat, Double distance, Pageable pageable) {
 
         Criteria criteria = new IntersectionCriteria()
@@ -117,8 +117,8 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
         Page<Document> aggregationResult = findDocumentsWithPagination(mongoTemplate, collectionName, pageable,
                 criteria, sort, excludedFields);
 
-        List<BasicSafetyMessageMessageFrame> bsms = aggregationResult.getContent().stream()
-                .map(document -> mapper.convertValue(document, BasicSafetyMessageMessageFrame.class)).toList();
+        List<BasicSafetyMessage> bsms = aggregationResult.getContent().stream()
+                .map(document -> mapper.convertValue(document, BasicSafetyMessage.class)).toList();
 
         return new PageImpl<>(bsms, pageable, aggregationResult.getTotalElements());
     }

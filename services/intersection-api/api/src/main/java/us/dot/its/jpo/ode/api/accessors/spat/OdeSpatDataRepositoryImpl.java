@@ -3,7 +3,7 @@ package us.dot.its.jpo.ode.api.accessors.spat;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
-import us.dot.its.jpo.asn.j2735.r2024.SPAT.SPATMessageFrame;
+import us.dot.its.jpo.asn.j2735.r2024.SPAT.SPAT;
 import us.dot.its.jpo.ode.api.accessors.IntersectionCriteria;
 import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 
@@ -59,7 +59,7 @@ public class OdeSpatDataRepositoryImpl
      * @param endTime        the end time to query by, if null will not be applied
      * @return the paginated data that matches the given criteria
      */
-    public Page<SPATMessageFrame> findLatest(
+    public Page<SPAT> findLatest(
             Integer intersectionID,
             Long startTime,
             Long endTime) {
@@ -71,13 +71,7 @@ public class OdeSpatDataRepositoryImpl
         return wrapSingleResultWithPage(
                 mongoTemplate.findOne(
                         query.with(sort),
-                        SPATMessageFrame.class,
+                        SPAT.class,
                         collectionName));
     }
-
-    @Override
-    public void add(SPATMessageFrame item) {
-        mongoTemplate.insert(item, collectionName);
-    }
-
 }

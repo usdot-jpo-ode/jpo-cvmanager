@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import us.dot.its.jpo.ode.api.accessors.IntersectionCriteria;
 import us.dot.its.jpo.ode.api.accessors.PageableQuery;
-import us.dot.its.jpo.asn.j2735.r2024.MapData.MapDataMessageFrame;
+import us.dot.its.jpo.asn.j2735.r2024.MapData.MapData;
 
 @Component
 public class OdeMapDataRepositoryImpl implements OdeMapDataRepository, PageableQuery {
@@ -58,7 +58,7 @@ public class OdeMapDataRepositoryImpl implements OdeMapDataRepository, PageableQ
          * @param endTime        the end time to query by, if null will not be applied
          * @return the paginated data that matches the given criteria
          */
-        public Page<MapDataMessageFrame> findLatest(
+        public Page<MapData> findLatest(
                         Integer intersectionID,
                         Long startTime,
                         Long endTime) {
@@ -70,7 +70,7 @@ public class OdeMapDataRepositoryImpl implements OdeMapDataRepository, PageableQ
                 return wrapSingleResultWithPage(
                                 mongoTemplate.findOne(
                                                 query.with(sort),
-                                                MapDataMessageFrame.class,
+                                                MapData.class,
                                                 collectionName));
         }
 
@@ -84,7 +84,7 @@ public class OdeMapDataRepositoryImpl implements OdeMapDataRepository, PageableQ
          * @param pageable       the pageable object to use for pagination
          * @return the paginated data that matches the given criteria
          */
-        public Page<MapDataMessageFrame> find(
+        public Page<MapData> find(
                         Integer intersectionID,
                         Long startTime,
                         Long endTime,
@@ -95,7 +95,7 @@ public class OdeMapDataRepositoryImpl implements OdeMapDataRepository, PageableQ
                 Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
                 return findPage(mongoTemplate, collectionName, pageable, criteria,
                                 sort,
-                                null, MapDataMessageFrame.class);
+                                null, MapData.class);
         }
 
 }

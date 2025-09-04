@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import us.dot.its.jpo.asn.j2735.r2024.BasicSafetyMessage.BasicSafetyMessageMessageFrame;
+import us.dot.its.jpo.asn.j2735.r2024.BasicSafetyMessage.BasicSafetyMessage;
 import us.dot.its.jpo.ode.api.accessors.bsm.OdeBsmJsonRepository;
 import us.dot.its.jpo.ode.mockdata.MockBsmGenerator;
 
@@ -46,7 +46,7 @@ public class BsmController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role"),
     })
-    public ResponseEntity<Page<BasicSafetyMessageMessageFrame>> findBSMs(
+    public ResponseEntity<Page<BasicSafetyMessage>> findBSMs(
             @RequestParam(name = "origin_ip", required = false) String originIp,
             @RequestParam(name = "vehicle_id", required = false) String vehicleId,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -59,13 +59,13 @@ public class BsmController {
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
-            List<BasicSafetyMessageMessageFrame> list = MockBsmGenerator.getJsonBsms();
+            List<BasicSafetyMessage> list = MockBsmGenerator.getJsonBsms();
 
             return ResponseEntity
                     .ok(new PageImpl<>(list, PageRequest.of(page, size), list.size()));
         } else {
             PageRequest pageable = PageRequest.of(page, size);
-            Page<BasicSafetyMessageMessageFrame> response = odeBsmJsonRepo.find(originIp, vehicleId, startTime, endTime,
+            Page<BasicSafetyMessage> response = odeBsmJsonRepo.find(originIp, vehicleId, startTime, endTime,
                     longitude, latitude, distanceInMeters, pageable);
             return ResponseEntity.ok(response);
         }

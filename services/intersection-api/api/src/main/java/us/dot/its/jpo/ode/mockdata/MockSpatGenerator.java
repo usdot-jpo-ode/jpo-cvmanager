@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import lombok.extern.slf4j.Slf4j;
-import us.dot.its.jpo.asn.j2735.r2024.SPAT.SPATMessageFrame;
+import us.dot.its.jpo.asn.j2735.r2024.SPAT.SPAT;
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
 
 @Slf4j
@@ -35,14 +35,14 @@ public class MockSpatGenerator {
         return spats;
     }
 
-    public static List<SPATMessageFrame> getJsonSpats() {
+    public static List<SPAT> getJsonSpats() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 
-        ArrayList<SPATMessageFrame> spats = new ArrayList<>();
+        ArrayList<SPAT> spats = new ArrayList<>();
 
         try {
-            SPATMessageFrame spat = objectMapper.readValue(spatString, SPATMessageFrame.class);
+            SPAT spat = objectMapper.readValue(spatString, SPAT.class);
             spats.add(spat);
         } catch (JsonMappingException e) {
             log.error("JsonMappingException", e);

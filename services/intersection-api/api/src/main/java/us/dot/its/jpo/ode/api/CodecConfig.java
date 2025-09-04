@@ -23,12 +23,6 @@ public class CodecConfig {
 
     @Bean
     public MessageFrameCodec messageFrameCodec() {
-        System.out.println("Creating Message Codec Frame");
-        System.out.println("Text buffer Size: " + textBufferSize);
-        System.out.println("Uper buffer Size: " + uperBufferSize);
-        System.out.println("Message Frame Allocate Size: " + messageFrameAllocateSize);
-        System.out.println("ASN Codec Ctx Max Stack Size: " + asnCodecCtxMaxStackSize);
-
         return new MessageFrameCodec(
                 textBufferSize,
                 uperBufferSize,

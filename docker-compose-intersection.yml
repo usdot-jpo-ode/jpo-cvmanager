@@ -52,6 +52,11 @@ services:
       INTERSECTION_API_ENABLE_REPORTS: ${INTERSECTION_API_ENABLE_REPORTS}
 
       BASE_ROUTE_PREFIX: ${INTERSECTION_API_ROUTE_PREFIX:-/}
+    entrypoint:
+      - sh
+      - -c
+      - |
+        java -Djava.rmi.server.hostname=$DOCKER_HOST_IP -Dcom.sun.management.jmxremote.port=9090 -Dcom.sun.management.jmxremote.rmi.port=9090 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=true -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dlogback.configurationFile=/home/logback.xml -jar /home/intersection-api.jar
     logging:
       options:
         max-size: '10m'

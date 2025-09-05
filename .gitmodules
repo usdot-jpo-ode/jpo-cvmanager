@@ -1,7 +1,3 @@
-[submodule "services/intersection-api/asn1_codec"]
-	path = services/intersection-api/asn1_codec
-	url = https://github.com/usdot-jpo-ode/asn1_codec
-	branch = master
 [submodule "jpo-utils"]
 	path = jpo-utils
 	url = https://github.com/usdot-jpo-ode/jpo-utils

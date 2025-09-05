@@ -23,7 +23,8 @@ public class DecoderManager {
             "0013", Pair.of(MessageType.SPAT, 1000),
             "001d", Pair.of(MessageType.SRM, 500),
             "001e", Pair.of(MessageType.SSM, 500),
-            "001f", Pair.of(MessageType.TIM, 500));
+            "001f", Pair.of(MessageType.TIM, 500),
+            "0020", Pair.of(MessageType.PSM, 500));
     public static final Map<MessageType, String> typesToStartFlags = startFlagsToTypesAndSizes.entrySet().stream()
             .collect(Collectors.toMap(entry -> entry.getValue().getLeft(), Map.Entry::getKey));
     public static final int HEADER_MINIMUM_SIZE = 20;
@@ -34,6 +35,7 @@ public class DecoderManager {
     private final SrmDecoder srmDecoder;
     private final SsmDecoder ssmDecoder;
     private final TimDecoder timDecoder;
+    private final PsmDecoder psmDecoder;
 
     @Autowired
     public DecoderManager(
@@ -42,13 +44,15 @@ public class DecoderManager {
             SpatDecoder spatDecoder,
             SrmDecoder srmDecoder,
             SsmDecoder ssmDecoder,
-            TimDecoder timDecoder) {
+            TimDecoder timDecoder,
+            PsmDecoder psmDecoder) {
         this.bsmDecoder = bsmDecoder;
         this.mapDecoder = mapDecoder;
         this.spatDecoder = spatDecoder;
         this.srmDecoder = srmDecoder;
         this.ssmDecoder = ssmDecoder;
         this.timDecoder = timDecoder;
+        this.psmDecoder = psmDecoder;
 
     }
 
@@ -88,7 +92,7 @@ public class DecoderManager {
             case MessageType.TIM:
                 yield timDecoder;
             case MessageType.PSM:
-                yield null; // PSM decoder not implemented yet
+                yield psmDecoder; // PSM decoder not implemented yet
             case MessageType.UNKNOWN:
                 yield null;
         };

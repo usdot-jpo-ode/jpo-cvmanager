@@ -70,7 +70,9 @@ public class DecoderManager {
      *         formats for available message types.
      */
     public DecodedMessage decode(EncodedMessage message) {
-        final String payload = removeHeader(message.getAsn1Message(), message.getType());
+        String asn1 = message.getAsn1Message().toLowerCase();
+        final String payload = removeHeader(asn1, message.getType()).toLowerCase();
+
         message.setAsn1Message(payload);
 
         if (payload == null) {

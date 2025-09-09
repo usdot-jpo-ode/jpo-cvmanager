@@ -285,10 +285,10 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-            <groupId>usdot.jpo.ode</groupId>
-            <artifactId>j2735-2024-ffm-lib</artifactId>
-            <version>1.0.0</version>
-        </dependency>
+			<groupId>usdot.jpo.ode</groupId>
+			<artifactId>j2735-2024-ffm-lib</artifactId>
+			<version>1.0.5</version>
+		</dependency>
 	</dependencies>
 	<repositories>
 		<repository>

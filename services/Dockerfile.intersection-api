@@ -1,13 +1,18 @@
 FROM maven:3.9.6-eclipse-temurin-22-jammy AS builder
 
-WORKDIR /home
+WORKDIR /home/intersection-api
+
+# COPY ./rsu-status-monitor/libasnapplication.so ./intersection-api/
+# COPY ./rsu-status-monitor/j2735-2024-ffm-lib.jar ./intersection-api/
+
+# RUN apt-get install wget gzip
+
+RUN wget https://github.com/neaeraconsulting/j2735-ffm-java/releases/download/v1.0.4/libasnapplication.so.gz
+RUN gunzip libasnapplication.so.gz
 
 
-COPY ./rsu-status-monitor/libasnapplication.so ./intersection-api/
-COPY ./rsu-status-monitor/j2735-2024-ffm-lib.jar ./intersection-api/
-
-COPY ./intersection-api/api/pom.xml ./intersection-api/
-COPY ./intersection-api/api/settings.xml ./intersection-api/
+COPY ./intersection-api/api/pom.xml .
+COPY ./intersection-api/api/settings.xml .
 
 ARG MAVEN_GITHUB_TOKEN
 ARG MAVEN_GITHUB_ORG
@@ -16,8 +21,6 @@ ENV MAVEN_GITHUB_TOKEN=$MAVEN_GITHUB_TOKEN
 ENV MAVEN_GITHUB_ORG=$MAVEN_GITHUB_ORG
 
 
-WORKDIR /home/intersection-api
-RUN mvn install:install-file -Dfile=j2735-2024-ffm-lib.jar -DgroupId=usdot.jpo.ode -DartifactId=j2735-2024-ffm-lib -Dversion=1.0.0 -Dpackaging=jar
 RUN mvn -s settings.xml dependency:resolve
 
 
@@ -32,9 +35,7 @@ WORKDIR /home
 
 COPY --from=builder /home/intersection-api/src/main/resources/application.yaml /home
 COPY --from=builder /home/intersection-api/target/intersection-api.jar /home
-
-# Install native library for J2735 FFM
-COPY ./rsu-status-monitor/libasnapplication.so /usr/lib
+COPY --from=builder /home/intersection-api/libasnapplication.so /usr/lib
 
 ENTRYPOINT ["java", \
     "-Djava.rmi.server.hostname=$DOCKER_HOST_IP", \

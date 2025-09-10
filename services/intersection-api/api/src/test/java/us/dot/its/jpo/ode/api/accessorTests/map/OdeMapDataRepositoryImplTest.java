@@ -25,9 +25,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import us.dot.its.jpo.asn.j2735.r2024.MapData.MapData;
 import us.dot.its.jpo.ode.api.accessors.map.OdeMapDataRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.AggregationResult;
+import us.dot.its.jpo.ode.model.OdeMessageFrameData;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -52,7 +52,7 @@ public class OdeMapDataRepositoryImplTest {
     private Page<Document> mockDocumentPage;
 
     @Mock
-    private Page<MapData> mockPage;
+    private Page<OdeMessageFrameData> mockPage;
 
     @InjectMocks
     private OdeMapDataRepositoryImpl repository;
@@ -93,11 +93,11 @@ public class OdeMapDataRepositoryImplTest {
                 any(Criteria.class),
                 any(Sort.class),
                 any(),
-                eq(MapData.class))).thenReturn(mockPage);
+                eq(OdeMessageFrameData.class))).thenReturn(mockPage);
         PageRequest pageRequest = PageRequest.of(0, 1);
         doCallRealMethod().when(repo).find(1, null, null, pageRequest);
 
-        Page<MapData> results = repo.find(1, null, null, pageRequest);
+        Page<OdeMessageFrameData> results = repo.find(1, null, null, pageRequest);
 
         assertThat(results).isEqualTo(mockPage);
     }

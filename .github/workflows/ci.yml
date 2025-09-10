@@ -112,7 +112,7 @@ jobs:
   build_intersection_api:
     runs-on: ubuntu-latest
     container:
-      image: maven:3.9.9-eclipse-temurin-21
+      image: maven:3.9.9-eclipse-temurin-22
       options: --user root
     steps:
       - name: Checkout Repository
@@ -122,10 +122,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.m2
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}-${{ hashFiles('**/settings.xml') }}-${{ runner.os }}-java-21
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}-${{ hashFiles('**/settings.xml') }}-${{ runner.os }}-java-22
           restore-keys: |
-            ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}-${{ runner.os }}-java-21
-            ${{ runner.os }}-maven-${{ runner.os }}-java-21
+            ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}-${{ runner.os }}-java-22
+            ${{ runner.os }}-maven-${{ runner.os }}-java-22
             ${{ runner.os }}-maven
 
       - name: Install Dependencies

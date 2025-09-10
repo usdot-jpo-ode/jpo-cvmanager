@@ -61,8 +61,6 @@ public class BsmController {
         if (testData) {
             List<OdeMessageFrameData> list = MockBsmGenerator.getJsonBsms();
 
-            System.out.println(list);
-
             return ResponseEntity
                     .ok(new PageImpl<>(list, PageRequest.of(page, size), list.size()));
         } else {

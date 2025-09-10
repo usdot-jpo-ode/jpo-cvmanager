@@ -65,14 +65,13 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
 				.withinTimeWindow(DATE_FIELD, startTime, endTime, true);
 
 		if (centerLng != null && centerLat != null && distance != null) {
-			double[] latitudes = GeographyCalculator.calculateLatitudes(centerLng, centerLat, distance);
-			double[] longitudes = GeographyCalculator.calculateLongitudes(centerLng, centerLat, distance);
+			double[] boundingBox = GeographyCalculator.calculateBoundingBox(centerLng, centerLat, distance);
 			criteria = criteria.and(LATITUDE_FIELD)
-					.gte(Math.min(latitudes[0], latitudes[1]))
-					.lte(Math.max(latitudes[0], latitudes[1]))
+					.gte(Math.min(boundingBox[0], boundingBox[1]))
+					.lte(Math.max(boundingBox[0], boundingBox[1]))
 					.and(LONGITUDE_FIELD)
-					.gte(Math.min(longitudes[0], longitudes[1]))
-					.lte(Math.max(longitudes[0], longitudes[1]));
+					.gte(Math.min(boundingBox[2], boundingBox[3]))
+					.lte(Math.max(boundingBox[2], boundingBox[3]));
 		}
 		Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
 		List<String> excludedFields = List.of(RECORD_GENERATED_AT_FIELD);
@@ -114,14 +113,13 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
 				.withinTimeWindow(DATE_FIELD, startTime, endTime, true);
 
 		if (centerLng != null && centerLat != null && distance != null) {
-			double[] latitudes = GeographyCalculator.calculateLatitudes(centerLng, centerLat, distance);
-			double[] longitudes = GeographyCalculator.calculateLongitudes(centerLng, centerLat, distance);
+			double[] boundingBox = GeographyCalculator.calculateBoundingBox(centerLng, centerLat, distance);
 			criteria = criteria.and(LATITUDE_FIELD)
-					.gte(Math.min(latitudes[0], latitudes[1]))
-					.lte(Math.max(latitudes[0], latitudes[1]))
+					.gte(Math.min(boundingBox[0], boundingBox[1]))
+					.lte(Math.max(boundingBox[0], boundingBox[1]))
 					.and(LONGITUDE_FIELD)
-					.gte(Math.min(longitudes[0], longitudes[1]))
-					.lte(Math.max(longitudes[0], longitudes[1]));
+					.gte(Math.min(boundingBox[2], boundingBox[3]))
+					.lte(Math.max(boundingBox[2], boundingBox[3]));
 		}
 		Query query = Query.query(criteria);
 		return mongoTemplate.count(query, Map.class, collectionName);

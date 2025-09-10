@@ -1,5 +1,8 @@
 package us.dot.its.jpo.ode.mockdata;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,8 +17,6 @@ import us.dot.its.jpo.asn.j2735.r2024.SignalStatusMessage.SignalStatusMessage;
 @Slf4j
 public class MockSsmGenerator {
 
-    static String ssmString = "{\"metadata\":{\"logFileName\":\"\",\"recordType\":\"ssmTx\",\"receivedMessageDetails\":{\"rxSource\":\"NA\"},\"payloadType\":\"us.dot.its.jpo.ode.model.OdeSsmPayload\",\"serialId\":{\"streamId\":\"e6f21a57-6952-402a-86c8-49e8fcb727c1\",\"bundleSize\":1,\"bundleId\":0,\"recordId\":0,\"serialNumber\":0},\"odeReceivedAt\":\"2024-05-09T15:27:17.557565954Z\",\"schemaVersion\":8,\"maxDurationTime\":0,\"recordGeneratedAt\":\"\",\"sanitized\":false,\"odePacketID\":\"\",\"odeTimStartDateTime\":\"\",\"originIp\":\"1.1.1.1\",\"ssmSource\":\"RSU\"},\"payload\":{\"data\":{\"second\":0,\"status\":{\"signalStatus\":[{\"sequenceNumber\":0,\"id\":{\"id\":12110},\"sigStatus\":{\"signalStatusPackage\":[{\"requester\":{\"id\":{\"stationID\":2366845094},\"request\":3,\"sequenceNumber\":0,\"typeData\":{\"role\":\"publicTransport\"}},\"inboundOn\":{\"lane\":23},\"status\":\"granted\"}]}}]}},\"dataType\":\"us.dot.its.jpo.ode.plugin.j2735.J2735SSM\"}}";
-
     public static List<SignalStatusMessage> getJsonSsms() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
@@ -23,6 +24,7 @@ public class MockSsmGenerator {
         ArrayList<SignalStatusMessage> ssms = new ArrayList<>();
 
         try {
+            String ssmString = new String(Files.readAllBytes(Paths.get("src/main/resources/mockdata/ssm.json")));
             SignalStatusMessage ssm = objectMapper.readValue(ssmString,
                     SignalStatusMessage.class);
             ssms.add(ssm);
@@ -30,6 +32,9 @@ public class MockSsmGenerator {
             log.error("JsonMappingException", e);
         } catch (JsonProcessingException e) {
             log.error("JsonProcessingException", e);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
         return ssms;
     }

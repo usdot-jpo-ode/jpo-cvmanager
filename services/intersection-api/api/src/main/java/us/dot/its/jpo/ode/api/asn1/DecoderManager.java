@@ -23,7 +23,7 @@ public class DecoderManager {
             "0013", Pair.of(MessageType.SPAT, 1000),
             "001d", Pair.of(MessageType.SRM, 500),
             "001e", Pair.of(MessageType.SSM, 500),
-            "001f", Pair.of(MessageType.TIM, 500),
+            "001f", Pair.of(MessageType.TIM, 2048),
             "0020", Pair.of(MessageType.PSM, 500));
     public static final Map<MessageType, String> typesToStartFlags = startFlagsToTypesAndSizes.entrySet().stream()
             .collect(Collectors.toMap(entry -> entry.getValue().getLeft(), Map.Entry::getKey));

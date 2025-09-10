@@ -368,8 +368,6 @@ public class OdeBsmJsonRepositoryImplTest {
 		// Serialize results to JSON and compare with the original JSON
 		String resultJson = objectMapper.writeValueAsString(findResponse.getContent().get(0));
 
-		System.out.println("\n\n\nResult JSON" + resultJson);
-
 		// Remove unused fields from each entry
 		List<Document> expectedResult = sampleDocuments.stream().map(doc -> {
 			doc.remove("_id");
@@ -377,8 +375,6 @@ public class OdeBsmJsonRepositoryImplTest {
 			return doc;
 		}).toList();
 		String expectedJson = objectMapper.writeValueAsString(expectedResult.get(0));
-
-		System.out.println("\n\n\nExpected JSON" + expectedJson);
 
 		// Compare JSON with ignored fields
 		JSONAssert.assertEquals(expectedJson, resultJson, new CustomComparator(

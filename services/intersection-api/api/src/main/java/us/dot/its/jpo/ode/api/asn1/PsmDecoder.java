@@ -35,7 +35,7 @@ import us.dot.its.jpo.asn.j2735.r2024.PersonalSafetyMessage.PersonalSafetyMessag
 public class PsmDecoder implements Decoder {
 
     MessageFrameCodec codec;
-    XmlMapper xmlMapper = new XmlMapper();
+    public static final XmlMapper xmlMapper = new XmlMapper();
 
     /**
      * Constructs a PsmDecoder with required dependencies.

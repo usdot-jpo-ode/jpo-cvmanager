@@ -35,7 +35,7 @@ import us.dot.its.jpo.asn.j2735.r2024.SignalRequestMessage.SignalRequestMessageM
 public class SrmDecoder implements Decoder {
 
     MessageFrameCodec codec;
-    XmlMapper xmlMapper = new XmlMapper();
+    public static final XmlMapper xmlMapper = new XmlMapper();
 
     /**
      * Constructs a SrmDecoder with required dependencies.

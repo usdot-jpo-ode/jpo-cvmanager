@@ -42,8 +42,8 @@ public class SpatDecoder implements Decoder {
 
     MessageFrameCodec codec;
     SpatJsonValidator spatJsonValidator;
-    SpatProcessedJsonConverter converter = new SpatProcessedJsonConverter();
-    XmlMapper xmlMapper = new XmlMapper();
+    public static final SpatProcessedJsonConverter converter = new SpatProcessedJsonConverter();
+    public static final XmlMapper xmlMapper = new XmlMapper();
 
     /**
      * Constructs a SpatDecoder with required dependencies.

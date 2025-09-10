@@ -47,8 +47,8 @@ public class MapDecoder implements Decoder {
 
     MessageFrameCodec codec;
     MapJsonValidator mapJsonValidator;
-    MapProcessedJsonConverter converter = new MapProcessedJsonConverter();
-    XmlMapper xmlMapper = new XmlMapper();
+    public static final MapProcessedJsonConverter converter = new MapProcessedJsonConverter();
+    public static final XmlMapper xmlMapper = new XmlMapper();
 
     /**
      * Constructs a MapDecoder with required dependencies.

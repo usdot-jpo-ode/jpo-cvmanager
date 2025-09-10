@@ -43,8 +43,8 @@ public class BsmDecoder implements Decoder {
 
     MessageFrameCodec codec;
     BsmJsonValidator bsmJsonValidator;
-    BsmProcessedJsonConverter converter = new BsmProcessedJsonConverter();
-    XmlMapper xmlMapper = new XmlMapper();
+    public static final BsmProcessedJsonConverter converter = new BsmProcessedJsonConverter();
+    public static final XmlMapper xmlMapper = new XmlMapper();
 
     /**
      * Constructs a BsmDecoder with required dependencies.

@@ -130,10 +130,4 @@ public class SpatMinimumDataEventRepositoryImpl
 
         return result.getMappedResults();
     }
-
-    @Override
-    public void add(SpatMinimumDataEvent item) {
-        mongoTemplate.insert(item, collectionName);
-    }
-
 }

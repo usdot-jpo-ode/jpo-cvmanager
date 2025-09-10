@@ -158,9 +158,4 @@ public class ConnectionOfTravelEventRepositoryImpl
 
         return result.getMappedResults();
     }
-
-    @Override
-    public void add(ConnectionOfTravelEvent item) {
-        mongoTemplate.insert(item, collectionName);
-    }
 }

@@ -134,9 +134,4 @@ public class StopLinePassageEventRepositoryImpl
         return result.getMappedResults();
     }
 
-    @Override
-    public void add(StopLinePassageEvent item) {
-        mongoTemplate.insert(item, collectionName);
-    }
-
 }

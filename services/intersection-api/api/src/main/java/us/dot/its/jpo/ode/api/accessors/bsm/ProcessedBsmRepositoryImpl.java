@@ -41,7 +41,7 @@ public class ProcessedBsmRepositoryImpl implements ProcessedBsmRepository, Pagea
 	TypeReference<ProcessedBsm<Point>> processedBsmTypeReference = new TypeReference<>() {
 	};
 
-	private ObjectMapper mapper = DateJsonMapper.getInstance()
+	public static final ObjectMapper mapper = DateJsonMapper.getInstance()
 			.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
 	public ProcessedBsmRepositoryImpl(MongoTemplate mongoTemplate) {

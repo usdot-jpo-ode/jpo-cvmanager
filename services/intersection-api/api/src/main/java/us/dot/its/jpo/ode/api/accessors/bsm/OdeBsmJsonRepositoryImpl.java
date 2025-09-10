@@ -27,7 +27,7 @@ import us.dot.its.jpo.ode.model.OdeMessageFrameData;
 public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQuery {
 
 	private final MongoTemplate mongoTemplate;
-	private final ObjectMapper mapper = DateJsonMapper.getInstance()
+	public static final ObjectMapper mapper = DateJsonMapper.getInstance()
 			.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
 	private final String collectionName = "OdeBsmJson";

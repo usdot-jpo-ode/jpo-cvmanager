@@ -80,10 +80,6 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
 		Page<Document> aggregationResult = findDocumentsWithPagination(mongoTemplate, collectionName, pageable,
 				criteria, sort, excludedFields);
 
-		for (Document doc : aggregationResult.getContent()) {
-			System.out.println(doc.toString());
-		}
-
 		List<OdeMessageFrameData> bsms = aggregationResult.getContent().stream()
 				.map(document -> mapper.convertValue(document, OdeMessageFrameData.class)).toList();
 

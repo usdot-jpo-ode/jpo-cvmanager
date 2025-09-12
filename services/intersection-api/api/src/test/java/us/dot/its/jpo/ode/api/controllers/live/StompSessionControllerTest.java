@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.api.controllers.live;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -56,12 +57,9 @@ class StompSessionControllerTest {
         AbstractSubProtocolEvent event = mock(SessionConnectEvent.class);
         when(event.getMessage()).thenReturn(message);
 
-        try {
+        assertThrows(RuntimeException.class, () -> {
             controller.handleSessionConnectEvent((SessionConnectEvent) event);
-            assert false : "Expected RuntimeException for null session ID";
-        } catch (RuntimeException e) {
-            // expected
-        }
+        });
     }
 
     @Test

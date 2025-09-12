@@ -11,8 +11,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.BsmMessageCountProgressionEvent;
 import us.dot.its.jpo.ode.api.accessors.events.bsm_message_count_progression_event.BsmMessageCountProgressionRepositoryImpl;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;

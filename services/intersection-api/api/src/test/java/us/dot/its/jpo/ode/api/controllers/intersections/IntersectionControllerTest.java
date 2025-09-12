@@ -79,7 +79,8 @@ public class IntersectionControllerTest {
 
             ResponseEntity<List<IntersectionReferenceData>> response = controller.getIntersections(null, false);
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-            assertThat(response.getBody()).contains(intersection);
+            assertThat(response.getBody()).hasSize(1);
+            assertThat(response.getBody().get(0)).isEqualTo(intersection);
         }
     }
 

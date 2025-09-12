@@ -55,7 +55,7 @@ public class StompController {
         return String.format("/live/%d/%s", intersectionID, messageType);
     }
 
-    public void broadcastSpat(ProcessedSpat spat) {
+    public void broadcastProcessedSpat(ProcessedSpat spat) {
         if (spat != null) {
             Integer intersectionID = spat.getIntersectionId();
             if (intersectionID == null) {
@@ -73,7 +73,7 @@ public class StompController {
         }
     }
 
-    public void broadcastMap(ProcessedMap<LineString> map) {
+    public void broadcastProcessedMap(ProcessedMap<LineString> map) {
         if (map != null) {
             Integer intersectionID = map.getProperties().getIntersectionId();
             if (intersectionID == null) {

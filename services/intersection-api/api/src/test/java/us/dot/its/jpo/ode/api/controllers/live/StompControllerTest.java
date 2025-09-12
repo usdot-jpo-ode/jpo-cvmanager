@@ -44,7 +44,7 @@ public class StompControllerTest {
         ProcessedSpat spat = mock(ProcessedSpat.class);
         when(spat.getIntersectionId()).thenReturn(42);
 
-        controller.broadcastSpat(spat);
+        controller.broadcastProcessedSpat(spat);
 
         verify(brokerMessagingTemplate).convertAndSend(startsWith("/live/42/processed-spat"), anyString());
     }
@@ -54,7 +54,18 @@ public class StompControllerTest {
         ProcessedSpat spat = mock(ProcessedSpat.class);
         when(spat.getIntersectionId()).thenReturn(null);
 
-        controller.broadcastSpat(spat);
+        controller.broadcastProcessedSpat(spat);
+
+        // Should not send if intersectionID is null
+        verify(brokerMessagingTemplate, never()).convertAndSend(anyString(), anyString());
+    }
+
+    @Test
+    void testBroadcastSpatMinusOneIntersectionId() {
+        ProcessedSpat spat = mock(ProcessedSpat.class);
+        when(spat.getIntersectionId()).thenReturn(-1);
+
+        controller.broadcastProcessedSpat(spat);
 
         // Should not send if intersectionID == -1
         verify(brokerMessagingTemplate, never()).convertAndSend(anyString(), anyString());
@@ -67,7 +78,7 @@ public class StompControllerTest {
         when(map.getProperties()).thenReturn(props);
         when(props.getIntersectionId()).thenReturn(99);
 
-        controller.broadcastMap(map);
+        controller.broadcastProcessedMap(map);
 
         verify(brokerMessagingTemplate).convertAndSend(startsWith("/live/99/processed-map"), anyString());
     }
@@ -79,7 +90,7 @@ public class StompControllerTest {
         when(map.getProperties()).thenReturn(props);
         when(props.getIntersectionId()).thenReturn(null);
 
-        controller.broadcastMap(map);
+        controller.broadcastProcessedMap(map);
 
         verify(brokerMessagingTemplate, never()).convertAndSend(anyString(), anyString());
     }

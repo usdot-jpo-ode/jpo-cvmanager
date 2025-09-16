@@ -161,10 +161,10 @@ def write_db_batched(
         query_strings = []
         all_params = base_params.copy()
         for query_string, params in batch:
-            query_strings.append(f"{query_prefix} {query_string}")
+            query_strings.append(query_string)
             all_params.update(params)
         full_query = query_prefix + ",".join(query_strings) + query_suffix
-        write_db(full_query, all_params)
+        write_db(full_query, params=all_params)
 
 
 def query_and_return_list(query):

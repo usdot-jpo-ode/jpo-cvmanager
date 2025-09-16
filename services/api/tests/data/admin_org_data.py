@@ -204,12 +204,12 @@ modify_org_add_user_sql = (
     (
         "INSERT INTO public.user_organization(user_id, organization_id, role_id) VALUES"
         " ("
-        "(SELECT user_id FROM public.users WHERE email = :email), "
+        "(SELECT user_id FROM public.users WHERE email = :user_email_0), "
         "(SELECT organization_id FROM public.organizations WHERE name = :org_name), "
-        "(SELECT role_id FROM public.roles WHERE name = :role)"
+        "(SELECT role_id FROM public.roles WHERE name = :user_role_0)"
         ")"
     ),
-    {"email": "test1@email.com", "org_name": "Test Org", "role": "admin"},
+    {"org_name": "Test Org", "user_email_0": "test1@email.com", "user_role_0": "admin"},
 )
 
 modify_org_modify_user_sql = (
@@ -225,49 +225,49 @@ modify_org_modify_user_sql = (
 modify_org_remove_user_sql = (
     (
         "DELETE FROM public.user_organization WHERE "
-        "user_id = (SELECT user_id FROM public.users WHERE email = :email) "
+        "user_id IN (SELECT user_id FROM public.users WHERE email IN (:email_0)) "
         "AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = :org_name)"
     ),
-    {"email": "test3@email.com", "org_name": "Test Org"},
+    {"org_name": "Test Org", "email_0": "test3@email.com"},
 )
 
 modify_org_add_rsu_sql = (
     (
         "INSERT INTO public.rsu_organization(rsu_id, organization_id) VALUES"
         " ("
-        "(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip), "
+        "(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip_0), "
         "(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
         ")"
     ),
-    {"rsu_ip": "10.0.0.2", "org_name": "Test Org"},
+    {"org_name": "Test Org", "rsu_ip_0": "10.0.0.2"},
 )
 
 modify_org_remove_rsu_sql = (
     (
         "DELETE FROM public.rsu_organization WHERE "
-        "rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip) "
-        "AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
+        "rsu_id IN (SELECT rsu_id FROM public.rsus WHERE ipv4_address IN (:rsu_ip_0)) "
+        "AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = :org_name)"
     ),
-    {"rsu_ip": "10.0.0.1", "org_name": "Test Org"},
+    {"org_name": "Test Org", "rsu_ip_0": "10.0.0.1"},
 )
 
 modify_org_add_intersection_sql = (
     (
         "INSERT INTO public.intersection_organization(intersection_id, organization_id) VALUES ("
-        "(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id), "
+        "(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id_0), "
         "(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
         ")"
     ),
-    {"intersection_id": "1111", "org_name": "Test Org"},
+    {"org_name": "Test Org", "intersection_id_0": "1111"},
 )
 
 modify_org_remove_intersection_sql = (
     (
         "DELETE FROM public.intersection_organization WHERE "
-        "intersection_id=(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id) "
-        "AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
+        "intersection_id IN (SELECT intersection_id FROM public.intersections WHERE intersection_number IN (:intersection_id_0)) "
+        "AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = :org_name)"
     ),
-    {"intersection_id": "1112", "org_name": "Test Org"},
+    {"org_name": "Test Org", "intersection_id_0": "1112"},
 )
 
 # delete_org

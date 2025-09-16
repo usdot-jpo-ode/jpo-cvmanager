@@ -233,36 +233,20 @@ def test_modify_intersection_success(mock_pgquery, mock_check_safe_input):
             params=admin_intersection_data.modify_intersection_sql[1],
         ),
         call(
-            admin_intersection_data.add_org_sql_1[0],
-            params=admin_intersection_data.add_org_sql_1[1],
+            admin_intersection_data.add_org_sql[0],
+            params=admin_intersection_data.add_org_sql[1],
         ),
         call(
-            admin_intersection_data.add_org_sql_2[0],
-            params=admin_intersection_data.add_org_sql_2[1],
+            admin_intersection_data.remove_org_sql[0],
+            params=admin_intersection_data.remove_org_sql[1],
         ),
         call(
-            admin_intersection_data.remove_org_sql_3[0],
-            params=admin_intersection_data.remove_org_sql_3[1],
+            admin_intersection_data.add_rsu_sql[0],
+            params=admin_intersection_data.add_rsu_sql[1],
         ),
         call(
-            admin_intersection_data.remove_org_sql_4[0],
-            params=admin_intersection_data.remove_org_sql_4[1],
-        ),
-        call(
-            admin_intersection_data.add_rsu_sql_1[0],
-            params=admin_intersection_data.add_rsu_sql_1[1],
-        ),
-        call(
-            admin_intersection_data.add_rsu_sql_2[0],
-            params=admin_intersection_data.add_rsu_sql_2[1],
-        ),
-        call(
-            admin_intersection_data.remove_rsu_sql_3[0],
-            params=admin_intersection_data.remove_rsu_sql_3[1],
-        ),
-        call(
-            admin_intersection_data.remove_rsu_sql_4[0],
-            params=admin_intersection_data.remove_rsu_sql_4[1],
+            admin_intersection_data.remove_rsu_sql[0],
+            params=admin_intersection_data.remove_rsu_sql[1],
         ),
     ]
     mock_pgquery.assert_has_calls(calls)

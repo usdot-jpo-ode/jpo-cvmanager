@@ -329,7 +329,7 @@ def modify_org_authorized(orig_name: str, org_spec: dict):
             query = (
                 "DELETE FROM public.rsu_organization WHERE "
                 f"rsu_id IN (SELECT rsu_id FROM public.rsus WHERE ipv4_address IN ({', '.join(ip_placeholders)})) "
-                "AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
+                "AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = :org_name)"
             )
             pgquery.write_db(query, params=params)
 
@@ -344,7 +344,7 @@ def modify_org_authorized(orig_name: str, org_spec: dict):
                         f"(SELECT intersection_id FROM public.intersections WHERE intersection_number = :{id_placeholder}), "
                         "(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
                         ")",
-                        {id_placeholder: intersection_id},
+                        {id_placeholder: str(intersection_id)},
                     )
                 )
 
@@ -363,12 +363,12 @@ def modify_org_authorized(orig_name: str, org_spec: dict):
             for idx, intersection_id in enumerate(org_spec["intersections_to_remove"]):
                 key = f"intersection_id_{idx}"
                 id_placeholders.append(f":{key}")
-                params[key] = intersection_id
+                params[key] = str(intersection_id)
 
             query = (
                 "DELETE FROM public.intersection_organization WHERE "
                 f"intersection_id IN (SELECT intersection_id FROM public.intersections WHERE intersection_number IN ({', '.join(id_placeholders)})) "
-                "AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
+                "AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = :org_name)"
             )
             pgquery.write_db(query, params=params)
     except IntegrityError as e:

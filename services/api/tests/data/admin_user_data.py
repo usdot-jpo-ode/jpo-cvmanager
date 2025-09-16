@@ -109,14 +109,14 @@ add_org_sql = (
     "INSERT INTO public.user_organization(user_id, organization_id, role_id) VALUES"
     " ("
     "(SELECT user_id FROM public.users WHERE email = :email), "
-    "(SELECT organization_id FROM public.organizations WHERE name = :org_name), "
-    "(SELECT role_id FROM public.roles WHERE name = :role)"
+    "(SELECT organization_id FROM public.organizations WHERE name = :org_name_0), "
+    "(SELECT role_id FROM public.roles WHERE name = :org_role_0)"
     ")"
 )
 add_org_params = {
     "email": "test@gmail.com",
-    "org_name": "Test Org3",
-    "role": "admin",
+    "org_name_0": "Test Org3",
+    "org_role_0": "admin",
 }
 
 modify_org_sql = (
@@ -134,11 +134,11 @@ modify_org_params = {
 remove_org_sql = (
     "DELETE FROM public.user_organization WHERE "
     "user_id = (SELECT user_id FROM public.users WHERE email = :email) "
-    "AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = :org_name)"
+    "AND organization_id IN (SELECT organization_id FROM public.organizations WHERE name IN (:org_name_0))"
 )
 remove_org_params = {
     "email": "test@gmail.com",
-    "org_name": "Test Org1",
+    "org_name_0": "Test Org1",
 }
 
 delete_user_calls = [

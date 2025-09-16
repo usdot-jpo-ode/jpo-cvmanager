@@ -146,16 +146,16 @@ add_org_sql = (
     "INSERT INTO public.rsu_organization(rsu_id, organization_id) VALUES"
     " ("
     "(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip), "
-    "(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
+    "(SELECT organization_id FROM public.organizations WHERE name = :org_name_0)"
     ")",
-    {"rsu_ip": "10.0.0.1", "org_name": "Test Org2"},
+    {"rsu_ip": "10.0.0.1", "org_name_0": "Test Org2"},
 )
 
 remove_org_sql = (
     "DELETE FROM public.rsu_organization WHERE "
-    "rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip) "
-    "AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = :org_name)",
-    {"rsu_ip": "10.0.0.1", "org_name": "Test Org1"},
+    "rsu_id = (SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip) "
+    "AND organization_id IN (SELECT organization_id FROM public.organizations WHERE name IN (:org_name_0))",
+    {"rsu_ip": "10.0.0.1", "org_name_0": "Test Org1"},
 )
 
 delete_rsu_calls = [

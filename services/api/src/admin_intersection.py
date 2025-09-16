@@ -262,7 +262,7 @@ def modify_intersection_authorized(
 
             rsu_remove_query = (
                 "DELETE FROM public.rsu_intersection WHERE "
-                "intersection_id=(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id) "
+                "intersection_id = (SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id) "
                 f"AND rsu_id IN (SELECT rsu_id FROM public.rsus WHERE ipv4_address IN ({', '.join(ip_placeholders)}))"
             )
             pgquery.write_db(rsu_remove_query, params=params)

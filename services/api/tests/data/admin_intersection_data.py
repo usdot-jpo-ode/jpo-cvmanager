@@ -143,83 +143,50 @@ modify_intersection_sql = (
     },
 )
 
-add_org_sql_1 = (
+add_org_sql = (
     (
         "INSERT INTO public.intersection_organization(intersection_id, organization_id) VALUES"
         " ("
         "(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id), "
-        "(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
-        ")"
-    ),
-    {"intersection_id": "1121", "org_name": "Test Org1"},
-)
-add_org_sql_2 = (
-    (
-        "INSERT INTO public.intersection_organization(intersection_id, organization_id) VALUES"
-        " ("
+        "(SELECT organization_id FROM public.organizations WHERE name = :org_name_0)"
+        "),("
         "(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id), "
-        "(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
+        "(SELECT organization_id FROM public.organizations WHERE name = :org_name_1)"
         ")"
     ),
-    {"intersection_id": "1121", "org_name": "Test Org2"},
+    {"intersection_id": "1121", "org_name_0": "Test Org1", "org_name_1": "Test Org2"},
 )
 
-remove_org_sql_3 = (
+remove_org_sql = (
     (
         "DELETE FROM public.intersection_organization WHERE "
-        "intersection_id=(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id) "
-        "AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
+        "intersection_id = (SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id) "
+        "AND organization_id IN (SELECT organization_id FROM public.organizations WHERE name IN (:org_name_0, :org_name_1))"
     ),
-    {"intersection_id": "1121", "org_name": "Test Org3"},
+    {"intersection_id": "1121", "org_name_0": "Test Org3", "org_name_1": "Test Org4"},
 )
 
-remove_org_sql_4 = (
-    (
-        "DELETE FROM public.intersection_organization WHERE "
-        "intersection_id=(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id) "
-        "AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
-    ),
-    {"intersection_id": "1121", "org_name": "Test Org4"},
-)
-
-add_rsu_sql_1 = (
+add_rsu_sql = (
     (
         "INSERT INTO public.rsu_intersection(rsu_id, intersection_id) VALUES"
         " ("
-        "(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip), "
+        "(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip_0), "
+        "(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id)"
+        "),("
+        "(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip_1), "
         "(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id)"
         ")"
     ),
-    {"rsu_ip": "1.1.1.1", "intersection_id": "1121"},
+    {"intersection_id": "1121", "rsu_ip_0": "1.1.1.1", "rsu_ip_1": "1.1.1.2"},
 )
 
-add_rsu_sql_2 = (
-    (
-        "INSERT INTO public.rsu_intersection(rsu_id, intersection_id) VALUES"
-        " ("
-        "(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip), "
-        "(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id)"
-        ")"
-    ),
-    {"rsu_ip": "1.1.1.2", "intersection_id": "1121"},
-)
-
-remove_rsu_sql_3 = (
+remove_rsu_sql = (
     (
         "DELETE FROM public.rsu_intersection WHERE "
-        "intersection_id=(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id) "
-        "AND rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip)"
+        "intersection_id = (SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id) "
+        "AND rsu_id IN (SELECT rsu_id FROM public.rsus WHERE ipv4_address IN (:rsu_ip_0, :rsu_ip_1))"
     ),
-    {"intersection_id": "1121", "rsu_ip": "1.1.1.3"},
-)
-
-remove_rsu_sql_4 = (
-    (
-        "DELETE FROM public.rsu_intersection WHERE "
-        "intersection_id=(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id) "
-        "AND rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip)"
-    ),
-    {"intersection_id": "1121", "rsu_ip": "1.1.1.4"},
+    {"intersection_id": "1121", "rsu_ip_0": "1.1.1.3", "rsu_ip_1": "1.1.1.4"},
 )
 
 delete_intersection_calls = [

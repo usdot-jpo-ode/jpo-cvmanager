@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bson.Document;
-import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.locationtech.jts.geom.Envelope;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -71,14 +71,14 @@ public class ProcessedBsmRepositoryImpl implements ProcessedBsmRepository, Pagea
 				.withinTimeWindow(DATE_FIELD, startTime, endTime, true);
 
 		if (centerLng != null && centerLat != null && distance != null) {
-			ReferencedEnvelope boundingBox = GeographyCalculator.calculateBoundingBox(centerLng, centerLat, distance);
+			Envelope boundingBox = GeographyCalculator.calculateBoundingBox(centerLng, centerLat, distance);
 
 			criteria = criteria.and(LATITUDE_FIELD)
-					.gte(boundingBox.getMinX())
-					.lte(boundingBox.getMaxX())
-					.and(LONGITUDE_FIELD)
 					.gte(boundingBox.getMinY())
-					.lte(boundingBox.getMaxY());
+					.lte(boundingBox.getMaxY())
+					.and(LONGITUDE_FIELD)
+					.gte(boundingBox.getMinX())
+					.lte(boundingBox.getMaxX());
 		}
 		Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
 		List<String> excludedFields = List.of(RECORD_GENERATED_AT_FIELD);
@@ -120,14 +120,14 @@ public class ProcessedBsmRepositoryImpl implements ProcessedBsmRepository, Pagea
 				.withinTimeWindow(DATE_FIELD, startTime, endTime, true);
 
 		if (centerLng != null && centerLat != null && distance != null) {
-			ReferencedEnvelope boundingBox = GeographyCalculator.calculateBoundingBox(centerLng, centerLat, distance);
+			Envelope boundingBox = GeographyCalculator.calculateBoundingBox(centerLng, centerLat, distance);
 
 			criteria = criteria.and(LATITUDE_FIELD)
-					.gte(boundingBox.getMinX())
-					.lte(boundingBox.getMaxX())
-					.and(LONGITUDE_FIELD)
 					.gte(boundingBox.getMinY())
-					.lte(boundingBox.getMaxY());
+					.lte(boundingBox.getMaxY())
+					.and(LONGITUDE_FIELD)
+					.gte(boundingBox.getMinX())
+					.lte(boundingBox.getMaxX());
 		}
 		Query query = Query.query(criteria);
 		return mongoTemplate.count(query, Map.class, collectionName);

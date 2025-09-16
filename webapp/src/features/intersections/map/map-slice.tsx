@@ -9,6 +9,7 @@ import toast from 'react-hot-toast'
 import {
   addBsmTimestamps,
   generateSignalStateFeatureCollection,
+  isValidDate,
   parseMapSignalGroups,
   parseSpatSignalGroups,
 } from './utilities/message-utils'
@@ -324,8 +325,10 @@ export const pullInitialData = createAsyncThunk(
         const startTime = new Date(sortedSpatData[0].utcTimeStamp)
         const endTime = new Date(sortedSpatData[sortedSpatData.length - 1].utcTimeStamp)
         if (
-          queryParams.startDate.getTime() !== startTime.getTime() ||
-          queryParams.endDate.getTime() !== endTime.getTime()
+          (queryParams.startDate.getTime() !== startTime.getTime() ||
+            queryParams.endDate.getTime() !== endTime.getTime()) &&
+          isValidDate(startTime) &&
+          isValidDate(endTime)
         ) {
           dispatch(
             updateQueryParams({

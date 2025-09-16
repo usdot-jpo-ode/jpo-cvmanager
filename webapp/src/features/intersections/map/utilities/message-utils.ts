@@ -189,6 +189,11 @@ export const addBsmTimestamps = (bsmFeatureCollection: BsmFeatureCollection): Bs
   }
 }
 
+export const isValidDate = (d: Date) => {
+  if (d == null) return false
+  return d instanceof Date && !isNaN(d?.getTime())
+}
+
 export const addConnections = (
   connectingLanes: ConnectingLanesFeatureCollection,
   signalGroups: SpatSignalGroup[],

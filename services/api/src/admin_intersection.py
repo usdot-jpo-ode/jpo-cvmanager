@@ -187,25 +187,27 @@ def modify_intersection_authorized(
 
         # Add the intersection-to-organization relationships for the organizations to add
         if len(intersection_spec["organizations_to_add"]) > 0:
-            query_rows = []
-            params = {"intersection_id": intersection_id}
+            query_rows: list[tuple[str, dict]] = []
             for index, organization in enumerate(
                 intersection_spec["organizations_to_add"]
             ):
                 org_placeholder = f"org_name_{index}"
                 query_rows.append(
-                    "("
-                    "(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id), "
-                    f"(SELECT organization_id FROM public.organizations WHERE name = :{org_placeholder})"
-                    ")"
+                    (
+                        "("
+                        "(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id), "
+                        f"(SELECT organization_id FROM public.organizations WHERE name = :{org_placeholder})"
+                        ")",
+                        {org_placeholder: organization},
+                    )
                 )
-                params[org_placeholder] = organization
 
-            org_add_query = (
-                "INSERT INTO public.intersection_organization(intersection_id, organization_id) VALUES "
-                + ", ".join(query_rows)
+            query_prefix = "INSERT INTO public.intersection_organization(intersection_id, organization_id) VALUES "
+            pgquery.write_db_batched(
+                query_prefix,
+                query_rows,
+                base_params={"intersection_id": intersection_id},
             )
-            pgquery.write_db(org_add_query, params=params)
 
         # Remove the intersection-to-organization relationships for the organizations to remove
         if len(intersection_spec["organizations_to_remove"]) > 0:
@@ -227,22 +229,26 @@ def modify_intersection_authorized(
         # Add the rsu-to-intersection relationships for the rsus to add
         if len(intersection_spec["rsus_to_add"]) > 0:
             query_rows = []
-            params = {"intersection_id": intersection_id}
             for index, rsu_ip in enumerate(intersection_spec["rsus_to_add"]):
                 ip_placeholder = f"rsu_ip_{index}"
                 query_rows.append(
-                    "("
-                    f"(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :{ip_placeholder}), "
-                    "(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id)"
-                    ")"
+                    (
+                        "("
+                        f"(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :{ip_placeholder}), "
+                        "(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id)"
+                        ")",
+                        {ip_placeholder: rsu_ip},
+                    )
                 )
-                params[ip_placeholder] = rsu_ip
 
-            rsu_add_query = (
+            query_prefix = (
                 "INSERT INTO public.rsu_intersection(rsu_id, intersection_id) VALUES "
-                + ", ".join(query_rows)
             )
-            pgquery.write_db(rsu_add_query, params=params)
+            pgquery.write_db_batched(
+                query_prefix,
+                query_rows,
+                base_params={"intersection_id": intersection_id},
+            )
 
         # Remove the rsu-to-intersection relationships for the rsus to remove
         if len(intersection_spec["rsus_to_remove"]) > 0:

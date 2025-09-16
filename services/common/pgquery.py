@@ -132,6 +132,41 @@ def write_db(query_string, params=None):
         conn.commit()
 
 
+def write_db_batched(
+    query_prefix: str,
+    query_rows: list[tuple[str, dict]],
+    query_suffix: str = "",
+    base_params: dict = {},
+    batch_size: int = 100,
+):
+    """
+    Executes a series of similar write queries (such as batch inserts or updates) in batches,
+    safely enumerating parameters to avoid SQL parameter name collisions and to stay within
+    database parameter limits.
+
+    Args:
+        query_prefix (str): The SQL prefix for each query (e.g., "INSERT INTO ... VALUES").
+        query_rows (list[tuple[str, dict]]): A list of tuples, each containing a query string
+            (typically a VALUES clause or similar) and a dict of parameters for that row.
+        query_suffix (str, optional): An optional SQL suffix to append after each batch (e.g., "RETURNING id").
+        base_params (dict, optional): Parameters used by the query prefix or suffix.
+        batch_size (int, optional): The maximum number of rows to include in each batch execution.
+
+    Returns:
+        None
+    """
+    # Each query stage comes with a query string, and a set of parameters
+    for i in range(0, len(query_rows), batch_size):
+        batch = query_rows[i : i + batch_size]
+        query_strings = []
+        all_params = base_params.copy()
+        for query_string, params in batch:
+            query_strings.append(f"{query_prefix} {query_string}")
+            all_params.update(params)
+        full_query = query_prefix + ",".join(query_strings) + query_suffix
+        write_db(full_query, all_params)
+
+
 def query_and_return_list(query):
     data = query_db(query)
     return_list = []

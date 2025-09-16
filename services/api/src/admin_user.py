@@ -149,26 +149,30 @@ def modify_user(orig_email: str, user_spec: dict):
 
         # Add the user-to-organization relationships
         if len(user_spec["organizations_to_add"]) > 0:
-            query_rows = []
-            params = {"email": user_spec["email"]}
+            query_rows: list[tuple[str, dict]] = []
             for index, organization in enumerate(user_spec["organizations_to_add"]):
                 org_name_placeholder = f"org_name_{index}"
                 org_role_placeholder = f"org_role_{index}"
                 query_rows.append(
-                    "("
-                    "(SELECT user_id FROM public.users WHERE email = :email), "
-                    f"(SELECT organization_id FROM public.organizations WHERE name = :{org_name_placeholder}), "
-                    f"(SELECT role_id FROM public.roles WHERE name = :{org_role_placeholder})"
-                    ")"
+                    (
+                        "("
+                        "(SELECT user_id FROM public.users WHERE email = :email), "
+                        f"(SELECT organization_id FROM public.organizations WHERE name = :{org_name_placeholder}), "
+                        f"(SELECT role_id FROM public.roles WHERE name = :{org_role_placeholder})"
+                        ")",
+                        {
+                            org_name_placeholder: organization["name"],
+                            org_role_placeholder: organization["role"],
+                        },
+                    )
                 )
-                params[org_name_placeholder] = organization["name"]
-                params[org_role_placeholder] = organization["role"]
 
-            query = (
-                "INSERT INTO public.user_organization(user_id, organization_id, role_id) VALUES "
-                + ", ".join(query_rows)
+            query_prefix = "INSERT INTO public.user_organization(user_id, organization_id, role_id) VALUES "
+            pgquery.write_db_batched(
+                query_prefix,
+                query_rows,
+                base_params={"email": user_spec["email"]},
             )
-            pgquery.write_db(query, params=params)
 
         # Modify the user-to-organization relationships
         for organization in user_spec["organizations_to_modify"]:

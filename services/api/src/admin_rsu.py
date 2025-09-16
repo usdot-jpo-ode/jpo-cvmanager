@@ -159,24 +159,39 @@ def modify_rsu_authorized(
 
         # Add the rsu-to-organization relationships for the organizations to add
         if len(rsu_spec["organizations_to_add"]) > 0:
-            for organization in rsu_spec["organizations_to_add"]:
-                org_add_query = (
-                    "INSERT INTO public.rsu_organization(rsu_id, organization_id) VALUES ("
+            query_rows = []
+            params = {"rsu_ip": rsu_ip}
+            for index, organization in enumerate(rsu_spec["organizations_to_add"]):
+                org_placeholder = f"org_name_{index}"
+                query_rows.append(
+                    "("
                     "(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip), "
-                    "(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
+                    f"(SELECT organization_id FROM public.organizations WHERE name = :{org_placeholder})"
                     ")"
                 )
-                params = {"rsu_ip": rsu_ip, "org_name": organization}
-                pgquery.write_db(org_add_query, params=params)
+                params[org_placeholder] = organization
+
+            org_add_query = (
+                "INSERT INTO public.rsu_organization(rsu_id, organization_id) VALUES "
+                + ", ".join(query_rows)
+            )
+            pgquery.write_db(org_add_query, params=params)
 
         # Remove the rsu-to-organization relationships for the organizations to remove
-        for organization in rsu_spec["organizations_to_remove"]:
+        if len(rsu_spec["organizations_to_remove"]) > 0:
+            params = {"rsu_ip": rsu_ip}
+            # Generate placeholders for each organization name
+            org_placeholders = []
+            for idx, org in enumerate(rsu_spec["organizations_to_remove"]):
+                key = f"org_name_{idx}"
+                org_placeholders.append(f":{key}")
+                params[key] = org
+
             org_remove_query = (
                 "DELETE FROM public.rsu_organization WHERE "
-                "rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip) "
-                "AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
+                "rsu_id = (SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip) "
+                f"AND organization_id IN (SELECT organization_id FROM public.organizations WHERE name IN ({', '.join(org_placeholders)}))"
             )
-            params = {"rsu_ip": rsu_ip, "org_name": organization}
             pgquery.write_db(org_remove_query, params=params)
     except IntegrityError as e:
         if e.orig is None:

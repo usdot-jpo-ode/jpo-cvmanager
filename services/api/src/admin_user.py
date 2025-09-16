@@ -149,20 +149,26 @@ def modify_user(orig_email: str, user_spec: dict):
 
         # Add the user-to-organization relationships
         if len(user_spec["organizations_to_add"]) > 0:
-            for organization in user_spec["organizations_to_add"]:
-                org_add_query = (
-                    "INSERT INTO public.user_organization(user_id, organization_id, role_id) VALUES ("
+            query_rows = []
+            params = {"email": user_spec["email"]}
+            for index, organization in enumerate(user_spec["organizations_to_add"]):
+                org_name_placeholder = f"org_name_{index}"
+                org_role_placeholder = f"org_role_{index}"
+                query_rows.append(
+                    "("
                     "(SELECT user_id FROM public.users WHERE email = :email), "
-                    "(SELECT organization_id FROM public.organizations WHERE name = :org_name), "
-                    "(SELECT role_id FROM public.roles WHERE name = :role)"
+                    f"(SELECT organization_id FROM public.organizations WHERE name = :{org_name_placeholder}), "
+                    f"(SELECT role_id FROM public.roles WHERE name = :{org_role_placeholder})"
                     ")"
                 )
-                params = {
-                    "email": user_spec["email"],
-                    "org_name": organization["name"],
-                    "role": organization["role"],
-                }
-                pgquery.write_db(org_add_query, params=params)
+                params[org_name_placeholder] = organization["name"]
+                params[org_role_placeholder] = organization["role"]
+
+            query = (
+                "INSERT INTO public.user_organization(user_id, organization_id, role_id) VALUES "
+                + ", ".join(query_rows)
+            )
+            pgquery.write_db(query, params=params)
 
         # Modify the user-to-organization relationships
         for organization in user_spec["organizations_to_modify"]:
@@ -180,14 +186,21 @@ def modify_user(orig_email: str, user_spec: dict):
             pgquery.write_db(org_modify_query, params=params)
 
         # Remove the user-to-organization relationships
-        for organization in user_spec["organizations_to_remove"]:
-            org_remove_query = (
+        if len(user_spec["organizations_to_remove"]) > 0:
+            params = {"email": user_spec["email"]}
+            # Generate placeholders for each organization name
+            org_placeholders = []
+            for idx, org in enumerate(user_spec["organizations_to_remove"]):
+                key = f"org_name_{idx}"
+                org_placeholders.append(f":{key}")
+                params[key] = org["name"]
+
+            query = (
                 "DELETE FROM public.user_organization WHERE "
                 "user_id = (SELECT user_id FROM public.users WHERE email = :email) "
-                "AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = :org_name)"
+                f"AND organization_id IN (SELECT organization_id FROM public.organizations WHERE name IN ({', '.join(org_placeholders)}))"
             )
-            params = {"email": user_spec["email"], "org_name": organization["name"]}
-            pgquery.write_db(org_remove_query, params=params)
+            pgquery.write_db(query, params=params)
     except IntegrityError as e:
         if e.orig is None:
             raise InternalServerError("Encountered unknown issue") from e

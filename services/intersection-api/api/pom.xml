@@ -129,7 +129,7 @@
 		<dependency>
 			<groupId>usdot.jpo.ode</groupId>
 			<artifactId>jpo-geojsonconverter</artifactId>
-			<version>3.0.2</version>
+			<version>3.0.4</version>
 			<!-- Allow using newer streams version than geojsonconverter -->
 			<exclusions>
 				<exclusion>

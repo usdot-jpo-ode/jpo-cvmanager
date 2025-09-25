@@ -104,7 +104,7 @@ public class StompControllerTest {
 
         controller.broadcastBSM(77, bsm);
 
-        verify(brokerMessagingTemplate).convertAndSend(startsWith("/live/77/ode-bsm-json"), anyString());
+        verify(brokerMessagingTemplate).convertAndSend(startsWith("/live/77/processed-bsm"), anyString());
     }
 
     @Test

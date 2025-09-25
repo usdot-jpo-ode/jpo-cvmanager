@@ -177,29 +177,29 @@ public class ProcessedSpatRepositoryImplTest {
         // Compare JSON with ignored fields
         JSONAssert.assertEquals(expectedJson, resultJson, new CustomComparator(
                 JSONCompareMode.LENIENT, // Allows different key orders
-                new Customization("properties.timeStamp", (o1, o2) -> true),
-                new Customization("properties.odeReceivedAt", (o1, o2) -> true),
-                new Customization("properties.odeReceivedAt", (o1, o2) -> true),
+                new Customization("properties.timeStamp", (_, _) -> true),
+                        new Customization("properties.odeReceivedAt", (_, _) -> true),
+                new Customization("properties.odeReceivedAt", (_, _) -> true),
                 new Customization(
                         "states[signalGroup=2].stateTimeSpeed[eventState=PROTECTED_CLEARANCE].timing.maxEndTime",
-                        (o1, o2) -> true),
-                new Customization(
+                        (_, _) -> true),
+                        new Customization(
                         "states[signalGroup=2].stateTimeSpeed[eventState=PROTECTED_CLEARANCE].timing.minEndTime",
-                        (o1, o2) -> true),
-                new Customization(
+                        (_, _) -> true),
+                        new Customization(
                         "states[signalGroup=4].stateTimeSpeed[eventState=STOP_AND_REMAIN].timing.maxEndTime",
-                        (o1, o2) -> true),
-                new Customization(
+                        (_, _) -> true),
+                        new Customization(
                         "states[signalGroup=4].stateTimeSpeed[eventState=STOP_AND_REMAIN].timing.minEndTime",
-                        (o1, o2) -> true),
-                new Customization(
+                        (_, _) -> true),
+                        new Customization(
                         "states[signalGroup=6].stateTimeSpeed[eventState=PROTECTED_CLEARANCE].timing.maxEndTime",
-                        (o1, o2) -> true),
-                new Customization(
+                        (_, _) -> true),
+                        new Customization(
                         "states[signalGroup=6].stateTimeSpeed[eventState=PROTECTED_CLEARANCE].timing.minEndTime",
-                        (o1, o2) -> true),
-                new Customization(
+                        (_, _) -> true),
+                        new Customization(
                         "utcTimeStamp",
-                        (o1, o2) -> true)));
+                        (_, _) -> true)));
     }
 }

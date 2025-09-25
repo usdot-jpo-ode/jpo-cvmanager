@@ -106,17 +106,4 @@ public class MapBroadcastRateNotificationRepositoryImplTest {
         verify(mongoTemplate).findOne(any(Query.class), eq(MapBroadcastRateNotification.class),
                 eq("CmMapBroadcastRateNotification"));
     }
-
-    @Test
-    void testAdd() {
-        MapBroadcastRateNotification event = new MapBroadcastRateNotification();
-        event.setIntersectionID(intersectionID);
-
-        doReturn(null).when(mongoTemplate).insert(any(MapBroadcastRateNotification.class), anyString());
-
-        repository.add(event);
-
-        verify(mongoTemplate).insert(event, "CmMapBroadcastRateNotification");
-    }
-
 }

@@ -217,32 +217,19 @@ public class StopLinePassageEventRepositoryImplTest {
                 new Customization("properties.odeReceivedAt", (o1, o2) -> true)));
     }
 
-        @Test
-        void testFindLatest() {
-                StopLinePassageEvent event = new StopLinePassageEvent();
-                event.setIntersectionID(intersectionID);
+    @Test
+    void testFindLatest() {
+        StopLinePassageEvent event = new StopLinePassageEvent();
+        event.setIntersectionID(intersectionID);
 
-                doReturn(event).when(mongoTemplate).findOne(any(Query.class), eq(StopLinePassageEvent.class),
-                                anyString());
+        doReturn(event).when(mongoTemplate).findOne(any(Query.class), eq(StopLinePassageEvent.class),
+                anyString());
 
-                Page<StopLinePassageEvent> page = repository.findLatest(intersectionID, startTime, endTime);
+        Page<StopLinePassageEvent> page = repository.findLatest(intersectionID, startTime, endTime);
 
-                assertThat(page.getContent()).hasSize(1);
-                assertThat(page.getContent().get(0).getIntersectionID()).isEqualTo(intersectionID);
-                verify(mongoTemplate).findOne(any(Query.class), eq(StopLinePassageEvent.class),
-                                eq("CmStopLinePassageEvent"));
-        }
-
-        @Test
-        void testAdd() {
-                StopLinePassageEvent event = new StopLinePassageEvent();
-                event.setIntersectionID(intersectionID);
-
-                doReturn(null).when(mongoTemplate).insert(any(StopLinePassageEvent.class), anyString());
-
-                repository.add(event);
-
-                verify(mongoTemplate).insert(event, "CmStopLinePassageEvent");
-        }
-
+        assertThat(page.getContent()).hasSize(1);
+        assertThat(page.getContent().get(0).getIntersectionID()).isEqualTo(intersectionID);
+        verify(mongoTemplate).findOne(any(Query.class), eq(StopLinePassageEvent.class),
+                eq("CmStopLinePassageEvent"));
+    }
 }

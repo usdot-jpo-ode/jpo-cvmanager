@@ -83,14 +83,4 @@ class MapMessageCountProgressionEventRepositoryImplTest {
 
         assertThat(results).isEqualTo(mockPage);
     }
-
-    @Test
-    void testAdd() {
-        MapMessageCountProgressionEvent event = new MapMessageCountProgressionEvent();
-        event.setIntersectionID(intersectionID);
-
-        repository.add(event);
-
-        verify(mongoTemplate).insert(event, "CmMapMessageCountProgressionEvents");
-    }
 }

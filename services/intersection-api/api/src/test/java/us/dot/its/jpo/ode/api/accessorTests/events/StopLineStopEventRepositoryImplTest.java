@@ -131,32 +131,19 @@ public class StopLineStopEventRepositoryImplTest {
         assertThat(actualResults.get(1).getCount()).isEqualTo(7200);
     }
 
-        @Test
-        void testFindLatest() {
-                StopLineStopEvent event = new StopLineStopEvent();
-                event.setIntersectionID(intersectionID);
+    @Test
+    void testFindLatest() {
+        StopLineStopEvent event = new StopLineStopEvent();
+        event.setIntersectionID(intersectionID);
 
-                doReturn(event).when(mongoTemplate).findOne(any(Query.class), eq(StopLineStopEvent.class),
-                                anyString());
+        doReturn(event).when(mongoTemplate).findOne(any(Query.class), eq(StopLineStopEvent.class),
+                anyString());
 
-                Page<StopLineStopEvent> page = repository.findLatest(intersectionID, startTime, endTime);
+        Page<StopLineStopEvent> page = repository.findLatest(intersectionID, startTime, endTime);
 
-                assertThat(page.getContent()).hasSize(1);
-                assertThat(page.getContent().get(0).getIntersectionID()).isEqualTo(intersectionID);
-                verify(mongoTemplate).findOne(any(Query.class), eq(StopLineStopEvent.class),
-                                eq("CmStopLineStopEvent"));
-        }
-
-        @Test
-        void testAdd() {
-                StopLineStopEvent event = new StopLineStopEvent();
-                event.setIntersectionID(intersectionID);
-
-                doReturn(null).when(mongoTemplate).insert(any(StopLineStopEvent.class), anyString());
-
-                repository.add(event);
-
-                verify(mongoTemplate).insert(event, "CmStopLineStopEvent");
-        }
-
+        assertThat(page.getContent()).hasSize(1);
+        assertThat(page.getContent().get(0).getIntersectionID()).isEqualTo(intersectionID);
+        verify(mongoTemplate).findOne(any(Query.class), eq(StopLineStopEvent.class),
+                eq("CmStopLineStopEvent"));
+    }
 }

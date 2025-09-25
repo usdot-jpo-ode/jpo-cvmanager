@@ -106,17 +106,4 @@ public class SignalGroupAlignmentNotificationRepositoryImplTest {
         verify(mongoTemplate).findOne(any(Query.class), eq(SignalGroupAlignmentNotification.class),
                 eq("CmSignalGroupAlignmentNotification"));
     }
-
-    @Test
-    void testAdd() {
-        SignalGroupAlignmentNotification event = new SignalGroupAlignmentNotification();
-        event.setIntersectionID(intersectionID);
-
-        doReturn(null).when(mongoTemplate).insert(any(SignalGroupAlignmentNotification.class), anyString());
-
-        repository.add(event);
-
-        verify(mongoTemplate).insert(event, "CmSignalGroupAlignmentNotification");
-    }
-
 }

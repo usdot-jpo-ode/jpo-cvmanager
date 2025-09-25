@@ -143,17 +143,4 @@ public class IntersectionReferenceAlignmentEventRepositoryImplTest {
         verify(mongoTemplate).findOne(any(Query.class), eq(IntersectionReferenceAlignmentEvent.class),
                 eq("CmIntersectionReferenceAlignmentEvents"));
     }
-
-    @Test
-    void testAdd() {
-        IntersectionReferenceAlignmentEvent event = new IntersectionReferenceAlignmentEvent();
-        event.setIntersectionID(intersectionID);
-
-        doReturn(null).when(mongoTemplate).insert(any(IntersectionReferenceAlignmentEvent.class), anyString());
-
-        repository.add(event);
-
-        verify(mongoTemplate).insert(event, "CmIntersectionReferenceAlignmentEvents");
-    }
-
 }

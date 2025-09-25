@@ -105,17 +105,4 @@ public class TimeChangeDetailsNotificationRepositoryImplTest {
         verify(mongoTemplate).findOne(any(Query.class), eq(TimeChangeDetailsNotification.class),
                 eq("CmTimeChangeDetailsNotification"));
     }
-
-    @Test
-    void testAdd() {
-        TimeChangeDetailsNotification event = new TimeChangeDetailsNotification();
-        event.setIntersectionID(intersectionID);
-
-        doReturn(null).when(mongoTemplate).insert(any(TimeChangeDetailsNotification.class), anyString());
-
-        repository.add(event);
-
-        verify(mongoTemplate).insert(event, "CmTimeChangeDetailsNotification");
-    }
-
 }

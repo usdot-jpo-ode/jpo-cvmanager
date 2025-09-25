@@ -106,17 +106,4 @@ public class StopLineStopAssessmentRepositoryImplTest {
         verify(mongoTemplate).findOne(any(Query.class), eq(StopLineStopAssessment.class),
                 eq("CmStopLineStopAssessment"));
     }
-
-    @Test
-    void testAdd() {
-        StopLineStopAssessment event = new StopLineStopAssessment();
-        event.setIntersectionID(intersectionID);
-
-        doReturn(null).when(mongoTemplate).insert(any(StopLineStopAssessment.class), anyString());
-
-        repository.add(event);
-
-        verify(mongoTemplate).insert(event, "CmStopLineStopAssessment");
-    }
-
 }

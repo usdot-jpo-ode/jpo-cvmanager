@@ -83,14 +83,4 @@ class BsmMessageCountProgressionRepositoryImplTest {
 
         assertThat(results).isEqualTo(mockPage);
     }
-
-    @Test
-    void testAdd() {
-        BsmMessageCountProgressionEvent event = new BsmMessageCountProgressionEvent();
-        event.setIntersectionID(intersectionID);
-
-        repository.add(event);
-
-        verify(mongoTemplate).insert(event, "CmBsmMessageCountProgressionEvents");
-    }
 }

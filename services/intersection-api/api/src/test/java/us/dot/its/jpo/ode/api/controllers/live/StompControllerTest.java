@@ -1,5 +1,7 @@
 package us.dot.its.jpo.ode.api.controllers.live;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.startsWith;
 import static org.mockito.Mockito.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -9,10 +11,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
+import us.dot.its.jpo.geojsonconverter.pojos.geojson.Point;
+import us.dot.its.jpo.geojsonconverter.pojos.geojson.bsm.ProcessedBsm;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.MapSharedProperties;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
-import us.dot.its.jpo.ode.model.OdeBsmData;
 
 public class StompControllerTest {
 
@@ -97,7 +100,7 @@ public class StompControllerTest {
 
     @Test
     void testBroadcastBSM() throws JsonProcessingException {
-        OdeBsmData bsm = mock(OdeBsmData.class);
+        ProcessedBsm<Point> bsm = mock(ProcessedBsm.class);
 
         controller.broadcastBSM(77, bsm);
 
@@ -106,7 +109,7 @@ public class StompControllerTest {
 
     @Test
     void testBroadcastBSMIntersectionIdMinusOne() {
-        OdeBsmData bsm = mock(OdeBsmData.class);
+        ProcessedBsm<Point> bsm = mock(ProcessedBsm.class);
 
         controller.broadcastBSM(-1, bsm);
 

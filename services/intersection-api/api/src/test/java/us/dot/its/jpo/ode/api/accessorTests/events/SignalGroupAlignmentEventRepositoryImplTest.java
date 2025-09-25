@@ -142,17 +142,4 @@ public class SignalGroupAlignmentEventRepositoryImplTest {
         verify(mongoTemplate).findOne(any(Query.class), eq(SignalGroupAlignmentEvent.class),
                 eq("CmSignalGroupAlignmentEvents"));
     }
-
-    @Test
-    void testAdd() {
-        SignalGroupAlignmentEvent event = new SignalGroupAlignmentEvent();
-        event.setIntersectionID(intersectionID);
-
-        doReturn(null).when(mongoTemplate).insert(any(SignalGroupAlignmentEvent.class), anyString());
-
-        repository.add(event);
-
-        verify(mongoTemplate).insert(event, "CmSignalGroupAlignmentEvents");
-    }
-
 }

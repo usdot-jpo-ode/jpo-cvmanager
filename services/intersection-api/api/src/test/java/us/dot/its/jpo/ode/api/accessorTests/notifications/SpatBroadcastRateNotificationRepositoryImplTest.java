@@ -105,17 +105,4 @@ public class SpatBroadcastRateNotificationRepositoryImplTest {
         verify(mongoTemplate).findOne(any(Query.class), eq(SpatBroadcastRateNotification.class),
                 eq("CmSpatBroadcastRateNotification"));
     }
-
-    @Test
-    void testAdd() {
-        SpatBroadcastRateNotification event = new SpatBroadcastRateNotification();
-        event.setIntersectionID(intersectionID);
-
-        doReturn(null).when(mongoTemplate).insert(any(SpatBroadcastRateNotification.class), anyString());
-
-        repository.add(event);
-
-        verify(mongoTemplate).insert(event, "CmSpatBroadcastRateNotification");
-    }
-
 }

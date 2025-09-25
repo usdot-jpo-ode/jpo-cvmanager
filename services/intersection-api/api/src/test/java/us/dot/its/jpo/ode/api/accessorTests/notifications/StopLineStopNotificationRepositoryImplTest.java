@@ -105,17 +105,4 @@ public class StopLineStopNotificationRepositoryImplTest {
         verify(mongoTemplate).findOne(any(Query.class), eq(StopLineStopNotification.class),
                 eq("CmStopLineStopNotification"));
     }
-
-    @Test
-    void testAdd() {
-        StopLineStopNotification event = new StopLineStopNotification();
-        event.setIntersectionID(intersectionID);
-
-        doReturn(null).when(mongoTemplate).insert(any(StopLineStopNotification.class), anyString());
-
-        repository.add(event);
-
-        verify(mongoTemplate).insert(event, "CmStopLineStopNotification");
-    }
-
 }

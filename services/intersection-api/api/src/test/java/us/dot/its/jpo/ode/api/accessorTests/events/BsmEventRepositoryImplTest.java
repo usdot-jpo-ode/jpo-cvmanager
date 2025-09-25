@@ -327,17 +327,4 @@ public class BsmEventRepositoryImplTest {
         verify(mongoTemplate).findOne(any(Query.class), eq(BsmEvent.class),
                 eq("CmBsmEvents"));
     }
-
-    @Test
-    void testAdd() {
-        BsmEvent event = new BsmEvent();
-        event.setIntersectionID(intersectionID);
-
-        doReturn(null).when(mongoTemplate).insert(any(BsmEvent.class), anyString());
-
-        repository.add(event);
-
-        verify(mongoTemplate).insert(event, "CmBsmEvents");
-    }
-
 }

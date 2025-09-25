@@ -107,17 +107,4 @@ public class LaneDirectionOfTravelNotificationRepositoryImplTest {
         verify(mongoTemplate).findOne(any(Query.class), eq(LaneDirectionOfTravelNotification.class),
                 eq("CmLaneDirectionOfTravelNotification"));
     }
-
-    @Test
-    void testAdd() {
-        LaneDirectionOfTravelNotification event = new LaneDirectionOfTravelNotification();
-        event.setIntersectionID(intersectionID);
-
-        doReturn(null).when(mongoTemplate).insert(any(LaneDirectionOfTravelNotification.class), anyString());
-
-        repository.add(event);
-
-        verify(mongoTemplate).insert(event, "CmLaneDirectionOfTravelNotification");
-    }
-
 }

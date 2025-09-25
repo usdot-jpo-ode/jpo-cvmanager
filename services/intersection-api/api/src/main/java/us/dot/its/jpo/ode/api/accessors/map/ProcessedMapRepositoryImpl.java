@@ -306,10 +306,4 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
 
         return results;
     }
-
-    @Override
-    public void add(ProcessedMap<LineString> item) {
-        mongoTemplate.insert(item, collectionName);
-    }
-
 }

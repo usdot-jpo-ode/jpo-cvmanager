@@ -46,90 +46,90 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLineStopEvent;
 @AutoConfigureEmbeddedDatabase
 public class StopLineStopEventRepositoryImplTest {
 
-        @Mock
-        private MongoTemplate mongoTemplate;
+    @Mock
+    private MongoTemplate mongoTemplate;
 
-        @Mock
-        private Page<StopLineStopEvent> mockPage;
+    @Mock
+    private Page<StopLineStopEvent> mockPage;
 
-        @InjectMocks
-        private StopLineStopEventRepositoryImpl repository;
+    @InjectMocks
+    private StopLineStopEventRepositoryImpl repository;
 
-        Integer intersectionID = 123;
-        Long startTime = 1624640400000L; // June 26, 2021 00:00:00 GMT
-        Long endTime = 1624726799000L; // June 26, 2021 23:59:59 GMT
-        boolean latest = true;
+    Integer intersectionID = 123;
+    Long startTime = 1624640400000L; // June 26, 2021 00:00:00 GMT
+    Long endTime = 1624726799000L; // June 26, 2021 23:59:59 GMT
+    boolean latest = true;
 
-        @BeforeEach
-        void setUp() {
-                MockitoAnnotations.openMocks(this);
-                repository = new StopLineStopEventRepositoryImpl(mongoTemplate);
-        }
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        repository = new StopLineStopEventRepositoryImpl(mongoTemplate);
+    }
 
-        @Test
-        public void testCount() {
-                long expectedCount = 10;
+    @Test
+    public void testCount() {
+        long expectedCount = 10;
 
-                when(mongoTemplate.count(any(),
-                                Mockito.<String>any())).thenReturn(expectedCount);
+        when(mongoTemplate.count(any(),
+                Mockito.<String>any())).thenReturn(expectedCount);
 
-                long resultCount = repository.count(1, null, null);
+        long resultCount = repository.count(1, null, null);
 
-                assertThat(resultCount).isEqualTo(expectedCount);
-                verify(mongoTemplate).count(any(Query.class), anyString());
-        }
+        assertThat(resultCount).isEqualTo(expectedCount);
+        verify(mongoTemplate).count(any(Query.class), anyString());
+    }
 
-        @Test
+    @Test
 
-        public void testFind() {
-                StopLineStopEventRepositoryImpl repo = mock(StopLineStopEventRepositoryImpl.class);
+    public void testFind() {
+        StopLineStopEventRepositoryImpl repo = mock(StopLineStopEventRepositoryImpl.class);
 
-                when(repo.findPage(
-                                any(),
-                                any(),
-                                any(PageRequest.class),
-                                any(Criteria.class),
-                                any(Sort.class),
-                                any(),
-                                eq(StopLineStopEvent.class))).thenReturn(mockPage);
-                PageRequest pageRequest = PageRequest.of(0, 1);
-                doCallRealMethod().when(repo).find(1, null, null, pageRequest);
+        when(repo.findPage(
+                any(),
+                any(),
+                any(PageRequest.class),
+                any(Criteria.class),
+                any(Sort.class),
+                any(),
+                eq(StopLineStopEvent.class))).thenReturn(mockPage);
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        doCallRealMethod().when(repo).find(1, null, null, pageRequest);
 
-                Page<StopLineStopEvent> results = repo.find(1, null, null, pageRequest);
+        Page<StopLineStopEvent> results = repo.find(1, null, null, pageRequest);
 
-                assertThat(results).isEqualTo(mockPage);
-        }
+        assertThat(results).isEqualTo(mockPage);
+    }
 
-        @Test
-        public void testGetStopLineStopEventEventsByDay() {
+    @Test
+    public void testGetStopLineStopEventEventsByDay() {
 
-                List<IDCount> aggregatedResults = new ArrayList<>();
-                IDCount result1 = new IDCount();
-                result1.setId("2023-06-26");
-                result1.setCount(3600);
-                IDCount result2 = new IDCount();
-                result2.setId("2023-06-26");
-                result2.setCount(7200);
-                aggregatedResults.add(result1);
-                aggregatedResults.add(result2);
+        List<IDCount> aggregatedResults = new ArrayList<>();
+        IDCount result1 = new IDCount();
+        result1.setId("2023-06-26");
+        result1.setCount(3600);
+        IDCount result2 = new IDCount();
+        result2.setId("2023-06-26");
+        result2.setCount(7200);
+        aggregatedResults.add(result1);
+        aggregatedResults.add(result2);
 
-                AggregationResults<IDCount> aggregationResults = new AggregationResults<>(aggregatedResults,
-                                new Document());
-                Mockito.when(
-                                mongoTemplate.aggregate(Mockito.any(Aggregation.class), Mockito.anyString(),
-                                                Mockito.eq(IDCount.class)))
-                                .thenReturn(aggregationResults);
+        AggregationResults<IDCount> aggregationResults = new AggregationResults<>(aggregatedResults,
+                new Document());
+        Mockito.when(
+                mongoTemplate.aggregate(Mockito.any(Aggregation.class), Mockito.anyString(),
+                        Mockito.eq(IDCount.class)))
+                .thenReturn(aggregationResults);
 
-                List<IDCount> actualResults = repository.getAggregatedDailyStopLineStopEventCounts(intersectionID,
-                                startTime,
-                                endTime);
+        List<IDCount> actualResults = repository.getAggregatedDailyStopLineStopEventCounts(intersectionID,
+                startTime,
+                endTime);
 
-                assertThat(actualResults.size()).isEqualTo(2);
-                assertThat(actualResults.get(0).getId()).isEqualTo("2023-06-26");
-                assertThat(actualResults.get(0).getCount()).isEqualTo(3600);
-                assertThat(actualResults.get(1).getId()).isEqualTo("2023-06-26");
-                assertThat(actualResults.get(1).getCount()).isEqualTo(7200);
-        }
+        assertThat(actualResults.size()).isEqualTo(2);
+        assertThat(actualResults.get(0).getId()).isEqualTo("2023-06-26");
+        assertThat(actualResults.get(0).getCount()).isEqualTo(3600);
+        assertThat(actualResults.get(1).getId()).isEqualTo("2023-06-26");
+        assertThat(actualResults.get(1).getCount()).isEqualTo(7200);
+    }
 
         @Test
         void testFindLatest() {

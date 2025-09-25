@@ -20,7 +20,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import us.dot.its.jpo.ode.api.accessors.bsm.OdeBsmJsonRepository;
 import us.dot.its.jpo.ode.mockdata.MockBsmGenerator;
-import us.dot.its.jpo.ode.model.OdeBsmData;
+import us.dot.its.jpo.ode.model.OdeMessageFrameData;
 
 @Slf4j
 @RestController
@@ -46,7 +46,7 @@ public class BsmController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or USER role"),
     })
-    public ResponseEntity<Page<OdeBsmData>> findBSMs(
+    public ResponseEntity<Page<OdeMessageFrameData>> findBSMs(
             @RequestParam(name = "origin_ip", required = false) String originIp,
             @RequestParam(name = "vehicle_id", required = false) String vehicleId,
             @RequestParam(name = "start_time_utc_millis", required = false) Long startTime,
@@ -59,12 +59,13 @@ public class BsmController {
             @RequestParam(name = "test", required = false, defaultValue = "false") boolean testData) {
 
         if (testData) {
-            List<OdeBsmData> list = MockBsmGenerator.getJsonBsms();
+            List<OdeMessageFrameData> list = MockBsmGenerator.getJsonBsms();
+
             return ResponseEntity
                     .ok(new PageImpl<>(list, PageRequest.of(page, size), list.size()));
         } else {
             PageRequest pageable = PageRequest.of(page, size);
-            Page<OdeBsmData> response = odeBsmJsonRepo.find(originIp, vehicleId, startTime, endTime,
+            Page<OdeMessageFrameData> response = odeBsmJsonRepo.find(originIp, vehicleId, startTime, endTime,
                     longitude, latitude, distanceInMeters, pageable);
             return ResponseEntity.ok(response);
         }

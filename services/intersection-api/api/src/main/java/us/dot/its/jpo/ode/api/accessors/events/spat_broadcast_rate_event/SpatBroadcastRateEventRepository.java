@@ -6,9 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.broadcast_rate.SpatBroadcastRateEvent;
 import us.dot.its.jpo.ode.api.models.IDCount;
-import us.dot.its.jpo.ode.api.models.DataLoader;
 
-public interface SpatBroadcastRateEventRepository extends DataLoader<SpatBroadcastRateEvent> {
+public interface SpatBroadcastRateEventRepository {
     long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<SpatBroadcastRateEvent> findLatest(Integer intersectionID, Long startTime, Long endTime);

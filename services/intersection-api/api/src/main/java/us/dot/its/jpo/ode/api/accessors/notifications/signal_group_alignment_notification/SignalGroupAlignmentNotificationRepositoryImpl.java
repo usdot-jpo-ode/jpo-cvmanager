@@ -98,10 +98,4 @@ public class SignalGroupAlignmentNotificationRepositoryImpl
         return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null,
                 SignalGroupAlignmentNotification.class);
     }
-
-    @Override
-    public void add(SignalGroupAlignmentNotification item) {
-        mongoTemplate.insert(item, collectionName);
-    }
-
 }

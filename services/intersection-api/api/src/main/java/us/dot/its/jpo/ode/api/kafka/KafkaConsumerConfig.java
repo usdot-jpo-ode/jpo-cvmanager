@@ -13,12 +13,14 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import us.dot.its.jpo.conflictmonitor.monitor.models.bsm.BsmIntersectionIdKey;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
+import us.dot.its.jpo.geojsonconverter.pojos.geojson.Point;
+import us.dot.its.jpo.geojsonconverter.pojos.geojson.bsm.ProcessedBsm;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
 import us.dot.its.jpo.geojsonconverter.serialization.deserializers.JsonDeserializer;
+import us.dot.its.jpo.geojsonconverter.serialization.deserializers.ProcessedBsmDeserializer;
 import us.dot.its.jpo.geojsonconverter.serialization.deserializers.ProcessedMapDeserializer;
 import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
-import us.dot.its.jpo.ode.model.OdeBsmData;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -57,8 +59,8 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<BsmIntersectionIdKey, OdeBsmData> bsmListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<BsmIntersectionIdKey, OdeBsmData> factory = new ConcurrentKafkaListenerContainerFactory<>();
+    public ConcurrentKafkaListenerContainerFactory<BsmIntersectionIdKey, ProcessedBsm<Point>> bsmListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<BsmIntersectionIdKey, ProcessedBsm<Point>> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(bsmConsumerFactory());
         return factory;
     }
@@ -78,10 +80,10 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
-    public DefaultKafkaConsumerFactory<BsmIntersectionIdKey, OdeBsmData> bsmConsumerFactory() {
+    public DefaultKafkaConsumerFactory<BsmIntersectionIdKey, ProcessedBsm<Point>> bsmConsumerFactory() {
         return consumerFactory(ListenerIds.BSM,
                 new JsonDeserializer<>(BsmIntersectionIdKey.class),
-                new JsonDeserializer<>(OdeBsmData.class));
+                new ProcessedBsmDeserializer<>(Point.class));
     }
 
     private <TKey, TValue> DefaultKafkaConsumerFactory<TKey, TValue> consumerFactory(

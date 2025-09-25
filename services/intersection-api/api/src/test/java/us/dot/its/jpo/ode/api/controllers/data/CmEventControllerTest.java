@@ -18,7 +18,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -63,11 +63,8 @@ import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.MinuteCount;
 import us.dot.its.jpo.ode.api.services.PermissionService;
 import us.dot.its.jpo.ode.api.services.PostgresService;
+import us.dot.its.jpo.ode.mockdata.MockBsmGenerator;
 import us.dot.its.jpo.ode.mockdata.MockEventGenerator;
-import us.dot.its.jpo.ode.model.OdeBsmData;
-import us.dot.its.jpo.ode.model.OdeMsgMetadata;
-import us.dot.its.jpo.ode.model.OdeMsgPayload;
-import us.dot.its.jpo.ode.model.OdeObject;
 import us.dot.its.jpo.ode.plugin.j2735.J2735Bsm;
 import us.dot.its.jpo.ode.plugin.j2735.J2735BsmCoreData;
 
@@ -79,58 +76,58 @@ public class CmEventControllerTest {
 
         private final CmEventController controller;
 
-        @MockBean
+        @MockitoBean
         ConnectionOfTravelEventRepository connectionOfTravelEventRepo;
 
-        @MockBean
+        @MockitoBean
         IntersectionReferenceAlignmentEventRepository intersectionReferenceAlignmentEventRepo;
 
-        @MockBean
+        @MockitoBean
         LaneDirectionOfTravelEventRepository laneDirectionOfTravelRepo;
 
-        @MockBean
+        @MockitoBean
         SignalGroupAlignmentEventRepository signalGroupAlignmentEventRepo;
 
-        @MockBean
+        @MockitoBean
         SignalStateConflictEventRepository signalStateConflictEventRepo;
 
-        @MockBean
+        @MockitoBean
         StopLineStopEventRepository stopLineStopEventRepo;
 
-        @MockBean
+        @MockitoBean
         StopLinePassageEventRepository stopLinePassageEventRepo;
 
-        @MockBean
+        @MockitoBean
         TimeChangeDetailsEventRepository timeChangeDetailsEventRepo;
 
-        @MockBean
+        @MockitoBean
         SpatMinimumDataEventRepository spatMinimumDataEventRepo;
 
-        @MockBean
+        @MockitoBean
         MapMinimumDataEventRepository mapMinimumDataEventRepo;
 
-        @MockBean
+        @MockitoBean
         SpatBroadcastRateEventRepository spatBroadcastRateEventRepo;
 
-        @MockBean
+        @MockitoBean
         MapBroadcastRateEventRepository mapBroadcastRateEventRepo;
 
-        @MockBean
+        @MockitoBean
         SpatMessageCountProgressionEventRepository spatMessageCountProgressionEventRepo;
 
-        @MockBean
+        @MockitoBean
         MapMessageCountProgressionEventRepository mapMessageCountProgressionEventRepo;
 
-        @MockBean
+        @MockitoBean
         BsmMessageCountProgressionEventRepository bsmMessageCountProgressionEventRepo;
 
-        @MockBean
+        @MockitoBean
         BsmEventRepository bsmEventRepo;
 
-        @MockBean
+        @MockitoBean
         PostgresService postgresService;
 
-        @MockBean
+        @MockitoBean
         PermissionService permissionService;
 
         @Autowired
@@ -2218,8 +2215,14 @@ public class CmEventControllerTest {
                 when(permissionService.hasIntersection(intersectionID, "USER")).thenReturn(true);
                 when(permissionService.hasRole("USER")).thenReturn(true);
                 BsmEvent mockEvent = new BsmEvent();
-                mockEvent.setStartingBsm(new OdeBsmData(new OdeMsgMetadata(), new OdeMsgPayload(bsm)));
-                mockEvent.setEndingBsm(new OdeBsmData(new OdeMsgMetadata(), new OdeMsgPayload()));
+                // mockEvent.setStartingBsm(new OdeBsmData(new OdeMsgMetadata(), new
+                // OdeMsgPayload(bsm)));
+                // mockEvent.setEndingBsm(new OdeBsmData(new OdeMsgMetadata(), new
+                // OdeMsgPayload()));
+
+                mockEvent.setStartingBsm(MockBsmGenerator.getProcessedBsms().getFirst());
+                mockEvent.setEndingBsm(MockBsmGenerator.getProcessedBsms().getFirst());
+
                 Page<BsmEvent> mockPage = new PageImpl<>(Collections.singletonList(mockEvent), PageRequest.of(0, 10),
                                 1);
                 when(bsmEventRepo.find(intersectionID, startTime, endTime, PageRequest.of(0, 10))).thenReturn(mockPage);

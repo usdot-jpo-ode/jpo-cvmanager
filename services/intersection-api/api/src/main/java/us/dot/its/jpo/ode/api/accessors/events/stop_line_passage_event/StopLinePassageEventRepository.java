@@ -7,9 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.StopLinePassageEvent;
 import us.dot.its.jpo.ode.api.models.IDCount;
-import us.dot.its.jpo.ode.api.models.DataLoader;
 
-public interface StopLinePassageEventRepository extends DataLoader<StopLinePassageEvent> {
+public interface StopLinePassageEventRepository {
     long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<StopLinePassageEvent> findLatest(Integer intersectionID, Long startTime, Long endTime);

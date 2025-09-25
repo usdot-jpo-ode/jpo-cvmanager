@@ -191,9 +191,4 @@ public class LaneDirectionOfTravelEventRepositoryImpl
 
         return result.getMappedResults();
     }
-
-    @Override
-    public void add(LaneDirectionOfTravelEvent item) {
-        mongoTemplate.insert(item, collectionName);
-    }
 }

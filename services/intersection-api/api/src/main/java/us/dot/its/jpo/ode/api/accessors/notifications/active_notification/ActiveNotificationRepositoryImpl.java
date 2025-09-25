@@ -124,29 +124,36 @@ public class ActiveNotificationRepositoryImpl
             switch (type) {
                 case "ConnectionOfTravelNotification" ->
                     notifications
-                            .add(mongoTemplate.getConverter().read(ConnectionOfTravelNotification.class,
+                            .add(mongoTemplate.getConverter().read(
+                                    ConnectionOfTravelNotification.class,
                                     dbObject));
                 case "IntersectionReferenceAlignmentNotification" -> notifications.add(
-                        mongoTemplate.getConverter().read(IntersectionReferenceAlignmentNotification.class,
+                        mongoTemplate.getConverter().read(
+                                IntersectionReferenceAlignmentNotification.class,
                                 dbObject));
                 case "LaneDirectionOfTravelAssessmentNotification" ->
                     notifications
-                            .add(mongoTemplate.getConverter().read(LaneDirectionOfTravelNotification.class,
+                            .add(mongoTemplate.getConverter().read(
+                                    LaneDirectionOfTravelNotification.class,
                                     dbObject));
                 case "SignalGroupAlignmentNotification" ->
                     notifications
-                            .add(mongoTemplate.getConverter().read(SignalGroupAlignmentNotification.class,
+                            .add(mongoTemplate.getConverter().read(
+                                    SignalGroupAlignmentNotification.class,
                                     dbObject));
                 case "SignalStateConflictNotification" ->
                     notifications
-                            .add(mongoTemplate.getConverter().read(SignalStateConflictNotification.class,
+                            .add(mongoTemplate.getConverter().read(
+                                    SignalStateConflictNotification.class,
                                     dbObject));
                 case "TimeChangeDetailsNotification" ->
-                    notifications.add(mongoTemplate.getConverter().read(TimeChangeDetailsNotification.class,
+                    notifications.add(mongoTemplate.getConverter().read(
+                            TimeChangeDetailsNotification.class,
                             dbObject));
                 case "AppHealthNotification" ->
                     notifications
-                            .add(mongoTemplate.getConverter().read(KafkaStreamsAnomalyNotification.class,
+                            .add(mongoTemplate.getConverter().read(
+                                    KafkaStreamsAnomalyNotification.class,
                                     dbObject));
                 default ->
                     log.warn("Attempted to find unknown notificationType: {}", type);
@@ -167,11 +174,4 @@ public class ActiveNotificationRepositoryImpl
         DeleteResult result = mongoTemplate.remove(query, collectionName);
         return result.getDeletedCount();
     }
-
-    @Override
-    public void add(Notification item) {
-        item.setId(item.getNotificationType() + "_" + item.getIntersectionID());
-        mongoTemplate.insert(item, collectionName);
-    }
-
 }

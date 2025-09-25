@@ -98,10 +98,4 @@ public class LaneDirectionOfTravelNotificationRepositoryImpl
         return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null,
                 LaneDirectionOfTravelNotification.class);
     }
-
-    @Override
-    public void add(LaneDirectionOfTravelNotification item) {
-        mongoTemplate.insert(item, collectionName);
-    }
-
 }

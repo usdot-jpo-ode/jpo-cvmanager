@@ -37,8 +37,8 @@ import java.util.List;
 
 import org.bson.Document;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,158 +55,145 @@ import us.dot.its.jpo.ode.api.models.AggregationResultCount;
 @AutoConfigureEmbeddedDatabase
 public class SignalStateConflictNotificationRepositoryImplTest {
 
-        @SpyBean
-        private MongoTemplate mongoTemplate;
+    @MockitoSpyBean
+    private MongoTemplate mongoTemplate;
 
-        @Mock
-        private AggregationResults<AggregationResult> mockAggregationResult;
+    @Mock
+    private AggregationResults<AggregationResult> mockAggregationResult;
 
-        @Mock
-        private Page<Document> mockDocumentPage;
+    @Mock
+    private Page<Document> mockDocumentPage;
 
-        @Mock
-        private Page<SignalStateConflictNotification> mockPage;
+    @Mock
+    private Page<SignalStateConflictNotification> mockPage;
 
-        @InjectMocks
-        private SignalStateConflictNotificationRepositoryImpl repository;
+    @InjectMocks
+    private SignalStateConflictNotificationRepositoryImpl repository;
 
-        Integer intersectionID = 123;
-        Long startTime = 1724170658205L;
-        String startTimeString = "2024-08-20T16:17:38.205Z";
-        Long endTime = 1724170778205L;
-        String endTimeString = "2024-08-20T16:19:38.205Z";
-        boolean latest = true;
+    Integer intersectionID = 123;
+    Long startTime = 1724170658205L;
+    String startTimeString = "2024-08-20T16:17:38.205Z";
+    Long endTime = 1724170778205L;
+    String endTimeString = "2024-08-20T16:19:38.205Z";
+    boolean latest = true;
 
-        @BeforeEach
-        void setUp() {
-                MockitoAnnotations.openMocks(this);
-                repository = new SignalStateConflictNotificationRepositoryImpl(mongoTemplate);
-        }
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        repository = new SignalStateConflictNotificationRepositoryImpl(mongoTemplate);
+    }
 
-        @Test
-        public void testCount() {
-                long expectedCount = 10;
+    @Test
+    public void testCount() {
+        long expectedCount = 10;
 
-                doReturn(expectedCount).when(mongoTemplate).count(any(),
-                                Mockito.<String>any());
+        doReturn(expectedCount).when(mongoTemplate).count(any(),
+                Mockito.<String>any());
 
-                long resultCount = repository.count(1, null, null);
+        long resultCount = repository.count(1, null, null);
 
-                assertThat(resultCount).isEqualTo(expectedCount);
-                verify(mongoTemplate).count(any(Query.class), anyString());
-        }
+        assertThat(resultCount).isEqualTo(expectedCount);
+        verify(mongoTemplate).count(any(Query.class), anyString());
+    }
 
-        @Test
-        public void testFind() {
-                SignalStateConflictNotificationRepositoryImpl repo = mock(
-                                SignalStateConflictNotificationRepositoryImpl.class);
+    @Test
+    public void testFind() {
+        SignalStateConflictNotificationRepositoryImpl repo = mock(
+                SignalStateConflictNotificationRepositoryImpl.class);
 
-                when(repo.findPage(
-                                any(),
-                                any(),
-                                any(PageRequest.class),
-                                any(Criteria.class),
-                                any(Sort.class),
-                                any(),
-                                eq(SignalStateConflictNotification.class))).thenReturn(mockPage);
-                PageRequest pageRequest = PageRequest.of(0, 1);
-                doCallRealMethod().when(repo).find(1, null, null, pageRequest);
+        when(repo.findPage(
+                any(),
+                any(),
+                any(PageRequest.class),
+                any(Criteria.class),
+                any(Sort.class),
+                any(),
+                eq(SignalStateConflictNotification.class))).thenReturn(mockPage);
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        doCallRealMethod().when(repo).find(1, null, null, pageRequest);
 
-                Page<SignalStateConflictNotification> results = repo.find(1, null, null, pageRequest);
+        Page<SignalStateConflictNotification> results = repo.find(1, null, null, pageRequest);
 
-                assertThat(results).isEqualTo(mockPage);
-        }
+        assertThat(results).isEqualTo(mockPage);
+    }
 
-        @Test
-        public void testFindWithData() throws IOException {
-                // Load sample JSON data
-                String json = new String(
-                                Files.readAllBytes(
-                                                Paths.get("src/test/resources/json/ConflictMonitor.CmSignalStateConflictNotification.json")));
-                ObjectMapper objectMapper = new ObjectMapper();
-                objectMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule()); // Register
-                // JavaTimeModule
+    @Test
+    public void testFindWithData() throws IOException {
+        // Load sample JSON data
+        String json = new String(
+                Files.readAllBytes(
+                        Paths.get("src/test/resources/json/ConflictMonitor.CmSignalStateConflictNotification.json")));
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule()); // Register
+        // JavaTimeModule
 
-                List<Document> sampleDocuments = List.of(Document.parse(json));
+        List<Document> sampleDocuments = List.of(Document.parse(json));
 
-                // Mock dependencies
-                when(mockDocumentPage.getContent()).thenReturn(sampleDocuments);
-                when(mockDocumentPage.getTotalElements()).thenReturn(1L);
+        // Mock dependencies
+        when(mockDocumentPage.getContent()).thenReturn(sampleDocuments);
+        when(mockDocumentPage.getTotalElements()).thenReturn(1L);
 
-                AggregationResult aggregationResult = new AggregationResult();
-                aggregationResult.setResults(sampleDocuments);
-                AggregationResultCount aggregationResultCount = new AggregationResultCount();
-                aggregationResultCount.setCount(1L);
-                aggregationResult.setMetadata(List.of(aggregationResultCount));
+        AggregationResult aggregationResult = new AggregationResult();
+        aggregationResult.setResults(sampleDocuments);
+        AggregationResultCount aggregationResultCount = new AggregationResultCount();
+        aggregationResultCount.setCount(1L);
+        aggregationResult.setMetadata(List.of(aggregationResultCount));
 
-                when(mockAggregationResult.getUniqueMappedResult()).thenReturn(aggregationResult);
+        when(mockAggregationResult.getUniqueMappedResult()).thenReturn(aggregationResult);
 
-                ArgumentCaptor<Aggregation> aggregationCaptor = ArgumentCaptor.forClass(Aggregation.class);
-                doReturn(mockAggregationResult).when(mongoTemplate).aggregate(aggregationCaptor.capture(),
-                                anyString(),
-                                eq(AggregationResult.class));
+        ArgumentCaptor<Aggregation> aggregationCaptor = ArgumentCaptor.forClass(Aggregation.class);
+        doReturn(mockAggregationResult).when(mongoTemplate).aggregate(aggregationCaptor.capture(),
+                anyString(),
+                eq(AggregationResult.class));
 
-                // Call the repository find method
-                PageRequest pageRequest = PageRequest.of(0, 1);
-                Page<SignalStateConflictNotification> findResponse = repository.find(intersectionID, startTime, endTime,
-                                pageRequest);
+        // Call the repository find method
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        Page<SignalStateConflictNotification> findResponse = repository.find(intersectionID, startTime, endTime,
+                pageRequest);
 
-                // Extract the captured Aggregation
-                Aggregation capturedAggregation = aggregationCaptor.getValue();
+        // Extract the captured Aggregation
+        Aggregation capturedAggregation = aggregationCaptor.getValue();
 
-                // Extract the MatchOperation from the Aggregation pipeline
-                Document pipeline = capturedAggregation.toPipeline(Aggregation.DEFAULT_CONTEXT).get(0);
+        // Extract the MatchOperation from the Aggregation pipeline
+        Document pipeline = capturedAggregation.toPipeline(Aggregation.DEFAULT_CONTEXT).get(0);
 
-                // Assert the Match operation Criteria
-                assertThat(pipeline.toJson())
-                                .isEqualTo(String.format(
-                                                "{\"$match\": {\"intersectionID\": %s, \"notificationGeneratedAt\": {\"$gte\": {\"$date\": \"%s\"}, \"$lte\": {\"$date\": \"%s\"}}}}",
-                                                intersectionID, startTimeString, endTimeString));
+        // Assert the Match operation Criteria
+        assertThat(pipeline.toJson())
+                .isEqualTo(String.format(
+                        "{\"$match\": {\"intersectionID\": %s, \"notificationGeneratedAt\": {\"$gte\": {\"$date\": \"%s\"}, \"$lte\": {\"$date\": \"%s\"}}}}",
+                        intersectionID, startTimeString, endTimeString));
 
-                // Serialize results to JSON and compare with the original JSON
-                String resultJson = objectMapper.writeValueAsString(findResponse.getContent().get(0));
+        // Serialize results to JSON and compare with the original JSON
+        String resultJson = objectMapper.writeValueAsString(findResponse.getContent().get(0));
 
-                // Remove unused fields from each entry
-                List<Document> expectedResult = sampleDocuments.stream().map(doc -> {
-                        doc.remove("_id");
-                        doc.remove("recordGeneratedAt");
-                        return doc;
-                }).toList();
-                String expectedJson = objectMapper.writeValueAsString(expectedResult.get(0));
+        // Remove unused fields from each entry
+        List<Document> expectedResult = sampleDocuments.stream().map(doc -> {
+            doc.remove("_id");
+            doc.remove("recordGeneratedAt");
+            return doc;
+        }).toList();
+        String expectedJson = objectMapper.writeValueAsString(expectedResult.get(0));
 
-                // Compare JSON with ignored fields
-                JSONAssert.assertEquals(expectedJson, resultJson, new CustomComparator(
-                                JSONCompareMode.LENIENT, // Allows different key orders
-                                new Customization("properties.timeStamp", (o1, o2) -> true),
-                                new Customization("properties.odeReceivedAt", (o1, o2) -> true)));
-        }
+        // Compare JSON with ignored fields
+        JSONAssert.assertEquals(expectedJson, resultJson, new CustomComparator(
+                JSONCompareMode.LENIENT, // Allows different key orders
+                new Customization("properties.timeStamp", (o1, o2) -> true),
+                new Customization("properties.odeReceivedAt", (o1, o2) -> true)));
+    }
 
-        @Test
-        void testFindLatest() {
-                SignalStateConflictNotification event = new SignalStateConflictNotification();
-                event.setIntersectionID(intersectionID);
+    @Test
+    void testFindLatest() {
+        SignalStateConflictNotification event = new SignalStateConflictNotification();
+        event.setIntersectionID(intersectionID);
 
-                doReturn(event).when(mongoTemplate).findOne(any(Query.class), eq(SignalStateConflictNotification.class),
-                                anyString());
+        doReturn(event).when(mongoTemplate).findOne(any(Query.class), eq(SignalStateConflictNotification.class),
+                anyString());
 
-                Page<SignalStateConflictNotification> page = repository.findLatest(intersectionID, startTime, endTime);
+        Page<SignalStateConflictNotification> page = repository.findLatest(intersectionID, startTime, endTime);
 
-                assertThat(page.getContent()).hasSize(1);
-                assertThat(page.getContent().get(0).getIntersectionID()).isEqualTo(intersectionID);
-                verify(mongoTemplate).findOne(any(Query.class), eq(SignalStateConflictNotification.class),
-                                eq("CmSignalStateConflictNotification"));
-        }
-
-        @Test
-        void testAdd() {
-                SignalStateConflictNotification event = new SignalStateConflictNotification();
-                event.setIntersectionID(intersectionID);
-
-                doReturn(null).when(mongoTemplate).insert(any(SignalStateConflictNotification.class), anyString());
-
-                repository.add(event);
-
-                verify(mongoTemplate).insert(event, "CmSignalStateConflictNotification");
-        }
-
+        assertThat(page.getContent()).hasSize(1);
+        assertThat(page.getContent().get(0).getIntersectionID()).isEqualTo(intersectionID);
+        verify(mongoTemplate).findOne(any(Query.class), eq(SignalStateConflictNotification.class),
+                eq("CmSignalStateConflictNotification"));
+    }
 }

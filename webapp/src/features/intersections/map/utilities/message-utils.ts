@@ -1,3 +1,4 @@
+import { LaneDirectionOfTravelNotification } from '../../../../models/jpo-conflictmonitor/notifications/LaneDirectionOfTravelNotification'
 import { getTimestamp } from '../map-component'
 import { getBearingBetweenPoints } from './map-utils'
 import * as turf from '@turf/turf'
@@ -173,24 +174,26 @@ export const parseSpatSignalGroups = (spats: ProcessedSpat[]): SpatSignalGroups 
   return timedSignalGroups
 }
 
-export const parseBsmToGeojson = (bsmData: OdeBsmData[]): BsmFeatureCollection => {
+export const addBsmTimestamps = (bsmFeatureCollection: BsmFeatureCollection): BsmFeatureCollection => {
   return {
     type: 'FeatureCollection' as const,
-    features: bsmData.map((bsm) => {
+    features: bsmFeatureCollection.features.map((bsm) => {
       return {
-        type: 'Feature',
+        ...bsm,
         properties: {
-          ...bsm.payload.data.coreData,
-          odeReceivedAt: new Date(bsm.metadata.odeReceivedAt as unknown as string).getTime() / 1000,
-        },
-        geometry: {
-          type: 'Point',
-          coordinates: [bsm.payload.data.coreData.position.longitude, bsm.payload.data.coreData.position.latitude],
+          ...bsm.properties,
+          odeReceivedAtEpochSeconds: new Date(bsm.properties.odeReceivedAt).getTime() / 1000,
         },
       }
     }),
   }
 }
+
+export const isValidDate = (d: Date) => {
+  if (d == null) return false
+  return d instanceof Date && !isNaN(d?.getTime())
+}
+
 export const addConnections = (
   connectingLanes: ConnectingLanesFeatureCollection,
   signalGroups: SpatSignalGroup[],

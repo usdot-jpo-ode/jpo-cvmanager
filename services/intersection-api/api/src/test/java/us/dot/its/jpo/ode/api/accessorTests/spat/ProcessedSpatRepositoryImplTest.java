@@ -43,8 +43,8 @@ import us.dot.its.jpo.ode.api.models.AggregationResult;
 import us.dot.its.jpo.ode.api.models.AggregationResultCount;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -57,7 +57,7 @@ import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 @AutoConfigureEmbeddedDatabase
 public class ProcessedSpatRepositoryImplTest {
 
-    @SpyBean
+    @MockitoSpyBean
     private MongoTemplate mongoTemplate;
 
     @Mock
@@ -186,9 +186,11 @@ public class ProcessedSpatRepositoryImplTest {
                 new Customization(
                         "states[signalGroup=2].stateTimeSpeed[eventState=PROTECTED_CLEARANCE].timing.minEndTime",
                         (o1, o2) -> true),
-                new Customization("states[signalGroup=4].stateTimeSpeed[eventState=STOP_AND_REMAIN].timing.maxEndTime",
+                new Customization(
+                        "states[signalGroup=4].stateTimeSpeed[eventState=STOP_AND_REMAIN].timing.maxEndTime",
                         (o1, o2) -> true),
-                new Customization("states[signalGroup=4].stateTimeSpeed[eventState=STOP_AND_REMAIN].timing.minEndTime",
+                new Customization(
+                        "states[signalGroup=4].stateTimeSpeed[eventState=STOP_AND_REMAIN].timing.minEndTime",
                         (o1, o2) -> true),
                 new Customization(
                         "states[signalGroup=6].stateTimeSpeed[eventState=PROTECTED_CLEARANCE].timing.maxEndTime",

@@ -6,10 +6,9 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.TimeChangeDetailsEvent;
-import us.dot.its.jpo.ode.api.models.DataLoader;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
-public interface TimeChangeDetailsEventRepository extends DataLoader<TimeChangeDetailsEvent> {
+public interface TimeChangeDetailsEventRepository {
     long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<TimeChangeDetailsEvent> findLatest(Integer intersectionID, Long startTime, Long endTime);

@@ -433,14 +433,14 @@ function ControlPanel() {
                 {liveDataActive ? 'Stop Live Data' : 'Render Live Data'}
               </Button>
               <Button
-                sx={{ mt: 2 }}
+                sx={{ mt: 2, ml: 2 }}
                 onClick={() => {
                   dispatch(
                     updateQueryParams({
                       ...queryParams,
                       eventDate: eventTime.toDate(),
-                      startDate: eventTime.toDate().getTime() - timeBeforeSeconds * 1000,
-                      endDate: eventTime.toDate().getTime() + timeAfterSeconds * 1000,
+                      startDate: new Date(eventTime.toDate().getTime() - timeBeforeSeconds * 1000),
+                      endDate: new Date(eventTime.toDate().getTime() + timeAfterSeconds * 1000),
                     })
                   )
                 }}

@@ -1,7 +1,7 @@
 import logging
 import common.pgquery as pgquery
 import sqlalchemy
-import os
+import environment
 import admin_new_user
 
 
@@ -59,14 +59,14 @@ class AdminNewOrgSchema(Schema):
 
 class AdminNewOrg(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization",
         "Access-Control-Allow-Methods": "POST",
         "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
         "Content-Type": "application/json",
     }
 

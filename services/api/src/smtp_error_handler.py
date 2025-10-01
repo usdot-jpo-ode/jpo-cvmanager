@@ -2,32 +2,31 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 import logging
-import logging.handlers
 
 from logging.handlers import SMTPHandler
 import smtplib
 import datetime
 import ssl
-import os
+import environment
 
 
 def get_subscribed_users():
-    emails = os.environ["CSM_EMAILS_TO_SEND_TO"].split(",")
+    emails = environment.CSM_EMAILS_TO_SEND_TO
     return emails
 
 
 def configure_error_emails(app):
     mail_handler = SMTP_SSLHandler(
         mailhost=[
-            os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"],
-            int(os.environ["CSM_TARGET_SMTP_SERVER_PORT"]),
+            environment.CSM_TARGET_SMTP_SERVER_ADDRESS,
+            environment.CSM_TARGET_SMTP_SERVER_PORT,
         ],
-        fromaddr=os.environ["CSM_EMAIL_TO_SEND_FROM"],
+        fromaddr=environment.CSM_EMAIL_TO_SEND_FROM,
         toaddrs=[],
         subject="Automated CV Manager API Error",
         credentials=[
-            os.environ["CSM_EMAIL_APP_USERNAME"],
-            os.environ["CSM_EMAIL_APP_PASSWORD"],
+            environment.CSM_EMAIL_APP_USERNAME,
+            environment.CSM_EMAIL_APP_PASSWORD,
         ],
         secure=(),
     )
@@ -65,10 +64,10 @@ class SMTP_SSLHandler(SMTPHandler):
             body_content = open("./error_email/error_email_template.html").read()
 
             EMAIL_KEYS = {
-                "ENVIRONMENT": os.environ["ENVIRONMENT_NAME"],
+                "ENVIRONMENT": environment.ENVIRONMENT_NAME,
                 "ERROR_MESSAGE": self.format(record).replace("\n", "<br>"),
                 "ERROR_TIME": str(record.asctime),
-                "LOGS_LINK": os.environ["LOGS_LINK"],
+                "LOGS_LINK": environment.LOGS_LINK,
             }
 
             context = ssl._create_unverified_context()

@@ -2,7 +2,7 @@ import logging
 import common.pgquery as pgquery
 import sqlalchemy
 import admin_new_intersection
-import os
+import environment
 
 
 def get_intersection_data(intersection_id):
@@ -226,14 +226,14 @@ class AdminIntersectionPatchSchema(Schema):
 
 class AdminIntersection(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization",
         "Access-Control-Allow-Methods": "GET,PATCH,DELETE",
         "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
         "Content-Type": "application/json",
     }
 

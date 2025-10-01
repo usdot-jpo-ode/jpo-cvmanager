@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_restful import Api
-import os
+import environment
 import logging
 
 # Custom script imports
@@ -31,19 +31,11 @@ from admin_org import AdminOrg
 from contact_support import ContactSupportResource
 from rsu_error_summary import RSUErrorSummaryResource
 import smtp_error_handler
+from common import util
 
-log_level = os.environ.get("LOGGING_LEVEL", "INFO")
-logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
+util.configure_logging()
 
 app = Flask(__name__)
-
-# Feature flag environment variables
-ENABLE_RSU_FEATURES = os.environ.get("ENABLE_RSU_FEATURES", "true") != "false"
-ENABLE_INTERSECTION_FEATURES = (
-    os.environ.get("ENABLE_INTERSECTION_FEATURES", "true") != "false"
-)
-ENABLE_WZDX_FEATURES = os.environ.get("ENABLE_WZDX_FEATURES", "true") != "false"
-ENABLE_MOOVE_AI_FEATURES = os.environ.get("ENABLE_MOOVE_AI_FEATURES", "true") != "false"
 
 smtp_error_handler.configure_error_emails(app)
 
@@ -60,7 +52,7 @@ api.add_resource(AdminNotification, "/admin-notification")
 api.add_resource(AdminNewNotification, "/admin-new-notification")
 api.add_resource(ContactSupportResource, "/contact-support")
 
-if ENABLE_RSU_FEATURES:
+if environment.ENABLE_RSU_FEATURES:
     api.add_resource(RsuInfo, "/rsuinfo")
     api.add_resource(RsuOnlineStatus, "/rsu-online-status")
     api.add_resource(RsuQueryCounts, "/rsucounts")
@@ -73,12 +65,12 @@ if ENABLE_RSU_FEATURES:
     api.add_resource(AdminNewRsu, "/admin-new-rsu")
     api.add_resource(AdminRsu, "/admin-rsu")
     api.add_resource(RSUErrorSummaryResource, "/rsu-error-summary")
-if ENABLE_WZDX_FEATURES:
+if environment.ENABLE_WZDX_FEATURES:
     api.add_resource(WzdxFeed, "/wzdx-feed")
-if ENABLE_INTERSECTION_FEATURES:
+if environment.ENABLE_INTERSECTION_FEATURES:
     api.add_resource(AdminNewIntersection, "/admin-new-intersection")
     api.add_resource(AdminIntersection, "/admin-intersection")
-if ENABLE_MOOVE_AI_FEATURES:
+if environment.ENABLE_MOOVE_AI_FEATURES:
     api.add_resource(MooveAiData, "/moove-ai-data")
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
-import os
 import logging
 from pymongo import MongoClient
 from datetime import datetime, timedelta
+import environment
 
 message_types = ["BSM", "TIM", "Map", "SPaT", "SRM", "SSM", "PSM"]
 
@@ -79,7 +79,7 @@ def run_mongo_counter(mongo_db):
 
 if __name__ == "__main__":
     logging.info("Starting the MongoDB counter")
-    client = MongoClient(os.getenv("MONGO_DB_URI"))
-    mongo_db = client[os.getenv("MONGO_DB_NAME")]
+    client = MongoClient(environment.MONGO_DB_URI)
+    mongo_db = client[environment.MONGO_DB_NAME]
     run_mongo_counter(mongo_db)
     logging.info("MongoDB counter has finished")

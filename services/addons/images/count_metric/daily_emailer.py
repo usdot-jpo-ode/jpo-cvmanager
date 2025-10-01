@@ -1,4 +1,3 @@
-import os
 import logging
 import gen_email
 from common.emailSender import EmailSender
@@ -6,6 +5,7 @@ import common.pgquery as pgquery
 from common.email_util import get_email_list
 from datetime import datetime, timedelta
 from pymongo import MongoClient
+import environment
 
 message_types = ["BSM", "TIM", "Map", "SPaT", "SRM", "SSM"]
 
@@ -129,17 +129,17 @@ def email_daily_counts(org_name, email_body):
 
         for email_address in email_addresses:
             emailSender = EmailSender(
-                os.environ["SMTP_SERVER_IP"],
+                environment.SMTP_SERVER_IP,
                 587,
             )
             emailSender.send(
-                sender=os.environ["SMTP_EMAIL"],
+                sender=environment.SMTP_EMAIL,
                 recipient=email_address,
-                subject=f"{org_name} {str(os.environ['DEPLOYMENT_TITLE'])} Counts",
+                subject=f"{org_name} {environment.DEPLOYMENT_TITLE} Counts",
                 message=email_body,
                 replyEmail="",
-                username=os.environ["SMTP_USERNAME"],
-                password=os.environ["SMTP_PASSWORD"],
+                username=environment.SMTP_USERNAME,
+                password=environment.SMTP_PASSWORD,
                 pretty=True,
             )
     except Exception as e:
@@ -147,8 +147,8 @@ def email_daily_counts(org_name, email_body):
 
 
 def run_daily_emailer():
-    client = MongoClient(os.getenv("MONGO_DB_URI"))
-    mongo_db = client[os.getenv("MONGO_DB_NAME")]
+    client = MongoClient(environment.MONGO_DB_URI)
+    mongo_db = client[environment.MONGO_DB_NAME]
 
     # Grab today's date and yesterday's date for a 24 hour range
     start_dt = (datetime.now() - timedelta(1)).replace(

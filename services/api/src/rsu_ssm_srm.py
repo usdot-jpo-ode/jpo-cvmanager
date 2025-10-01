@@ -1,5 +1,5 @@
 import common.util as util
-import os
+import environment
 import logging
 from datetime import datetime, timedelta
 from pymongo import MongoClient
@@ -12,9 +12,9 @@ def query_ssm_data_mongo(result):
     start_utc = util.format_date_utc(start_date.isoformat())
 
     try:
-        client = MongoClient(os.getenv("MONGO_DB_URI"), serverSelectionTimeoutMS=5000)
-        db = client[os.getenv("MONGO_DB_NAME")]
-        collection = db[os.getenv("SSM_DB_NAME")]
+        client = MongoClient(environment.MONGO_DB_URI, serverSelectionTimeoutMS=5000)
+        db = client[environment.MONGO_DB_NAME]
+        collection = db[environment.MONGO_SSM_COLLECTION_NAME]
     except Exception as e:
         logging.error(
             f"Failed to connect to Mongo counts collection with error message: {e}"
@@ -32,7 +32,7 @@ def query_ssm_data_mongo(result):
         "_id": 0,
     }
 
-    logging.debug(f"Running filter on SSM mongoDB collection")
+    logging.debug("Running filter on SSM mongoDB collection")
 
     # The data schema for the mongoDB collection is the same for the OdeSsmJson schema
     # This can be viewed here: https://github.com/usdot-jpo-ode/jpo-ode/blob/develop/jpo-ode-core/src/main/resources/schemas/schema-ssm.json
@@ -67,9 +67,9 @@ def query_srm_data_mongo(result):
     start_utc = util.format_date_utc(start_date.isoformat())
 
     try:
-        client = MongoClient(os.getenv("MONGO_DB_URI"), serverSelectionTimeoutMS=5000)
-        db = client[os.getenv("MONGO_DB_NAME")]
-        collection = db[os.getenv("SRM_DB_NAME")]
+        client = MongoClient(environment.MONGO_DB_URI, serverSelectionTimeoutMS=5000)
+        db = client[environment.MONGO_DB_NAME]
+        collection = db[environment.MONGO_SRM_COLLECTION_NAME]
     except Exception as e:
         logging.error(
             f"Failed to connect to Mongo counts collection with error message: {e}"
@@ -88,7 +88,7 @@ def query_srm_data_mongo(result):
         "_id": 0,
     }
 
-    logging.debug(f"Running filter on SRM mongoDB collection")
+    logging.debug("Running filter on SRM mongoDB collection")
 
     # The data schema for the mongoDB collection is the same for the OdeSrmJson schema
     # This can be viewed here: https://github.com/usdot-jpo-ode/jpo-ode/blob/develop/jpo-ode-core/src/main/resources/schemas/schema-srm.json
@@ -125,14 +125,14 @@ from flask_restful import Resource
 
 class RsuSsmSrmData(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization",
         "Access-Control-Allow-Methods": "GET",
         "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
         "Content-Type": "application/json",
     }
 

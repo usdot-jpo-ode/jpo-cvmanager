@@ -1,12 +1,11 @@
 import upgrader
 import json
 import logging
-import os
 import subprocess
 import sys
 import tarfile
 import time
-
+from common import util
 
 class YunexUpgrader(upgrader.UpgraderAbstractClass):
     def __init__(self, upgrade_info):
@@ -16,7 +15,7 @@ class YunexUpgrader(upgrader.UpgraderAbstractClass):
         xfer_command = [
             "java",
             "-jar",
-            f"/home/tools/xfer_yunex.jar",
+            "/home/tools/xfer_yunex.jar",
             "-upload",
             file_name,
             f"{self.rsu_ip}:3600",
@@ -124,8 +123,7 @@ class YunexUpgrader(upgrader.UpgraderAbstractClass):
 # - target_firmware_version
 # - install_package
 if __name__ == "__main__":
-    log_level = os.environ.get("LOGGING_LEVEL", "INFO")
-    logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
+    util.configure_logging()
     # Trimming outer single quotes from the json.loads
     upgrade_info = json.loads(sys.argv[1][1:-1])
     yunex_upgrader = YunexUpgrader(upgrade_info)

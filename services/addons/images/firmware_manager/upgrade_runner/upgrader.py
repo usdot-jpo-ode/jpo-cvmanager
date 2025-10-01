@@ -4,12 +4,12 @@ import subprocess
 import time
 from common import gcs_utils
 import logging
-import os
 import requests
 import shutil
 from common.emailSender import EmailSender
 from common.email_util import get_email_list_from_rsu
 import download_blob
+import environment
 
 
 class UpgraderAbstractClass(abc.ABC):
@@ -45,9 +45,7 @@ class UpgraderAbstractClass(abc.ABC):
         )
 
         # Download blob, defaults to GCP blob storage
-        bspCaseInsensitive = os.environ.get(
-            "BLOB_STORAGE_PROVIDER", "DOCKER"
-        ).casefold()
+        bspCaseInsensitive = environment.BLOB_STORAGE_PROVIDER.casefold()
         if bspCaseInsensitive == "gcp":
             return (
                 gcs_utils.download_gcp_blob(
@@ -73,9 +71,7 @@ class UpgraderAbstractClass(abc.ABC):
         )
 
         # Obtain the upgrade scheduler endpoint
-        upgrade_scheduler_endpoint = os.environ.get(
-            "UPGRADE_SCHEDULER_ENDPOINT", "127.0.0.1"
-        )
+        upgrade_scheduler_endpoint = environment.UPGRADE_SCHEDULER_ENDPOINT
         if upgrade_scheduler_endpoint == "UNDEFINED":
             raise Exception(
                 "The UPGRADE_SCHEDULER_ENDPOINT environment variable is undefined!"
@@ -132,17 +128,17 @@ class UpgraderAbstractClass(abc.ABC):
 
             for email_address in email_addresses:
                 emailSender = EmailSender(
-                    os.environ["SMTP_SERVER_IP"],
-                    587,
+                    environment.SMTP_SERVER_IP,
+                    environment.SMTP_SERVER_PORT,
                 )
                 emailSender.send(
-                    sender=os.environ["SMTP_EMAIL"],
+                    sender=environment.SMTP_EMAIL,
                     recipient=email_address,
                     subject=subject,
                     message=f"{type}: Failed to perform update on RSU {self.rsu_ip} due to the following error: {err}",
                     replyEmail="",
-                    username=os.environ["SMTP_USERNAME"],
-                    password=os.environ["SMTP_PASSWORD"],
+                    username=environment.SMTP_USERNAME,
+                    password=environment.SMTP_PASSWORD,
                     pretty=True,
                 )
         except Exception as e:

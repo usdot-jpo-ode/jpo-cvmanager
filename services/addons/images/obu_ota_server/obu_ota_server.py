@@ -3,25 +3,25 @@ from fastapi import FastAPI, Request, Response, HTTPException, Depends
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from common import gcs_utils, pgquery
 import commsignia_manifest
-import os
 import glob
+import os
 import aiofiles
-from starlette.responses import Response
 import logging
 from datetime import datetime
 import asyncio
+import environment
+from common import util
 
 app = FastAPI()
-log_level = "INFO" if "LOGGING_LEVEL" not in os.environ else os.environ["LOGGING_LEVEL"]
-logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
+util.configure_logging()
 security = HTTPBasic()
 
 commsignia_file_ext = ".tar.sig"
 
 
 def authenticate_user(credentials: HTTPBasicCredentials = Depends(security)) -> str:
-    correct_username = os.getenv("OTA_USERNAME")
-    correct_password = os.getenv("OTA_PASSWORD")
+    correct_username = environment.OTA_USERNAME
+    correct_password = environment.OTA_PASSWORD
     if (
         credentials.username != correct_username
         or credentials.password != correct_password
@@ -43,20 +43,20 @@ async def read_root(request: Request):
 
 
 def get_firmware_list() -> list:
-    blob_storage_provider = os.getenv("BLOB_STORAGE_PROVIDER", "DOCKER")
+    blob_storage_provider = environment.BLOB_STORAGE_PROVIDER
     files = []
     file_extension = commsignia_file_ext
     if blob_storage_provider.upper() == "DOCKER":
         files = glob.glob(f"/firmwares/*{file_extension}")
     elif blob_storage_provider.upper() == "GCP":
-        blob_storage_path = os.getenv("BLOB_STORAGE_PATH", "DOCKER")
+        blob_storage_path = environment.BLOB_STORAGE_PATH
         files = gcs_utils.list_gcs_blobs(blob_storage_path, file_extension)
     return files
 
 
 def get_host_name() -> str:
-    host_name = os.getenv("SERVER_HOST", "localhost")
-    tls_enabled = os.getenv("NGINX_ENCRYPTION", "plain")
+    host_name = environment.SERVER_HOST
+    tls_enabled = environment.NGINX_ENCRYPTION
     if tls_enabled.lower() == "ssl":
         host_name = "https://" + host_name
     else:
@@ -78,7 +78,7 @@ async def get_manifest(request: Request) -> dict[str, Any]:
 
 def get_firmware(firmware_id: str, local_file_path: str) -> bool:
     try:
-        blob_storage_provider = os.getenv("BLOB_STORAGE_PROVIDER", "DOCKER")
+        blob_storage_provider = environment.BLOB_STORAGE_PROVIDER
         # checks if firmware exists locally
         if not os.path.exists(local_file_path):
             # If configured to only use local storage, return False as firmware does not exist
@@ -131,12 +131,11 @@ async def read_file(
 
 def removed_old_logs(serialnum: str):
     try:
-        max_count = int(os.getenv("MAX_COUNT", 10))
         success_count = pgquery.query_db(
             f"SELECT COUNT(*) FROM public.obu_ota_requests WHERE obu_sn = '{serialnum}' AND error_status = B'0'"
         )
-        if success_count[0][0] > max_count:
-            excess_count = success_count[0][0] - max_count
+        if success_count[0][0] > environment.MAX_COUNT:
+            excess_count = success_count[0][0] - environment.MAX_COUNT
             oldest_entries = pgquery.query_db(
                 f"SELECT request_id FROM public.obu_ota_requests WHERE obu_sn = '{serialnum}' AND error_status = B'0' ORDER BY request_datetime ASC LIMIT {excess_count}"
             )

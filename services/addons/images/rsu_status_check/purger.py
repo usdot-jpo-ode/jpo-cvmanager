@@ -1,8 +1,8 @@
-from datetime import datetime, timedelta, timezone
-import os
+from datetime import datetime, timedelta
 import logging
 import common.pgquery as pgquery
-
+import environment
+from common import util
 
 def get_all_rsus():
     query = "SELECT to_jsonb(row) FROM (SELECT rsu_id FROM public.rsus) AS row ORDER BY rsu_id"
@@ -83,17 +83,12 @@ def purge_ping_data(stale_period):
 
 
 if __name__ == "__main__":
-    # Configure logging based on ENV var or use default if not set
-    log_level = os.environ.get("LOGGING_LEVEL", "INFO")
-    logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
+    util.configure_logging()
 
-    run_service = (
-        os.environ.get("RSU_PING", "False").lower() == "true"
-        or os.environ.get("ZABBIX", "False").lower() == "true"
-    )
+    run_service = environment.RSU_PING or environment.ZABBIX
     if not run_service:
         logging.info("The purger service is disabled and will not run")
         exit()
 
-    stale_period = int(os.environ["STALE_PERIOD"])
+    stale_period = environment.STALE_PERIOD_HOURS
     purge_ping_data(stale_period)

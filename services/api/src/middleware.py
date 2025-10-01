@@ -1,9 +1,8 @@
 from werkzeug.wrappers import Request, Response
 from keycloak import KeycloakOpenID
 import logging
-import os
+import environment
 import common.pgquery as pgquery
-from typing import Literal
 
 
 class FEATURE_KEYS_LITERAL:
@@ -13,23 +12,12 @@ class FEATURE_KEYS_LITERAL:
     MOOVE_AI = "moove_ai"
 
 
-# Feature flag environment variables
-ENABLE_RSU_FEATURES = os.getenv("ENABLE_RSU_FEATURES", "true").lower() != "false"
-ENABLE_INTERSECTION_FEATURES = (
-    os.getenv("ENABLE_INTERSECTION_FEATURES", "true").lower() != "false"
-)
-ENABLE_WZDX_FEATURES = os.getenv("ENABLE_WZDX_FEATURES", "true").lower() != "false"
-ENABLE_MOOVE_AI_FEATURES = (
-    os.getenv("ENABLE_MOOVE_AI_FEATURES", "true").lower() != "false"
-)
-
-
 def get_user_role(token):
     keycloak_openid = KeycloakOpenID(
-        server_url=os.getenv("KEYCLOAK_ENDPOINT"),
-        realm_name=os.getenv("KEYCLOAK_REALM"),
-        client_id=os.getenv("KEYCLOAK_API_CLIENT_ID"),
-        client_secret_key=os.getenv("KEYCLOAK_API_CLIENT_SECRET_KEY"),
+        server_url=environment.KEYCLOAK_ENDPOINT,
+        realm_name=environment.KEYCLOAK_REALM,
+        client_id=environment.KEYCLOAK_API_CLIENT_ID,
+        client_secret_key=environment.KEYCLOAK_API_CLIENT_SECRET_KEY,
     )
     logging.debug(f"Middleware get_user_role introspect token {token}")
     introspect = keycloak_openid.introspect(token)
@@ -141,13 +129,19 @@ def is_tag_disabled(tag: FEATURE_KEYS_LITERAL) -> bool:
     Returns:
         bool: True if the feature should be disabled, False otherwise
     """
-    if not ENABLE_RSU_FEATURES and tag == FEATURE_KEYS_LITERAL.RSU:
+    if not environment.ENABLE_RSU_FEATURES and tag == FEATURE_KEYS_LITERAL.RSU:
         return True
-    elif not ENABLE_INTERSECTION_FEATURES and tag == FEATURE_KEYS_LITERAL.INTERSECTION:
+    elif (
+        not environment.ENABLE_INTERSECTION_FEATURES
+        and tag == FEATURE_KEYS_LITERAL.INTERSECTION
+    ):
         return True
-    elif not ENABLE_WZDX_FEATURES and tag == FEATURE_KEYS_LITERAL.WZDX:
+    elif not environment.ENABLE_WZDX_FEATURES and tag == FEATURE_KEYS_LITERAL.WZDX:
         return True
-    elif not ENABLE_MOOVE_AI_FEATURES and tag == FEATURE_KEYS_LITERAL.MOOVE_AI:
+    elif (
+        not environment.ENABLE_MOOVE_AI_FEATURES
+        and tag == FEATURE_KEYS_LITERAL.MOOVE_AI
+    ):
         return True
     return False
 
@@ -187,7 +181,7 @@ class Middleware:
     def __init__(self, app):
         self.app = app
         self.default_headers = {
-            "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+            "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
             "Content-Type": "application/json",
         }
 
@@ -245,7 +239,7 @@ class Middleware:
             res = Response(
                 "User unauthorized", status=401, headers=self.default_headers
             )
-            logging.debug(f"User unauthorized, returning a 401")
+            logging.debug("User unauthorized, returning a 401")
             return res(environ, start_response)
         except Exception as e:
             # Throws an exception if not valid

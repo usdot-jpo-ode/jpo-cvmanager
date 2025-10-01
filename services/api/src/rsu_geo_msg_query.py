@@ -1,12 +1,8 @@
 import common.util as util
-import os
+import environment
 import logging
 from datetime import datetime
 from pymongo import MongoClient, ASCENDING, GEOSPHERE
-import math
-from bson.json_util import dumps
-from bson.json_util import loads
-import json
 
 coord_resolution = 0.0001  # lats more than this are considered different
 time_resolution = 10  # time deltas bigger than this are considered different
@@ -30,13 +26,13 @@ def geo_hash(id, timestamp, long, lat):
 
 def get_collection(msg_type):
     """Get MongoDB collection based on message type"""
-    mongo_uri = os.getenv("MONGO_DB_URI")
-    db_name = os.getenv("MONGO_DB_NAME")
+    mongo_uri = environment.MONGO_DB_URI
+    db_name = environment.MONGO_DB_NAME
 
     if msg_type.lower() == "bsm":
-        coll_name = os.getenv("MONGO_PROCESSED_BSM_COLLECTION_NAME", "ProcessedBsm")
+        coll_name = environment.MONGO_PROCESSED_BSM_COLLECTION_NAME
     elif msg_type.lower() == "psm":
-        coll_name = os.getenv("MONGO_PROCESSED_PSM_COLLECTION_NAME", "ProcessedPsm")
+        coll_name = environment.MONGO_PROCESSED_PSM_COLLECTION_NAME
     else:
         return None, None, 400
 
@@ -87,10 +83,6 @@ def query_geo_data_mongo(pointList, start, end, msg_type):
     hashmap = {}
     count = 0
     total_count = 0
-    # If MAX_GEO_QUERY_RECORDS is not set or is an empty string, use 10000 as default
-    max_records = os.getenv("MAX_GEO_QUERY_RECORDS", 10000) or 10000
-    # Convert to int in a separate step to avoid errors
-    max_records = int(max_records)
 
     try:
         logging.debug(f"Running filter: {filter} on mongo collection {coll_name}")
@@ -115,7 +107,10 @@ def query_geo_data_mongo(pointList, start, end, msg_type):
                 doc["geometry"]["coordinates"][1],
             )
 
-            if message_hash not in hashmap and count < max_records:
+            if (
+                message_hash not in hashmap
+                and count < environment.MAX_GEO_QUERY_RECORDS
+            ):
                 doc.pop("_id")
                 doc.pop("recordGeneratedAt")
 
@@ -151,14 +146,14 @@ class RsuGeoDataSchema(Schema):
 
 class RsuGeoData(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization",
         "Access-Control-Allow-Methods": "POST",
         "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
         "Content-Type": "application/json",
     }
 

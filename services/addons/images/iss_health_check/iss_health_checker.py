@@ -1,11 +1,12 @@
 from datetime import datetime
 import requests
 import logging
-import os
 import iss_token
 import common.pgquery as pgquery
 from dataclasses import dataclass, field
 from typing import Dict
+import environment
+from common import util
 
 
 # Set up logging
@@ -68,8 +69,8 @@ def get_scms_status_data():
     iss_headers["x-api-key"] = iss_token.get_token()
 
     # Create the GET request string
-    iss_base = os.environ["ISS_SCMS_VEHICLE_REST_ENDPOINT"]
-    project_id = os.environ["ISS_PROJECT_ID"]
+    iss_base = environment.ISS_SCMS_VEHICLE_REST_ENDPOINT
+    project_id = environment.ISS_PROJECT_ID
     page_size = 200
     page = 0
     messages_processed = 0
@@ -191,11 +192,7 @@ def validate_scms_data(value):
 
 
 if __name__ == "__main__":
-    # Configure logging based on ENV var or use default if not set
-    log_level = (
-        "INFO" if "LOGGING_LEVEL" not in os.environ else os.environ["LOGGING_LEVEL"]
-    )
-    logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
+    util.configure_logging()
 
     scms_statuses = get_scms_status_data()
     insert_scms_data(scms_statuses)

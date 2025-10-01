@@ -1,7 +1,7 @@
 import logging
 import common.pgquery as pgquery
 import sqlalchemy
-import os
+import environment
 
 
 def query_and_return_list(query):
@@ -166,14 +166,14 @@ class AdminNewIntersectionSchema(Schema):
 
 class AdminNewIntersection(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization",
         "Access-Control-Allow-Methods": "GET,POST",
         "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
         "Content-Type": "application/json",
     }
 

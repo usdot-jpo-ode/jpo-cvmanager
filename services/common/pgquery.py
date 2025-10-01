@@ -1,6 +1,6 @@
-import os
 import sqlalchemy
 import logging
+import environment
 
 db_config = {
     # Pool size is the maximum number of permanent connections to keep.
@@ -21,7 +21,7 @@ db = None
 
 
 def init_tcp_connection_engine(db_user, db_pass, db_name, db_hostname, db_port):
-    logging.info(f"Creating DB pool")
+    logging.info("Creating DB pool")
     logging.debug(f"{db_user},{db_name},{db_hostname},{db_port}")
     pool = sqlalchemy.create_engine(
         # Equivalent URL:
@@ -42,7 +42,7 @@ def init_tcp_connection_engine(db_user, db_pass, db_name, db_hostname, db_port):
 
 
 def init_socket_connection_engine(db_user, db_pass, db_name, unix_query):
-    logging.info(f"Creating DB pool")
+    logging.info("Creating DB pool")
     pool = sqlalchemy.create_engine(
         # Equivalent URL:
         # postgresql+pg8000://<db_user>:<db_pass>@/<db_name>?unix_sock=/cloudsql/<cloud_sql_instance_name>
@@ -60,22 +60,18 @@ def init_socket_connection_engine(db_user, db_pass, db_name, unix_query):
 
 
 def init_connection_engine():
-    db_user = os.environ["PG_DB_USER"]
-    db_pass = os.environ["PG_DB_PASS"]
-    db_name = os.environ["PG_DB_NAME"]
-    if (
-        "INSTANCE_CONNECTION_NAME" in os.environ
-        and os.environ["INSTANCE_CONNECTION_NAME"].strip()
-    ):
+    db_user = environment.PG_DB_USER
+    db_pass = environment.PG_DB_PASS
+    db_name = environment.PG_DB_NAME
+    if environment.INSTANCE_CONNECTION_NAME:
         logging.debug("Using socket connection")
-        instance_connection_name = os.environ["INSTANCE_CONNECTION_NAME"]
         unix_query = {
-            "unix_sock": f"/cloudsql/{instance_connection_name}/.s.PGSQL.5432"
+            "unix_sock": f"/cloudsql/{environment.INSTANCE_CONNECTION_NAME}/.s.PGSQL.5432"
         }
         return init_socket_connection_engine(db_user, db_pass, db_name, unix_query)
     else:
         logging.debug("Using tcp connection")
-        db_host = os.environ["PG_DB_HOST"]
+        db_host = environment.PG_DB_HOST
         # Extract host and port from db_host
         host_args = db_host.split(":")
         db_hostname, db_port = host_args[0], int(host_args[1])

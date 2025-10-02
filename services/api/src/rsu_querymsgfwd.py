@@ -1,7 +1,7 @@
 import common.pgquery as pgquery
 import common.snmp.rsu_message_forward_helpers as rsu_message_forward_helpers
 import common.util as util
-from environment import CORS_DOMAIN
+from api.src import environment
 import logging
 
 
@@ -87,14 +87,14 @@ class RsuQueryMsgFwdSchema(Schema):
 
 class RsuQueryMsgFwd(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": CORS_DOMAIN,
+        "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization,Organization",
         "Access-Control-Allow-Methods": "GET",
         "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        "Access-Control-Allow-Origin": CORS_DOMAIN,
+        "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
         "Content-Type": "application/json",
     }
 

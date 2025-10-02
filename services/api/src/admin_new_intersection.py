@@ -1,7 +1,7 @@
 import logging
 import common.pgquery as pgquery
 import sqlalchemy
-import environment
+from api.src import environment
 
 
 def query_and_return_list(query):

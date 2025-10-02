@@ -19,8 +19,6 @@ def test_request_options():
 
 
 # GET endpoint tests
-
-
 @patch("api.src.admin_email_notification.get_modify_notification_data")
 def test_entry_get(mock_get_modify_notification_data):
     req = MagicMock()

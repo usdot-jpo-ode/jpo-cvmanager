@@ -2,14 +2,14 @@ from typing import Any
 from fastapi import FastAPI, Request, Response, HTTPException, Depends
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from common import gcs_utils, pgquery
-import commsignia_manifest
+from addons.images.obu_ota_server import commsignia_manifest
 import glob
 import os
 import aiofiles
 import logging
 from datetime import datetime
 import asyncio
-import environment
+from addons.images.obu_ota_server import environment
 from common import util
 
 app = FastAPI()
@@ -199,7 +199,7 @@ async def get_fw(request: Request, firmware_id: str):
             content=data, media_type="application/octet-stream", headers=headers
         )
     except Exception as e:
-        asyncio.create_task(log_request(1, request, firmware_id, 1, e.detail))
+        asyncio.create_task(log_request(1, request, firmware_id, 1, str(e)))
         logging.error(
             f"get_fw: Error responding with firmware with error: {e} for firmware_id: {firmware_id}"
         )

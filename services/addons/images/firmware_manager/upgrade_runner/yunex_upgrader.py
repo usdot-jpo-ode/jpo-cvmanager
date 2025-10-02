@@ -1,4 +1,4 @@
-import upgrader
+from addons.images.firmware_manager.upgrade_runner import upgrader
 import json
 import logging
 import subprocess

@@ -2,7 +2,7 @@ import logging
 from common.snmp.update_pg.update_rsu_message_forward import (
     UpdatePostgresRsuMessageForward,
 )
-import environment
+from addons.images.rsu_status_check import environment
 from common import util
 
 

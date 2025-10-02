@@ -38,3 +38,4 @@ google-cloud-bigquery==3.29.0
 pandas==2.2.3
 shapely==2.0.7
 db-dtypes==1.4.0
+trio==0.31.0

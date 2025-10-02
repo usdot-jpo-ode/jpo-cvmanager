@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_restful import Api
-import environment
+from api.src import environment
 import logging
 
 # Custom script imports

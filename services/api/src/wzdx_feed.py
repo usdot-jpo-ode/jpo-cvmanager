@@ -2,7 +2,7 @@ from flask_restful import Resource
 import logging
 import requests
 import json
-import environment
+from api.src import environment
 
 
 def get_wzdx_data():

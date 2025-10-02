@@ -113,10 +113,7 @@ def test_generate_count_table_empty():
     assert result == ""
 
 
-@patch.dict(
-    os.environ,
-    {"DEPLOYMENT_TITLE": "Test"},
-)
+@patch("addons.images.count_metric.environment.DEPLOYMENT_TITLE", "Test")
 @patch("addons.images.count_metric.gen_email.generate_count_table")
 def test_generate_email_body(mock_generate_count_table):
     mock_generate_count_table.return_value = ""

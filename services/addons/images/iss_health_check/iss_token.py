@@ -4,7 +4,7 @@ import requests
 import json
 import uuid
 import logging
-import environment
+from addons.images.iss_health_check import environment
 
 
 # Set up logging

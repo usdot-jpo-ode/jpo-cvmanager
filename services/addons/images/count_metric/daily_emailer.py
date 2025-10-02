@@ -5,7 +5,7 @@ import common.pgquery as pgquery
 from common.email_util import get_email_list
 from datetime import datetime, timedelta
 from pymongo import MongoClient
-import environment
+from addons.images.count_metric import environment
 
 message_types = ["BSM", "TIM", "Map", "SPaT", "SRM", "SSM"]
 
@@ -130,7 +130,7 @@ def email_daily_counts(org_name, email_body):
         for email_address in email_addresses:
             emailSender = EmailSender(
                 environment.SMTP_SERVER_IP,
-                587,
+                environment.SMTP_SERVER_PORT,
             )
             emailSender.send(
                 sender=environment.SMTP_EMAIL,

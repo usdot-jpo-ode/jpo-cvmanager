@@ -8,8 +8,8 @@ import requests
 import shutil
 from common.emailSender import EmailSender
 from common.email_util import get_email_list_from_rsu
-import download_blob
-import environment
+from addons.images.firmware_manager.upgrade_runner import download_blob
+from addons.images.firmware_manager.upgrade_runner import environment
 
 
 class UpgraderAbstractClass(abc.ABC):

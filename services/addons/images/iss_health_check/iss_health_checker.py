@@ -5,7 +5,7 @@ import iss_token
 import common.pgquery as pgquery
 from dataclasses import dataclass, field
 from typing import Dict
-import environment
+from addons.images.iss_health_check import environment
 from common import util
 
 

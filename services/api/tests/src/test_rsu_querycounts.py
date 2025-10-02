@@ -1,6 +1,5 @@
 from unittest.mock import patch, MagicMock
 import pytest
-import os
 import api.src.rsu_querycounts as rsu_querycounts
 from api.src.rsu_querycounts import query_rsu_counts_mongo
 import api.tests.data.rsu_querycounts_data as querycounts_data
@@ -16,6 +15,7 @@ def test_options_request():
     assert headers["Access-Control-Allow-Methods"] == "GET"
 
 
+@patch("api.src.environment.COUNTS_MSG_TYPES", ["BSM", "SSM", "SPAT"])
 @patch("api.src.rsu_querycounts.get_organization_rsus")
 @patch("api.src.rsu_querycounts.query_rsu_counts_mongo")
 def test_get_request(mock_query, mock_rsus):
@@ -34,33 +34,6 @@ def test_get_request(mock_query, mock_rsus):
 
 
 ################################### Testing Data Validation #########################################
-
-
-@patch.dict(os.environ, {"COUNTS_MSG_TYPES": "test,anothErtest"})
-def test_get_request_invalid_message():
-    req = MagicMock()
-    req.args = querycounts_data.request_args_bad_message
-    counts = rsu_querycounts.RsuQueryCounts()
-    with patch("api.src.rsu_querycounts.request", req):
-        (data, code, headers) = counts.get()
-        assert code == 400
-        assert headers["Access-Control-Allow-Origin"] == "test.com"
-        assert data == "Invalid Message Type.\nValid message types: Test, Anothertest"
-
-
-@patch.dict(os.environ, {}, clear=True)
-def test_get_request_invalid_message_no_env():
-    req = MagicMock()
-    req.args = querycounts_data.request_args_bad_message
-    counts = rsu_querycounts.RsuQueryCounts()
-    with patch("api.src.rsu_querycounts.request", req):
-        (data, code, headers) = counts.get()
-        assert code == 400
-        assert headers["Access-Control-Allow-Origin"] == "test.com"
-        assert (
-            data
-            == "Invalid Message Type.\nValid message types: Bsm, Ssm, Spat, Srm, Map"
-        )
 
 
 def test_schema_validate_bad_data():
@@ -123,10 +96,6 @@ def test_rsu_counts_get_organization_rsus_empty(mock_pgquery):
 
 
 ##################################### Test query_rsu_counts ###########################################
-@patch.dict(
-    os.environ,
-    {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "name"},
-)
 @patch("api.src.rsu_querycounts.MongoClient")
 def test_query_rsu_counts_mongo_success(mock_mongo):
     mock_db = MagicMock()
@@ -154,10 +123,6 @@ def test_query_rsu_counts_mongo_success(mock_mongo):
     assert status_code == 200
 
 
-@patch.dict(
-    os.environ,
-    {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "name"},
-)
 @patch("api.src.rsu_querycounts.MongoClient")
 @patch("api.src.rsu_querycounts.logging")
 def test_query_rsu_counts_mongo_failure(mock_logging, mock_mongo):

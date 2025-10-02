@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-import environment
+from addons.images.count_metric import environment
 
 
 def diff_to_color(val):

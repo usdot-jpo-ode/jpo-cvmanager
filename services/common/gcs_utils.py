@@ -1,7 +1,7 @@
 from google.cloud import storage
 from common.util import validate_file_type
 import logging
-import environment
+from common import environment
 import os
 
 def download_gcp_blob(blob_name, destination_file_name, file_extension=None):

@@ -138,9 +138,9 @@ spec:
               value: ""
             - name: MONGO_PROCESSED_PSM_COLLECTION_NAME
               value: ""
-            - name: SSM_DB_NAME
+            - name: MONGO_SSM_COLLECTION_NAME
               value: ""
-            - name: SRM_DB_NAME
+            - name: MONGO_SRM_COLLECTION_NAME
               value: ""
             - name: WZDX_ENDPOINT
               value: ""

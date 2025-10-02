@@ -1,7 +1,7 @@
 import logging
 import common.pgquery as pgquery
 import common.util as util
-import environment
+from api.src import environment
 
 
 def get_iss_scms_status(organization):

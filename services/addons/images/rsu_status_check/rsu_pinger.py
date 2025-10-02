@@ -3,7 +3,7 @@ import time
 import common.pgquery as pgquery
 from datetime import datetime
 from subprocess import Popen, DEVNULL
-import environment
+from addons.images.rsu_status_check import environment
 from common import util
 
 

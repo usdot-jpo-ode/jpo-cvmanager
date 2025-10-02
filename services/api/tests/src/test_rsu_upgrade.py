@@ -28,7 +28,7 @@ def test_check_for_upgrade_true(mock_query_db):
         "FROM public.rsus AS rd "
         "JOIN public.firmware_upgrade_rules fur ON fur.from_id = rd.firmware_version "
         "JOIN public.firmware_images fi2 ON fi2.firmware_id = fur.to_id "
-        f"WHERE rd.ipv4_address = '192.168.0.10'"
+        "WHERE rd.ipv4_address = '192.168.0.10'"
         ") as row"
     )
 
@@ -59,7 +59,7 @@ def test_check_for_upgrade_false(mock_query_db):
         "FROM public.rsus AS rd "
         "JOIN public.firmware_upgrade_rules fur ON fur.from_id = rd.firmware_version "
         "JOIN public.firmware_images fi2 ON fi2.firmware_id = fur.to_id "
-        f"WHERE rd.ipv4_address = '192.168.0.10'"
+        "WHERE rd.ipv4_address = '192.168.0.10'"
         ") as row"
     )
 
@@ -74,7 +74,7 @@ def test_check_for_upgrade_false(mock_query_db):
     assert actual_response == expected_response
 
 
-@patch.dict(os.environ, {"FIRMWARE_MANAGER_ENDPOINT": "http://1.1.1.1:8080"})
+@patch("api.src.environment.FIRMWARE_MANAGER_ENDPOINT", "http://1.1.1.1:8080")
 @patch("api.src.rsu_upgrade.requests.post")
 @patch("api.src.rsu_upgrade.pgquery.write_db")
 @patch(
@@ -113,7 +113,7 @@ def test_mark_rsu_for_upgrade_eligible(
     assert actual_status_code == expected_status_code
 
 
-@patch.dict(os.environ, {"FIRMWARE_MANAGER_ENDPOINT": "http://1.1.1.1:8080"})
+@patch("api.src.environment.FIRMWARE_MANAGER_ENDPOINT", "http://1.1.1.1:8080")
 @patch("api.src.rsu_upgrade.requests.post")
 @patch("api.src.rsu_upgrade.pgquery.write_db")
 @patch(
@@ -154,7 +154,7 @@ def test_mark_rsu_for_upgrade_eligible_but_rejected(
     assert actual_status_code == expected_status_code
 
 
-@patch.dict(os.environ, {"FIRMWARE_MANAGER_ENDPOINT": "http://1.1.1.1:8080"})
+@patch("api.src.environment.FIRMWARE_MANAGER_ENDPOINT", "http://1.1.1.1:8080")
 @patch("api.src.rsu_upgrade.requests.post")
 @patch("api.src.rsu_upgrade.pgquery.write_db")
 @patch(

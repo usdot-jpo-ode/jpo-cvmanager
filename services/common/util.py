@@ -2,7 +2,7 @@ from dateutil.parser import parse
 import pytz
 import logging
 import datetime
-import environment
+from common import environment
 import os
 
 

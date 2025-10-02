@@ -1,5 +1,5 @@
 import logging
-import environment
+from api.src import environment
 from flask import abort, request
 from flask_restful import Resource
 from marshmallow import Schema

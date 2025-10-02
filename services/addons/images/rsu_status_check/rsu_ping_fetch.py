@@ -1,7 +1,7 @@
 import requests
 import logging
 import common.pgquery as pgquery
-import environment
+from addons.images.rsu_status_check import environment
 from common import util
 
 

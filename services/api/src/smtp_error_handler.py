@@ -7,7 +7,7 @@ from logging.handlers import SMTPHandler
 import smtplib
 import datetime
 import ssl
-import environment
+from api.src import environment
 
 
 def get_subscribed_users():

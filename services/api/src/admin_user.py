@@ -2,7 +2,7 @@ import logging
 import common.pgquery as pgquery
 import sqlalchemy
 import admin_new_user
-import environment
+from api.src import environment
 
 
 def get_user_data(user_email):

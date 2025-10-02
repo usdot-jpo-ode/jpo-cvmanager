@@ -4,7 +4,7 @@ import logging
 import rsu_upgrade
 import ssh_commands
 import rsu_snmpset
-import environment
+from api.src import environment
 
 # Dict of functions
 command_data = {

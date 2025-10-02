@@ -1,6 +1,6 @@
 import common.pgquery as pgquery
 import logging
-import environment
+from api.src import environment
 
 
 def query_org_rsus(orgName):

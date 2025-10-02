@@ -6,7 +6,7 @@ from threading import Lock
 from waitress import serve
 import requests
 import logging
-import environment
+from addons.images.firmware_manager.upgrade_scheduler import environment
 from common import util
 
 app = Flask(__name__)

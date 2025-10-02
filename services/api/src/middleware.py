@@ -1,7 +1,7 @@
 from werkzeug.wrappers import Request, Response
 from keycloak import KeycloakOpenID
 import logging
-import environment
+from api.src import environment
 import common.pgquery as pgquery
 
 

@@ -1,7 +1,7 @@
 import logging
 from pymongo import MongoClient
 from datetime import datetime, timedelta
-import environment
+from addons.images.count_metric import environment
 
 message_types = ["BSM", "TIM", "Map", "SPaT", "SRM", "SSM", "PSM"]
 

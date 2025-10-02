@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 import common.pgquery as pgquery
 import common.util as util
-import environment
+from api.src import environment
 import logging
 from pymongo import MongoClient
 
@@ -133,7 +133,7 @@ class RsuQueryCounts(Resource):
 
         # Validate request with supported message types
         msgList = environment.COUNTS_MSG_TYPES
-        if message.title() not in msgList:
+        if message.upper() not in msgList:
             return (
                 "Invalid Message Type.\nValid message types: " + ", ".join(msgList),
                 400,

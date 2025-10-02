@@ -3,9 +3,8 @@ import os
 from common import gcs_utils
 
 
-@patch.dict(
-    os.environ, {"GCP_PROJECT": "test-project", "BLOB_STORAGE_BUCKET": "test-bucket"}
-)
+@patch("common.environment.GCP_PROJECT", "test-project")
+@patch("common.environment.BLOB_STORAGE_BUCKET", "test-bucket")
 @patch("common.gcs_utils.logging")
 @patch("common.gcs_utils.storage.Client")
 def test_download_gcp_blob(mock_storage_client, mock_logging):
@@ -29,9 +28,8 @@ def test_download_gcp_blob(mock_storage_client, mock_logging):
     )
 
 
-@patch.dict(
-    os.environ, {"GCP_PROJECT": "test-project", "BLOB_STORAGE_BUCKET": "test-bucket"}
-)
+@patch("common.environment.GCP_PROJECT", "test-project")
+@patch("common.environment.BLOB_STORAGE_BUCKET", "test-bucket")
 @patch("common.gcs_utils.storage.Client")
 def test_list_gcs_blobs(mock_storage_client):
     # mock
@@ -58,9 +56,8 @@ def test_list_gcs_blobs(mock_storage_client):
     assert result == ["/firmwares/file1.txt", "/firmwares/file3.txt"]
 
 
-@patch.dict(
-    os.environ, {"GCP_PROJECT": "test-project", "BLOB_STORAGE_BUCKET": "test-bucket"}
-)
+@patch("common.environment.GCP_PROJECT", "test-project")
+@patch("common.environment.BLOB_STORAGE_BUCKET", "test-bucket")
 @patch("common.gcs_utils.storage.Client")
 def test_list_gcs_blobs_empty(mock_storage_client):
     # mock

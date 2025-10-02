@@ -1,7 +1,8 @@
 import common.pgquery as pgquery
 import json
 import logging
-import environment
+
+from api.src import environment
 import requests
 
 

@@ -1,9 +1,9 @@
 from google.cloud import bigquery
-import environment
+from api.src import environment
 import logging
 import pandas as pd
 from shapely import wkt
-import environment
+from api.src import environment
 
 
 def query_moove_ai(pointList):

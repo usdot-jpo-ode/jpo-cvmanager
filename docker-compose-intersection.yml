@@ -17,9 +17,6 @@ services:
     ports:
       - '8089:8089'
     restart: always
-    extra_hosts:
-      ${WEBAPP_DOMAIN}: ${WEBAPP_HOST_IP}
-      ${KEYCLOAK_DOMAIN}: ${KC_HOST_IP}
     environment:
       AUTH_SERVER_URL: ${KEYCLOAK_ENDPOINT}
       DB_HOST_IP: ${DB_HOST_IP}

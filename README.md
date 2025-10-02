@@ -208,12 +208,7 @@ The following steps are intended to help get a new user up and running the JPO C
     2. Some of these variables, delineated by sections, pertain to the [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor), [jpo-geojsonconverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter), and [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode). Please see the documentation provided for these projects when setting these variables.
 4.  The CV Manager has four components that need to be containerized and deployed: the API, the PostgreSQL database, Keycloak, and the webapp.
 
-    - If you are looking to deploy the CV Manager locally, you can simply run the docker-compose, make sure to fill out the .env file to ensure it launches properly. Also, edit your host file ([How to edit the host file](<[resources/kubernetes](https://docs.rackspace.com/support/how-to/modify-your-hosts-file/)>)) and add IP address of your docker host to these custom domains (remove the carrot brackets and just put the IP address):
-
-    CV Manager hosts:
-
-         <DOCKER_HOST_IP> cvmanager.local.com
-         <DOCKER_HOST_IP> cvmanager.auth.com
+    - If you are looking to deploy the CV Manager locally, you can simply run the docker-compose, make sure to fill out the .env file to ensure it launches properly
 
 5.  Apply the docker compose to start the required components:
 
@@ -227,21 +222,21 @@ The following steps are intended to help get a new user up and running the JPO C
     docker compose up --build -d
     ```
 
-6.  Access the website by going to:
+6.  Access the website by going to http://localhost
 
     ```
-      http://cvmanager.local.com
       Default Username: test@gmail.com
       Default Password: tester
     ```
 
-7.  To access keycloak go to:
+7.  To access keycloak go to http://localhost:8084/
 
     ```
-      http://cvmanager.auth.com:8084/
       Default Username: admin
       Default Password: admin
     ```
+
+    This should automatically redirect you to http://host.docker.internal:8084/. If it does not, navigate to that URL directly.
 
 - If you are looking to deploy in Kubernetes or on separate VMs, refer to the Kubernetes YAML deployment files to deploy the four components to your cluster. ([Kubernetes YAML](resources/kubernetes))
 
@@ -328,16 +323,7 @@ A debugging profile has been set up for use with VSCode to allow ease of debuggi
 
 For the "Debug Solution" to run properly on Windows 10/11 using WSL, the following must be configured:
 
-1.  In a Powershell or Command Prompt terminal run the command: `ifconfig` and open up your `C:\Windows\System32\drivers\etc\hosts` file
-
-    - Copy the `Ethernet adapter vEthernet (WSL) -> IPv4 Address` value to your hosts `cvmanager.auth.com` entry.
-    - In the same hosts file, update the `cvmanager.local.com` value to: `127.0.0.1`.
-
-2.  Update your main .env file variables as specified in the root of the cvmanager directory
-
-    - Copy the `Ethernet adapter vEthernet (Default) -> IPv4 Address` value to your hosts `WEBAPP_HOST_IP` variable
-
-3.  Apply the docker compose to start the required components:
+1.  Apply the docker compose to start the required components:
 
 ```sh
 docker compose up -d
@@ -349,21 +335,21 @@ To run only the critical cvmanager components (no intersection services), use th
 docker compose up -d cvmanager_api cvmanager_webapp cvmanager_postgres cvmanager_keycloak
 ```
 
-4.  Access the website by going to:
+2.  Access the website by going to http://localhost
 
     ```
-      http://cvmanager.local.com
       Default Username: test@gmail.com
       Default Password: tester
     ```
 
-5.  To access keycloak go to:
+3.  To access keycloak go to http://localhost:8084/
 
     ```
-      http://cvmanager.auth.com:8084/
       Default Username: admin
       Default Password: admin
     ```
+
+    This should automatically redirect you to http://host.docker.internal:8084/. If it does not, navigate to that URL directly.
 
 ### Environment Variables
 
@@ -444,7 +430,7 @@ git config --global core.autocrlf false
 - KEYCLOAK_API_CLIENT_ID: Keycloak API client name.
 - KEYCLOAK_API_CLIENT_SECRET_KEY: Keycloak API secret for the given client name.
 - KEYCLOAK_LOGIN_THEME_NAME: Name of the jar file to use as the theme provider in Keycloak. For generating a custom theme reference the [Keycloakify](https://github.com/CDOT-CV/keycloakify-starter) Github
-- KC_LOGGING_LEVEL: The level of which the Keycloak instance will log. (ALL, DEBUG, ERROR, FATAL, INFO, OFF, TRACE, and WARN)
+- KC_LOG_LEVEL: The level of which the Keycloak instance will log. (ALL, DEBUG, ERROR, FATAL, INFO, OFF, TRACE, and WARN)
 - GOOGLE_CLIENT_ID: GCP OAuth2.0 client ID for SSO Authentication within keycloak.
 - GOOGLE_CLIENT_SECRET: GCP OAuth2.0 client secret for SSO Authentication within keycloak.
 

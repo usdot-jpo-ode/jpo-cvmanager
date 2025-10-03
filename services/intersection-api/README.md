@@ -55,7 +55,7 @@ Run all docker images
 docker compose up -d
 ```
 
-### 3. Setup Docker Environment Variables
+### 3. Setup Environment Variables
 
 Make sure to set the JPO ConflictMonitor and cvmanager intersection api environment variables in the root .env file (from sample.env)
 
@@ -63,7 +63,7 @@ Make sure to set the JPO ConflictMonitor and cvmanager intersection api environm
 
 #### Github Token
 
-A GitHub token is required to pull artifacts from GitHub repositories. This is required to obtain the jpo-ode jars and must be done before attempting to build this repository.
+A GitHub token is required to pull required java artifacts from GitHub repositories. This is required to obtain the jpo-ode jars and must be done before attempting to build this repository.
 
 1. Log into GitHub.
 2. Navigate to Settings -> Developer settings -> Personal access tokens.

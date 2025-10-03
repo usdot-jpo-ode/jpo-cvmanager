@@ -33,7 +33,7 @@ import {
   selectDecoderModeEnabled,
   selectPlaybackModeActive,
   selectSliderTimeValue,
-  setSliderValue,
+  setSliderValueDeciseconds,
   setTimeWindowSeconds,
   toggleLiveDataActive,
   togglePlaybackModeActive,
@@ -42,10 +42,10 @@ import {
   selectLiveDataActive,
   selectMapSpatTimes,
   selectQueryParams,
-  selectSliderValue,
+  selectSliderValueDeciseconds,
   selectTimeWindowSeconds,
 } from './map-slice'
-import { getTimeRange } from './utilities/map-utils'
+import { getTimeRangeDeciseconds } from './utilities/map-utils'
 import {
   selectIntersections,
   setSelectedIntersection,
@@ -164,7 +164,7 @@ function ControlPanel() {
 
   const queryParams = useSelector(selectQueryParams)
   const timeWindowSeconds = useSelector(selectTimeWindowSeconds)
-  const sliderValue = useSelector(selectSliderValue)
+  const sliderValueDeciseconds = useSelector(selectSliderValueDeciseconds)
   const mapSpatTimes = useSelector(selectMapSpatTimes)
   const liveDataActive = useSelector(selectLiveDataActive)
   const sliderTimeValue = useSelector(selectSliderTimeValue)
@@ -285,10 +285,10 @@ function ControlPanel() {
         </button>
         <Slider
           sx={{ ml: 2, width: 'calc(100% - 80px)' }}
-          value={sliderValue}
-          onChange={(event: Event, value: number | number[]) => dispatch(setSliderValue(value))}
+          value={sliderValueDeciseconds}
+          onChange={(event: Event, value: number | number[]) => dispatch(setSliderValueDeciseconds(value))}
           min={0}
-          max={getTimeRange(queryParams.startDate, queryParams.endDate)}
+          max={getTimeRangeDeciseconds(queryParams.startDate, queryParams.endDate)}
           valueLabelDisplay="auto"
           disableSwap
           color="primary"
@@ -347,19 +347,21 @@ function ControlPanel() {
                 <Grid2 size={{ xs: 12, md: 5 }}>
                   <FormControl fullWidth>
                     <TextField
-                      label="Time Before Event"
-                      name="timeRangeBefore"
+                      label="Time Render Window"
+                      name="timeRangeAfter"
                       type="number"
                       sx={{ mt: 1 }}
                       onChange={(e) => {
-                        setTimeBefore(e.target.value)
+                        if (Number.isInteger(Number(e.target.value))) {
+                          dispatch(setTimeWindowSeconds(parseInt(e.target.value)))
+                        }
                       }}
                       slotProps={{
                         input: {
                           endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
                         },
                       }}
-                      value={timeBefore}
+                      value={timeWindowSeconds}
                     />
                   </FormControl>
                 </Grid2>
@@ -380,6 +382,25 @@ function ControlPanel() {
                 <Grid2 size={{ xs: 12, md: 5 }}>
                   <FormControl fullWidth>
                     <TextField
+                      label="Time Before Event"
+                      name="timeRangeBefore"
+                      type="number"
+                      sx={{ mt: 1 }}
+                      onChange={(e) => {
+                        setTimeBefore(e.target.value)
+                      }}
+                      slotProps={{
+                        input: {
+                          endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
+                        },
+                      }}
+                      value={timeBefore}
+                    />
+                  </FormControl>
+                </Grid2>
+                <Grid2 size={{ xs: 12, md: 5 }}>
+                  <FormControl fullWidth>
+                    <TextField
                       label="Time After Event"
                       name="timeRangeAfter"
                       type="number"
@@ -393,27 +414,6 @@ function ControlPanel() {
                         },
                       }}
                       value={timeAfter}
-                    />
-                  </FormControl>
-                </Grid2>
-                <Grid2 size={{ xs: 12, md: 5 }}>
-                  <FormControl fullWidth>
-                    <TextField
-                      label="Time Render Window"
-                      name="timeRangeAfter"
-                      type="number"
-                      sx={{ mt: 1 }}
-                      onChange={(e) => {
-                        if (Number.isInteger(Number(e.target.value))) {
-                          dispatch(setTimeWindowSeconds(parseInt(e.target.value)))
-                        }
-                      }}
-                      slotProps={{
-                        input: {
-                          endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
-                        },
-                      }}
-                      value={timeWindowSeconds}
                     />
                   </FormControl>
                 </Grid2>

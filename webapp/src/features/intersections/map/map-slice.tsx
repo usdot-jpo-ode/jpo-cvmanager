@@ -15,7 +15,7 @@ import {
 } from './utilities/message-utils'
 import { generateColorDictionary, generateMapboxStyleExpression } from './utilities/colors'
 import { setBsmCircleColor, setBsmLegendColors } from './map-layer-style-slice'
-import { getTimeRange } from './utilities/map-utils'
+import { getTimeRangeDeciseconds } from './utilities/map-utils'
 import { MapRef, ViewState } from 'react-map-gl'
 import { selectRsuMapData } from '../../../generalSlices/rsuSlice'
 import EnvironmentVars from '../../../EnvironmentVars'
@@ -142,7 +142,7 @@ const initialState = {
     zoom: 19,
   } as Partial<ViewState>,
   timeWindowSeconds: 60,
-  sliderValue: 0,
+  sliderValueDeciseconds: 0,
   sliderTimeValue: {
     start: new Date(),
     end: new Date(),
@@ -178,10 +178,10 @@ const initialState = {
   decoderModeEnabled: false,
 }
 
-const getNewSliderTimeValue = (startDate: Date, sliderValue: number, timeWindowSeconds: number) => {
+const getNewSliderTimeValue = (startDate: Date, sliderValueDeciseconds: number, timeWindowSeconds: number) => {
   return {
-    start: new Date((startDate.getTime() / 1000 + sliderValue / 10 - timeWindowSeconds) * 1000),
-    end: new Date((startDate.getTime() / 1000 + sliderValue / 10) * 1000),
+    start: new Date((startDate.getTime() / 1000 + sliderValueDeciseconds / 10 - timeWindowSeconds) * 1000),
+    end: new Date((startDate.getTime() / 1000 + sliderValueDeciseconds / 10) * 1000),
   }
 }
 
@@ -540,9 +540,9 @@ export const renderEntireMap = createAsyncThunk(
       return {
         bsmData: currentBsmData,
         rawData: { bsm: currentBsmData },
-        sliderValue: Math.min(
-          getTimeRange(queryParams.startDate, queryParams.eventDate ?? new Date()),
-          getTimeRange(queryParams.startDate, queryParams.endDate)
+        sliderValueDeciseconds: Math.min(
+          getTimeRangeDeciseconds(queryParams.startDate, queryParams.eventDate ?? new Date()),
+          getTimeRangeDeciseconds(queryParams.startDate, queryParams.endDate)
         ),
       }
     }
@@ -578,9 +578,9 @@ export const renderEntireMap = createAsyncThunk(
     return {
       bsmData: currentBsmData,
       rawData: rawData,
-      sliderValue: Math.min(
-        getTimeRange(queryParams.startDate, queryParams.eventDate ?? new Date()),
-        getTimeRange(queryParams.startDate, queryParams.endDate)
+      sliderValueDeciseconds: Math.min(
+        getTimeRangeDeciseconds(queryParams.startDate, queryParams.eventDate ?? new Date()),
+        getTimeRangeDeciseconds(queryParams.startDate, queryParams.endDate)
       ),
     }
   },
@@ -809,7 +809,8 @@ export const renderIterative_Bsm = createAsyncThunk(
     }
     const currTimestamp = getTimestamp(
       Math.max(
-        new Date(newBsmFeatureCollection.features.at(-1)!.properties.odeReceivedAt as unknown as string).getTime() / 1000,
+        new Date(newBsmFeatureCollection.features.at(-1)!.properties.odeReceivedAt as unknown as string).getTime() /
+          1000,
         latestTimestamp
       )
     )
@@ -1188,11 +1189,11 @@ const compareQueryParams = (oldParams: MAP_QUERY_PARAMS, newParams: MAP_QUERY_PA
   )
 }
 
-const generateRenderTimeInterval = (startDate: Date, sliderValue: number, timeWindowSeconds: number) => {
+const generateRenderTimeInterval = (startDate: Date, sliderValueDeciseconds: number, timeWindowSeconds: number) => {
   const startTime = startDate.getTime() / 1000
 
-  const filteredStartTime = startTime + sliderValue / 10 - timeWindowSeconds
-  const filteredEndTime = startTime + sliderValue / 10
+  const filteredStartTime = startTime + sliderValueDeciseconds / 10 - timeWindowSeconds
+  const filteredEndTime = startTime + sliderValueDeciseconds / 10
 
   return [filteredStartTime, filteredEndTime]
 }
@@ -1294,19 +1295,9 @@ export const intersectionMapSlice = createSlice({
           start: new Date(newQueryParams.endDate.getTime() - state.value.timeWindowSeconds * 1000),
           end: newQueryParams.endDate,
         }
-        state.value.sliderValue =
+        state.value.sliderValueDeciseconds =
           (newQueryParams.endDate.getTime() - state.value.timeWindowSeconds * 1000 - newQueryParams.endDate.getTime()) /
           100
-        console.log(
-          'Received timestamp',
-          action.payload,
-          'newQueryParams',
-          newQueryParams,
-          'sliderTimeValue',
-          state.value.sliderTimeValue,
-          'sliderValue',
-          state.value.sliderValue
-        )
       }
     },
     setViewState: (state, action: PayloadAction<Partial<ViewState>>) => {
@@ -1334,7 +1325,7 @@ export const intersectionMapSlice = createSlice({
       }
       state.value.sliderTimeValue = getNewSliderTimeValue(
         state.value.queryParams.startDate,
-        state.value.sliderValue,
+        state.value.sliderValueDeciseconds,
         state.value.timeWindowSeconds
       )
       state.value.timeWindowSeconds = 60
@@ -1364,12 +1355,12 @@ export const intersectionMapSlice = createSlice({
         state.value.queryParams = newQueryParams
         state.value.sliderTimeValue = getNewSliderTimeValue(
           state.value.queryParams.startDate,
-          state.value.sliderValue,
+          state.value.sliderValueDeciseconds,
           state.value.timeWindowSeconds
         )
         if (action.payload.resetTimeWindow) state.value.timeWindowSeconds = 60
         if (action.payload.updateSlider)
-          state.value.sliderValue = getTimeRange(newQueryParams.startDate, newQueryParams.endDate)
+          state.value.sliderValueDeciseconds = getTimeRangeDeciseconds(newQueryParams.startDate, newQueryParams.endDate)
       }
       // _updateQueryParams({ state: state.value, ...action.payload })
     },
@@ -1396,7 +1387,7 @@ export const intersectionMapSlice = createSlice({
         state.value.queryParams = updatedQueryParams
         state.value.sliderTimeValue = getNewSliderTimeValue(
           state.value.queryParams.startDate,
-          state.value.sliderValue,
+          state.value.sliderValueDeciseconds,
           state.value.timeWindowSeconds
         )
       } else {
@@ -1404,22 +1395,23 @@ export const intersectionMapSlice = createSlice({
       }
       state.value.timeWindowSeconds = timeWindowSeconds ?? state.value.timeWindowSeconds
     },
-    setSliderValue: (state, action: PayloadAction<number | number[]>) => {
-      state.value.sliderValue = action.payload as number
+    setSliderValueDeciseconds: (state, action: PayloadAction<number | number[]>) => {
+      state.value.sliderValueDeciseconds = action.payload as number
       state.value.liveDataActive = false
     },
     incrementSliderValue: (state, action: PayloadAction<number | undefined>) => {
-      const maxSliderValue = getTimeRange(state.value.queryParams.startDate, state.value.queryParams.endDate)
-      if (state.value.sliderValue == maxSliderValue) {
+      // action.payload in deciseconds
+      const maxSliderValue = getTimeRangeDeciseconds(state.value.queryParams.startDate, state.value.queryParams.endDate)
+      if (state.value.sliderValueDeciseconds == maxSliderValue) {
         state.value.playbackModeActive = false
       } else {
-        state.value.sliderValue += action.payload ?? 1
+        state.value.sliderValueDeciseconds += action.payload ?? 1
       }
     },
     updateRenderTimeInterval: (state) => {
       state.value.renderTimeInterval = generateRenderTimeInterval(
         state.value.queryParams.startDate,
-        state.value.sliderValue,
+        state.value.sliderValueDeciseconds,
         state.value.timeWindowSeconds
       )
     },
@@ -1547,7 +1539,7 @@ export const intersectionMapSlice = createSlice({
       state.value.mapData = undefined
       state.value.mapSpatTimes = { mapTime: 0, spatTime: 0 }
       state.value.rawData = {}
-      state.value.sliderValue = 0
+      state.value.sliderValueDeciseconds = 0
       state.value.playbackModeActive = false
       state.value.currentSpatData = []
       // state.value.currentProcessedSpatData = [];
@@ -1641,15 +1633,15 @@ export const intersectionMapSlice = createSlice({
           action: PayloadAction<{
             bsmData: BsmFeatureCollection
             rawData: any
-            sliderValue: number
+            sliderValueDeciseconds: number
           }>
         ) => {
           state.value.bsmData = action.payload.bsmData
           state.value.rawData = action.payload.rawData
-          state.value.sliderValue = action.payload.sliderValue
+          state.value.sliderValueDeciseconds = action.payload.sliderValueDeciseconds
           state.value.sliderTimeValue = getNewSliderTimeValue(
             state.value.queryParams.startDate,
-            state.value.sliderValue,
+            state.value.sliderValueDeciseconds,
             state.value.timeWindowSeconds
           )
         }
@@ -1778,7 +1770,7 @@ export const selectBsmEventsByMinute = (state: RootState) => state.intersectionM
 export const selectPlaybackModeActive = (state: RootState) => state.intersectionMap.value.playbackModeActive
 export const selectViewState = (state: RootState) => state.intersectionMap.value.viewState
 export const selectTimeWindowSeconds = (state: RootState) => state.intersectionMap.value.timeWindowSeconds
-export const selectSliderValue = (state: RootState) => state.intersectionMap.value.sliderValue
+export const selectSliderValueDeciseconds = (state: RootState) => state.intersectionMap.value.sliderValueDeciseconds
 export const selectRenderTimeInterval = (state: RootState) => state.intersectionMap.value.renderTimeInterval
 export const selectHoveredFeature = (state: RootState) => state.intersectionMap.value.hoveredFeature
 export const selectSelectedFeature = (state: RootState) => state.intersectionMap.value.selectedFeature
@@ -1815,7 +1807,7 @@ export const {
   handleImportedMapMessageData,
   updateQueryParams,
   onTimeQueryChanged,
-  setSliderValue,
+  setSliderValueDeciseconds,
   incrementSliderValue,
   updateRenderTimeInterval,
   onMapClick,

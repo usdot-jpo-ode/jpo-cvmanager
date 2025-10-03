@@ -57,7 +57,7 @@ import {
   selectShowPopupOnHover,
   selectSigGroupLabelsVisible,
   selectSignalStateData,
-  selectSliderValue,
+  selectSliderValueDeciseconds,
   selectSpatSignalGroups,
   selectTimeWindowSeconds,
   selectViewState,
@@ -139,7 +139,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
   const filteredSurroundingNotifications = useSelector(selectFilteredSurroundingNotifications)
   const viewState = useSelector(selectViewState)
   const timeWindowSeconds = useSelector(selectTimeWindowSeconds)
-  const sliderValue = useSelector(selectSliderValue)
+  const sliderValueDeciseconds = useSelector(selectSliderValueDeciseconds)
   const renderTimeInterval = useSelector(selectRenderTimeInterval)
   const hoveredFeature = useSelector(selectHoveredFeature)
   const selectedFeature = useSelector(selectSelectedFeature)
@@ -168,7 +168,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
     dispatch(setMapProps(props))
   }, [props])
 
-  // Increment sliderValue by 1 every second when playbackModeActive is true
+  // Increment selectSliderValueDeciseconds by 1 every second when playbackModeActive is true
   useEffect(() => {
     if (playbackModeActive) {
       const playbackPeriod = 100 //ms
@@ -232,7 +232,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
     if (!liveDataActive) {
       dispatch(updateRenderTimeInterval())
     }
-  }, [sliderValue, queryParams, timeWindowSeconds])
+  }, [sliderValueDeciseconds, queryParams, timeWindowSeconds])
 
   useEffect(() => {
     if (liveDataActive) {

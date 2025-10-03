@@ -20,6 +20,6 @@ export function getBearingBetweenPoints(start: number[], end: number[]) {
   return rad2deg(brng)
 }
 
-export const getTimeRange = (startDate: Date, endDate: Date) => {
+export const getTimeRangeDeciseconds = (startDate: Date, endDate: Date) => {
   return (endDate.getTime() - startDate.getTime()) / 100
 }

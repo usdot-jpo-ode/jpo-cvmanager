@@ -107,6 +107,7 @@ services:
         ENABLE_MOOVE_AI_FEATURES: ${ENABLE_MOOVE_AI_FEATURES}
         WEBAPP_THEME_LIGHT: ${WEBAPP_THEME_LIGHT}
         WEBAPP_THEME_DARK: ${WEBAPP_THEME_DARK}
+        ENABLE_HAAS_FEATURES: ${ENABLE_HAAS_FEATURES}
     image: jpo_cvmanager_webapp:latest
     restart: always
     volumes:
@@ -129,6 +130,7 @@ services:
     profiles:
       - basic
       - cvmanager_postgres
+      - intersection_no_api
     image: postgis/postgis:15-master
     restart: always
     ports:
@@ -148,6 +150,7 @@ services:
       - basic
       - keycloak
       - cvmanager_keycloak
+      - intersection_no_api
     build:
       context: ./resources/keycloak
       dockerfile: Dockerfile

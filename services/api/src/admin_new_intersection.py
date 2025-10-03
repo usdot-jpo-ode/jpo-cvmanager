@@ -25,7 +25,7 @@ def get_allowed_selections():
 
 
 def check_safe_input(intersection_spec):
-    special_characters = "!\"#$%&'()*+,./:;<=>?@[\\]^`{|}~"
+    special_characters = "!\"#$%'()*+,./:;<=>?@[\\]^`{|}~"
     unchecked_fields = [
         "origin_ip",
         "rsus",
@@ -57,7 +57,7 @@ def add_intersection(intersection_spec):
     # Check for special characters for potential SQL injection
     if not check_safe_input(intersection_spec):
         return {
-            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+            "message": "No special characters are allowed: !\"#$%'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
         }, 500
 
     try:

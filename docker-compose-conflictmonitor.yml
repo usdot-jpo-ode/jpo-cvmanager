@@ -7,13 +7,21 @@ services:
     profiles:
       - conflictmonitor
       - conflictmonitor_only
-    image: usdotjpoode/jpo-conflictmonitor:latest
+    image: ${DOCKERHUB_HOST:-usdotjpoode}/jpo-conflictmonitor:${DOCKERHUB_RELEASE:-2025-q2}
     restart: ${RESTART_POLICY}
     ports:
       - '8082:8082'
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP:?error}
       KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS:?error}
+      CONNECT_URL: ${CONNECT_URL:-http://kafka-connect:8083}
+      spring.kafka.bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:?error}
+      ROCKSDB_TOTAL_OFF_HEAP_MEMORY: ${ROCKSDB_TOTAL_OFF_HEAP_MEMORY:-134217728}
+      ROCKSDB_INDEX_FILTER_BLOCK_RATIO: ${ROCKSDB_INDEX_FILTER_BLOCK_RATIO:-0.1}
+      ROCKSDB_TOTAL_MEMTABLE_MEMORY: ${ROCKSDB_TOTAL_MEMTABLE_MEMORY:-67108864}
+      ROCKSDB_BLOCK_SIZE: ${ROCKSDB_BLOCK_SIZE:-4096}
+      ROCKSDB_N_MEMTABLES: ${ROCKSDB_N_MEMTABLES:-2}
+      ROCKSDB_MEMTABLE_SIZE: ${ROCKSDB_MEMTABLE_SIZE:-16777216}
     healthcheck:
       test: ['CMD', 'java', '-version']
       interval: 10s
@@ -38,7 +46,7 @@ services:
     profiles:
       - conflictmonitor
       - ode
-    image: usdotjpoode/jpo-ode:latest
+    image: ${DOCKERHUB_HOST:-usdotjpoode}/jpo-ode:${DOCKERHUB_RELEASE:-2025-q2}
     restart: ${RESTART_POLICY}
     ports:
       - '8080:8080'
@@ -56,14 +64,27 @@ services:
       - '6666:6666/udp'
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP:?error}
-      ODE_TIM_INGEST_MONITORING_ENABLED: true
-      ODE_TIM_INGEST_MONITORING_INTERVAL: 60
-      DATA_SIGNING_ENABLED_RSU: false
-      DATA_SIGNING_ENABLED_SDW: false
       ODE_KAFKA_BROKERS: ${DOCKER_HOST_IP}:9092
       KAFKA_LINGER_MS: 1
-      KAFKA_BATCH_SIZE: 16384
+      KAFKA_ACKS: all
       KAFKA_RETRIES: 0
+      KAFKA_BATCH_SIZE: 16384
+      KAFKA_BUFFER_MEMORY: 33554432
+      KAFKA_COMPRESSION_TYPE: zstd
+      KAFKA_KEY_SERIALIZER: org.apache.kafka.common.serialization.StringSerializer
+      KAFKA_VALUE_SERIALIZER: org.apache.kafka.common.serialization.StringSerializer
+      KAFKA_PARTITIONER_CLASS: org.apache.kafka.clients.producer.internals.DefaultPartitioner
+      ODE_TIM_INGEST_MONITORING_ENABLED: true
+      ODE_TIM_INGEST_MONITORING_INTERVAL: 60
+      ODE_STOMP_EXPORTER_ENABLED: true
+      DATA_SIGNING_ENABLED_RSU: false
+      DATA_SIGNING_ENABLED_SDW: false
+      ROCKSDB_TOTAL_OFF_HEAP_MEMORY: ${ROCKSDB_TOTAL_OFF_HEAP_MEMORY:-134217728}
+      ROCKSDB_INDEX_FILTER_BLOCK_RATIO: ${ROCKSDB_INDEX_FILTER_BLOCK_RATIO:-0.1}
+      ROCKSDB_TOTAL_MEMTABLE_MEMORY: ${ROCKSDB_TOTAL_MEMTABLE_MEMORY:-67108864}
+      ROCKSDB_BLOCK_SIZE: ${ROCKSDB_BLOCK_SIZE:-4096}
+      ROCKSDB_N_MEMTABLES: ${ROCKSDB_N_MEMTABLES:-2}
+      ROCKSDB_MEMTABLE_SIZE: ${ROCKSDB_MEMTABLE_SIZE:-16777216}
     depends_on:
       kafka:
         condition: service_healthy
@@ -83,7 +104,7 @@ services:
     profiles:
       - conflictmonitor
       - adm
-    image: usdotjpoode/asn1_codec:latest
+    image: ${DOCKERHUB_HOST:-usdotjpoode}/asn1_codec:${DOCKERHUB_RELEASE:-2025-q2}
     restart: ${RESTART_POLICY}
     deploy:
       resources:
@@ -92,13 +113,10 @@ services:
           memory: 2G
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      KAFKA_TYPE: ${KAFKA_TYPE}
-      CONFLUENT_KEY: ${CONFLUENT_KEY}
-      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
       ACM_CONFIG_FILE: adm.properties
-      ACM_LOG_TO_CONSOLE: ${ADM_LOG_TO_CONSOLE}
-      ACM_LOG_TO_FILE: ${ADM_LOG_TO_FILE}
-      ACM_LOG_LEVEL: ${ADM_LOG_LEVEL}
+      ACM_LOG_TO_CONSOLE: false
+      ACM_LOG_TO_FILE: true
+      ACM_LOG_LEVEL: WARNING
     depends_on:
       kafka:
         condition: service_healthy
@@ -112,7 +130,7 @@ services:
     profiles:
       - conflictmonitor
       - aem
-    image: usdotjpoode/asn1_codec:latest
+    image: ${DOCKERHUB_HOST:-usdotjpoode}/asn1_codec:${DOCKERHUB_RELEASE:-2025-q2}
     restart: ${RESTART_POLICY}
     deploy:
       resources:
@@ -121,13 +139,10 @@ services:
           memory: 2G
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      KAFKA_TYPE: ${KAFKA_TYPE}
-      CONFLUENT_KEY: ${CONFLUENT_KEY}
-      CONFLUENT_SECRET: ${CONFLUENT_SECRET}
       ACM_CONFIG_FILE: aem.properties
-      ACM_LOG_TO_CONSOLE: ${AEM_LOG_TO_CONSOLE}
-      ACM_LOG_TO_FILE: ${AEM_LOG_TO_FILE}
-      ACM_LOG_LEVEL: ${AEM_LOG_LEVEL}
+      ACM_LOG_TO_CONSOLE: false
+      ACM_LOG_TO_FILE: true
+      ACM_LOG_LEVEL: WARNING
     depends_on:
       kafka:
         condition: service_healthy
@@ -141,7 +156,7 @@ services:
     profiles:
       - conflictmonitor
       - geojsonconverter
-    image: usdotjpoode/geojsonconverter:latest
+    image: ${DOCKERHUB_HOST:-usdotjpoode}/geojsonconverter:${DOCKERHUB_RELEASE:-2025-q2}
     restart: ${RESTART_POLICY}
     deploy:
       resources:
@@ -156,6 +171,52 @@ services:
       options:
         max-size: '10m'
         max-file: '5'
+    depends_on:
+      kafka:
+        condition: service_healthy
+        required: false
+
+  deduplicator:
+    profiles:
+      - conflictmonitor
+      - deduplicator
+    image: ${DOCKERHUB_HOST:-usdotjpoode}/jpo-deduplicator:${DOCKERHUB_RELEASE:-2025-q2}
+    privileged: false # Set true to allow writing to /proc/sys/vm/drop_caches
+    restart: ${RESTART_POLICY}
+    ports:
+      - '10091:10090' # JMX
+    environment:
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS}
+      SPRING_KAFKA_BOOTSTRAPSERVERS: ${KAFKA_BOOTSTRAP_SERVERS}
+      ENABLE_PROCESSED_MAP_DEDUPLICATION: true
+      ENABLE_PROCESSED_MAP_WKT_DEDUPLICATION: true
+      ENABLE_ODE_MAP_DEDUPLICATION: true
+      ENABLE_ODE_TIM_DEDUPLICATION: true
+      ENABLE_ODE_RAW_ENCODED_TIM_DEDUPLICATION: true
+      ENABLE_PROCESSED_SPAT_DEDUPLICATION: true
+      ENABLE_ODE_BSM_DEDUPLICATION: true
+      ENABLE_PROCESSED_BSM_DEDUPLICATION: true
+
+      ROCKSDB_TOTAL_OFF_HEAP_MEMORY: ${ROCKSDB_TOTAL_OFF_HEAP_MEMORY:-134217728}
+      ROCKSDB_INDEX_FILTER_BLOCK_RATIO: ${ROCKSDB_INDEX_FILTER_BLOCK_RATIO:-0.1}
+      ROCKSDB_TOTAL_MEMTABLE_MEMORY: ${ROCKSDB_TOTAL_MEMTABLE_MEMORY:-67108864}
+      ROCKSDB_BLOCK_SIZE: ${ROCKSDB_BLOCK_SIZE:-4096}
+      ROCKSDB_N_MEMTABLES: ${ROCKSDB_N_MEMTABLES:-2}
+      ROCKSDB_MEMTABLE_SIZE: ${ROCKSDB_MEMTABLE_SIZE:-16777216}
+    healthcheck:
+      test: ['CMD', 'java', '-version']
+      interval: 10s
+      timeout: 10s
+      retries: 20
+    logging:
+      options:
+        max-size: '10m'
+        max-file: '5'
+    deploy:
+      resources:
+        limits:
+          memory: 1G
     depends_on:
       kafka:
         condition: service_healthy

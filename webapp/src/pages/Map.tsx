@@ -118,6 +118,10 @@ import { MapLayer } from '../models/MapLayer'
 import { toast } from 'react-hot-toast'
 import { RoomOutlined } from '@mui/icons-material'
 import MooveAiHardBrakingLegend from '../components/MooveAiHardBrakingLegend'
+import { selectHaasLocationData } from '../generalSlices/haasAlertSlice'
+import { HaasLocationProperties } from '../models/haas/HaasWebsocketLocation'
+import { HaasAlertVisualization } from '../components/HaasAlertVisualization'
+import { Feature, Point } from 'geojson'
 import { PrimaryButton } from '../styles/components/PrimaryButton'
 import { ConditionalRenderRsu, evaluateFeatureFlags } from '../feature-flags'
 import { DateTime } from 'luxon'
@@ -170,6 +174,9 @@ function MapPage() {
   const addMooveAiPoint = useSelector(selectAddMooveAiPoint)
   const mooveAiCoordinates = useSelector(selectMooveAiCoordinates)
   const mooveAiFilter = useSelector(selectMooveAiFilter)
+
+  const haasLocationData = useSelector(selectHaasLocationData)
+  const [selectedHaasIncident, setSelectedHaasIncident] = useState<Feature<Point, HaasLocationProperties> | null>(null)
 
   const intersectionsList = useSelector(selectIntersections)
   const selectedIntersection = useSelector(selectSelectedIntersection)
@@ -807,6 +814,12 @@ function MapPage() {
       type: 'line',
       tag: 'mooveai',
     },
+    {
+      id: 'haas-alert-layer',
+      label: 'HAAS Alert Viewer',
+      type: 'circle',
+      tag: 'haas',
+    },
   ]
 
   const Legend = () => {
@@ -825,6 +838,10 @@ function MapPage() {
             break
           case 'moove-ai-layer':
             dispatch(clearMooveAiData())
+            break
+          case 'haas-alert-layer':
+            setSelectedHaasIncident(null)
+            break
         }
       } else {
         switch (id) {
@@ -1097,7 +1114,7 @@ function MapPage() {
           mapStyle={mbStyle}
           style={{ width: '100%', height: '100%' }}
           onMove={(evt) => dispatch(setMapViewState(evt.viewState))}
-          interactiveLayerIds={['geoMsgPointLayer']}
+          interactiveLayerIds={['geoMsgPointLayer', 'haas-alert-points']}
           onMouseMove={(e) => {
             if (addGeoMsgPoint || addConfigPoint || addMooveAiPoint) {
               const point: GeoJSON.Feature<GeoJSON.Point> = {
@@ -1114,6 +1131,23 @@ function MapPage() {
             }
           }}
           onClick={(e) => {
+            // Handle HAAS Alert point clicks
+            if (e.features?.[0]?.layer?.id === 'haas-alert-points') {
+              const feature = e.features[0]
+              const geometry = feature.geometry as GeoJSON.Point
+              setSelectedHaasIncident({
+                type: 'Feature',
+                geometry: {
+                  type: 'Point',
+                  coordinates: [geometry.coordinates[0], geometry.coordinates[1]],
+                },
+                properties: {
+                  ...feature.properties,
+                },
+              } as Feature<Point, HaasLocationProperties>)
+              return
+            }
+
             // Prevent double click from triggering single click
             const clickTime = new Date().getTime()
             if (clickTime - lastClickTime < 300) {
@@ -1506,6 +1540,15 @@ function MapPage() {
               </Stack>
             </Popup>
           ) : null}
+          {activeLayers.includes('haas-alert-layer') && haasLocationData.data && (
+            <HaasAlertVisualization
+              menuSelection={menuSelection}
+              haasLocationData={haasLocationData}
+              theme={theme}
+              selectedIncident={selectedHaasIncident}
+              onIncidentClose={() => setSelectedHaasIncident(null)}
+            />
+          )}
         </Map>
       </Container>
 

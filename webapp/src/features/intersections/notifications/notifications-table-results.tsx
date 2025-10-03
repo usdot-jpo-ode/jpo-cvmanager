@@ -16,6 +16,8 @@ import {
   Collapse,
   useTheme,
   alpha,
+  Chip,
+  Tooltip,
 } from '@mui/material'
 import React, { ReactElement } from 'react'
 import MapRoundedIcon from '@mui/icons-material/MapRounded'
@@ -24,6 +26,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
+import { CeaseBroadcastRecommendationTypes } from './notifications-table'
 
 export const NotificationsTableResults = ({
   customers,
@@ -245,6 +248,11 @@ export const NotificationsTableResults = ({
                           <Typography color="textPrimary" variant="body1">
                             {notification.notificationType}
                           </Typography>
+                          {CeaseBroadcastRecommendationTypes.includes(notification.notificationType) && (
+                            <Tooltip title="Cease Broadcast Recommended">
+                              <Chip color="error" sx={{ ml: 2 }} label={<Typography>CBR</Typography>} size="small" />
+                            </Tooltip>
+                          )}
                         </Box>
                       </TableCell>
                       <TableCell>{format(notification.notificationGeneratedAt, 'MM/dd/yyyy HH:mm:ss')}</TableCell>

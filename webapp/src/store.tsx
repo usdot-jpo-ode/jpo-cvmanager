@@ -31,6 +31,7 @@ import dataSelectorReducer from './features/intersections/data-selector/dataSele
 import { intersectionApiSlice } from './features/api/intersectionApiSlice'
 import mapSliceReducer from './pages/mapSlice'
 import timeSyncReducer from './generalSlices/timeSyncSlice'
+import haasSliceReducer from './generalSlices/haasAlertSlice'
 
 export const setupStore = (preloadedState?: Partial<any>) => {
   return configureStore({
@@ -66,6 +67,7 @@ export const setupStore = (preloadedState?: Partial<any>) => {
       map: mapSliceReducer,
       asn1Decoder: asn1DecoderSlice,
       timeSync: timeSyncReducer,
+      haas: haasSliceReducer,
       [intersectionApiSlice.reducerPath]: intersectionApiSlice.reducer,
     },
     preloadedState,

@@ -8,14 +8,14 @@ services:
       - conflictmonitor
       - conflictmonitor_only
     image: ${DOCKERHUB_HOST:-usdotjpoode}/jpo-conflictmonitor:${DOCKERHUB_RELEASE:-2025-q2}
-    restart: ${RESTART_POLICY}
+    restart: ${RESTART_POLICY:-on-failure:3}
     ports:
       - '8082:8082'
     environment:
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP:?error}
-      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS:?error}
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP:-host.docker.internal}
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS:-kafka:9092}
       CONNECT_URL: ${CONNECT_URL:-http://kafka-connect:8083}
-      spring.kafka.bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:?error}
+      spring.kafka.bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:-kafka:9092}
       ROCKSDB_TOTAL_OFF_HEAP_MEMORY: ${ROCKSDB_TOTAL_OFF_HEAP_MEMORY:-134217728}
       ROCKSDB_INDEX_FILTER_BLOCK_RATIO: ${ROCKSDB_INDEX_FILTER_BLOCK_RATIO:-0.1}
       ROCKSDB_TOTAL_MEMTABLE_MEMORY: ${ROCKSDB_TOTAL_MEMTABLE_MEMORY:-67108864}
@@ -47,7 +47,7 @@ services:
       - conflictmonitor
       - ode
     image: ${DOCKERHUB_HOST:-usdotjpoode}/jpo-ode:${DOCKERHUB_RELEASE:-2025-q2}
-    restart: ${RESTART_POLICY}
+    restart: ${RESTART_POLICY:-on-failure:3}
     ports:
       - '8080:8080'
       - '9090:9090'
@@ -63,8 +63,8 @@ services:
       - '5555:5555/udp'
       - '6666:6666/udp'
     environment:
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP:?error}
-      ODE_KAFKA_BROKERS: ${DOCKER_HOST_IP}:9092
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP:-host.docker.internal}
+      ODE_KAFKA_BROKERS: ${DOCKER_HOST_IP:-kafka}:9092
       KAFKA_LINGER_MS: 1
       KAFKA_ACKS: all
       KAFKA_RETRIES: 0
@@ -105,14 +105,14 @@ services:
       - conflictmonitor
       - adm
     image: ${DOCKERHUB_HOST:-usdotjpoode}/asn1_codec:${DOCKERHUB_RELEASE:-2025-q2}
-    restart: ${RESTART_POLICY}
+    restart: ${RESTART_POLICY:-on-failure:3}
     deploy:
       resources:
         limits:
           cpus: '1'
           memory: 2G
     environment:
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP:-host.docker.internal}
       ACM_CONFIG_FILE: adm.properties
       ACM_LOG_TO_CONSOLE: false
       ACM_LOG_TO_FILE: true
@@ -131,14 +131,14 @@ services:
       - conflictmonitor
       - aem
     image: ${DOCKERHUB_HOST:-usdotjpoode}/asn1_codec:${DOCKERHUB_RELEASE:-2025-q2}
-    restart: ${RESTART_POLICY}
+    restart: ${RESTART_POLICY:-on-failure:3}
     deploy:
       resources:
         limits:
           cpus: '1'
           memory: 2G
     environment:
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP:-host.docker.internal}
       ACM_CONFIG_FILE: aem.properties
       ACM_LOG_TO_CONSOLE: false
       ACM_LOG_TO_FILE: true
@@ -157,16 +157,16 @@ services:
       - conflictmonitor
       - geojsonconverter
     image: ${DOCKERHUB_HOST:-usdotjpoode}/geojsonconverter:${DOCKERHUB_RELEASE:-2025-q2}
-    restart: ${RESTART_POLICY}
+    restart: ${RESTART_POLICY:-on-failure:3}
     deploy:
       resources:
         limits:
           cpus: '1'
           memory: 2G
     environment:
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP:?error}
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP:-host.docker.internal}
       geometry.output.mode: GEOJSON_ONLY
-      spring.kafka.bootstrap-servers: ${DOCKER_HOST_IP:?error}:9092
+      spring.kafka.bootstrap-servers: ${DOCKER_HOST_IP:-kafka}:9092
     logging:
       options:
         max-size: '10m'
@@ -182,13 +182,13 @@ services:
       - deduplicator
     image: ${DOCKERHUB_HOST:-usdotjpoode}/jpo-deduplicator:${DOCKERHUB_RELEASE:-2025-q2}
     privileged: false # Set true to allow writing to /proc/sys/vm/drop_caches
-    restart: ${RESTART_POLICY}
+    restart: ${RESTART_POLICY:-on-failure:3}
     ports:
       - '10091:10090' # JMX
     environment:
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP}
-      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS}
-      SPRING_KAFKA_BOOTSTRAPSERVERS: ${KAFKA_BOOTSTRAP_SERVERS}
+      DOCKER_HOST_IP: ${DOCKER_HOST_IP:-host.docker.internal}
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS:-kafka:9092}
+      SPRING_KAFKA_BOOTSTRAPSERVERS: ${KAFKA_BOOTSTRAP_SERVERS:-kafka:9092}
       ENABLE_PROCESSED_MAP_DEDUPLICATION: true
       ENABLE_PROCESSED_MAP_WKT_DEDUPLICATION: true
       ENABLE_ODE_MAP_DEDUPLICATION: true

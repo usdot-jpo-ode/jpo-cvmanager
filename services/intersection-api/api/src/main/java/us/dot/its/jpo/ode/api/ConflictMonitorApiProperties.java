@@ -3,7 +3,6 @@ package us.dot.its.jpo.ode.api;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,7 +13,6 @@ import us.dot.its.jpo.conflictmonitor.AlwaysContinueProductionExceptionHandler;
 import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 
 import java.util.ArrayList;
 import java.util.HashSet;

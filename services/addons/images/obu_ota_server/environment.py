@@ -1,4 +1,4 @@
-from common.util import get_env_var
+from common.common_environment import get_env_var
 
 OTA_USERNAME=get_env_var("OTA_USERNAME", "admin")
 OTA_PASSWORD=get_env_var("OTA_PASSWORD", error=True)

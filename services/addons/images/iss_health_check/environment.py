@@ -1,4 +1,4 @@
-from common.util import get_env_var
+from common.common_environment import get_env_var
 
 
 def process_storage_type(val: str, default: str) -> str:

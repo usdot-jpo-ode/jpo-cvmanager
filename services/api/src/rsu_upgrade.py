@@ -2,7 +2,7 @@ import common.pgquery as pgquery
 import json
 import logging
 
-from api.src import environment
+import api_environment
 import requests
 
 
@@ -43,7 +43,7 @@ def check_for_upgrade(rsu_ip):
 
 
 def mark_rsu_for_upgrade(rsu_ip):
-    if environment.FIRMWARE_MANAGER_ENDPOINT is None:
+    if api_environment.FIRMWARE_MANAGER_ENDPOINT is None:
         return {
             "message": "The firmware manager is not supported for this CV Manager deployment"
         }, 500
@@ -62,7 +62,7 @@ def mark_rsu_for_upgrade(rsu_ip):
 
     logging.info(f"Initiating firmware upgrade with the firmware manager for {rsu_ip}")
     # Environment variable FIRMWARE_MANAGER_ENDPOINT must contain "http://" and port
-    firmware_manager_endpoint = environment.FIRMWARE_MANAGER_ENDPOINT
+    firmware_manager_endpoint = api_environment.FIRMWARE_MANAGER_ENDPOINT
     post_body = {"rsu_ip": rsu_ip}
     response = requests.post(
         f"{firmware_manager_endpoint}/init_firmware_upgrade", json=post_body

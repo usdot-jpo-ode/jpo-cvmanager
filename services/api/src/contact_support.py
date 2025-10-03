@@ -1,5 +1,5 @@
 import logging
-from api.src import environment
+import api_environment
 
 from flask import abort, request
 from flask_restful import Resource
@@ -18,27 +18,29 @@ class ContactSupportSchema(Schema):
 
 class ContactSupportResource(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization",
         "Access-Control-Allow-Methods": "POST,OPTIONS",
         "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization",
         "Access-Control-Allow-Methods": "POST,OPTIONS",
         "Content-Type": "application/json",
     }
 
     def __init__(self):
-        self.CSM_EMAIL_TO_SEND_FROM = environment.CSM_EMAIL_TO_SEND_FROM
-        self.CSM_TARGET_SMTP_SERVER_ADDRESS = environment.CSM_TARGET_SMTP_SERVER_ADDRESS
-        self.CSM_TARGET_SMTP_SERVER_PORT = environment.CSM_TARGET_SMTP_SERVER_PORT
-        self.CSM_TLS_ENABLED = environment.CSM_TLS_ENABLED
-        self.CSM_AUTH_ENABLED = environment.CSM_AUTH_ENABLED
-        self.CSM_EMAIL_APP_USERNAME = environment.CSM_EMAIL_APP_USERNAME
-        self.CSM_EMAIL_APP_PASSWORD = environment.CSM_EMAIL_APP_PASSWORD
+        self.CSM_EMAIL_TO_SEND_FROM = api_environment.CSM_EMAIL_TO_SEND_FROM
+        self.CSM_TARGET_SMTP_SERVER_ADDRESS = (
+            api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS
+        )
+        self.CSM_TARGET_SMTP_SERVER_PORT = api_environment.CSM_TARGET_SMTP_SERVER_PORT
+        self.CSM_TLS_ENABLED = api_environment.CSM_TLS_ENABLED
+        self.CSM_AUTH_ENABLED = api_environment.CSM_AUTH_ENABLED
+        self.CSM_EMAIL_APP_USERNAME = api_environment.CSM_EMAIL_APP_USERNAME
+        self.CSM_EMAIL_APP_PASSWORD = api_environment.CSM_EMAIL_APP_PASSWORD
 
         if not self.CSM_EMAIL_TO_SEND_FROM:
             logging.error("CSM_EMAIL_TO_SEND_FROM environment variable not set")

@@ -5,8 +5,8 @@ from api.src import wzdx_feed
 import os
 
 
-@patch("api.src.environment.WZDX_ENDPOINT", "myendpoint")
-@patch("api.src.environment.WZDX_API_KEY", "myapikey")
+@patch("api.src.api_environment.WZDX_ENDPOINT", "myendpoint")
+@patch("api.src.api_environment.WZDX_API_KEY", "myapikey")
 # test that get_wzdx_data is calling json.loads with expected arguments
 def test_get_wzdx_data():
     # mock return values for function dependencies

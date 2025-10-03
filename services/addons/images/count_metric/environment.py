@@ -1,4 +1,4 @@
-from common.util import get_env_var
+from common.common_environment import get_env_var
 
 SMTP_SERVER_IP=get_env_var("SMTP_SERVER_IP", error=True)
 SMTP_SERVER_PORT=int(get_env_var("SMTP_SERVER_PORT", "587", warn=False))

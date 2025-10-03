@@ -74,7 +74,7 @@ def test_check_for_upgrade_false(mock_query_db):
     assert actual_response == expected_response
 
 
-@patch("api.src.environment.FIRMWARE_MANAGER_ENDPOINT", "http://1.1.1.1:8080")
+@patch("api.src.api_environment.FIRMWARE_MANAGER_ENDPOINT", "http://1.1.1.1:8080")
 @patch("api.src.rsu_upgrade.requests.post")
 @patch("api.src.rsu_upgrade.pgquery.write_db")
 @patch(
@@ -113,7 +113,7 @@ def test_mark_rsu_for_upgrade_eligible(
     assert actual_status_code == expected_status_code
 
 
-@patch("api.src.environment.FIRMWARE_MANAGER_ENDPOINT", "http://1.1.1.1:8080")
+@patch("api.src.api_environment.FIRMWARE_MANAGER_ENDPOINT", "http://1.1.1.1:8080")
 @patch("api.src.rsu_upgrade.requests.post")
 @patch("api.src.rsu_upgrade.pgquery.write_db")
 @patch(
@@ -154,7 +154,7 @@ def test_mark_rsu_for_upgrade_eligible_but_rejected(
     assert actual_status_code == expected_status_code
 
 
-@patch("api.src.environment.FIRMWARE_MANAGER_ENDPOINT", "http://1.1.1.1:8080")
+@patch("api.src.api_environment.FIRMWARE_MANAGER_ENDPOINT", "http://1.1.1.1:8080")
 @patch("api.src.rsu_upgrade.requests.post")
 @patch("api.src.rsu_upgrade.pgquery.write_db")
 @patch(

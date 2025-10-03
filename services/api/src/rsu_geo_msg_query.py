@@ -1,5 +1,5 @@
 import common.util as util
-from api.src import environment
+import api_environment
 import logging
 from datetime import datetime
 from pymongo import MongoClient, ASCENDING, GEOSPHERE
@@ -26,13 +26,13 @@ def geo_hash(id, timestamp, long, lat):
 
 def get_collection(msg_type):
     """Get MongoDB collection based on message type"""
-    mongo_uri = environment.MONGO_DB_URI
-    db_name = environment.MONGO_DB_NAME
+    mongo_uri = api_environment.MONGO_DB_URI
+    db_name = api_environment.MONGO_DB_NAME
 
     if msg_type.lower() == "bsm":
-        coll_name = environment.MONGO_PROCESSED_BSM_COLLECTION_NAME
+        coll_name = api_environment.MONGO_PROCESSED_BSM_COLLECTION_NAME
     elif msg_type.lower() == "psm":
-        coll_name = environment.MONGO_PROCESSED_PSM_COLLECTION_NAME
+        coll_name = api_environment.MONGO_PROCESSED_PSM_COLLECTION_NAME
     else:
         return None, None, 400
 
@@ -109,7 +109,7 @@ def query_geo_data_mongo(pointList, start, end, msg_type):
 
             if (
                 message_hash not in hashmap
-                and count < environment.MAX_GEO_QUERY_RECORDS
+                and count < api_environment.MAX_GEO_QUERY_RECORDS
             ):
                 doc.pop("_id")
                 doc.pop("recordGeneratedAt")
@@ -146,14 +146,14 @@ class RsuGeoDataSchema(Schema):
 
 class RsuGeoData(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization",
         "Access-Control-Allow-Methods": "POST",
         "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Content-Type": "application/json",
     }
 

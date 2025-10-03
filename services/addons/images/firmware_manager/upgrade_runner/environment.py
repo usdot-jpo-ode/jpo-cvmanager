@@ -1,4 +1,4 @@
-from common.util import get_env_var
+from common.common_environment import get_env_var
 
 BLOB_STORAGE_PROVIDER=get_env_var("BLOB_STORAGE_PROVIDER", "DOCKER", warn=False)
 UPGRADE_SCHEDULER_ENDPOINT=get_env_var("UPGRADE_SCHEDULER_ENDPOINT", "127.0.0.1")

@@ -4,7 +4,7 @@ import logging
 import rsu_upgrade
 import ssh_commands
 import rsu_snmpset
-from api.src import environment
+import api_environment
 
 # Dict of functions
 command_data = {
@@ -171,13 +171,13 @@ class RsuCommandRequestSchema(Schema):
 
 class RsuCommandRequest(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization,Organization",
         "Access-Control-Allow-Methods": "GET,POST",
         "Access-Control-Max-Age": "3600",
     }
 
-    headers = {"Access-Control-Allow-Origin": environment.CORS_DOMAIN}
+    headers = {"Access-Control-Allow-Origin": api_environment.CORS_DOMAIN}
 
     def options(self):
         # CORS support

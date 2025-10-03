@@ -1,5 +1,5 @@
 import common.util as util
-from api.src import environment
+import api_environment
 import logging
 from datetime import datetime, timedelta
 from pymongo import MongoClient
@@ -12,9 +12,11 @@ def query_ssm_data_mongo(result):
     start_utc = util.format_date_utc(start_date.isoformat())
 
     try:
-        client = MongoClient(environment.MONGO_DB_URI, serverSelectionTimeoutMS=5000)
-        db = client[environment.MONGO_DB_NAME]
-        collection = db[environment.MONGO_SSM_COLLECTION_NAME]
+        client = MongoClient(
+            api_environment.MONGO_DB_URI, serverSelectionTimeoutMS=5000
+        )
+        db = client[api_environment.MONGO_DB_NAME]
+        collection = db[api_environment.MONGO_SSM_COLLECTION_NAME]
     except Exception as e:
         logging.error(
             f"Failed to connect to Mongo counts collection with error message: {e}"
@@ -67,9 +69,11 @@ def query_srm_data_mongo(result):
     start_utc = util.format_date_utc(start_date.isoformat())
 
     try:
-        client = MongoClient(environment.MONGO_DB_URI, serverSelectionTimeoutMS=5000)
-        db = client[environment.MONGO_DB_NAME]
-        collection = db[environment.MONGO_SRM_COLLECTION_NAME]
+        client = MongoClient(
+            api_environment.MONGO_DB_URI, serverSelectionTimeoutMS=5000
+        )
+        db = client[api_environment.MONGO_DB_NAME]
+        collection = db[api_environment.MONGO_SRM_COLLECTION_NAME]
     except Exception as e:
         logging.error(
             f"Failed to connect to Mongo counts collection with error message: {e}"
@@ -125,14 +129,14 @@ from flask_restful import Resource
 
 class RsuSsmSrmData(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization",
         "Access-Control-Allow-Methods": "GET",
         "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Content-Type": "application/json",
     }
 

@@ -1,6 +1,6 @@
 import sqlalchemy
 import logging
-from common import environment
+import common_environment
 
 db_config = {
     # Pool size is the maximum number of permanent connections to keep.
@@ -60,18 +60,18 @@ def init_socket_connection_engine(db_user, db_pass, db_name, unix_query):
 
 
 def init_connection_engine():
-    db_user = environment.PG_DB_USER
-    db_pass = environment.PG_DB_PASS
-    db_name = environment.PG_DB_NAME
-    if environment.INSTANCE_CONNECTION_NAME:
+    db_user = common_environment.PG_DB_USER
+    db_pass = common_environment.PG_DB_PASS
+    db_name = common_environment.PG_DB_NAME
+    if common_environment.INSTANCE_CONNECTION_NAME:
         logging.debug("Using socket connection")
         unix_query = {
-            "unix_sock": f"/cloudsql/{environment.INSTANCE_CONNECTION_NAME}/.s.PGSQL.5432"
+            "unix_sock": f"/cloudsql/{common_environment.INSTANCE_CONNECTION_NAME}/.s.PGSQL.5432"
         }
         return init_socket_connection_engine(db_user, db_pass, db_name, unix_query)
     else:
         logging.debug("Using tcp connection")
-        db_host = environment.PG_DB_HOST
+        db_host = common_environment.PG_DB_HOST
         # Extract host and port from db_host
         host_args = db_host.split(":")
         db_hostname, db_port = host_args[0], int(host_args[1])

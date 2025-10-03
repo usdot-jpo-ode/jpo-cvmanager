@@ -1,4 +1,4 @@
-from common.util import get_env_var
+from common.common_environment import get_env_var
 
 UPGRADE_RUNNER_ENDPOINT = get_env_var("UPGRADE_RUNNER_ENDPOINT", "UNDEFINED")
 ACTIVE_UPGRADE_LIMIT = int(get_env_var("ACTIVE_UPGRADE_LIMIT", "1"))

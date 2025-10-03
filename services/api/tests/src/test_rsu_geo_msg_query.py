@@ -125,8 +125,8 @@ def test_query_geo_data_mongo_unsupported_msg_type(mock_mongo):
     assert response == []
 
 
-@patch("api.src.environment.MONGO_PROCESSED_BSM_COLLECTION_NAME", "bsm_col")
-@patch("api.src.environment.MONGO_PROCESSED_PSM_COLLECTION_NAME", "psm_col")
+@patch("api.src.api_environment.MONGO_PROCESSED_BSM_COLLECTION_NAME", "bsm_col")
+@patch("api.src.api_environment.MONGO_PROCESSED_PSM_COLLECTION_NAME", "psm_col")
 @patch("api.src.rsu_geo_msg_query.MongoClient")
 def test_get_collection(mock_mongo):
     mock_db = MagicMock()
@@ -223,8 +223,8 @@ def test_order_by_time_stamp(mock_mongo):
     )
 
 
-@patch("api.src.environment.MONGO_PROCESSED_BSM_COLLECTION_NAME", "col")
-@patch("api.src.environment.MAX_GEO_QUERY_RECORDS", 5)
+@patch("api.src.api_environment.MONGO_PROCESSED_BSM_COLLECTION_NAME", "col")
+@patch("api.src.api_environment.MAX_GEO_QUERY_RECORDS", 5)
 @patch("api.src.rsu_geo_msg_query.MongoClient")
 def test_query_limit(mock_mongo):
     mock_db = MagicMock()

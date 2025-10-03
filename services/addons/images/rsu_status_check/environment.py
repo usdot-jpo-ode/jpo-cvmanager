@@ -1,4 +1,4 @@
-from common.util import get_env_var
+from common.common_environment import get_env_var
 
 RSU_PING=get_env_var("RSU_PING", "False", warn=False).lower() == "true"
 ZABBIX=get_env_var("ZABBIX", "False", warn=False).lower() == "true"

@@ -1,4 +1,4 @@
-from common.util import get_env_var
+from common.common_environment import get_env_var
 
 def process_count_msg_types(type_string: str) -> list[str]:
     """Process the COUNTS_MSG_TYPES environment variable into a list of uppercase strings"""
@@ -42,6 +42,10 @@ WZDX_API_KEY=get_env_var("WZDX_API_KEY", error=ENABLE_WZDX_FEATURES)
 
 FIRMWARE_MANAGER_ENDPOINT=get_env_var("FIRMWARE_MANAGER_ENDPOINT", warn=False)
 
-GCP_PROJECT_ID=get_env_var("GCP_PROJECT_ID", error=ENABLE_MOOVE_AI_FEATURES)
-MOOVE_AI_SEGMENT_AGG_STATS_TABLE=get_env_var("MOOVE_AI_SEGMENT_AGG_STATS_TABLE", error=ENABLE_MOOVE_AI_FEATURES)
-MOOVE_AI_SEGMENT_EVENT_STATS_TABLE=get_env_var("MOOVE_AI_SEGMENT_EVENT_STATS_TABLE", error=ENABLE_MOOVE_AI_FEATURES)
+GCP_PROJECT_ID = get_env_var("GCP_PROJECT_ID", warn=ENABLE_MOOVE_AI_FEATURES)
+MOOVE_AI_SEGMENT_AGG_STATS_TABLE = get_env_var(
+    "MOOVE_AI_SEGMENT_AGG_STATS_TABLE", warn=ENABLE_MOOVE_AI_FEATURES
+)
+MOOVE_AI_SEGMENT_EVENT_STATS_TABLE = get_env_var(
+    "MOOVE_AI_SEGMENT_EVENT_STATS_TABLE", warn=ENABLE_MOOVE_AI_FEATURES
+)

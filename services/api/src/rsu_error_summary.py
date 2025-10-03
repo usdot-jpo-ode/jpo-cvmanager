@@ -1,5 +1,5 @@
 import logging
-from api.src import environment
+import api_environment
 from flask import abort, request
 from flask_restful import Resource
 from marshmallow import Schema
@@ -14,14 +14,14 @@ class RSUErrorSummarySchema(Schema):
 
 class RSUErrorSummaryResource(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization",
         "Access-Control-Allow-Methods": "POST,OPTIONS",
         "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization",
         "Access-Control-Allow-Methods": "POST,OPTIONS",
         "Content-Type": "application/json",
@@ -48,17 +48,17 @@ class RSUErrorSummaryResource(Resource):
             for email_address in email_addresses:
                 logging.info(f"Sending email to {email_address}")
                 emailSender = EmailSender(
-                    environment.CSM_TARGET_SMTP_SERVER_ADDRESS,
-                    environment.CSM_TARGET_SMTP_SERVER_PORT,
+                    api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS,
+                    api_environment.CSM_TARGET_SMTP_SERVER_PORT,
                 )
                 emailSender.send(
-                    sender=environment.CSM_EMAIL_TO_SEND_FROM,
+                    sender=api_environment.CSM_EMAIL_TO_SEND_FROM,
                     recipient=email_address,
                     subject=subject,
                     message=message,
                     replyEmail="",
-                    username=environment.CSM_EMAIL_APP_USERNAME,
-                    password=environment.CSM_EMAIL_APP_PASSWORD,
+                    username=api_environment.CSM_EMAIL_APP_USERNAME,
+                    password=api_environment.CSM_EMAIL_APP_PASSWORD,
                     pretty=True,
                 )
         except Exception as e:

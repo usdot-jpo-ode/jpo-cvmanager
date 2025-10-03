@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_restful import Api
-from api.src import environment
-import logging
+import api_environment
+
 
 # Custom script imports
 from middleware import Middleware
@@ -52,7 +52,7 @@ api.add_resource(AdminNotification, "/admin-notification")
 api.add_resource(AdminNewNotification, "/admin-new-notification")
 api.add_resource(ContactSupportResource, "/contact-support")
 
-if environment.ENABLE_RSU_FEATURES:
+if api_environment.ENABLE_RSU_FEATURES:
     api.add_resource(RsuInfo, "/rsuinfo")
     api.add_resource(RsuOnlineStatus, "/rsu-online-status")
     api.add_resource(RsuQueryCounts, "/rsucounts")
@@ -65,12 +65,12 @@ if environment.ENABLE_RSU_FEATURES:
     api.add_resource(AdminNewRsu, "/admin-new-rsu")
     api.add_resource(AdminRsu, "/admin-rsu")
     api.add_resource(RSUErrorSummaryResource, "/rsu-error-summary")
-if environment.ENABLE_WZDX_FEATURES:
+if api_environment.ENABLE_WZDX_FEATURES:
     api.add_resource(WzdxFeed, "/wzdx-feed")
-if environment.ENABLE_INTERSECTION_FEATURES:
+if api_environment.ENABLE_INTERSECTION_FEATURES:
     api.add_resource(AdminNewIntersection, "/admin-new-intersection")
     api.add_resource(AdminIntersection, "/admin-intersection")
-if environment.ENABLE_MOOVE_AI_FEATURES:
+if api_environment.ENABLE_MOOVE_AI_FEATURES:
     api.add_resource(MooveAiData, "/moove-ai-data")
 
 if __name__ == "__main__":

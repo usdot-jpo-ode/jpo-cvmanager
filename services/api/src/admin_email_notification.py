@@ -1,7 +1,7 @@
 import logging
 import common.pgquery as pgquery
 import sqlalchemy
-from api.src import environment
+import api_environment
 
 
 def get_notification_data(user_email):
@@ -130,14 +130,14 @@ class AdminNotificationPatchSchema(Schema):
 
 class AdminNotification(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization",
         "Access-Control-Allow-Methods": "GET,PATCH,DELETE",
         "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Content-Type": "application/json",
     }
 

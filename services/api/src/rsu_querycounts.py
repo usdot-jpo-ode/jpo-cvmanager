@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 import common.pgquery as pgquery
 import common.util as util
-from api.src import environment
+import api_environment
 import logging
 from pymongo import MongoClient
 
@@ -25,8 +25,10 @@ def query_rsu_counts_mongo(allowed_ips_dict, message_type, start, end):
     )
 
     try:
-        client = MongoClient(environment.MONGO_DB_URI, serverSelectionTimeoutMS=5000)
-        mongo_db = client[environment.MONGO_DB_NAME]
+        client = MongoClient(
+            api_environment.MONGO_DB_URI, serverSelectionTimeoutMS=5000
+        )
+        mongo_db = client[api_environment.MONGO_DB_NAME]
         collection = mongo_db["CVCounts"]
     except Exception as e:
         logging.error(
@@ -99,14 +101,14 @@ class RsuQueryCountsSchema(Schema):
 
 class RsuQueryCounts(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization,Organization",
         "Access-Control-Allow-Methods": "GET",
         "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Content-Type": "application/json",
     }
 
@@ -132,7 +134,7 @@ class RsuQueryCounts(Resource):
         )
 
         # Validate request with supported message types
-        msgList = environment.COUNTS_MSG_TYPES
+        msgList = api_environment.COUNTS_MSG_TYPES
         if message.upper() not in msgList:
             return (
                 "Invalid Message Type.\nValid message types: " + ", ".join(msgList),

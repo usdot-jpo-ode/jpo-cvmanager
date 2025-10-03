@@ -22,7 +22,8 @@ def test_get_environment_name_fail():
 
 ###################################### Testing Functions ##########################################
 @patch(
-    "api.src.environment.CSM_EMAILS_TO_SEND_TO", ["test@gmail.com", "test2@gmail.com"]
+    "api.src.api_environment.CSM_EMAILS_TO_SEND_TO",
+    ["test@gmail.com", "test2@gmail.com"],
 )
 def test_get_subscribed_users_success():
     expected = ["test@gmail.com", "test2@gmail.com"]
@@ -40,15 +41,16 @@ LOGS_LINK = "http://logs_link.com"
 
 
 @patch(
-    "api.src.environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
+    "api.src.api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
     DEFAULT_TARGET_SMTP_SERVER_ADDRESS,
 )
 @patch(
-    "api.src.environment.CSM_TARGET_SMTP_SERVER_PORT", DEFAULT_TARGET_SMTP_SERVER_PORT
+    "api.src.api_environment.CSM_TARGET_SMTP_SERVER_PORT",
+    DEFAULT_TARGET_SMTP_SERVER_PORT,
 )
-@patch("api.src.environment.CSM_EMAIL_TO_SEND_FROM", EMAIL_TO_SEND_FROM)
-@patch("api.src.environment.CSM_EMAIL_APP_USERNAME", EMAIL_APP_USERNAME)
-@patch("api.src.environment.CSM_EMAIL_APP_PASSWORD", EMAIL_APP_PASSWORD)
+@patch("api.src.api_environment.CSM_EMAIL_TO_SEND_FROM", EMAIL_TO_SEND_FROM)
+@patch("api.src.api_environment.CSM_EMAIL_APP_USERNAME", EMAIL_APP_USERNAME)
+@patch("api.src.api_environment.CSM_EMAIL_APP_PASSWORD", EMAIL_APP_PASSWORD)
 def test_configure_error_emails():
     app = MagicMock()
     app.logger = MagicMock()
@@ -57,8 +59,8 @@ def test_configure_error_emails():
     app.logger.addHandler.assert_called_once()
 
 
-@patch("api.src.environment.LOGS_LINK", LOGS_LINK)
-@patch("api.src.environment.ENVIRONMENT_NAME", ENVIRONMENT_NAME)
+@patch("api.src.api_environment.LOGS_LINK", LOGS_LINK)
+@patch("api.src.api_environment.ENVIRONMENT_NAME", ENVIRONMENT_NAME)
 @patch("builtins.open", new_callable=mock_open, read_data="data")
 @patch("api.src.smtp_error_handler.smtplib")
 @patch("api.src.smtp_error_handler.get_subscribed_users")

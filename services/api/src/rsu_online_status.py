@@ -4,7 +4,7 @@ import logging
 import pytz
 import common.util as util
 import common.pgquery as pgquery
-from api.src import environment
+import api_environment
 
 
 # Function for querying PostgreSQL db for the last 15 minutes of ping data for every RSU
@@ -110,14 +110,14 @@ class RsuOnlineStatusSchema(Schema):
 
 class RsuOnlineStatus(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization,Organization",
         "Access-Control-Allow-Methods": "GET",
         "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        "Access-Control-Allow-Origin": environment.CORS_DOMAIN,
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Content-Type": "application/json",
     }
 

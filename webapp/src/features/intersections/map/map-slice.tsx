@@ -180,8 +180,8 @@ const initialState = {
 
 const getNewSliderTimeValue = (startDate: Date, sliderValue: number, timeWindowSeconds: number) => {
   return {
-    start: new Date((startDate.getTime() / 1000 + sliderValue - timeWindowSeconds) * 1000),
-    end: new Date((startDate.getTime() / 1000 + sliderValue) * 1000),
+    start: new Date((startDate.getTime() / 1000 + sliderValue / 10 - timeWindowSeconds) * 1000),
+    end: new Date((startDate.getTime() / 1000 + sliderValue / 10) * 1000),
   }
 }
 

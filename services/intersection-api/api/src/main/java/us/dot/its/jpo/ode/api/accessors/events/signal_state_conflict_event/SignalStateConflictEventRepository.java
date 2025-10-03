@@ -7,9 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.SignalStateConflictEvent;
 import us.dot.its.jpo.ode.api.models.IDCount;
-import us.dot.its.jpo.ode.api.models.DataLoader;
 
-public interface SignalStateConflictEventRepository extends DataLoader<SignalStateConflictEvent> {
+public interface SignalStateConflictEventRepository {
     long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<SignalStateConflictEvent> findLatest(Integer intersectionID, Long startTime, Long endTime);

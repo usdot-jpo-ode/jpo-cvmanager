@@ -1,0 +1,50 @@
+{
+  "metadata": {
+    "recordType": "srmTx",
+    "securityResultCode": "success",
+    "payloadType": "us.dot.its.jpo.ode.model.OdeMessageFramePayload",
+    "serialId": {
+      "streamId": "44a6d71c-8af1-4f45-848c-10bd7f919be8",
+      "bundleSize": 1,
+      "bundleId": 0,
+      "recordId": 0,
+      "serialNumber": 0
+    },
+    "odeReceivedAt": "2025-08-29T16:09:34.416Z",
+    "schemaVersion": 9,
+    "maxDurationTime": 0,
+    "recordGeneratedBy": "OBU",
+    "sanitized": false,
+    "source": "EV",
+    "isCertPresent": false
+  },
+  "payload": {
+    "data": {
+      "messageId": 29,
+      "value": {
+        "SignalRequestMessage": {
+          "second": 0,
+          "sequenceNumber": 1,
+          "requests": [
+            {
+              "request": {
+                "id": { "id": 12109 },
+                "requestID": 4,
+                "requestType": "priorityRequest",
+                "inBoundLane": { "lane": 13 },
+                "outBoundLane": { "lane": 4 }
+              },
+              "duration": 10979
+            }
+          ],
+          "requestor": {
+            "id": { "stationID": 2366845094 },
+            "type": { "role": "publicTransport" },
+            "position": { "position": { "lat": 395904915, "long": -1050913829, "elevation": 16854 }, "heading": 14072 }
+          }
+        }
+      }
+    },
+    "dataType": "us.dot.its.jpo.asn.j2735.r2024.SignalRequestMessage.SignalRequestMessageMessageFrame"
+  }
+}

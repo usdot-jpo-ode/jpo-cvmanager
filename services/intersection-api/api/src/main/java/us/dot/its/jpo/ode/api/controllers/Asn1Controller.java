@@ -81,6 +81,9 @@ public class Asn1Controller {
                                                         .contentType(MediaType.APPLICATION_JSON)
                                                         .body(MockDecodedMessageGenerator.getTimDecodedMessage()
                                                                         .toString());
+                                        case PSM -> ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)
+                                                        .contentType(MediaType.APPLICATION_JSON)
+                                                        .body("Not Implemented");
                                         case null ->
                                                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                                                                 String.format("No test data available for Message Type %s",

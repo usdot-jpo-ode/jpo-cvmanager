@@ -8,7 +8,7 @@ type DecoderApiResponseGeneric = {
   asn1Text: string
   processedMap: ProcessedMap | undefined
   processedSpat: ProcessedSpat | undefined
-  bsm: OdeBsmData | undefined
+  bsm: ProcessedBsmFeature | undefined
 }
 
 type DecoderApiResponseSpat = DecoderApiResponseGeneric & {
@@ -21,7 +21,7 @@ type DecoderApiResponseMap = DecoderApiResponseGeneric & {
 }
 type DecoderApiResponseBsm = DecoderApiResponseGeneric & {
   type: 'BSM'
-  payload: OdeBsmData
+  payload: ProcessedBsmFeature
 }
 
 type DECODER_PROGRESS_TYPE = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED' | 'ERROR'

@@ -4,9 +4,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
-import us.dot.its.jpo.ode.api.models.DataLoader;
 
-public interface ConnectionOfTravelNotificationRepository extends DataLoader<ConnectionOfTravelNotification> {
+public interface ConnectionOfTravelNotificationRepository {
     long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<ConnectionOfTravelNotification> findLatest(Integer intersectionID, Long startTime, Long endTime);

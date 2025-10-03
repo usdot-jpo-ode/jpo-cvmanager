@@ -98,10 +98,4 @@ public class IntersectionReferenceAlignmentNotificationRepositoryImpl
         return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null,
                 IntersectionReferenceAlignmentNotification.class);
     }
-
-    @Override
-    public void add(IntersectionReferenceAlignmentNotification item) {
-        mongoTemplate.insert(item, collectionName);
-    }
-
 }

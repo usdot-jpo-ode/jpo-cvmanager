@@ -97,9 +97,4 @@ public class StopLineStopAssessmentRepositoryImpl implements StopLineStopAssessm
         return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null, StopLineStopAssessment.class);
     }
 
-    @Override
-    public void add(StopLineStopAssessment item) {
-        mongoTemplate.insert(item, collectionName);
-    }
-
 }

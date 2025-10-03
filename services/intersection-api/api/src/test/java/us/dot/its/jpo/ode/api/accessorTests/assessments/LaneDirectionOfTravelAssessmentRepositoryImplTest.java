@@ -37,8 +37,8 @@ import java.util.List;
 
 import org.bson.Document;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,7 +55,7 @@ import us.dot.its.jpo.ode.api.models.AggregationResultCount;
 @AutoConfigureEmbeddedDatabase
 public class LaneDirectionOfTravelAssessmentRepositoryImplTest {
 
-    @SpyBean
+    @MockitoSpyBean
     private MongoTemplate mongoTemplate;
 
     @Mock
@@ -98,7 +98,8 @@ public class LaneDirectionOfTravelAssessmentRepositoryImplTest {
 
     @Test
     public void testFind() {
-        LaneDirectionOfTravelAssessmentRepositoryImpl repo = mock(LaneDirectionOfTravelAssessmentRepositoryImpl.class);
+        LaneDirectionOfTravelAssessmentRepositoryImpl repo = mock(
+                LaneDirectionOfTravelAssessmentRepositoryImpl.class);
 
         when(repo.findPage(
                 any(),

@@ -44,8 +44,7 @@ export const DecoderEntry = (props: DecoderDataEntry & DecoderEntryProps) => {
         return spatPayload?.intersectionId
       }
       case 'BSM': {
-        const bsmPayload = decodedResponse.bsm
-        return bsmPayload?.metadata.originIp
+        return null
       }
     }
   }
@@ -138,8 +137,8 @@ export const DecoderEntry = (props: DecoderDataEntry & DecoderEntryProps) => {
       if (refPoint) dispatch(centerMapOnPoint(refPoint))
     } else if (type == 'BSM') {
       const bsmPayload = decodedResponse.bsm
-      const position = bsmPayload?.payload.data.coreData.position
-      if (position) dispatch(centerMapOnPoint(position))
+      const position = bsmPayload?.geometry.coordinates
+      if (position) dispatch(centerMapOnPoint({ latitude: position[1], longitude: position[0] }))
     }
   }
 

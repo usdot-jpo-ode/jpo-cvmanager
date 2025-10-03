@@ -9,9 +9,8 @@ import org.springframework.data.domain.Pageable;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.ConnectionOfTravelEvent;
 import us.dot.its.jpo.ode.api.models.IDCount;
 import us.dot.its.jpo.ode.api.models.LaneConnectionCount;
-import us.dot.its.jpo.ode.api.models.DataLoader;
 
-public interface ConnectionOfTravelEventRepository extends DataLoader<ConnectionOfTravelEvent> {
+public interface ConnectionOfTravelEventRepository {
     long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<ConnectionOfTravelEvent> findLatest(Integer intersectionID, Long startTime, Long endTime);

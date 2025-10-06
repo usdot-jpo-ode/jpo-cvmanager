@@ -28,12 +28,10 @@ jobs:
           # Check the number of changed files in the pull request
           CHANGED_FILES_COUNT=$(echo "$ALL_CHANGED_FILES" | wc -w)
 
-          # Set MAX_CHANGED_FILES from env or default to 25
-          MAX_CHANGED_FILES="${{ vars.MAX_CHANGED_FILES || 25 }}"
-          echo "Max allowed changed files: $MAX_CHANGED_FILES, Changed files in PR: $CHANGED_FILES_COUNT"
+          echo "Max allowed changed files: ${{ vars.MAX_CHANGED_FILES }}, Changed files in PR: $CHANGED_FILES_COUNT"
 
-          if [ "$CHANGED_FILES_COUNT" -gt "$MAX_CHANGED_FILES" ]; then
-            echo "Error: Pull request has more than $MAX_CHANGED_FILES changed files. Please reduce the size of your changes."
+          if [ "$CHANGED_FILES_COUNT" -gt "${{ vars.MAX_CHANGED_FILES }}" ]; then
+            echo "Error: Pull request has more than ${{ vars.MAX_CHANGED_FILES }} changed files. Please reduce the size of your changes."
             exit 1
           else
             echo "Pull request size is within the acceptable limit."

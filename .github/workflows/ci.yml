@@ -11,7 +11,7 @@ on:
 
 jobs:
   test_change_limit:
-    if: github.event_name == 'pull_request'
+    if: vars.MAX_CHANGED_FILES && github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout ${{ github.event.repository.name }}
@@ -40,6 +40,8 @@ jobs:
           fi
 
   build_api:
+    needs: test_change_limit
+    if: ${{ always() && !failure() && !cancelled() }}
     runs-on: ubuntu-latest
     container:
       image: python:3.12.2
@@ -79,6 +81,8 @@ jobs:
           find "$GITHUB_WORKSPACE/services" -name "coverage.xml"
 
   webapp:
+    needs: test_change_limit
+    if: ${{ always() && !failure() && !cancelled() }}
     runs-on: ubuntu-latest
     container:
       image: node:19.8.1
@@ -113,6 +117,8 @@ jobs:
           find "$GITHUB_WORKSPACE" -name "lcov.info"
 
   build_keycloak_provider:
+    needs: test_change_limit
+    if: ${{ always() && !failure() && !cancelled() }}
     runs-on: ubuntu-latest
     container:
       image: maven:3.9.9-eclipse-temurin-21
@@ -139,6 +145,8 @@ jobs:
           path: $GITHUB_WORKSPACE/resources/keycloak/custom-user-provider/target/surefire-reports
 
   build_intersection_api:
+    needs: test_change_limit
+    if: ${{ always() && !failure() && !cancelled() }}
     runs-on: ubuntu-latest
     container:
       image: maven:3.9.9-eclipse-temurin-21

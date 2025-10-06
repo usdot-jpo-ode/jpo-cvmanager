@@ -7,10 +7,39 @@ on:
       - cdot-release*
   pull_request:
     branches:
-      - '**' # Run on PRs to any branch
+      - "**" # Run on PRs to any branch
 
 jobs:
+  test_change_limit:
+    if: vars.MAX_CHANGED_FILES && github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ${{ github.event.repository.name }}
+        uses: actions/checkout@v4
+
+      - name: Get changed files
+        id: changed-files
+        uses: step-security/changed-files@v46
+
+      - name: Check for large changes
+        env:
+          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+        run: |
+          # Check the number of changed files in the pull request
+          CHANGED_FILES_COUNT=$(echo "$ALL_CHANGED_FILES" | wc -w)
+
+          echo "Max allowed changed files: ${{ vars.MAX_CHANGED_FILES }}, Changed files in PR: $CHANGED_FILES_COUNT"
+
+          if [ "$CHANGED_FILES_COUNT" -gt "${{ vars.MAX_CHANGED_FILES }}" ]; then
+            echo "Error: Pull request has more than ${{ vars.MAX_CHANGED_FILES }} changed files. Please reduce the size of your changes."
+            exit 1
+          else
+            echo "Pull request size is within the acceptable limit."
+          fi
+
   build_api:
+    needs: test_change_limit
+    if: ${{ always() && !failure() && !cancelled() }}
     runs-on: ubuntu-latest
     container:
       image: python:3.12.2
@@ -50,6 +79,8 @@ jobs:
           find "$GITHUB_WORKSPACE/services" -name "coverage.xml"
 
   webapp:
+    needs: test_change_limit
+    if: ${{ always() && !failure() && !cancelled() }}
     runs-on: ubuntu-latest
     container:
       image: node:19.8.1
@@ -84,6 +115,8 @@ jobs:
           find "$GITHUB_WORKSPACE" -name "lcov.info"
 
   build_keycloak_provider:
+    needs: test_change_limit
+    if: ${{ always() && !failure() && !cancelled() }}
     runs-on: ubuntu-latest
     container:
       image: maven:3.9.9-eclipse-temurin-21
@@ -95,8 +128,8 @@ jobs:
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          distribution: 'adopt'
-          java-version: '21'
+          distribution: "adopt"
+          java-version: "21"
 
       - name: Build and Test with Maven
         run: |
@@ -110,6 +143,8 @@ jobs:
           path: $GITHUB_WORKSPACE/resources/keycloak/custom-user-provider/target/surefire-reports
 
   build_intersection_api:
+    needs: test_change_limit
+    if: ${{ always() && !failure() && !cancelled() }}
     runs-on: ubuntu-latest
     container:
       image: maven:3.9.9-eclipse-temurin-21
@@ -131,7 +166,7 @@ jobs:
       - name: Install Dependencies
         env:
           MAVEN_GITHUB_TOKEN: ${{ secrets.MAVEN_GITHUB_TOKEN }}
-          MAVEN_GITHUB_ORG: 'usdot-jpo-ode'
+          MAVEN_GITHUB_ORG: "usdot-jpo-ode"
         run: |
           cd $GITHUB_WORKSPACE/services/intersection-api/api
           mvn clean install -DskipTests -s ./settings.xml
@@ -140,7 +175,7 @@ jobs:
       - name: Run tests
         env:
           MAVEN_GITHUB_TOKEN: ${{ secrets.MAVEN_GITHUB_TOKEN }}
-          MAVEN_GITHUB_ORG: 'usdot-jpo-ode'
+          MAVEN_GITHUB_ORG: "usdot-jpo-ode"
         run: |
           cd $GITHUB_WORKSPACE/services/intersection-api/api
           mvn verify -s ./settings.xml
@@ -189,8 +224,8 @@ jobs:
 
       - uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: "temurin"
+          java-version: "17"
 
       - name: Setup SonarScanner
         uses: warchant/setup-sonar-scanner@v7

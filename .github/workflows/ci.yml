@@ -38,9 +38,6 @@ jobs:
           else
             echo "Pull request size is within the acceptable limit."
           fi
-      - name: Cancel parallel jobs if failure
-        if: failure()
-        uses: andymckay/cancel-action@0.5
 
   build_api:
     runs-on: ubuntu-latest

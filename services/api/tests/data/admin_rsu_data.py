@@ -109,43 +109,74 @@ expected_get_rsu_query_one = (
     "JOIN public.snmp_protocols AS snmp_ver ON snmp_ver.snmp_protocol_id = rsus.snmp_protocol_id "
     "JOIN public.rsu_organization AS ro ON ro.rsu_id = rsus.rsu_id  "
     "JOIN public.organizations AS org ON org.organization_id = ro.organization_id"
-    " WHERE ipv4_address = '10.11.81.12'"
+    " WHERE ipv4_address = :rsu_ip"
     ") as row"
 )
 
 modify_rsu_sql = (
     "UPDATE public.rsus SET "
-    f"geography=ST_GeomFromText('POINT(-100.0 38.0)'), "
-    f"milepost=900.1, "
-    f"ipv4_address='10.0.0.1', "
-    f"serial_number='test', "
-    f"primary_route='Test Route', "
-    f"model=(SELECT rsu_model_id FROM public.rsu_models WHERE name = 'model'), "
-    f"credential_id=(SELECT credential_id FROM public.rsu_credentials WHERE nickname = 'test'), "
-    f"snmp_credential_id=(SELECT snmp_credential_id FROM public.snmp_credentials WHERE nickname = 'test'), "
-    f"snmp_protocol_id=(SELECT snmp_protocol_id FROM public.snmp_protocols WHERE nickname = 'test'), "
-    f"iss_scms_id='test' "
-    f"WHERE ipv4_address='10.0.0.1'"
+    "geography=ST_GeomFromText('POINT(' || :geo_position_longitude || ' ' || :geo_position_latitude || ')'), "
+    "milepost=:milepost, "
+    "ipv4_address=:rsu_ip, "
+    "serial_number=:serial_number, "
+    "primary_route=:primary_route, "
+    "model=(SELECT rsu_model_id FROM public.rsu_models WHERE name = :model), "
+    "credential_id=(SELECT credential_id FROM public.rsu_credentials WHERE nickname = :ssh_credential_group), "
+    "snmp_credential_id=(SELECT snmp_credential_id FROM public.snmp_credentials WHERE nickname = :snmp_credential_group), "
+    "snmp_protocol_id=(SELECT snmp_protocol_id FROM public.snmp_protocols WHERE nickname = :snmp_version_group), "
+    "iss_scms_id=:scms_id "
+    "WHERE ipv4_address=:orig_ip",
+    {
+        "rsu_ip": "10.0.0.1",
+        "geo_position_longitude": -100.0,
+        "geo_position_latitude": 38.0,
+        "milepost": 900.1,
+        "serial_number": "test",
+        "primary_route": "Test Route",
+        "model": "model",
+        "ssh_credential_group": "test",
+        "snmp_credential_group": "test",
+        "snmp_version_group": "test",
+        "scms_id": "test",
+        "orig_ip": "10.0.0.1",
+    },
 )
 
 add_org_sql = (
     "INSERT INTO public.rsu_organization(rsu_id, organization_id) VALUES"
     " ("
-    "(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '10.0.0.1'), "
-    "(SELECT organization_id FROM public.organizations WHERE name = 'Test Org2')"
-    ")"
+    "(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip), "
+    "(SELECT organization_id FROM public.organizations WHERE name = :org_name_0)"
+    ")",
+    {"rsu_ip": "10.0.0.1", "org_name_0": "Test Org2"},
 )
 
 remove_org_sql = (
     "DELETE FROM public.rsu_organization WHERE "
-    "rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '10.0.0.1') "
-    "AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = 'Test Org1')"
+    "rsu_id = (SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip) "
+    "AND organization_id IN (SELECT organization_id FROM public.organizations WHERE name IN (:org_name_0))",
+    {"rsu_ip": "10.0.0.1", "org_name_0": "Test Org1"},
 )
 
 delete_rsu_calls = [
-    "DELETE FROM public.rsu_organization WHERE rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '10.11.81.12')",
-    "DELETE FROM public.ping WHERE rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '10.11.81.12')",
-    "DELETE FROM public.scms_health WHERE rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '10.11.81.12')",
-    "DELETE FROM public.snmp_msgfwd_config WHERE rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '10.11.81.12')",
-    "DELETE FROM public.rsus WHERE ipv4_address = '10.11.81.12'",
+    (
+        "DELETE FROM public.rsu_organization WHERE rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip)",
+        {"rsu_ip": "10.11.81.12"},
+    ),
+    (
+        "DELETE FROM public.ping WHERE rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip)",
+        {"rsu_ip": "10.11.81.12"},
+    ),
+    (
+        "DELETE FROM public.scms_health WHERE rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip)",
+        {"rsu_ip": "10.11.81.12"},
+    ),
+    (
+        "DELETE FROM public.snmp_msgfwd_config WHERE rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip)",
+        {"rsu_ip": "10.11.81.12"},
+    ),
+    (
+        "DELETE FROM public.rsus WHERE ipv4_address = :rsu_ip",
+        {"rsu_ip": "10.11.81.12"},
+    ),
 ]

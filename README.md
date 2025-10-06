@@ -22,6 +22,9 @@ The JPO Connected Vehicle Manager is a web-based application that helps an organ
 - Device firmware upgrade support for Kapsch, Commsignia and Yunex devices
 - Admin controls for adding, modifying and removing devices and users
 - Fully customizable theming with Material UI - [cvmanager theming documentation](webapp/src/styles/README.md)
+- Organizations allow fine tuned access control of users and devices. Multiple organizations can be run concurrently within 1 CV-Manager deployment.
+- Role-based access supports three user roles: Admin, Operator, and User. See the chart below for a breakdown of role-based access within and between organizations
+  <img src=docs/organization-permissions-chart.png alt="organization permission chart"/>
 
 To provide feedback, we recommend that you create an "issue" in this repository (<https://github.com/usdot-jpo-ode/jpo-cvmanager/issues>). You will need a GitHub account to create an issue. If you don’t have an account, a dialog will be presented to you to create one at no cost.
 

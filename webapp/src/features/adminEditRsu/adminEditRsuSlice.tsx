@@ -128,6 +128,10 @@ export const editRsu = createAsyncThunk(
       tag: 'rsu',
     })
 
+    if (!data) {
+      return { success: false, message: 'Failed to complete the request with unknown error' }
+    }
+
     switch (data.status) {
       case 200:
         dispatch(updateRsuTableData())

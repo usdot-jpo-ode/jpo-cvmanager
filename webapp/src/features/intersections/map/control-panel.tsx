@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent } from 'react'
+import React, { useState, useEffect, useMemo, ChangeEvent } from 'react'
 import Slider from '@mui/material/Slider'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -181,16 +181,16 @@ function ControlPanel() {
   const getQueryParams = ({ startDate, endDate, eventDate }: { startDate: Date; endDate: Date; eventDate: Date }) => {
     return {
       eventTime: eventDate,
-      timeBefore: Math.round((eventDate.getTime() - startDate.getTime()) / 1000),
-      timeAfter: Math.round((endDate.getTime() - eventDate.getTime()) / 1000),
+      timeBeforeSeconds: Math.round((eventDate.getTime() - startDate.getTime()) / 1000),
+      timeAfterSeconds: Math.round((endDate.getTime() - eventDate.getTime()) / 1000),
     }
   }
 
-  const [eventTime, setEventTime] = useState<dayjs.Dayjs | null>(
-    dayjs(getQueryParams(queryParams).eventTime.toString())
-  )
-  const [timeBefore, setTimeBefore] = useState<string | undefined>(getQueryParams(queryParams).timeBefore.toString())
-  const [timeAfter, setTimeAfter] = useState<string | undefined>(getQueryParams(queryParams).timeAfter.toString())
+  const queryParamTimes = useMemo(() => getQueryParams(queryParams), [queryParams])
+
+  const [eventTime, setEventTime] = useState<dayjs.Dayjs | null>(dayjs(queryParamTimes.eventTime.toString()))
+  const [timeBeforeSeconds, setTimeBeforeSeconds] = useState<number | undefined>(queryParamTimes.timeBeforeSeconds)
+  const [timeAfterSeconds, setTimeAfterSeconds] = useState<number | undefined>(queryParamTimes.timeAfterSeconds)
   const [timeWindowSecondsLocal, setTimeWindowSecondsLocal] = useState<string | undefined>(
     timeWindowSeconds?.toString()
   )
@@ -202,8 +202,8 @@ function ControlPanel() {
   useEffect(() => {
     const newDateParams = getQueryParams(queryParams)
     setEventTime(dayjs(newDateParams.eventTime))
-    setTimeBefore(newDateParams.timeBefore.toString())
-    setTimeAfter(newDateParams.timeAfter.toString())
+    setTimeBeforeSeconds(newDateParams.timeBeforeSeconds)
+    setTimeAfterSeconds(newDateParams.timeAfterSeconds)
   }, [queryParams])
 
   useEffect(() => {
@@ -353,7 +353,7 @@ function ControlPanel() {
                       sx={{ mt: 1 }}
                       onChange={(e) => {
                         if (Number.isInteger(Number(e.target.value))) {
-                          dispatch(setTimeWindowSeconds(parseInt(e.target.value)))
+                          setTimeBeforeSeconds(parseInt(e.target.value))
                         }
                       }}
                       slotProps={{
@@ -361,7 +361,7 @@ function ControlPanel() {
                           endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
                         },
                       }}
-                      value={timeWindowSeconds}
+                      value={timeWindowSeconds.toString()}
                     />
                   </FormControl>
                 </Grid2>

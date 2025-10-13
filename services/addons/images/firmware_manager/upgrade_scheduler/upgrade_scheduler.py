@@ -7,11 +7,11 @@ from waitress import serve
 import requests
 import logging
 from addons.images.firmware_manager.upgrade_scheduler import environment
-from common import util
+from common import common_environment
 
 app = Flask(__name__)
 
-util.configure_logging()
+common_environment.configure_logging()
 
 # Tracker for active firmware upgrades
 # Key: IPv4 string of target device

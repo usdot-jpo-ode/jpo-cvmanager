@@ -1,4 +1,4 @@
-import environment
+import api_environment
 
 # REST endpoint resource class
 from flask_restful import Resource

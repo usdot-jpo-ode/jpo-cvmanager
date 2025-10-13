@@ -31,9 +31,9 @@ from admin_org import AdminOrg
 from contact_support import ContactSupportResource
 from rsu_error_summary import RSUErrorSummaryResource
 import smtp_error_handler
-from common import util
+from common import common_environment
 
-util.configure_logging()
+common_environment.configure_logging()
 
 app = Flask(__name__)
 

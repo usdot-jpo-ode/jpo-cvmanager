@@ -5,7 +5,7 @@ import subprocess
 import sys
 import tarfile
 import time
-from common import util
+from common import common_environment
 
 class YunexUpgrader(upgrader.UpgraderAbstractClass):
     def __init__(self, upgrade_info):
@@ -123,7 +123,7 @@ class YunexUpgrader(upgrader.UpgraderAbstractClass):
 # - target_firmware_version
 # - install_package
 if __name__ == "__main__":
-    util.configure_logging()
+    common_environment.configure_logging()
     # Trimming outer single quotes from the json.loads
     upgrade_info = json.loads(sys.argv[1][1:-1])
     yunex_upgrader = YunexUpgrader(upgrade_info)

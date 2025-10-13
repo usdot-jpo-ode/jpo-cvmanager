@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import logging
 import common.pgquery as pgquery
 from addons.images.rsu_status_check import environment
-from common import util
+from common import common_environment
 
 def get_all_rsus():
     query = "SELECT to_jsonb(row) FROM (SELECT rsu_id FROM public.rsus) AS row ORDER BY rsu_id"
@@ -83,7 +83,7 @@ def purge_ping_data(stale_period):
 
 
 if __name__ == "__main__":
-    util.configure_logging()
+    common_environment.configure_logging()
 
     run_service = environment.RSU_PING or environment.ZABBIX
     if not run_service:

@@ -4,6 +4,8 @@ import logging
 
 def configure_logging() -> str:
     LOGGING_LEVEL = os.environ.get("LOGGING_LEVEL", "INFO")
+    if not LOGGING_LEVEL:
+        LOGGING_LEVEL = "INFO"
     logging.basicConfig(format="%(levelname)s:%(message)s", level=LOGGING_LEVEL)
     return LOGGING_LEVEL
 

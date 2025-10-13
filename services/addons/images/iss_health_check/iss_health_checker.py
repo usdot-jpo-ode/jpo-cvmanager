@@ -6,7 +6,7 @@ import common.pgquery as pgquery
 from dataclasses import dataclass, field
 from typing import Dict
 from addons.images.iss_health_check import environment
-from common import util
+from common import common_environment
 
 
 # Set up logging
@@ -192,7 +192,7 @@ def validate_scms_data(value):
 
 
 if __name__ == "__main__":
-    util.configure_logging()
+    common_environment.configure_logging()
 
     scms_statuses = get_scms_status_data()
     insert_scms_data(scms_statuses)

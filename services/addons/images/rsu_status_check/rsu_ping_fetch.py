@@ -2,7 +2,7 @@ import requests
 import logging
 import common.pgquery as pgquery
 from addons.images.rsu_status_check import environment
-from common import util
+from common import common_environment
 
 
 def get_rsu_data():
@@ -145,7 +145,7 @@ class RsuStatusFetch:
 
 
 if __name__ == "__main__":
-    util.configure_logging()
+    common_environment.configure_logging()
 
     run_service = environment.RSU_PING and environment.ZABBIX
     if not run_service:

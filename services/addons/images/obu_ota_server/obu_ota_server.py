@@ -10,10 +10,10 @@ import logging
 from datetime import datetime
 import asyncio
 from addons.images.obu_ota_server import environment
-from common import util
+from common import common_environment
 
 app = FastAPI()
-util.configure_logging()
+common_environment.configure_logging()
 security = HTTPBasic()
 
 commsignia_file_ext = ".tar.sig"

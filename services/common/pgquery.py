@@ -1,6 +1,6 @@
 import sqlalchemy
 import logging
-import common_environment
+from common import common_environment
 
 db_config = {
     # Pool size is the maximum number of permanent connections to keep.

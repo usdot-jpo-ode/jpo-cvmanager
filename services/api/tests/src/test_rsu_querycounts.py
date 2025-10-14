@@ -3,10 +3,13 @@ import pytest
 import api.src.rsu_querycounts as rsu_querycounts
 from api.src.rsu_querycounts import query_rsu_counts_mongo
 import api.tests.data.rsu_querycounts_data as querycounts_data
+from api.tests.data import auth_data
+from werkzeug.exceptions import Forbidden
 
-##################################### Testing Requests ###########################################
+user_valid = auth_data.get_request_environ()
 
 
+# #################################### Testing Requests ###########################################
 def test_options_request():
     counts = rsu_querycounts.RsuQueryCounts()
     (body, code, headers) = counts.options()
@@ -18,36 +21,36 @@ def test_options_request():
 @patch("api.src.api_environment.COUNTS_MSG_TYPES", ["BSM", "SSM", "SPAT"])
 @patch("api.src.rsu_querycounts.get_organization_rsus")
 @patch("api.src.rsu_querycounts.query_rsu_counts_mongo")
+@patch(
+    "api.src.rsu_querycounts.request",
+    MagicMock(
+        args=querycounts_data.request_args_good,
+    ),
+)
 def test_get_request(mock_query, mock_rsus):
-    req = MagicMock()
-    req.args = querycounts_data.request_args_good
-    req.environ = querycounts_data.request_params_good
     counts = rsu_querycounts.RsuQueryCounts()
     mock_rsus.return_value = ["10.0.0.1", "10.0.0.2", "10.0.0.3"]
-    mock_query.return_value = {"Some Data"}, 200
-    with patch("api.src.rsu_querycounts.request", req):
-        (data, code, headers) = counts.get()
-        assert code == 200
-        assert headers["Access-Control-Allow-Origin"] == "test.com"
-        assert headers["Content-Type"] == "application/json"
-        assert data == {"Some Data"}
+    mock_query.return_value = {"Some Data"}
+    (data, code, headers) = counts.get()
+    assert code == 200
+    assert headers["Access-Control-Allow-Origin"] == "test.com"
+    assert headers["Content-Type"] == "application/json"
+    assert data == {"Some Data"}
 
 
-################################### Testing Data Validation #########################################
-
-
+@patch(
+    "api.src.rsu_querycounts.request",
+    MagicMock(
+        args=querycounts_data.request_args_bad_type,
+    ),
+)
 def test_schema_validate_bad_data():
-    req = MagicMock()
-    req.args = querycounts_data.request_args_bad_type
     counts = rsu_querycounts.RsuQueryCounts()
-    with patch("api.src.rsu_querycounts.request", req):
-        with pytest.raises(Exception):
-            assert counts.get()
+    with pytest.raises(Exception):
+        assert counts.get()
 
 
-################################### Test get_organization_rsus ########################################
-
-
+# ################################## Test get_organization_rsus ########################################
 @patch("api.src.rsu_querycounts.pgquery")
 def test_rsu_counts_get_organization_rsus(mock_pgquery):
     mock_pgquery.query_db.return_value = [
@@ -61,14 +64,13 @@ def test_rsu_counts_get_organization_rsus(mock_pgquery):
         "SELECT rd.ipv4_address, rd.primary_route "
         "FROM public.rsus rd "
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
-        "WHERE ron_v.name = 'Test' "
         "ORDER BY primary_route ASC, milepost ASC"
         ") as row"
     )
 
-    actual_result = rsu_querycounts.get_organization_rsus("Test")
+    actual_result = rsu_querycounts.get_organization_rsus(user_valid, [])
 
-    mock_pgquery.query_db.assert_called_with(expected_query)
+    mock_pgquery.query_db.assert_called_with(expected_query, params={})
     assert actual_result == {
         "10.11.81.12": "Route 1",
         "10.11.81.13": "Route 1",
@@ -85,12 +87,11 @@ def test_rsu_counts_get_organization_rsus_empty(mock_pgquery):
         "SELECT rd.ipv4_address, rd.primary_route "
         "FROM public.rsus rd "
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
-        "WHERE ron_v.name = 'Test' "
         "ORDER BY primary_route ASC, milepost ASC"
         ") as row"
     )
-    actual_result = rsu_querycounts.get_organization_rsus("Test")
-    mock_pgquery.query_db.assert_called_with(expected_query)
+    actual_result = rsu_querycounts.get_organization_rsus(user_valid, [])
+    mock_pgquery.query_db.assert_called_with(expected_query, params={})
 
     assert actual_result == {}
 
@@ -117,10 +118,9 @@ def test_query_rsu_counts_mongo_success(mock_mongo):
         "192.168.0.2": {"road": "A2", "count": 5},
     }
 
-    result, status_code = query_rsu_counts_mongo(allowed_ips, message_type, start, end)
+    result = query_rsu_counts_mongo(allowed_ips, message_type, start, end)
 
     assert result == expected_result
-    assert status_code == 200
 
 
 @patch("api.src.rsu_querycounts.MongoClient")
@@ -134,6 +134,7 @@ def test_query_rsu_counts_mongo_failure(mock_logging, mock_mongo):
     start = "2022-01-01T00:00:00"
     end = "2023-01-01T00:00:00"
 
-    result, status_code = query_rsu_counts_mongo(allowed_ips, message_type, start, end)
-    assert result == {}
-    assert status_code == 503
+    with pytest.raises(Forbidden) as exc_info:
+        query_rsu_counts_mongo(allowed_ips, message_type, start, end)
+
+    assert str(exc_info.value) == "403 Forbidden: Failed to connect to Mongo"

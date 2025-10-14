@@ -46,6 +46,6 @@ expectedQuery = (
     ") AS a "
     "WHERE a.row_id <= 1 ORDER BY rsu_id"
     ") AS scms_health_data ON rd.rsu_id = scms_health_data.rsu_id "
-    f"WHERE ron_v.name = 'Test' "
+    "WHERE ron_v.name = :org_name "
     "ORDER BY rd.ipv4_address"
 )

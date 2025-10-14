@@ -1,11 +1,22 @@
+from typing import Any
+from flask_restful import Resource
 import common.util as util
 import api_environment
 import logging
 from datetime import datetime, timedelta
 from pymongo import MongoClient
+from werkzeug.exceptions import InternalServerError, ServiceUnavailable
+
+from common.auth_tools import (
+    ORG_ROLE_LITERAL,
+    PermissionResult,
+    require_permission,
+    get_rsu_set_for_org,
+)
 
 
-def query_ssm_data_mongo(result):
+def query_ssm_data_mongo() -> list:
+    results = []
     end_date = datetime.now()
     end_utc = util.format_date_utc(end_date.isoformat())
     start_date = end_date - timedelta(days=1)
@@ -21,7 +32,7 @@ def query_ssm_data_mongo(result):
         logging.error(
             f"Failed to connect to Mongo counts collection with error message: {e}"
         )
-        return [], 503
+        raise ServiceUnavailable("Failed to connect to MongoDB") from e
 
     filter = {"recordGeneratedAt": {"$gte": start_utc, "$lte": end_utc}}
     project = {
@@ -40,7 +51,7 @@ def query_ssm_data_mongo(result):
     # This can be viewed here: https://github.com/usdot-jpo-ode/jpo-ode/blob/develop/jpo-ode-core/src/main/resources/schemas/schema-ssm.json
     try:
         for doc in collection.find(filter, project):
-            result.append(
+            results.append(
                 {
                     "time": util.format_date_denver(doc["recordGeneratedAt"]),
                     "ip": doc["metadata"]["originIp"],
@@ -56,13 +67,14 @@ def query_ssm_data_mongo(result):
                     "type": doc["metadata"]["recordType"],
                 }
             )
-        return 200, result
+        return results
     except Exception as e:
         logging.error(f"SSM filter failed: {e}")
-        return 500, result
+        raise InternalServerError("Encountered unknown issue") from e
 
 
-def query_srm_data_mongo(result):
+def query_srm_data_mongo() -> list:
+    results = []
     end_date = datetime.now()
     end_utc = util.format_date_utc(end_date.isoformat())
     start_date = end_date - timedelta(days=1)
@@ -78,7 +90,7 @@ def query_srm_data_mongo(result):
         logging.error(
             f"Failed to connect to Mongo counts collection with error message: {e}"
         )
-        return [], 503
+        raise ServiceUnavailable("Failed to connect to MongoDB") from e
 
     filter = {"recordGeneratedAt": {"$gte": start_utc, "$lte": end_utc}}
     project = {
@@ -98,7 +110,7 @@ def query_srm_data_mongo(result):
     # This can be viewed here: https://github.com/usdot-jpo-ode/jpo-ode/blob/develop/jpo-ode-core/src/main/resources/schemas/schema-srm.json
     try:
         for doc in collection.find(filter, project):
-            result.append(
+            results.append(
                 {
                     "time": util.format_date_denver(doc["recordGeneratedAt"]),
                     "ip": doc["metadata"]["originIp"],
@@ -116,15 +128,16 @@ def query_srm_data_mongo(result):
                     "status": "N/A",
                 }
             )
-        return 200, result
+        return results
     except Exception as e:
         logging.error(f"SRM filter failed: {e}")
-        return 500, result
+        raise InternalServerError("Encountered unknown issue") from e
 
 
-# REST endpoint resource class and schema
-from flask import request
-from flask_restful import Resource
+def filter_results_by_ip_address(
+    results: list[dict[str, Any]], valid_ips: set[str]
+) -> list:
+    return [result for result in results if result["ip"] in valid_ips]
 
 
 class RsuSsmSrmData(Resource):
@@ -144,10 +157,19 @@ class RsuSsmSrmData(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
-    def get(self):
+    @require_permission(required_role=ORG_ROLE_LITERAL.USER)
+    def get(self, permission_result: PermissionResult):
         logging.debug("RsuSsmSrmData GET requested")
         data = []
-        code, ssmRes = query_ssm_data_mongo(data)
-        code, finalRes = query_srm_data_mongo(ssmRes)
-        finalRes.sort(key=lambda x: x["time"])
-        return (finalRes, code, self.headers)
+
+        data.extend(query_ssm_data_mongo())
+        data.extend(query_srm_data_mongo())
+        data.sort(key=lambda x: x["time"])
+
+        # Filter by RSUs within authenticated organizations
+        if permission_result.user.organization:
+            allowed_ips = get_rsu_set_for_org([permission_result.user.organization])
+        else:
+            allowed_ips = get_rsu_set_for_org(permission_result.qualified_orgs)
+
+        return (filter_results_by_ip_address(data, allowed_ips), 200, self.headers)

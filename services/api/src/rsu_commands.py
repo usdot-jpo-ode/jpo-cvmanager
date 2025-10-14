@@ -1,7 +1,17 @@
+from typing import Any
+from flask import request, abort
+from flask_restful import Resource
 from marshmallow import Schema, fields
 import common.pgquery as pgquery
 import logging
 import rsu_upgrade
+from werkzeug.exceptions import BadRequest
+from common.auth_tools import (
+    ORG_ROLE_LITERAL,
+    EnvironWithOrg,
+    PermissionResult,
+    require_permission,
+)
 import ssh_commands
 import rsu_snmpset
 import api_environment
@@ -75,19 +85,19 @@ def fetch_rsu_info(rsu_ip, organization):
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
-        "SELECT rd.rsu_id AS rsu_id, man.name AS manufacturer_name, rcred.username AS ssh_username, rcred.password AS ssh_password, snmp.username AS snmp_username, snmp.password AS snmp_password, snmp.encrypt_password as snmp_encrypt_pw, sver.protocol_code AS snmp_version "
+        "SELECT rd.rsu_id AS rsu_id, man.name AS manufacturer_name, rsu_creds.username AS ssh_username, rsu_creds.password AS ssh_password, snmp.username AS snmp_username, snmp.password AS snmp_password, snmp.encrypt_password as snmp_encrypt_pw, snmp_ver.protocol_code AS snmp_version "
         "FROM public.rsus AS rd "
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
         "JOIN public.rsu_models AS rm ON rm.rsu_model_id = rd.model "
         "JOIN public.manufacturers AS man ON man.manufacturer_id = rm.manufacturer "
-        "LEFT JOIN public.rsu_credentials AS rcred ON rcred.credential_id = rd.credential_id "
+        "LEFT JOIN public.rsu_credentials AS rsu_creds ON rsu_creds.credential_id = rd.credential_id "
         "LEFT JOIN public.snmp_credentials AS snmp ON snmp.snmp_credential_id = rd.snmp_credential_id "
-        "LEFT JOIN public.snmp_protocols AS sver ON sver.snmp_protocol_id = rd.snmp_protocol_id "
-        f"WHERE ron_v.name = '{organization}' AND rd.ipv4_address = '{rsu_ip}'"
+        "LEFT JOIN public.snmp_protocols AS snmp_ver ON snmp_ver.snmp_protocol_id = rd.snmp_protocol_id "
+        "WHERE ron_v.name = :org_name AND rd.ipv4_address = :rsu_ip"
         ") as row"
     )
-
-    data = pgquery.query_db(query)
+    params = {"org_name": organization, "rsu_ip": rsu_ip}
+    data = pgquery.query_db(query, params=params)
     logging.info("Parsing results...")
     if len(data) > 0:
         # Grab the first result, it should be the only result
@@ -108,7 +118,7 @@ def fetch_rsu_info(rsu_ip, organization):
     return None
 
 
-def execute_upgradersu(organization, rsu_list):
+def execute_upgrade_rsu(organization, rsu_list):
     return_dict = {}
     for rsu in rsu_list:
         if fetch_rsu_info(rsu, organization) is None:
@@ -140,7 +150,7 @@ def perform_command(command, organization, role, rsu_list, args):
         )
 
     if command == "upgrade-rsu":
-        return execute_upgradersu(organization, rsu_list), 200
+        return execute_upgrade_rsu(organization, rsu_list), 200
 
     # Handle remaining functions with only one RSU
     rsu_ip = rsu_list[0]
@@ -158,11 +168,6 @@ def perform_command(command, organization, role, rsu_list, args):
 
 
 # REST endpoint resource class and schema
-from flask import request, abort
-from flask_restful import Resource
-from marshmallow import Schema, fields
-
-
 class RsuCommandRequestSchema(Schema):
     command = fields.Str(required=True)
     rsu_ip = fields.List(fields.IPv4(required=True))
@@ -183,26 +188,35 @@ class RsuCommandRequest(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
-    def get(self):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.OPERATOR,
+    )
+    def get(self, permission_result: PermissionResult):
         logging.debug("RsuCommandRequest GET requested")
-        return self.universal()
+        return self.universal(permission_result.user)
 
-    def post(self):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.OPERATOR,
+    )
+    def post(self, permission_result: PermissionResult):
         logging.debug("RsuCommandRequest POST requested")
-        return self.universal()
+        return self.universal(permission_result.user)
 
-    def universal(self):
+    def universal(self, user: EnvironWithOrg):
         schema = RsuCommandRequestSchema()
-        errors = schema.validate(request.json)
+        if request.json is None:
+            raise BadRequest("No JSON body found")
+        body: dict[str, Any] = request.json
+        errors = schema.validate(body)
         if errors:
             logging.error(str(errors))
             abort(400, str(errors))
 
         data, code = perform_command(
-            request.json["command"],
-            request.environ["organization"],
-            request.environ["role"],
-            request.json["rsu_ip"],
-            request.json["args"],
+            body["command"],
+            user.organization,
+            user.role,
+            body["rsu_ip"],
+            body["args"],
         )
         return (data, code, self.headers)

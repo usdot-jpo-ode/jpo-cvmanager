@@ -1,8 +1,13 @@
+from flask import request
+from flask_restful import Resource
+from marshmallow import Schema, fields
 import common.util as util
 import api_environment
 import logging
 from datetime import datetime
 from pymongo import MongoClient, ASCENDING, GEOSPHERE
+from werkzeug.exceptions import InternalServerError
+from common.auth_tools import ORG_ROLE_LITERAL, require_permission
 
 coord_resolution = 0.0001  # lats more than this are considered different
 time_resolution = 10  # time deltas bigger than this are considered different
@@ -125,16 +130,12 @@ def query_geo_data_mongo(pointList, start, end, msg_type):
         logging.info(
             f"Filter successful. Records returned: {count}, Total records: {total_count}"
         )
-        return result, 200
+        return result
     except Exception as e:
         logging.error(f"Filter failed: {e}")
-        return [], 500
-
-
-# REST endpoint resource class and schema
-from flask import request
-from flask_restful import Resource
-from marshmallow import Schema, fields
+        raise InternalServerError(
+            f"Encountered unknown issue querying MongoDB: {e}"
+        ) from e
 
 
 class RsuGeoDataSchema(Schema):
@@ -161,6 +162,7 @@ class RsuGeoData(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
+    @require_permission(required_role=ORG_ROLE_LITERAL.USER)
     def post(self):
         logging.debug("RsuGeoData POST requested")
 
@@ -171,13 +173,15 @@ class RsuGeoData(Resource):
             pointList = data["geometry"]
             start = data["start"]
             end = data["end"]
-        except:
+        except KeyError:
             return (
                 'Body format: {"start": string, "end": string, "geometry": coordinate list}',
                 400,
                 self.headers,
             )
 
-        data, code = query_geo_data_mongo(pointList, start, end, msg_type.capitalize())
-
-        return (data, code, self.headers)
+        return (
+            query_geo_data_mongo(pointList, start, end, msg_type.capitalize()),
+            200,
+            self.headers,
+        )

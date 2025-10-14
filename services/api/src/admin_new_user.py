@@ -1,26 +1,32 @@
+from typing import Any
+from flask import request, abort
+from flask_restful import Resource
+from marshmallow import Schema, fields, validate
 import logging
 import common.pgquery as pgquery
-import sqlalchemy
 import api_environment
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 import time
+from werkzeug.exceptions import InternalServerError, BadRequest
+from common.auth_tools import (
+    ORG_ROLE_LITERAL,
+    EnvironWithOrg,
+    PermissionResult,
+    enforce_organization_restrictions,
+    get_qualified_org_list,
+    require_permission,
+)
 
 
-def query_and_return_list(query):
-    data = pgquery.query_db(query)
-    return_list = []
-    for row in data:
-        return_list.append(" ".join(row))
-    return return_list
-
-
-def get_allowed_selections():
+def get_allowed_selections(user: EnvironWithOrg):
     allowed = {}
 
-    organizations_query = "SELECT name FROM public.organizations ORDER BY name ASC"
-    roles_query = "SELECT name FROM public.roles ORDER BY name"
+    allowed["organizations"] = get_qualified_org_list(
+        user, ORG_ROLE_LITERAL.ADMIN, include_super_user=True
+    )
 
-    allowed["organizations"] = query_and_return_list(organizations_query)
-    allowed["roles"] = query_and_return_list(roles_query)
+    roles_query = "SELECT name FROM public.roles ORDER BY name"
+    allowed["roles"] = pgquery.query_and_return_list(roles_query)
 
     return allowed
 
@@ -80,14 +86,14 @@ def check_safe_input(user_spec):
     return True
 
 
-def add_user(user_spec):
+def add_user(user_spec: dict):
     # Check for special characters for potential SQL injection
     if not check_email(user_spec["email"]):
-        return {"message": "Email is not valid"}, 500
+        raise BadRequest("Email is not valid")
     if not check_safe_input(user_spec):
-        return {
-            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
-        }, 500
+        raise BadRequest(
+            "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+        )
 
     try:
         current_timestamp = int(time.time() * 1000)
@@ -108,26 +114,23 @@ def add_user(user_spec):
             )
         user_org_insert_query = user_org_insert_query[:-1]
         pgquery.write_db(user_org_insert_query)
-    except sqlalchemy.exc.IntegrityError as e:
+    except IntegrityError as e:
+        if e.orig is None:
+            raise InternalServerError("Encountered unknown issue") from e
         failed_value = e.orig.args[0]["D"]
         failed_value = failed_value.replace("(", '"')
         failed_value = failed_value.replace(")", '"')
         failed_value = failed_value.replace("=", " = ")
         logging.error(f"Exception encountered: {failed_value}")
-        return {"message": failed_value}, 500
-    except Exception as e:
-        logging.error(f"Exception encountered: {e}")
-        return {"message": "Encountered unknown issue"}, 500
+        raise InternalServerError(failed_value) from e
+    except SQLAlchemyError as e:
+        logging.error(f"SQL Exception encountered: {e}")
+        raise InternalServerError("Encountered unknown issue executing query") from e
 
-    return {"message": "New user successfully added"}, 200
+    return {"message": "New user successfully added"}
 
 
 # REST endpoint resource class
-from flask import request, abort
-from flask_restful import Resource
-from marshmallow import Schema, fields, validate
-
-
 class UserOrganizationSchema(Schema):
     name = fields.Str(required=True)
     role = fields.Str(required=True)
@@ -162,18 +165,34 @@ class AdminNewUser(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
-    def get(self):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.OPERATOR,
+    )
+    def get(self, permission_result: PermissionResult):
         logging.debug("AdminNewUser GET requested")
-        return (get_allowed_selections(), 200, self.headers)
+        return (get_allowed_selections(permission_result.user), 200, self.headers)
 
-    def post(self):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.ADMIN,
+    )
+    def post(self, permission_result: PermissionResult):
         logging.debug("AdminNewUser POST requested")
         # Check for main body values
+        if request.json is None:
+            raise BadRequest("No JSON body found")
+        body: dict[str, Any] = request.json
+
         schema = AdminNewUserSchema()
-        errors = schema.validate(request.json)
+        errors = schema.validate(body)
         if errors:
             logging.error(str(errors))
             abort(400, str(errors))
 
-        data, code = add_user(request.json)
-        return (data, code, self.headers)
+        enforce_organization_restrictions(
+            user=permission_result.user,
+            qualified_orgs=permission_result.qualified_orgs,
+            spec=request.json,
+            keys_to_check=["organizations"],
+        )
+
+        return (add_user(body), 200, self.headers)

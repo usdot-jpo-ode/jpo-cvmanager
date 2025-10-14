@@ -9,9 +9,8 @@ import api.tests.data.contact_support_data as contact_support_data
 DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS = "smtp.gmail.com"
 DEFAULT_CSM_TARGET_SMTP_SERVER_PORT = 587
 
+
 # tests for ContactSupportSchema class ---
-
-
 def test_contact_support_schema():
     # prepare
     schema = contact_support.ContactSupportSchema()
@@ -20,11 +19,11 @@ def test_contact_support_schema():
     exceptionOccurred = False
     try:
         schema.load(contact_support_data.contact_support_data)
-    except Exception as e:
+    except Exception:
         exceptionOccurred = True
 
     # assert
-    assert exceptionOccurred == False
+    assert exceptionOccurred is False
 
 
 def test_contact_support_schema_invalid():
@@ -38,9 +37,8 @@ def test_contact_support_schema_invalid():
 
 # end of tests for ContactSupportSchema class ---
 
+
 # tests for ContactSupportResource class ---
-
-
 @patch(
     "api.src.api_environment.CSM_EMAIL_TO_SEND_FROM",
     contact_support_data.CSM_EMAIL_TO_SEND_FROM,
@@ -102,8 +100,8 @@ def test_contact_support_resource_initialization_no_CSM_EMAIL_TO_SEND_FROM():
     # execute
     exceptionOccurred = False
     try:
-        contactSupportResource = contact_support.ContactSupportResource()
-    except Exception as e:
+        contact_support.ContactSupportResource()
+    except Exception:
         exceptionOccurred = True
 
     # assert
@@ -135,8 +133,8 @@ def test_contact_support_resource_initialization_no_CSM_EMAIL_APP_PASSWORD():
     # execute
     exceptionOccurred = False
     try:
-        contactSupportResource = contact_support.ContactSupportResource()
-    except Exception as e:
+        contact_support.ContactSupportResource()
+    except Exception:
         exceptionOccurred = True
 
     # assert
@@ -280,4 +278,4 @@ def test_validate_input():
     )
 
     # assert
-    assert result == None
+    assert result is None

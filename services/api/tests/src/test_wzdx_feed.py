@@ -2,7 +2,6 @@ from unittest.mock import MagicMock, Mock
 
 from mock import patch
 from api.src import wzdx_feed
-import os
 
 
 @patch("api.src.api_environment.WZDX_ENDPOINT", "myendpoint")
@@ -10,21 +9,23 @@ import os
 # test that get_wzdx_data is calling json.loads with expected arguments
 def test_get_wzdx_data():
     # mock return values for function dependencies
-    wzdx_feed.json.loads = MagicMock(return_value="myvalue")
+    wzdx_feed.json.loads = MagicMock(return_value="my_value")
 
     wzdx_feed.requests.get = MagicMock(
-        return_value=Mock(content=MagicMock(decode=MagicMock(return_value="mycontent")))
+        return_value=Mock(
+            content=MagicMock(decode=MagicMock(return_value="my_content"))
+        )
     )
 
     # call function
     result = wzdx_feed.get_wzdx_data()
 
     # check return value
-    expectedResult = "myvalue"
+    expectedResult = "my_value"
     assert result == expectedResult
 
     # check that json.loads was called with expected arguments
-    expectedContent = "mycontent"
+    expectedContent = "my_content"
     wzdx_feed.requests.get.return_value.content.decode.return_value = expectedContent
 
 

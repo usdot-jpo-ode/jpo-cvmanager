@@ -64,6 +64,7 @@ class ContactSupportResource(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
+    # TODO: Enforce authentication, when automatic user registration is implemented
     def post(self):
         logging.debug("ContactSupport POST requested")
         # Check for main body values

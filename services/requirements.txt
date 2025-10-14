@@ -23,7 +23,7 @@ pytz==2023.3.post1
 Werkzeug==3.0.0
 uuid==1.30
 multidict==6.0.5
-python-keycloak==3.12.0
+python-keycloak==5.5.1
 fabric==3.2.2
 paramiko==3.5.0
 scp==0.15.0
@@ -32,10 +32,11 @@ fastapi==0.110.0
 pydantic==2.6.2
 uvicorn==0.27.1
 pytest-asyncio==0.23.3
-aiofiles==23.2.1
+aiofiles==24.1.0
 httpx==0.27.0
 google-cloud-bigquery==3.29.0
 pandas==2.2.3
 shapely==2.0.7
 db-dtypes==1.4.0
 trio==0.31.0
+PyJWT==2.10.1

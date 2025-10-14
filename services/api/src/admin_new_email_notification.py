@@ -1,18 +1,24 @@
+from flask import request, abort
+from flask_restful import Resource
+from marshmallow import Schema, fields
 import logging
 import common.pgquery as pgquery
-import sqlalchemy
 import api_environment
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from werkzeug.exceptions import InternalServerError, BadRequest
+from common.auth_tools import (
+    ORG_ROLE_LITERAL,
+    RESOURCE_TYPE,
+    require_permission,
+)
 
 
-def query_and_return_list(query):
-    data = pgquery.query_db(query)
-    return_list = []
-    for row in data:
-        return_list.append(" ".join(row))
-    return return_list
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.ADMIN,
+    resource_type=RESOURCE_TYPE.USER,
+)
+def get_allowed_types_authorized(user_email: str):
 
-
-def get_allowed_types(user_email):
     allowed = {}
 
     email_types_query = (
@@ -21,7 +27,7 @@ def get_allowed_types(user_email):
         f"(SELECT user_id FROM public.users WHERE email = '{user_email}'))"
     )
 
-    allowed["email_types"] = query_and_return_list(email_types_query)
+    allowed["email_types"] = pgquery.query_and_return_list(email_types_query)
 
     return allowed
 
@@ -43,41 +49,45 @@ def check_safe_input(notification_spec):
     return True
 
 
-def add_notification(notification_spec):
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.ADMIN,
+    resource_type=RESOURCE_TYPE.USER,
+)
+def add_notification_authorized(email: str, notification_spec: dict):
+
     # Check for special characters for potential SQL injection
     if not check_safe_input(notification_spec):
-        return {
-            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
-        }, 500
+        raise BadRequest(
+            "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+        )
     try:
         notification_insert_query = (
             "INSERT into public.user_email_notification(user_id, email_type_id) VALUES ("
-            f"(SELECT user_id FROM public.users WHERE email='{notification_spec['email']}'), "
+            f"(SELECT user_id FROM public.users WHERE email='{email}'), "
             f"(SELECT email_type_id FROM public.email_type WHERE email_type='{notification_spec['email_type']}'))"
         )
         pgquery.write_db(notification_insert_query)
 
-    except sqlalchemy.exc.IntegrityError as e:
-        failed_value = e.orig.args[0]["D"]
-        failed_value = failed_value.replace("(", '"')
-        failed_value = failed_value.replace(")", '"')
-        failed_value = failed_value.replace("=", " = ")
-        logging.error(f"Exception encountered: {failed_value}")
-        return {"message": failed_value}, 500
-    except Exception as e:
-        logging.error(f"Exception encountered: {e}")
-        return {"message": "Encountered unknown issue"}, 500
+    except IntegrityError as e:
+        # Log the full exception for debugging purposes
+        logging.error("IntegrityError encountered", exc_info=True)
 
-    return {"message": "New email notification successfully added"}, 200
+        # Attempt to extract meaningful details from the exception
+        error_message = "An integrity error occurred."
+        if hasattr(e, "orig") and hasattr(e.orig, "args") and len(e.orig.args) > 0:
+
+            error_message = e.orig.args[0].get("D", error_message)
+
+        # Raise a generic internal server error with the extracted message
+        raise InternalServerError(error_message) from e
+    except SQLAlchemyError as e:
+        logging.error(f"SQL Exception encountered: {e}")
+        raise InternalServerError("Encountered unknown issue executing query") from e
+
+    return {"message": "New email notification successfully added"}
 
 
 # REST endpoint resource class
-from flask import request, abort
-from flask_restful import Resource
-from marshmallow import Schema, fields
-import urllib.request
-
-
 class AdminNewNotificationSchema(Schema):
     email = fields.Str(required=True)
     email_type = fields.Str(required=True)
@@ -104,19 +114,26 @@ class AdminNewNotification(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
+    @require_permission(required_role=None)
     def get(self):
         logging.debug("AdminNewNotification GET requested")
+
         # Check for main body values
         schema = AdminGetNotificationSchema()
         errors = schema.validate(request.args)
         if errors:
             logging.error(str(errors))
             abort(400, str(errors))
-        user_email = urllib.request.unquote(request.args["user_email"])
-        return (get_allowed_types(user_email), 200, self.headers)
+        return (
+            get_allowed_types_authorized(request.args["user_email"]),
+            200,
+            self.headers,
+        )
 
+    @require_permission(required_role=None)
     def post(self):
         logging.debug("AdminNewNotification POST requested")
+
         # Check for main body values
         schema = AdminNewNotificationSchema()
         errors = schema.validate(request.json)
@@ -124,5 +141,8 @@ class AdminNewNotification(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        data, code = add_notification(request.json)
-        return (data, code, self.headers)
+        return (
+            add_notification_authorized(request.json.get("email"), request.json),
+            200,
+            self.headers,
+        )

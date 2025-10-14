@@ -1,18 +1,23 @@
+from typing import Any
+from flask import request, abort
+from flask_restful import Resource
+from marshmallow import Schema, fields, validate
 import logging
 import common.pgquery as pgquery
-import sqlalchemy
 import api_environment
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from werkzeug.exceptions import InternalServerError, BadRequest
+from common.auth_tools import (
+    ORG_ROLE_LITERAL,
+    EnvironWithOrg,
+    PermissionResult,
+    enforce_organization_restrictions,
+    get_qualified_org_list,
+    require_permission,
+)
 
 
-def query_and_return_list(query):
-    data = pgquery.query_db(query)
-    return_list = []
-    for row in data:
-        return_list.append(" ".join(row))
-    return return_list
-
-
-def get_allowed_selections():
+def get_allowed_selections(user: EnvironWithOrg):
     allowed = {}
 
     primary_routes_query = (
@@ -33,18 +38,22 @@ def get_allowed_selections():
     snmp_version_nicknames_query = (
         "SELECT nickname FROM public.snmp_protocols ORDER BY nickname ASC"
     )
-    organizations_query = "SELECT name FROM public.organizations ORDER BY name ASC"
 
-    allowed["primary_routes"] = query_and_return_list(primary_routes_query)
-    allowed["rsu_models"] = query_and_return_list(rsu_models_query)
-    allowed["ssh_credential_groups"] = query_and_return_list(
+    allowed["primary_routes"] = pgquery.query_and_return_list(primary_routes_query)
+    allowed["rsu_models"] = pgquery.query_and_return_list(rsu_models_query)
+    allowed["ssh_credential_groups"] = pgquery.query_and_return_list(
         ssh_credential_nicknames_query
     )
-    allowed["snmp_credential_groups"] = query_and_return_list(
+    allowed["snmp_credential_groups"] = pgquery.query_and_return_list(
         snmp_credential_nicknames_query
     )
-    allowed["snmp_version_groups"] = query_and_return_list(snmp_version_nicknames_query)
-    allowed["organizations"] = query_and_return_list(organizations_query)
+    allowed["snmp_version_groups"] = pgquery.query_and_return_list(
+        snmp_version_nicknames_query
+    )
+
+    allowed["organizations"] = get_qualified_org_list(
+        user, ORG_ROLE_LITERAL.OPERATOR, include_super_user=True
+    )
 
     return allowed
 
@@ -85,12 +94,12 @@ def check_safe_input(rsu_spec):
     return True
 
 
-def add_rsu(rsu_spec):
+def add_rsu(rsu_spec: dict):
     # Check for special characters for potential SQL injection
     if not check_safe_input(rsu_spec):
-        return {
-            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
-        }, 500
+        raise BadRequest(
+            "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+        )
 
     # Parse model out of the "Manufacturer Model" string
     space_index = rsu_spec["model"].find(" ")
@@ -103,7 +112,7 @@ def add_rsu(rsu_spec):
         scms_id = rsu_spec["serial_number"]
     else:
         if scms_id == "":
-            return {"message": "SCMS ID must be specified"}, 500
+            raise BadRequest("SCMS ID must be specified")
 
     try:
         query = (
@@ -135,26 +144,23 @@ def add_rsu(rsu_spec):
             )
         org_query = org_query[:-1]
         pgquery.write_db(org_query)
-    except sqlalchemy.exc.IntegrityError as e:
+    except IntegrityError as e:
+        if e.orig is None:
+            raise InternalServerError("Encountered unknown issue") from e
         failed_value = e.orig.args[0]["D"]
         failed_value = failed_value.replace("(", '"')
         failed_value = failed_value.replace(")", '"')
         failed_value = failed_value.replace("=", " = ")
         logging.error(f"Exception encountered: {failed_value}")
-        return {"message": failed_value}, 500
-    except Exception as e:
-        logging.error(f"Exception encountered: {e}")
-        return {"message": "Encountered unknown issue"}, 500
+        raise InternalServerError(failed_value) from e
+    except SQLAlchemyError as e:
+        logging.error(f"SQL Exception encountered: {e}")
+        raise InternalServerError("Encountered unknown issue executing query") from e
 
-    return {"message": "New RSU successfully added"}, 200
+    return {"message": "New RSU successfully added"}
 
 
 # REST endpoint resource class
-from flask import request, abort
-from flask_restful import Resource
-from marshmallow import Schema, fields, validate
-
-
 class GeoPositionSchema(Schema):
     latitude = fields.Decimal(required=True)
     longitude = fields.Decimal(required=True)
@@ -193,18 +199,37 @@ class AdminNewRsu(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
-    def get(self):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.OPERATOR,
+    )
+    def get(self, permission_result: PermissionResult):
         logging.debug("AdminNewRsu GET requested")
-        return (get_allowed_selections(), 200, self.headers)
+        return (
+            get_allowed_selections(permission_result.user),
+            200,
+            self.headers,
+        )
 
-    def post(self):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.OPERATOR,
+    )
+    def post(self, permission_result: PermissionResult):
         logging.debug("AdminNewRsu POST requested")
         # Check for main body values
+        if request.json is None:
+            raise BadRequest("No JSON body found")
+        body: dict[str, Any] = request.json
+
         schema = AdminNewRsuSchema()
-        errors = schema.validate(request.json)
+        errors = schema.validate(body)
         if errors:
             logging.error(str(errors))
             abort(400, str(errors))
+        enforce_organization_restrictions(
+            user=permission_result.user,
+            qualified_orgs=permission_result.qualified_orgs,
+            spec=body,
+            keys_to_check=["organizations"],
+        )
 
-        data, code = add_rsu(request.json)
-        return (data, code, self.headers)
+        return (add_rsu(body), 200, self.headers)

@@ -1,10 +1,17 @@
+from flask_restful import Resource
 import logging
 import common.pgquery as pgquery
 import common.util as util
 import api_environment
 
+from common.auth_tools import (
+    ORG_ROLE_LITERAL,
+    PermissionResult,
+    require_permission,
+)
 
-def get_iss_scms_status(organization):
+
+def get_iss_scms_status(organization: str) -> dict:
     # Execute the query and fetch all results
     query = (
         "SELECT jsonb_build_object('ip', rd.ipv4_address, 'health', scms_health_data.health, 'expiration', scms_health_data.expiration) "
@@ -18,12 +25,12 @@ def get_iss_scms_status(organization):
         ") AS a "
         "WHERE a.row_id <= 1 ORDER BY rsu_id"
         ") AS scms_health_data ON rd.rsu_id = scms_health_data.rsu_id "
-        f"WHERE ron_v.name = '{organization}' "
+        "WHERE ron_v.name = :org_name "
         "ORDER BY rd.ipv4_address"
     )
-
+    params = {"org_name": organization}
     logging.debug(f'Executing query "{query};"')
-    data = pgquery.query_db(query)
+    data = pgquery.query_db(query, params=params)
 
     logging.info("Parsing results...")
     result = {}
@@ -38,11 +45,6 @@ def get_iss_scms_status(organization):
             else None
         )
     return result
-
-
-# REST endpoint resource class
-from flask import request
-from flask_restful import Resource
 
 
 class IssScmsStatus(Resource):
@@ -62,6 +64,13 @@ class IssScmsStatus(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
-    def get(self):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.USER,
+    )
+    def get(self, permission_result: PermissionResult):
         logging.debug("IssScmsStatus GET requested")
-        return (get_iss_scms_status(request.environ["organization"]), 200, self.headers)
+        return (
+            get_iss_scms_status(permission_result.user.organization),
+            200,
+            self.headers,
+        )

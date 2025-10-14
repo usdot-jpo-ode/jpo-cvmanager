@@ -4,6 +4,8 @@ import requests
 import json
 import api_environment
 
+from common.auth_tools import require_permission
+
 
 def get_wzdx_data():
     # Execute the query and fetch all results
@@ -32,6 +34,7 @@ class WzdxFeed(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
+    @require_permission(required_role=None)
     def get(self):
         logging.debug("WzdxFeed GET requested")
         return (get_wzdx_data(), 200, self.headers)

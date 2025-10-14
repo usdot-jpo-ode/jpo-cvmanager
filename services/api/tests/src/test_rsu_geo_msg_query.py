@@ -1,6 +1,7 @@
 from copy import deepcopy
 from datetime import datetime, timedelta
 from unittest.mock import patch, MagicMock
+import pytest
 from api.src.rsu_geo_msg_query import (
     query_geo_data_mongo,
     geo_hash,
@@ -8,6 +9,7 @@ from api.src.rsu_geo_msg_query import (
     create_geo_filter,
 )
 import api.tests.data.rsu_geo_msg_query_data as rsu_geo_msg_query_data
+from werkzeug.exceptions import InternalServerError
 
 
 def test_geo_hash():
@@ -27,7 +29,7 @@ def test_query_geo_data_mongo_bsm(mock_mongo):
 
     start = "2023-07-01T00:00:00Z"
     end = "2023-07-02T00:00:00Z"
-    response, code = query_geo_data_mongo(
+    response = query_geo_data_mongo(
         rsu_geo_msg_query_data.point_list, start, end, "bSm"
     )
 
@@ -37,7 +39,6 @@ def test_query_geo_data_mongo_bsm(mock_mongo):
 
     mock_mongo.assert_called()
     mock_collection.find.assert_called()
-    assert code == 200
 
     # Compare each field in the response
     assert len(response) == len(expected_response)
@@ -55,15 +56,17 @@ def test_query_geo_data_mongo_filter_failed(mock_mongo):
 
     start = "2023-07-01T00:00:00Z"
     end = "2023-07-02T00:00:00Z"
-    response, code = query_geo_data_mongo(
-        rsu_geo_msg_query_data.point_list, start, end, "BsM"
+
+    with pytest.raises(InternalServerError) as exc_info:
+        query_geo_data_mongo(rsu_geo_msg_query_data.point_list, start, end, "BsM")
+
+    assert (
+        str(exc_info.value)
+        == "500 Internal Server Error: Encountered unknown issue querying MongoDB: Failed to find"
     )
-    expected_response = []
 
     mock_mongo.assert_called()
     mock_collection.find.assert_called()
-    assert code == 500
-    assert response == expected_response
 
 
 @patch("api.src.rsu_geo_msg_query.MongoClient")
@@ -94,7 +97,7 @@ def test_query_geo_data_mongo_psm(mock_mongo):
 
     start = "2023-07-01T00:00:00Z"
     end = "2023-07-02T00:00:00Z"
-    response, code = query_geo_data_mongo(
+    response = query_geo_data_mongo(
         rsu_geo_msg_query_data.point_list, start, end, "PsM"
     )
     expected_response = deepcopy(rsu_geo_msg_query_data.mongo_geo_psm_data_response)
@@ -103,7 +106,6 @@ def test_query_geo_data_mongo_psm(mock_mongo):
 
     mock_mongo.assert_called()
     mock_collection.find.assert_called()
-    assert code == 200
 
     # Compare each field in the response
     assert len(response) == len(expected_response)
@@ -111,6 +113,14 @@ def test_query_geo_data_mongo_psm(mock_mongo):
         assert resp["type"] == exp["type"]
         assert resp["geometry"] == exp["geometry"]
         assert resp["properties"] == exp["properties"]
+
+    # with pytest.raises(InternalServerError) as exc_info:
+    #     query_geo_data_mongo(rsu_geo_msg_query_data.point_list, start, end, "PsM")
+
+    # assert str(exc_info.value) == "Encountered unknown issue querying MongoDB: "
+
+    # mock_mongo.assert_called()
+    # mock_collection.find.assert_called()
 
 
 @patch("api.src.rsu_geo_msg_query.MongoClient")
@@ -189,12 +199,11 @@ def test_query_geo_data_mongo_schema_version_filter(mock_mongo):
 
     start = "2023-07-01T00:00:00Z"
     end = "2023-07-02T00:00:00Z"
-    response, code = query_geo_data_mongo(
+    response = query_geo_data_mongo(
         rsu_geo_msg_query_data.point_list, start, end, "BSM"
     )
 
     # assert that the other schema versions are not processed
-    assert code == 200
     assert len(response) == 0
 
 
@@ -212,11 +221,10 @@ def test_order_by_time_stamp(mock_mongo):
 
     start = "2023-07-01T00:00:00Z"
     end = "2023-07-02T00:00:00Z"
-    response, code = query_geo_data_mongo(
+    response = query_geo_data_mongo(
         rsu_geo_msg_query_data.point_list, start, end, "BSM"
     )
 
-    assert code == 200
     assert len(response) == 3
     assert (
         response[0]["properties"]["timeStamp"] < response[1]["properties"]["timeStamp"]
@@ -247,10 +255,8 @@ def test_query_limit(mock_mongo):
 
     start = "2023-07-01T00:00:00Z"
     end = "2023-07-02T00:00:00Z"
-    response, code = query_geo_data_mongo(
+    response = query_geo_data_mongo(
         rsu_geo_msg_query_data.point_list, start, end, "BSM"
     )
-
-    assert code == 200
     # assert that the 5 extra records are not returned
     assert len(response) == 5

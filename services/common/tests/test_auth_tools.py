@@ -1,0 +1,640 @@
+from mock import MagicMock, patch
+import pytest
+from common import auth_tools
+from common.auth_tools import (
+    ENVIRON_USER_KEY,
+    ORG_ROLE_LITERAL,
+    RESOURCE_TYPE,
+    PermissionResult,
+    UserInfo,
+    require_permission,
+)
+from api.tests.data import auth_data
+from common.tests.data import auth_tools_data
+from werkzeug.exceptions import Forbidden
+
+
+######################### User Info #########################
+def test_user_info():
+    user = UserInfo(auth_data.jwt_token_data_good)
+    assert user.email == "test@gmail.com"
+    assert user.first_name == "Test"
+    assert user.last_name == "User"
+    assert user.name == "Test User"
+    assert user.super_user
+    assert user.organizations == {
+        "Test Org": ORG_ROLE_LITERAL.ADMIN,
+        "Test Org 2": ORG_ROLE_LITERAL.OPERATOR,
+        "Test Org 3": ORG_ROLE_LITERAL.USER,
+    }
+
+    assert user.to_dict() == {
+        "email": "test@gmail.com",
+        "organizations": [
+            {"name": "Test Org", "role": ORG_ROLE_LITERAL.ADMIN},
+            {"name": "Test Org 2", "role": ORG_ROLE_LITERAL.OPERATOR},
+            {"name": "Test Org 3", "role": ORG_ROLE_LITERAL.USER},
+        ],
+        "super_user": True,
+        "first_name": "Test",
+        "last_name": "User",
+        "name": "Test User",
+    }
+
+
+######################### RSUs #########################
+@patch("common.pgquery.query_db")
+def test_get_rsu_set_for_org(mock_query_db):
+    mock_query_db.return_value = auth_tools_data.rsu_query_return
+    valid_rsus = auth_tools.get_rsu_set_for_org(auth_tools_data.query_organizations)
+    assert "1.1.1.1" in valid_rsus
+    assert len(valid_rsus) == 3
+
+    assert mock_query_db.call_count == 1
+    mock_query_db.assert_called_with(
+        auth_tools_data.rsu_set_for_org_query_statement[0],
+        params=auth_tools_data.rsu_set_for_org_query_statement[1],
+    )
+
+
+@patch("common.pgquery.query_db")
+def test_get_rsu_set_for_org_no_orgs(mock_query_db):
+    mock_query_db.return_value = []
+    valid_rsus = auth_tools.get_rsu_set_for_org(set())
+    assert len(valid_rsus) == 0
+
+    assert mock_query_db.call_count == 0
+
+
+@patch("common.pgquery.query_db")
+def test_check_rsu_with_org(mock_query_db):
+    mock_query_db.return_value = auth_tools_data.rsu_query_return
+
+    # Valid RSUs
+    assert auth_tools.check_rsu_with_org("1.1.1.1", ["a"])
+    mock_query_db.assert_called_with(
+        auth_tools_data.rsu_query_statement[0],
+        params=auth_tools_data.rsu_query_statement[1],
+    )
+
+    # Invalid RSUs
+    assert not auth_tools.check_rsu_with_org("1.1.1.1a", ["a"])
+    assert not auth_tools.check_rsu_with_org("1.1.1.4", ["a"])
+    assert not auth_tools.check_rsu_with_org("1.1.1.", ["a"])
+    assert not auth_tools.check_rsu_with_org("1", ["a"])
+    assert not auth_tools.check_rsu_with_org(None, ["a"])
+
+
+######################### Intersections #########################
+@patch("common.pgquery.query_db")
+def test_check_intersection_with_org(mock_query_db):
+    mock_query_db.return_value = auth_tools_data.intersection_query_return
+
+    # Valid intersections
+    assert auth_tools.check_intersection_with_org("1", ["a"])
+    mock_query_db.assert_called_with(
+        auth_tools_data.intersection_query_statement[0],
+        params=auth_tools_data.intersection_query_statement[1],
+    )
+
+    # Invalid intersections
+    assert not auth_tools.check_intersection_with_org("a", ["a"])
+    assert not auth_tools.check_intersection_with_org("4", ["a"])
+    assert not auth_tools.check_intersection_with_org(None, ["a"])
+
+
+######################### Users #########################
+@patch("common.pgquery.query_db")
+def test_check_user_with_org(mock_query_db):
+    mock_query_db.return_value = auth_tools_data.user_query_return
+
+    # Valid users
+    assert auth_tools.check_user_with_org("test1@gmail.com", ["a"])
+    mock_query_db.assert_called_with(
+        auth_tools_data.user_query_statement[0],
+        params=auth_tools_data.user_query_statement[1],
+    )
+
+    # Invalid users
+    assert not auth_tools.check_user_with_org("invalid@gmail.com", ["a"])
+    assert not auth_tools.check_user_with_org("", ["a"])
+    assert not auth_tools.check_user_with_org(None, ["a"])
+
+
+########################## Get User Info ##########################
+@patch("common.pgquery.query_db")
+def test_get_user_info_valid_user(mock_query_db):
+    # Mock the response for the user_info_query
+    mock_query_db.side_effect = [
+        [
+            [
+                {
+                    "email": "test@gmail.com",
+                    "given_name": "Test",
+                    "family_name": "User",
+                    "super_user": "1",
+                }
+            ]
+        ],  # user_info_query
+        [
+            [{"org": "Test Org", "role": "ADMIN"}],
+            [{"org": "Test Org 2", "role": "OPERATOR"}],
+        ],  # org_query
+    ]
+
+    # Call the function
+    user_info = auth_tools.get_user_info("test@gmail.com")
+
+    # Assertions
+    assert user_info.email == "test@gmail.com"
+    assert user_info.first_name == "Test"
+    assert user_info.last_name == "User"
+    assert user_info.super_user is True
+    assert user_info.organizations == {
+        "Test Org": ORG_ROLE_LITERAL.ADMIN,
+        "Test Org 2": ORG_ROLE_LITERAL.OPERATOR,
+    }
+
+
+@patch("common.pgquery.query_db")
+def test_get_user_info_no_user(mock_query_db):
+    # Mock the response for the user_info_query (no user found)
+    mock_query_db.side_effect = [[], []]  # Empty results for both queries
+
+    # Call the function
+    user_info = auth_tools.get_user_info("nonexistent@gmail.com")
+
+    # Assertions
+    assert user_info is None
+
+
+@patch("common.pgquery.query_db")
+def test_get_user_info_no_organizations(mock_query_db):
+    # Mock the response for the user_info_query
+    mock_query_db.side_effect = [
+        [
+            [
+                {
+                    "email": "test@gmail.com",
+                    "given_name": "Test",
+                    "family_name": "User",
+                    "super_user": False,
+                }
+            ]
+        ],  # user_info_query
+        [],  # org_query (no organizations found)
+    ]
+
+    # Call the function
+    user_info = auth_tools.get_user_info("test@gmail.com")
+
+    # Assertions
+    assert user_info.email == "test@gmail.com"
+    assert user_info.first_name == "Test"
+    assert user_info.last_name == "User"
+    assert user_info.super_user is False
+    assert user_info.organizations == {}
+
+
+@patch("common.pgquery.query_db")
+def test_get_user_info_query_error(mock_query_db):
+    # Mock the response for the user_info_query to raise an exception
+    mock_query_db.side_effect = Exception("Database error")
+
+    # Call the function and assert that it raises an exception
+    with pytest.raises(Exception, match="Database error"):
+        auth_tools.get_user_info("test@gmail.com")
+
+
+######################### Generate Placeholders For List #########################
+def test_generate_placeholders_for_list_basic():
+    # Arrange
+    lst = ["item1", "item2", "item3"]
+
+    # Act
+    placeholders, params = auth_tools.generate_sql_placeholders_for_list(lst)
+
+    # Assert
+    assert placeholders == ":item_0, :item_1, :item_2"
+    assert params == {
+        "item_0": "item1",
+        "item_1": "item2",
+        "item_2": "item3",
+    }
+
+
+def test_generate_placeholders_for_list_empty():
+    # Arrange
+    lst = []
+
+    # Act
+    placeholders, params = auth_tools.generate_sql_placeholders_for_list(lst)
+
+    # Assert
+    assert placeholders == ""
+    assert params == {}
+
+
+def test_generate_placeholders_for_list_with_params_to_update():
+    # Arrange
+    lst = ["item1", "item2"]
+    existing_params = {"existing_key": "existing_value"}
+
+    # Act
+    placeholders, params = auth_tools.generate_sql_placeholders_for_list(
+        lst, params_to_update=existing_params
+    )
+
+    # Assert
+    assert placeholders == ":item_0, :item_1"
+    assert params == {
+        "item_0": "item1",
+        "item_1": "item2",
+    }
+    assert existing_params == {
+        "existing_key": "existing_value",
+        "item_0": "item1",
+        "item_1": "item2",
+    }
+
+
+######################### Role Checks #########################
+def test_check_role_above():
+    assert auth_tools.check_role_above(ORG_ROLE_LITERAL.ADMIN, ORG_ROLE_LITERAL.USER)
+    assert auth_tools.check_role_above(ORG_ROLE_LITERAL.OPERATOR, ORG_ROLE_LITERAL.USER)
+    assert not auth_tools.check_role_above(
+        ORG_ROLE_LITERAL.USER, ORG_ROLE_LITERAL.ADMIN
+    )
+    assert not auth_tools.check_role_above(
+        ORG_ROLE_LITERAL.USER, ORG_ROLE_LITERAL.OPERATOR
+    )
+
+
+######################### Qualified Org List #########################
+@patch("common.pgquery.query_and_return_list")
+def test_get_qualified_org_list(mock_query_and_return_list):
+    mock_query_and_return_list.return_value = [
+        "Test Org",
+        "Test Org 2",
+        "Test Org 3",
+        "Test Org 4",
+    ]
+    user = auth_data.get_request_environ()
+
+    # super_user
+    user.user_info.super_user = True
+    assert auth_tools.get_qualified_org_list(
+        user, ORG_ROLE_LITERAL.ADMIN, include_super_user=True
+    ) == [
+        "Test Org",
+        "Test Org 2",
+        "Test Org 3",
+        "Test Org 4",
+    ]
+    assert auth_tools.get_qualified_org_list(
+        user, ORG_ROLE_LITERAL.ADMIN, include_super_user=False
+    ) == ["Test Org"]
+    assert auth_tools.get_qualified_org_list(
+        user, ORG_ROLE_LITERAL.OPERATOR, include_super_user=False
+    ) == [
+        "Test Org",
+        "Test Org 2",
+    ]
+    assert auth_tools.get_qualified_org_list(
+        user, ORG_ROLE_LITERAL.USER, include_super_user=False
+    ) == [
+        "Test Org",
+        "Test Org 2",
+        "Test Org 3",
+    ]
+
+    # no super_user
+    user.user_info.super_user = False
+    assert auth_tools.get_qualified_org_list(user, ORG_ROLE_LITERAL.ADMIN) == [
+        "Test Org",
+    ]
+    assert auth_tools.get_qualified_org_list(user, ORG_ROLE_LITERAL.OPERATOR) == [
+        "Test Org",
+        "Test Org 2",
+    ]
+    assert auth_tools.get_qualified_org_list(user, ORG_ROLE_LITERAL.USER) == [
+        "Test Org",
+        "Test Org 2",
+        "Test Org 3",
+    ]
+
+
+def test_require_permission():
+    @require_permission(required_role=ORG_ROLE_LITERAL.OPERATOR)
+    def test_function():
+        return None
+
+    user_valid = auth_data.get_request_environ()
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+
+    # Mock the environment
+    with patch("common.auth_tools.request", req):
+        test_function()  # Should pass without error
+
+
+def test_require_permission_with_result():
+    @require_permission(required_role=ORG_ROLE_LITERAL.OPERATOR)
+    def test_function(permission_result: PermissionResult):
+        return permission_result
+
+    user_valid = auth_data.get_request_environ()
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+
+    # Mock the environment
+    with patch("common.auth_tools.request", req):
+        result = test_function()
+        assert result.allowed
+
+
+@patch("common.auth_tools.get_qualified_org_list")
+@patch("common.auth_tools.check_role_above")
+@patch("common.auth_tools.check_user_with_org")
+@patch("common.auth_tools.check_rsu_with_org")
+@patch("common.auth_tools.check_intersection_with_org")
+def test_require_permission_calls_super_user(
+    mock_check_intersection_with_org,
+    mock_check_rsu_with_org,
+    mock_check_user_with_org,
+    mock_check_role_above,
+    mock_get_qualified_org_list,
+):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.OPERATOR,
+        resource_type=RESOURCE_TYPE.USER,
+    )
+    def test_function(email: str, permission_result: PermissionResult):
+        return permission_result
+
+    user_valid = auth_data.get_request_environ()
+    user_valid.user_info.email = "test@example.com"
+    user_valid.user_info.super_user = True
+
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+
+    # Mock the environment
+    with patch("common.auth_tools.request", req):
+        test_function("different@example.com")
+        mock_get_qualified_org_list.assert_called_once()
+        mock_check_user_with_org.assert_not_called()
+        mock_check_rsu_with_org.assert_not_called()
+        mock_check_intersection_with_org.assert_not_called()
+        mock_check_role_above.assert_not_called()
+
+
+@patch("common.auth_tools.get_qualified_org_list", return_value=["Test Org"])
+@patch("common.auth_tools.check_role_above")
+@patch("common.auth_tools.check_user_with_org")
+@patch("common.auth_tools.check_rsu_with_org")
+@patch("common.auth_tools.check_intersection_with_org")
+def test_require_permission_calls_user_self(
+    mock_check_intersection_with_org,
+    mock_check_rsu_with_org,
+    mock_check_user_with_org,
+    mock_check_role_above,
+    mock_get_qualified_org_list,
+):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.OPERATOR,
+        resource_type=RESOURCE_TYPE.USER,
+    )
+    def test_function(email: str, permission_result: PermissionResult):
+        return permission_result
+
+    user_valid = auth_data.get_request_environ()
+    user_valid.user_info.email = "test@example.com"
+    user_valid.user_info.super_user = False
+
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+
+    # Mock the environment
+    with patch("common.auth_tools.request", req):
+        test_function("test@example.com")
+        mock_get_qualified_org_list.assert_called_once()
+        mock_get_qualified_org_list.assert_called_with(
+            user_valid, ORG_ROLE_LITERAL.OPERATOR, include_super_user=False
+        )
+        mock_check_user_with_org.assert_not_called()
+        mock_check_rsu_with_org.assert_not_called()
+        mock_check_intersection_with_org.assert_not_called()
+        mock_check_role_above.assert_not_called()
+
+
+@patch("common.auth_tools.get_qualified_org_list", return_value=["Test Org"])
+@patch("common.auth_tools.check_role_above")
+@patch("common.auth_tools.check_user_with_org", return_value=True)
+@patch("common.auth_tools.check_rsu_with_org")
+@patch("common.auth_tools.check_intersection_with_org")
+def test_require_permission_calls_user_other(
+    mock_check_intersection_with_org,
+    mock_check_rsu_with_org,
+    mock_check_user_with_org,
+    mock_check_role_above,
+    mock_get_qualified_org_list,
+):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.OPERATOR,
+        resource_type=RESOURCE_TYPE.USER,
+    )
+    def test_function(email: str, permission_result: PermissionResult):
+        return permission_result
+
+    user_valid = auth_data.get_request_environ()
+    user_valid.user_info.email = "test@example.com"
+    user_valid.user_info.super_user = False
+    user_valid.organization = "Test Org"
+    user_valid.role = ORG_ROLE_LITERAL.OPERATOR
+
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+
+    # Mock the environment
+    with patch("common.auth_tools.request", req):
+        test_function("different@example.com")
+        mock_get_qualified_org_list.assert_called_once()
+        mock_get_qualified_org_list.assert_called_with(
+            user_valid, ORG_ROLE_LITERAL.OPERATOR, include_super_user=False
+        )
+        mock_check_user_with_org.assert_called_once()
+        mock_check_user_with_org.assert_called_with(
+            "different@example.com", ["Test Org"]
+        )
+        mock_check_rsu_with_org.assert_not_called()
+        mock_check_intersection_with_org.assert_not_called()
+        mock_check_role_above.assert_called_once()
+        mock_check_role_above.assert_called_with(
+            ORG_ROLE_LITERAL.OPERATOR, ORG_ROLE_LITERAL.OPERATOR
+        )
+
+
+@patch("common.auth_tools.check_user_with_org")
+def test_require_permission_user_self(mock_check_user_with_org):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.OPERATOR, resource_type=RESOURCE_TYPE.USER
+    )
+    def test_function(email: str, permission_result: PermissionResult):
+        return permission_result
+
+    user_valid = auth_data.get_request_environ()
+    user_valid.user_info.email = "test@example.com"
+    user_valid.user_info.super_user = False
+
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+
+    # Mock the environment
+    with patch("common.auth_tools.request", req):
+        result: PermissionResult = test_function("test@example.com")
+        assert result.allowed
+        mock_check_user_with_org.assert_not_called()
+
+
+@patch("common.auth_tools.check_user_with_org", return_value=True)
+def test_require_permission_user_other(mock_check_user_with_org):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.OPERATOR, resource_type=RESOURCE_TYPE.USER
+    )
+    def test_function(email: str):
+        return None
+
+    user_valid = auth_data.get_request_environ()
+    user_valid.user_info.email = "test@example.com"
+    user_valid.user_info.super_user = False
+
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+
+    # Mock the environment
+    with patch("common.auth_tools.request", req):
+        test_function("different@example.com")
+        assert mock_check_user_with_org.call_count == 1
+
+
+@patch("common.auth_tools.check_user_with_org", return_value=False)
+def test_require_permission_user_unauthorized(mock_check_user_with_org):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.OPERATOR, resource_type=RESOURCE_TYPE.USER
+    )
+    def test_function(email: str):
+        return None
+
+    user_valid = auth_data.get_request_environ()
+    user_valid.user_info.email = "test@example.com"
+    user_valid.user_info.super_user = False
+    user_valid.user_info.organizations = {}
+
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+
+    # Mock the environment
+    with patch("common.auth_tools.request", req):
+        with pytest.raises(Forbidden):
+            test_function("different@example.com")
+
+
+@patch("common.auth_tools.check_rsu_with_org", return_value=True)
+def test_require_permission_rsu_authorized(mock_check_rsu_with_org):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.OPERATOR, resource_type=RESOURCE_TYPE.RSU
+    )
+    def test_function(rsu_ip: str):
+        return None
+
+    user_valid = auth_data.get_request_environ()
+    user_valid.user_info.super_user = False
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+
+    # Mock the environment
+    with patch("common.auth_tools.request", req):
+        test_function("1.1.1.1")
+
+
+@patch("common.auth_tools.check_rsu_with_org", return_value=False)
+def test_require_permission_rsu_unauthorized(mock_check_rsu_with_org):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.OPERATOR, resource_type=RESOURCE_TYPE.RSU
+    )
+    def test_function(rsu_ip: str):
+        return None
+
+    user_valid = auth_data.get_request_environ()
+    user_valid.user_info.super_user = False
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+
+    # Mock the environment
+    with patch("common.auth_tools.request", req):
+        with pytest.raises(Forbidden):
+            test_function("1.1.1.1")
+
+
+@patch("common.auth_tools.check_intersection_with_org", return_value=True)
+def test_require_permission_intersection_authorized(mock_check_intersection_with_org):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.OPERATOR,
+        resource_type=RESOURCE_TYPE.INTERSECTION,
+    )
+    def test_function(intersection_id: str):
+        return None
+
+    user_valid = auth_data.get_request_environ()
+    user_valid.user_info.super_user = False
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+
+    # Mock the environment
+    with patch("common.auth_tools.request", req):
+        test_function("1")
+
+
+@patch("common.auth_tools.check_intersection_with_org", return_value=False)
+def test_require_permission_intersection_unauthorized(mock_check_intersection_with_org):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.OPERATOR,
+        resource_type=RESOURCE_TYPE.INTERSECTION,
+    )
+    def test_function(intersection_id: str):
+        return None
+
+    user_valid = auth_data.get_request_environ()
+    user_valid.user_info.super_user = False
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+
+    # Mock the environment
+    with patch("common.auth_tools.request", req):
+        with pytest.raises(Forbidden):
+            test_function("1")
+
+
+@patch("common.auth_tools.check_role_above", return_value=True)
+@patch("common.auth_tools.check_rsu_with_org", return_value=True)
+def test_require_permission_org_role_above(
+    mock_check_rsu_with_org, mock_check_role_above
+):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.OPERATOR, resource_type=RESOURCE_TYPE.RSU
+    )
+    def test_function(rsu_ip: str, permission_result: dict):
+        return None
+
+    user_valid = auth_data.get_request_environ()
+    user_valid.user_info.super_user = False
+    user_valid.role = ORG_ROLE_LITERAL.OPERATOR
+    user_valid.organization = "Test Org"
+
+    req = MagicMock()
+    req.environ = {ENVIRON_USER_KEY: user_valid}
+
+    # Mock the environment
+    with patch("common.auth_tools.request", req):
+        test_function("1.1.1.1")

@@ -1,7 +1,46 @@
 from unittest.mock import patch, MagicMock
 import json
 
+import pytest
+
 from addons.images.iss_health_check import iss_token
+
+
+# --------------------- Storage Type tests ---------------------
+@patch("addons.images.iss_health_check.environment.STORAGE_TYPE", "gcp")
+def test_get_storage_type_gcp():
+    actual_value = iss_token.get_storage_type()
+    assert actual_value == "gcp"
+
+
+@patch("addons.images.iss_health_check.environment.STORAGE_TYPE", "postgres")
+def test_get_storage_type_postgres():
+    actual_value = iss_token.get_storage_type()
+    assert actual_value == "postgres"
+
+
+@patch("addons.images.iss_health_check.environment.STORAGE_TYPE", "gcp")
+def test_get_storage_type_gcp_case_insensitive():
+    actual_value = iss_token.get_storage_type()
+    assert actual_value == "gcp"
+
+
+@patch("addons.images.iss_health_check.environment.STORAGE_TYPE", "postgres")
+def test_get_storage_type_postgres_case_insensitive():
+    actual_value = iss_token.get_storage_type()
+    assert actual_value == "postgres"
+
+
+@patch("addons.images.iss_health_check.environment.STORAGE_TYPE", "test")
+def test_get_storage_type_invalid():
+    with pytest.raises(SystemExit):
+        iss_token.get_storage_type()
+
+
+@patch("addons.images.iss_health_check.environment.STORAGE_TYPE", None)
+def test_get_storage_type_unset():
+    with pytest.raises(SystemExit):
+        iss_token.get_storage_type()
 
 
 # --------------------- end of Storage Type tests ---------------------
@@ -38,7 +77,7 @@ def test_check_if_secret_exists_true(mock_secretmanager, mock_sm_client):
     )
     mock_secretmanager.ListSecretsRequest.assert_called_with(parent="test-parent")
     mock_sm_client.list_secrets.assert_called_with(request="list-request")
-    assert actual_value == True
+    assert actual_value is True
 
 
 @patch(
@@ -58,7 +97,7 @@ def test_check_if_secret_exists_false(mock_secretmanager, mock_sm_client):
     )
     mock_secretmanager.ListSecretsRequest.assert_called_with(parent="test-parent")
     mock_sm_client.list_secrets.assert_called_with(request="list-request")
-    assert actual_value == False
+    assert actual_value is False
 
 
 @patch(
@@ -239,8 +278,6 @@ def test_get_token_secret_exists(
 
 
 # --------------------- Postgres tests ---------------------
-
-
 @patch(
     "addons.images.iss_health_check.iss_token.pgquery",
 )
@@ -249,7 +286,7 @@ def test_check_if_data_exists_true(mock_pgquery):
     actual_value = iss_token.check_if_data_exists("test-table-name")
     expected_query = "SELECT * FROM test-table-name"
     mock_pgquery.query_db.assert_called_with(expected_query)
-    assert actual_value == True
+    assert actual_value is True
 
 
 @patch(
@@ -260,7 +297,7 @@ def test_check_if_data_exists_false(mock_pgquery):
     actual_value = iss_token.check_if_data_exists("test-table-name")
     expected_query = "SELECT * FROM test-table-name"
     mock_pgquery.query_db.assert_called_with(expected_query)
-    assert actual_value == False
+    assert actual_value is False
 
 
 @patch(

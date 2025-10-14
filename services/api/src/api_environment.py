@@ -25,8 +25,8 @@ CSM_AUTH_ENABLED = get_env_var("CSM_AUTH_ENABLED", "true").lower() == "true"
 CSM_EMAIL_APP_USERNAME = get_env_var("CSM_EMAIL_APP_USERNAME", warn=CSM_AUTH_ENABLED)
 CSM_EMAIL_APP_PASSWORD = get_env_var("CSM_EMAIL_APP_PASSWORD", warn=CSM_AUTH_ENABLED)
 
-MONGO_DB_URI=get_env_var("MONGO_DB_URI", "mongodb://localhost:27017/")
-MONGO_DB_NAME=get_env_var("MONGO_DB_NAME", "CV")
+MONGO_DB_URI = get_env_var("MONGO_DB_URI", "mongodb://localhost:27017/", error=True)
+MONGO_DB_NAME = get_env_var("MONGO_DB_NAME", "CV", error=True)
 MONGO_SSM_COLLECTION_NAME=get_env_var("MONGO_SSM_COLLECTION_NAME")
 MONGO_SRM_COLLECTION_NAME=get_env_var("MONGO_SRM_COLLECTION_NAME")
 MONGO_PROCESSED_BSM_COLLECTION_NAME=get_env_var("MONGO_PROCESSED_BSM_COLLECTION_NAME", "ProcessedBsm", warn=False)

@@ -2,7 +2,7 @@ import logging
 from common.snmp.update_pg.update_rsu_message_forward import (
     UpdatePostgresRsuMessageForward,
 )
-from addons.images.rsu_status_check import environment
+import rsu_status_check_environment
 from common import common_environment
 
 
@@ -11,7 +11,7 @@ from common import common_environment
 def main():
     common_environment.configure_logging()
 
-    if not environment.RSU_MSGFWD_FETCH:
+    if not rsu_status_check_environment.RSU_MSGFWD_FETCH:
         logging.info("The rsu-msgfwd-fetch service is disabled and will not run")
         return
 

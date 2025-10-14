@@ -4,7 +4,7 @@ import requests
 import json
 import uuid
 import logging
-from addons.images.iss_health_check import environment
+import iss_health_check_environment
 
 
 # Set up logging
@@ -118,10 +118,10 @@ def add_data(table_name, common_name, token):
 
 # Main function
 def get_token():
-    if environment.STORAGE_TYPE == "gcp":
+    if iss_health_check_environment.STORAGE_TYPE == "gcp":
         client = secretmanager.SecretManagerServiceClient()
         secret_id = "iss-token-secret"
-        parent = f"projects/{environment.PROJECT_ID}"
+        parent = f"projects/{iss_health_check_environment.PROJECT_ID}"
 
         # Check to see if the GCP secret exists
         data_exists = check_if_secret_exists(client, secret_id, parent)
@@ -136,10 +136,10 @@ def get_token():
             # If there is no available ISS token secret, create secret
             logger.debug("Secret does not exist, creating secret")
             create_secret(client, secret_id, parent)
-            # Use environment variable for first run with new secret
-            token = environment.ISS_API_KEY
-    elif environment.STORAGE_TYPE == "postgres":
-        key_table_name = environment.ISS_KEY_TABLE_NAME
+            # Use iss_health_check_environment variable for first run with new secret
+            token = iss_health_check_environment.ISS_API_KEY
+    elif iss_health_check_environment.STORAGE_TYPE == "postgres":
+        key_table_name = iss_health_check_environment.ISS_KEY_TABLE_NAME
 
         # check to see if data exists in the table
         data_exists = check_if_data_exists(key_table_name)
@@ -152,17 +152,19 @@ def get_token():
             token = value["token"]
             logger.debug(f"Received token: {friendly_name} with id {id}")
         else:
-            # if there is no data, use environment variable for first run
-            token = environment.ISS_API_KEY
+            # if there is no data, use iss_health_check_environment variable for first run
+            token = iss_health_check_environment.ISS_API_KEY
 
     # Pull new ISS SCMS API token
-    iss_base = environment.ISS_SCMS_TOKEN_REST_ENDPOINT
+    iss_base = iss_health_check_environment.ISS_SCMS_TOKEN_REST_ENDPOINT
 
     # Create HTTP request headers
     iss_headers = {"x-api-key": token}
 
     # Create the POST body
-    new_friendly_name = f"{environment.ISS_API_KEY_NAME}_{str(uuid.uuid4())}"
+    new_friendly_name = (
+        f"{iss_health_check_environment.ISS_API_KEY_NAME}_{str(uuid.uuid4())}"
+    )
     iss_post_body = {"friendlyName": new_friendly_name, "expireDays": 1}
 
     # Create new ISS SCMS API Token to ensure its freshness
@@ -183,10 +185,10 @@ def get_token():
 
     version_data = {"name": new_friendly_name, "token": new_token}
 
-    if environment.STORAGE_TYPE == "gcp":
+    if iss_health_check_environment.STORAGE_TYPE == "gcp":
         # Add new version to the secret
         add_secret_version(client, secret_id, parent, version_data)
-    elif environment.STORAGE_TYPE == "postgres":
+    elif iss_health_check_environment.STORAGE_TYPE == "postgres":
         # add new entry to the table
         add_data(key_table_name, new_friendly_name, new_token)
 

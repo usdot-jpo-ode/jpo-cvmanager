@@ -1,7 +1,7 @@
 import time
 from paramiko import SSHClient, WarningPolicy
 from scp import SCPClient
-from addons.images.firmware_manager.upgrade_runner import upgrader
+import upgrader
 import json
 import logging
 import sys

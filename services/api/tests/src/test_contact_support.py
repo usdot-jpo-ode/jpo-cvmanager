@@ -40,27 +40,27 @@ def test_contact_support_schema_invalid():
 
 # tests for ContactSupportResource class ---
 @patch(
-    "api.src.api_environment.CSM_EMAIL_TO_SEND_FROM",
+    "api_environment.CSM_EMAIL_TO_SEND_FROM",
     contact_support_data.CSM_EMAIL_TO_SEND_FROM,
 )
 @patch(
-    "api.src.api_environment.CSM_EMAIL_APP_USERNAME",
+    "api_environment.CSM_EMAIL_APP_USERNAME",
     contact_support_data.CSM_EMAIL_APP_USERNAME,
 )
 @patch(
-    "api.src.api_environment.CSM_EMAIL_APP_PASSWORD",
+    "api_environment.CSM_EMAIL_APP_PASSWORD",
     contact_support_data.CSM_EMAIL_APP_PASSWORD,
 )
 @patch(
-    "api.src.api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
+    "api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
     DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS,
 )
 @patch(
-    "api.src.api_environment.CSM_TARGET_SMTP_SERVER_PORT",
+    "api_environment.CSM_TARGET_SMTP_SERVER_PORT",
     DEFAULT_CSM_TARGET_SMTP_SERVER_PORT,
 )
-@patch("api.src.api_environment.CSM_TLS_ENABLED", True)
-@patch("api.src.api_environment.CSM_AUTH_ENABLED", True)
+@patch("api_environment.CSM_TLS_ENABLED", True)
+@patch("api_environment.CSM_AUTH_ENABLED", True)
 def test_contact_support_resource_initialization_success():
 
     # execute
@@ -77,25 +77,25 @@ def test_contact_support_resource_initialization_success():
     )
 
 
-@patch("api.src.api_environment.CSM_EMAIL_TO_SEND_FROM", None)
+@patch("api_environment.CSM_EMAIL_TO_SEND_FROM", None)
 @patch(
-    "api.src.api_environment.CSM_EMAIL_APP_USERNAME",
+    "api_environment.CSM_EMAIL_APP_USERNAME",
     contact_support_data.CSM_EMAIL_APP_USERNAME,
 )
 @patch(
-    "api.src.api_environment.CSM_EMAIL_APP_PASSWORD",
+    "api_environment.CSM_EMAIL_APP_PASSWORD",
     contact_support_data.CSM_EMAIL_APP_PASSWORD,
 )
 @patch(
-    "api.src.api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
+    "api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
     DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS,
 )
 @patch(
-    "api.src.api_environment.CSM_TARGET_SMTP_SERVER_PORT",
+    "api_environment.CSM_TARGET_SMTP_SERVER_PORT",
     DEFAULT_CSM_TARGET_SMTP_SERVER_PORT,
 )
-@patch("api.src.api_environment.CSM_TLS_ENABLED", True)
-@patch("api.src.api_environment.CSM_AUTH_ENABLED", True)
+@patch("api_environment.CSM_TLS_ENABLED", True)
+@patch("api_environment.CSM_AUTH_ENABLED", True)
 def test_contact_support_resource_initialization_no_CSM_EMAIL_TO_SEND_FROM():
     # execute
     exceptionOccurred = False
@@ -111,24 +111,24 @@ def test_contact_support_resource_initialization_no_CSM_EMAIL_TO_SEND_FROM():
 
 
 @patch(
-    "api.src.api_environment.CSM_EMAIL_TO_SEND_FROM",
+    "api_environment.CSM_EMAIL_TO_SEND_FROM",
     contact_support_data.CSM_EMAIL_TO_SEND_FROM,
 )
 @patch(
-    "api.src.api_environment.CSM_EMAIL_APP_USERNAME",
+    "api_environment.CSM_EMAIL_APP_USERNAME",
     contact_support_data.CSM_EMAIL_APP_USERNAME,
 )
-@patch("api.src.api_environment.CSM_EMAIL_APP_PASSWORD", None)
+@patch("api_environment.CSM_EMAIL_APP_PASSWORD", None)
 @patch(
-    "api.src.api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
+    "api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
     DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS,
 )
 @patch(
-    "api.src.api_environment.CSM_TARGET_SMTP_SERVER_PORT",
+    "api_environment.CSM_TARGET_SMTP_SERVER_PORT",
     DEFAULT_CSM_TARGET_SMTP_SERVER_PORT,
 )
-@patch("api.src.api_environment.CSM_TLS_ENABLED", True)
-@patch("api.src.api_environment.CSM_AUTH_ENABLED", True)
+@patch("api_environment.CSM_TLS_ENABLED", True)
+@patch("api_environment.CSM_AUTH_ENABLED", True)
 def test_contact_support_resource_initialization_no_CSM_EMAIL_APP_PASSWORD():
     # execute
     exceptionOccurred = False
@@ -142,27 +142,27 @@ def test_contact_support_resource_initialization_no_CSM_EMAIL_APP_PASSWORD():
 
 
 @patch(
-    "api.src.api_environment.CSM_EMAIL_TO_SEND_FROM",
+    "api_environment.CSM_EMAIL_TO_SEND_FROM",
     contact_support_data.CSM_EMAIL_TO_SEND_FROM,
 )
 @patch(
-    "api.src.api_environment.CSM_EMAIL_APP_USERNAME",
+    "api_environment.CSM_EMAIL_APP_USERNAME",
     contact_support_data.CSM_EMAIL_APP_USERNAME,
 )
 @patch(
-    "api.src.api_environment.CSM_EMAIL_APP_PASSWORD",
+    "api_environment.CSM_EMAIL_APP_PASSWORD",
     contact_support_data.CSM_EMAIL_APP_PASSWORD,
 )
 @patch(
-    "api.src.api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
+    "api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
     DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS,
 )
 @patch(
-    "api.src.api_environment.CSM_TARGET_SMTP_SERVER_PORT",
+    "api_environment.CSM_TARGET_SMTP_SERVER_PORT",
     DEFAULT_CSM_TARGET_SMTP_SERVER_PORT,
 )
-@patch("api.src.api_environment.CSM_TLS_ENABLED", True)
-@patch("api.src.api_environment.CSM_AUTH_ENABLED", True)
+@patch("api_environment.CSM_TLS_ENABLED", True)
+@patch("api_environment.CSM_AUTH_ENABLED", True)
 def test_options():
     contactSupportResource = contact_support.ContactSupportResource()
 
@@ -174,27 +174,27 @@ def test_options():
 
 
 @patch(
-    "api.src.api_environment.CSM_EMAIL_TO_SEND_FROM",
+    "api_environment.CSM_EMAIL_TO_SEND_FROM",
     contact_support_data.CSM_EMAIL_TO_SEND_FROM,
 )
 @patch(
-    "api.src.api_environment.CSM_EMAIL_APP_USERNAME",
+    "api_environment.CSM_EMAIL_APP_USERNAME",
     contact_support_data.CSM_EMAIL_APP_USERNAME,
 )
 @patch(
-    "api.src.api_environment.CSM_EMAIL_APP_PASSWORD",
+    "api_environment.CSM_EMAIL_APP_PASSWORD",
     contact_support_data.CSM_EMAIL_APP_PASSWORD,
 )
 @patch(
-    "api.src.api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
+    "api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
     DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS,
 )
 @patch(
-    "api.src.api_environment.CSM_TARGET_SMTP_SERVER_PORT",
+    "api_environment.CSM_TARGET_SMTP_SERVER_PORT",
     DEFAULT_CSM_TARGET_SMTP_SERVER_PORT,
 )
-@patch("api.src.api_environment.CSM_TLS_ENABLED", True)
-@patch("api.src.api_environment.CSM_AUTH_ENABLED", True)
+@patch("api_environment.CSM_TLS_ENABLED", True)
+@patch("api_environment.CSM_AUTH_ENABLED", True)
 def test_post_success():
     contactSupportResource = contact_support.ContactSupportResource()
     contactSupportResource.validate_input = MagicMock()
@@ -210,27 +210,27 @@ def test_post_success():
 
 
 @patch(
-    "api.src.api_environment.CSM_EMAIL_TO_SEND_FROM",
+    "api_environment.CSM_EMAIL_TO_SEND_FROM",
     contact_support_data.CSM_EMAIL_TO_SEND_FROM,
 )
 @patch(
-    "api.src.api_environment.CSM_EMAIL_APP_USERNAME",
+    "api_environment.CSM_EMAIL_APP_USERNAME",
     contact_support_data.CSM_EMAIL_APP_USERNAME,
 )
 @patch(
-    "api.src.api_environment.CSM_EMAIL_APP_PASSWORD",
+    "api_environment.CSM_EMAIL_APP_PASSWORD",
     contact_support_data.CSM_EMAIL_APP_PASSWORD,
 )
 @patch(
-    "api.src.api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
+    "api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
     DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS,
 )
 @patch(
-    "api.src.api_environment.CSM_TARGET_SMTP_SERVER_PORT",
+    "api_environment.CSM_TARGET_SMTP_SERVER_PORT",
     DEFAULT_CSM_TARGET_SMTP_SERVER_PORT,
 )
-@patch("api.src.api_environment.CSM_TLS_ENABLED", True)
-@patch("api.src.api_environment.CSM_AUTH_ENABLED", True)
+@patch("api_environment.CSM_TLS_ENABLED", True)
+@patch("api_environment.CSM_AUTH_ENABLED", True)
 def test_post_no_json_body():
     contactSupportResource = contact_support.ContactSupportResource()
     contactSupportResource.validate_input = MagicMock()
@@ -248,27 +248,27 @@ def test_post_no_json_body():
 
 
 @patch(
-    "api.src.api_environment.CSM_EMAIL_TO_SEND_FROM",
+    "api_environment.CSM_EMAIL_TO_SEND_FROM",
     contact_support_data.CSM_EMAIL_TO_SEND_FROM,
 )
 @patch(
-    "api.src.api_environment.CSM_EMAIL_APP_USERNAME",
+    "api_environment.CSM_EMAIL_APP_USERNAME",
     contact_support_data.CSM_EMAIL_APP_USERNAME,
 )
 @patch(
-    "api.src.api_environment.CSM_EMAIL_APP_PASSWORD",
+    "api_environment.CSM_EMAIL_APP_PASSWORD",
     contact_support_data.CSM_EMAIL_APP_PASSWORD,
 )
 @patch(
-    "api.src.api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
+    "api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
     DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS,
 )
 @patch(
-    "api.src.api_environment.CSM_TARGET_SMTP_SERVER_PORT",
+    "api_environment.CSM_TARGET_SMTP_SERVER_PORT",
     DEFAULT_CSM_TARGET_SMTP_SERVER_PORT,
 )
-@patch("api.src.api_environment.CSM_TLS_ENABLED", True)
-@patch("api.src.api_environment.CSM_AUTH_ENABLED", True)
+@patch("api_environment.CSM_TLS_ENABLED", True)
+@patch("api_environment.CSM_AUTH_ENABLED", True)
 def test_validate_input():
     contactSupportResource = contact_support.ContactSupportResource()
 

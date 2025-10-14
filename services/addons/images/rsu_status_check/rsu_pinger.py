@@ -3,7 +3,7 @@ import time
 import common.pgquery as pgquery
 from datetime import datetime
 from subprocess import Popen, DEVNULL
-from addons.images.rsu_status_check import environment
+import rsu_status_check_environment
 from common import common_environment
 
 
@@ -86,7 +86,9 @@ def run_rsu_pinger():
 if __name__ == "__main__":
     common_environment.configure_logging()
 
-    run_service = environment.RSU_PING and environment.ZABBIX
+    run_service = (
+        rsu_status_check_environment.RSU_PING and rsu_status_check_environment.ZABBIX
+    )
     if not run_service:
         logging.info("The rsu-pinger service is disabled and will not run")
         exit()

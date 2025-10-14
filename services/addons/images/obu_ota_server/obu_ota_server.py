@@ -9,7 +9,7 @@ import aiofiles
 import logging
 from datetime import datetime
 import asyncio
-from addons.images.obu_ota_server import environment
+import obu_ota_server_environment
 from common import common_environment
 
 app = FastAPI()
@@ -20,8 +20,8 @@ commsignia_file_ext = ".tar.sig"
 
 
 def authenticate_user(credentials: HTTPBasicCredentials = Depends(security)) -> str:
-    correct_username = environment.OTA_USERNAME
-    correct_password = environment.OTA_PASSWORD
+    correct_username = obu_ota_server_environment.OTA_USERNAME
+    correct_password = obu_ota_server_environment.OTA_PASSWORD
     if (
         credentials.username != correct_username
         or credentials.password != correct_password
@@ -43,20 +43,20 @@ async def read_root(request: Request):
 
 
 def get_firmware_list() -> list:
-    blob_storage_provider = environment.BLOB_STORAGE_PROVIDER
+    blob_storage_provider = obu_ota_server_environment.BLOB_STORAGE_PROVIDER
     files = []
     file_extension = commsignia_file_ext
     if blob_storage_provider.upper() == "DOCKER":
         files = glob.glob(f"/firmwares/*{file_extension}")
     elif blob_storage_provider.upper() == "GCP":
-        blob_storage_path = environment.BLOB_STORAGE_PATH
+        blob_storage_path = obu_ota_server_environment.BLOB_STORAGE_PATH
         files = gcs_utils.list_gcs_blobs(blob_storage_path, file_extension)
     return files
 
 
 def get_host_name() -> str:
-    host_name = environment.SERVER_HOST
-    tls_enabled = environment.NGINX_ENCRYPTION
+    host_name = obu_ota_server_environment.SERVER_HOST
+    tls_enabled = obu_ota_server_environment.NGINX_ENCRYPTION
     if tls_enabled.lower() == "ssl":
         host_name = "https://" + host_name
     else:
@@ -78,7 +78,7 @@ async def get_manifest(request: Request) -> dict[str, Any]:
 
 def get_firmware(firmware_id: str, local_file_path: str) -> bool:
     try:
-        blob_storage_provider = environment.BLOB_STORAGE_PROVIDER
+        blob_storage_provider = obu_ota_server_environment.BLOB_STORAGE_PROVIDER
         # checks if firmware exists locally
         if not os.path.exists(local_file_path):
             # If configured to only use local storage, return False as firmware does not exist
@@ -134,8 +134,8 @@ def removed_old_logs(serialnum: str):
         success_count = pgquery.query_db(
             f"SELECT COUNT(*) FROM public.obu_ota_requests WHERE obu_sn = '{serialnum}' AND error_status = B'0'"
         )
-        if success_count[0][0] > environment.MAX_COUNT:
-            excess_count = success_count[0][0] - environment.MAX_COUNT
+        if success_count[0][0] > obu_ota_server_environment.MAX_COUNT:
+            excess_count = success_count[0][0] - obu_ota_server_environment.MAX_COUNT
             oldest_entries = pgquery.query_db(
                 f"SELECT request_id FROM public.obu_ota_requests WHERE obu_sn = '{serialnum}' AND error_status = B'0' ORDER BY request_datetime ASC LIMIT {excess_count}"
             )

@@ -9,7 +9,7 @@ import shutil
 from common.emailSender import EmailSender
 from common.email_util import get_email_list_from_rsu
 from addons.images.firmware_manager.upgrade_runner import download_blob
-from addons.images.firmware_manager.upgrade_runner import environment
+import upgrade_runner_environment
 
 
 class UpgraderAbstractClass(abc.ABC):
@@ -45,7 +45,7 @@ class UpgraderAbstractClass(abc.ABC):
         )
 
         # Download blob, defaults to GCP blob storage
-        bspCaseInsensitive = environment.BLOB_STORAGE_PROVIDER.casefold()
+        bspCaseInsensitive = upgrade_runner_environment.BLOB_STORAGE_PROVIDER.casefold()
         if bspCaseInsensitive == "gcp":
             return (
                 gcs_utils.download_gcp_blob(
@@ -71,7 +71,9 @@ class UpgraderAbstractClass(abc.ABC):
         )
 
         # Obtain the upgrade scheduler endpoint
-        upgrade_scheduler_endpoint = environment.UPGRADE_SCHEDULER_ENDPOINT
+        upgrade_scheduler_endpoint = (
+            upgrade_runner_environment.UPGRADE_SCHEDULER_ENDPOINT
+        )
         if upgrade_scheduler_endpoint == "UNDEFINED":
             raise Exception(
                 "The UPGRADE_SCHEDULER_ENDPOINT environment variable is undefined!"
@@ -128,17 +130,17 @@ class UpgraderAbstractClass(abc.ABC):
 
             for email_address in email_addresses:
                 emailSender = EmailSender(
-                    environment.SMTP_SERVER_IP,
-                    environment.SMTP_SERVER_PORT,
+                    upgrade_runner_environment.SMTP_SERVER_IP,
+                    upgrade_runner_environment.SMTP_SERVER_PORT,
                 )
                 emailSender.send(
-                    sender=environment.SMTP_EMAIL,
+                    sender=upgrade_runner_environment.SMTP_EMAIL,
                     recipient=email_address,
                     subject=subject,
                     message=f"{type}: Failed to perform update on RSU {self.rsu_ip} due to the following error: {err}",
                     replyEmail="",
-                    username=environment.SMTP_USERNAME,
-                    password=environment.SMTP_PASSWORD,
+                    username=upgrade_runner_environment.SMTP_USERNAME,
+                    password=upgrade_runner_environment.SMTP_PASSWORD,
                     pretty=True,
                 )
         except Exception as e:

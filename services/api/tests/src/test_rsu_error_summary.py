@@ -15,7 +15,7 @@ def test_rsu_error_summary_schema():
     exceptionOccurred = False
     try:
         schema.load(rsu_error_summary_data.rsu_error_summary_data_good)
-    except Exception as e:
+    except Exception:
         exceptionOccurred = True
 
     # assert
@@ -30,7 +30,7 @@ def test_rsu_error_summary_schema_invalid():
     exceptionOccurred = False
     try:
         schema.load(rsu_error_summary_data.rsu_error_summary_data_bad)
-    except Exception as e:
+    except Exception:
         exceptionOccurred = True
 
     # assert
@@ -39,27 +39,27 @@ def test_rsu_error_summary_schema_invalid():
 
 # RSUErrorSummaryResource class tests ---
 @patch(
-    "api.src.api_environment.CSM_EMAIL_TO_SEND_FROM",
+    "api_environment.CSM_EMAIL_TO_SEND_FROM",
     rsu_error_summary_data.CSM_EMAIL_TO_SEND_FROM,
 )
 @patch(
-    "api.src.api_environment.CSM_EMAIL_APP_USERNAME",
+    "api_environment.CSM_EMAIL_APP_USERNAME",
     rsu_error_summary_data.CSM_EMAIL_APP_USERNAME,
 )
 @patch(
-    "api.src.api_environment.CSM_EMAIL_APP_PASSWORD",
+    "api_environment.CSM_EMAIL_APP_PASSWORD",
     rsu_error_summary_data.CSM_EMAIL_APP_PASSWORD,
 )
 @patch(
-    "api.src.api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
+    "api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
     rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS,
 )
 @patch(
-    "api.src.api_environment.CSM_TARGET_SMTP_SERVER_PORT",
+    "api_environment.CSM_TARGET_SMTP_SERVER_PORT",
     rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_PORT,
 )
-@patch("api.src.api_environment.CSM_TLS_ENABLED", True)
-@patch("api.src.api_environment.CSM_AUTH_ENABLED", True)
+@patch("api_environment.CSM_TLS_ENABLED", True)
+@patch("api_environment.CSM_AUTH_ENABLED", True)
 def test_options():
     RSUErrorSummaryResource = rsu_error_summary.RSUErrorSummaryResource()
 
@@ -71,27 +71,27 @@ def test_options():
 
 
 @patch(
-    "api.src.api_environment.CSM_EMAIL_TO_SEND_FROM",
+    "api_environment.CSM_EMAIL_TO_SEND_FROM",
     rsu_error_summary_data.CSM_EMAIL_TO_SEND_FROM,
 )
 @patch(
-    "api.src.api_environment.CSM_EMAIL_APP_USERNAME",
+    "api_environment.CSM_EMAIL_APP_USERNAME",
     rsu_error_summary_data.CSM_EMAIL_APP_USERNAME,
 )
 @patch(
-    "api.src.api_environment.CSM_EMAIL_APP_PASSWORD",
+    "api_environment.CSM_EMAIL_APP_PASSWORD",
     rsu_error_summary_data.CSM_EMAIL_APP_PASSWORD,
 )
 @patch(
-    "api.src.api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
+    "api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
     rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS,
 )
 @patch(
-    "api.src.api_environment.CSM_TARGET_SMTP_SERVER_PORT",
+    "api_environment.CSM_TARGET_SMTP_SERVER_PORT",
     rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_PORT,
 )
-@patch("api.src.api_environment.CSM_TLS_ENABLED", True)
-@patch("api.src.api_environment.CSM_AUTH_ENABLED", True)
+@patch("api_environment.CSM_TLS_ENABLED", True)
+@patch("api_environment.CSM_AUTH_ENABLED", True)
 def test_post_success():
     RSUErrorSummaryResource = rsu_error_summary.RSUErrorSummaryResource()
     RSUErrorSummaryResource.validate_input = MagicMock()
@@ -107,27 +107,27 @@ def test_post_success():
 
 
 @patch(
-    "api.src.api_environment.CSM_EMAIL_TO_SEND_FROM",
+    "api_environment.CSM_EMAIL_TO_SEND_FROM",
     rsu_error_summary_data.CSM_EMAIL_TO_SEND_FROM,
 )
 @patch(
-    "api.src.api_environment.CSM_EMAIL_APP_USERNAME",
+    "api_environment.CSM_EMAIL_APP_USERNAME",
     rsu_error_summary_data.CSM_EMAIL_APP_USERNAME,
 )
 @patch(
-    "api.src.api_environment.CSM_EMAIL_APP_PASSWORD",
+    "api_environment.CSM_EMAIL_APP_PASSWORD",
     rsu_error_summary_data.CSM_EMAIL_APP_PASSWORD,
 )
 @patch(
-    "api.src.api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
+    "api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
     rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS,
 )
 @patch(
-    "api.src.api_environment.CSM_TARGET_SMTP_SERVER_PORT",
+    "api_environment.CSM_TARGET_SMTP_SERVER_PORT",
     rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_PORT,
 )
-@patch("api.src.api_environment.CSM_TLS_ENABLED", True)
-@patch("api.src.api_environment.CSM_AUTH_ENABLED", True)
+@patch("api_environment.CSM_TLS_ENABLED", True)
+@patch("api_environment.CSM_AUTH_ENABLED", True)
 def test_post_no_json_body():
     RSUErrorSummaryResource = rsu_error_summary.RSUErrorSummaryResource()
     RSUErrorSummaryResource.validate_input = MagicMock()
@@ -145,27 +145,27 @@ def test_post_no_json_body():
 
 
 @patch(
-    "api.src.api_environment.CSM_EMAIL_TO_SEND_FROM",
+    "api_environment.CSM_EMAIL_TO_SEND_FROM",
     rsu_error_summary_data.CSM_EMAIL_TO_SEND_FROM,
 )
 @patch(
-    "api.src.api_environment.CSM_EMAIL_APP_USERNAME",
+    "api_environment.CSM_EMAIL_APP_USERNAME",
     rsu_error_summary_data.CSM_EMAIL_APP_USERNAME,
 )
 @patch(
-    "api.src.api_environment.CSM_EMAIL_APP_PASSWORD",
+    "api_environment.CSM_EMAIL_APP_PASSWORD",
     rsu_error_summary_data.CSM_EMAIL_APP_PASSWORD,
 )
 @patch(
-    "api.src.api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
+    "api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
     rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS,
 )
 @patch(
-    "api.src.api_environment.CSM_TARGET_SMTP_SERVER_PORT",
+    "api_environment.CSM_TARGET_SMTP_SERVER_PORT",
     rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_PORT,
 )
-@patch("api.src.api_environment.CSM_TLS_ENABLED", True)
-@patch("api.src.api_environment.CSM_AUTH_ENABLED", True)
+@patch("api_environment.CSM_TLS_ENABLED", True)
+@patch("api_environment.CSM_AUTH_ENABLED", True)
 def test_validate_input_good():
     RSUErrorSummaryResource = rsu_error_summary.RSUErrorSummaryResource()
 

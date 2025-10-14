@@ -1,4 +1,5 @@
 from collections import namedtuple
+import logging
 from unittest.mock import patch, MagicMock, mock_open
 from api.src.smtp_error_handler import SMTP_SSLHandler
 import api.src.smtp_error_handler as smtp_error_handler
@@ -22,7 +23,7 @@ def test_get_environment_name_fail():
 
 ###################################### Testing Functions ##########################################
 @patch(
-    "api.src.api_environment.CSM_EMAILS_TO_SEND_TO",
+    "api_environment.CSM_EMAILS_TO_SEND_TO",
     ["test@gmail.com", "test2@gmail.com"],
 )
 def test_get_subscribed_users_success():
@@ -32,6 +33,7 @@ def test_get_subscribed_users_success():
 
 
 EMAIL_TO_SEND_FROM = "test@test.test"
+EMAILS_TO_SEND_TO = ["test1@gmail.com", "test2@gmail.com"]
 EMAIL_APP_USERNAME = "test"
 EMAIL_APP_PASSWORD = "test"
 DEFAULT_TARGET_SMTP_SERVER_ADDRESS = "smtp.gmail.com"
@@ -41,16 +43,16 @@ LOGS_LINK = "http://logs_link.com"
 
 
 @patch(
-    "api.src.api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
+    "api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
     DEFAULT_TARGET_SMTP_SERVER_ADDRESS,
 )
 @patch(
-    "api.src.api_environment.CSM_TARGET_SMTP_SERVER_PORT",
+    "api_environment.CSM_TARGET_SMTP_SERVER_PORT",
     DEFAULT_TARGET_SMTP_SERVER_PORT,
 )
-@patch("api.src.api_environment.CSM_EMAIL_TO_SEND_FROM", EMAIL_TO_SEND_FROM)
-@patch("api.src.api_environment.CSM_EMAIL_APP_USERNAME", EMAIL_APP_USERNAME)
-@patch("api.src.api_environment.CSM_EMAIL_APP_PASSWORD", EMAIL_APP_PASSWORD)
+@patch("api_environment.CSM_EMAIL_TO_SEND_FROM", EMAIL_TO_SEND_FROM)
+@patch("api_environment.CSM_EMAIL_APP_USERNAME", EMAIL_APP_USERNAME)
+@patch("api_environment.CSM_EMAIL_APP_PASSWORD", EMAIL_APP_PASSWORD)
 def test_configure_error_emails():
     app = MagicMock()
     app.logger = MagicMock()
@@ -59,12 +61,12 @@ def test_configure_error_emails():
     app.logger.addHandler.assert_called_once()
 
 
-@patch("api.src.api_environment.LOGS_LINK", LOGS_LINK)
-@patch("api.src.api_environment.ENVIRONMENT_NAME", ENVIRONMENT_NAME)
+@patch("api_environment.LOGS_LINK", LOGS_LINK)
+@patch("api_environment.ENVIRONMENT_NAME", ENVIRONMENT_NAME)
+@patch("api_environment.CSM_EMAILS_TO_SEND_TO", EMAILS_TO_SEND_TO)
 @patch("builtins.open", new_callable=mock_open, read_data="data")
 @patch("api.src.smtp_error_handler.smtplib")
-@patch("api.src.smtp_error_handler.get_subscribed_users")
-def test_send(mock_get_subscribed_users, mock_smtplib, mock_file):
+def test_send(mock_smtplib, mock_file):
     # prepare
     emailHandler = SMTP_SSLHandler(
         mailhost=[DEFAULT_TARGET_SMTP_SERVER_ADDRESS, DEFAULT_TARGET_SMTP_SERVER_PORT],
@@ -84,28 +86,25 @@ def test_send(mock_get_subscribed_users, mock_smtplib, mock_file):
     smtp_obj.login = MagicMock()
     smtp_obj.sendmail = MagicMock()
     smtp_obj.quit = MagicMock()
-    mock_get_subscribed_users.return_value = (
-        smtp_error_handler_data.subscribed_user_emails
-    )
     mock_file = MagicMock()
     mock_file.read = MagicMock()
     mock_file.read.return_value = smtp_error_handler_data.html_email_template
 
     Record = namedtuple("Record", ["asctime"])
     record = Record("2023-09-15 00:00:00,000000")
-    emailHandler.format = lambda x: "%s".format(x)
+    emailHandler.format = lambda x: str(x)
+
+    logging.error("mock_smtplib", mock_smtplib)
 
     # execute
     emailHandler.emit(record)
 
     # assert
-    mock_get_subscribed_users.assert_called_once()
     smtp_obj.starttls.assert_called_once()
     smtp_obj.ehlo.assert_called_once()
     smtp_obj.login.assert_called_once_with(EMAIL_APP_USERNAME, EMAIL_APP_PASSWORD)
 
     smtp_obj.sendmail.call_count == 2
-    print(smtp_obj.sendmail.call_args_list)
     smtp_obj.sendmail.assert_any_call(EMAIL_TO_SEND_FROM, "test1@gmail.com", ANY)
     smtp_obj.sendmail.assert_any_call(EMAIL_TO_SEND_FROM, "test2@gmail.com", ANY)
 

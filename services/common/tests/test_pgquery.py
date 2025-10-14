@@ -92,10 +92,10 @@ def test_init_socket_connection_engine():
     "common.pgquery.db_config",
     new={"pool_size": 5, "max_overflow": 2, "pool_timeout": 30, "pool_recycle": 1800},
 )
-@patch("common.environment.PG_DB_USER", "user")
-@patch("common.environment.PG_DB_PASS", "pass")
-@patch("common.environment.PG_DB_NAME", "mydatabase")
-@patch("common.environment.PG_DB_HOST", "myhostname:3000")
+@patch("common.common_environment.PG_DB_USER", "user")
+@patch("common.common_environment.PG_DB_PASS", "pass")
+@patch("common.common_environment.PG_DB_NAME", "my_database")
+@patch("common.common_environment.PG_DB_HOST", "my_hostname:3000")
 def test_init_connection_engine_target_tcp():
     # mock return values for function dependencies
     pgquery.init_tcp_connection_engine = MagicMock(return_value="my_engine1")
@@ -130,11 +130,12 @@ def test_init_connection_engine_target_tcp():
     new={"pool_size": 5, "max_overflow": 2, "pool_timeout": 30, "pool_recycle": 1800},
 )
 @patch("common.pgquery.db", new=None)
-@patch("common.environment.PG_DB_USER", "user")
-@patch("common.environment.PG_DB_PASS", "pass")
-@patch("common.environment.PG_DB_NAME", "mydatabase")
+@patch("common.common_environment.PG_DB_USER", "user")
+@patch("common.common_environment.PG_DB_PASS", "pass")
+@patch("common.common_environment.PG_DB_NAME", "my_database")
 @patch(
-    "common.environment.INSTANCE_CONNECTION_NAME", "myproject:us-central1:myinstance"
+    "common.common_environment.INSTANCE_CONNECTION_NAME",
+    "myproject:us-central1:myinstance",
 )
 def test_init_connection_engine_target_socket():
     # mock return values for function dependencies

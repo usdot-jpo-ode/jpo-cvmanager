@@ -18,7 +18,7 @@ def test_options_request():
     assert headers["Access-Control-Allow-Methods"] == "GET"
 
 
-@patch("api.src.api_environment.COUNTS_MSG_TYPES", ["BSM", "SSM", "SPAT"])
+@patch("api_environment.COUNTS_MSG_TYPES", ["BSM", "SSM", "SPAT"])
 @patch("api.src.rsu_querycounts.get_organization_rsus")
 @patch("api.src.rsu_querycounts.query_rsu_counts_mongo")
 @patch(

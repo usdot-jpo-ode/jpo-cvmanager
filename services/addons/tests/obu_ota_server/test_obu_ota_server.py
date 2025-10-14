@@ -17,7 +17,7 @@ from addons.images.obu_ota_server.obu_ota_server import (
 )
 
 
-@patch("addons.images.obu_ota_server.environment.BLOB_STORAGE_PROVIDER", "DOCKER")
+@patch("obu_ota_server_environment.BLOB_STORAGE_PROVIDER", "DOCKER")
 @patch("glob.glob")
 def test_get_firmware_list_local(mock_glob):
     mock_glob.return_value = ["/firmwares/test1.tar.sig", "/firmwares/test2.tar.sig"]
@@ -28,8 +28,8 @@ def test_get_firmware_list_local(mock_glob):
     assert result == ["/firmwares/test1.tar.sig", "/firmwares/test2.tar.sig"]
 
 
-@patch("addons.images.obu_ota_server.environment.BLOB_STORAGE_PROVIDER", "GCP")
-@patch("addons.images.obu_ota_server.environment.BLOB_STORAGE_PATH", "PATH")
+@patch("obu_ota_server_environment.BLOB_STORAGE_PROVIDER", "GCP")
+@patch("obu_ota_server_environment.BLOB_STORAGE_PATH", "PATH")
 @patch("common.gcs_utils.list_gcs_blobs")
 def test_get_firmware_list_gcs(mock_list_gcs_blobs):
     mock_list_gcs_blobs.return_value = [
@@ -43,7 +43,7 @@ def test_get_firmware_list_gcs(mock_list_gcs_blobs):
     assert result == ["/firmwares/test1.tar.sig", "/firmwares/test2.tar.sig"]
 
 
-@patch("addons.images.obu_ota_server.environment.BLOB_STORAGE_PROVIDER", "DOCKER")
+@patch("obu_ota_server_environment.BLOB_STORAGE_PROVIDER", "DOCKER")
 @patch("os.path.exists")
 @patch("common.gcs_utils.list_gcs_blobs")
 def test_get_firmware_local_fail(mock_gcs_utils, mock_os_path_exists):
@@ -59,7 +59,7 @@ def test_get_firmware_local_fail(mock_gcs_utils, mock_os_path_exists):
     assert result is False
 
 
-@patch("addons.images.obu_ota_server.environment.BLOB_STORAGE_PROVIDER", "DOCKER")
+@patch("obu_ota_server_environment.BLOB_STORAGE_PROVIDER", "DOCKER")
 @patch("os.path.exists")
 @patch("common.gcs_utils.list_gcs_blobs")
 def test_get_firmware_local_success(mock_gcs_utils, mock_os_path_exists):
@@ -75,7 +75,7 @@ def test_get_firmware_local_success(mock_gcs_utils, mock_os_path_exists):
     assert result is True
 
 
-@patch("addons.images.obu_ota_server.environment.BLOB_STORAGE_PROVIDER", "GCP")
+@patch("obu_ota_server_environment.BLOB_STORAGE_PROVIDER", "GCP")
 @patch("os.path.exists")
 @patch("common.gcs_utils.download_gcp_blob")
 def test_get_firmware_gcs_success(mock_download_gcp_blob, mock_os_path_exists):
@@ -95,7 +95,7 @@ def test_get_firmware_gcs_success(mock_download_gcp_blob, mock_os_path_exists):
     assert result is True
 
 
-@patch("addons.images.obu_ota_server.environment.BLOB_STORAGE_PROVIDER", "GCP")
+@patch("obu_ota_server_environment.BLOB_STORAGE_PROVIDER", "GCP")
 @patch("os.path.exists")
 @patch("common.gcs_utils.download_gcp_blob")
 def test_get_firmware_gcs_failure(mock_download_gcp_blob, mock_os_path_exists):
@@ -182,11 +182,11 @@ async def test_read_file_no_end_range():
 
 
 @patch(
-    "addons.images.obu_ota_server.environment.OTA_USERNAME",
+    "obu_ota_server_environment.OTA_USERNAME",
     "username",
 )
 @patch(
-    "addons.images.obu_ota_server.environment.OTA_PASSWORD",
+    "obu_ota_server_environment.OTA_PASSWORD",
     "password",
 )
 @pytest.mark.anyio
@@ -200,11 +200,11 @@ async def test_read_root():
 
 
 @patch(
-    "addons.images.obu_ota_server.environment.OTA_USERNAME",
+    "obu_ota_server_environment.OTA_USERNAME",
     "username",
 )
 @patch(
-    "addons.images.obu_ota_server.environment.OTA_PASSWORD",
+    "obu_ota_server_environment.OTA_PASSWORD",
     "password",
 )
 @patch("addons.images.obu_ota_server.obu_ota_server.get_firmware_list")
@@ -227,11 +227,11 @@ async def test_get_manifest(mock_commsignia_manifest, mock_get_firmware_list):
 
 
 @patch(
-    "addons.images.obu_ota_server.environment.OTA_USERNAME",
+    "obu_ota_server_environment.OTA_USERNAME",
     "username",
 )
 @patch(
-    "addons.images.obu_ota_server.environment.OTA_PASSWORD",
+    "obu_ota_server_environment.OTA_PASSWORD",
     "password",
 )
 @patch("addons.images.obu_ota_server.obu_ota_server.get_firmware")
@@ -295,7 +295,7 @@ async def test_log_request(mock_removed_old_logs, mock_datetime, mock_pgquery):
     )
 
 
-@patch("addons.images.obu_ota_server.environment.MAX_COUNT", 10)
+@patch("obu_ota_server_environment.MAX_COUNT", 10)
 @patch("addons.images.obu_ota_server.obu_ota_server.pgquery")
 def test_removed_old_logs_no_removal(mock_pgquery):
     mock_pgquery.query_db.side_effect = [
@@ -311,7 +311,7 @@ def test_removed_old_logs_no_removal(mock_pgquery):
     mock_pgquery.write_db.assert_not_called()
 
 
-@patch("addons.images.obu_ota_server.environment.MAX_COUNT", 5)
+@patch("obu_ota_server_environment.MAX_COUNT", 5)
 @patch("addons.images.obu_ota_server.obu_ota_server.pgquery")
 def test_removed_old_logs_with_removal(mock_pgquery):
     mock_pgquery.query_db.side_effect = [
@@ -335,11 +335,11 @@ def test_removed_old_logs_with_removal(mock_pgquery):
 
 
 @patch(
-    "addons.images.obu_ota_server.environment.OTA_USERNAME",
+    "obu_ota_server_environment.OTA_USERNAME",
     "username",
 )
 @patch(
-    "addons.images.obu_ota_server.environment.OTA_PASSWORD",
+    "obu_ota_server_environment.OTA_PASSWORD",
     "password",
 )
 @patch("addons.images.obu_ota_server.obu_ota_server.get_firmware_list")
@@ -361,9 +361,9 @@ async def test_get_manifest(mock_commsignia_manifest, mock_get_firmware_list):
     assert response.json() == {"json": "data"}
 
 
-@patch("addons.images.obu_ota_server.environment.OTA_USERNAME", "username")
-@patch("addons.images.obu_ota_server.environment.OTA_PASSWORD", "password")
-@patch("addons.images.obu_ota_server.environment.NGINX_ENCRYPTION", "plain")
+@patch("obu_ota_server_environment.OTA_USERNAME", "username")
+@patch("obu_ota_server_environment.OTA_PASSWORD", "password")
+@patch("obu_ota_server_environment.NGINX_ENCRYPTION", "plain")
 @patch("addons.images.obu_ota_server.obu_ota_server.get_firmware_list")
 @patch("addons.images.obu_ota_server.obu_ota_server.commsignia_manifest.add_contents")
 @pytest.mark.anyio
@@ -383,9 +383,9 @@ async def test_fqdn_response_plain(mock_commsignia_manifest, mock_get_firmware_l
     mock_commsignia_manifest.assert_called_once_with(expected_hostname, [])
 
 
-@patch("addons.images.obu_ota_server.environment.OTA_USERNAME", "username")
-@patch("addons.images.obu_ota_server.environment.OTA_PASSWORD", "password")
-@patch("addons.images.obu_ota_server.environment.NGINX_ENCRYPTION", "ssl")
+@patch("obu_ota_server_environment.OTA_USERNAME", "username")
+@patch("obu_ota_server_environment.OTA_PASSWORD", "password")
+@patch("obu_ota_server_environment.NGINX_ENCRYPTION", "ssl")
 @patch("addons.images.obu_ota_server.obu_ota_server.get_firmware_list")
 @patch("addons.images.obu_ota_server.obu_ota_server.commsignia_manifest.add_contents")
 @pytest.mark.anyio

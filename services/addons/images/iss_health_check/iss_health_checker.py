@@ -5,7 +5,7 @@ import iss_token
 import common.pgquery as pgquery
 from dataclasses import dataclass, field
 from typing import Dict
-from addons.images.iss_health_check import environment
+import iss_health_check_environment
 from common import common_environment
 
 
@@ -69,8 +69,8 @@ def get_scms_status_data():
     iss_headers["x-api-key"] = iss_token.get_token()
 
     # Create the GET request string
-    iss_base = environment.ISS_SCMS_VEHICLE_REST_ENDPOINT
-    project_id = environment.ISS_PROJECT_ID
+    iss_base = iss_health_check_environment.ISS_SCMS_VEHICLE_REST_ENDPOINT
+    project_id = iss_health_check_environment.ISS_PROJECT_ID
     page_size = 200
     page = 0
     messages_processed = 0

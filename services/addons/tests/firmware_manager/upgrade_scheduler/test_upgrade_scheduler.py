@@ -43,7 +43,7 @@ def test_get_rsu_upgrade_data_one(mock_querydb):
 
 # start_tasks_from_queue tests
 @patch(
-    "addons.images.firmware_manager.upgrade_scheduler.environment.UPGRADE_RUNNER_ENDPOINT",
+    "upgrade_scheduler_environment.UPGRADE_RUNNER_ENDPOINT",
     "http://test-endpoint",
 )
 @patch(
@@ -137,11 +137,11 @@ def test_start_tasks_from_queue_no_env_var(mock_post, mock_logging):
 
 
 @patch(
-    "addons.images.firmware_manager.upgrade_scheduler.environment.UPGRADE_RUNNER_ENDPOINT",
+    "upgrade_scheduler_environment.UPGRADE_RUNNER_ENDPOINT",
     "http://test-endpoint",
 )
 @patch(
-    "addons.images.firmware_manager.upgrade_scheduler.environment.UPGRADE_RUNNER_ENDPOINT",
+    "upgrade_scheduler_environment.UPGRADE_RUNNER_ENDPOINT",
     "http://test-endpoint",
 )
 @patch(
@@ -199,7 +199,7 @@ def test_start_tasks_from_queue_post_success(mock_post, mock_logging):
 
 
 @patch(
-    "addons.images.firmware_manager.upgrade_scheduler.environment.UPGRADE_RUNNER_ENDPOINT",
+    "upgrade_scheduler_environment.UPGRADE_RUNNER_ENDPOINT",
     "http://test-endpoint",
 )
 @patch(
@@ -859,7 +859,7 @@ def test_list_active_upgrades(mock_logging):
 
 # check_for_upgrades tests
 @patch(
-    "addons.images.firmware_manager.upgrade_scheduler.environment.UPGRADE_RUNNER_ENDPOINT",
+    "upgrade_scheduler_environment.UPGRADE_RUNNER_ENDPOINT",
     "http://test-endpoint",
 )
 @patch(
@@ -1024,7 +1024,7 @@ def test_reset_consecutive_failure_count_for_rsu(mock_write_db):
 
 
 @patch(
-    "addons.images.firmware_manager.upgrade_scheduler.environment.FW_UPGRADE_MAX_RETRY_LIMIT",
+    "upgrade_scheduler_environment.FW_UPGRADE_MAX_RETRY_LIMIT",
     3,
 )
 @patch(
@@ -1045,7 +1045,7 @@ def test_is_rsu_at_max_retries_limit_TRUE(mock_query_db):
 
 
 @patch(
-    "addons.images.firmware_manager.upgrade_scheduler.environment.FW_UPGRADE_MAX_RETRY_LIMIT",
+    "upgrade_scheduler_environment.FW_UPGRADE_MAX_RETRY_LIMIT",
     3,
 )
 @patch(
@@ -1066,7 +1066,7 @@ def test_is_rsu_at_max_retries_limit_FALSE(mock_query_db):
 
 
 @patch(
-    "addons.images.firmware_manager.upgrade_scheduler.environment.FW_UPGRADE_MAX_RETRY_LIMIT",
+    "upgrade_scheduler_environment.FW_UPGRADE_MAX_RETRY_LIMIT",
     3,
 )
 @patch(
@@ -1125,7 +1125,7 @@ def test_init_background_task(mock_bgscheduler):
 
 
 @patch(
-    "addons.images.firmware_manager.upgrade_scheduler.environment.ACTIVE_UPGRADE_LIMIT",
+    "upgrade_scheduler_environment.ACTIVE_UPGRADE_LIMIT",
     5,
 )
 def test_get_upgrade_limit_with_env():

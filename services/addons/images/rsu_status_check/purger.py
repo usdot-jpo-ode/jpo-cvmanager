@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 import logging
 import common.pgquery as pgquery
-from addons.images.rsu_status_check import environment
+import rsu_status_check_environment
 from common import common_environment
 
 def get_all_rsus():
@@ -85,10 +85,12 @@ def purge_ping_data(stale_period):
 if __name__ == "__main__":
     common_environment.configure_logging()
 
-    run_service = environment.RSU_PING or environment.ZABBIX
+    run_service = (
+        rsu_status_check_environment.RSU_PING or rsu_status_check_environment.ZABBIX
+    )
     if not run_service:
         logging.info("The purger service is disabled and will not run")
         exit()
 
-    stale_period = environment.STALE_PERIOD_HOURS
+    stale_period = rsu_status_check_environment.STALE_PERIOD_HOURS
     purge_ping_data(stale_period)

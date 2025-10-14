@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from addons.images.count_metric import environment
+import count_metric_environment
 
 
 def diff_to_color(val):
@@ -97,7 +97,7 @@ def generate_email_body(org_name, rsu_dict, start_dt, end_dt, message_type_list)
     # DEPLOYMENT_TITLE is a contextual title for where these counts apply. ie. "GCP prod"
     # This is generalized to support any deployment environment
     html = (
-        f"<h2>{org_name} {environment.DEPLOYMENT_TITLE} Count Report {start} UTC - {end} UTC</h2>"
+        f"<h2>{org_name} {count_metric_environment.DEPLOYMENT_TITLE} Count Report {start} UTC - {end} UTC</h2>"
         "<p>This is an automated email to report yesterday's ODE message counts for J2735 messages going in and out of the ODE. "
         "In counts are the number of encoded messages received by the ODE from the load balancer. "
         "Out counts are the number of decoded messages that have come out of the ODE in JSON form and "

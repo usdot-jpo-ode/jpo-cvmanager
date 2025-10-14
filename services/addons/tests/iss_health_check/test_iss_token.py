@@ -1,49 +1,7 @@
 from unittest.mock import patch, MagicMock
 import json
 
-import pytest
-
 from addons.images.iss_health_check import iss_token
-
-
-# --------------------- Storage Type tests ---------------------
-@patch("addons.images.iss_health_check.environment.STORAGE_TYPE", "gcp")
-def test_get_storage_type_gcp():
-    actual_value = iss_token.get_storage_type()
-    assert actual_value == "gcp"
-
-
-@patch("addons.images.iss_health_check.environment.STORAGE_TYPE", "postgres")
-def test_get_storage_type_postgres():
-    actual_value = iss_token.get_storage_type()
-    assert actual_value == "postgres"
-
-
-@patch("addons.images.iss_health_check.environment.STORAGE_TYPE", "gcp")
-def test_get_storage_type_gcp_case_insensitive():
-    actual_value = iss_token.get_storage_type()
-    assert actual_value == "gcp"
-
-
-@patch("addons.images.iss_health_check.environment.STORAGE_TYPE", "postgres")
-def test_get_storage_type_postgres_case_insensitive():
-    actual_value = iss_token.get_storage_type()
-    assert actual_value == "postgres"
-
-
-@patch("addons.images.iss_health_check.environment.STORAGE_TYPE", "test")
-def test_get_storage_type_invalid():
-    with pytest.raises(SystemExit):
-        iss_token.get_storage_type()
-
-
-@patch("addons.images.iss_health_check.environment.STORAGE_TYPE", None)
-def test_get_storage_type_unset():
-    with pytest.raises(SystemExit):
-        iss_token.get_storage_type()
-
-
-# --------------------- end of Storage Type tests ---------------------
 
 
 # --------------------- GCP tests ---------------------
@@ -133,16 +91,14 @@ def test_add_secret_version(mock_sm_client):
     mock_sm_client.add_secret_version.assert_called_with(request=expected_request)
 
 
-@patch("addons.images.iss_health_check.environment.PROJECT_ID", "test-proj")
-@patch("addons.images.iss_health_check.environment.ISS_API_KEY", "test-api-key")
+@patch("iss_health_check_environment.PROJECT_ID", "test-proj")
+@patch("iss_health_check_environment.ISS_API_KEY", "test-api-key")
 @patch(
-    "addons.images.iss_health_check.environment.ISS_SCMS_TOKEN_REST_ENDPOINT",
+    "iss_health_check_environment.ISS_SCMS_TOKEN_REST_ENDPOINT",
     "https://api.dm.iss-scms.com/api/test-token",
 )
-@patch(
-    "addons.images.iss_health_check.environment.ISS_API_KEY_NAME", "test-api-key-name"
-)
-@patch("addons.images.iss_health_check.environment.STORAGE_TYPE", "gcp")
+@patch("iss_health_check_environment.ISS_API_KEY_NAME", "test-api-key-name")
+@patch("iss_health_check_environment.STORAGE_TYPE", "gcp")
 @patch("addons.images.iss_health_check.iss_token.requests.Response")
 @patch("addons.images.iss_health_check.iss_token.requests")
 @patch("addons.images.iss_health_check.iss_token.uuid")
@@ -198,16 +154,14 @@ def test_get_token_create_secret(
     assert actual_value == expected_value
 
 
-@patch("addons.images.iss_health_check.environment.PROJECT_ID", "test-proj")
-@patch("addons.images.iss_health_check.environment.ISS_API_KEY", "test-api-key")
+@patch("iss_health_check_environment.PROJECT_ID", "test-proj")
+@patch("iss_health_check_environment.ISS_API_KEY", "test-api-key")
 @patch(
-    "addons.images.iss_health_check.environment.ISS_SCMS_TOKEN_REST_ENDPOINT",
+    "iss_health_check_environment.ISS_SCMS_TOKEN_REST_ENDPOINT",
     "https://api.dm.iss-scms.com/api/test-token",
 )
-@patch(
-    "addons.images.iss_health_check.environment.ISS_API_KEY_NAME", "test-api-key-name"
-)
-@patch("addons.images.iss_health_check.environment.STORAGE_TYPE", "gcp")
+@patch("iss_health_check_environment.ISS_API_KEY_NAME", "test-api-key-name")
+@patch("iss_health_check_environment.STORAGE_TYPE", "gcp")
 @patch("addons.images.iss_health_check.iss_token.requests.Response")
 @patch("addons.images.iss_health_check.iss_token.requests")
 @patch("addons.images.iss_health_check.iss_token.uuid")
@@ -323,19 +277,15 @@ def test_get_latest_data(mock_pgquery):
     assert actual_value == {"id": 1, "name": "test-common-name", "token": "test-token"}
 
 
-@patch("addons.images.iss_health_check.environment.PROJECT_ID", "test-proj")
-@patch("addons.images.iss_health_check.environment.ISS_API_KEY", "test-api-key")
+@patch("iss_health_check_environment.PROJECT_ID", "test-proj")
+@patch("iss_health_check_environment.ISS_API_KEY", "test-api-key")
 @patch(
-    "addons.images.iss_health_check.environment.ISS_SCMS_TOKEN_REST_ENDPOINT",
+    "iss_health_check_environment.ISS_SCMS_TOKEN_REST_ENDPOINT",
     "https://api.dm.iss-scms.com/api/test-token",
 )
-@patch(
-    "addons.images.iss_health_check.environment.ISS_API_KEY_NAME", "test-api-key-name"
-)
-@patch("addons.images.iss_health_check.environment.STORAGE_TYPE", "postgres")
-@patch(
-    "addons.images.iss_health_check.environment.ISS_KEY_TABLE_NAME", "test-table-name"
-)
+@patch("iss_health_check_environment.ISS_API_KEY_NAME", "test-api-key-name")
+@patch("iss_health_check_environment.STORAGE_TYPE", "postgres")
+@patch("iss_health_check_environment.ISS_KEY_TABLE_NAME", "test-table-name")
 @patch("addons.images.iss_health_check.iss_token.requests.Response")
 @patch("addons.images.iss_health_check.iss_token.requests")
 @patch("addons.images.iss_health_check.iss_token.uuid")
@@ -376,19 +326,15 @@ def test_get_token_data_does_not_exist(
     assert result == "new-iss-token"
 
 
-@patch("addons.images.iss_health_check.environment.PROJECT_ID", "test-proj")
-@patch("addons.images.iss_health_check.environment.ISS_API_KEY", "test-api-key")
+@patch("iss_health_check_environment.PROJECT_ID", "test-proj")
+@patch("iss_health_check_environment.ISS_API_KEY", "test-api-key")
 @patch(
-    "addons.images.iss_health_check.environment.ISS_SCMS_TOKEN_REST_ENDPOINT",
+    "iss_health_check_environment.ISS_SCMS_TOKEN_REST_ENDPOINT",
     "https://api.dm.iss-scms.com/api/test-token",
 )
-@patch(
-    "addons.images.iss_health_check.environment.ISS_API_KEY_NAME", "test-api-key-name"
-)
-@patch("addons.images.iss_health_check.environment.STORAGE_TYPE", "postgres")
-@patch(
-    "addons.images.iss_health_check.environment.ISS_KEY_TABLE_NAME", "test-table-name"
-)
+@patch("iss_health_check_environment.ISS_API_KEY_NAME", "test-api-key-name")
+@patch("iss_health_check_environment.STORAGE_TYPE", "postgres")
+@patch("iss_health_check_environment.ISS_KEY_TABLE_NAME", "test-table-name")
 @patch("addons.images.iss_health_check.iss_token.requests.Response")
 @patch("addons.images.iss_health_check.iss_token.requests")
 @patch("addons.images.iss_health_check.iss_token.uuid")

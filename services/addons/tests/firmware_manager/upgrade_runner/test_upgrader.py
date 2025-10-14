@@ -75,7 +75,7 @@ def test_cleanup_not_exist(mock_Path, mock_shutil):
 
 
 @patch(
-    "addons.images.firmware_manager.upgrade_runner.environment.BLOB_STORAGE_PROVIDER",
+    "upgrade_runner_environment.BLOB_STORAGE_PROVIDER",
     "GCP",
 )
 @patch("common.gcs_utils.download_gcp_blob")
@@ -95,7 +95,7 @@ def test_download_blob_gcp(mock_Path, mock_download_gcp_blob):
 
 
 @patch(
-    "addons.images.firmware_manager.upgrade_runner.environment.BLOB_STORAGE_PROVIDER",
+    "upgrade_runner_environment.BLOB_STORAGE_PROVIDER",
     "DOCKER",
 )
 @patch(
@@ -116,7 +116,7 @@ def test_download_blob_docker(mock_Path, mock_download_docker_blob):
 
 
 @patch(
-    "addons.images.firmware_manager.upgrade_runner.environment.BLOB_STORAGE_PROVIDER",
+    "upgrade_runner_environment.BLOB_STORAGE_PROVIDER",
     "Test",
 )
 @patch("addons.images.firmware_manager.upgrade_runner.upgrader.logging")
@@ -135,7 +135,7 @@ def test_download_blob_not_supported(mock_Path, mock_download_gcp_blob, mock_log
 
 
 @patch(
-    "addons.images.firmware_manager.upgrade_runner.environment.UPGRADE_SCHEDULER_ENDPOINT",
+    "upgrade_runner_environment.UPGRADE_SCHEDULER_ENDPOINT",
     "http://test-endpoint",
 )
 @patch("addons.images.firmware_manager.upgrade_runner.upgrader.logging")
@@ -155,7 +155,7 @@ def test_notify_firmware_manager_success(mock_requests, mock_logging):
 
 
 @patch(
-    "addons.images.firmware_manager.upgrade_runner.environment.UPGRADE_SCHEDULER_ENDPOINT",
+    "upgrade_runner_environment.UPGRADE_SCHEDULER_ENDPOINT",
     "http://test-endpoint",
 )
 @patch("addons.images.firmware_manager.upgrade_runner.upgrader.logging")

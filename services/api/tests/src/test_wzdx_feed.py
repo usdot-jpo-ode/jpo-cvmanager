@@ -4,8 +4,8 @@ from mock import patch
 from api.src import wzdx_feed
 
 
-@patch("api.src.api_environment.WZDX_ENDPOINT", "myendpoint")
-@patch("api.src.api_environment.WZDX_API_KEY", "myapikey")
+@patch("api_environment.WZDX_ENDPOINT", "myendpoint")
+@patch("api_environment.WZDX_API_KEY", "myapikey")
 # test that get_wzdx_data is calling json.loads with expected arguments
 def test_get_wzdx_data():
     # mock return values for function dependencies

@@ -1,7 +1,7 @@
 import requests
 import logging
 import common.pgquery as pgquery
-from addons.images.rsu_status_check import environment
+import rsu_status_check_environment
 from common import common_environment
 
 
@@ -38,7 +38,7 @@ def insert_rsu_ping(request_json):
 
 class RsuStatusFetch:
     def __init__(self):
-        self.ZABBIX_ENDPOINT = environment.ZABBIX_ENDPOINT
+        self.ZABBIX_ENDPOINT = rsu_status_check_environment.ZABBIX_ENDPOINT
         self.ZABBIX_AUTH = ""
 
     def setZabbixAuth(self):
@@ -48,8 +48,8 @@ class RsuStatusFetch:
             "method": "user.login",
             "id": 1,
             "params": {
-                "username": environment.ZABBIX_USER,
-                "password": environment.ZABBIX_PASSWORD,
+                "username": rsu_status_check_environment.ZABBIX_USER,
+                "password": rsu_status_check_environment.ZABBIX_PASSWORD,
             },
         }
 
@@ -147,7 +147,9 @@ class RsuStatusFetch:
 if __name__ == "__main__":
     common_environment.configure_logging()
 
-    run_service = environment.RSU_PING and environment.ZABBIX
+    run_service = (
+        rsu_status_check_environment.RSU_PING and rsu_status_check_environment.ZABBIX
+    )
     if not run_service:
         logging.info("The rsu-ping-fetch service is disabled and will not run")
         exit()

@@ -32,6 +32,7 @@ from contact_support import ContactSupportResource
 from rsu_error_summary import RSUErrorSummaryResource
 import smtp_error_handler
 from common import common_environment
+import api_environment
 
 common_environment.configure_logging()
 
@@ -45,7 +46,7 @@ app.wsgi_app = Middleware(app.wsgi_app)
 @app.after_request
 def apply_cors_header(response):
     # Add CORS header to all responses to prevent webapp parsing errors. Webapps have trouble handling responses that do not have the Access-Control-Allow-Origin header set.
-    response.headers["Access-Control-Allow-Origin"] = os.environ["CORS_DOMAIN"]
+    response.headers["Access-Control-Allow-Origin"] = api_environment.CORS_DOMAIN
     return response
 
 

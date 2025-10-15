@@ -33,24 +33,24 @@ def get_ping_data(user: EnvironWithOrg):
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
         "JOIN ("
         "SELECT * FROM public.ping AS ping_data "
-        f"WHERE ping_data.timestamp >= {t.strftime('%Y/%m/%dT%H:%M:%S')}::timestamp"
+        f"WHERE ping_data.timestamp >= '{t.strftime('%Y/%m/%dT%H:%M:%S')}'::timestamp"
         ") AS ping_data ON rd.rsu_id = ping_data.rsu_id "
     )
 
     where_clause = None
     params: dict[str, Any] = {}
     if user.organization:
-        where_clause = "ron_v.name = :org_name"
+        where_clause = " ron_v.name = :org_name "
         params = {"org_name": user.organization}
     if not user.user_info.super_user:
         org_names_placeholder, _ = generate_sql_placeholders_for_list(
             list(user.user_info.organizations.keys()), params_to_update=params
         )
-        where_clause = f"ron_v.name IN ({org_names_placeholder})"
+        where_clause = f" ron_v.name IN ({org_names_placeholder}) "
         params = {}
     if where_clause:
-        query += f"WHERE {where_clause} "
-    query += "ORDER BY rd.rsu_id, ping_data.timestamp DESC"
+        query += f" WHERE {where_clause} "
+    query += " ORDER BY rd.rsu_id, ping_data.timestamp DESC "
 
     logging.debug(f'Executing query: "{query};"')
     data = pgquery.query_db(query, params=params)

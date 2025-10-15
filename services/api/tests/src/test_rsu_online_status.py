@@ -78,7 +78,7 @@ def test_ping_data_query(mock_pgquery):
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
         "JOIN ("
         "SELECT * FROM public.ping AS ping_data "
-        f"WHERE ping_data.timestamp >= {t.strftime("%Y/%m/%dT%H:%M:%S")}::timestamp"
+        f"WHERE ping_data.timestamp >= '{t.strftime('%Y/%m/%dT%H:%M:%S')}'::timestamp"
         ") AS ping_data ON rd.rsu_id = ping_data.rsu_id "
         "WHERE ron_v.name IN (:item_0, :item_1, :item_2) "
         "ORDER BY rd.rsu_id, ping_data.timestamp DESC"

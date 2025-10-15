@@ -27,7 +27,7 @@ services:
 
       DESTINATION_DB: ${COUNT_DESTINATION_DB:-MONGODB}
 
-      MONGO_DB_URI: ${MONGO_DB_URI:-mongodb://${MONGO_READ_WRITE_USER:-ode}:${MONGO_READ_WRITE_PASS:-replace-me}@${DB_HOST_IP:-mongo}:${DB_HOST_PORT:-replace-me}/?directConnection=true&authSource=admin}
+      MONGO_DB_URI: ${MONGO_DB_URI:-mongodb://${MONGO_READ_WRITE_USER:-ode}:${MONGO_READ_WRITE_PASS:-replace-me}@${DB_HOST_IP:-mongo}:${DB_HOST_PORT:-27017}/?directConnection=true&authSource=admin}
       MONGO_DB_NAME: ${CM_DATABASE_NAME:-CV}
       INPUT_COUNTS_MONGO_COLLECTION_NAME: ${INPUT_COUNTS_MONGO_COLLECTION_NAME:-}
       OUTPUT_COUNTS_MONGO_COLLECTION_NAME: ${OUTPUT_COUNTS_MONGO_COLLECTION_NAME:-}

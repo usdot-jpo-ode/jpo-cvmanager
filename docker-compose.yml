@@ -17,13 +17,13 @@ services:
     ports:
       - '8081:5000'
     environment:
-      PG_DB_HOST: ${PG_DB_HOST:-cvmanager_postgres}
+      PG_DB_HOST: ${PG_DB_HOST:-cvmanager_postgres:5432}
       PG_DB_USER: ${PG_DB_USER:-postgres}
       PG_DB_PASS: ${PG_DB_PASS:-postgres}
       PG_DB_NAME: ${PG_DB_NAME:-postgres}
       INSTANCE_CONNECTION_NAME: ${INSTANCE_CONNECTION_NAME}
 
-      MONGO_DB_URI: ${MONGO_DB_URI:-mongodb://${MONGO_READ_WRITE_USER:-ode}:${MONGO_READ_WRITE_PASS:-replace-me}@${DB_HOST_IP:-mongo}:${DB_HOST_PORT:-replace-me}/?directConnection=true&authSource=admin}
+      MONGO_DB_URI: ${MONGO_DB_URI:-mongodb://${MONGO_READ_WRITE_USER:-ode}:${MONGO_READ_WRITE_PASS:-replace-me}@${DB_HOST_IP:-mongo}:${DB_HOST_PORT:-27017}/?directConnection=true&authSource=admin}
       MONGO_DB_NAME: ${CM_DATABASE_NAME:-CV}
       MONGO_PROCESSED_BSM_COLLECTION_NAME: ${MONGO_PROCESSED_BSM_COLLECTION_NAME:-processed_bsm}
       MONGO_PROCESSED_PSM_COLLECTION_NAME: ${MONGO_PROCESSED_PSM_COLLECTION_NAME:-processed_psm}
@@ -85,9 +85,9 @@ services:
       context: webapp
       dockerfile: Dockerfile
       args:
-        API_URI: ${API_ENDPOINT:-cvmanager_api}
+        API_URI: ${API_ENDPOINT:-http://localhost:8081}
         MAPBOX_TOKEN: ${MAPBOX_TOKEN?:error}
-        KEYCLOAK_HOST_URL: ${KEYCLOAK_ENDPOINT:-http://cvmanager_keycloak:8084}
+        KEYCLOAK_HOST_URL: ${KEYCLOAK_ENDPOINT:-http://172.26.97.25:8084}
         KEYCLOAK_REALM: ${KEYCLOAK_REALM:-cvmanager}
         KEYCLOAK_CLIENT_ID: ${KEYCLOAK_GUI_CLIENT_ID:-cvmanager-gui}
         COUNT_MESSAGE_TYPES: ${COUNTS_MSG_TYPES:-BSM,SSM,SPAT,SRM,MAP}
@@ -96,8 +96,8 @@ services:
         MAPBOX_INIT_LATITUDE: ${MAPBOX_INIT_LATITUDE:-39.7392}
         MAPBOX_INIT_LONGITUDE: ${MAPBOX_INIT_LONGITUDE:--104.9903}
         MAPBOX_INIT_ZOOM: ${MAPBOX_INIT_ZOOM:-10}
-        CVIZ_API_SERVER_URL: ${CVIZ_API_SERVER_URL}${INTERSECTION_API_ROUTE_PREFIX:-/}
-        CVIZ_API_WS_URL: ${CVIZ_API_WS_URL}${INTERSECTION_API_ROUTE_PREFIX:-/}
+        CVIZ_API_SERVER_URL: ${CVIZ_API_SERVER_URL:-http://localhost:8089}${INTERSECTION_API_ROUTE_PREFIX:-/}
+        CVIZ_API_WS_URL: ${CVIZ_API_WS_URL:-ws://localhost:8089}${INTERSECTION_API_ROUTE_PREFIX:-/}
         ENABLE_RSU_FEATURES: ${ENABLE_RSU_FEATURES:-true}
         ENABLE_INTERSECTION_FEATURES: ${ENABLE_INTERSECTION_FEATURES:-true}
         ENABLE_WZDX_FEATURES: ${ENABLE_WZDX_FEATURES:-true}
@@ -174,7 +174,7 @@ services:
       KC_DB_URL_PORT: 5432
       KC_DB_USERNAME: ${PG_DB_USER:-postgres}
       KC_DB_PASSWORD: ${PG_DB_PASS:-postgres}
-      KC_HOSTNAME: ${KEYCLOAK_ENDPOINT:-http://cvmanager_keycloak:8084}
+      KC_HOSTNAME: ${KEYCLOAK_ENDPOINT:-http://172.26.97.25:8084}
       KEYCLOAK_API_CLIENT_SECRET_KEY: ${KEYCLOAK_API_CLIENT_SECRET_KEY:-keycloak-secret-key}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}

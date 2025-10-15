@@ -7,8 +7,9 @@ import EventsApi from '../../../apis/intersections/events-api'
 import NotificationApi from '../../../apis/intersections/notification-api'
 import toast from 'react-hot-toast'
 import {
+  addBsmTimestamps,
   generateSignalStateFeatureCollection,
-  parseBsmToGeojson,
+  isValidDate,
   parseMapSignalGroups,
   parseSpatSignalGroups,
 } from './utilities/message-utils'
@@ -61,7 +62,7 @@ export type MAP_PROPS = {
     | {
         map: ProcessedMap[]
         spat: ProcessedSpat[]
-        bsm: OdeBsmData[]
+        bsm: BsmFeatureCollection
       }
     | undefined
   sourceDataType: 'notification' | 'event' | 'assessment' | 'timestamp' | undefined
@@ -304,16 +305,14 @@ export const pullInitialData = createAsyncThunk(
     dispatch(setAbortAllFutureRequests(false))
     let rawMap: ProcessedMap[] = []
     let rawSpat: ProcessedSpat[] = []
-    let rawBsmGeojson: BsmFeatureCollection = {
-      type: 'FeatureCollection',
-      features: [],
-    }
+    let rawBsmGeojson: BsmFeatureCollection = { type: 'FeatureCollection', features: [] }
     let abortController = new AbortController()
     if (decoderModeEnabled) {
       rawMap = (sourceData as { map: ProcessedMap[] }).map.map((map) => ({
         ...map,
         properties: {
           ...map.properties,
+          timeStamp: getTimestamp(map.properties.timeStamp),
           odeReceivedAt: getTimestamp(map.properties.odeReceivedAt),
         },
       }))
@@ -321,26 +320,31 @@ export const pullInitialData = createAsyncThunk(
         ...spat,
         utcTimeStamp: getTimestamp(spat.utcTimeStamp),
       }))
-      rawBsmGeojson = parseBsmToGeojson(
-        (sourceData as { bsm: OdeBsmData[] }).bsm.map((bsm) => ({
-          ...bsm,
-          metadata: {
-            ...bsm.metadata,
-            odeReceivedAt: getTimestamp(bsm.metadata.odeReceivedAt),
-          },
-        }))
-      )
+      rawBsmGeojson = addBsmTimestamps((sourceData as { bsm: BsmFeatureCollection }).bsm)
       if (rawSpat && rawSpat.length != 0 && rawMap && rawMap.length != 0) {
         const sortedSpatData = rawSpat.sort((x, y) => x.utcTimeStamp - y.utcTimeStamp)
         const startTime = new Date(sortedSpatData[0].utcTimeStamp)
         const endTime = new Date(sortedSpatData[sortedSpatData.length - 1].utcTimeStamp)
         if (
-          queryParams.startDate.getTime() !== startTime.getTime() ||
-          queryParams.endDate.getTime() !== endTime.getTime()
+          (queryParams.startDate.getTime() !== startTime.getTime() ||
+            queryParams.endDate.getTime() !== endTime.getTime()) &&
+          isValidDate(startTime) &&
+          isValidDate(endTime)
         ) {
           dispatch(
             updateQueryParams({
-              ...generateQueryParams({ map: [], spat: rawSpat, bsm: [] }, null, decoderModeEnabled),
+              ...generateQueryParams(
+                {
+                  map: [],
+                  spat: rawSpat,
+                  bsm: {
+                    type: 'FeatureCollection',
+                    features: [],
+                  },
+                },
+                null,
+                decoderModeEnabled
+              ),
               intersectionId: rawMap[0].properties.intersectionId,
             })
           )
@@ -400,7 +404,14 @@ export const pullInitialData = createAsyncThunk(
         success: `Successfully got MAP Data`,
         error: `Failed to get MAP data. Please see console`,
       })
-      rawMap = await rawMapPromise
+      rawMap = (await rawMapPromise).map((map) => ({
+        ...map,
+        properties: {
+          ...map.properties,
+          timeStamp: getTimestamp(map.properties.timeStamp),
+          odeReceivedAt: getTimestamp(map.properties.odeReceivedAt),
+        },
+      }))
     } else {
       rawMap = [...importedMessageData.mapData]
       rawSpat = [...importedMessageData.spatData].sort((a, b) => a.utcTimeStamp - b.utcTimeStamp)
@@ -412,7 +423,9 @@ export const pullInitialData = createAsyncThunk(
       bsmGeojson = {
         ...rawBsmGeojson,
         features: [
-          ...[...rawBsmGeojson.features].sort((a, b) => b.properties.odeReceivedAt - a.properties.odeReceivedAt),
+          ...[...rawBsmGeojson.features].sort(
+            (a, b) => b.properties.odeReceivedAtEpochSeconds - a.properties.odeReceivedAtEpochSeconds
+          ),
         ],
       }
       dispatch(renderEntireMap({ currentMapData: [], currentSpatData: [], currentBsmData: bsmGeojson }))
@@ -494,12 +507,14 @@ export const pullInitialData = createAsyncThunk(
         success: `Successfully got BSM Data`,
         error: `Failed to get BSM data. Please see console`,
       })
-      rawBsmGeojson = parseBsmToGeojson(await rawBsmPromise)
+      rawBsmGeojson = addBsmTimestamps({ type: 'FeatureCollection', features: await rawBsmPromise })
     }
     const bsmGeojson = {
       ...rawBsmGeojson,
       features: [
-        ...[...rawBsmGeojson.features].sort((a, b) => b.properties.odeReceivedAt - a.properties.odeReceivedAt),
+        ...[...rawBsmGeojson.features].sort(
+          (a, b) => b.properties.odeReceivedAtEpochSeconds - a.properties.odeReceivedAtEpochSeconds
+        ),
       ],
     }
     dispatch(renderEntireMap({ currentMapData: rawMap, currentSpatData: rawSpat, currentBsmData: bsmGeojson }))
@@ -615,12 +630,14 @@ export const updateTrailedBsmData = createAsyncThunk(
     const renderTimeInterval = selectRenderTimeInterval(currentState)
     const bsmTrailLength = selectBsmTrailLength(currentState)
 
-    const filteredBsms: BsmFeature[] = bsmData?.features?.filter(
+    const filteredBsms: ProcessedBsmFeature[] = bsmData?.features?.filter(
       (feature) =>
-        feature.properties?.odeReceivedAt >= renderTimeInterval[0] &&
-        feature.properties?.odeReceivedAt <= renderTimeInterval[1]
+        feature.properties?.odeReceivedAtEpochSeconds >= renderTimeInterval[0] &&
+        feature.properties?.odeReceivedAtEpochSeconds <= renderTimeInterval[1]
     )
-    const sortedBsms = filteredBsms.sort((a, b) => b.properties.odeReceivedAt - a.properties.odeReceivedAt)
+    const sortedBsms = filteredBsms.sort(
+      (a, b) => b.properties.odeReceivedAtEpochSeconds - a.properties.odeReceivedAtEpochSeconds
+    )
 
     const uniqueIds = new Set(filteredBsms.map((bsm) => bsm.properties?.id).sort())
     // generate equally spaced unique colors for each uniqueId
@@ -630,7 +647,7 @@ export const updateTrailedBsmData = createAsyncThunk(
     const bsmLayerStyle = generateMapboxStyleExpression(colors)
     dispatch(setBsmCircleColor(bsmLayerStyle))
 
-    const lastBsms: BsmFeature[] = []
+    const lastBsms: ProcessedBsmFeature[] = []
     const bsmCounts: { [id: string]: number } = {}
     for (let i = 0; i < sortedBsms.length; i++) {
       const id = sortedBsms[i].properties?.id
@@ -772,14 +789,16 @@ export const renderIterative_Spat = createAsyncThunk(
 
 export const renderIterative_Bsm = createAsyncThunk(
   'intersectionMap/renderIterative_Bsm',
-  async (newBsmData: OdeBsmData[], { getState, dispatch }) => {
+  async (newBsmData: ProcessedBsmFeature[], { getState, dispatch }) => {
     const currentState = getState() as RootState
     const queryParams = selectQueryParams(currentState)
     const currentBsmData: BsmFeatureCollection = selectCurrentBsmData(currentState)
 
+    const newBsmFeatureCollection = addBsmTimestamps({ type: 'FeatureCollection', features: newBsmData })
+
     const OLDEST_DATA_TO_KEEP = queryParams.eventDate.getTime() - queryParams.startDate.getTime() // milliseconds
     // Inject and filter spat data
-    const currTimestamp = new Date(newBsmData.at(-1)!.metadata.odeReceivedAt as unknown as string).getTime() / 1000
+    const currTimestamp = new Date(newBsmFeatureCollection.features.at(-1)!.properties.odeReceivedAt).getTime() / 1000
     let oldIndex = 0
     for (let i = 0; i < currentBsmData.features.length; i++) {
       if (Number(currentBsmData.features[i].properties.odeReceivedAt) < currTimestamp - OLDEST_DATA_TO_KEEP) {
@@ -788,10 +807,11 @@ export const renderIterative_Bsm = createAsyncThunk(
         break
       }
     }
-    const newBsmGeojson = parseBsmToGeojson(newBsmData)
     const currentBsmGeojson = {
       ...currentBsmData,
-      features: currentBsmData.features.slice(oldIndex, currentBsmData.features.length).concat(newBsmGeojson.features),
+      features: currentBsmData.features
+        .slice(oldIndex, currentBsmData.features.length)
+        .concat(newBsmFeatureCollection.features),
     }
 
     dispatch(updateBsmData(currentBsmGeojson))
@@ -799,7 +819,7 @@ export const renderIterative_Bsm = createAsyncThunk(
     return currentBsmGeojson
   },
   {
-    condition: (newBsmData: OdeBsmData[]) => newBsmData.length != 0,
+    condition: (newBsmData: ProcessedBsmFeature[]) => (newBsmData?.length ?? 0) != 0,
   }
 )
 
@@ -953,7 +973,7 @@ export const initializeLiveStreaming = createAsyncThunk(
         })
 
         client.subscribe(bsmTopic, function (mes: IMessage) {
-          const bsmData: OdeBsmData = JSON.parse(mes.body)
+          const bsmData: ProcessedBsmFeature = JSON.parse(mes.body)
           console.debug('Received BSM message ' + (Date.now() - bsmTime) + ' ms')
           bsmTime = Date.now()
           dispatch(renderIterative_Bsm([bsmData]))

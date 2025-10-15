@@ -25,6 +25,7 @@ schema.bsm: classpath:schemas/bsm.schema.json
 schema.map: classpath:schemas/map.schema.json
 schema.spat: classpath:schemas/spat.schema.json
 schema.psm: classpath:schemas/psm.schema.json
+schema.rtcm: classpath:schemas/rtcm.schema.json
 
 # Amount of time to wait to try and increase batching
 kafka.linger_ms: 50
@@ -105,3 +106,9 @@ sendgrid:
 
 ### Postmark Email Settings
 postmark.api.secretKey: ${CM_POSTMARK_SECRET_KEY:""}
+
+j2735.api:
+  text-buffer-size: 262144
+  uper-buffer-size: 8192
+  asn-codec-ctx-max-stack-size: 60000
+  message-frame-allocate-size: 16384

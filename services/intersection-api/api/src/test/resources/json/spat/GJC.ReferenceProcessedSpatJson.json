@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 2,
+  "messageType": "SPAT",
+  "odeReceivedAt": "2025-08-29T16:09:34.416Z",
+  "validationMessages": [
+    {
+      "message": "$.metadata.source:doesnothaveavalueintheenumeration[RSU,V2X,MMITSS,UNKNOWN]",
+      "jsonPath": "$.metadata.source",
+      "schemaPath": "#/properties/metadata/properties/source/enum"
+    },
+    {
+      "message": "$.metadata.logFileName:ismissingbutitisrequired",
+      "jsonPath": "$.metadata",
+      "schemaPath": "#/properties/metadata/required"
+    },
+    {
+      "message": "$.metadata.receivedMessageDetails:ismissingbutitisrequired",
+      "jsonPath": "$.metadata",
+      "schemaPath": "#/properties/metadata/required"
+    },
+    {
+      "message": "$.metadata.recordGeneratedAt:ismissingbutitisrequired",
+      "jsonPath": "$.metadata",
+      "schemaPath": "#/properties/metadata/required"
+    },
+    {
+      "message": "$.metadata.asn1:ismissingbutitisrequired",
+      "jsonPath": "$.metadata",
+      "schemaPath": "#/properties/metadata/required"
+    },
+    { "message": "CTI-4501conformanceissue:TheSPAT'timeStamp'DE_MinuteOfTheYearismissing" },
+    { "message": "CTI-4501conformanceissue:Theintersections'id.region'DE_RoadRegulatorIDismissing" },
+    { "message": "CTI-4501conformanceissue:Thestate-time-speed'timing.nextTime'DE_TimeMarkismissing" },
+    { "message": "CTI-4501conformanceissue:Thestate-time-speed'timing.startTime'DE_TimeMarkismissing" }
+  ],
+  "intersectionId": 12111,
+  "cti4501Conformant": false,
+  "revision": 0,
+  "status": {
+    "manualControlIsEnabled": false,
+    "stopTimeIsActivated": false,
+    "failureFlash": false,
+    "preemptIsActive": false,
+    "signalPriorityIsActive": false,
+    "fixedTimeOperation": false,
+    "trafficDependentOperation": false,
+    "standbyOperation": false,
+    "failureMode": false,
+    "off": false,
+    "recentMAPmessageUpdate": false,
+    "recentChangeInMAPassignedLanesIDsUsed": false,
+    "noValidMAPisAvailableAtThisTime": false,
+    "noValidSPATisAvailableAtThisTime": false
+  },
+  "utcTimeStamp": "2025-08-29T16:09:35.176Z",
+  "enabledLanes": [],
+  "states": [
+    {
+      "signalGroup": 2,
+      "stateTimeSpeed": [
+        {
+          "eventState": "PROTECTED_MOVEMENT_ALLOWED",
+          "timing": { "minEndTime": "2025-08-29T16:36:52Z", "maxEndTime": "2025-08-29T16:36:52.1Z" }
+        }
+      ]
+    },
+    {
+      "signalGroup": 4,
+      "stateTimeSpeed": [
+        {
+          "eventState": "STOP_AND_REMAIN",
+          "timing": { "minEndTime": "2025-08-29T16:36:58.1Z", "maxEndTime": "2025-08-29T16:36:58.1Z" }
+        }
+      ]
+    },
+    {
+      "signalGroup": 6,
+      "stateTimeSpeed": [
+        {
+          "eventState": "PROTECTED_MOVEMENT_ALLOWED",
+          "timing": { "minEndTime": "2025-08-29T16:36:52Z", "maxEndTime": "2025-08-29T16:36:52.1Z" }
+        }
+      ]
+    },
+    {
+      "signalGroup": 8,
+      "stateTimeSpeed": [
+        {
+          "eventState": "STOP_AND_REMAIN",
+          "timing": { "minEndTime": "2025-08-29T16:36:25.2Z", "maxEndTime": "2025-08-29T16:36:25.2Z" }
+        }
+      ]
+    },
+    {
+      "signalGroup": 1,
+      "stateTimeSpeed": [
+        {
+          "eventState": "STOP_AND_REMAIN",
+          "timing": { "minEndTime": "2025-08-29T16:36:25.2Z", "maxEndTime": "2025-08-29T16:36:25.2Z" }
+        }
+      ]
+    },
+    {
+      "signalGroup": 5,
+      "stateTimeSpeed": [
+        {
+          "eventState": "STOP_AND_REMAIN",
+          "timing": { "minEndTime": "2025-08-29T16:36:25.2Z", "maxEndTime": "2025-08-29T16:36:25.2Z" }
+        }
+      ]
+    }
+  ]
+}

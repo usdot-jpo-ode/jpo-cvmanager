@@ -45,8 +45,8 @@ import us.dot.its.jpo.ode.api.models.AggregationResultCount;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -59,7 +59,7 @@ import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 @AutoConfigureEmbeddedDatabase
 public class LaneDirectionOfTravelEventRepositoryImplTest {
 
-    @SpyBean
+    @MockitoSpyBean
     private MongoTemplate mongoTemplate;
 
     @Mock
@@ -133,12 +133,15 @@ public class LaneDirectionOfTravelEventRepositoryImplTest {
         aggregatedResults.add(result1);
         aggregatedResults.add(result2);
 
-        AggregationResults<IDCount> aggregationResults = new AggregationResults<>(aggregatedResults, new Document());
+        AggregationResults<IDCount> aggregationResults = new AggregationResults<>(aggregatedResults,
+                new Document());
         doReturn(aggregationResults).when(
                 mongoTemplate)
-                .aggregate(Mockito.any(Aggregation.class), Mockito.anyString(), Mockito.eq(IDCount.class));
+                .aggregate(Mockito.any(Aggregation.class), Mockito.anyString(),
+                        Mockito.eq(IDCount.class));
 
-        List<IDCount> actualResults = repository.getAggregatedDailyLaneDirectionOfTravelEventCounts(intersectionID,
+        List<IDCount> actualResults = repository.getAggregatedDailyLaneDirectionOfTravelEventCounts(
+                intersectionID,
                 startTime, endTime);
 
         assertThat(actualResults.size()).isEqualTo(2);

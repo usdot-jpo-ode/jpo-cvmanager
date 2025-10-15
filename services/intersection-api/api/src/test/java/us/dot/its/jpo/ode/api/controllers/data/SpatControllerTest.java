@@ -11,7 +11,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -33,10 +33,10 @@ public class SpatControllerTest {
 
     private final SpatController controller;
 
-    @MockBean
+    @MockitoBean
     ProcessedSpatRepository processedSpatRepo;
 
-    @MockBean
+    @MockitoBean
     PermissionService permissionService;
 
     @Autowired

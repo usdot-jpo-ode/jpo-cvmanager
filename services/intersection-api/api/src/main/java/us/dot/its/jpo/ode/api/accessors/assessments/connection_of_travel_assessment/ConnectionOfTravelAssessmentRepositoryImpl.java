@@ -99,9 +99,4 @@ public class ConnectionOfTravelAssessmentRepositoryImpl
                 ConnectionOfTravelAssessment.class);
     }
 
-    @Override
-    public void add(ConnectionOfTravelAssessment item) {
-        mongoTemplate.insert(item, collectionName);
-    }
-
 }

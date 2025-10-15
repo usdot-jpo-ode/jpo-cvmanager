@@ -1,114 +1,113 @@
 package us.dot.its.jpo.ode.api.asn1;
 
 import lombok.extern.slf4j.Slf4j;
+import java.util.HexFormat;
+
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+
+import j2735ffm.MessageFrameCodec;
 import us.dot.its.jpo.ode.api.models.messages.SsmDecodedMessage;
 import us.dot.its.jpo.ode.api.models.messages.DecodedMessage;
 import us.dot.its.jpo.ode.api.models.messages.EncodedMessage;
-import us.dot.its.jpo.ode.model.OdeMsgMetadata;
-import us.dot.its.jpo.ode.model.Asn1Encoding;
-import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
-import us.dot.its.jpo.ode.model.OdeAsn1Data;
-import us.dot.its.jpo.ode.model.OdeAsn1Payload;
-import us.dot.its.jpo.ode.model.OdeSsmData;
-import us.dot.its.jpo.ode.model.OdeSsmMetadata;
-import us.dot.its.jpo.ode.model.OdeSsmPayload;
-import us.dot.its.jpo.ode.model.OdeData;
-import us.dot.its.jpo.ode.model.OdeHexByteArray;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
-import us.dot.its.jpo.ode.model.OdeMsgPayload;
-import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
-import us.dot.its.jpo.ode.model.RxSource;
-import us.dot.its.jpo.ode.plugin.j2735.builders.SSMBuilder;
-import us.dot.its.jpo.ode.util.JsonUtils;
-import us.dot.its.jpo.ode.util.XmlUtils;
-import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
+import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
+import us.dot.its.jpo.ode.model.OdeMessageFrameData;
+import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata.Source;
+import us.dot.its.jpo.ode.model.OdeMessageFramePayload;
+import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata;
+import us.dot.its.jpo.ode.util.DateTimeUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import us.dot.its.jpo.asn.j2735.r2024.MessageFrame.MessageFrame;
+import us.dot.its.jpo.asn.j2735.r2024.SignalStatusMessage.SignalStatusMessageMessageFrame;
 
+/**
+ * Decoder implementation for Basic Safety Message (SSM) messages.
+ * Converts ASN.1 encoded SSM messages to processed SSM objects.
+ */
 @Slf4j
 @Component
 public class SsmDecoder implements Decoder {
 
+    MessageFrameCodec codec;
+    public static final XmlMapper xmlMapper = new XmlMapper();
+
+    /**
+     * Constructs a SsmDecoder with required dependencies.
+     *
+     * @param codec MessageFrameCodec for ASN.1 decoding
+     */
+    @Autowired
+    SsmDecoder(MessageFrameCodec codec) {
+        this.codec = codec;
+    }
+
+    /**
+     * Decodes an ASN.1 encoded SSM message to a processed SSM object.
+     *
+     * @param message EncodedMessage containing ASN.1 SSM data
+     * @return DecodedMessage containing processed SSM or error details
+     */
     @Override
     public DecodedMessage decode(EncodedMessage message) {
 
-        // Convert to Ode Data type and Add Metadata
-        OdeData data = getAsOdeData(message.getAsn1Message());
-
-        XmlUtils xmlUtils = new XmlUtils();
+        String xer = decodeAsnToXERString(message.getAsn1Message());
 
         try {
-            // Convert to XML for ASN.1 Decoder
-            String xml = xmlUtils.toXml(data);
+            OdeMessageFrameData odeMessageFrameData = convertXERToMessageFrame(xer);
+            return new SsmDecodedMessage(
+                    ((SignalStatusMessageMessageFrame) odeMessageFrameData.getPayload().getData()).getValue(),
+                    message.getAsn1Message(), "");
 
-            // Send String through ASN.1 Decoder to get Decoded XML Data
-            String decodedXml = DecoderManager.decodeXmlWithAcm(xml);
-
-            // Convert to Ode Json
-            OdeSsmData ssm = getAsOdeJson(decodedXml);
-
-            // build output data structure
-            return new SsmDecodedMessage(ssm, message.getAsn1Message(), "");
-        } catch (Exception e) {
-            log.error("Exception decoding SSM message", e);
+        } catch (JsonProcessingException e) {
             return new SsmDecodedMessage(null, message.getAsn1Message(), e.getMessage());
         }
+
     }
 
+    /**
+     * Converts an ASN.1 hex string to XER (XML Encoding Rules) string.
+     *
+     * @param asnHex ASN.1 encoded hex string
+     * @return XER string representation of the message
+     */
     @Override
-    public OdeData getAsOdeData(String encodedData) {
-        OdeMsgPayload payload = new OdeAsn1Payload(new OdeHexByteArray(encodedData));
+    public String decodeAsnToXERString(String asnHex) {
+        byte[] bytes = HexFormat.of().parseHex(asnHex);
+        String xer = codec.uperToXer(bytes);
+        return xer;
+    }
 
-        // construct metadata
-        OdeSsmMetadata metadata = new OdeSsmMetadata(payload);
-
-        metadata.setOdeReceivedAt(DecoderManager.getCurrentIsoTimestamp());
-        metadata.setOriginIp(DecoderManager.getStaticUserOriginIp());
+    /**
+     * Converts an XER-encoded XML string to an OdeMessageFrameData object.
+     *
+     * @param encodedXml XER-encoded XML string
+     * @return OdeMessageFrameData object
+     * @throws JsonMappingException    if XML mapping fails
+     * @throws JsonProcessingException if XML processing fails
+     */
+    @Override
+    public OdeMessageFrameData convertXERToMessageFrame(String encodedXml)
+            throws JsonMappingException, JsonProcessingException {
+        OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
+        metadata.setOdeReceivedAt(DateTimeUtils.now());
         metadata.setRecordType(RecordType.ssmTx);
+        metadata.setSecurityResultCode(SecurityResultCode.success);
+        metadata.setRecordGeneratedBy(GeneratedBy.RSU);
+        metadata.setSource(Source.EV);
 
-        Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame", EncodingRule.UPER);
-        metadata.addEncoding(unsecuredDataEncoding);
+        JsonNode rootNode = xmlMapper.readTree(encodedXml);
 
-        // construct odeData
-        return new OdeAsn1Data(metadata, payload);
+        MessageFrame<?> messageFrame = xmlMapper.convertValue(rootNode, MessageFrame.class);
+
+        OdeMessageFramePayload payload = new OdeMessageFramePayload(messageFrame);
+
+        return new OdeMessageFrameData(metadata, payload);
 
     }
-
-    @Override
-    public OdeSsmData getAsOdeJson(String consumedData) throws XmlUtilsException {
-        ObjectNode consumed = XmlUtils.toObjectNode(consumedData);
-
-        JsonNode metadataNode = consumed.findValue(OdeMsgMetadata.METADATA_STRING);
-        if (metadataNode instanceof ObjectNode object) {
-            // Removing encodings to match ODE behavior
-            object.remove(OdeMsgMetadata.ENCODINGS_STRING);
-
-            // Ssm header file does not have a location and use predefined set required
-            // RxSource
-            ReceivedMessageDetails receivedMessageDetails = new ReceivedMessageDetails();
-            receivedMessageDetails.setRxSource(RxSource.NA);
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode;
-            try {
-                jsonNode = objectMapper.readTree(receivedMessageDetails.toJson());
-                object.set(OdeMsgMetadata.RECEIVEDMSGDETAILS_STRING, jsonNode);
-            } catch (JsonProcessingException e) {
-                log.error("Exception decoding SSM to ODE json", e);
-            }
-        }
-
-        OdeSsmMetadata metadata = (OdeSsmMetadata) JsonUtils.fromJson(metadataNode.toString(), OdeSsmMetadata.class);
-
-        if (metadata.getSchemaVersion() <= 4) {
-            metadata.setReceivedMessageDetails(null);
-        }
-
-        OdeSsmPayload payload = new OdeSsmPayload(SSMBuilder.genericSSM(consumed.findValue("SignalStatusMessage")));
-        return new OdeSsmData(metadata, payload);
-    }
-
 }

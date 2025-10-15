@@ -18,7 +18,7 @@ const initialState = {
   data: {} as { [id: string]: DecoderDataEntry },
   selectedMapMessage: undefined as undefined | { id: string; intersectionId: number; rsuIp: string },
   selectedBsms: [] as string[],
-  currentBsms: [] as OdeBsmData[],
+  currentBsms: [] as ProcessedBsmFeature[],
   dialogOpen: false,
 }
 
@@ -37,7 +37,7 @@ const getTimestampFromType = (type: DECODER_MESSAGE_TYPE, decodedResponse: Decod
     case 'SPAT':
       return getTimestamp(decodedResponse?.processedSpat?.utcTimeStamp)
     case 'BSM':
-      return getTimestamp(decodedResponse?.bsm?.metadata.odeReceivedAt)
+      return getTimestamp(decodedResponse?.bsm?.properties.odeReceivedAt)
   }
 }
 
@@ -187,7 +187,7 @@ export const updateAllDataOnMap = createAsyncThunk(
                 !isGreyedOut(selectedMapMessage.intersectionId, getIntersectionId(v.decodedResponse))
             )
             .map((v: any) => v.decodedResponse?.processedSpat),
-          bsm: currentBsms,
+          bsm: { type: 'FeatureCollection', features: currentBsms },
         },
         sourceDataType: null,
         intersectionId,
@@ -215,7 +215,7 @@ export const decoderModeToggled = createAsyncThunk(
           sourceData: {
             map: [],
             spat: [],
-            bsm: [],
+            bsm: { type: 'FeatureCollection', features: [] },
           },
           sourceDataType: initialSourceDataType,
           intersectionId,

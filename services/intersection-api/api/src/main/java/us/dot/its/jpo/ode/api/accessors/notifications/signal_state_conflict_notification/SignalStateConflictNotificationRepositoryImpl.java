@@ -100,9 +100,4 @@ public class SignalStateConflictNotificationRepositoryImpl
                 SignalStateConflictNotification.class);
     }
 
-    @Override
-    public void add(SignalStateConflictNotification item) {
-        mongoTemplate.insert(item, collectionName);
-    }
-
 }

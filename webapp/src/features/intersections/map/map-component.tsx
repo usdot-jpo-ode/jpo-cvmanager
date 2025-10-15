@@ -83,6 +83,10 @@ import { Remove } from '@mui/icons-material'
 import VisualSettings from './visual-settings'
 import { useDispatch, useSelector } from 'react-redux'
 
+/**
+ * Returns a milliseconds since epoch timestamp for the input object
+ * This method covers inputs of epoch seconds, milliseconds, and datetime strings
+ */
 export const getTimestamp = (dt: any): number => {
   try {
     const dtFromString = Date.parse(dt as any as string)

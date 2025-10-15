@@ -131,9 +131,4 @@ public class MapBroadcastRateEventRepositoryImpl
 
         return result.getMappedResults();
     }
-
-    @Override
-    public void add(MapBroadcastRateEvent item) {
-        mongoTemplate.insert(item, collectionName);
-    }
 }

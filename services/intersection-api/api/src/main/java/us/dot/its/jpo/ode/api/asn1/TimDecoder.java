@@ -1,82 +1,113 @@
 package us.dot.its.jpo.ode.api.asn1;
 
 import lombok.extern.slf4j.Slf4j;
+import java.util.HexFormat;
+
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
+import j2735ffm.MessageFrameCodec;
 import us.dot.its.jpo.ode.api.models.messages.TimDecodedMessage;
 import us.dot.its.jpo.ode.api.models.messages.DecodedMessage;
 import us.dot.its.jpo.ode.api.models.messages.EncodedMessage;
-import us.dot.its.jpo.ode.model.Asn1Encoding;
-import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
-import us.dot.its.jpo.ode.model.OdeAsn1Data;
-import us.dot.its.jpo.ode.model.OdeAsn1Payload;
-import us.dot.its.jpo.ode.model.OdeTimData;
-import us.dot.its.jpo.ode.model.OdeTimMetadata;
-import us.dot.its.jpo.ode.model.OdeData;
-import us.dot.its.jpo.ode.model.OdeHexByteArray;
-import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
 import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
-import us.dot.its.jpo.ode.model.OdeMsgPayload;
-import us.dot.its.jpo.ode.util.XmlUtils;
-import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
+import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
+import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
+import us.dot.its.jpo.ode.model.OdeMessageFrameData;
+import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata.Source;
+import us.dot.its.jpo.ode.model.OdeMessageFramePayload;
+import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata;
+import us.dot.its.jpo.ode.util.DateTimeUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import us.dot.its.jpo.asn.j2735.r2024.MessageFrame.MessageFrame;
+import us.dot.its.jpo.asn.j2735.r2024.TravelerInformation.TravelerInformationMessageFrame;
 
+/**
+ * Decoder implementation for Basic Safety Message (TIM) messages.
+ * Converts ASN.1 encoded TIM messages to processed TIM objects.
+ */
 @Slf4j
 @Component
 public class TimDecoder implements Decoder {
-    private final XmlUtils xmlUtils = new XmlUtils();
 
+    MessageFrameCodec codec;
+    public static final XmlMapper xmlMapper = new XmlMapper();
+
+    /**
+     * Constructs a TimDecoder with required dependencies.
+     *
+     * @param codec MessageFrameCodec for ASN.1 decoding
+     */
+    @Autowired
+    TimDecoder(MessageFrameCodec codec) {
+        this.codec = codec;
+    }
+
+    /**
+     * Decodes an ASN.1 encoded TIM message to a processed TIM object.
+     *
+     * @param message EncodedMessage containing ASN.1 TIM data
+     * @return DecodedMessage containing processed TIM or error details
+     */
     @Override
     public DecodedMessage decode(EncodedMessage message) {
-        
-        // Convert to Ode Data type and Add Metadata
-        OdeData data = getAsOdeData(message.getAsn1Message());
-        
+
+        String xer = decodeAsnToXERString(message.getAsn1Message());
+
         try {
-            // Convert to XML for ASN.1 Decoder
-            String xml = xmlUtils.toXml(data);
+            OdeMessageFrameData odeMessageFrameData = convertXERToMessageFrame(xer);
+            return new TimDecodedMessage(
+                    ((TravelerInformationMessageFrame) odeMessageFrameData.getPayload().getData()).getValue(),
+                    message.getAsn1Message(), "");
 
-            // Send String through ASN.1 Decoder to get Decoded XML Data
-            String decodedXml = DecoderManager.decodeXmlWithAcm(xml);
-
-            // Convert to Ode Json 
-            ObjectNode tim = XmlUtils.toObjectNode(decodedXml);
-
-            // build output data structure
-            return new TimDecodedMessage(tim, message.getAsn1Message(), "");
-            
         } catch (JsonProcessingException e) {
-            log.error("JSON Processing Exception: {}", e.getMessage(), e);
-            return new TimDecodedMessage(null, message.getAsn1Message(), e.getMessage());
-        } catch (Exception e) {
-            log.error("Generic Exception: {}", e.getMessage(), e);
             return new TimDecodedMessage(null, message.getAsn1Message(), e.getMessage());
         }
+
     }
 
+    /**
+     * Converts an ASN.1 hex string to XER (XML Encoding Rules) string.
+     *
+     * @param asnHex ASN.1 encoded hex string
+     * @return XER string representation of the message
+     */
     @Override
-    public OdeData getAsOdeData(String encodedData) {
-        OdeMsgPayload payload = new OdeAsn1Payload(new OdeHexByteArray(encodedData));
+    public String decodeAsnToXERString(String asnHex) {
+        byte[] bytes = HexFormat.of().parseHex(asnHex);
+        String xer = codec.uperToXer(bytes);
+        return xer;
+    }
 
-        // construct metadata
-        OdeTimMetadata metadata = new OdeTimMetadata(payload);
-        metadata.setOdeReceivedAt(DecoderManager.getCurrentIsoTimestamp());
-        metadata.setOriginIp("user-upload");
+    /**
+     * Converts an XER-encoded XML string to an OdeMessageFrameData object.
+     *
+     * @param encodedXml XER-encoded XML string
+     * @return OdeMessageFrameData object
+     * @throws JsonMappingException    if XML mapping fails
+     * @throws JsonProcessingException if XML processing fails
+     */
+    @Override
+    public OdeMessageFrameData convertXERToMessageFrame(String encodedXml)
+            throws JsonMappingException, JsonProcessingException {
+        OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
+        metadata.setOdeReceivedAt(DateTimeUtils.now());
         metadata.setRecordType(RecordType.timMsg);
-        metadata.setRecordGeneratedBy(GeneratedBy.RSU);
-        
-        Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",EncodingRule.UPER);
-        metadata.addEncoding(unsecuredDataEncoding);
-        
-        //construct odeData
-        return new OdeAsn1Data(metadata, payload);
-    }
+        metadata.setSecurityResultCode(SecurityResultCode.success);
+        metadata.setRecordGeneratedBy(GeneratedBy.TMC);
+        metadata.setSource(Source.EV);
 
-    @Override
-    public OdeTimData getAsOdeJson(String consumedData) throws XmlUtilsException {
-        // There is no proper deserializer for TIM data into the ODE tim format. This function is not used here.
-        return null;
+        JsonNode rootNode = xmlMapper.readTree(encodedXml);
+
+        MessageFrame<?> messageFrame = xmlMapper.convertValue(rootNode, MessageFrame.class);
+
+        OdeMessageFramePayload payload = new OdeMessageFramePayload(messageFrame);
+
+        return new OdeMessageFrameData(metadata, payload);
+
     }
 }

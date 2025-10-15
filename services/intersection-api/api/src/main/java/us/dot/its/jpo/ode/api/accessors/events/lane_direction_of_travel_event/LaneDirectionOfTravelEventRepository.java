@@ -7,9 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.LaneDirectionOfTravelEvent;
 import us.dot.its.jpo.ode.api.models.IDCount;
-import us.dot.its.jpo.ode.api.models.DataLoader;
 
-public interface LaneDirectionOfTravelEventRepository extends DataLoader<LaneDirectionOfTravelEvent> {
+public interface LaneDirectionOfTravelEventRepository {
     long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<LaneDirectionOfTravelEvent> findLatest(Integer intersectionID, Long startTime, Long endTime);

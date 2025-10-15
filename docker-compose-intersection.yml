@@ -9,7 +9,8 @@ services:
       - intersection_api
     image: intersection-api:latest
     build:
-      context: ./services/intersection-api
+      context: ./services
+      dockerfile: Dockerfile.intersection-api
       args:
         MAVEN_GITHUB_TOKEN: ${MAVEN_GITHUB_TOKEN:?error}
         MAVEN_GITHUB_ORG: ${MAVEN_GITHUB_ORG:?error}

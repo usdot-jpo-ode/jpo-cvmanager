@@ -130,9 +130,4 @@ public class MapMinimumDataEventRepositoryImpl
         return result.getMappedResults();
     }
 
-    @Override
-    public void add(MapMinimumDataEvent item) {
-        mongoTemplate.insert(item, collectionName);
-    }
-
 }

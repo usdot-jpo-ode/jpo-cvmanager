@@ -132,10 +132,4 @@ public class SignalStateConflictEventRepositoryImpl
 
         return result.getMappedResults();
     }
-
-    @Override
-    public void add(SignalStateConflictEvent item) {
-        mongoTemplate.insert(item, collectionName);
-    }
-
 }

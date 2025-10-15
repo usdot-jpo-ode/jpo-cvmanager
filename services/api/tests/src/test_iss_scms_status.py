@@ -2,9 +2,8 @@ from unittest.mock import patch, MagicMock
 import api.src.iss_scms_status as iss_scms_status
 import api.tests.data.iss_scms_status_data as iss_scms_status_data
 
-###################################### Testing Requests ##########################################
 
-
+# ##################################### Testing Requests ##########################################
 def test_request_options():
     info = iss_scms_status.IssScmsStatus()
     (body, code, headers) = info.options()
@@ -15,22 +14,17 @@ def test_request_options():
 
 @patch("api.src.iss_scms_status.get_iss_scms_status")
 def test_entry_get(mock_get_iss_scms_status):
-    req = MagicMock()
-    req.environ = iss_scms_status_data.request_params_good
     mock_get_iss_scms_status.return_value = {}
-    with patch("api.src.iss_scms_status.request", req):
-        status = iss_scms_status.IssScmsStatus()
-        (body, code, headers) = status.get()
+    status = iss_scms_status.IssScmsStatus()
+    (body, code, headers) = status.get()
 
-        mock_get_iss_scms_status.assert_called_once()
-        assert code == 200
-        assert headers["Access-Control-Allow-Origin"] == "test.com"
-        assert body == {}
-
-
-###################################### Testing Functions ##########################################
+    mock_get_iss_scms_status.assert_called_once()
+    assert code == 200
+    assert headers["Access-Control-Allow-Origin"] == "test.com"
+    assert body == {}
 
 
+# ##################################### Testing Functions ##########################################
 @patch("api.src.iss_scms_status.pgquery")
 def test_get_iss_status_no_data(mock_pgquery):
     mock_pgquery.query_db.return_value = {}
@@ -47,11 +41,13 @@ def test_get_iss_status_no_data(mock_pgquery):
         ") AS a "
         "WHERE a.row_id <= 1 ORDER BY rsu_id"
         ") AS scms_health_data ON rd.rsu_id = scms_health_data.rsu_id "
-        f"WHERE ron_v.name = 'Test' "
+        "WHERE ron_v.name = :org_name "
         "ORDER BY rd.ipv4_address"
     )
     actual_result = iss_scms_status.get_iss_scms_status("Test")
-    mock_pgquery.query_db.assert_called_with(expected_query)
+    mock_pgquery.query_db.assert_called_with(
+        expected_query, params={"org_name": "Test"}
+    )
 
     assert actual_result == expected_rsu_data
 
@@ -101,5 +97,5 @@ def test_get_iss_scms_status_query(mock_query_db):
     result = iss_scms_status.get_iss_scms_status("Test")
     assert result == iss_scms_status_data.expected_rsu_data_single_result
     iss_scms_status.pgquery.query_db.assert_called_once_with(
-        iss_scms_status_data.expectedQuery
+        iss_scms_status_data.expectedQuery, params={"org_name": "Test"}
     )

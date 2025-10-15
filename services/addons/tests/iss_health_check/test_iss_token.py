@@ -6,9 +6,8 @@ import pytest
 
 from addons.images.iss_health_check import iss_token
 
+
 # --------------------- Storage Type tests ---------------------
-
-
 @patch.dict(
     os.environ,
     {
@@ -305,8 +304,6 @@ def test_get_token_secret_exists(
 
 
 # --------------------- Postgres tests ---------------------
-
-
 @patch(
     "addons.images.iss_health_check.iss_token.pgquery",
 )

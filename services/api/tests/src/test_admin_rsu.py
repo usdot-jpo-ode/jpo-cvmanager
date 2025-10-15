@@ -2,14 +2,16 @@ from unittest.mock import patch, MagicMock, call
 import pytest
 import api.src.admin_rsu as admin_rsu
 import api.tests.data.admin_rsu_data as admin_rsu_data
-import sqlalchemy
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from werkzeug.exceptions import HTTPException
+from api.tests.data import auth_data
+from werkzeug.exceptions import BadRequest, InternalServerError
 
-###################################### Testing Requests ##########################################
+user_valid = auth_data.get_request_environ()
 
+
+# ##################################### Testing Requests ##########################################
 # OPTIONS endpoint test
-
-
 def test_request_options():
     info = admin_rsu.AdminRsu()
     (body, code, headers) = info.options()
@@ -19,12 +21,9 @@ def test_request_options():
 
 
 # GET endpoint tests
-
-
-@patch("api.src.admin_rsu.get_modify_rsu_data")
+@patch("api.src.admin_rsu.get_modify_rsu_data_authorized")
 def test_entry_get_rsu(mock_get_modify_rsu_data):
     req = MagicMock()
-    req.environ = admin_rsu_data.request_environ
     req.args = admin_rsu_data.request_args_rsu_good
     mock_get_modify_rsu_data.return_value = {}
     with patch("api.src.admin_rsu.request", req):
@@ -39,10 +38,9 @@ def test_entry_get_rsu(mock_get_modify_rsu_data):
         assert body == {}
 
 
-@patch("api.src.admin_rsu.get_modify_rsu_data")
+@patch("api.src.admin_rsu.get_modify_rsu_data_authorized")
 def test_entry_get_all(mock_get_modify_rsu_data):
     req = MagicMock()
-    req.environ = admin_rsu_data.request_environ
     req.args = admin_rsu_data.request_args_all_good
     mock_get_modify_rsu_data.return_value = {}
     with patch("api.src.admin_rsu.request", req):
@@ -60,7 +58,6 @@ def test_entry_get_all(mock_get_modify_rsu_data):
 # Test schema for string value
 def test_entry_get_schema_str():
     req = MagicMock()
-    req.environ = admin_rsu_data.request_environ
     req.json = admin_rsu_data.request_args_str_bad
     with patch("api.src.admin_rsu.request", req):
         status = admin_rsu.AdminRsu()
@@ -71,7 +68,6 @@ def test_entry_get_schema_str():
 # Test schema for IPv4 string if not "all"
 def test_entry_get_schema_ipv4():
     req = MagicMock()
-    req.environ = admin_rsu_data.request_environ
     req.json = admin_rsu_data.request_args_ipv4_bad
     with patch("api.src.admin_rsu.request", req):
         status = admin_rsu.AdminRsu()
@@ -80,14 +76,11 @@ def test_entry_get_schema_ipv4():
 
 
 # PATCH endpoint tests
-
-
-@patch("api.src.admin_rsu.modify_rsu")
+@patch("api.src.admin_rsu.modify_rsu_authorized")
 def test_entry_patch(mock_modify_rsu):
     req = MagicMock()
-    req.environ = admin_rsu_data.request_environ
     req.json = admin_rsu_data.request_json_good
-    mock_modify_rsu.return_value = {}, 200
+    mock_modify_rsu.return_value = {}
     with patch("api.src.admin_rsu.request", req):
         status = admin_rsu.AdminRsu()
         (body, code, headers) = status.patch()
@@ -100,7 +93,6 @@ def test_entry_patch(mock_modify_rsu):
 
 def test_entry_patch_schema():
     req = MagicMock()
-    req.environ = admin_rsu_data.request_environ
     req.json = admin_rsu_data.request_json_bad
     with patch("api.src.admin_rsu.request", req):
         status = admin_rsu.AdminRsu()
@@ -109,12 +101,9 @@ def test_entry_patch_schema():
 
 
 # DELETE endpoint tests
-
-
-@patch("api.src.admin_rsu.delete_rsu")
+@patch("api.src.admin_rsu.delete_rsu_authorized")
 def test_entry_delete_rsu(mock_delete_rsu):
     req = MagicMock()
-    req.environ = admin_rsu_data.request_environ
     req.args = admin_rsu_data.request_args_rsu_good
     mock_delete_rsu.return_value = {}
     with patch("api.src.admin_rsu.request", req):
@@ -132,7 +121,6 @@ def test_entry_delete_rsu(mock_delete_rsu):
 # Check single schema that requires IPv4 string
 def test_entry_delete_schema():
     req = MagicMock()
-    req.environ = admin_rsu_data.request_environ
     req.json = admin_rsu_data.request_args_ipv4_bad
     with patch("api.src.admin_rsu.request", req):
         status = admin_rsu.AdminRsu()
@@ -141,18 +129,14 @@ def test_entry_delete_schema():
 
 
 ###################################### Testing Functions ##########################################
-
-# get_rsu_data
-
-
 @patch("api.src.admin_rsu.pgquery.query_db")
 def test_get_rsu_data_all(mock_query_db):
     mock_query_db.return_value = admin_rsu_data.get_rsu_data_return
     expected_rsu_data = admin_rsu_data.expected_get_rsu_all
     expected_query = admin_rsu_data.expected_get_rsu_query_all
-    actual_result = admin_rsu.get_rsu_data("all")
+    actual_result = admin_rsu.get_rsu_data("all", user_valid, qualified_orgs=[])
 
-    mock_query_db.assert_called_with(expected_query)
+    mock_query_db.assert_called_with(expected_query, params={})
     assert actual_result == expected_rsu_data
 
 
@@ -161,9 +145,9 @@ def test_get_rsu_data_rsu(mock_query_db):
     mock_query_db.return_value = admin_rsu_data.get_rsu_data_return
     expected_rsu_data = admin_rsu_data.expected_get_rsu_all[0]
     expected_query = admin_rsu_data.expected_get_rsu_query_one
-    actual_result = admin_rsu.get_rsu_data("10.11.81.12")
+    actual_result = admin_rsu.get_rsu_data("10.11.81.12", user_valid, qualified_orgs=[])
 
-    mock_query_db.assert_called_with(expected_query)
+    mock_query_db.assert_called_with(expected_query, params={"rsu_ip": "10.11.81.12"})
     assert actual_result == expected_rsu_data
 
 
@@ -173,20 +157,20 @@ def test_get_rsu_data_none(mock_query_db):
     mock_query_db.return_value = []
     expected_rsu_data = {}
     expected_query = admin_rsu_data.expected_get_rsu_query_one
-    actual_result = admin_rsu.get_rsu_data("10.11.81.12")
+    actual_result = admin_rsu.get_rsu_data("10.11.81.12", user_valid, qualified_orgs=[])
 
-    mock_query_db.assert_called_with(expected_query)
+    mock_query_db.assert_called_with(expected_query, params={"rsu_ip": "10.11.81.12"})
     assert actual_result == expected_rsu_data
 
 
 # get_modify_rsu_data
-
-
 @patch("api.src.admin_rsu.get_rsu_data")
 def test_get_modify_rsu_data_all(mock_get_rsu_data):
     mock_get_rsu_data.return_value = ["test rsu data"]
     expected_rsu_data = {"rsu_data": ["test rsu data"]}
-    actual_result = admin_rsu.get_modify_rsu_data("all")
+    actual_result = admin_rsu.get_modify_rsu_data_authorized(
+        "all",
+    )
 
     assert actual_result == expected_rsu_data
 
@@ -200,56 +184,62 @@ def test_get_modify_rsu_data_rsu(mock_get_rsu_data, mock_get_allowed_selections)
         "rsu_data": "test rsu data",
         "allowed_selections": "test selections",
     }
-    actual_result = admin_rsu.get_modify_rsu_data("10.11.81.13")
+    actual_result = admin_rsu.get_modify_rsu_data_authorized("10.11.81.13")
 
     assert actual_result == expected_rsu_data
 
 
 # modify_rsu
-
-
 @patch("api.src.admin_rsu.admin_new_rsu.check_safe_input")
 @patch("api.src.admin_rsu.pgquery.write_db")
 def test_modify_rsu_success(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
-    expected_msg, expected_code = {"message": "RSU successfully modified"}, 200
-    actual_msg, actual_code = admin_rsu.modify_rsu(admin_rsu_data.request_json_good)
+    expected_msg = {"message": "RSU successfully modified"}
+    actual_msg = admin_rsu.modify_rsu_authorized(
+        orig_ip="10.0.0.1", rsu_spec=admin_rsu_data.request_json_good
+    )
 
     calls = [
-        call(admin_rsu_data.modify_rsu_sql),
-        call(admin_rsu_data.add_org_sql),
-        call(admin_rsu_data.remove_org_sql),
+        call(admin_rsu_data.modify_rsu_sql[0], params=admin_rsu_data.modify_rsu_sql[1]),
+        call(admin_rsu_data.add_org_sql[0], params=admin_rsu_data.add_org_sql[1]),
+        call(admin_rsu_data.remove_org_sql[0], params=admin_rsu_data.remove_org_sql[1]),
     ]
     mock_pgquery.assert_has_calls(calls)
     assert actual_msg == expected_msg
-    assert actual_code == expected_code
 
 
 @patch("api.src.admin_rsu.admin_new_rsu.check_safe_input")
 @patch("api.src.admin_rsu.pgquery.write_db")
 def test_modify_rsu_check_fail(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = False
-    expected_msg, expected_code = {
-        "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
-    }, 500
-    actual_msg, actual_code = admin_rsu.modify_rsu(admin_rsu_data.request_json_good)
 
-    calls = []
-    mock_pgquery.assert_has_calls(calls)
-    assert actual_msg == expected_msg
-    assert actual_code == expected_code
+    with pytest.raises(BadRequest) as exc_info:
+        admin_rsu.modify_rsu_authorized(
+            orig_ip="10.0.0.1", rsu_spec=admin_rsu_data.request_json_good
+        )
+
+    assert (
+        str(exc_info.value)
+        == "400 Bad Request: No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+    )
+    mock_pgquery.assert_has_calls([])
 
 
 @patch("api.src.admin_rsu.admin_new_rsu.check_safe_input")
 @patch("api.src.admin_rsu.pgquery.write_db")
 def test_modify_rsu_generic_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
-    mock_pgquery.side_effect = Exception("Test")
-    expected_msg, expected_code = {"message": "Encountered unknown issue"}, 500
-    actual_msg, actual_code = admin_rsu.modify_rsu(admin_rsu_data.request_json_good)
+    mock_pgquery.side_effect = SQLAlchemyError("Test")
 
-    assert actual_msg == expected_msg
-    assert actual_code == expected_code
+    with pytest.raises(InternalServerError) as exc_info:
+        admin_rsu.modify_rsu_authorized(
+            orig_ip="10.0.0.1", rsu_spec=admin_rsu_data.request_json_good
+        )
+
+    assert (
+        str(exc_info.value)
+        == "500 Internal Server Error: Encountered unknown issue executing query"
+    )
 
 
 @patch("api.src.admin_rsu.admin_new_rsu.check_safe_input")
@@ -258,28 +248,43 @@ def test_modify_rsu_sql_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     orig = MagicMock()
     orig.args = ({"D": "SQL issue encountered"},)
-    mock_pgquery.side_effect = sqlalchemy.exc.IntegrityError("", {}, orig)
-    expected_msg, expected_code = {"message": "SQL issue encountered"}, 500
-    actual_msg, actual_code = admin_rsu.modify_rsu(admin_rsu_data.request_json_good)
+    mock_pgquery.side_effect = IntegrityError("", {}, orig)
 
-    assert actual_msg == expected_msg
-    assert actual_code == expected_code
+    with pytest.raises(InternalServerError) as exc_info:
+        admin_rsu.modify_rsu_authorized(
+            orig_ip="10.0.0.1", rsu_spec=admin_rsu_data.request_json_good
+        )
+
+    assert str(exc_info.value) == "500 Internal Server Error: SQL issue encountered"
 
 
 # delete_rsu
-
-
 @patch("api.src.admin_rsu.pgquery.write_db")
 def test_delete_rsu(mock_write_db):
     expected_result = {"message": "RSU successfully deleted"}
-    actual_result = admin_rsu.delete_rsu("10.11.81.12")
+    actual_result = admin_rsu.delete_rsu_authorized("10.11.81.12")
 
     calls = [
-        call(admin_rsu_data.delete_rsu_calls[0]),
-        call(admin_rsu_data.delete_rsu_calls[1]),
-        call(admin_rsu_data.delete_rsu_calls[2]),
-        call(admin_rsu_data.delete_rsu_calls[3]),
-        call(admin_rsu_data.delete_rsu_calls[4]),
+        call(
+            admin_rsu_data.delete_rsu_calls[0][0],
+            params=admin_rsu_data.delete_rsu_calls[0][1],
+        ),
+        call(
+            admin_rsu_data.delete_rsu_calls[1][0],
+            params=admin_rsu_data.delete_rsu_calls[1][1],
+        ),
+        call(
+            admin_rsu_data.delete_rsu_calls[2][0],
+            params=admin_rsu_data.delete_rsu_calls[2][1],
+        ),
+        call(
+            admin_rsu_data.delete_rsu_calls[3][0],
+            params=admin_rsu_data.delete_rsu_calls[3][1],
+        ),
+        call(
+            admin_rsu_data.delete_rsu_calls[4][0],
+            params=admin_rsu_data.delete_rsu_calls[4][1],
+        ),
     ]
     mock_write_db.assert_has_calls(calls)
     assert actual_result == expected_result

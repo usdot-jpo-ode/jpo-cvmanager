@@ -30,12 +30,12 @@ def get_all_orgs(organizations: list[str] | None):
     )
     params: dict[str, Any] = {}
     if organizations is None:
-        query += " FROM public.organizations org "
+        query += "FROM public.organizations org "
     else:
         org_names_placeholder, _ = generate_sql_placeholders_for_list(
             organizations, params_to_update=params
         )
-        query += f" FROM public.organizations org WHERE org.name IN ({org_names_placeholder}) "
+        query += f"FROM public.organizations org WHERE org.name IN ({org_names_placeholder}) "
     query += ") as row"
 
     data = pgquery.query_db(query, params=params)

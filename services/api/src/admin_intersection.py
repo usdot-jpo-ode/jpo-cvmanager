@@ -52,7 +52,7 @@ def get_intersection_data(
         "JOIN public.intersection_organization AS ro ON ro.intersection_id = intersections.intersection_id  "
         "JOIN public.organizations AS org ON org.organization_id = ro.organization_id  "
         "LEFT JOIN public.rsu_intersection AS ri ON ri.intersection_id = intersections.intersection_id  "
-        "LEFT JOIN public.rsus AS rsu ON rsu.rsu_id = ri.rsu_id"
+        "LEFT JOIN public.rsus AS rsu ON rsu.rsu_id = ri.rsu_id "
     )
 
     where_clauses = []
@@ -67,7 +67,7 @@ def get_intersection_data(
         where_clauses.append("intersection_number = :intersection_id")
         params["intersection_id"] = intersection_id
     if where_clauses:
-        query += " WHERE " + " AND ".join(where_clauses)
+        query += "WHERE " + " AND ".join(where_clauses)
     query += ") as row"
 
     data = pgquery.query_db(query, params=params)

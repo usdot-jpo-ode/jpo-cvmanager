@@ -44,6 +44,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.springframework.boot.info.BuildProperties;
+import org.springframework.data.web.config.SpringDataJacksonConfiguration;
 
 @Configuration
 @ConfigurationProperties("conflict.monitor.api")
@@ -293,6 +294,7 @@ public class ConflictMonitorApiProperties {
     public ObjectMapper defaultMapper() {
         ObjectMapper objectMapper = DateJsonMapper.getInstance();
         objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.registerModule(new SpringDataJacksonConfiguration.PageModule(null));
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         objectMapper.setSerializationInclusion(Include.NON_NULL);
         return objectMapper;

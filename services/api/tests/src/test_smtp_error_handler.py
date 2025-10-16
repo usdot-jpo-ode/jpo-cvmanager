@@ -4,7 +4,6 @@ from unittest.mock import patch, MagicMock, call, mock_open
 from api.src.smtp_error_handler import SMTP_SSLHandler
 import api.src.smtp_error_handler as smtp_error_handler
 import api.tests.data.smtp_error_handler_data as smtp_error_handler_data
-import logging
 from unittest.mock import ANY
 
 

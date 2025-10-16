@@ -11,14 +11,15 @@ export const keycloakLogin = createAsyncThunk('user/login', async (token: string
     if (token) {
       const response = await AuthApi.logIn(token)
       switch (response.status) {
-        case 200: {
+        case 200:
           const authLoginData = {
-            data: JSON.parse(response.json.toString()),
+            data: response.json
+              ? { ...response.json, name: `${response.json.first_name} ${response.json.last_name}` }
+              : null,
             token: token,
             expires_at: Date.now() + 590000,
           }
           return authLoginData
-        }
         case 400:
           return rejectWithValue('Login Unsuccessful: Bad Request')
         case 401:

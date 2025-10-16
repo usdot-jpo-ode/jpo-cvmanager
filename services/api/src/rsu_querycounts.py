@@ -1,9 +1,22 @@
+from typing import Any
+from flask import request, abort
+from flask_restful import Resource
+from marshmallow import Schema, fields
 from datetime import datetime, timedelta
 import common.pgquery as pgquery
 import common.util as util
 import os
 import logging
 from pymongo import MongoClient
+from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden
+
+from common.auth_tools import (
+    ORG_ROLE_LITERAL,
+    EnvironWithOrg,
+    PermissionResult,
+    require_permission,
+    generate_sql_placeholders_for_list,
+)
 
 message_types = {
     "bsm": "BSM",
@@ -27,12 +40,12 @@ def query_rsu_counts_mongo(allowed_ips_dict, message_type, start, end):
     try:
         client = MongoClient(os.getenv("MONGO_DB_URI"), serverSelectionTimeoutMS=5000)
         mongo_db = client[os.getenv("MONGO_DB_NAME")]
-        collection = mongo_db[f"CVCounts"]
+        collection = mongo_db["CVCounts"]
     except Exception as e:
         logging.error(
             f"Failed to connect to Mongo counts collection with error message: {e}"
         )
-        return {}, 503
+        raise Forbidden("Failed to connect to Mongo") from e
 
     result = {}
     for rsu_ip in allowed_ips_dict:
@@ -55,13 +68,12 @@ def query_rsu_counts_mongo(allowed_ips_dict, message_type, start, end):
             result[rsu_ip] = item
         except Exception as e:
             logging.error(f"Filter failed: {e}")
-            return {}, 500
+            raise InternalServerError("Encountered unknown issue") from e
 
-    return result, 200
+    return result
 
 
-def get_organization_rsus(organization):
-    logging.info(f"Preparing to query for all RSU IPs for {organization}...")
+def get_organization_rsus(user: EnvironWithOrg, qualified_orgs: list[str]):
 
     # Execute the query and fetch all results
     query = (
@@ -70,13 +82,25 @@ def get_organization_rsus(organization):
         "SELECT rd.ipv4_address, rd.primary_route "
         "FROM public.rsus rd "
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
-        f"WHERE ron_v.name = '{organization}' "
-        "ORDER BY primary_route ASC, milepost ASC"
-        ") as row"
     )
 
+    where_clause = None
+    params: dict[str, Any] = {}
+    if user.organization:
+        where_clause = "ron_v.name = :user_org"
+        params["user_org"] = user.organization
+    if not user.user_info.super_user:
+        org_names_placeholder, _ = generate_sql_placeholders_for_list(
+            qualified_orgs, params_to_update=params
+        )
+        where_clause = f"ron_v.name IN ({org_names_placeholder})"
+    if where_clause:
+        query += f" WHERE {where_clause}"
+    query += "ORDER BY primary_route ASC, milepost ASC"
+    query += ") as row"
+
     logging.debug(f'Executing query: "{query};"')
-    data = pgquery.query_db(query)
+    data = pgquery.query_db(query, params=params)
 
     rsu_dict = {}
     for row in data:
@@ -86,11 +110,6 @@ def get_organization_rsus(organization):
 
 
 # REST endpoint resource class and schema
-from flask import request, abort
-from flask_restful import Resource
-from marshmallow import Schema, fields
-
-
 class RsuQueryCountsSchema(Schema):
     message = fields.String(required=False)
     start = fields.DateTime(required=False)
@@ -114,7 +133,10 @@ class RsuQueryCounts(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
-    def get(self):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.USER,
+    )
+    def get(self, permission_result: PermissionResult):
         logging.debug("RsuQueryCounts GET requested")
         # Schema check for arguments
         schema = RsuQueryCountsSchema()
@@ -133,18 +155,16 @@ class RsuQueryCounts(Resource):
 
         # Validate request with supported message types
         logging.debug(f"COUNTS_MSG_TYPES: {os.getenv('COUNTS_MSG_TYPES','NOT_SET')}")
-        msgList = os.getenv("COUNTS_MSG_TYPES", "BSM,SSM,SPAT,SRM,MAP")
-        msgList = [msgtype.strip().title() for msgtype in msgList.split(",")]
+        msgListStr = os.getenv("COUNTS_MSG_TYPES", "BSM,SSM,SPAT,SRM,MAP")
+        msgList = [msg_type.strip().title() for msg_type in msgListStr.split(",")]
         if message.title() not in msgList:
-            return (
-                "Invalid Message Type.\nValid message types: " + ", ".join(msgList),
-                400,
-                self.headers,
+            raise BadRequest(
+                "Invalid Message Type.\nValid message types: " + ", ".join(msgList)
             )
-        data = 0
-        code = 204
 
-        rsu_dict = get_organization_rsus(request.environ["organization"])
-        data, code = query_rsu_counts_mongo(rsu_dict, message, start, end)
+        rsu_dict = get_organization_rsus(
+            permission_result.user, permission_result.qualified_orgs
+        )
+        data = query_rsu_counts_mongo(rsu_dict, message, start, end)
 
-        return (data, code, self.headers)
+        return (data, 200, self.headers)

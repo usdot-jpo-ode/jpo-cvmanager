@@ -8,6 +8,7 @@ type MapSharedProperties = {
   schemaVersion: number
   messageType: 'MAP'
   odeReceivedAt: number
+  timeStamp: number
   originIp: string
   intersectionName?: string
   region?: number
@@ -20,7 +21,6 @@ type MapSharedProperties = {
   laneWidth: number
   speedLimits?: J2735RegulatorySpeedLimit[]
   mapSource: MapSource | string //import us.dot.its.jpo.ode.model.OdeMapMetadata.MapSource;
-  timeStamp: string
 }
 
 type MapSource = 'RSU' | 'V2X' | 'MMITSS' | 'unknown'

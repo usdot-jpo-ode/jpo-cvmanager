@@ -11,21 +11,21 @@ import os
 )
 def test_init_tcp_connection_engine():
     # mock return values for function dependencies
-    sqlalchemy.create_engine = MagicMock(return_value="myengine")
-    sqlalchemy.engine.url.URL.create = MagicMock(return_value="myurl")
+    sqlalchemy.create_engine = MagicMock(return_value="my_engine")
+    sqlalchemy.engine.url.URL.create = MagicMock(return_value="my_url")
 
     # call function
     db_user = "user"
     db_pass = "pass"
-    db_name = "mydatabase"
-    db_hostname = "myhostname"
+    db_name = "my_database"
+    db_hostname = "my_hostname"
     db_port = 3000
     engine_pool = pgquery.init_tcp_connection_engine(
         db_user, db_pass, db_name, db_hostname, db_port
     )
 
     # check return value
-    assert engine_pool == "myengine"
+    assert engine_pool == "my_engine"
 
     # check that sqlalchemy.engine.url.URL.create was called with expected arguments
     sqlalchemy.engine.url.URL.create.assert_called_once_with(
@@ -44,7 +44,7 @@ def test_init_tcp_connection_engine():
         "pool_timeout": 30,
         "pool_recycle": 1800,
     }
-    sqlalchemy.create_engine.assert_called_once_with("myurl", **my_db_config)
+    sqlalchemy.create_engine.assert_called_once_with("my_url", **my_db_config)
 
 
 # test that init_socket_connection_engine is calling sqlalchemy.create_engine with expected arguments
@@ -54,22 +54,22 @@ def test_init_tcp_connection_engine():
 )
 def test_init_socket_connection_engine():
     # mock return values for function dependencies
-    sqlalchemy.create_engine = MagicMock(return_value="myengine")
-    sqlalchemy.engine.url.URL.create = MagicMock(return_value="myurl")
+    sqlalchemy.create_engine = MagicMock(return_value="my_engine")
+    sqlalchemy.engine.url.URL.create = MagicMock(return_value="my_url")
 
     # call function
     db_user = "user"
     db_pass = "pass"
-    db_name = "mydatabase"
-    unix_query = {"unix_sock": "/cloudsql/myproject:us-central1:myinstance"}
+    db_name = "my_database"
+    unix_query = {"unix_sock": "/cloudsql/my_project:us-central1:my_instance"}
     engine_pool = pgquery.init_socket_connection_engine(
         db_user, db_pass, db_name, unix_query
     )
 
     # check return value
-    assert engine_pool == "myengine"
+    assert engine_pool == "my_engine"
 
-    # check that sqlalchemy.engine.url.URL.create was called with expected arguments
+    # check that sqlalchemy_.engine.url.URL.create was called with expected arguments
     sqlalchemy.engine.url.URL.create.assert_called_once_with(
         drivername="postgresql+pg8000",
         username=db_user,
@@ -85,7 +85,7 @@ def test_init_socket_connection_engine():
         "pool_timeout": 30,
         "pool_recycle": 1800,
     }
-    sqlalchemy.create_engine.assert_called_once_with("myurl", **my_db_config)
+    sqlalchemy.create_engine.assert_called_once_with("my_url", **my_db_config)
 
 
 # test initializing tcp connection engine based on environment variables
@@ -95,13 +95,13 @@ def test_init_socket_connection_engine():
 )
 def test_init_connection_engine_target_tcp():
     # mock return values for function dependencies
-    pgquery.init_tcp_connection_engine = MagicMock(return_value="myengine1")
-    pgquery.init_socket_connection_engine = MagicMock(return_value="myengine2")
+    pgquery.init_tcp_connection_engine = MagicMock(return_value="my_engine1")
+    pgquery.init_socket_connection_engine = MagicMock(return_value="my_engine2")
 
     db_user = "user"
     db_pass = "pass"
-    db_name = "mydatabase"
-    db_hostname = "myhostname:3000"
+    db_name = "my_database"
+    db_hostname = "my_hostname:3000"
 
     # set environment variables
     os.environ["PG_DB_USER"] = db_user
@@ -116,7 +116,7 @@ def test_init_connection_engine_target_tcp():
     engine_pool = pgquery.init_connection_engine()
 
     # check return value
-    assert engine_pool == "myengine1"
+    assert engine_pool == "my_engine1"
 
     # check that init_tcp_connection_engine was called with expected arguments
     pgquery.init_tcp_connection_engine.assert_called_once_with(
@@ -135,18 +135,18 @@ def test_init_connection_engine_target_tcp():
 @patch("common.pgquery.db", new=None)
 def test_init_connection_engine_target_socket():
     # mock return values for function dependencies
-    pgquery.init_tcp_connection_engine = MagicMock(return_value="myengine1")
-    pgquery.init_socket_connection_engine = MagicMock(return_value="myengine2")
+    pgquery.init_tcp_connection_engine = MagicMock(return_value="my_engine1")
+    pgquery.init_socket_connection_engine = MagicMock(return_value="my_engine2")
 
     db_user = "user"
     db_pass = "pass"
-    db_name = "mydatabase"
+    db_name = "my_database"
 
     # set environment variables
     os.environ["PG_DB_USER"] = db_user
     os.environ["PG_DB_PASS"] = db_pass
     os.environ["PG_DB_NAME"] = db_name
-    os.environ["INSTANCE_CONNECTION_NAME"] = "myproject:us-central1:myinstance"
+    os.environ["INSTANCE_CONNECTION_NAME"] = "my_project:us-central1:my_instance"
 
     unix_query = {
         "unix_sock": f"/cloudsql/{os.environ['INSTANCE_CONNECTION_NAME']}/.s.PGSQL.5432"
@@ -156,7 +156,7 @@ def test_init_connection_engine_target_socket():
     engine_pool = pgquery.init_connection_engine()
 
     # check return value
-    assert engine_pool == "myengine2"
+    assert engine_pool == "my_engine2"
 
     # check that init_socket_connection_engine was called with expected arguments
     pgquery.init_socket_connection_engine.assert_called_once_with(
@@ -182,7 +182,7 @@ def test_query_db():
                         return_value=Mock(  # return a mock connection
                             execute=MagicMock(
                                 return_value=Mock(  # return a mock result
-                                    fetchall=MagicMock(return_value="myresult")
+                                    fetchall=MagicMock(return_value="my_result")
                                 )
                             )
                         )
@@ -194,11 +194,11 @@ def test_query_db():
     )
 
     # call function
-    query = "SELECT * FROM mytable"
+    query = "SELECT * FROM my_table"
     result = pgquery.query_db(query)
 
     # check return value
-    assert result == "myresult"
+    assert result == "my_result"
 
     # check that init_connection_engine was called once
     pgquery.init_connection_engine.assert_called_once()
@@ -219,7 +219,7 @@ def test_write_db():
                         return_value=Mock(  # return a mock connection
                             execute=MagicMock(
                                 return_value=Mock(  # return a mock result
-                                    fetchall=MagicMock(return_value="myresult")
+                                    fetchall=MagicMock(return_value="my_result")
                                 )
                             )
                         )
@@ -236,3 +236,21 @@ def test_write_db():
 
     # check that init_connection_engine was called once
     pgquery.init_connection_engine.assert_called_once()
+
+
+@patch("common.pgquery.query_db")
+def test_query_and_return_list(mock_query_db):
+    # sqlalchemy returns a list of tuples. This test replicates the tuple list
+    mock_query_db.return_value = [
+        (
+            "AAA",
+            "BBB",
+        ),
+        ("CCC",),
+    ]
+    expected_data = ["AAA BBB", "CCC"]
+    expected_query = "SELECT * FROM test"
+    actual_result = pgquery.query_and_return_list("SELECT * FROM test")
+
+    mock_query_db.assert_called_with(expected_query)
+    assert actual_result == expected_data

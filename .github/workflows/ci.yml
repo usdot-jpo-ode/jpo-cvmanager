@@ -166,7 +166,7 @@ jobs:
       - name: Install Dependencies
         env:
           MAVEN_GITHUB_TOKEN: ${{ secrets.MAVEN_GITHUB_TOKEN }}
-          MAVEN_GITHUB_ORG: "usdot-jpo-ode"
+          MAVEN_GITHUB_ORG: ${{ github.repository_owner }}
         run: |
           cd $GITHUB_WORKSPACE/services/intersection-api/api
           mvn clean install -DskipTests -s ./settings.xml
@@ -175,7 +175,7 @@ jobs:
       - name: Run tests
         env:
           MAVEN_GITHUB_TOKEN: ${{ secrets.MAVEN_GITHUB_TOKEN }}
-          MAVEN_GITHUB_ORG: "usdot-jpo-ode"
+          MAVEN_GITHUB_ORG: ${{ github.repository_owner }}
         run: |
           cd $GITHUB_WORKSPACE/services/intersection-api/api
           mvn verify -s ./settings.xml

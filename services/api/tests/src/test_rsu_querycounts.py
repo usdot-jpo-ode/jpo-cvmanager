@@ -64,7 +64,7 @@ def test_rsu_counts_get_organization_rsus(mock_pgquery):
         "SELECT rd.ipv4_address, rd.primary_route "
         "FROM public.rsus rd "
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
-        "ORDER BY primary_route ASC, milepost ASC"
+        "ORDER BY primary_route ASC, milepost ASC "
         ") as row"
     )
 
@@ -87,7 +87,7 @@ def test_rsu_counts_get_organization_rsus_empty(mock_pgquery):
         "SELECT rd.ipv4_address, rd.primary_route "
         "FROM public.rsus rd "
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
-        "ORDER BY primary_route ASC, milepost ASC"
+        "ORDER BY primary_route ASC, milepost ASC "
         ") as row"
     )
     actual_result = rsu_querycounts.get_organization_rsus(user_valid, [])

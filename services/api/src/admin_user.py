@@ -28,7 +28,7 @@ def get_user_data(user_email: str, user: EnvironWithOrg, qualified_orgs: list[st
         "FROM public.users u "
         "LEFT JOIN public.user_organization AS uo ON uo.user_id = u.user_id "
         "LEFT JOIN public.organizations AS org ON org.organization_id = uo.organization_id "
-        "LEFT JOIN public.roles ON roles.role_id = uo.role_id"
+        "LEFT JOIN public.roles ON roles.role_id = uo.role_id "
     )
 
     where_clauses = []
@@ -42,7 +42,7 @@ def get_user_data(user_email: str, user: EnvironWithOrg, qualified_orgs: list[st
         where_clauses.append("u.email = :user_email")
         params["user_email"] = user_email
     if where_clauses:
-        query += " WHERE " + " AND ".join(where_clauses)
+        query += "WHERE " + " AND ".join(where_clauses)
     query += ") as row"
 
     data = pgquery.query_db(query, params=params)

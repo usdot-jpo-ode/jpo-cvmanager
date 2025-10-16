@@ -34,15 +34,20 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
 	private final String collectionName = "OdeBsmJson";
 	private final String DATE_FIELD = "metadata.odeReceivedAt";
 	private final String ORIGIN_IP_FIELD = "metadata.originIp";
-	private final String VEHICLE_ID_FIELD = "payload.data.coreData.id";
-	private final String LONGITUDE_FIELD = "payload.data.coreData.position.longitude";
-	private final String LATITUDE_FIELD = "payload.data.coreData.position.latitude";
+    private final String VEHICLE_ID_FIELD = "payload.data.value.BasicSafetyMessage.coreData.id";
+    private final String LONGITUDE_FIELD = "payload.data.value.BasicSafetyMessage.coreData.long";
+    private final String LATITUDE_FIELD = "payload.data.value.BasicSafetyMessage.coreData.lat";
 	private final String RECORD_GENERATED_AT_FIELD = "recordGeneratedAt";
 
 	@Autowired
 	public OdeBsmJsonRepositoryImpl(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
 	}
+
+    private int getOdeLatLng(double value) {
+        // ODE lat/long values are integers
+        return (int) (value * 1e7);
+    }
 
 	/**
 	 * Filter OdeBsmData by originIp, vehicleId, startTime, endTime, and a bounding
@@ -68,11 +73,11 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
 		if (centerLng != null && centerLat != null && distance != null) {
 			Envelope boundingBox = GeographyCalculator.calculateBoundingBox(centerLng, centerLat, distance);
 			criteria = criteria.and(LATITUDE_FIELD)
-					.gte(boundingBox.getMinY())
-					.lte(boundingBox.getMaxY())
+                    .gte(getOdeLatLng(boundingBox.getMinY()))
+                    .lte(getOdeLatLng(boundingBox.getMaxY()))
 					.and(LONGITUDE_FIELD)
-					.gte(boundingBox.getMinX())
-					.lte(boundingBox.getMaxX());
+                    .gte(getOdeLatLng(boundingBox.getMinX()))
+                    .lte(getOdeLatLng(boundingBox.getMaxX()));
 		}
 		Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
 		List<String> excludedFields = List.of(RECORD_GENERATED_AT_FIELD);
@@ -116,11 +121,11 @@ public class OdeBsmJsonRepositoryImpl implements OdeBsmJsonRepository, PageableQ
 		if (centerLng != null && centerLat != null && distance != null) {
 			Envelope boundingBox = GeographyCalculator.calculateBoundingBox(centerLng, centerLat, distance);
 			criteria = criteria.and(LATITUDE_FIELD)
-					.gte(boundingBox.getMinY())
-					.lte(boundingBox.getMaxY())
+                    .gte(getOdeLatLng(boundingBox.getMinY()))
+                    .lte(getOdeLatLng(boundingBox.getMaxY()))
 					.and(LONGITUDE_FIELD)
-					.gte(boundingBox.getMinX())
-					.lte(boundingBox.getMaxX());
+                    .gte(getOdeLatLng(boundingBox.getMinX()))
+                    .lte(getOdeLatLng(boundingBox.getMaxX()));
 		}
 		Query query = Query.query(criteria);
 		return mongoTemplate.count(query, Map.class, collectionName);

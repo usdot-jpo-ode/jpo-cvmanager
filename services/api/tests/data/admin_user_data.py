@@ -72,7 +72,7 @@ expected_get_user_query = (
     "FROM public.users u "
     "LEFT JOIN public.user_organization AS uo ON uo.user_id = u.user_id "
     "LEFT JOIN public.organizations AS org ON org.organization_id = uo.organization_id "
-    "LEFT JOIN public.roles ON roles.role_id = uo.role_id"
+    "LEFT JOIN public.roles ON roles.role_id = uo.role_id "
     ") as row"
 )
 

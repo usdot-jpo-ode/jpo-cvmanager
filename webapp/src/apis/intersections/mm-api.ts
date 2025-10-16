@@ -164,7 +164,7 @@ class MessageMonitorApi {
     if (distance) queryParams['distance'] = distance.toString()
 
     const response: PagedResponse<ProcessedBsmFeature> = await authApiHelper.invokeApi({
-      path: '/data/ode-bsm-json',
+      path: '/data/processed-bsm',
       token: token,
       queryParams,
       abortController,

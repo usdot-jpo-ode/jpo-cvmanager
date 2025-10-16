@@ -33,7 +33,7 @@ def get_ping_data(user: EnvironWithOrg):
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
         "JOIN ("
         "SELECT * FROM public.ping AS ping_data "
-        f"WHERE ping_data.timestamp >= {t.strftime('%Y/%m/%dT%H:%M:%S')}::timestamp"
+        f"WHERE ping_data.timestamp >= '{t.strftime('%Y/%m/%dT%H:%M:%S')}'::timestamp"
         ") AS ping_data ON rd.rsu_id = ping_data.rsu_id "
     )
 
@@ -50,7 +50,7 @@ def get_ping_data(user: EnvironWithOrg):
         params = {}
     if where_clause:
         query += f"WHERE {where_clause} "
-    query += "ORDER BY rd.rsu_id, ping_data.timestamp DESC"
+    query += "ORDER BY rd.rsu_id, ping_data.timestamp DESC "
 
     logging.debug(f'Executing query: "{query};"')
     data = pgquery.query_db(query, params=params)

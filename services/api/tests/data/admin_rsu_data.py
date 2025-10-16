@@ -91,7 +91,7 @@ expected_get_rsu_query_all = (
     "JOIN public.snmp_credentials AS snmp_cred ON snmp_cred.snmp_credential_id = rsus.snmp_credential_id "
     "JOIN public.snmp_protocols AS snmp_ver ON snmp_ver.snmp_protocol_id = rsus.snmp_protocol_id "
     "JOIN public.rsu_organization AS ro ON ro.rsu_id = rsus.rsu_id  "
-    "JOIN public.organizations AS org ON org.organization_id = ro.organization_id"
+    "JOIN public.organizations AS org ON org.organization_id = ro.organization_id "
     ") as row"
 )
 

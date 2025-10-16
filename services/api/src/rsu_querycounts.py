@@ -95,8 +95,8 @@ def get_organization_rsus(user: EnvironWithOrg, qualified_orgs: list[str]):
         )
         where_clause = f"ron_v.name IN ({org_names_placeholder})"
     if where_clause:
-        query += f" WHERE {where_clause}"
-    query += "ORDER BY primary_route ASC, milepost ASC"
+        query += f"WHERE {where_clause} "
+    query += "ORDER BY primary_route ASC, milepost ASC "
     query += ") as row"
 
     logging.debug(f'Executing query: "{query};"')

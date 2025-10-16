@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent } from 'react'
+import React, { useState, useEffect, useMemo, ChangeEvent } from 'react'
 import Slider from '@mui/material/Slider'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -37,6 +37,7 @@ import {
   setTimeWindowSeconds,
   toggleLiveDataActive,
   togglePlaybackModeActive,
+  updateQueryParams,
 } from './map-slice'
 import {
   selectLiveDataActive,
@@ -179,16 +180,16 @@ function ControlPanel() {
   const getQueryParams = ({ startDate, endDate, eventDate }: { startDate: Date; endDate: Date; eventDate: Date }) => {
     return {
       eventTime: eventDate,
-      timeBefore: Math.round((eventDate.getTime() - startDate.getTime()) / 1000),
-      timeAfter: Math.round((endDate.getTime() - eventDate.getTime()) / 1000),
+      timeBeforeSeconds: Math.round((eventDate.getTime() - startDate.getTime()) / 1000),
+      timeAfterSeconds: Math.round((endDate.getTime() - eventDate.getTime()) / 1000),
     }
   }
 
-  const [eventTime, setEventTime] = useState<dayjs.Dayjs | null>(
-    dayjs(getQueryParams(queryParams).eventTime.toString())
-  )
-  const [timeBefore, setTimeBefore] = useState<string | undefined>(getQueryParams(queryParams).timeBefore.toString())
-  const [timeAfter, setTimeAfter] = useState<string | undefined>(getQueryParams(queryParams).timeAfter.toString())
+  const queryParamTimes = useMemo(() => getQueryParams(queryParams), [queryParams])
+
+  const [eventTime, setEventTime] = useState<dayjs.Dayjs | null>(dayjs(queryParamTimes.eventTime.toString()))
+  const [timeBeforeSeconds, setTimeBeforeSeconds] = useState<number | undefined>(queryParamTimes.timeBeforeSeconds)
+  const [timeAfterSeconds, setTimeAfterSeconds] = useState<number | undefined>(queryParamTimes.timeAfterSeconds)
   const [timeWindowSecondsLocal, setTimeWindowSecondsLocal] = useState<string | undefined>(
     timeWindowSeconds?.toString()
   )
@@ -200,8 +201,8 @@ function ControlPanel() {
   useEffect(() => {
     const newDateParams = getQueryParams(queryParams)
     setEventTime(dayjs(newDateParams.eventTime))
-    setTimeBefore(newDateParams.timeBefore.toString())
-    setTimeAfter(newDateParams.timeAfter.toString())
+    setTimeBeforeSeconds(newDateParams.timeBeforeSeconds)
+    setTimeAfterSeconds(newDateParams.timeAfterSeconds)
   }, [queryParams])
 
   useEffect(() => {
@@ -350,14 +351,16 @@ function ControlPanel() {
                       type="number"
                       sx={{ mt: 1 }}
                       onChange={(e) => {
-                        setTimeBefore(e.target.value)
+                        if (Number.isInteger(Number(e.target.value))) {
+                          setTimeBeforeSeconds(parseInt(e.target.value))
+                        }
                       }}
                       slotProps={{
                         input: {
                           endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
                         },
                       }}
-                      value={timeBefore}
+                      value={timeBeforeSeconds.toString()}
                     />
                   </FormControl>
                 </Grid2>
@@ -383,14 +386,16 @@ function ControlPanel() {
                       type="number"
                       sx={{ mt: 1 }}
                       onChange={(e) => {
-                        setTimeAfter(e.target.value)
+                        if (Number.isInteger(Number(e.target.value))) {
+                          setTimeAfterSeconds(parseInt(e.target.value))
+                        }
                       }}
                       slotProps={{
                         input: {
                           endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
                         },
                       }}
-                      value={timeAfter}
+                      value={timeAfterSeconds}
                     />
                   </FormControl>
                 </Grid2>
@@ -426,6 +431,29 @@ function ControlPanel() {
                 className="capital-case"
               >
                 {liveDataActive ? 'Stop Live Data' : 'Render Live Data'}
+              </Button>
+              <Button
+                sx={{ mt: 2, ml: 2 }}
+                onClick={() => {
+                  dispatch(
+                    updateQueryParams({
+                      ...queryParams,
+                      eventDate: eventTime.toDate(),
+                      startDate: new Date(eventTime.toDate().getTime() - timeBeforeSeconds * 1000),
+                      endDate: new Date(eventTime.toDate().getTime() + timeAfterSeconds * 1000),
+                    })
+                  )
+                }}
+                color="info"
+                variant="outlined"
+                className="capital-case"
+                disabled={
+                  queryParamTimes.eventTime.getTime() === eventTime.toDate().getTime() &&
+                  queryParamTimes.timeBeforeSeconds === timeBeforeSeconds &&
+                  queryParamTimes.timeAfterSeconds === timeAfterSeconds
+                }
+              >
+                Update Time Range
               </Button>
             </Box>
           </AccordionDetails>

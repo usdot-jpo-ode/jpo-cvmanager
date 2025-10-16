@@ -97,7 +97,7 @@ expected_get_intersection_query_all = (
     "JOIN public.intersection_organization AS ro ON ro.intersection_id = intersections.intersection_id  "
     "JOIN public.organizations AS org ON org.organization_id = ro.organization_id  "
     "LEFT JOIN public.rsu_intersection AS ri ON ri.intersection_id = intersections.intersection_id  "
-    "LEFT JOIN public.rsus AS rsu ON rsu.rsu_id = ri.rsu_id"
+    "LEFT JOIN public.rsus AS rsu ON rsu.rsu_id = ri.rsu_id "
     ") as row"
 )
 

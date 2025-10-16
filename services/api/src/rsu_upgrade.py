@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import requests
+from werkzeug.exceptions import Conflict, NotImplemented
 
 
 def check_for_upgrade(rsu_ip):
@@ -21,10 +22,11 @@ def check_for_upgrade(rsu_ip):
         "FROM public.rsus AS rd "
         "JOIN public.firmware_upgrade_rules fur ON fur.from_id = rd.firmware_version "
         "JOIN public.firmware_images fi2 ON fi2.firmware_id = fur.to_id "
-        f"WHERE rd.ipv4_address = '{rsu_ip}'"
+        "WHERE rd.ipv4_address = :rsu_ip"
         ") as row"
     )
-    data = pgquery.query_db(query)
+    params = {"rsu_ip": rsu_ip}
+    data = pgquery.query_db(query, params=params)
 
     if len(data) > 0:
         # Grab the first result, it should be the only result if the 'firmware_upgrade_rules' table is populated properly
@@ -43,17 +45,17 @@ def check_for_upgrade(rsu_ip):
 
 def mark_rsu_for_upgrade(rsu_ip):
     if os.getenv("FIRMWARE_MANAGER_ENDPOINT") is None:
-        return {
-            "message": "The firmware manager is not supported for this CV Manager deployment"
-        }, 500
+        raise NotImplemented(  # noqa: F901
+            "The firmware manager is not supported for this CV Manager deployment"
+        )
 
     # Verify requested target RSU is eligible for upgrade and determine next upgrade
     upgrade_info = check_for_upgrade(rsu_ip)
 
-    if upgrade_info["upgrade_available"] == False:
-        return {
-            "error": f"Requested RSU '{rsu_ip}' is already up to date with the latest firmware"
-        }, 500
+    if upgrade_info["upgrade_available"] is False:
+        raise Conflict(
+            f"Requested RSU '{rsu_ip}' is already up to date with the latest firmware"
+        )
 
     # Modify PostgreSQL RSU row to new target firmware ID
     query = f"UPDATE public.rsus SET target_firmware_version = {upgrade_info['upgrade_id']} WHERE ipv4_address = '{rsu_ip}'"

@@ -863,7 +863,7 @@ function MapPage() {
           .filter((layer) => evaluateFeatureFlags(layer.tag))
           .map((layer) => (
             <div key={layer.id}>
-              <Typography fontSize="small" display="flex" alignItems="center">
+              <div style={{ fontSize: 'small', display: 'flex', alignItems: 'center' }}>
                 {layer.control && (
                   <IconButton
                     onClick={() => toggleExpandLayer(layer.id)}
@@ -879,7 +879,7 @@ function MapPage() {
                   label={<Typography>{layer.label}</Typography>}
                   control={<Checkbox checked={activeLayers.includes(layer.id)} />}
                 />
-              </Typography>
+              </div>
               {layer.control && <Collapse in={expandedLayers.includes(layer.id)}>{layer.control}</Collapse>}
             </div>
           ))}
@@ -986,6 +986,7 @@ function MapPage() {
                   ].map((val) => (
                     <FormControlLabel
                       value={val.key}
+                      key={val.key}
                       sx={{ mt: -1 }}
                       control={
                         <Radio
@@ -1035,15 +1036,18 @@ function MapPage() {
                       sx={{ ml: 1 }}
                     />
                     <Tooltip title="Clear Points">
-                      <IconButton
-                        disabled={configCoordinates.length == 0}
-                        onClick={() => {
-                          dispatch(clearConfig())
-                        }}
-                        size="large"
-                      >
-                        <ClearIcon />
-                      </IconButton>
+                      <div>
+                        {/* prevents warning of Tooltip not wanting to wrap a disabled button element */}
+                        <IconButton
+                          disabled={configCoordinates.length == 0}
+                          onClick={() => {
+                            dispatch(clearConfig())
+                          }}
+                          size="large"
+                        >
+                          <ClearIcon />
+                        </IconButton>
+                      </div>
                     </Tooltip>
                   </FormGroup>
                   <FormGroup row sx={{ justifyContent: 'center', alignItems: 'center' }}>

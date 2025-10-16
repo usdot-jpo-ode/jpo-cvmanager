@@ -1,9 +1,8 @@
-import json
 import os
 
-# REST endpoint resource class and schema
-from flask import request
 from flask_restful import Resource
+
+from common.auth_tools import PermissionResult, require_permission
 
 
 class UserAuth(Resource):
@@ -23,9 +22,14 @@ class UserAuth(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
-    def get(self):
+    @require_permission(
+        required_role=None,
+    )
+    def get(self, permission_result: PermissionResult):
         # Check for user info and return data
-        data = request.environ["user_info"]
-        if data:
-            return (json.dumps(data), 200, self.headers)
-        return ("Unauthorized user", 401)
+
+        return (
+            permission_result.user.user_info.to_dict(),
+            200,
+            self.headers,
+        )

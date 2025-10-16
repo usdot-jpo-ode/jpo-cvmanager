@@ -26,7 +26,7 @@ def test_get_email_list_org(mock_build_org_email_list, mock_query_db):
         [{"email": "bob2@gmail.com"}],
     ]
     mock_build_org_email_list.return_value = ["org@gmail.com"]
-    email_list = email_util.get_email_list("msg_type", "org")
+    email_list = email_util.get_email_list("msg_type", "name")
     assert "org@gmail.com" in email_list
     assert len(email_list) == 1
 

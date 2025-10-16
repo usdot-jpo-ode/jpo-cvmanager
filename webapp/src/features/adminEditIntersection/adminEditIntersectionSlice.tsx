@@ -184,6 +184,10 @@ export const editIntersection = createAsyncThunk(
       tag: 'intersection',
     })
 
+    if (data == null) {
+      return { success: false, message: 'Failed to complete the request with unknown error' }
+    }
+
     switch (data.status) {
       case 200:
         dispatch(updateIntersectionTableData())

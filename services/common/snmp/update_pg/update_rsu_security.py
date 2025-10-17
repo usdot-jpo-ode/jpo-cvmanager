@@ -28,13 +28,13 @@ class UpdatePostgresRsuSecurity(UpdatePostgresSnmpAbstractClass):
         )
 
         for snmp_config in snmp_config_list:
-            values = {
+            params = {
                 "timestamp": snmp_config["timestamp"],
                 "health": snmp_config["health"],
                 "expiration": snmp_config["expiration"],
                 "rsu_id": snmp_config["rsu_id"],
             }
-            pgquery.write_db(query, values)
+            pgquery.write_db(query, params)
 
     def update_postgresql(self, rsu_snmp_configs_obj, subset=False):
         """

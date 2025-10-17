@@ -353,27 +353,6 @@ CREATE TABLE IF NOT EXISTS public.scms_health
 		ON DELETE NO ACTION
 );
 
--- Create rsu_health table
-CREATE SEQUENCE public.rsu_health_rsu_health_id_seq
-   INCREMENT 1
-   START 1
-   MINVALUE 1
-   MAXVALUE 2147483647
-   CACHE 1;
-
-CREATE TABLE IF NOT EXISTS public.rsu_health
-(
-   rsu_health_id integer NOT NULL DEFAULT nextval('rsu_health_rsu_health_id_seq'::regclass),
-   timestamp timestamp without time zone NOT NULL,
-   health integer NOT NULL,
-   rsu_id integer NOT NULL,
-   CONSTRAINT rsu_health_pkey PRIMARY KEY (rsu_health_id),
-   CONSTRAINT fk_rsu_id FOREIGN KEY (rsu_id)
-		REFERENCES public.rsus (rsu_id) MATCH SIMPLE
-		ON UPDATE NO ACTION
-		ON DELETE NO ACTION
-);
-
 -- Create snmp_msgfwd_type table
 CREATE SEQUENCE public.snmp_msgfwd_type_id_seq
    INCREMENT 1
@@ -566,3 +545,21 @@ CREATE TABLE IF NOT EXISTS public.max_retry_limit_reached_instances
       ON UPDATE NO ACTION
       ON DELETE NO ACTION
 );
+
+-- Indexes
+CREATE INDEX idx_organizations_name ON public.organizations (name);
+
+-- RSUs
+CREATE INDEX idx_rsu_organization ON public.rsu_organization (organization_id, rsu_id);
+CREATE INDEX idx_rsus_ipv4_address ON public.rsus (ipv4_address);
+CREATE INDEX idx_rsus_ipv4_rsu_id ON public.rsus (ipv4_address, rsu_id);
+
+-- Intersections
+CREATE INDEX idx_intersections_intersection_number ON public.intersections (intersection_number);
+CREATE INDEX idx_intersection_id ON public.intersections (intersection_id);
+CREATE INDEX idx_intersection_organization ON public.intersection_organization (organization_id, intersection_id);
+
+-- Users
+CREATE INDEX idx_users_email ON public.users (email);
+CREATE INDEX idx_users_user_id ON public.users (user_id);
+CREATE INDEX idx_user_organization ON public.user_organization (user_id, organization_id);

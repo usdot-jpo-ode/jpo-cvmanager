@@ -1,8 +1,9 @@
 from unittest.mock import call, MagicMock, patch
 
 import pytest
+
 import api.src.ssh_commands as ssh_commands
-import os
+from werkzeug.exceptions import BadRequest, InternalServerError
 
 # shared variables
 mock_reboot_request = {
@@ -16,9 +17,8 @@ mock_snmp_filter_request = {
     "creds": {"username": "username", "password": "password"},
 }
 
+
 # ### REBOOT TESTS ###
-
-
 @patch("api.src.ssh_commands.Connection")
 def test_reboot(mock_connection):
     # mock
@@ -37,7 +37,7 @@ def test_reboot(mock_connection):
     mock_connection.return_value.__enter__.return_value.sudo.assert_called_once_with(
         "reboot"
     )
-    assert result == ("succeeded", 200)
+    assert result == "succeeded"
 
 
 @patch("api.src.ssh_commands.Connection")
@@ -49,7 +49,10 @@ def test_reboot_exception(mock_connection):
     )
 
     # run test
-    result = ssh_commands.reboot(mock_reboot_request)
+    with pytest.raises(InternalServerError) as exc_info:
+        ssh_commands.reboot(mock_reboot_request)
+
+    assert str(exc_info.value) == "500 Internal Server Error: failed to reboot RSU"
 
     # verify
     mock_connection.assert_called_once_with(
@@ -61,18 +64,17 @@ def test_reboot_exception(mock_connection):
     mock_connection.return_value.__enter__.return_value.sudo.assert_called_once_with(
         "reboot"
     )
-    assert result == ("failed", 500)
 
 
-### SNMPFILTER TESTS ###
-
-
+# ## SNMPFILTER TESTS ###
 def test_snmpfilter_not_commsignia():
-    # run test
-    resp = ssh_commands.snmpfilter({"manufacturer": "test"})
-
     # verify
-    assert resp == ("Target RSU is not of type Commsignia", 400)
+    with pytest.raises(BadRequest) as exc_info:
+        ssh_commands.snmpfilter({"manufacturer": "test"})
+
+    assert (
+        str(exc_info.value) == "400 Bad Request: Target RSU is not of type Commsignia"
+    )
 
 
 @patch("api.src.ssh_commands.Connection.run")
@@ -85,7 +87,7 @@ def test_snmp_filter_resp(mock_conn_run):
     resp = ssh_commands.snmpfilter(mock_snmp_filter_request)
 
     # verify
-    assert resp == ("filter applied successfully", 200)
+    assert resp == "filter applied successfully"
 
 
 @patch("api.src.ssh_commands.Connection.run")
@@ -94,7 +96,7 @@ def test_snmp_filter_run_no_reboot(mock_conn_run):
     resp = ssh_commands.snmpfilter(mock_snmp_filter_request)
 
     # verify
-    assert resp == ("filter applied successfully", 200)
+    assert resp == "filter applied successfully"
     calls = [
         call(
             "grep -rwl /rwdata/etc/data_logger_ftw -e '\"value\":3758096407'",
@@ -120,7 +122,7 @@ def test_snmp_filter_run_with_reboot(mock_conn_run):
     resp = ssh_commands.snmpfilter(mock_snmp_filter_request)
 
     # verify
-    expected_response = ("filter applied successfully", 200)
+    expected_response = "filter applied successfully"
     assert resp == expected_response
     calls = [
         call(
@@ -147,8 +149,9 @@ def test_snmpfilter_error(mock_logging, mock_conn_run):
     mock_conn_run.side_effect = Exception("mocked error")
 
     # run test
-    resp = ssh_commands.snmpfilter(mock_snmp_filter_request)
+    with pytest.raises(InternalServerError) as exc_info:
+        ssh_commands.snmpfilter(mock_snmp_filter_request)
 
-    # verify
-    mock_logging.error.assert_called_once_with("Encountered an error: mocked error")
-    assert resp == ("filter failed to be applied", 500)
+    assert (
+        str(exc_info.value) == "500 Internal Server Error: Filter failed to be applied"
+    )

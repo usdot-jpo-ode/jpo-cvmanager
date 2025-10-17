@@ -21,7 +21,7 @@ db = None
 
 
 def init_tcp_connection_engine(db_user, db_pass, db_name, db_hostname, db_port):
-    logging.info(f"Creating DB pool")
+    logging.info("Creating DB pool")
     logging.debug(f"{db_user},{db_name},{db_hostname},{db_port}")
     pool = sqlalchemy.create_engine(
         # Equivalent URL:
@@ -42,7 +42,7 @@ def init_tcp_connection_engine(db_user, db_pass, db_name, db_hostname, db_port):
 
 
 def init_socket_connection_engine(db_user, db_pass, db_name, unix_query):
-    logging.info(f"Creating DB pool")
+    logging.info("Creating DB pool")
     pool = sqlalchemy.create_engine(
         # Equivalent URL:
         # postgresql+pg8000://<db_user>:<db_pass>@/<db_name>?unix_sock=/cloudsql/<cloud_sql_instance_name>
@@ -84,7 +84,19 @@ def init_connection_engine():
         )
 
 
-def query_db(query_string):
+def query_db(query_string, params=None):
+    """
+    Execute a parameterized query against the database.
+
+    Args:
+        query_string (str): The SQL query string with placeholders for parameters.
+                            Example: "SELECT * FROM table WHERE column = :value"
+        params (dict, optional): A dictionary of parameters to bind to the query.
+                            Example: {"value": "some_value"}
+
+    Returns:
+        list: The result of the query as a list of rows.
+    """
     global db
     if db is None:
         db = init_connection_engine()
@@ -92,17 +104,22 @@ def query_db(query_string):
     logging.info("DB connection starting...")
     with db.connect() as conn:
         logging.debug("Executing query...")
-        data = conn.execute(sqlalchemy.text(query_string)).fetchall()
+        data = conn.execute(sqlalchemy.text(query_string), params).fetchall()
         return data
 
 
-def write_db(query_string, values=None):
+def write_db(query_string, params=None):
     """
-    Executes a write (INSERT/UPDATE/DELETE) SQL query on the PostgreSQL database.
+    Execute a parameterized write query (INSERT, UPDATE, DELETE) against the database.
 
     Args:
-        query_string (str): The SQL query string to execute.
-        values (dict or list, optional): Optional parameter for query parameterization.
+        query_string (str): The SQL query string with placeholders for any parameters.
+                            Example: "INSERT INTO table (column) VALUES (:value)"
+        params (dict, optional): A dictionary of parameters to bind to the query.
+                            Example: {"value": "some_value"}
+
+    Returns:
+        None
     """
     global db
     if db is None:
@@ -111,8 +128,48 @@ def write_db(query_string, values=None):
     logging.info("DB connection starting...")
     with db.connect() as conn:
         logging.debug("Executing insert query...")
-        if values:
-            conn.execute(sqlalchemy.text(query_string), values)
-        else:
-            conn.execute(sqlalchemy.text(query_string))
+        conn.execute(sqlalchemy.text(query_string), params)
         conn.commit()
+
+
+def write_db_batched(
+    query_prefix: str,
+    query_rows: list[tuple[str, dict]],
+    query_suffix: str = "",
+    base_params: dict = {},
+    batch_size: int = 100,
+):
+    """
+    Executes a series of similar write queries (such as batch inserts or updates) in batches,
+    safely enumerating parameters to avoid SQL parameter name collisions and to stay within
+    database parameter limits.
+
+    Args:
+        query_prefix (str): The SQL prefix for each query (e.g., "INSERT INTO ... VALUES").
+        query_rows (list[tuple[str, dict]]): A list of tuples, each containing a query string
+            (typically a VALUES clause or similar) and a dict of parameters for that row.
+        query_suffix (str, optional): An optional SQL suffix to append after each batch (e.g., "RETURNING id").
+        base_params (dict, optional): Parameters used by the query prefix or suffix.
+        batch_size (int, optional): The maximum number of rows to include in each batch execution.
+
+    Returns:
+        None
+    """
+    # Each query stage comes with a query string, and a set of parameters
+    for i in range(0, len(query_rows), batch_size):
+        batch = query_rows[i : i + batch_size]
+        query_strings = []
+        all_params = base_params.copy()
+        for query_string, params in batch:
+            query_strings.append(query_string)
+            all_params.update(params)
+        full_query = query_prefix + ",".join(query_strings) + query_suffix
+        write_db(full_query, params=all_params)
+
+
+def query_and_return_list(query):
+    data = query_db(query)
+    return_list = []
+    for row in data:
+        return_list.append(" ".join(row))
+    return return_list

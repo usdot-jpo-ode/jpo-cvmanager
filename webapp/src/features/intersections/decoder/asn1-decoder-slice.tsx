@@ -252,6 +252,23 @@ export const asn1DecoderSlice = createSlice({
     onItemDeleted: (state, action: PayloadAction<string>) => {
       const id = action.payload
       if (state.value.data[id]?.text != '') {
+        const type = state.value.data[id].type
+        switch (type) {
+          case 'MAP': {
+            if (state.value.selectedMapMessage?.id === id) {
+              state.value.selectedMapMessage = undefined
+            }
+            break
+          }
+          case 'SPAT': {
+            // No specific action needed for SPAT deletion
+            break
+          }
+          case 'BSM': {
+            state.value.selectedBsms = state.value.selectedBsms.filter((bsmId) => bsmId !== id)
+            break
+          }
+        }
         delete state.value.data[id]
       }
     },
@@ -287,7 +304,7 @@ export const asn1DecoderSlice = createSlice({
         case 'MAP': {
           const intersectionId = state.value.data[id]?.decodedResponse?.processedMap?.properties?.intersectionId
           const rsuIp = state.value.data[id]?.decodedResponse?.processedMap?.properties?.originIp
-          if (intersectionId) {
+          if (intersectionId != null) {
             state.value.selectedMapMessage = { id, intersectionId, rsuIp: rsuIp! }
           }
           return

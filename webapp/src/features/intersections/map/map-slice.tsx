@@ -304,7 +304,6 @@ export const pullInitialData = createAsyncThunk(
     dispatch(setAbortAllFutureRequests(false))
     let rawMap: ProcessedMap[] = []
     let rawSpat: ProcessedSpat[] = []
-    let rawBsm: OdeBsmData[] = []
     let rawBsmGeojson: BsmFeatureCollection = {
       type: 'FeatureCollection',
       features: [],
@@ -322,13 +321,15 @@ export const pullInitialData = createAsyncThunk(
         ...spat,
         utcTimeStamp: getTimestamp(spat.utcTimeStamp),
       }))
-      rawBsm = (sourceData as { bsm: OdeBsmData[] }).bsm.map((bsm) => ({
-        ...bsm,
-        metadata: {
-          ...bsm.metadata,
-          odeReceivedAt: getTimestamp(bsm.metadata.odeReceivedAt),
-        },
-      }))
+      rawBsmGeojson = parseBsmToGeojson(
+        (sourceData as { bsm: OdeBsmData[] }).bsm.map((bsm) => ({
+          ...bsm,
+          metadata: {
+            ...bsm.metadata,
+            odeReceivedAt: getTimestamp(bsm.metadata.odeReceivedAt),
+          },
+        }))
+      )
       if (rawSpat && rawSpat.length != 0 && rawMap && rawMap.length != 0) {
         const sortedSpatData = rawSpat.sort((x, y) => x.utcTimeStamp - y.utcTimeStamp)
         const startTime = new Date(sortedSpatData[0].utcTimeStamp)
@@ -405,9 +406,6 @@ export const pullInitialData = createAsyncThunk(
       rawSpat = [...importedMessageData.spatData].sort((a, b) => a.utcTimeStamp - b.utcTimeStamp)
       rawBsmGeojson = importedMessageData.bsmData
     }
-    if (rawBsmGeojson == undefined && rawBsm) {
-      rawBsmGeojson = parseBsmToGeojson(rawBsm)
-    }
 
     if (decoderModeEnabled) {
       let bsmGeojson = rawBsmGeojson
@@ -477,6 +475,7 @@ export const pullInitialData = createAsyncThunk(
     if (selectAbortAllFutureRequests(getState() as RootState)) {
       return
     }
+
     if (!importedMessageData && !decoderModeEnabled) {
       abortController = new AbortController()
       dispatch(addInitialDataAbortController(abortController))
@@ -495,12 +494,13 @@ export const pullInitialData = createAsyncThunk(
         success: `Successfully got BSM Data`,
         error: `Failed to get BSM data. Please see console`,
       })
-      rawBsm = await rawBsmPromise
+      rawBsmGeojson = parseBsmToGeojson(await rawBsmPromise)
     }
-    let bsmGeojson = parseBsmToGeojson(rawBsm)
-    bsmGeojson = {
-      ...bsmGeojson,
-      features: [...[...bsmGeojson.features].sort((a, b) => b.properties.odeReceivedAt - a.properties.odeReceivedAt)],
+    const bsmGeojson = {
+      ...rawBsmGeojson,
+      features: [
+        ...[...rawBsmGeojson.features].sort((a, b) => b.properties.odeReceivedAt - a.properties.odeReceivedAt),
+      ],
     }
     dispatch(renderEntireMap({ currentMapData: rawMap, currentSpatData: rawSpat, currentBsmData: bsmGeojson }))
     return

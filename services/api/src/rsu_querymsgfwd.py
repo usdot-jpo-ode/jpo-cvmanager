@@ -1,12 +1,25 @@
+from flask import request, abort
+from flask_restful import Resource
+from marshmallow import Schema, fields
 import common.pgquery as pgquery
 import common.snmp.rsu_message_forward_helpers as rsu_message_forward_helpers
 import common.util as util
 import os
 import logging
 
+from common.auth_tools import (
+    ORG_ROLE_LITERAL,
+    RESOURCE_TYPE,
+    PermissionResult,
+    require_permission,
+)
 
-def query_snmp_msgfwd(rsu_ip, organization):
-    logging.info(f"Preparing to query for all RSU IPs for {organization}...")
+
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.USER,
+    resource_type=RESOURCE_TYPE.RSU,
+)
+def query_snmp_msgfwd_authorized(rsu_ip: str, organization: ORG_ROLE_LITERAL):
 
     # Execute the query and fetch all results
     query = (
@@ -19,15 +32,15 @@ def query_snmp_msgfwd(rsu_ip, organization):
         "SELECT rd.rsu_id, rd.ipv4_address "
         "FROM public.rsus rd "
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
-        f"WHERE ron_v.name = '{organization}'"
+        "WHERE ron_v.name = :org_name"
         ") rdo ON smc.rsu_id = rdo.rsu_id "
-        f"WHERE rdo.ipv4_address = '{rsu_ip}' "
+        "WHERE rdo.ipv4_address = :rsu_ip "
         "ORDER BY smt.name, snmp_index ASC"
         ") as row"
     )
-
+    params = {"org_name": organization, "rsu_ip": rsu_ip}
     logging.debug(f'Executing query: "{query};"')
-    data = pgquery.query_db(query)
+    data = pgquery.query_db(query, params=params)
 
     msgfwd_configs_dict = {}
     for row in data:
@@ -72,15 +85,10 @@ def query_snmp_msgfwd(rsu_ip, organization):
     ):
         msgfwd_configs_dict["rsuReceivedMsgTable"] = {}
 
-    return {"RsuFwdSnmpwalk": msgfwd_configs_dict}, 200
+    return {"RsuFwdSnmpwalk": msgfwd_configs_dict}
 
 
 # REST endpoint resource class and schema
-from flask import request, abort
-from flask_restful import Resource
-from marshmallow import Schema, fields
-
-
 class RsuQueryMsgFwdSchema(Schema):
     rsu_ip = fields.IPv4(required=True)
 
@@ -102,7 +110,8 @@ class RsuQueryMsgFwd(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
-    def get(self):
+    @require_permission(required_role=ORG_ROLE_LITERAL.USER)
+    def get(self, permission_result: PermissionResult):
         logging.debug("RsuQueryMsgFwd GET requested")
         # Schema check for arguments
         schema = RsuQueryMsgFwdSchema()
@@ -112,6 +121,8 @@ class RsuQueryMsgFwd(Resource):
         # Get arguments from request and set defaults if not provided
         rsu_ip = request.args.get("rsu_ip")
 
-        data, code = query_snmp_msgfwd(rsu_ip, request.environ["organization"])
-
-        return (data, code, self.headers)
+        return (
+            query_snmp_msgfwd_authorized(rsu_ip, permission_result.user.organization),
+            200,
+            self.headers,
+        )

@@ -17,9 +17,13 @@ class UpdatePostgresRsuHealth(UpdatePostgresSnmpAbstractClass):
         """
         Inserts a list of SNMP RSU health statuses into the PostgreSQL database.
         """
-        query = "INSERT INTO public.rsu_health (timestamp, health, rsu_id) VALUES (%s, %s, %s)"
+        query = "INSERT INTO public.rsu_health (timestamp, health, rsu_id) VALUES (:timestamp, :health, :rsu_id)"
         values = [
-            (snmp_config["timestamp"], snmp_config["health"], snmp_config["rsu_id"])
+            {
+                "timestamp": snmp_config["timestamp"],
+                "health": snmp_config["health"],
+                "rsu_id": snmp_config["rsu_id"],
+            }
             for snmp_config in snmp_config_list
         ]
 

@@ -16,8 +16,11 @@ def test_insert_config_list(rsu_health_instance):
             {"timestamp": "2023-01-01 13:00", "health": 0, "rsu_id": 102},
         ]
         rsu_health_instance.insert_config_list(snmp_config_list)
-        expected_query = "INSERT INTO public.rsu_health (timestamp, health, rsu_id) VALUES (%s, %s, %s)"
-        expected_values = [("2023-01-01 12:00", 1, 101), ("2023-01-01 13:00", 0, 102)]
+        expected_query = "INSERT INTO public.rsu_health (timestamp, health, rsu_id) VALUES (:timestamp, :health, :rsu_id)"
+        expected_values = [
+            {"timestamp": "2023-01-01 12:00", "health": 1, "rsu_id": 101},
+            {"timestamp": "2023-01-01 13:00", "health": 0, "rsu_id": 102},
+        ]
 
         mock_write_db.assert_called_once_with(expected_query, expected_values)
 

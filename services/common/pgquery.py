@@ -102,8 +102,7 @@ def write_db(query_string, values=None):
 
     Args:
         query_string (str): The SQL query string to execute.
-        values (dict, optional): Optional parameter for query parameterization. If provided,
-            the query will be executed as a parameterized statement using these values.
+        values (dict or list, optional): Optional parameter for query parameterization.
     """
     global db
     if db is None:

@@ -2,7 +2,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 
-const TIME_SERVER_URL_UTC = 'http://worldtimeapi.org/api/timezone/Etc/UTC'
+const TIME_SERVER_URL_UTC = 'https://timeapi.io/api/Time/current/zone?timeZone=Etc/UTC'
 
 interface TimeSyncState {
   timeOffsetMillis: number // Offset in milliseconds
@@ -26,7 +26,7 @@ export const syncTimeOffset = createAsyncThunk('timeSync/syncTimeOffset', async 
 
   const rtt = end - start // Calculate round-trip time
   const data = await response.json()
-  const serverTime = new Date(data.utc_datetime).getTime()
+  const serverTime = new Date(data.dateTime).getTime()
 
   // Adjust for half the round-trip time
   const correctedTime = serverTime + rtt / 2

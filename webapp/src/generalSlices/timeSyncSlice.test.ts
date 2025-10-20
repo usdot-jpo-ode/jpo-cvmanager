@@ -14,7 +14,7 @@ import reducer, {
   setTimeOffset,
 } from './timeSyncSlice'
 
-const TIME_SERVER_URL_UTC = 'http://worldtimeapi.org/api/timezone/Etc/UTC'
+const TIME_SERVER_URL_UTC = 'https://timeapi.io/api/Time/current/zone?timeZone=Etc/UTC'
 
 describe('timeSync reducer', () => {
   it('should handle initial state', () => {
@@ -73,23 +73,21 @@ describe('async thunks', () => {
   })
 
   it('syncTimeOffset should synchronize time offset (mocked fetch)', async () => {
-    const mockServerTime = '2025-05-28T18:29:14.291500+00:00'
+    const mockServerTime = '2025-10-20T21:28:30.0960336'
     const mockResponse = {
-      utc_offset: '+00:00',
-      timezone: 'Etc/UTC',
-      day_of_week: 3,
-      day_of_year: 148,
-      datetime: '2025-05-28T18:29:14.291500+00:00',
-      utc_datetime: mockServerTime,
-      unixtime: 1748456954,
-      raw_offset: 0,
-      week_number: 22,
-      dst: false,
-      abbreviation: 'UTC',
-      dst_offset: 0,
-      dst_from: null,
-      dst_until: null,
-      client_ip: '24.237.37.87',
+      year: 2025,
+      month: 10,
+      day: 20,
+      hour: 21,
+      minute: 28,
+      seconds: 30,
+      milliSeconds: 96,
+      dateTime: '2025-10-20T21:28:30.0960336',
+      date: '10/20/2025',
+      time: '21:28',
+      timeZone: 'Etc/UTC',
+      dayOfWeek: 'Monday',
+      dstActive: false,
     } // Mock fetch response
     ;(global.fetch as jest.Mock).mockResolvedValueOnce({
       json: jest.fn().mockResolvedValueOnce(mockResponse),

@@ -981,10 +981,8 @@ export const initializeLiveStreaming = createAsyncThunk(
     // Topics are in the format /live/{intersectionID}/{spat,map,bsm}
     const spatTopic = `/live/${intersectionId}/processed-spat`
     const mapTopic = `/live/${intersectionId}/processed-map`
-    const bsmTopic = `/live/${intersectionId}/ode-bsm-json`
-    let spatTime = Date.now()
-    let mapTime = Date.now()
-    let bsmTime = Date.now()
+    const bsmTopic = `/live/${intersectionId}/processed-bsm`
+    
     const connectionStartTime = Date.now()
     client.connect(
       {},

@@ -982,7 +982,7 @@ export const initializeLiveStreaming = createAsyncThunk(
     const spatTopic = `/live/${intersectionId}/processed-spat`
     const mapTopic = `/live/${intersectionId}/processed-map`
     const bsmTopic = `/live/${intersectionId}/processed-bsm`
-    
+
     const connectionStartTime = Date.now()
     client.connect(
       {},
@@ -993,7 +993,11 @@ export const initializeLiveStreaming = createAsyncThunk(
           console.debug(
             'Received SPaT message with age of ' +
               (getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState)) - messageTime) +
-              'ms'
+              'ms',
+            spatMessage.utcTimeStamp,
+            messageTime,
+            selectTimeOffsetMillis(getState() as RootState),
+            getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState))
           )
           dispatch(renderIterative_Spat([spatMessage]))
           // dispatch(maybeUpdateSliderValue())
@@ -1161,7 +1165,7 @@ export const updateRenderedMapState = createAsyncThunk(
       signalStateData: closestSignalGroup
         ? generateSignalStateFeatureCollection(mapSignalGroups!, closestSignalGroup?.spat)
         : undefined,
-      spatTime: closestSignalGroup?.datetime,
+      spatTime: closestSignalGroup?.datetime * 1000,
       filteredSurroundingEvents: filteredEvents,
       filteredSurroundingNotifications: filteredNotifications,
     }

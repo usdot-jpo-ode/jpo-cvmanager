@@ -75,14 +75,15 @@ describe('async thunks', () => {
       const getState = jest.fn()
       const kcToken = 'token'
       const action = keycloakLogin(kcToken)
-      const testData = JSON.stringify({ data: 'testingData' })
+      const testData = { data: 'testingData' }
       const data = { json: testData, status: 200 }
+      const userData = { ...testData, name: 'undefined undefined' }
       AuthApi.logIn = jest.fn().mockReturnValue(data)
       Date.now = jest.fn(() => new Date(Date.UTC(2022, 1, 1)).valueOf())
       try {
         const resp = await action(dispatch, getState, undefined)
         expect(resp.payload).toEqual({
-          data: JSON.parse(data.json),
+          data: userData,
           token: kcToken,
           expires_at: Date.now() + 590000,
         })

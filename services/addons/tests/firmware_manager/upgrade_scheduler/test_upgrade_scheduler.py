@@ -42,8 +42,6 @@ def test_get_rsu_upgrade_data_one(mock_querydb):
 
 
 # start_tasks_from_queue tests
-
-
 @patch.dict("os.environ", {"UPGRADE_RUNNER_ENDPOINT": "http://test-endpoint"})
 @patch(
     "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
@@ -185,7 +183,7 @@ def test_start_tasks_from_queue_post_success(mock_post, mock_logging):
     )
 
     mock_logging.info.assert_called_with(
-        f"Firmware upgrade runner successfully requested to begin the upgrade for 8.8.8.8"
+        "Firmware upgrade runner successfully requested to begin the upgrade for 8.8.8.8"
     )
     mock_logging.error.assert_not_called()
 
@@ -241,13 +239,11 @@ def test_start_tasks_from_queue_post_fail(mock_post, mock_logging):
 
     mock_logging.info.assert_not_called()
     mock_logging.error.assert_called_with(
-        f"Firmware upgrade runner request failed for 8.8.8.8, check Upgrade Runner logs for details"
+        "Firmware upgrade runner request failed for 8.8.8.8, check Upgrade Runner logs for details"
     )
 
 
 # init_firmware_upgrade tests
-
-
 @patch(
     "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
     {},
@@ -279,7 +275,7 @@ def test_init_firmware_upgrade_rsu_not_reachable(
 
             mock_flask_jsonify.assert_called_with(
                 {
-                    "error": f"Firmware upgrade failed to start for '8.8.8.8': device is unreachable"
+                    "error": "Firmware upgrade failed to start for '8.8.8.8': device is unreachable"
                 }
             )
             assert code == 500
@@ -340,11 +336,11 @@ def test_init_firmware_upgrade_already_running(mock_logging):
             "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.jsonify",
             mock_flask_jsonify,
         ):
-            message, code = upgrade_scheduler.init_firmware_upgrade()
+            _, code = upgrade_scheduler.init_firmware_upgrade()
 
             mock_flask_jsonify.assert_called_with(
                 {
-                    "error": f"Firmware upgrade failed to start for '8.8.8.8': an upgrade is already underway or queued for the target device"
+                    "error": "Firmware upgrade failed to start for '8.8.8.8': an upgrade is already underway or queued for the target device"
                 }
             )
             assert code == 500
@@ -383,11 +379,11 @@ def test_init_firmware_upgrade_no_eligible_upgrade(
             "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.jsonify",
             mock_flask_jsonify,
         ):
-            message, code = upgrade_scheduler.init_firmware_upgrade()
+            _, code = upgrade_scheduler.init_firmware_upgrade()
 
             mock_flask_jsonify.assert_called_with(
                 {
-                    "error": f"Firmware upgrade failed to start for '8.8.8.8': the target firmware is already installed or is an invalid upgrade from the current firmware"
+                    "error": "Firmware upgrade failed to start for '8.8.8.8': the target firmware is already installed or is an invalid upgrade from the current firmware"
                 }
             )
             assert code == 500
@@ -434,7 +430,7 @@ def test_init_firmware_upgrade_success(
             "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.jsonify",
             mock_flask_jsonify,
         ):
-            message, code = upgrade_scheduler.init_firmware_upgrade()
+            _, code = upgrade_scheduler.init_firmware_upgrade()
 
             # Assert start_tasks_from_queue is called
             mock_stfq.assert_called_with()
@@ -444,7 +440,7 @@ def test_init_firmware_upgrade_success(
 
             # Assert REST response is as expected from a successful run
             mock_flask_jsonify.assert_called_with(
-                {"message": f"Firmware upgrade started successfully for '8.8.8.8'"}
+                {"message": "Firmware upgrade started successfully for '8.8.8.8'"}
             )
             assert code == 201
 
@@ -464,8 +460,6 @@ def test_init_firmware_upgrade_success(
 
 
 # firmware_upgrade_completed tests
-
-
 @patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.logging")
 @patch(
     "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
@@ -809,8 +803,6 @@ def test_firmware_upgrade_completed_success_status_exception(
 
 
 # list_active_upgrades tests
-
-
 @patch("addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.logging")
 @patch(
     "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
@@ -853,8 +845,6 @@ def test_list_active_upgrades(mock_logging):
 
 
 # check_for_upgrades tests
-
-
 @patch.dict("os.environ", {"UPGRADE_RUNNER_ENDPOINT": "http://test-endpoint"})
 @patch(
     "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.was_latest_ping_successful_for_rsu"
@@ -953,8 +943,6 @@ def test_check_for_upgrades(
 
 
 # Other tests
-
-
 @patch(
     "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.pgquery.query_db"
 )

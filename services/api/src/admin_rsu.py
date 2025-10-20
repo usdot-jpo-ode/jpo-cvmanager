@@ -1,11 +1,25 @@
+from typing import Any
+from flask import request, abort
+from flask_restful import Resource
+from marshmallow import Schema, fields
 import logging
 import common.pgquery as pgquery
-import sqlalchemy
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 import admin_new_rsu
 import os
+from werkzeug.exceptions import InternalServerError, BadRequest
+from common.auth_tools import (
+    ORG_ROLE_LITERAL,
+    RESOURCE_TYPE,
+    EnvironWithOrg,
+    PermissionResult,
+    enforce_organization_restrictions,
+    require_permission,
+    generate_sql_placeholders_for_list,
+)
 
 
-def get_rsu_data(rsu_ip):
+def get_rsu_data(rsu_ip: str, user: EnvironWithOrg, qualified_orgs: list[str]):
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
@@ -21,11 +35,22 @@ def get_rsu_data(rsu_ip):
         "JOIN public.rsu_organization AS ro ON ro.rsu_id = rsus.rsu_id  "
         "JOIN public.organizations AS org ON org.organization_id = ro.organization_id"
     )
+
+    where_clauses = []
+    params: dict[str, Any] = {}
+    if not user.user_info.super_user:
+        org_names_placeholder, _ = generate_sql_placeholders_for_list(
+            qualified_orgs, params_to_update=params
+        )
+        where_clauses.append(f"org.name IN ({org_names_placeholder})")
     if rsu_ip != "all":
-        query += f" WHERE ipv4_address = '{rsu_ip}'"
+        where_clauses.append("ipv4_address = :rsu_ip")
+        params["rsu_ip"] = rsu_ip
+    if where_clauses:
+        query += " WHERE " + " AND ".join(where_clauses)
     query += ") as row"
 
-    data = pgquery.query_db(query)
+    data = pgquery.query_db(query, params=params)
 
     rsu_dict = {}
     for row in data:
@@ -60,122 +85,173 @@ def get_rsu_data(rsu_ip):
         return rsu_list
 
 
-def get_modify_rsu_data(rsu_ip):
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.USER,
+    resource_type=RESOURCE_TYPE.RSU,
+)
+def get_modify_rsu_data_authorized(rsu_ip: str, permission_result: PermissionResult):
     modify_rsu_obj = {}
-    modify_rsu_obj["rsu_data"] = get_rsu_data(rsu_ip)
+    modify_rsu_obj["rsu_data"] = get_rsu_data(
+        rsu_ip, permission_result.user, permission_result.qualified_orgs
+    )
     if rsu_ip != "all":
-        modify_rsu_obj["allowed_selections"] = admin_new_rsu.get_allowed_selections()
+        modify_rsu_obj["allowed_selections"] = admin_new_rsu.get_allowed_selections(
+            permission_result.user
+        )
     return modify_rsu_obj
 
 
-def modify_rsu(rsu_spec):
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.OPERATOR, resource_type=RESOURCE_TYPE.RSU
+)
+def modify_rsu_authorized(
+    permission_result: PermissionResult, orig_ip: str, rsu_spec: dict
+):
+    enforce_organization_restrictions(
+        user=permission_result.user,
+        qualified_orgs=permission_result.qualified_orgs,
+        spec=rsu_spec,
+        keys_to_check=["organizations_to_add", "organizations_to_remove"],
+    )
+
     # Check for special characters for potential SQL injection
     if not admin_new_rsu.check_safe_input(rsu_spec):
-        return {
-            "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
-        }, 500
+        raise BadRequest(
+            "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+        )
 
     # Parse model out of the "Manufacturer Model" string
     space_index = rsu_spec["model"].find(" ")
     model = rsu_spec["model"][(space_index + 1) :]
+    rsu_ip = rsu_spec["ip"]
 
     try:
         # Modify the existing RSU data
         query = (
             "UPDATE public.rsus SET "
-            f"geography=ST_GeomFromText('POINT({str(rsu_spec['geo_position']['longitude'])} {str(rsu_spec['geo_position']['latitude'])})'), "
-            f"milepost={str(rsu_spec['milepost'])}, "
-            f"ipv4_address='{rsu_spec['ip']}', "
-            f"serial_number='{rsu_spec['serial_number']}', "
-            f"primary_route='{rsu_spec['primary_route']}', "
-            f"model=(SELECT rsu_model_id FROM public.rsu_models WHERE name = '{model}'), "
-            f"credential_id=(SELECT credential_id FROM public.rsu_credentials WHERE nickname = '{rsu_spec['ssh_credential_group']}'), "
-            f"snmp_credential_id=(SELECT snmp_credential_id FROM public.snmp_credentials WHERE nickname = '{rsu_spec['snmp_credential_group']}'), "
-            f"snmp_protocol_id=(SELECT snmp_protocol_id FROM public.snmp_protocols WHERE nickname = '{rsu_spec['snmp_version_group']}'), "
-            f"iss_scms_id='{rsu_spec['scms_id']}' "
-            f"WHERE ipv4_address='{rsu_spec['orig_ip']}'"
+            "geography=ST_GeomFromText('POINT(' || :geo_position_longitude || ' ' || :geo_position_latitude || ')'), "
+            "milepost=:milepost, "
+            "ipv4_address=:rsu_ip, "
+            "serial_number=:serial_number, "
+            "primary_route=:primary_route, "
+            "model=(SELECT rsu_model_id FROM public.rsu_models WHERE name = :model), "
+            "credential_id=(SELECT credential_id FROM public.rsu_credentials WHERE nickname = :ssh_credential_group), "
+            "snmp_credential_id=(SELECT snmp_credential_id FROM public.snmp_credentials WHERE nickname = :snmp_credential_group), "
+            "snmp_protocol_id=(SELECT snmp_protocol_id FROM public.snmp_protocols WHERE nickname = :snmp_version_group), "
+            "iss_scms_id=:scms_id "
+            "WHERE ipv4_address=:orig_ip"
         )
-        pgquery.write_db(query)
+        params = {
+            "rsu_ip": rsu_ip,
+            "geo_position_longitude": rsu_spec["geo_position"]["longitude"],
+            "geo_position_latitude": rsu_spec["geo_position"]["latitude"],
+            "milepost": rsu_spec["milepost"],
+            "serial_number": rsu_spec["serial_number"],
+            "primary_route": rsu_spec["primary_route"],
+            "model": model,
+            "ssh_credential_group": rsu_spec["ssh_credential_group"],
+            "snmp_credential_group": rsu_spec["snmp_credential_group"],
+            "snmp_version_group": rsu_spec["snmp_version_group"],
+            "scms_id": rsu_spec["scms_id"],
+            "orig_ip": orig_ip,
+        }
+        pgquery.write_db(query, params=params)
 
         # Add the rsu-to-organization relationships for the organizations to add
         if len(rsu_spec["organizations_to_add"]) > 0:
-            org_add_query = (
-                "INSERT INTO public.rsu_organization(rsu_id, organization_id) VALUES"
-            )
-            for organization in rsu_spec["organizations_to_add"]:
-                org_add_query += (
-                    " ("
-                    f"(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{rsu_spec['ip']}'), "
-                    f"(SELECT organization_id FROM public.organizations WHERE name = '{organization}')"
-                    "),"
+            query_rows: list[tuple[str, dict]] = []
+            for index, organization in enumerate(rsu_spec["organizations_to_add"]):
+                org_placeholder = f"org_name_{index}"
+                query_rows.append(
+                    (
+                        "("
+                        "(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip), "
+                        f"(SELECT organization_id FROM public.organizations WHERE name = :{org_placeholder})"
+                        ")",
+                        {org_placeholder: organization},
+                    )
                 )
-            org_add_query = org_add_query[:-1]
-            pgquery.write_db(org_add_query)
+
+            query_prefix = (
+                "INSERT INTO public.rsu_organization(rsu_id, organization_id) VALUES "
+            )
+            pgquery.write_db_batched(
+                query_prefix, query_rows, base_params={"rsu_ip": rsu_ip}
+            )
 
         # Remove the rsu-to-organization relationships for the organizations to remove
-        for organization in rsu_spec["organizations_to_remove"]:
+        if len(rsu_spec["organizations_to_remove"]) > 0:
+            params = {"rsu_ip": rsu_ip}
+            # Generate placeholders for each organization name
+            org_placeholders = []
+            for idx, org in enumerate(rsu_spec["organizations_to_remove"]):
+                key = f"org_name_{idx}"
+                org_placeholders.append(f":{key}")
+                params[key] = org
+
             org_remove_query = (
                 "DELETE FROM public.rsu_organization WHERE "
-                f"rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{rsu_spec['ip']}') "
-                f"AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = '{organization}')"
+                "rsu_id = (SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip) "
+                f"AND organization_id IN (SELECT organization_id FROM public.organizations WHERE name IN ({', '.join(org_placeholders)}))"
             )
-            pgquery.write_db(org_remove_query)
-    except sqlalchemy.exc.IntegrityError as e:
+            pgquery.write_db(org_remove_query, params=params)
+    except IntegrityError as e:
+        if e.orig is None:
+            raise InternalServerError("Encountered unknown issue") from e
         failed_value = e.orig.args[0]["D"]
         failed_value = failed_value.replace("(", '"')
         failed_value = failed_value.replace(")", '"')
         failed_value = failed_value.replace("=", " = ")
         logging.error(f"Exception encountered: {failed_value}")
-        return {"message": failed_value}, 500
-    except Exception as e:
-        logging.error(f"Exception encountered: {e}")
-        return {"message": "Encountered unknown issue"}, 500
+        raise InternalServerError(failed_value) from e
+    except SQLAlchemyError as e:
+        logging.error(f"SQL Exception encountered: {e}")
+        raise InternalServerError("Encountered unknown issue executing query") from e
 
-    return {"message": "RSU successfully modified"}, 200
+    return {"message": "RSU successfully modified"}
 
 
-def delete_rsu(rsu_ip):
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.OPERATOR,
+    resource_type=RESOURCE_TYPE.RSU,
+)
+def delete_rsu_authorized(rsu_ip: str):
     # Delete RSU to Organization relationships
     org_remove_query = (
         "DELETE FROM public.rsu_organization WHERE "
-        f"rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{rsu_ip}')"
+        "rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip)"
     )
-    pgquery.write_db(org_remove_query)
+    pgquery.write_db(org_remove_query, params={"rsu_ip": rsu_ip})
 
     # Delete recorded RSU ping data
     ping_remove_query = (
         "DELETE FROM public.ping WHERE "
-        f"rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{rsu_ip}')"
+        "rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip)"
     )
-    pgquery.write_db(ping_remove_query)
+    pgquery.write_db(ping_remove_query, params={"rsu_ip": rsu_ip})
 
     # Delete recorded RSU SCMS health data
     scms_remove_query = (
         "DELETE FROM public.scms_health WHERE "
-        f"rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{rsu_ip}')"
+        "rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip)"
     )
-    pgquery.write_db(scms_remove_query)
+    pgquery.write_db(scms_remove_query, params={"rsu_ip": rsu_ip})
 
     # Delete snmp message forward config data
     msg_config_remove_query = (
         "DELETE FROM public.snmp_msgfwd_config WHERE "
-        f"rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '{rsu_ip}')"
+        "rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip)"
     )
-    pgquery.write_db(msg_config_remove_query)
+    pgquery.write_db(msg_config_remove_query, params={"rsu_ip": rsu_ip})
 
     # Delete RSU data
-    rsu_remove_query = "DELETE FROM public.rsus WHERE " f"ipv4_address = '{rsu_ip}'"
-    pgquery.write_db(rsu_remove_query)
+    rsu_remove_query = "DELETE FROM public.rsus WHERE ipv4_address = :rsu_ip"
+    pgquery.write_db(rsu_remove_query, params={"rsu_ip": rsu_ip})
 
     return {"message": "RSU successfully deleted"}
 
 
 # REST endpoint resource class
-from flask import request, abort
-from flask_restful import Resource
-from marshmallow import Schema, fields
-
-
 class AdminRsuGetAllSchema(Schema):
     rsu_ip = fields.Str(required=True)
 
@@ -222,8 +298,10 @@ class AdminRsu(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
+    @require_permission(required_role=ORG_ROLE_LITERAL.USER)
     def get(self):
         logging.debug("AdminRsu GET requested")
+
         schema = AdminRsuGetAllSchema()
         errors = schema.validate(request.args)
         if errors:
@@ -238,10 +316,16 @@ class AdminRsu(Resource):
                 logging.error(errors)
                 abort(400, errors)
 
-        return (get_modify_rsu_data(request.args["rsu_ip"]), 200, self.headers)
+        return (
+            get_modify_rsu_data_authorized(request.args["rsu_ip"]),
+            200,
+            self.headers,
+        )
 
+    @require_permission(required_role=ORG_ROLE_LITERAL.OPERATOR)
     def patch(self):
         logging.debug("AdminRsu PATCH requested")
+
         # Check for main body values
         schema = AdminRsuPatchSchema()
         errors = schema.validate(request.json)
@@ -249,9 +333,15 @@ class AdminRsu(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
 
-        data, code = modify_rsu(request.json)
-        return (data, code, self.headers)
+        return (
+            modify_rsu_authorized(
+                orig_ip=request.json["orig_ip"], rsu_spec=request.json
+            ),
+            200,
+            self.headers,
+        )
 
+    @require_permission(required_role=ORG_ROLE_LITERAL.OPERATOR)
     def delete(self):
         logging.debug("AdminRsu DELETE requested")
         schema = AdminRsuGetDeleteSchema()
@@ -260,4 +350,4 @@ class AdminRsu(Resource):
             logging.error(errors)
             abort(400, errors)
 
-        return (delete_rsu(request.args["rsu_ip"]), 200, self.headers)
+        return (delete_rsu_authorized(request.args["rsu_ip"]), 200, self.headers)

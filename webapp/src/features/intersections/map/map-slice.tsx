@@ -654,6 +654,15 @@ export const renderIterative_Map = createAsyncThunk(
     const queryParams = selectQueryParams(currentState)
     const currentMapData: ProcessedMap[] = selectCurrentMapData(currentState)
 
+    newMapData = newMapData.map((map) => ({
+      ...map,
+      properties: {
+        ...map.properties,
+        timeStamp: getTimestamp(map.properties.timeStamp),
+        odeReceivedAt: getTimestamp(map.properties.odeReceivedAt),
+      },
+    }))
+
     const OLDEST_DATA_TO_KEEP = queryParams.eventDate.getTime() - queryParams.startDate.getTime() // milliseconds
 
     // find latest timestamp from currentMapData
@@ -664,7 +673,7 @@ export const renderIterative_Map = createAsyncThunk(
         latestTimestamp = timestamp
       }
     }
-    const currTimestamp = getTimestamp(Math.max(newMapData.at(-1)!.properties.odeReceivedAt, latestTimestamp))
+    const currTimestamp = Math.max(newMapData.at(-1)!.properties.odeReceivedAt, latestTimestamp)
 
     let oldIndex = 0
     for (let i = 0; i < currentMapData.length; i++) {

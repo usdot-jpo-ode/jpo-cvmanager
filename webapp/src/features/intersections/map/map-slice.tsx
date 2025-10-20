@@ -706,7 +706,7 @@ export const renderIterative_Map = createAsyncThunk(
       currentMapData: currentMapDataLocal,
       connectingLanes: latestMapMessage.connectingLanesFeatureCollection,
       mapData: latestMapMessage,
-      mapTime: currTimestamp / 1000,
+      mapTime: currTimestamp,
       mapSignalGroups: mapSignalGroupsLocal,
     }
   },

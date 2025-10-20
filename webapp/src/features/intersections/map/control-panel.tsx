@@ -470,7 +470,7 @@ function ControlPanel() {
 
               {liveDataActive && (
                 <Typography fontSize="16px">
-                  Live Spat Offset: {mapSpatTimes.spatTime * 1000 - getAccurateTimeMillis(timeOffsetMillis)}
+                  Live Spat Offset: {mapSpatTimes.spatTime - getAccurateTimeMillis(timeOffsetMillis)}
                 </Typography>
               )}
               <Typography fontSize="16px">Activity Chart for {format(sliderTimeValue.start, 'MM/dd/yyyy')}:</Typography>

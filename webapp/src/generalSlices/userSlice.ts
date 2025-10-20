@@ -12,6 +12,8 @@ export const keycloakLogin = createAsyncThunk('user/login', async (token: string
       const response = await AuthApi.logIn(token)
       switch (response.status) {
         case 200: {
+          console.log('response.json', response.json, JSON.parse(response.json.toString()))
+
           const authLoginData = {
             data: JSON.parse(response.json.toString()),
             token: token,
@@ -117,7 +119,7 @@ export const userSlice = createSlice({
         state.value.authLoginData = action.payload
         state.value.organization = action.payload?.data?.organizations?.[0]
         LocalStorageManager.setAuthData(action.payload)
-        SecureStorageManager.setUserRole(action.payload['data']['organizations'][0])
+        SecureStorageManager.setUserRole(action.payload?.data?.organizations?.[0])
       })
       .addCase(keycloakLogin.rejected, (state, action: PayloadAction<unknown>) => {
         state.loading = false

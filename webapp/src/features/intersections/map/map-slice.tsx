@@ -1002,11 +1002,7 @@ export const initializeLiveStreaming = createAsyncThunk(
           console.debug(
             'Received SPaT message with age of ' +
               (getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState)) - messageTime) +
-              'ms',
-            spatMessage.utcTimeStamp,
-            messageTime,
-            selectTimeOffsetMillis(getState() as RootState),
-            getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState))
+              'ms'
           )
           dispatch(renderIterative_Spat([spatMessage]))
           // dispatch(maybeUpdateSliderValue())

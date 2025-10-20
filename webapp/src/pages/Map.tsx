@@ -966,7 +966,6 @@ function MapPage() {
                   defaultValue={selectedVendor}
                   onChange={(event) => {
                     const vendor = event.target.value as string
-                    console.log(vendor)
                     setVendor(vendor)
                   }}
                 >

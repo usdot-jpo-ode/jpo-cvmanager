@@ -353,7 +353,7 @@ function ControlPanel() {
                       sx={{ mt: 1 }}
                       onChange={(e) => {
                         if (Number.isInteger(Number(e.target.value))) {
-                          setTimeBeforeSeconds(parseInt(e.target.value))
+                          setTimeWindowSeconds(parseInt(e.target.value))
                         }
                       }}
                       slotProps={{
@@ -387,14 +387,16 @@ function ControlPanel() {
                       type="number"
                       sx={{ mt: 1 }}
                       onChange={(e) => {
-                        setTimeBefore(e.target.value)
+                        if (Number.isInteger(Number(e.target.value))) {
+                          setTimeBeforeSeconds(parseInt(e.target.value))
+                        }
                       }}
                       slotProps={{
                         input: {
                           endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
                         },
                       }}
-                      value={timeBefore}
+                      value={timeBeforeSeconds}
                     />
                   </FormControl>
                 </Grid2>
@@ -406,14 +408,16 @@ function ControlPanel() {
                       type="number"
                       sx={{ mt: 1 }}
                       onChange={(e) => {
-                        setTimeAfter(e.target.value)
+                        if (Number.isInteger(Number(e.target.value))) {
+                          setTimeAfterSeconds(parseInt(e.target.value))
+                        }
                       }}
                       slotProps={{
                         input: {
                           endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
                         },
                       }}
-                      value={timeAfter}
+                      value={timeAfterSeconds}
                     />
                   </FormControl>
                 </Grid2>

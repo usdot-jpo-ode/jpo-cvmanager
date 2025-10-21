@@ -27,6 +27,7 @@ import { format } from 'date-fns'
 import JSZip from 'jszip'
 import {
   BSM_COUNTS_CHART_DATA,
+  cleanUpLiveStreaming,
   downloadMapData,
   handleImportedMapMessageData,
   selectBsmEventsByMinute,
@@ -425,6 +426,9 @@ function ControlPanel() {
               <Button
                 sx={{ mt: 2 }}
                 onClick={() => {
+                  if (liveDataActive) {
+                    dispatch(cleanUpLiveStreaming())
+                  }
                   dispatch(toggleLiveDataActive())
                 }}
                 color="info"

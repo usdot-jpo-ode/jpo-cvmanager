@@ -356,15 +356,18 @@ docker compose up -d cvmanager_api cvmanager_webapp cvmanager_postgres cvmanager
 
 ### Environment Variables
 
+<b>Required Variables</b>
+- DOCKER_HOST_IP: Set with the IP address of the eth0 port in your WSL instance. This can be found by installing networking tools in wsl and running the command `ifconfig`
+- MAPBOX_TOKEN: A token from Mapbox used to render the map in the Webapp. The free version of Mapbox works great in most cases.
+- MAVEN_GITHUB_TOKEN: A GitHub access token used to access public GitHub Maven packages. See [Github Token](#github-token) section for instructions on generating this token.
+
 <b>Generic Variables</b>
 
-- DOCKER_HOST_IP: Set with the IP address of the eth0 port in your WSL instance. This can be found by installing networking tools in wsl and running the command `ifconfig`
 - WEBAPP_HOST_IP: Defaults to DOCKER_HOST_IP value. Only change this if the webapp is being hosted on a separate endpoint.
 - KC_HOST_IP: Defaults to DOCKER_HOST_IP value. Only change this if the webapp is being hosted on a separate endpoint.
 
 <b>Webapp Variables</b>
 
-- MAPBOX_TOKEN: A token from Mapbox used to render the map in the Webapp. The free version of Mapbox works great in most cases.
 - WEBAPP_DOMAIN: The domain that the webapp will run on. This is required for Keycloak CORS authentication.
 - API_URI: The endpoint for the CV manager API, must be on a Keycloak Authorized domain.
 - COUNT_MESSAGE_TYPES: List of CV message types to query for counts.

@@ -460,12 +460,12 @@ function ControlPanel() {
               </Typography>
               <Typography fontSize="16px">
                 MAP Message Time:{' '}
-                {mapSpatTimes.mapTime === 0 ? 'No Data' : format(mapSpatTimes.mapTime, 'MM/dd/yyyy HH:mm:ss')}
+                {!mapSpatTimes.mapTime ? 'No Data' : format(mapSpatTimes.mapTime, 'MM/dd/yyyy HH:mm:ss')}
               </Typography>
 
               <Typography fontSize="16px">
                 SPAT Message Time:{' '}
-                {mapSpatTimes.spatTime === 0 ? 'No Data' : format(mapSpatTimes.spatTime, 'MM/dd/yyyy HH:mm:ss')}
+                {!mapSpatTimes.spatTime ? 'No Data' : format(mapSpatTimes.spatTime, 'MM/dd/yyyy HH:mm:ss')}
               </Typography>
 
               {liveDataActive && (

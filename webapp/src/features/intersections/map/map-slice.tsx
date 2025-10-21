@@ -673,6 +673,13 @@ export const renderIterative_Map = createAsyncThunk(
         latestTimestamp = timestamp
       }
     }
+    console.log(
+      'renderIterative_MAP ts ',
+      newMapData.at(-1)!.properties,
+      newMapData.at(-1)!.properties.odeReceivedAt,
+      latestTimestamp,
+      Math.max(newMapData.at(-1)!.properties.odeReceivedAt, latestTimestamp)
+    )
     const currTimestamp = Math.max(newMapData.at(-1)!.properties.odeReceivedAt, latestTimestamp)
 
     let oldIndex = 0

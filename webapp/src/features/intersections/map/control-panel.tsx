@@ -58,7 +58,7 @@ import { RootState } from '../../../store'
 import { decoderModeToggled, setAsn1DecoderDialogOpen } from '../decoder/asn1-decoder-slice'
 import toast from 'react-hot-toast'
 import { ExpandMoreOutlined, Pause, PlayArrowOutlined, UploadFile } from '@mui/icons-material'
-import { getAccurateTimeMillis, selectTimeOffsetMillis } from '../../../generalSlices/timeSyncSlice'
+import { selectTimeOffsetMillis } from '../../../generalSlices/timeSyncSlice'
 
 export const getNumber = (value: string | undefined): number | undefined => {
   if (value == null) return undefined
@@ -470,7 +470,7 @@ function ControlPanel() {
 
               {liveDataActive && (
                 <Typography fontSize="16px">
-                  Live Spat Offset: {mapSpatTimes.spatTime - getAccurateTimeMillis(timeOffsetMillis)}
+                  Live Spat Offset: {mapSpatTimes.spatTime - (Date.now() + timeOffsetMillis)}
                 </Typography>
               )}
               <Typography fontSize="16px">Activity Chart for {format(sliderTimeValue.start, 'MM/dd/yyyy')}:</Typography>

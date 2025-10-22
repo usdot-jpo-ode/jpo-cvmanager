@@ -1553,6 +1553,7 @@ export const intersectionMapSlice = createSlice({
       state.value.mapData = undefined
       state.value.mapSpatTimes = { mapTime: 0, spatTime: 0 }
       state.value.rawData = {}
+      state.value.sourceData = { map: [], spat: [], bsm: { type: 'FeatureCollection', features: [] } }
       state.value.sliderValueDeciseconds = 0
       state.value.playbackModeActive = false
       state.value.currentSpatData = []

@@ -1506,8 +1506,8 @@ export const intersectionMapSlice = createSlice({
     setShowPopupOnHover: (state, action: PayloadAction<boolean>) => {
       state.value.showPopupOnHover = action.payload
     },
-    toggleLiveDataActive: (state) => {
-      state.value.liveDataActive = !state.value.liveDataActive
+    setLiveDataActive: (state, action: PayloadAction<boolean>) => {
+      state.value.liveDataActive = action.payload
     },
     setBsmTrailLength: (state, action: PayloadAction<number>) => {
       state.value.bsmTrailLength = action.payload
@@ -1838,7 +1838,7 @@ export const {
   setLaneLabelsVisible,
   setSigGroupLabelsVisible,
   setShowPopupOnHover,
-  toggleLiveDataActive,
+  setLiveDataActive,
   setBsmTrailLength,
   setTimeWindowSeconds,
   setRawData,

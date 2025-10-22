@@ -36,7 +36,7 @@ import {
   selectSliderTimeValue,
   setSliderValueDeciseconds,
   setTimeWindowSeconds,
-  toggleLiveDataActive,
+  setLiveDataActive,
   togglePlaybackModeActive,
   updateQueryParams,
 } from './map-slice'
@@ -429,8 +429,10 @@ function ControlPanel() {
                 onClick={() => {
                   if (liveDataActive) {
                     dispatch(cleanUpLiveStreaming())
+                    dispatch(setLiveDataActive(false))
+                  } else {
+                    dispatch(setLiveDataActive(true))
                   }
-                  dispatch(toggleLiveDataActive())
                 }}
                 color="info"
                 variant="outlined"

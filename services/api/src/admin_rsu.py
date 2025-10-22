@@ -33,7 +33,7 @@ def get_rsu_data(rsu_ip: str, user: EnvironWithOrg, qualified_orgs: list[str]):
         "JOIN public.snmp_credentials AS snmp_cred ON snmp_cred.snmp_credential_id = rsus.snmp_credential_id "
         "JOIN public.snmp_protocols AS snmp_ver ON snmp_ver.snmp_protocol_id = rsus.snmp_protocol_id "
         "JOIN public.rsu_organization AS ro ON ro.rsu_id = rsus.rsu_id  "
-        "JOIN public.organizations AS org ON org.organization_id = ro.organization_id"
+        "JOIN public.organizations AS org ON org.organization_id = ro.organization_id "
     )
 
     where_clauses = []
@@ -47,7 +47,7 @@ def get_rsu_data(rsu_ip: str, user: EnvironWithOrg, qualified_orgs: list[str]):
         where_clauses.append("ipv4_address = :rsu_ip")
         params["rsu_ip"] = rsu_ip
     if where_clauses:
-        query += " WHERE " + " AND ".join(where_clauses)
+        query += "WHERE " + " AND ".join(where_clauses)
     query += ") as row"
 
     data = pgquery.query_db(query, params=params)

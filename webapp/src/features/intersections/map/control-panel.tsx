@@ -38,6 +38,7 @@ import {
   setTimeWindowSeconds,
   toggleLiveDataActive,
   togglePlaybackModeActive,
+  updateQueryParams,
 } from './map-slice'
 import {
   selectLiveDataActive,
@@ -436,6 +437,29 @@ function ControlPanel() {
                 className="capital-case"
               >
                 {liveDataActive ? 'Stop Live Data' : 'Render Live Data'}
+              </Button>
+              <Button
+                sx={{ mt: 2, ml: 2 }}
+                onClick={() => {
+                  dispatch(
+                    updateQueryParams({
+                      ...queryParams,
+                      eventDate: eventTime.toDate(),
+                      startDate: new Date(eventTime.toDate().getTime() - timeBeforeSeconds * 1000),
+                      endDate: new Date(eventTime.toDate().getTime() + timeAfterSeconds * 1000),
+                    })
+                  )
+                }}
+                color="info"
+                variant="outlined"
+                className="capital-case"
+                disabled={
+                  queryParamTimes.eventTime.getTime() === eventTime.toDate().getTime() &&
+                  queryParamTimes.timeBeforeSeconds === timeBeforeSeconds &&
+                  queryParamTimes.timeAfterSeconds === timeAfterSeconds
+                }
+              >
+                Update Time Range
               </Button>
             </Box>
           </AccordionDetails>

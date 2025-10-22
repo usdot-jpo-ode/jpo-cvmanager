@@ -1,10 +1,10 @@
 // Create a custom AbortController that can abort thunk promises
-class ThunkAbortController extends AbortController {
+export class ThunkAbortController extends AbortController {
   private thunkPromises: Set<{ abort: () => void }> = new Set()
 
   constructor(thunkPromise?: { abort: () => void }) {
     super()
-    
+
     if (thunkPromise) {
       this.addThunkPromise(thunkPromise)
     }
@@ -12,10 +12,10 @@ class ThunkAbortController extends AbortController {
 
   addThunkPromise(thunkPromise: { abort: () => void }) {
     this.thunkPromises.add(thunkPromise)
-    
+
     // Clean up when thunk completes
     if ('finally' in thunkPromise) {
-      (thunkPromise as any).finally(() => {
+      ;(thunkPromise as any).finally(() => {
         this.thunkPromises.delete(thunkPromise)
       })
     }
@@ -24,16 +24,16 @@ class ThunkAbortController extends AbortController {
   abort(reason?: any) {
     // Abort the fetch requests
     super.abort(reason)
-    
+
     // Abort all registered thunk promises
-    this.thunkPromises.forEach(thunkPromise => {
+    this.thunkPromises.forEach((thunkPromise) => {
       try {
         thunkPromise.abort()
       } catch (error) {
         console.warn('Error aborting thunk promise:', error)
       }
     })
-    
+
     // Clear the set
     this.thunkPromises.clear()
   }

@@ -25,6 +25,7 @@ import { SsmSrmData } from '../../../models/RsuApi'
 import { getTimestamp } from './map-component'
 import { getAccurateTimeMillis, selectTimeOffsetMillis } from '../../../generalSlices/timeSyncSlice'
 import { combineUrlPaths } from '../../../apis/intersections/api-helper-cviz'
+import { ThunkAbortController } from './utilities/thunk-abort-contoller'
 
 export type MAP_LAYERS =
   | 'map-message'
@@ -1011,9 +1012,10 @@ export const initializeLiveStreaming = createAsyncThunk(
           console.debug(
             'Received SPaT message with age of ' +
               (getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState)) - messageTime) +
-              'ms'
+              'ms',
+            selectTimeOffsetMillis(getState() as RootState)
           )
-          dispatch(renderIterative_Spat([spatMessage]))
+          //   dispatch(renderIterative_Spat([spatMessage]))
           // dispatch(maybeUpdateSliderValue())
         })
 
@@ -1023,9 +1025,10 @@ export const initializeLiveStreaming = createAsyncThunk(
           console.debug(
             'Received MAP message with age of ' +
               (getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState)) - messageTime) +
-              'ms'
+              'ms',
+            selectTimeOffsetMillis(getState() as RootState)
           )
-          dispatch(renderIterative_Map([mapMessage]))
+          //   dispatch(renderIterative_Map([mapMessage]))
           // dispatch(maybeUpdateSliderValue())
         })
 
@@ -1035,9 +1038,10 @@ export const initializeLiveStreaming = createAsyncThunk(
           console.debug(
             'Received BSM message with age of ' +
               (getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState)) - messageTime) +
-              'ms'
+              'ms',
+            selectTimeOffsetMillis(getState() as RootState)
           )
-          dispatch(renderIterative_Bsm([bsmData]))
+          //   dispatch(renderIterative_Bsm([bsmData]))
           // dispatch(maybeUpdateSliderValue())
         })
       },

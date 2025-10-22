@@ -22,6 +22,7 @@ import {
 } from './map-layer-style-slice'
 import {
   MAP_PROPS,
+  addInitialDataAbortPromise,
   cleanUpLiveStreaming,
   clearHoveredFeature,
   clearSelectedFeature,
@@ -220,7 +221,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
     if (loadInitialDataTimeoutId) {
       clearTimeout(loadInitialDataTimeoutId)
     }
-    const timeoutId = setTimeout(() => dispatch(pullInitialData()), 500)
+    const timeoutId = setTimeout(() => dispatch(addInitialDataAbortPromise(dispatch(pullInitialData()))), 500)
     dispatch(setLoadInitialDataTimeoutId(timeoutId))
   }, [queryParams])
 

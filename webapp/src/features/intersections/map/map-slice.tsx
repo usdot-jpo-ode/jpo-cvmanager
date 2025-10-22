@@ -502,7 +502,7 @@ export const pullInitialData = createAsyncThunk(
       ],
     }
     if (!selectAbortAllFutureRequests(getState() as RootState)) {
-      dispatch(renderEntireMap({ currentMapData: rawMap, currentSpatData: rawSpat, currentBsmData: bsmGeojson }))
+      dispatch(renderIterative_Bsm(bsmGeojson.features))
     }
     return
   },
@@ -1613,6 +1613,12 @@ export const intersectionMapSlice = createSlice({
     addInitialDataAbortController: (state, action: PayloadAction<AbortController>) => {
       state.value.pullInitialDataAbortControllers = [...state.value.pullInitialDataAbortControllers, action.payload]
     },
+    addInitialDataAbortPromise: (state, action: PayloadAction<{ abort: () => void }>) => {
+      state.value.pullInitialDataAbortControllers = [
+        ...state.value.pullInitialDataAbortControllers,
+        new ThunkAbortController(action.payload),
+      ]
+    },
     resetInitialDataAbortControllers: (state) => {
       const controllers = state.value.pullInitialDataAbortControllers
       state.value.pullInitialDataAbortControllers = []
@@ -1850,6 +1856,7 @@ export const {
   centerMapOnPoint,
   handleNewMapMessageData,
   addInitialDataAbortController,
+  addInitialDataAbortPromise,
   resetInitialDataAbortControllers,
   setSpatSignalGroups,
   setCurrentBsms,

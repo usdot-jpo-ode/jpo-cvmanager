@@ -239,7 +239,7 @@ export const generateQueryParams = (
         let startDate = undefined as number | undefined
         let endDate = undefined as number | undefined
 
-        for (const spat of (source as { spat: ProcessedSpat[] }).spat) {
+        for (const spat of (source as { spat: ProcessedSpat[] })?.spat ?? []) {
           if (!startDate || spat.utcTimeStamp < startDate) {
             startDate = getTimestamp(spat.utcTimeStamp)
           }

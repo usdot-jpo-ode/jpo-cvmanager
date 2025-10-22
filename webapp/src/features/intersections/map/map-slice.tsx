@@ -501,7 +501,9 @@ export const pullInitialData = createAsyncThunk(
         ),
       ],
     }
-    dispatch(renderEntireMap({ currentMapData: rawMap, currentSpatData: rawSpat, currentBsmData: bsmGeojson }))
+    if (!selectAbortAllFutureRequests(getState() as RootState)) {
+      dispatch(renderEntireMap({ currentMapData: rawMap, currentSpatData: rawSpat, currentBsmData: bsmGeojson }))
+    }
     return
   },
   {

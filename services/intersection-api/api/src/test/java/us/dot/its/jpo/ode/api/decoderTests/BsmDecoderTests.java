@@ -24,6 +24,8 @@ import us.dot.its.jpo.geojsonconverter.pojos.geojson.bsm.ProcessedBsm;
 import us.dot.its.jpo.ode.api.asn1.BsmDecoder;
 import us.dot.its.jpo.ode.model.OdeMessageFrameData;
 
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
@@ -50,13 +52,11 @@ public class BsmDecoderTests {
 
             odeBsmDecodedJsonReference = new String(
                     Files.readAllBytes(Paths
-                            .get("src/test/resources/json/bsm/Ode.ReferenceBsmJson.json")))
-                    .replaceAll("\n", "").replaceAll(" ", "");
+                            .get("src/test/resources/json/bsm/Ode.ReferenceBsmJson.json")));
 
             processedBsmReference = new String(
                     Files.readAllBytes(Paths
-                            .get("src/test/resources/json/bsm/GJC.ReferenceProcessedBsmJson.json")))
-                    .replaceAll("\n", "").replaceAll(" ", "");
+                            .get("src/test/resources/json/bsm/GJC.ReferenceProcessedBsmJson.json")));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -76,7 +76,7 @@ public class BsmDecoderTests {
             bsm.getMetadata()
                     .setSerialId(bsm.getMetadata().getSerialId().setStreamId("44a6d71c-8af1-4f45-848c-10bd7f919be8"));
 
-            assertEquals(bsm.toJson().replaceAll("\n", "").replaceAll(" ", ""), odeBsmDecodedJsonReference);
+            assertThatJson(odeBsmDecodedJsonReference).isEqualTo(bsm.toJson());
         } catch (JsonProcessingException e) {
             assertEquals(true, false);
         }
@@ -98,7 +98,7 @@ public class BsmDecoderTests {
 
             bsm.getProperties().setOdeReceivedAt("2025-08-29T16:09:34.416Z");
 
-            assertEquals(bsm.toString().replaceAll("\n", "").replaceAll(" ", ""), processedBsmReference);
+            assertThatJson(processedBsmReference).isEqualTo(bsm.toString());
         } catch (JsonProcessingException e) {
             assertEquals(true, false);
         }

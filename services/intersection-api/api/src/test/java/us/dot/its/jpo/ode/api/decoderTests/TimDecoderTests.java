@@ -22,6 +22,8 @@ import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
 import us.dot.its.jpo.ode.api.asn1.TimDecoder;
 import us.dot.its.jpo.ode.model.OdeMessageFrameData;
 
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
@@ -47,8 +49,7 @@ public class TimDecoderTests {
 
             odeTimDecodedJsonReference = new String(
                     Files.readAllBytes(Paths
-                            .get("src/test/resources/json/tim/Ode.ReferenceTimJson.json")))
-                    .replaceAll("\n", "").replaceAll(" ", "");
+                            .get("src/test/resources/json/tim/Ode.ReferenceTimJson.json")));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -69,7 +70,7 @@ public class TimDecoderTests {
             tim.getMetadata()
                     .setSerialId(tim.getMetadata().getSerialId().setStreamId("44a6d71c-8af1-4f45-848c-10bd7f919be8"));
 
-            assertEquals(tim.toJson().replaceAll("\n", "").replaceAll(" ", ""), odeTimDecodedJsonReference);
+            assertThatJson(odeTimDecodedJsonReference).isEqualTo(tim.toJson());
         } catch (JsonProcessingException e) {
             assertEquals(true, false);
         }

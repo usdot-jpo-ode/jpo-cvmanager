@@ -4,10 +4,6 @@
 
 The JPO Connected Vehicle Manager is a web-based application that helps an organization manage their deployed CV devices (Roadside Units and Onboard Units) through an interactive, graphical user interface using Mapbox.
 
-**GUI:** ReactJS with Redux Toolkit and Mapbox GL
-
-**API:** Python 3.12.2
-
 **Features:**
 
 - Visualize devices on a Mapbox map
@@ -28,6 +24,42 @@ The JPO Connected Vehicle Manager is a web-based application that helps an organ
 
 To provide feedback, we recommend that you create an "issue" in this repository (<https://github.com/usdot-jpo-ode/jpo-cvmanager/issues>). You will need a GitHub account to create an issue. If you don’t have an account, a dialog will be presented to you to create one at no cost.
 
+## Quick Start
+
+### Requirements
+- Docker and Docker Compose installed on your machine
+
+### Steps
+1. Copy the `sample.env` file to a new file named `.env` in the root directory of the project.
+2. Edit the `.env` file to set the required environment variables. At a minimum, you will need to set the following variables:
+   - `DOCKER_HOST_IP`: The IP address of your Docker host. This can be found through linux/wsl through the command "ifconfig", or "localhost" if using Docker Desktop on Windows or Linux (not mac).
+   - `MAPBOX_TOKEN`: Any mapbox token. You can create a free account at [mapbox.com](https://www.mapbox.com/) to obtain a token.
+   - `MAVEN_GITHUB_TOKEN`: A GitHub access token used to access public GitHub Maven packages. See [Github Token](#github-token) section for instructions on generating this token.
+3. Run the following command to start the CV Manager:
+```sh
+docker-compose up -d
+```
+4. Access the CV Manager webapp at [http://localhost](http://localhost) in your web browser.
+
+```
+Default Username: test@gmail.com
+Default Password: tester
+```
+
+If you have any issues, try the following steps:
+1. Ensure that the following required services are healthy in Docker (docker ps):
+    i. cvmanager_postgres
+    ii. cvmanager_keycloak
+    iii. cvmanager_api
+    iv. cvmanager_webapp
+2. Bring down the system and re-build all containers
+```sh
+docker compose down -v
+docker compose up --build -d
+```
+
+For more details on running the CV-Manager through Docker, see the [Getting Started](#getting-started) section below.
+
 ## Release Notes
 
 The current version and release history of the JPO CV Manager: [Release Notes](docs/Release_notes.md)
@@ -39,11 +71,12 @@ The JPO CV Manager was originally developed for the Google Cloud Platform and a 
 <img src="docs/CVManagerArchFlowchart.png" alt="drawing" width="1200"/>
 
 ### CV Manager Webapp
+ReactJS with Redux Toolkit and Mapbox GL
 
 - Supports OAuth2.0 through Keycloak for user authentication only. It can be configured for several different Identity Providers, including Google.
 
 ### CV Manager API
-
+Python 3.12.2
 - PostgreSQL database is required. Run the [table creation script to create a to-spec database](resources/sql_scripts).
   - Follow along with the README to ensure your data is properly populated before running the CV Manager.
 - GCP BigQuery is required to support J2735 message counts and BSM data. Message counts will be migrated to PostgreSQL eventually, however it is not recommended to store full J2735 messages in a PostgreSQL database. A noSQL database or a database that is specialized for storing big data is recommended. Support for MongoDB is planned to be implemented.

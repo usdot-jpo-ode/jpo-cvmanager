@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 import api.src.rsu_commands as rsu_commands
 
 # shared arguments
@@ -16,9 +16,8 @@ rsu_info = {
 }
 organization = "test"
 
-### RSU_COMMANDS TESTS ###
 
-
+# ## RSU_COMMANDS TESTS ###
 def test_rsu_commands_snmpfilter_option_present():
     expected_value = {
         "roles": ["operator", "admin"],
@@ -70,8 +69,6 @@ def test_execute_command_snmpfilter(mock_ssh_commands_snmpfilter):
 
 
 # test queries for RSU manufacturer, SSH credentials, and SNMP credentials
-
-
 @patch("api.src.rsu_commands.pgquery.query_db")
 def test_fetch_rsu_info(mock_query_db):
     # mock

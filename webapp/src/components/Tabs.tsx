@@ -10,7 +10,7 @@ interface TabItemProps {
   tag?: FEATURE_KEY
 }
 
-export const TabItem = () => {
+export const TabItem = (props: TabItemProps) => {
   return <div></div>
 }
 

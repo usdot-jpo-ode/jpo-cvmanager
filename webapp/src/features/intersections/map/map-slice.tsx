@@ -312,6 +312,7 @@ export const pullInitialData = createAsyncThunk(
         ...map,
         properties: {
           ...map.properties,
+          timeStamp: getTimestamp(map.properties.timeStamp),
           odeReceivedAt: getTimestamp(map.properties.odeReceivedAt),
         },
       }))
@@ -403,7 +404,14 @@ export const pullInitialData = createAsyncThunk(
         success: `Successfully got MAP Data`,
         error: `Failed to get MAP data. Please see console`,
       })
-      rawMap = await rawMapPromise
+      rawMap = (await rawMapPromise).map((map) => ({
+        ...map,
+        properties: {
+          ...map.properties,
+          timeStamp: getTimestamp(map.properties.timeStamp),
+          odeReceivedAt: getTimestamp(map.properties.odeReceivedAt),
+        },
+      }))
     } else {
       rawMap = [...importedMessageData.mapData]
       rawSpat = [...importedMessageData.spatData].sort((a, b) => a.utcTimeStamp - b.utcTimeStamp)

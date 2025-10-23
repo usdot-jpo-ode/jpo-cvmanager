@@ -48,6 +48,15 @@ ENABLE_MOOVE_AI_FEATURES = os.environ.get("ENABLE_MOOVE_AI_FEATURES", "true") !=
 smtp_error_handler.configure_error_emails(app)
 
 app.wsgi_app = Middleware(app.wsgi_app)
+
+
+@app.after_request
+def apply_cors_header(response):
+    # Add CORS header to all responses to prevent webapp parsing errors. Webapps have trouble handling responses that do not have the Access-Control-Allow-Origin header set.
+    response.headers["Access-Control-Allow-Origin"] = os.environ["CORS_DOMAIN"]
+    return response
+
+
 api = Api(app)
 
 api.add_resource(HealthCheck, "/")
@@ -66,7 +75,7 @@ if ENABLE_RSU_FEATURES:
     api.add_resource(RsuQueryCounts, "/rsucounts")
     api.add_resource(RsuQueryMsgFwd, "/rsu-msgfwd-query")
     api.add_resource(RsuCommandRequest, "/rsu-command")
-    api.add_resource(RsuGeoQuery, "/rsu-geo-query")
+    api.add_resource(RsuGeoQuery, "/rsu-config-geo-query")
     api.add_resource(RsuGeoData, "/rsu-geo-msg-data")
     api.add_resource(IssScmsStatus, "/iss-scms-status")
     api.add_resource(RsuSsmSrmData, "/rsu-ssm-srm-data")

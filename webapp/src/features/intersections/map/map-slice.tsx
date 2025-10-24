@@ -987,6 +987,8 @@ export const initializeLiveStreaming = createAsyncThunk(
     const currentState = getState() as RootState
     const authToken = selectToken(currentState)!
     const queryParams = selectQueryParams(currentState)
+
+    // Request current SPaT and MAP data. SPaT data is requested after the connection is established to ensure no gaps
     let abortController = new AbortController()
     dispatch(addInitialDataAbortController(abortController))
     const rawMapPromise = MessageMonitorApi.getMapMessages({
@@ -1001,20 +1003,6 @@ export const initializeLiveStreaming = createAsyncThunk(
       error: `Failed to get MAP data. Please see console`,
     })
     dispatch(renderIterative_Map(await rawMapPromise))
-    abortController = new AbortController()
-    dispatch(addInitialDataAbortController(abortController))
-    const rawSpatPromise = MessageMonitorApi.getSpatMessages({
-      token: authToken,
-      intersectionId: queryParams.intersectionId,
-      latest: true,
-      abortController,
-    })
-    toast.promise(rawSpatPromise, {
-      loading: `Loading SPAT Data`,
-      success: `Successfully got SPAT Data`,
-      error: `Failed to get SPAT data. Please see console`,
-    })
-    dispatch(renderIterative_Spat(await rawSpatPromise))
 
     // Topics are in the format /live/{intersectionID}/{spat,map,bsm}
     const spatTopic = `/live/${intersectionId}/processed-spat`
@@ -1060,7 +1048,7 @@ export const initializeLiveStreaming = createAsyncThunk(
               'ms',
             selectTimeOffsetMillis(getState() as RootState)
           )
-            dispatch(renderIterative_Bsm([bsmData]))
+          dispatch(renderIterative_Bsm([bsmData]))
           // dispatch(maybeUpdateSliderValue())
         })
       },
@@ -1068,6 +1056,24 @@ export const initializeLiveStreaming = createAsyncThunk(
         console.error('Live Streaming ERROR connecting to live data Websocket: ' + error)
       }
     )
+
+    // Request latest SPaT data to handle deduplicated feed. 
+    // SPaT messages are sorted, so getting an older message 
+    // here after a newer message is received on the websocket won't cause any issues
+    abortController = new AbortController()
+    dispatch(addInitialDataAbortController(abortController))
+    const rawSpatPromise = MessageMonitorApi.getSpatMessages({
+      token: authToken,
+      intersectionId: queryParams.intersectionId,
+      latest: true,
+      abortController,
+    })
+    toast.promise(rawSpatPromise, {
+      loading: `Loading SPAT Data`,
+      success: `Successfully got SPAT Data`,
+      error: `Failed to get SPAT data. Please see console`,
+    })
+    dispatch(renderIterative_Spat(await rawSpatPromise))
 
     function onDisconnect() {
       if (numRestarts < 5 && liveDataActive) {

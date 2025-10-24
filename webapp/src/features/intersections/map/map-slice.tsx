@@ -965,6 +965,8 @@ export const initializeLiveStreaming = createAsyncThunk(
     const liveDataActive = selectLiveDataActive(getState() as RootState)
     const wsClient = selectWsClient(getState() as RootState)
 
+    dispatch(resetInitialDataAbortControllers())
+    dispatch(setAbortAllFutureRequests(false))
     dispatch(onTimeQueryChanged({ eventTime: new Date(), timeBefore: 10, timeAfter: 0, timeWindowSeconds: 2 }))
     if (shouldResetMapView) dispatch(resetMapView())
 

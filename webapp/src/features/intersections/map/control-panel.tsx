@@ -60,7 +60,6 @@ import { RootState } from '../../../store'
 import { decoderModeToggled, setAsn1DecoderDialogOpen } from '../decoder/asn1-decoder-slice'
 import toast from 'react-hot-toast'
 import { ExpandMoreOutlined, Pause, PlayArrowOutlined, UploadFile } from '@mui/icons-material'
-import { selectTimeOffsetMillis } from '../../../generalSlices/timeSyncSlice'
 
 export const getNumber = (value: string | undefined): number | undefined => {
   if (value == null) return undefined
@@ -176,7 +175,6 @@ function ControlPanel() {
 
   const bsmEventsByMinute = useSelector(selectBsmEventsByMinute)
   const playbackModeActive = useSelector(selectPlaybackModeActive)
-  const timeOffsetMillis = useSelector(selectTimeOffsetMillis)
 
   const theme = useTheme()
 
@@ -497,12 +495,6 @@ function ControlPanel() {
                 SPAT Message Time:{' '}
                 {!mapSpatTimes.spatTime ? 'No Data' : format(mapSpatTimes.spatTime, 'MM/dd/yyyy HH:mm:ss')}
               </Typography>
-
-              {liveDataActive && (
-                <Typography fontSize="16px">
-                  Live Spat Offset: {mapSpatTimes.spatTime - (Date.now() + timeOffsetMillis)}
-                </Typography>
-              )}
               <Typography fontSize="16px">Activity Chart for {format(sliderTimeValue.start, 'MM/dd/yyyy')}:</Typography>
 
               <ResponsiveContainer

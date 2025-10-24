@@ -1015,8 +1015,8 @@ export const initializeLiveStreaming = createAsyncThunk(
               'ms',
             selectTimeOffsetMillis(getState() as RootState)
           )
-          //   dispatch(renderIterative_Spat([spatMessage]))
-          // dispatch(maybeUpdateSliderValue())
+          dispatch(renderIterative_Spat([spatMessage]))
+          //   dispatch(maybeUpdateSliderValue())
         })
 
         client.subscribe(mapTopic, function (mes: IMessage) {
@@ -1028,7 +1028,7 @@ export const initializeLiveStreaming = createAsyncThunk(
               'ms',
             selectTimeOffsetMillis(getState() as RootState)
           )
-          //   dispatch(renderIterative_Map([mapMessage]))
+          dispatch(renderIterative_Map([mapMessage]))
           // dispatch(maybeUpdateSliderValue())
         })
 
@@ -1041,7 +1041,7 @@ export const initializeLiveStreaming = createAsyncThunk(
               'ms',
             selectTimeOffsetMillis(getState() as RootState)
           )
-          //   dispatch(renderIterative_Bsm([bsmData]))
+            dispatch(renderIterative_Bsm([bsmData]))
           // dispatch(maybeUpdateSliderValue())
         })
       },

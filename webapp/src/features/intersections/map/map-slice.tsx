@@ -996,6 +996,17 @@ export const initializeLiveStreaming = createAsyncThunk(
       error: `Failed to get MAP data. Please see console`,
     })
     dispatch(renderIterative_Map(await rawMapPromise))
+    const rawSpatPromise = MessageMonitorApi.getSpatMessages({
+      token: authToken,
+      intersectionId: queryParams.intersectionId,
+      latest: true,
+    })
+    toast.promise(rawSpatPromise, {
+      loading: `Loading SPAT Data`,
+      success: `Successfully got SPAT Data`,
+      error: `Failed to get SPAT data. Please see console`,
+    })
+    dispatch(renderIterative_Spat(await rawSpatPromise))
 
     // Topics are in the format /live/{intersectionID}/{spat,map,bsm}
     const spatTopic = `/live/${intersectionId}/processed-spat`

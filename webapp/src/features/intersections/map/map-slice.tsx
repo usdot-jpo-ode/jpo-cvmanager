@@ -987,10 +987,13 @@ export const initializeLiveStreaming = createAsyncThunk(
     const currentState = getState() as RootState
     const authToken = selectToken(currentState)!
     const queryParams = selectQueryParams(currentState)
+    let abortController = new AbortController()
+    dispatch(addInitialDataAbortController(abortController))
     const rawMapPromise = MessageMonitorApi.getMapMessages({
       token: authToken,
       intersectionId: queryParams.intersectionId,
       latest: true,
+      abortController,
     })
     toast.promise(rawMapPromise, {
       loading: `Loading MAP Data`,
@@ -998,10 +1001,13 @@ export const initializeLiveStreaming = createAsyncThunk(
       error: `Failed to get MAP data. Please see console`,
     })
     dispatch(renderIterative_Map(await rawMapPromise))
+    abortController = new AbortController()
+    dispatch(addInitialDataAbortController(abortController))
     const rawSpatPromise = MessageMonitorApi.getSpatMessages({
       token: authToken,
       intersectionId: queryParams.intersectionId,
       latest: true,
+      abortController,
     })
     toast.promise(rawSpatPromise, {
       loading: `Loading SPAT Data`,

@@ -4,7 +4,7 @@ import logging
 
 def configure_logging() -> str:
     LOGGING_LEVEL = os.environ.get("LOGGING_LEVEL", "INFO")
-    if not LOGGING_LEVEL:
+    if not LOGGING_LEVEL or LOGGING_LEVEL == "":
         LOGGING_LEVEL = "INFO"
     logging.basicConfig(format="%(levelname)s:%(message)s", level=LOGGING_LEVEL)
     return LOGGING_LEVEL
@@ -28,11 +28,11 @@ def get_env_var(key: str, default: str | None = None, error=False, warn=True):
     return value
 
 
-LOGGING_LEVEL=configure_logging()
-TIMEZONE=get_env_var("TIMEZONE", "America/Denver")
+LOGGING_LEVEL = configure_logging()
+TIMEZONE = get_env_var("TIMEZONE", "America/Denver")
 
-GCP_PROJECT=get_env_var("GCP_PROJECT")
-BLOB_STORAGE_BUCKET=get_env_var("BLOB_STORAGE_BUCKET")
+GCP_PROJECT = get_env_var("GCP_PROJECT")
+BLOB_STORAGE_BUCKET = get_env_var("BLOB_STORAGE_BUCKET")
 
 PG_DB_HOST = get_env_var("PG_DB_HOST")
 PG_DB_USER = get_env_var("PG_DB_USER")

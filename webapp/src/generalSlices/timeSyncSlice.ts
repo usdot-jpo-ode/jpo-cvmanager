@@ -3,6 +3,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 
 const TIME_SERVER_URL_UTC = 'https://timeapi.io/api/Time/current/zone?timeZone=Etc/UTC'
+const MAX_ACCEPTABLE_RTT_MS = 1000 // Maximum acceptable round-trip time
 
 interface TimeSyncState {
   timeOffsetMillis: number // Offset in milliseconds
@@ -20,18 +21,21 @@ export const computeAccurateTimeMillis = (utcMillis: number, timeOffsetMillis: n
 export const getAccurateTimeMillis = (timeOffsetMillis: number): number => Date.now() + timeOffsetMillis
 
 export const syncTimeOffset = createAsyncThunk('timeSync/syncTimeOffset', async (_) => {
-    const start = Date.now() // Record the start time
-    const response = await fetch(TIME_SERVER_URL_UTC)
-    const end = Date.now() // Record the end time
+  const start = Date.now() // Record the start time
+  const response = await fetch(TIME_SERVER_URL_UTC)
+  const end = Date.now() // Record the end time
 
-    const rtt = end - start // Calculate round-trip time
-    const data = await response.json()
-    const serverTime = new Date(data.dateTime + 'Z').getTime()
+  let rtt = end - start // Calculate round-trip time
+  if (rtt > MAX_ACCEPTABLE_RTT_MS) {
+    rtt = 0 // Discard RTT if too high
+  }
+  const data = await response.json()
+  const serverTime = new Date(data.dateTime + 'Z').getTime()
 
-    // Adjust for half the round-trip time
-    const correctedTime = serverTime + rtt / 2
-    const currentTime = Date.now()
-    return correctedTime - currentTime
+  // Adjust for half the round-trip time
+  const correctedTime = serverTime + rtt / 2
+  const currentTime = Date.now()
+  return correctedTime - currentTime
 })
 
 const timeSyncSlice = createSlice({

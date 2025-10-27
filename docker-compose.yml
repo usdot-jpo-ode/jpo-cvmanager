@@ -149,7 +149,7 @@ services:
       context: ./resources/keycloak
       dockerfile: Dockerfile
       args:
-        KEYCLOAK_LOGIN_THEME_NAME: ${KEYCLOAK_LOGIN_THEME_NAME:-cv-manager-keycloak-theme-4.8.2}.jar
+        KEYCLOAK_LOGIN_THEME_NAME: ${KEYCLOAK_LOGIN_THEME_NAME:-sample_theme}.jar
     image: jpo_cvmanager_keycloak:latest
     restart: always
     depends_on:

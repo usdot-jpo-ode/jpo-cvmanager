@@ -350,13 +350,11 @@ function ControlPanel() {
                   <FormControl fullWidth>
                     <TextField
                       label="Time Render Window"
-                      name="timeRangeAfter"
+                      name="timeRenderWindow"
                       type="number"
                       sx={{ mt: 1 }}
                       onChange={(e) => {
-                        if (Number.isInteger(Number(e.target.value))) {
-                          setTimeWindowSeconds(parseInt(e.target.value))
-                        }
+                        setTimeWindowSecondsLocal(e.target.value)
                       }}
                       slotProps={{
                         input: {

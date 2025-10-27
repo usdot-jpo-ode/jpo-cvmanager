@@ -1519,6 +1519,7 @@ export const intersectionMapSlice = createSlice({
       state.value.liveDataActive = false
       state.value.liveDataRestart = -1
       state.value.wsClient = undefined
+      state.value.liveSpatLatestLatencyMs = undefined
     },
     setLoadInitialDataTimeoutId: (state, action: PayloadAction<NodeJS.Timeout>) => {
       state.value.loadInitialDataTimeoutId = action.payload

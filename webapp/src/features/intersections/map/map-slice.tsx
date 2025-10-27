@@ -177,6 +177,7 @@ const initialState = {
   srmSsmCount: 0,
   srmMsgList: [],
   decoderModeEnabled: false,
+  liveSpatLatestLatencyMs: undefined as number | undefined,
 }
 
 const getNewSliderTimeValue = (startDate: Date, sliderValueDeciseconds: number, timeWindowSeconds: number) => {
@@ -1016,6 +1017,7 @@ export const initializeLiveStreaming = createAsyncThunk(
         client.subscribe(spatTopic, function (mes: IMessage) {
           const spatMessage: ProcessedSpat = JSON.parse(mes.body)
           const messageTime = getTimestamp(spatMessage.utcTimeStamp)
+          const messageLatencyMs = getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState)) - messageTime
           console.debug(
             'Received SPaT message with age of ' +
               (getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState)) - messageTime) +
@@ -1023,6 +1025,7 @@ export const initializeLiveStreaming = createAsyncThunk(
             selectTimeOffsetMillis(getState() as RootState)
           )
           dispatch(renderIterative_Spat([spatMessage]))
+          dispatch(setLiveSpatLatestLatencyMs(messageLatencyMs))
           //   dispatch(maybeUpdateSliderValue())
         })
 
@@ -1057,8 +1060,8 @@ export const initializeLiveStreaming = createAsyncThunk(
       }
     )
 
-    // Request latest SPaT data to handle deduplicated feed. 
-    // SPaT messages are sorted, so getting an older message 
+    // Request latest SPaT data to handle deduplicated feed.
+    // SPaT messages are sorted, so getting an older message
     // here after a newer message is received on the websocket won't cause any issues
     abortController = new AbortController()
     dispatch(addInitialDataAbortController(abortController))
@@ -1669,6 +1672,9 @@ export const intersectionMapSlice = createSlice({
     setAbortAllFutureRequests: (state, action: PayloadAction<boolean>) => {
       state.value.abortAllFutureRequests = action.payload
     },
+    setLiveSpatLatestLatencyMs: (state, action: PayloadAction<number | undefined>) => {
+      state.value.liveSpatLatestLatencyMs = action.payload
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -1851,6 +1857,7 @@ export const selectSrmMsgList = (state: RootState) => state.intersectionMap.valu
 export const selectDecoderModeEnabled = (state: RootState) => state.intersectionMap.value.decoderModeEnabled
 export const selectTimeFilterBsms = (state: RootState) => !state.intersectionMap.value.decoderModeEnabled
 export const selectAbortAllFutureRequests = (state: RootState) => state.intersectionMap.value.abortAllFutureRequests
+export const selectLiveSpatLatestLatencyMs = (state: RootState) => state.intersectionMap.value.liveSpatLatestLatencyMs
 
 export const {
   setSurroundingEvents,
@@ -1892,6 +1899,7 @@ export const {
   setMapRef,
   setDecoderModeEnabled,
   setAbortAllFutureRequests,
+  setLiveSpatLatestLatencyMs,
 } = intersectionMapSlice.actions
 
 export default intersectionMapSlice.reducer

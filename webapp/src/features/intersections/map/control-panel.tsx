@@ -39,6 +39,7 @@ import {
   setLiveDataActive,
   togglePlaybackModeActive,
   updateQueryParams,
+  selectLiveSpatLatestLatencyMs,
 } from './map-slice'
 import {
   selectLiveDataActive,
@@ -175,6 +176,7 @@ function ControlPanel() {
 
   const bsmEventsByMinute = useSelector(selectBsmEventsByMinute)
   const playbackModeActive = useSelector(selectPlaybackModeActive)
+  const liveSpatLatestLatencyMs = useSelector(selectLiveSpatLatestLatencyMs)
 
   const theme = useTheme()
 
@@ -495,6 +497,12 @@ function ControlPanel() {
                 SPAT Message Time:{' '}
                 {!mapSpatTimes.spatTime ? 'No Data' : format(mapSpatTimes.spatTime, 'MM/dd/yyyy HH:mm:ss')}
               </Typography>
+              {liveDataActive && (
+                <Typography fontSize="16px">
+                  Latest spat message age:{' '}
+                  {(liveSpatLatestLatencyMs == undefined ? 'N/A' : liveSpatLatestLatencyMs / 1000) + ' seconds'}
+                </Typography>
+              )}
               <Typography fontSize="16px">Activity Chart for {format(sliderTimeValue.start, 'MM/dd/yyyy')}:</Typography>
 
               <ResponsiveContainer

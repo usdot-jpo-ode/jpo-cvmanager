@@ -22,6 +22,8 @@ import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
 import us.dot.its.jpo.ode.api.asn1.PsmDecoder;
 import us.dot.its.jpo.ode.model.OdeMessageFrameData;
 
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
@@ -47,8 +49,7 @@ public class PsmDecoderTests {
 
             odePsmDecodedJsonReference = new String(
                     Files.readAllBytes(Paths
-                            .get("src/test/resources/json/psm/Ode.ReferencePsmJson.json")))
-                    .replaceAll("\n", "").replaceAll(" ", "");
+                            .get("src/test/resources/json/psm/Ode.ReferencePsmJson.json")));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -69,7 +70,7 @@ public class PsmDecoderTests {
             psm.getMetadata()
                     .setSerialId(psm.getMetadata().getSerialId().setStreamId("44a6d71c-8af1-4f45-848c-10bd7f919be8"));
 
-            assertEquals(psm.toJson().replaceAll("\n", "").replaceAll(" ", ""), odePsmDecodedJsonReference);
+            assertThatJson(odePsmDecodedJsonReference).isEqualTo(psm.toJson());
         } catch (JsonProcessingException e) {
             assertEquals(true, false);
         }

@@ -24,6 +24,8 @@ import us.dot.its.jpo.ode.model.OdeMessageFrameData;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
@@ -51,13 +53,11 @@ public class SpatDecoderTests {
 
             odeSpatDecodedJsonReference = new String(
                     Files.readAllBytes(Paths
-                            .get("src/test/resources/json/spat/Ode.ReferenceSpatJson.json")))
-                    .replaceAll("\n", "").replaceAll(" ", "");
+                            .get("src/test/resources/json/spat/Ode.ReferenceSpatJson.json")));
 
             processedSpatReference = new String(
                     Files.readAllBytes(Paths
-                            .get("src/test/resources/json/spat/GJC.ReferenceProcessedSpatJson.json")))
-                    .replaceAll("\n", "").replaceAll(" ", "");
+                            .get("src/test/resources/json/spat/GJC.ReferenceProcessedSpatJson.json")));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -77,7 +77,7 @@ public class SpatDecoderTests {
             spat.getMetadata()
                     .setSerialId(spat.getMetadata().getSerialId().setStreamId("44a6d71c-8af1-4f45-848c-10bd7f919be8"));
 
-            assertEquals(spat.toJson().replaceAll("\n", "").replaceAll(" ", ""), odeSpatDecodedJsonReference);
+            assertThatJson(odeSpatDecodedJsonReference).isEqualTo(spat.toJson());
         } catch (JsonProcessingException e) {
             assertEquals(true, false);
         }
@@ -100,7 +100,7 @@ public class SpatDecoderTests {
 
             spat.setOdeReceivedAt("2025-08-29T16:09:34.416Z");
 
-            assertEquals(spat.toString().replaceAll("\n", "").replaceAll(" ", ""), processedSpatReference);
+            assertThatJson(processedSpatReference).isEqualTo(spat.toString());
         } catch (JsonProcessingException e) {
             assertEquals(true, false);
         }

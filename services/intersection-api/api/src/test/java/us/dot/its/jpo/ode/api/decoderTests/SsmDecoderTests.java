@@ -21,6 +21,7 @@ import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
 import us.dot.its.jpo.ode.api.asn1.SsmDecoder;
 import us.dot.its.jpo.ode.model.OdeMessageFrameData;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -47,8 +48,7 @@ public class SsmDecoderTests {
 
             odeSsmDecodedJsonReference = new String(
                     Files.readAllBytes(Paths
-                            .get("src/test/resources/json/ssm/Ode.ReferenceSsmJson.json")))
-                    .replaceAll("\n", "").replaceAll(" ", "");
+                            .get("src/test/resources/json/ssm/Ode.ReferenceSsmJson.json")));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -69,7 +69,7 @@ public class SsmDecoderTests {
             ssm.getMetadata()
                     .setSerialId(ssm.getMetadata().getSerialId().setStreamId("44a6d71c-8af1-4f45-848c-10bd7f919be8"));
 
-            assertEquals(ssm.toJson().replaceAll("\n", "").replaceAll(" ", ""), odeSsmDecodedJsonReference);
+            assertThatJson(odeSsmDecodedJsonReference).isEqualTo(ssm.toJson());
         } catch (JsonProcessingException e) {
             assertEquals(true, false);
         }

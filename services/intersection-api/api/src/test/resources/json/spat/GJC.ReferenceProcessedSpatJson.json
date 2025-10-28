@@ -4,34 +4,34 @@
   "odeReceivedAt": "2025-08-29T16:09:34.416Z",
   "validationMessages": [
     {
-      "message": "$.metadata.source:doesnothaveavalueintheenumeration[RSU,V2X,MMITSS,UNKNOWN]",
+      "message": "$.metadata.source: does not have a value in the enumeration [RSU, V2X, MMITSS, UNKNOWN]",
       "jsonPath": "$.metadata.source",
       "schemaPath": "#/properties/metadata/properties/source/enum"
     },
     {
-      "message": "$.metadata.logFileName:ismissingbutitisrequired",
+      "message": "$.metadata.logFileName: is missing but it is required",
       "jsonPath": "$.metadata",
       "schemaPath": "#/properties/metadata/required"
     },
     {
-      "message": "$.metadata.receivedMessageDetails:ismissingbutitisrequired",
+      "message": "$.metadata.receivedMessageDetails: is missing but it is required",
       "jsonPath": "$.metadata",
       "schemaPath": "#/properties/metadata/required"
     },
     {
-      "message": "$.metadata.recordGeneratedAt:ismissingbutitisrequired",
+      "message": "$.metadata.recordGeneratedAt: is missing but it is required",
       "jsonPath": "$.metadata",
       "schemaPath": "#/properties/metadata/required"
     },
     {
-      "message": "$.metadata.asn1:ismissingbutitisrequired",
+      "message": "$.metadata.asn1: is missing but it is required",
       "jsonPath": "$.metadata",
       "schemaPath": "#/properties/metadata/required"
     },
-    { "message": "CTI-4501conformanceissue:TheSPAT'timeStamp'DE_MinuteOfTheYearismissing" },
-    { "message": "CTI-4501conformanceissue:Theintersections'id.region'DE_RoadRegulatorIDismissing" },
-    { "message": "CTI-4501conformanceissue:Thestate-time-speed'timing.nextTime'DE_TimeMarkismissing" },
-    { "message": "CTI-4501conformanceissue:Thestate-time-speed'timing.startTime'DE_TimeMarkismissing" }
+    { "message": "CTI-4501 conformance issue: The SPAT 'timeStamp' DE_MinuteOfTheYear is missing" },
+    { "message": "CTI-4501 conformance issue: The intersections 'id.region' DE_RoadRegulatorID is missing" },
+    { "message": "CTI-4501 conformance issue: The state-time-speed 'timing.nextTime' DE_TimeMark is missing" },
+    { "message": "CTI-4501 conformance issue: The state-time-speed 'timing.startTime' DE_TimeMark is missing" }
   ],
   "intersectionId": 12111,
   "cti4501Conformant": false,

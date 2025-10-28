@@ -289,6 +289,12 @@
 			<artifactId>j2735-2024-ffm-lib</artifactId>
 			<version>1.0.5</version>
 		</dependency>
+		<dependency>
+            <groupId>net.javacrumbs.json-unit</groupId>
+            <artifactId>json-unit-assertj</artifactId>
+            <version>5.0.0</version>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
 	<repositories>
 		<repository>

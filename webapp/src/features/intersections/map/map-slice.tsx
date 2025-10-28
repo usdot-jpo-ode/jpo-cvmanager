@@ -744,6 +744,10 @@ export const renderIterative_Spat = createAsyncThunk(
     const currentProcessedSpatData: ProcessedSpat[] = selectCurrentSpatData(currentState) ?? []
 
     const OLDEST_DATA_TO_KEEP = queryParams.eventDate.getTime() - queryParams.startDate.getTime() // milliseconds
+    if (newSpatData.length == 0) {
+      console.warn('Did not attempt to render map (iterative SPAT), no new SPAT messages available:', newSpatData)
+      return { signalGroups: currentSpatSignalGroups, raw: currentProcessedSpatData }
+    }
     // Inject and filter spat data
     // 2024-01-09T00:24:28.354Z
     newSpatData = newSpatData.map((spat) => ({
@@ -1026,7 +1030,7 @@ export const initializeLiveStreaming = createAsyncThunk(
           )
           dispatch(renderIterative_Spat([spatMessage]))
           dispatch(setLiveSpatLatestLatencyMs(messageLatencyMs))
-          //   dispatch(maybeUpdateSliderValue())
+          dispatch(maybeUpdateSliderValue())
         })
 
         client.subscribe(mapTopic, function (mes: IMessage) {
@@ -1039,7 +1043,7 @@ export const initializeLiveStreaming = createAsyncThunk(
             selectTimeOffsetMillis(getState() as RootState)
           )
           dispatch(renderIterative_Map([mapMessage]))
-          // dispatch(maybeUpdateSliderValue())
+          dispatch(maybeUpdateSliderValue())
         })
 
         client.subscribe(bsmTopic, function (mes: IMessage) {
@@ -1052,7 +1056,7 @@ export const initializeLiveStreaming = createAsyncThunk(
             selectTimeOffsetMillis(getState() as RootState)
           )
           dispatch(renderIterative_Bsm([bsmData]))
-          // dispatch(maybeUpdateSliderValue())
+          dispatch(maybeUpdateSliderValue())
         })
       },
       (error) => {

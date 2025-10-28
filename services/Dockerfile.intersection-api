@@ -2,7 +2,7 @@ FROM maven:3.9.6-eclipse-temurin-22-jammy AS builder
 
 WORKDIR /home/intersection-api
 
-RUN wget https://github.com/usdot-jpo-ode/j2735-ffm-java/tree/j2735-ffm-java-2.0.2/lib/libasnapplication.so
+RUN wget -O libasnapplication.so https://github.com/usdot-jpo-ode/j2735-ffm-java/raw/j2735-ffm-java-2.0.2/lib/libasnapplication.so
 
 COPY ./intersection-api/api/pom.xml .
 COPY ./intersection-api/api/settings.xml .

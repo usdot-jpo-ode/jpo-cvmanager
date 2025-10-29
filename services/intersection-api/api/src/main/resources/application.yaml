@@ -83,6 +83,7 @@ enable:
   email: ${INTERSECTION_API_ENABLE_EMAILER:true}
   report: ${INTERSECTION_API_ENABLE_REPORTS:true}
   haas: ${INTERSECTION_API_ENABLE_HAAS:true}
+  asn1-decoder: ${INTERSECTION_API_ENABLE_ASN1_DECODER:true}
 
 cmServerURL: ${CM_SERVER_URL:http://localhost:8082}
 mongoTimeoutMs: ${CM_MONGO_TIMEOUT_MS:5000}
@@ -108,7 +109,6 @@ sendgrid:
 postmark.api.secretKey: ${CM_POSTMARK_SECRET_KEY:""}
 
 j2735.api:
-  text-buffer-size: 262144
-  uper-buffer-size: 8192
-  asn-codec-ctx-max-stack-size: 60000
-  message-frame-allocate-size: 16384
+  text-buffer-size: ${J2735_ASN_TEXT_BUFFER_SIZE:262144}
+  uper-buffer-size: ${J2735_UPER_BUFFER_SIZE:8192}
+  error-buffer-size: ${J2735_ERROR_BUFFER_SIZE:256}

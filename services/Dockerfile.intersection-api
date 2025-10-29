@@ -2,8 +2,6 @@ FROM maven:3.9.6-eclipse-temurin-22-jammy AS builder
 
 WORKDIR /home/intersection-api
 
-RUN wget -O libasnapplication.so https://github.com/usdot-jpo-ode/j2735-ffm-java/raw/j2735-ffm-java-2.0.2/lib/libasnapplication.so
-
 COPY ./intersection-api/api/pom.xml .
 COPY ./intersection-api/api/settings.xml .
 
@@ -28,7 +26,6 @@ WORKDIR /home
 
 COPY --from=builder /home/intersection-api/src/main/resources/application.yaml /home
 COPY --from=builder /home/intersection-api/target/intersection-api.jar /home
-COPY --from=builder /home/intersection-api/libasnapplication.so /usr/lib
 
 ENTRYPOINT ["java", \
     "-Djava.rmi.server.hostname=$DOCKER_HOST_IP", \

@@ -1084,6 +1084,8 @@ export const initializeLiveStreaming = createAsyncThunk(
     dispatch(renderIterative_Spat(await rawSpatPromise))
 
     function onDisconnect() {
+      client.deactivate() // Deactivate the client to clean up resources and stop automatic reconnection attempts
+      client.forceDisconnect() // Forcefully close the underlying WebSocket connection
       if (numRestarts < 5 && liveDataActive) {
         let numRestartsLocal = numRestarts
         if (Date.now() - connectionStartTime > 10000) {

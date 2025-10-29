@@ -20,7 +20,7 @@ RUN mvn -s settings.xml install -DskipTests
 
 
 # Create a new stage for runtime
-FROM eclipse-temurin:22-jre-jammy
+FROM eclipse-temurin:22-jre-noble
 
 WORKDIR /home
 

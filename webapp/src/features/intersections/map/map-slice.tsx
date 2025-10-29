@@ -776,6 +776,7 @@ export const renderIterative_Spat = createAsyncThunk(
         break
       }
     }
+
     const newSpatSignalGroups = parseSpatSignalGroups(newSpatData)
     const newSpatSignalGroupsArr = Object.keys(newSpatSignalGroups).map((key) => ({
       timestamp: Number(key),
@@ -1176,16 +1177,26 @@ export const updateRenderedMapState = createAsyncThunk(
       return
     }
 
-    // retrieve filtered SPATs
-    let closestSignalGroup: { spat: SpatSignalGroup[]; datetime: number } | null = null
-    for (const datetime in spatSignalGroups) {
-      const datetimeNum = Number(datetime) / 1000 // milliseconds to seconds
-      if (datetimeNum <= renderTimeInterval[1]) {
+    // Pre-process filtered SPAT keys
+    const spatSignalGroupKeys = Object.keys(spatSignalGroups).map((key) => ({
+      key: key,
+      dtSeconds: Number(key) / 1000,
+    }))
+
+    // find closest SPAT signal group to the end of the render time interval and set that as the default signal group to render
+    const lastSpatSignalGroup = spatSignalGroupKeys.reduce((a, b) => Math.max(Number(a), Number(b)), 0)
+    let closestSignalGroup: { spat: SpatSignalGroup[]; dtSeconds: number } = {
+      dtSeconds: lastSpatSignalGroup,
+      spat: spatSignalGroups[lastSpatSignalGroup],
+    }
+
+    // Iterate through SPAT signal groups to find closest prior to end of render interval
+    for (const { key, dtSeconds } of spatSignalGroupKeys) {
+      if (dtSeconds <= renderTimeInterval[1]) {
         if (
-          closestSignalGroup === null ||
-          Math.abs(datetimeNum - renderTimeInterval[1]) < Math.abs(closestSignalGroup.datetime - renderTimeInterval[1])
+          Math.abs(dtSeconds - renderTimeInterval[1]) < Math.abs(closestSignalGroup.dtSeconds - renderTimeInterval[1])
         ) {
-          closestSignalGroup = { datetime: datetimeNum, spat: spatSignalGroups[datetime] }
+          closestSignalGroup = { dtSeconds: dtSeconds, spat: spatSignalGroups[key] }
         }
       }
     }
@@ -1207,11 +1218,9 @@ export const updateRenderedMapState = createAsyncThunk(
     )
 
     return {
-      currentSignalGroups: closestSignalGroup?.spat,
-      signalStateData: closestSignalGroup
-        ? generateSignalStateFeatureCollection(mapSignalGroups!, closestSignalGroup?.spat)
-        : undefined,
-      spatTime: closestSignalGroup?.datetime * 1000,
+      currentSignalGroups: closestSignalGroup.spat,
+      signalStateData: generateSignalStateFeatureCollection(mapSignalGroups!, closestSignalGroup.spat),
+      spatTime: closestSignalGroup.dtSeconds * 1000,
       filteredSurroundingEvents: filteredEvents,
       filteredSurroundingNotifications: filteredNotifications,
     }

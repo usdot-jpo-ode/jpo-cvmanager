@@ -19,7 +19,7 @@ The intersection API requires the following dependencies be installed to run loc
 Additionally there are other dependencies installed through maven.
 Before building the intersection-api. Make sure that local copies of the ODE, JPO-GeoJsonConverter, and JPO-ConflictMonitor have been built and installed on your system. For instructions on building these locally, please see each ones respective repository.
 
-### Create an application-dev.yaml
+### Create an application-dev.yaml (Required for mvn, not for vscode)
 
 1. Navigate to the `src/main/resources` directory:
 

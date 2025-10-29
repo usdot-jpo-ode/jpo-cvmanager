@@ -160,7 +160,7 @@ const initialState = {
   importedMessageData: undefined as IMPORTED_MAP_MESSAGE_DATA | undefined,
   cursor: 'default',
   loadInitialDataTimeoutId: undefined as NodeJS.Timeout | undefined,
-  wsClient: undefined as MinimalClient | undefined,
+  wsClient: undefined as CompatClient | undefined,
   liveDataActive: false,
   currentMapData: [] as ProcessedMap[],
   currentSpatData: [] as ProcessedSpat[],
@@ -1522,9 +1522,9 @@ export const intersectionMapSlice = createSlice({
     },
     cleanUpLiveStreaming: (state) => {
       if (state.value.wsClient) {
-        state.value.wsClient.disconnect(() => {
-          console.debug('Successfully disconnected from STOMP endpoint')
-        })
+        state.value.wsClient.deactivate()
+        state.value.wsClient.forceDisconnect()
+        console.debug('Successfully disconnected from STOMP endpoint')
         state.value.timeWindowSeconds = 60
       }
       if (state.value.liveDataRestartTimeoutId) {

@@ -5,7 +5,12 @@
     </activeProfiles>
     <servers>
         <server>
-            <id>github</id>
+            <id>github-ode</id>
+            <username>usdot-jpo-ode</username>
+            <password>${env.MAVEN_GITHUB_TOKEN}</password>
+        </server>
+        <server>
+            <id>github-other</id>
             <username>cvmanager_intersection_api</username>
             <password>${env.MAVEN_GITHUB_TOKEN}</password>
         </server>
@@ -15,8 +20,16 @@
             <id>default</id>
             <repositories>
                 <repository>
-                    <id>github</id>
-                    <name>GitHub Apache Maven Packages</name>
+                    <id>github-ode</id>
+                    <name>GitHub Apache Maven Packages USDOT JPO ODE</name>
+                    <url>https://maven.pkg.github.com/usdot-jpo-ode/*</url>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+                <repository>
+                    <id>github-other</id>
+                    <name>GitHub Apache Maven Packages Other</name>
                     <url>https://maven.pkg.github.com/${env.MAVEN_GITHUB_ORG}/*</url>
                     <snapshots>
                         <enabled>false</enabled>

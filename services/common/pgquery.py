@@ -92,7 +92,7 @@ def query_db(query_string, params=None):
         query_string (str): The SQL query string with placeholders for parameters.
                             Example: "SELECT * FROM table WHERE column = :value"
         params (dict, optional): A dictionary of parameters to bind to the query.
-                                 Example: {"value": "some_value"}
+                            Example: {"value": "some_value"}
 
     Returns:
         list: The result of the query as a list of rows.
@@ -113,10 +113,10 @@ def write_db(query_string, params=None):
     Execute a parameterized write query (INSERT, UPDATE, DELETE) against the database.
 
     Args:
-        query_string (str): The SQL query string with placeholders for parameters.
+        query_string (str): The SQL query string with placeholders for any parameters.
                             Example: "INSERT INTO table (column) VALUES (:value)"
         params (dict, optional): A dictionary of parameters to bind to the query.
-                                 Example: {"value": "some_value"}
+                            Example: {"value": "some_value"}
 
     Returns:
         None

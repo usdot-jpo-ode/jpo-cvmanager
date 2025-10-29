@@ -5,13 +5,13 @@
     </activeProfiles>
     <servers>
         <server>
-            <id>github</id>
-            <username>cvmanager_intersection_api</username>
+            <id>github-ode</id>
+            <username>usdot-jpo-ode</username>
             <password>${env.MAVEN_GITHUB_TOKEN}</password>
         </server>
         <server>
-            <id>github_neaera</id>
-            <username>neaera</username>
+            <id>github-other</id>
+            <username>cvmanager_intersection_api</username>
             <password>${env.MAVEN_GITHUB_TOKEN}</password>
         </server>
     </servers>
@@ -20,17 +20,17 @@
             <id>default</id>
             <repositories>
                 <repository>
-                    <id>github</id>
-                    <name>GitHub Apache Maven Packages</name>
-                    <url>https://maven.pkg.github.com/${env.MAVEN_GITHUB_ORG}/*</url>
+                    <id>github-ode</id>
+                    <name>GitHub Apache Maven Packages USDOT JPO ODE</name>
+                    <url>https://maven.pkg.github.com/usdot-jpo-ode/*</url>
                     <snapshots>
                         <enabled>false</enabled>
                     </snapshots>
                 </repository>
                 <repository>
-                    <id>github_neaera</id>
-                    <name>Neaera GitHub Apache Maven Packages</name>
-                    <url>https://maven.pkg.github.com/neaeraconsulting/j2735-ffm-java</url>
+                    <id>github-other</id>
+                    <name>GitHub Apache Maven Packages Other</name>
+                    <url>https://maven.pkg.github.com/${env.MAVEN_GITHUB_ORG}/*</url>
                     <snapshots>
                         <enabled>false</enabled>
                     </snapshots>

@@ -63,7 +63,7 @@ A GitHub token is required to pull dependent java artifacts from GitHub reposito
 </settings>
 ```
 
-### Create an application-dev.yaml
+### Create an application-dev.yaml (Required for mvn, not for vscode)
 
 1. Navigate to the `src/main/resources` directory:
 

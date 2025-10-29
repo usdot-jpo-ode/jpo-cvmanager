@@ -94,3 +94,24 @@ See the [api/README.md](api/README.md#running-locally) for instructions
 ### 2. Running Smtp4dev
 
 An Smtp4dev server can be used locally to test the Email capabilities of the conflict monitor API: [smtp4dev](https://github.com/rnwood/smtp4dev). Once running, this server can be connected to the api (and Keycloak).
+
+## Updating the Asn.1 FFM Decoder Binaries
+
+1. View the FFM project tags on https://github.com/usdot-jpo-ode/j2735-ffm-java/tags and record the desired tag
+2. Update the asnapplication binaries in the intersection-api resources directories
+
+Example sh script:
+
+```sh
+export TAG=j2735-ffm-java-2.0.2
+wget -O libasnapplication.so https://github.com/usdot-jpo-ode/j2735-ffm-java/raw/$TAG/lib/libasnapplication.so
+wget -O asnapplication.dll https://github.com/usdot-jpo-ode/j2735-ffm-java/raw/$TAG/lib/asnapplication.dll
+
+# Copy new files to main resources
+cp libasnapplication.so ./api/src/main/resources/asn1/libasnapplication.so
+cp asnapplication.dll ./api/src/main/resources/asn1/asnapplication.dll
+
+# Copy new files to test resources
+cp libasnapplication.so ./api/src/test/resources/asn1/libasnapplication.so
+cp asnapplication.dll ./api/src/test/resources/asn1/asnapplication.dll
+```

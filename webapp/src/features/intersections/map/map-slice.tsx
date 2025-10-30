@@ -677,13 +677,7 @@ export const renderIterative_Map = createAsyncThunk(
         latestTimestamp = timestamp
       }
     }
-    console.log(
-      'renderIterative_MAP ts ',
-      newMapData.at(-1)!.properties,
-      newMapData.at(-1)!.properties.odeReceivedAt,
-      latestTimestamp,
-      Math.max(newMapData.at(-1)!.properties.odeReceivedAt, latestTimestamp)
-    )
+
     const currTimestamp = Math.max(newMapData.at(-1)!.properties.odeReceivedAt, latestTimestamp)
 
     let oldIndex = 0
@@ -1022,42 +1016,50 @@ export const initializeLiveStreaming = createAsyncThunk(
         client.subscribe(spatTopic, function (mes: IMessage) {
           const spatMessage: ProcessedSpat = JSON.parse(mes.body)
           const messageTime = getTimestamp(spatMessage.utcTimeStamp)
-          const messageLatencyMs = getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState)) - messageTime
+          const currentTimeMillis = getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState))
+          const messageLatencyMs = currentTimeMillis - messageTime
           console.debug(
             'Received SPaT message with age of ' +
-              (getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState)) - messageTime) +
-              'ms',
-            selectTimeOffsetMillis(getState() as RootState)
+              messageLatencyMs +
+              'ms, clock offset: ' +
+              selectTimeOffsetMillis(getState() as RootState) +
+              'ms'
           )
           dispatch(renderIterative_Spat([spatMessage]))
           dispatch(setLiveSpatLatestLatencyMs(messageLatencyMs))
-          dispatch(maybeUpdateSliderValue())
+          dispatch(maybeUpdateSliderValue(currentTimeMillis))
         })
 
         client.subscribe(mapTopic, function (mes: IMessage) {
           const mapMessage: ProcessedMap = JSON.parse(mes.body)
           const messageTime = getTimestamp(mapMessage.properties.odeReceivedAt)
+          const currentTimeMillis = getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState))
+          const messageLatencyMs = currentTimeMillis - messageTime
           console.debug(
             'Received MAP message with age of ' +
-              (getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState)) - messageTime) +
-              'ms',
-            selectTimeOffsetMillis(getState() as RootState)
+              messageLatencyMs +
+              'ms, clock offset: ' +
+              selectTimeOffsetMillis(getState() as RootState) +
+              'ms'
           )
           dispatch(renderIterative_Map([mapMessage]))
-          dispatch(maybeUpdateSliderValue())
+          dispatch(maybeUpdateSliderValue(currentTimeMillis))
         })
 
         client.subscribe(bsmTopic, function (mes: IMessage) {
           const bsmData: ProcessedBsmFeature = JSON.parse(mes.body)
           const messageTime = getTimestamp(bsmData.properties.odeReceivedAt)
+          const currentTimeMillis = getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState))
+          const messageLatencyMs = currentTimeMillis - messageTime
           console.debug(
             'Received BSM message with age of ' +
-              (getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState)) - messageTime) +
-              'ms',
-            selectTimeOffsetMillis(getState() as RootState)
+              messageLatencyMs +
+              'ms, clock offset: ' +
+              selectTimeOffsetMillis(getState() as RootState) +
+              'ms'
           )
           dispatch(renderIterative_Bsm([bsmData]))
-          dispatch(maybeUpdateSliderValue())
+          dispatch(maybeUpdateSliderValue(currentTimeMillis))
         })
       },
       (error) => {
@@ -1188,14 +1190,12 @@ export const updateRenderedMapState = createAsyncThunk(
       key: key,
       dtSeconds: Number(key) / 1000,
     }))
-    console.log('spatSignalGroupKeys', spatSignalGroupKeys, spatSignalGroups)
 
     // find closest SPAT signal group to the end of the render time interval and set that as the default signal group to render
     const lastSpatSignalGroupKeys = spatSignalGroupKeys.reduce((a, b) => (a.dtSeconds > b.dtSeconds ? a : b), {
       key: '',
       dtSeconds: 0,
     })
-    console.log('lastSpatSignalGroup', lastSpatSignalGroupKeys)
     let closestSignalGroup: { spat: SpatSignalGroup[]; dtSeconds: number } = {
       dtSeconds: lastSpatSignalGroupKeys.dtSeconds,
       spat: spatSignalGroups[lastSpatSignalGroupKeys.key],

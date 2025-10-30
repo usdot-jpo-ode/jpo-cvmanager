@@ -1188,12 +1188,17 @@ export const updateRenderedMapState = createAsyncThunk(
       key: key,
       dtSeconds: Number(key) / 1000,
     }))
+    console.log('spatSignalGroupKeys', spatSignalGroupKeys, spatSignalGroups)
 
     // find closest SPAT signal group to the end of the render time interval and set that as the default signal group to render
-    const lastSpatSignalGroup = spatSignalGroupKeys.reduce((a, b) => Math.max(Number(a), Number(b)), 0)
+    const lastSpatSignalGroupKeys = spatSignalGroupKeys.reduce((a, b) => (a.dtSeconds > b.dtSeconds ? a : b), {
+      key: '',
+      dtSeconds: 0,
+    })
+    console.log('lastSpatSignalGroup', lastSpatSignalGroupKeys)
     let closestSignalGroup: { spat: SpatSignalGroup[]; dtSeconds: number } = {
-      dtSeconds: lastSpatSignalGroup,
-      spat: spatSignalGroups[lastSpatSignalGroup],
+      dtSeconds: lastSpatSignalGroupKeys.dtSeconds,
+      spat: spatSignalGroups[lastSpatSignalGroupKeys.key],
     }
 
     // Iterate through SPAT signal groups to find closest prior to end of render interval

@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction, current } from '@reduxjs/toolkit'
 import { RootState } from '../../../store'
 import { selectToken } from '../../../generalSlices/userSlice'
-import { CompatClient, IMessage, Stomp } from '@stomp/stompjs'
+import { CompatClient, IMessage, Stomp, Client } from '@stomp/stompjs'
 import MessageMonitorApi from '../../../apis/intersections/mm-api'
 import EventsApi from '../../../apis/intersections/events-api'
 import NotificationApi from '../../../apis/intersections/notification-api'
@@ -160,7 +160,7 @@ const initialState = {
   importedMessageData: undefined as IMPORTED_MAP_MESSAGE_DATA | undefined,
   cursor: 'default',
   loadInitialDataTimeoutId: undefined as NodeJS.Timeout | undefined,
-  wsClient: undefined as CompatClient | undefined,
+  wsClient: undefined as Client | undefined,
   liveDataActive: false,
   currentMapData: [] as ProcessedMap[],
   currentSpatData: [] as ProcessedSpat[],
@@ -964,7 +964,7 @@ export const initializeLiveStreaming = createAsyncThunk(
     // Connect to WebSocket when component mounts
     const liveDataActive = selectLiveDataActive(getState() as RootState)
     const wsClient = selectWsClient(getState() as RootState)
-    let localWsClient = wsClient as CompatClient | null
+    let localWsClient = wsClient as Client | undefined
 
     dispatch(resetInitialDataAbortControllers())
     dispatch(setAbortAllFutureRequests(false))
@@ -981,11 +981,61 @@ export const initializeLiveStreaming = createAsyncThunk(
       console.debug('WebSocket client is already connected or active - skipping initialization')
       return
     } else if (localWsClient == null) {
-      const protocols = ['v10.stomp', 'v11.stomp']
-      protocols.push(token)
       const url = combineUrlPaths(EnvironmentVars.CVIZ_API_WS_URL, 'stomp')
-      // Stomp Client Documentation: https://stomp-js.github.io/stomp-websocket/codo/extra/docs-src/Usage.md.html
-      localWsClient = Stomp.client(url, protocols)
+      localWsClient = new Client({
+        brokerURL: url,
+        connectHeaders: {
+          Authorization: `Bearer ${token}`,
+        },
+        onConnect: () => {
+          localWsClient.subscribe(spatTopic, function (mes: IMessage) {
+            const spatMessage: ProcessedSpat = JSON.parse(mes.body)
+            const messageTime = getTimestamp(spatMessage.utcTimeStamp)
+            const currentTimeMillis = getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState))
+            const messageLatencyMs = currentTimeMillis - messageTime
+            console.debug(
+              'Received SPaT message with age of ' +
+                messageLatencyMs +
+                'ms, clock offset: ' +
+                selectTimeOffsetMillis(getState() as RootState) +
+                'ms'
+            )
+            dispatch(renderIterative_Spat([spatMessage]))
+            dispatch(setLiveSpatLatestLatencyMs(messageLatencyMs))
+            dispatch(maybeUpdateSliderValue(currentTimeMillis))
+          })
+          localWsClient.subscribe(mapTopic, function (mes: IMessage) {
+            const mapMessage: ProcessedMap = JSON.parse(mes.body)
+            const messageTime = getTimestamp(mapMessage.properties.odeReceivedAt)
+            const currentTimeMillis = getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState))
+            const messageLatencyMs = currentTimeMillis - messageTime
+            console.debug(
+              'Received MAP message with age of ' +
+                messageLatencyMs +
+                'ms, clock offset: ' +
+                selectTimeOffsetMillis(getState() as RootState) +
+                'ms'
+            )
+            dispatch(renderIterative_Map([mapMessage]))
+            dispatch(maybeUpdateSliderValue(currentTimeMillis))
+          })
+          localWsClient.subscribe(bsmTopic, function (mes: IMessage) {
+            const bsmData: ProcessedBsmFeature = JSON.parse(mes.body)
+            const messageTime = getTimestamp(bsmData.properties.odeReceivedAt)
+            const currentTimeMillis = getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState))
+            const messageLatencyMs = currentTimeMillis - messageTime
+            console.debug(
+              'Received BSM message with age of ' +
+                messageLatencyMs +
+                'ms, clock offset: ' +
+                selectTimeOffsetMillis(getState() as RootState) +
+                'ms'
+            )
+            dispatch(renderIterative_Bsm([bsmData]))
+            dispatch(maybeUpdateSliderValue(currentTimeMillis))
+          })
+        },
+      })
     }
 
     // Get Current MAP Message
@@ -1019,52 +1069,6 @@ export const initializeLiveStreaming = createAsyncThunk(
     const connectionId = Math.floor(Math.random() * 1000000)
 
     localWsClient.activate()
-    localWsClient.subscribe(spatTopic, function (mes: IMessage) {
-      const spatMessage: ProcessedSpat = JSON.parse(mes.body)
-      const messageTime = getTimestamp(spatMessage.utcTimeStamp)
-      const currentTimeMillis = getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState))
-      const messageLatencyMs = currentTimeMillis - messageTime
-      console.debug(
-        'Received SPaT message with age of ' +
-          messageLatencyMs +
-          'ms, clock offset: ' +
-          selectTimeOffsetMillis(getState() as RootState) +
-          'ms'
-      )
-      dispatch(renderIterative_Spat([spatMessage]))
-      dispatch(setLiveSpatLatestLatencyMs(messageLatencyMs))
-      dispatch(maybeUpdateSliderValue(currentTimeMillis))
-    })
-    localWsClient.subscribe(mapTopic, function (mes: IMessage) {
-      const mapMessage: ProcessedMap = JSON.parse(mes.body)
-      const messageTime = getTimestamp(mapMessage.properties.odeReceivedAt)
-      const currentTimeMillis = getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState))
-      const messageLatencyMs = currentTimeMillis - messageTime
-      console.debug(
-        'Received MAP message with age of ' +
-          messageLatencyMs +
-          'ms, clock offset: ' +
-          selectTimeOffsetMillis(getState() as RootState) +
-          'ms'
-      )
-      dispatch(renderIterative_Map([mapMessage]))
-      dispatch(maybeUpdateSliderValue(currentTimeMillis))
-    })
-    localWsClient.subscribe(bsmTopic, function (mes: IMessage) {
-      const bsmData: ProcessedBsmFeature = JSON.parse(mes.body)
-      const messageTime = getTimestamp(bsmData.properties.odeReceivedAt)
-      const currentTimeMillis = getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState))
-      const messageLatencyMs = currentTimeMillis - messageTime
-      console.debug(
-        'Received BSM message with age of ' +
-          messageLatencyMs +
-          'ms, clock offset: ' +
-          selectTimeOffsetMillis(getState() as RootState) +
-          'ms'
-      )
-      dispatch(renderIterative_Bsm([bsmData]))
-      dispatch(maybeUpdateSliderValue(currentTimeMillis))
-    })
 
     // Request latest SPaT data to handle deduplicated feed.
     // SPaT messages are sorted, so getting an older message
@@ -1807,7 +1811,7 @@ export const intersectionMapSlice = createSlice({
           state.value.filteredSurroundingNotifications = action.payload.filteredSurroundingNotifications
         }
       )
-      .addCase(initializeLiveStreaming.fulfilled, (state, action: PayloadAction<CompatClient | undefined>) => {
+      .addCase(initializeLiveStreaming.fulfilled, (state, action: PayloadAction<Client | undefined>) => {
         state.value.wsClient = action.payload
       })
       .addCase(getBsmDailyCounts.fulfilled, (state, action: PayloadAction<MessageMonitor.MinuteCount[]>) => {

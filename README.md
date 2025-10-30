@@ -27,18 +27,22 @@ To provide feedback, we recommend that you create an "issue" in this repository 
 ## Quick Start
 
 ### Requirements
+
 - Docker and Docker Compose installed on your machine
 
 ### Steps
+
 1. Copy the `sample.env` file to a new file named `.env` in the root directory of the project.
 2. Edit the `.env` file to set the required environment variables. At a minimum, you will need to set the following variables:
    - `DOCKER_HOST_IP`: The IP address of your Docker host. This can be found through linux/wsl through the command "ifconfig", or "localhost" if using Docker Desktop on Windows or Linux (not mac).
-   - `MAPBOX_TOKEN`: Any mapbox token. You can create a free account at [mapbox.com](https://www.mapbox.com/) to obtain a token.
+   - `MAPBOX_TOKEN`: Any valid mapbox token. Please see [Creating a Mapbox Token](#creating-a-mapbox-token) for instructions on how to create and account/generate a new token
    - `MAVEN_GITHUB_TOKEN`: A GitHub access token used to access public GitHub Maven packages. See [Github Token](#github-token) section for instructions on generating this token.
 3. Run the following command to start the CV Manager:
+
 ```sh
 docker-compose up -d
 ```
+
 4. Access the CV Manager webapp at [http://localhost](http://localhost) in your web browser.
 
 ```
@@ -47,12 +51,14 @@ Default Password: tester
 ```
 
 If you have any issues, try the following steps:
+
 1. Ensure that the following required services are healthy in Docker (docker ps):
-    i. cvmanager_postgres
-    ii. cvmanager_keycloak
-    iii. cvmanager_api
-    iv. cvmanager_webapp
+   i. cvmanager_postgres
+   ii. cvmanager_keycloak
+   iii. cvmanager_api
+   iv. cvmanager_webapp
 2. Bring down the system and re-build all containers
+
 ```sh
 docker compose down -v
 docker compose up --build -d
@@ -71,12 +77,32 @@ The JPO CV Manager was originally developed for the Google Cloud Platform and a 
 <img src="docs/CVManagerArchFlowchart.png" alt="drawing" width="1200"/>
 
 ### CV Manager Webapp
+
 ReactJS with Redux Toolkit and Mapbox GL
 
 - Supports OAuth2.0 through Keycloak for user authentication only. It can be configured for several different Identity Providers, including Google.
 
+#### Creating a Mapbox Token
+
+To generate a free mapbox access token:
+
+1. navigate to https://www.mapbox.com/ and select "Get started for free"
+2. Enter your name and email, and choose a unique username
+3. Enter your payment information. Your account will remain free unless you surpass the free tier limits (the free tier is very extensive, it will cover everything up to a multi-user large scale deployment)
+4. Confirm your email address
+5. Enter your billing address
+6. After logging in, select the "Tokens" tab under the Admin section
+7. Press create a new token (it is easier to manage and re-create new tokens than the default public token)
+   i. Enter a recognizable token name
+   ii. No scopes are required, as this token will only be used for tile loading
+   iii. Under Token Restrictions, enter the URL paths the CV-Manager will be hosted on. For local development, this is http://localhost and http://${DOCKER_HOST_IP} 1. This is incredibly important. When the CV-Manager is deployed, the mapbox token can be extracted quite easily. The only way to protect the use of this token (and not incur additional access costs) is to restrict the allowed domains
+   iv. Select "Create Token"
+8. Copy the token value and paste it into the .env under MAPBOX_TOKEN=
+
 ### CV Manager API
+
 Python 3.12.2
+
 - PostgreSQL database is required. Run the [table creation script to create a to-spec database](resources/sql_scripts).
   - Follow along with the README to ensure your data is properly populated before running the CV Manager.
 - GCP BigQuery is required to support J2735 message counts and BSM data. Message counts will be migrated to PostgreSQL eventually, however it is not recommended to store full J2735 messages in a PostgreSQL database. A noSQL database or a database that is specialized for storing big data is recommended. Support for MongoDB is planned to be implemented.
@@ -390,6 +416,7 @@ docker compose up -d cvmanager_api cvmanager_webapp cvmanager_postgres cvmanager
 ### Environment Variables
 
 <b>Required Variables</b>
+
 - DOCKER_HOST_IP: Set with the IP address of the eth0 port in your WSL instance. This can be found by installing networking tools in wsl and running the command `ifconfig`
 - MAPBOX_TOKEN: A token from Mapbox used to render the map in the Webapp. The free version of Mapbox works great in most cases.
 - MAVEN_GITHUB_TOKEN: A GitHub access token used to access public GitHub Maven packages. See [Github Token](#github-token) section for instructions on generating this token.
@@ -489,6 +516,14 @@ On Windows, Disable `git core.autocrlf` (One Time Only)
 ```bash
 git config --global core.autocrlf false
 ```
+
+### CV Manager Common Issues
+
+1. After logging into the webapp, you are presented with a page reading "Login Unsuccessful: Unknown Error Occurred"
+   <img src=docs/debugging/login_unsuccessful_unknown_error_occurred.png alt="Login Unsuccessful: Unknown Error Occurred"/>
+   This indicates an issue within the cvmanager_api service, see the docker logs for more information. Common issues include:
+   i. Unable to connect to PostgreSQL server (see postgres logs)
+   ii. Keycloak authentication error (see keycloak logs)
 
 ## License Information
 

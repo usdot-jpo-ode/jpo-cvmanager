@@ -20,7 +20,7 @@
 	<properties>
 		<java.version>22</java.version>
 		<jacoco.version>0.8.12</jacoco.version>
-		<jpoode.version>5.0.2</jpoode.version>
+		<jpoode.version>5.1.0</jpoode.version>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 		<sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
 		<sonar.language>java</sonar.language>
@@ -129,7 +129,7 @@
 		<dependency>
 			<groupId>usdot.jpo.ode</groupId>
 			<artifactId>jpo-geojsonconverter</artifactId>
-			<version>3.0.4</version>
+			<version>3.2.0</version>
 			<!-- Allow using newer streams version than geojsonconverter -->
 			<exclusions>
 				<exclusion>
@@ -287,8 +287,14 @@
 		<dependency>
 			<groupId>usdot.jpo.ode</groupId>
 			<artifactId>j2735-2024-ffm-lib</artifactId>
-			<version>1.0.5</version>
+			<version>2.0.2</version>
 		</dependency>
+		<dependency>
+            <groupId>net.javacrumbs.json-unit</groupId>
+            <artifactId>json-unit-assertj</artifactId>
+            <version>5.0.0</version>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
 	<repositories>
 		<repository>

@@ -26,6 +26,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.ZonedDateTime;
 
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
@@ -53,17 +55,14 @@ public class MapDecoderTests {
 
             odeMapDecodedJsonReference = new String(
                     Files.readAllBytes(Paths
-                            .get("src/test/resources/json/map/Ode.ReferenceMapJson.json")))
-                    .replaceAll("\n", "").replaceAll(" ", "");
+                            .get("src/test/resources/json/map/Ode.ReferenceMapJson.json")));
 
             processedMapReference = new String(
                     Files.readAllBytes(Paths
-                            .get("src/test/resources/json/map/GJC.ReferenceProcessedMapJson.json")))
-                    .replaceAll("\n", "").replaceAll(" ", "");
+                            .get("src/test/resources/json/map/GJC.ReferenceProcessedMapJson.json")));
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     /**
@@ -79,7 +78,7 @@ public class MapDecoderTests {
             spat.getMetadata()
                     .setSerialId(spat.getMetadata().getSerialId().setStreamId("44a6d71c-8af1-4f45-848c-10bd7f919be8"));
 
-            assertEquals(spat.toJson().replaceAll("\n", "").replaceAll(" ", ""), odeMapDecodedJsonReference);
+            assertThatJson(odeMapDecodedJsonReference).isEqualTo(spat.toJson());
         } catch (JsonProcessingException e) {
             assertEquals(true, false);
         }
@@ -101,7 +100,7 @@ public class MapDecoderTests {
 
             map.getProperties().setOdeReceivedAt(ZonedDateTime.parse("2025-08-29T16:09:34.416Z"));
 
-            assertEquals(map.toString().replaceAll("\n", "").replaceAll(" ", ""), processedMapReference);
+            assertThatJson(processedMapReference).isEqualTo(map.toString());
         } catch (JsonProcessingException e) {
             assertEquals(true, false);
         }

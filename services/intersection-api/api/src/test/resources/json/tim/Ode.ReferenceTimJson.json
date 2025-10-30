@@ -46,7 +46,7 @@
               "doNotUse2": 0,
               "regions": [
                 {
-                  "name": "TestingTIM",
+                  "name": "Testing TIM",
                   "id": { "region": 0, "id": 33 },
                   "anchor": { "lat": 412500807, "long": -1110093847, "elevation": 20207 },
                   "laneWidth": 700,
@@ -84,7 +84,7 @@
               "content": {
                 "advisory": [
                   { "item": { "itis": 125 } },
-                  { "item": { "text": "sometext" } },
+                  { "item": { "text": "some text" } },
                   { "item": { "itis": 250 } },
                   { "item": { "text": "98765" } }
                 ]

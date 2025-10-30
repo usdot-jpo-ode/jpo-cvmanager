@@ -22,6 +22,8 @@ import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
 import us.dot.its.jpo.ode.api.asn1.SrmDecoder;
 import us.dot.its.jpo.ode.model.OdeMessageFrameData;
 
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
@@ -69,7 +71,7 @@ public class SrmDecoderTests {
             srm.getMetadata()
                     .setSerialId(srm.getMetadata().getSerialId().setStreamId("44a6d71c-8af1-4f45-848c-10bd7f919be8"));
 
-            assertEquals(srm.toJson().replaceAll("\n", "").replaceAll(" ", ""), odeSrmDecodedJsonReference);
+            assertThatJson(odeSrmDecodedJsonReference).isEqualTo(srm.toJson());
         } catch (JsonProcessingException e) {
             assertEquals(true, false);
         }

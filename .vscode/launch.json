@@ -6,7 +6,7 @@
   "configurations": [
     {
       "command": "npm start",
-      "name": "Launch web app with Intersection Data",
+      "name": "Launch web app with Intersection API",
       "request": "launch",
       "cwd": "${workspaceFolder}/webapp",
       "type": "node-terminal",
@@ -14,7 +14,7 @@
     },
     {
       "command": "npm start",
-      "name": "Launch web app without Intersection Data",
+      "name": "Launch web app without Intersection API",
       "request": "launch",
       "cwd": "${workspaceFolder}/webapp",
       "type": "node-terminal",

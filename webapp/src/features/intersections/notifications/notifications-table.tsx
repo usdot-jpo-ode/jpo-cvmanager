@@ -133,7 +133,6 @@ export const NotificationsTable = (props: { simple: boolean }) => {
   }
 
   const handleQueryChange = (event) => {
-    // console.log('Query changed:', event, queryRef)
     event.preventDefault()
     setFilter((prevState) => ({
       ...prevState,

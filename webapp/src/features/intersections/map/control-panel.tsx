@@ -27,26 +27,28 @@ import { format } from 'date-fns'
 import JSZip from 'jszip'
 import {
   BSM_COUNTS_CHART_DATA,
+  cleanUpLiveStreaming,
   downloadMapData,
   handleImportedMapMessageData,
   selectBsmEventsByMinute,
   selectDecoderModeEnabled,
   selectPlaybackModeActive,
   selectSliderTimeValue,
-  setSliderValue,
+  setSliderValueDeciseconds,
   setTimeWindowSeconds,
-  toggleLiveDataActive,
+  setLiveDataActive,
   togglePlaybackModeActive,
   updateQueryParams,
+  selectLiveSpatLatestLatencyMs,
 } from './map-slice'
 import {
   selectLiveDataActive,
   selectMapSpatTimes,
   selectQueryParams,
-  selectSliderValue,
+  selectSliderValueDeciseconds,
   selectTimeWindowSeconds,
 } from './map-slice'
-import { getTimeRange } from './utilities/map-utils'
+import { getTimeRangeDeciseconds } from './utilities/map-utils'
 import {
   selectIntersections,
   setSelectedIntersection,
@@ -164,7 +166,7 @@ function ControlPanel() {
 
   const queryParams = useSelector(selectQueryParams)
   const timeWindowSeconds = useSelector(selectTimeWindowSeconds)
-  const sliderValue = useSelector(selectSliderValue)
+  const sliderValueDeciseconds = useSelector(selectSliderValueDeciseconds)
   const mapSpatTimes = useSelector(selectMapSpatTimes)
   const liveDataActive = useSelector(selectLiveDataActive)
   const sliderTimeValue = useSelector(selectSliderTimeValue)
@@ -174,6 +176,7 @@ function ControlPanel() {
 
   const bsmEventsByMinute = useSelector(selectBsmEventsByMinute)
   const playbackModeActive = useSelector(selectPlaybackModeActive)
+  const liveSpatLatestLatencyMs = useSelector(selectLiveSpatLatestLatencyMs)
 
   const theme = useTheme()
 
@@ -284,10 +287,10 @@ function ControlPanel() {
         </button>
         <Slider
           sx={{ ml: 2, width: 'calc(100% - 80px)' }}
-          value={sliderValue}
-          onChange={(event: Event, value: number | number[]) => dispatch(setSliderValue(value))}
+          value={sliderValueDeciseconds}
+          onChange={(event: Event, value: number | number[]) => dispatch(setSliderValueDeciseconds(value))}
           min={0}
-          max={getTimeRange(queryParams.startDate, queryParams.endDate)}
+          max={getTimeRangeDeciseconds(queryParams.startDate, queryParams.endDate)}
           valueLabelDisplay="auto"
           disableSwap
           color="primary"
@@ -346,21 +349,19 @@ function ControlPanel() {
                 <Grid2 size={{ xs: 12, md: 5 }}>
                   <FormControl fullWidth>
                     <TextField
-                      label="Time Before Event"
-                      name="timeRangeBefore"
+                      label="Time Render Window"
+                      name="timeRenderWindow"
                       type="number"
                       sx={{ mt: 1 }}
                       onChange={(e) => {
-                        if (Number.isInteger(Number(e.target.value))) {
-                          setTimeBeforeSeconds(parseInt(e.target.value))
-                        }
+                        setTimeWindowSecondsLocal(e.target.value)
                       }}
                       slotProps={{
                         input: {
                           endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
                         },
                       }}
-                      value={timeBeforeSeconds.toString()}
+                      value={timeWindowSeconds.toString()}
                     />
                   </FormControl>
                 </Grid2>
@@ -376,6 +377,27 @@ function ControlPanel() {
                         }}
                       />
                     </LocalizationProvider>
+                  </FormControl>
+                </Grid2>
+                <Grid2 size={{ xs: 12, md: 5 }}>
+                  <FormControl fullWidth>
+                    <TextField
+                      label="Time Before Event"
+                      name="timeRangeBefore"
+                      type="number"
+                      sx={{ mt: 1 }}
+                      onChange={(e) => {
+                        if (Number.isInteger(Number(e.target.value))) {
+                          setTimeBeforeSeconds(parseInt(e.target.value))
+                        }
+                      }}
+                      slotProps={{
+                        input: {
+                          endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
+                        },
+                      }}
+                      value={timeBeforeSeconds}
+                    />
                   </FormControl>
                 </Grid2>
                 <Grid2 size={{ xs: 12, md: 5 }}>
@@ -399,32 +421,16 @@ function ControlPanel() {
                     />
                   </FormControl>
                 </Grid2>
-                <Grid2 size={{ xs: 12, md: 5 }}>
-                  <FormControl fullWidth>
-                    <TextField
-                      label="Time Render Window"
-                      name="timeRangeAfter"
-                      type="number"
-                      sx={{ mt: 1 }}
-                      onChange={(e) => {
-                        if (Number.isInteger(Number(e.target.value))) {
-                          dispatch(setTimeWindowSeconds(parseInt(e.target.value)))
-                        }
-                      }}
-                      slotProps={{
-                        input: {
-                          endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
-                        },
-                      }}
-                      value={timeWindowSeconds}
-                    />
-                  </FormControl>
-                </Grid2>
               </Grid2>
               <Button
                 sx={{ mt: 2 }}
                 onClick={() => {
-                  dispatch(toggleLiveDataActive())
+                  if (liveDataActive) {
+                    dispatch(cleanUpLiveStreaming())
+                    dispatch(setLiveDataActive(false))
+                  } else {
+                    dispatch(setLiveDataActive(true))
+                  }
                 }}
                 color="info"
                 variant="outlined"
@@ -482,13 +488,19 @@ function ControlPanel() {
               </Typography>
               <Typography fontSize="16px">
                 MAP Message Time:{' '}
-                {mapSpatTimes.mapTime === 0 ? 'No Data' : format(mapSpatTimes.mapTime * 1000, 'MM/dd/yyyy HH:mm:ss')}
+                {!mapSpatTimes.mapTime ? 'No Data' : format(mapSpatTimes.mapTime, 'MM/dd/yyyy HH:mm:ss')}
               </Typography>
 
               <Typography fontSize="16px">
                 SPAT Message Time:{' '}
-                {mapSpatTimes.spatTime === 0 ? 'No Data' : format(mapSpatTimes.spatTime * 1000, 'MM/dd/yyyy HH:mm:ss')}
+                {!mapSpatTimes.spatTime ? 'No Data' : format(mapSpatTimes.spatTime, 'MM/dd/yyyy HH:mm:ss')}
               </Typography>
+              {liveDataActive && (
+                <Typography fontSize="16px">
+                  Latest spat message age:{' '}
+                  {(liveSpatLatestLatencyMs == undefined ? 'N/A' : liveSpatLatestLatencyMs / 1000) + ' seconds'}
+                </Typography>
+              )}
               <Typography fontSize="16px">Activity Chart for {format(sliderTimeValue.start, 'MM/dd/yyyy')}:</Typography>
 
               <ResponsiveContainer

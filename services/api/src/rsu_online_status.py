@@ -42,12 +42,11 @@ def get_ping_data(user: EnvironWithOrg):
     if user.organization:
         where_clause = "ron_v.name = :org_name"
         params = {"org_name": user.organization}
-    if not user.user_info.super_user:
+    elif not user.user_info.super_user:
         org_names_placeholder, _ = generate_sql_placeholders_for_list(
             list(user.user_info.organizations.keys()), params_to_update=params
         )
         where_clause = f"ron_v.name IN ({org_names_placeholder})"
-        params = {}
     if where_clause:
         query += f"WHERE {where_clause} "
     query += "ORDER BY rd.rsu_id, ping_data.timestamp DESC "

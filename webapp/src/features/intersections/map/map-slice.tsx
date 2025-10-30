@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, PayloadAction, current } from '@reduxjs/toolkit'
 import { RootState } from '../../../store'
 import { selectToken } from '../../../generalSlices/userSlice'
 import { CompatClient, IMessage, Stomp } from '@stomp/stompjs'
@@ -964,6 +964,7 @@ export const initializeLiveStreaming = createAsyncThunk(
     // Connect to WebSocket when component mounts
     const liveDataActive = selectLiveDataActive(getState() as RootState)
     const wsClient = selectWsClient(getState() as RootState)
+    let localWsClient = current(wsClient) as CompatClient | null
 
     dispatch(resetInitialDataAbortControllers())
     dispatch(setAbortAllFutureRequests(false))
@@ -976,12 +977,16 @@ export const initializeLiveStreaming = createAsyncThunk(
     }
     console.info('Live streaming data from Intersection API STOMP WebSocket endpoint')
 
-    const protocols = ['v10.stomp', 'v11.stomp']
-    protocols.push(token)
-    const url = combineUrlPaths(EnvironmentVars.CVIZ_API_WS_URL, 'stomp')
-
-    // Stomp Client Documentation: https://stomp-js.github.io/stomp-websocket/codo/extra/docs-src/Usage.md.html
-    const client = Stomp.client(url, protocols)
+    if (localWsClient != null && (localWsClient.connected || localWsClient.active)) {
+      console.debug('WebSocket client is already connected or active - skipping initialization')
+      return
+    } else if (localWsClient == null) {
+      const protocols = ['v10.stomp', 'v11.stomp']
+      protocols.push(token)
+      const url = combineUrlPaths(EnvironmentVars.CVIZ_API_WS_URL, 'stomp')
+      // Stomp Client Documentation: https://stomp-js.github.io/stomp-websocket/codo/extra/docs-src/Usage.md.html
+      localWsClient = Stomp.client(url, protocols)
+    }
 
     // Get Current MAP Message
     const currentState = getState() as RootState
@@ -1010,62 +1015,56 @@ export const initializeLiveStreaming = createAsyncThunk(
     const bsmTopic = `/live/${intersectionId}/processed-bsm`
 
     const connectionStartTime = Date.now()
-    client.connect(
-      {},
-      () => {
-        client.subscribe(spatTopic, function (mes: IMessage) {
-          const spatMessage: ProcessedSpat = JSON.parse(mes.body)
-          const messageTime = getTimestamp(spatMessage.utcTimeStamp)
-          const currentTimeMillis = getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState))
-          const messageLatencyMs = currentTimeMillis - messageTime
-          console.debug(
-            'Received SPaT message with age of ' +
-              messageLatencyMs +
-              'ms, clock offset: ' +
-              selectTimeOffsetMillis(getState() as RootState) +
-              'ms'
-          )
-          dispatch(renderIterative_Spat([spatMessage]))
-          dispatch(setLiveSpatLatestLatencyMs(messageLatencyMs))
-          dispatch(maybeUpdateSliderValue(currentTimeMillis))
-        })
 
-        client.subscribe(mapTopic, function (mes: IMessage) {
-          const mapMessage: ProcessedMap = JSON.parse(mes.body)
-          const messageTime = getTimestamp(mapMessage.properties.odeReceivedAt)
-          const currentTimeMillis = getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState))
-          const messageLatencyMs = currentTimeMillis - messageTime
-          console.debug(
-            'Received MAP message with age of ' +
-              messageLatencyMs +
-              'ms, clock offset: ' +
-              selectTimeOffsetMillis(getState() as RootState) +
-              'ms'
-          )
-          dispatch(renderIterative_Map([mapMessage]))
-          dispatch(maybeUpdateSliderValue(currentTimeMillis))
-        })
+    const connectionId = Math.floor(Math.random() * 1000000)
 
-        client.subscribe(bsmTopic, function (mes: IMessage) {
-          const bsmData: ProcessedBsmFeature = JSON.parse(mes.body)
-          const messageTime = getTimestamp(bsmData.properties.odeReceivedAt)
-          const currentTimeMillis = getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState))
-          const messageLatencyMs = currentTimeMillis - messageTime
-          console.debug(
-            'Received BSM message with age of ' +
-              messageLatencyMs +
-              'ms, clock offset: ' +
-              selectTimeOffsetMillis(getState() as RootState) +
-              'ms'
-          )
-          dispatch(renderIterative_Bsm([bsmData]))
-          dispatch(maybeUpdateSliderValue(currentTimeMillis))
-        })
-      },
-      (error) => {
-        console.error('Live Streaming ERROR connecting to live data Websocket: ' + error)
-      }
-    )
+    localWsClient.activate()
+    localWsClient.subscribe(spatTopic, function (mes: IMessage) {
+      const spatMessage: ProcessedSpat = JSON.parse(mes.body)
+      const messageTime = getTimestamp(spatMessage.utcTimeStamp)
+      const currentTimeMillis = getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState))
+      const messageLatencyMs = currentTimeMillis - messageTime
+      console.debug(
+        'Received SPaT message with age of ' +
+          messageLatencyMs +
+          'ms, clock offset: ' +
+          selectTimeOffsetMillis(getState() as RootState) +
+          'ms'
+      )
+      dispatch(renderIterative_Spat([spatMessage]))
+      dispatch(setLiveSpatLatestLatencyMs(messageLatencyMs))
+      dispatch(maybeUpdateSliderValue(currentTimeMillis))
+    })
+    localWsClient.subscribe(mapTopic, function (mes: IMessage) {
+      const mapMessage: ProcessedMap = JSON.parse(mes.body)
+      const messageTime = getTimestamp(mapMessage.properties.odeReceivedAt)
+      const currentTimeMillis = getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState))
+      const messageLatencyMs = currentTimeMillis - messageTime
+      console.debug(
+        'Received MAP message with age of ' +
+          messageLatencyMs +
+          'ms, clock offset: ' +
+          selectTimeOffsetMillis(getState() as RootState) +
+          'ms'
+      )
+      dispatch(renderIterative_Map([mapMessage]))
+      dispatch(maybeUpdateSliderValue(currentTimeMillis))
+    })
+    localWsClient.subscribe(bsmTopic, function (mes: IMessage) {
+      const bsmData: ProcessedBsmFeature = JSON.parse(mes.body)
+      const messageTime = getTimestamp(bsmData.properties.odeReceivedAt)
+      const currentTimeMillis = getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState))
+      const messageLatencyMs = currentTimeMillis - messageTime
+      console.debug(
+        'Received BSM message with age of ' +
+          messageLatencyMs +
+          'ms, clock offset: ' +
+          selectTimeOffsetMillis(getState() as RootState) +
+          'ms'
+      )
+      dispatch(renderIterative_Bsm([bsmData]))
+      dispatch(maybeUpdateSliderValue(currentTimeMillis))
+    })
 
     // Request latest SPaT data to handle deduplicated feed.
     // SPaT messages are sorted, so getting an older message
@@ -1085,9 +1084,22 @@ export const initializeLiveStreaming = createAsyncThunk(
     })
     dispatch(renderIterative_Spat(await rawSpatPromise))
 
-    function onDisconnect() {
-      client.deactivate() // Deactivate the client to clean up resources and stop automatic reconnection attempts
-      client.forceDisconnect() // Forcefully close the underlying WebSocket connection
+    async function onDisconnect(connectionId: number) {
+      console.log(
+        'Disconnecting live streaming client Before',
+        connectionId,
+        localWsClient?.connected,
+        localWsClient?.active,
+        localWsClient
+      )
+      await localWsClient.deactivate() // Deactivate the client to clean up resources and stop automatic reconnection attempts
+      console.log(
+        'Disconnecting live streaming client After',
+        connectionId,
+        localWsClient?.connected,
+        localWsClient?.active,
+        localWsClient
+      )
       if (numRestarts < 5 && liveDataActive) {
         let numRestartsLocal = numRestarts
         if (Date.now() - connectionStartTime > 10000) {
@@ -1123,7 +1135,7 @@ export const initializeLiveStreaming = createAsyncThunk(
       }
     }
 
-    client.onDisconnect = (frame) => {
+    localWsClient.onDisconnect = (frame) => {
       console.debug(
         'Live Streaming Disconnected from STOMP endpoint: ' +
           frame +
@@ -1133,14 +1145,14 @@ export const initializeLiveStreaming = createAsyncThunk(
           wsClient +
           ')'
       )
-      onDisconnect()
+      onDisconnect(connectionId)
     }
 
-    client.onStompError = (frame) => {
+    localWsClient.onStompError = (frame) => {
       console.error('Live Streaming STOMP ERROR', frame)
     }
 
-    client.onWebSocketClose = (frame) => {
+    localWsClient.onWebSocketClose = (frame) => {
       console.error(
         'Live Streaming STOMP WebSocket Close: ' +
           frame +
@@ -1150,15 +1162,15 @@ export const initializeLiveStreaming = createAsyncThunk(
           wsClient +
           ')'
       )
-      onDisconnect()
+      onDisconnect(connectionId)
     }
 
-    client.onWebSocketError = (frame) => {
+    localWsClient.onWebSocketError = (frame) => {
       // TODO: Consider restarting connection on error
       console.error('Live Streaming STOMP WebSocket Error', frame)
     }
 
-    return client
+    return localWsClient
   }
 )
 

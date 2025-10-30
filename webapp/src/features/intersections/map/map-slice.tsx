@@ -964,7 +964,7 @@ export const initializeLiveStreaming = createAsyncThunk(
     // Connect to WebSocket when component mounts
     const liveDataActive = selectLiveDataActive(getState() as RootState)
     const wsClient = selectWsClient(getState() as RootState)
-    let localWsClient = current(wsClient) as CompatClient | null
+    let localWsClient = wsClient as CompatClient | null
 
     dispatch(resetInitialDataAbortControllers())
     dispatch(setAbortAllFutureRequests(false))

@@ -976,168 +976,236 @@ export const initializeLiveStreaming = createAsyncThunk(
       return
     }
     console.info('Live streaming data from Intersection API STOMP WebSocket endpoint')
+      const spatTopic = `/live/${intersectionId}/processed-spat`
+      const mapTopic = `/live/${intersectionId}/processed-map`
+      const bsmTopic = `/live/${intersectionId}/processed-bsm`
 
-    if (localWsClient != null && (localWsClient.connected || localWsClient.active)) {
-      console.debug('WebSocket client is already connected or active - skipping initialization')
-      return
-    } else if (localWsClient == null) {
+      //   if (localWsClient != null && (localWsClient.connected || localWsClient.active)) {
+      //     console.debug('WebSocket client is already connected or active - skipping initialization')
+      //     return
+      //   } else if (localWsClient == null) {
       const url = combineUrlPaths(EnvironmentVars.CVIZ_API_WS_URL, 'stomp')
+      // Topics are in the format /live/{intersectionID}/{spat,map,bsm}
+      //   localWsClient = Stomp.client(url, ['v10.stomp', 'v11.stomp', token])
+
+      //   localWsClient.connect({}, () => {
+      //     console.log('Successfully connected to STOMP websocket')
+      //       localWsClient.subscribe(spatTopic, function (mes: IMessage) {
+      //         const spatMessage: ProcessedSpat = JSON.parse(mes.body)
+      //         const messageTime = getTimestamp(spatMessage.utcTimeStamp)
+      //         const currentTimeMillis = getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState))
+      //         const messageLatencyMs = currentTimeMillis - messageTime
+      //         console.debug(
+      //           'Received SPaT message with age of ' +
+      //             messageLatencyMs +
+      //             'ms, clock offset: ' +
+      //             selectTimeOffsetMillis(getState() as RootState) +
+      //             'ms'
+      //         )
+      //         dispatch(renderIterative_Spat([spatMessage]))
+      //         dispatch(setLiveSpatLatestLatencyMs(messageLatencyMs))
+      //         dispatch(maybeUpdateSliderValue(currentTimeMillis))
+      //       })
+      //       localWsClient.subscribe(mapTopic, function (mes: IMessage) {
+      //         const mapMessage: ProcessedMap = JSON.parse(mes.body)
+      //         const messageTime = getTimestamp(mapMessage.properties.odeReceivedAt)
+      //         const currentTimeMillis = getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState))
+      //         const messageLatencyMs = currentTimeMillis - messageTime
+      //         console.debug(
+      //           'Received MAP message with age of ' +
+      //             messageLatencyMs +
+      //             'ms, clock offset: ' +
+      //             selectTimeOffsetMillis(getState() as RootState) +
+      //             'ms'
+      //         )
+      //         dispatch(renderIterative_Map([mapMessage]))
+      //         dispatch(maybeUpdateSliderValue(currentTimeMillis))
+      //       })
+      //       localWsClient.subscribe(bsmTopic, function (mes: IMessage) {
+      //         const bsmData: ProcessedBsmFeature = JSON.parse(mes.body)
+      //         const messageTime = getTimestamp(bsmData.properties.odeReceivedAt)
+      //         const currentTimeMillis = getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState))
+      //         const messageLatencyMs = currentTimeMillis - messageTime
+      //         console.debug(
+      //           'Received BSM message with age of ' +
+      //             messageLatencyMs +
+      //             'ms, clock offset: ' +
+      //             selectTimeOffsetMillis(getState() as RootState) +
+      //             'ms'
+      //         )
+      //         dispatch(renderIterative_Bsm([bsmData]))
+      //         dispatch(maybeUpdateSliderValue(currentTimeMillis))
+      //       })
+      //   },      (error) => {
+      //     console.error('Live Streaming ERROR connecting to live data Websocket: ' + error)})
+      //   }
+
       localWsClient = new Client({
         brokerURL: url,
-        connectHeaders: {
-          Authorization: `Bearer ${token}`,
+        webSocketFactory: () => {
+          // Pass token as a subprotocol
+          console.log('Token being sent:', token?.substring(0, 20) + '...')
+          const ws = new WebSocket(url, ['v10.stomp', 'v11.stomp', token])
+          ws.onopen = () => console.log('WebSocket opened')
+          ws.onerror = (error) => console.error('WebSocket error:', error)
+          ws.onclose = (event) => console.log('WebSocket closed:', event.code, event.reason)
+
+          return ws
         },
         onConnect: () => {
-          localWsClient.subscribe(spatTopic, function (mes: IMessage) {
-            const spatMessage: ProcessedSpat = JSON.parse(mes.body)
-            const messageTime = getTimestamp(spatMessage.utcTimeStamp)
-            const currentTimeMillis = getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState))
-            const messageLatencyMs = currentTimeMillis - messageTime
-            console.debug(
-              'Received SPaT message with age of ' +
-                messageLatencyMs +
-                'ms, clock offset: ' +
-                selectTimeOffsetMillis(getState() as RootState) +
-                'ms'
-            )
-            dispatch(renderIterative_Spat([spatMessage]))
-            dispatch(setLiveSpatLatestLatencyMs(messageLatencyMs))
-            dispatch(maybeUpdateSliderValue(currentTimeMillis))
-          })
-          localWsClient.subscribe(mapTopic, function (mes: IMessage) {
-            const mapMessage: ProcessedMap = JSON.parse(mes.body)
-            const messageTime = getTimestamp(mapMessage.properties.odeReceivedAt)
-            const currentTimeMillis = getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState))
-            const messageLatencyMs = currentTimeMillis - messageTime
-            console.debug(
-              'Received MAP message with age of ' +
-                messageLatencyMs +
-                'ms, clock offset: ' +
-                selectTimeOffsetMillis(getState() as RootState) +
-                'ms'
-            )
-            dispatch(renderIterative_Map([mapMessage]))
-            dispatch(maybeUpdateSliderValue(currentTimeMillis))
-          })
-          localWsClient.subscribe(bsmTopic, function (mes: IMessage) {
-            const bsmData: ProcessedBsmFeature = JSON.parse(mes.body)
-            const messageTime = getTimestamp(bsmData.properties.odeReceivedAt)
-            const currentTimeMillis = getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState))
-            const messageLatencyMs = currentTimeMillis - messageTime
-            console.debug(
-              'Received BSM message with age of ' +
-                messageLatencyMs +
-                'ms, clock offset: ' +
-                selectTimeOffsetMillis(getState() as RootState) +
-                'ms'
-            )
-            dispatch(renderIterative_Bsm([bsmData]))
-            dispatch(maybeUpdateSliderValue(currentTimeMillis))
-          })
+          console.log('Successfully connected to STOMP websocket')
+          try {
+            localWsClient.subscribe(spatTopic, function (mes: IMessage) {
+              const spatMessage: ProcessedSpat = JSON.parse(mes.body)
+              const messageTime = getTimestamp(spatMessage.utcTimeStamp)
+              const currentTimeMillis = getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState))
+              const messageLatencyMs = currentTimeMillis - messageTime
+              console.debug(
+                'Received SPaT message with age of ' +
+                  messageLatencyMs +
+                  'ms, clock offset: ' +
+                  selectTimeOffsetMillis(getState() as RootState) +
+                  'ms'
+              )
+              dispatch(renderIterative_Spat([spatMessage]))
+              dispatch(setLiveSpatLatestLatencyMs(messageLatencyMs))
+              dispatch(maybeUpdateSliderValue(currentTimeMillis))
+            })
+            localWsClient.subscribe(mapTopic, function (mes: IMessage) {
+              const mapMessage: ProcessedMap = JSON.parse(mes.body)
+              const messageTime = getTimestamp(mapMessage.properties.odeReceivedAt)
+              const currentTimeMillis = getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState))
+              const messageLatencyMs = currentTimeMillis - messageTime
+              console.debug(
+                'Received MAP message with age of ' +
+                  messageLatencyMs +
+                  'ms, clock offset: ' +
+                  selectTimeOffsetMillis(getState() as RootState) +
+                  'ms'
+              )
+              dispatch(renderIterative_Map([mapMessage]))
+              dispatch(maybeUpdateSliderValue(currentTimeMillis))
+            })
+            localWsClient.subscribe(bsmTopic, function (mes: IMessage) {
+              const bsmData: ProcessedBsmFeature = JSON.parse(mes.body)
+              const messageTime = getTimestamp(bsmData.properties.odeReceivedAt)
+              const currentTimeMillis = getAccurateTimeMillis(selectTimeOffsetMillis(getState() as RootState))
+              const messageLatencyMs = currentTimeMillis - messageTime
+              console.debug(
+                'Received BSM message with age of ' +
+                  messageLatencyMs +
+                  'ms, clock offset: ' +
+                  selectTimeOffsetMillis(getState() as RootState) +
+                  'ms'
+              )
+              dispatch(renderIterative_Bsm([bsmData]))
+              dispatch(maybeUpdateSliderValue(currentTimeMillis))
+            })
+          } catch (error) {
+            console.error('Error during subscriotion:', error)
+          }
         },
       })
-    }
+      //   }
 
-    // Get Current MAP Message
-    const currentState = getState() as RootState
-    const authToken = selectToken(currentState)!
-    const queryParams = selectQueryParams(currentState)
+      localWsClient.debug = (msg) => console.debug(msg)
 
-    // Request current SPaT and MAP data. SPaT data is requested after the connection is established to ensure no gaps
-    let abortController = new AbortController()
-    dispatch(addInitialDataAbortController(abortController))
-    const rawMapPromise = MessageMonitorApi.getMapMessages({
-      token: authToken,
-      intersectionId: queryParams.intersectionId,
-      latest: true,
-      abortController,
-    })
-    toast.promise(rawMapPromise, {
-      loading: `Loading MAP Data`,
-      success: `Successfully got MAP Data`,
-      error: `Failed to get MAP data. Please see console`,
-    })
-    dispatch(renderIterative_Map(await rawMapPromise))
+      localWsClient.activate()
 
-    // Topics are in the format /live/{intersectionID}/{spat,map,bsm}
-    const spatTopic = `/live/${intersectionId}/processed-spat`
-    const mapTopic = `/live/${intersectionId}/processed-map`
-    const bsmTopic = `/live/${intersectionId}/processed-bsm`
+      // Get Current MAP Message
+      const currentState = getState() as RootState
+      const authToken = selectToken(currentState)!
+      const queryParams = selectQueryParams(currentState)
 
-    const connectionStartTime = Date.now()
+      // Request current SPaT and MAP data. SPaT data is requested after the connection is established to ensure no gaps
+      let abortController = new AbortController()
+      dispatch(addInitialDataAbortController(abortController))
+      const rawMapPromise = MessageMonitorApi.getMapMessages({
+        token: authToken,
+        intersectionId: queryParams.intersectionId,
+        latest: true,
+        abortController,
+      })
+      toast.promise(rawMapPromise, {
+        loading: `Loading MAP Data`,
+        success: `Successfully got MAP Data`,
+        error: `Failed to get MAP data. Please see console`,
+      })
+      dispatch(renderIterative_Map(await rawMapPromise))
 
-    const connectionId = Math.floor(Math.random() * 1000000)
+      const connectionStartTime = Date.now()
 
-    localWsClient.activate()
+      const connectionId = Math.floor(Math.random() * 1000000)
 
-    // Request latest SPaT data to handle deduplicated feed.
-    // SPaT messages are sorted, so getting an older message
-    // here after a newer message is received on the websocket won't cause any issues
-    abortController = new AbortController()
-    dispatch(addInitialDataAbortController(abortController))
-    const rawSpatPromise = MessageMonitorApi.getSpatMessages({
-      token: authToken,
-      intersectionId: queryParams.intersectionId,
-      latest: true,
-      abortController,
-    })
-    toast.promise(rawSpatPromise, {
-      loading: `Loading SPAT Data`,
-      success: `Successfully got SPAT Data`,
-      error: `Failed to get SPAT data. Please see console`,
-    })
-    dispatch(renderIterative_Spat(await rawSpatPromise))
+      // Request latest SPaT data to handle deduplicated feed.
+      // SPaT messages are sorted, so getting an older message
+      // here after a newer message is received on the websocket won't cause any issues
+      abortController = new AbortController()
+      dispatch(addInitialDataAbortController(abortController))
+      const rawSpatPromise = MessageMonitorApi.getSpatMessages({
+        token: authToken,
+        intersectionId: queryParams.intersectionId,
+        latest: true,
+        abortController,
+      })
+      toast.promise(rawSpatPromise, {
+        loading: `Loading SPAT Data`,
+        success: `Successfully got SPAT Data`,
+        error: `Failed to get SPAT data. Please see console`,
+      })
+      dispatch(renderIterative_Spat(await rawSpatPromise))
 
-    async function onDisconnect(connectionId: number) {
-      console.log(
-        'Disconnecting live streaming client Before',
-        connectionId,
-        localWsClient?.connected,
-        localWsClient?.active,
-        localWsClient
-      )
-      await localWsClient.deactivate() // Deactivate the client to clean up resources and stop automatic reconnection attempts
-      console.log(
-        'Disconnecting live streaming client After',
-        connectionId,
-        localWsClient?.connected,
-        localWsClient?.active,
-        localWsClient
-      )
-      if (numRestarts < 5 && liveDataActive) {
-        let numRestartsLocal = numRestarts
-        if (Date.now() - connectionStartTime > 10000) {
-          numRestartsLocal = 0
-        }
-        console.debug('Attempting to reconnect to STOMP endpoint (numRestarts: ' + numRestartsLocal + ')')
+      async function onDisconnect(connectionId: number) {
+        console.log(
+          'Disconnecting live streaming client Before',
+          connectionId,
+          localWsClient?.connected,
+          localWsClient?.active,
+          localWsClient
+        )
+        return
+        await localWsClient.deactivate() // Deactivate the client to clean up resources and stop automatic reconnection attempts
+        console.log(
+          'Disconnecting live streaming client After',
+          connectionId,
+          localWsClient?.connected,
+          localWsClient?.active,
+          localWsClient
+        )
+        if (numRestarts < 5 && liveDataActive) {
+          let numRestartsLocal = numRestarts
+          if (Date.now() - connectionStartTime > 10000) {
+            numRestartsLocal = 0
+          }
+          console.debug('Attempting to reconnect to STOMP endpoint (numRestarts: ' + numRestartsLocal + ')')
 
-        if (numRestartsLocal == 0) {
-          dispatch(
-            initializeLiveStreaming({
-              token,
-              intersectionId,
-              numRestarts: 0,
-              shouldResetMapView: false,
-            })
-          )
-        } else {
-          dispatch(
-            setLiveDataRestartTimeoutId(
-              setTimeout(() => {
-                dispatch(setLiveDataRestart(numRestartsLocal + 1))
-              }, numRestartsLocal * 2000)
+          if (numRestartsLocal == 0) {
+            dispatch(
+              initializeLiveStreaming({
+                token,
+                intersectionId,
+                numRestarts: 0,
+                shouldResetMapView: false,
+              })
             )
-          )
-        }
-      } else {
-        if (numRestarts >= 5) {
-          console.info('Disconnected from STOMP endpoint - number of retries exceeded')
+          } else {
+            dispatch(
+              setLiveDataRestartTimeoutId(
+                setTimeout(() => {
+                  dispatch(setLiveDataRestart(numRestartsLocal + 1))
+                }, numRestartsLocal * 2000)
+              )
+            )
+          }
         } else {
-          console.info('Disconnected from STOMP endpoint - liveDataActive is no longer active')
+          if (numRestarts >= 5) {
+            console.info('Disconnected from STOMP endpoint - number of retries exceeded')
+          } else {
+            console.info('Disconnected from STOMP endpoint - liveDataActive is no longer active')
+          }
+          cleanUpLiveStreaming()
         }
-        cleanUpLiveStreaming()
       }
-    }
 
     localWsClient.onDisconnect = (frame) => {
       console.debug(

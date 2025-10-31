@@ -126,7 +126,7 @@ public class IntersectionReferenceAlignmentEventRepositoryImpl
 				Aggregation.match(
 						Criteria.where("eventGeneratedAt").gte(startTimeDate).lte(endTimeDate)),
 				Aggregation.project()
-						.and(DateOperators.DateToString.dateOf("date").toString("}%Y-%m-%d"))
+						.and(DateOperators.DateToString.dateOf("date").toString("%Y-%m-%d"))
 						.as("dateStr"),
 				Aggregation.group("dateStr").count().as("count"));
 

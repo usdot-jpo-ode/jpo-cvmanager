@@ -161,6 +161,7 @@ const initialState = {
   cursor: 'default',
   loadInitialDataTimeoutId: undefined as NodeJS.Timeout | undefined,
   wsClient: undefined as Client | undefined,
+  wsSessionId: undefined as number | undefined,
   liveDataActive: false,
   currentMapData: [] as ProcessedMap[],
   currentSpatData: [] as ProcessedSpat[],
@@ -981,25 +982,22 @@ export const initializeLiveStreaming = createAsyncThunk(
     const bsmTopic = `/live/${intersectionId}/processed-bsm`
 
     const url = combineUrlPaths(EnvironmentVars.CVIZ_API_WS_URL, 'stomp')
+    const sessionId = Math.floor(Math.random() * 1000000)
 
     localWsClient = new Client({
       webSocketFactory: () => {
-        // Pass token as a subprotocol
-        console.log('Token being sent:', token?.substring(0, 20) + '...')
-        try {
-          const ws = new WebSocket(url, ['v10.stomp', 'v11.stomp', token])
-          ws.onopen = () => console.log('WebSocket opened')
-          ws.onerror = (error) => console.error('WebSocket error:', error)
-          ws.onclose = (event) => console.log('WebSocket closed:', event.code, event.reason)
-          return ws
-        } catch (error) {
-          console.error('Error creating WebSocket:', error)
-          //   forceReconnect()
-          return null
-        }
+        return new WebSocket(url, ['v10.stomp', 'v11.stomp', token])
       },
       onConnect: () => {
-        console.log('Successfully connected to STOMP websocket')
+        console.log('Successfully connected to STOMP websocket', 'session ID:', sessionId)
+        if (
+          !selectLiveDataActive(getState() as RootState) ||
+          selectWsSessionId(getState() as RootState) !== sessionId
+        ) {
+          console.debug('Cancelling re-connect because live data is no longer active or active session ID mismatch')
+          localWsClient?.deactivate()
+          return
+        }
         try {
           localWsClient.subscribe(spatTopic, function (mes: IMessage) {
             const spatMessage: ProcessedSpat = JSON.parse(mes.body)
@@ -1048,7 +1046,7 @@ export const initializeLiveStreaming = createAsyncThunk(
             dispatch(maybeUpdateSliderValue(currentTimeMillis))
           })
         } catch (error) {
-          console.error('Error during subscription:', error)
+          console.error('Error during subscription:', error, 'session ID:', sessionId)
         }
       },
     })
@@ -1065,65 +1063,66 @@ export const initializeLiveStreaming = createAsyncThunk(
     // Request current SPaT and MAP data. SPaT data is requested after the connection is established to ensure no gaps
     let abortController = new AbortController()
     dispatch(addInitialDataAbortController(abortController))
-    const rawMapPromise = MessageMonitorApi.getMapMessages({
+    MessageMonitorApi.getMapMessages({
       token: authToken,
       intersectionId: queryParams.intersectionId,
       latest: true,
       abortController,
-    })
-    dispatch(renderIterative_Map(await rawMapPromise))
-
-    const connectionId = Math.floor(Math.random() * 1000000)
+    }).then((maps) => dispatch(renderIterative_Map(maps)))
 
     // Request latest SPaT data to handle deduplicated feed.
     // SPaT messages are sorted, so getting an older message
     // here after a newer message is received on the websocket won't cause any issues
     abortController = new AbortController()
     dispatch(addInitialDataAbortController(abortController))
-    const rawSpatPromise = MessageMonitorApi.getSpatMessages({
+    MessageMonitorApi.getSpatMessages({
       token: authToken,
       intersectionId: queryParams.intersectionId,
       latest: true,
       abortController,
-    })
-    dispatch(renderIterative_Spat(await rawSpatPromise))
+    }).then((spats) => dispatch(renderIterative_Spat(spats)))
 
     async function forceReconnect() {
-      console.info(`Forcing live data reconnect for connection ID ${connectionId}`)
-      dispatch(cleanUpLiveStreaming(true))
-      dispatch(
-        setLiveDataRestartTimeoutId(
-          setTimeout(
-            () =>
-              dispatch(
-                initializeLiveStreaming({
-                  token,
-                  intersectionId,
-                  numRestarts: 0,
-                  shouldResetMapView: false,
-                })
-              ),
-            5000
+      console.info(`Forcing live data reconnect`, 'session ID:', sessionId)
+      if (!selectLiveDataActive(getState() as RootState) || selectWsSessionId(getState() as RootState) !== sessionId) {
+        dispatch(cleanUpLiveStreaming(false))
+        localWsClient?.deactivate()
+      } else {
+        dispatch(cleanUpLiveStreaming(true))
+        dispatch(
+          setLiveDataRestartTimeoutId(
+            setTimeout(
+              () =>
+                dispatch(
+                  initializeLiveStreaming({
+                    token,
+                    intersectionId,
+                    numRestarts: 0,
+                    shouldResetMapView: false,
+                  })
+                ),
+              10000
+            )
           )
         )
-      )
+      }
     }
 
     localWsClient.onStompError = (frame) => {
-      console.error('Live Streaming STOMP ERROR', frame)
+      console.error('Live Streaming STOMP ERROR', frame, 'session ID:', sessionId)
     }
 
     localWsClient.onWebSocketClose = (frame) => {
-      console.error('Live Streaming STOMP WebSocket Close', frame)
+      console.error('Live Streaming STOMP WebSocket Close', frame, 'session ID:', sessionId)
     }
 
     localWsClient.onWebSocketError = (frame) => {
       // TODO: Consider restarting connection on error
-      console.error('Live Streaming STOMP WebSocket Error', frame)
+      console.error('Live Streaming STOMP WebSocket Error', frame, 'session ID:', sessionId)
       forceReconnect()
     }
 
-    return localWsClient
+    return { wsClient: localWsClient, sessionId: sessionId }
   }
 )
 
@@ -1494,8 +1493,8 @@ export const intersectionMapSlice = createSlice({
       const isRestart = action.payload ?? false
       if (state.value.wsClient) {
         state.value.wsClient.deactivate()
-        state.value.wsClient.forceDisconnect()
         state.value.wsClient = undefined
+        state.value.wsSessionId = undefined
         console.debug('Successfully disconnected from STOMP endpoint')
       }
       if (!isRestart) {
@@ -1764,9 +1763,13 @@ export const intersectionMapSlice = createSlice({
           state.value.filteredSurroundingNotifications = action.payload.filteredSurroundingNotifications
         }
       )
-      .addCase(initializeLiveStreaming.fulfilled, (state, action: PayloadAction<Client | undefined>) => {
-        state.value.wsClient = action.payload
-      })
+      .addCase(
+        initializeLiveStreaming.fulfilled,
+        (state, action: PayloadAction<{ wsClient: Client | undefined; sessionId: number | undefined }>) => {
+          state.value.wsClient = action.payload.wsClient
+          state.value.wsSessionId = action.payload.sessionId
+        }
+      )
       .addCase(getBsmDailyCounts.fulfilled, (state, action: PayloadAction<MessageMonitor.MinuteCount[]>) => {
         state.value.bsmEventsByMinute = (action.payload ?? []).map((item) => {
           const date = new Date(item.minute)
@@ -1831,6 +1834,7 @@ export const selectImportedMessageData = (state: RootState) => state.intersectio
 export const selectCursor = (state: RootState) => state.intersectionMap.value.cursor
 export const selectLoadInitialDataTimeoutId = (state: RootState) => state.intersectionMap.value.loadInitialDataTimeoutId
 export const selectWsClient = (state: RootState) => state.intersectionMap.value.wsClient
+export const selectWsSessionId = (state: RootState) => state.intersectionMap.value.wsSessionId
 export const selectLiveDataActive = (state: RootState) => state.intersectionMap.value.liveDataActive
 export const selectCurrentMapData = (state: RootState) => state.intersectionMap.value.currentMapData
 export const selectCurrentSpatData = (state: RootState) => state.intersectionMap.value.currentSpatData

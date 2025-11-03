@@ -259,8 +259,6 @@ const IntersectionMap = (props: MAP_PROPS) => {
     } else {
       if (bsmTrailLength < 15) setBsmTrailLength(20)
       dispatch(cleanUpLiveStreaming())
-      dispatch(resetMapView())
-      dispatch(pullInitialData())
     }
   }, [liveDataActive])
 

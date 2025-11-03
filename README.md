@@ -266,8 +266,8 @@ The following steps are intended to help get a new user up and running the JPO C
     git submodule update --init --recursive
     ```
 3.  Create a copy of the sample.env named ".env" and refer to the Environmental variables section below for more information on each variable.
-    1. Make sure at least the DOCKER_HOST_IP, KEYCLOAK_ADMIN_PASSWORD, KEYCLOAK_API_CLIENT_SECRET_KEY, and MAPBOX_TOKEN are set for this.
-    2. Some of these variables, delineated by sections, pertain to the [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor), [jpo-geojsonconverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter), and [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode). Please see the documentation provided for these projects when setting these variables.
+    1. Make sure at least the DOCKER_HOST_IP, MAVEN_GITHUB_TOKEN, and MAPBOX_TOKEN are set for this.
+    2. For other services or different configuration, please make a copy of the sample-full.env. Some of these variables, delineated by sections, pertain to the [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor), [jpo-geojsonconverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter), and [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode). Please see the documentation provided for these projects when setting these variables.
 4.  The CV Manager has four components that need to be containerized and deployed: the API, the PostgreSQL database, Keycloak, and the webapp.
 
     - If you are looking to deploy the CV Manager locally, you can simply run the docker-compose, make sure to fill out the .env file to ensure it launches properly
@@ -298,7 +298,7 @@ The following steps are intended to help get a new user up and running the JPO C
       Default Password: admin
     ```
 
-    This should automatically redirect you to http://host.docker.internal:8084/. If it does not, navigate to that URL directly.
+    This should automatically redirect you to http://${DOCKER_HOST_IP}:8084/. If it does not, navigate to that URL directly.
 
 - If you are looking to deploy in Kubernetes or on separate VMs, refer to the Kubernetes YAML deployment files to deploy the four components to your cluster. ([Kubernetes YAML](resources/kubernetes))
 
@@ -335,8 +335,7 @@ In addition to the groups defined in the table below, each service may also be a
 
 ##### Note on JPO-Utils Profiles
 
-While `kafka`, `kafka-setup`, `mongo`, `mongo-setup`, and `kafka-connect` are not included in the table above, they are required for the intersection API to run. These services
-are provided by the jpo-utils repository. To enable these services, you must include the `kafka_full`, `mongo_full`, and `kafka_connect_standalone` profiles.
+While `kafka`, `kafka-setup`, `mongo`, `mongo-setup`, and `kafka-connect` are not included in the table above, they are required for the intersection API to run. These services are provided by the jpo-utils repository. To enable these services, you must include the `kafka_full`, `mongo_full`, and `kafka_connect_standalone` profiles.
 
 ### Debugging
 

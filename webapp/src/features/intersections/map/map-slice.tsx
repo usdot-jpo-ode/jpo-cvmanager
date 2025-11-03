@@ -1088,23 +1088,8 @@ export const initializeLiveStreaming = createAsyncThunk(
         dispatch(cleanUpLiveStreaming(false))
         localWsClient?.deactivate()
       } else {
-        dispatch(cleanUpLiveStreaming(true))
-        dispatch(
-          setLiveDataRestartTimeoutId(
-            setTimeout(
-              () =>
-                dispatch(
-                  initializeLiveStreaming({
-                    token,
-                    intersectionId,
-                    numRestarts: 0,
-                    shouldResetMapView: false,
-                  })
-                ),
-              10000
-            )
-          )
-        )
+        dispatch(setLiveDataActive(false))
+        setTimeout(() => dispatch(setLiveDataActive(true)), 3000)
       }
     }
 

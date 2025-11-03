@@ -1101,12 +1101,14 @@ export const initializeLiveStreaming = createAsyncThunk(
         setLiveDataRestartTimeoutId(
           setTimeout(
             () =>
-              initializeLiveStreaming({
-                token,
-                intersectionId,
-                numRestarts: 0,
-                shouldResetMapView: false,
-              }),
+              dispatch(
+                initializeLiveStreaming({
+                  token,
+                  intersectionId,
+                  numRestarts: 0,
+                  shouldResetMapView: false,
+                })
+              ),
             2000
           )
         )

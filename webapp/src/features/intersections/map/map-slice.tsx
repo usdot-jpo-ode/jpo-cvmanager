@@ -1096,7 +1096,7 @@ export const initializeLiveStreaming = createAsyncThunk(
 
     async function forceReconnect() {
       console.info(`Forcing live data reconnect for connection ID ${connectionId}`)
-      dispatch(cleanUpLiveStreaming())
+      dispatch(cleanUpLiveStreaming(true))
       dispatch(
         setLiveDataRestartTimeoutId(
           setTimeout(
@@ -1494,21 +1494,25 @@ export const intersectionMapSlice = createSlice({
       state.value.cursor = ''
       state.value.hoveredFeature = undefined
     },
-    cleanUpLiveStreaming: (state) => {
+    cleanUpLiveStreaming: (state, action: PayloadAction<boolean>) => {
+      const isRestart = action.payload ?? false
       if (state.value.wsClient) {
         state.value.wsClient.deactivate()
         state.value.wsClient.forceDisconnect()
+        state.value.wsClient = undefined
         console.debug('Successfully disconnected from STOMP endpoint')
+      }
+      if (!isRestart) {
+        if (action.payload)
+          if (state.value.liveDataRestartTimeoutId) {
+            clearTimeout(state.value.liveDataRestartTimeoutId)
+            state.value.liveDataRestartTimeoutId = undefined
+          }
         state.value.timeWindowSeconds = 60
+        state.value.liveDataActive = false
+        state.value.liveDataRestart = -1
+        state.value.liveSpatLatestLatencyMs = undefined
       }
-      if (state.value.liveDataRestartTimeoutId) {
-        clearTimeout(state.value.liveDataRestartTimeoutId)
-        state.value.liveDataRestartTimeoutId = undefined
-      }
-      state.value.liveDataActive = false
-      state.value.liveDataRestart = -1
-      state.value.wsClient = undefined
-      state.value.liveSpatLatestLatencyMs = undefined
     },
     setLoadInitialDataTimeoutId: (state, action: PayloadAction<NodeJS.Timeout>) => {
       state.value.loadInitialDataTimeoutId = action.payload

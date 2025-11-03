@@ -35,6 +35,7 @@ import {
   onMapMouseMove,
   pullInitialData,
   resetInitialDataAbortControllers,
+  resetMapView,
   selectAllInteractiveLayerIds,
   selectBsmData,
   selectConnectingLanes,
@@ -62,6 +63,7 @@ import {
   selectSpatSignalGroups,
   selectTimeWindowSeconds,
   selectViewState,
+  setDecoderModeEnabled,
   setLoadInitialDataTimeoutId,
   setMapProps,
   setMapRef,
@@ -257,6 +259,8 @@ const IntersectionMap = (props: MAP_PROPS) => {
     } else {
       if (bsmTrailLength < 15) setBsmTrailLength(20)
       dispatch(cleanUpLiveStreaming())
+      dispatch(resetMapView())
+      dispatch(pullInitialData())
     }
   }, [liveDataActive])
 

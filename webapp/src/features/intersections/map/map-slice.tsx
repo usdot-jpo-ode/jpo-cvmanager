@@ -979,6 +979,9 @@ export const initializeLiveStreaming = createAsyncThunk(
       console.debug('Not initializing live streaming because liveDataActive is false')
       return
     }
+    if (wsClient != null) {
+      wsClient.deactivate()
+    }
     console.info('Live streaming data from Intersection API STOMP WebSocket endpoint')
 
     // Request initial SPaT and MAP data to default the view
@@ -1109,6 +1112,12 @@ export const initializeLiveStreaming = createAsyncThunk(
         dispatch(cleanUpLiveStreaming(false))
         localWsClient?.deactivate()
       } else {
+        // TODO: revisit this
+        // This is an imperfect solution to force a reconnect, but the stompjs library does not provide a better way
+        // to do so this at the moment. Simply deactivating and reactivating the client did not work
+        // The problem that occurs is that after ~6 minutes and around the 10th reconnect attempt,
+        // the client is no longer able to reconnect unless the liveDataActive is toggled.
+        localWsClient?.deactivate()
         dispatch(setLiveDataActive(false))
         setTimeout(() => dispatch(setLiveDataActive(true)), 3000)
       }

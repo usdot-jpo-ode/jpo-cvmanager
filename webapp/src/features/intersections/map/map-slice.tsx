@@ -983,7 +983,6 @@ export const initializeLiveStreaming = createAsyncThunk(
     const url = combineUrlPaths(EnvironmentVars.CVIZ_API_WS_URL, 'stomp')
 
     localWsClient = new Client({
-      brokerURL: url,
       webSocketFactory: () => {
         // Pass token as a subprotocol
         console.log('Token being sent:', token?.substring(0, 20) + '...')
@@ -995,7 +994,7 @@ export const initializeLiveStreaming = createAsyncThunk(
           return ws
         } catch (error) {
           console.error('Error creating WebSocket:', error)
-          forceReconnect()
+          //   forceReconnect()
           return null
         }
       },
@@ -1072,11 +1071,6 @@ export const initializeLiveStreaming = createAsyncThunk(
       latest: true,
       abortController,
     })
-    toast.promise(rawMapPromise, {
-      loading: `Loading MAP Data`,
-      success: `Successfully got MAP Data`,
-      error: `Failed to get MAP data. Please see console`,
-    })
     dispatch(renderIterative_Map(await rawMapPromise))
 
     const connectionId = Math.floor(Math.random() * 1000000)
@@ -1092,32 +1086,27 @@ export const initializeLiveStreaming = createAsyncThunk(
       latest: true,
       abortController,
     })
-    toast.promise(rawSpatPromise, {
-      loading: `Loading SPAT Data`,
-      success: `Successfully got SPAT Data`,
-      error: `Failed to get SPAT data. Please see console`,
-    })
     dispatch(renderIterative_Spat(await rawSpatPromise))
 
     async function forceReconnect() {
       console.info(`Forcing live data reconnect for connection ID ${connectionId}`)
       dispatch(cleanUpLiveStreaming(true))
-      dispatch(
-        setLiveDataRestartTimeoutId(
-          setTimeout(
-            () =>
-              dispatch(
-                initializeLiveStreaming({
-                  token,
-                  intersectionId,
-                  numRestarts: 0,
-                  shouldResetMapView: false,
-                })
-              ),
-            2000
-          )
-        )
-      )
+      //   dispatch(
+      //     setLiveDataRestartTimeoutId(
+      //       setTimeout(
+      //         () =>
+      //           dispatch(
+      //             initializeLiveStreaming({
+      //               token,
+      //               intersectionId,
+      //               numRestarts: 0,
+      //               shouldResetMapView: false,
+      //             })
+      //           ),
+      //         2000
+      //       )
+      //     )
+      //   )
     }
 
     localWsClient.onStompError = (frame) => {
@@ -1131,7 +1120,7 @@ export const initializeLiveStreaming = createAsyncThunk(
     localWsClient.onWebSocketError = (frame) => {
       // TODO: Consider restarting connection on error
       console.error('Live Streaming STOMP WebSocket Error', frame)
-      //   forceReconnect()
+      forceReconnect()
     }
 
     return localWsClient

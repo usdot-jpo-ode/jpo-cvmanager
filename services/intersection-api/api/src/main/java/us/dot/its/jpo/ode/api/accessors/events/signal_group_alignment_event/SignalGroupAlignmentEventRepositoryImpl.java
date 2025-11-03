@@ -126,7 +126,7 @@ public class SignalGroupAlignmentEventRepositoryImpl
 				Aggregation.project()
 						.and(ConvertOperators.ToDate.toDate("$timestamp")).as("date"),
 				Aggregation.project()
-						.and(DateOperators.DateToString.dateOf("date").toString("}%Y-%m-%d"))
+						.and(DateOperators.DateToString.dateOf("date").toString("%Y-%m-%d"))
 						.as("dateStr"),
 				Aggregation.group("dateStr").count().as("count"));
 

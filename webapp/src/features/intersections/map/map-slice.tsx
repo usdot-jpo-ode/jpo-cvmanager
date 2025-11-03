@@ -963,8 +963,11 @@ export const initializeLiveStreaming = createAsyncThunk(
   ) => {
     const { token, intersectionId, numRestarts = 0, shouldResetMapView = true } = args
     // Connect to WebSocket when component mounts
-    const liveDataActive = selectLiveDataActive(getState() as RootState)
-    const wsClient = selectWsClient(getState() as RootState)
+    const currentState = getState() as RootState
+    const liveDataActive = selectLiveDataActive(currentState)
+    const wsClient = selectWsClient(currentState)
+    const authToken = selectToken(currentState)
+    const queryParams = selectQueryParams(currentState)
     let localWsClient = wsClient as Client | undefined
 
     dispatch(resetInitialDataAbortControllers())
@@ -977,6 +980,29 @@ export const initializeLiveStreaming = createAsyncThunk(
       return
     }
     console.info('Live streaming data from Intersection API STOMP WebSocket endpoint')
+
+    // Request initial SPaT and MAP data to default the view
+    let abortController = new AbortController()
+    dispatch(addInitialDataAbortController(abortController))
+    MessageMonitorApi.getMapMessages({
+      token: authToken,
+      intersectionId: queryParams.intersectionId,
+      latest: true,
+      abortController,
+    }).then((maps) => dispatch(renderIterative_Map(maps)))
+
+    // Request latest SPaT data to handle deduplicated feed.
+    // SPaT messages are sorted, so getting an older message
+    // here after a newer message is received on the websocket won't cause any issues
+    abortController = new AbortController()
+    dispatch(addInitialDataAbortController(abortController))
+    MessageMonitorApi.getSpatMessages({
+      token: authToken,
+      intersectionId: queryParams.intersectionId,
+      latest: true,
+      abortController,
+    }).then((spats) => dispatch(renderIterative_Spat(spats)))
+
     const spatTopic = `/live/${intersectionId}/processed-spat`
     const mapTopic = `/live/${intersectionId}/processed-map`
     const bsmTopic = `/live/${intersectionId}/processed-bsm`
@@ -1048,39 +1074,34 @@ export const initializeLiveStreaming = createAsyncThunk(
         } catch (error) {
           console.error('Error during subscription:', error, 'session ID:', sessionId)
         }
+
+        // Request current SPaT and MAP data to ensure no messages were missed
+        let abortController = new AbortController()
+        dispatch(addInitialDataAbortController(abortController))
+        MessageMonitorApi.getMapMessages({
+          token: authToken,
+          intersectionId: queryParams.intersectionId,
+          latest: true,
+          abortController,
+        }).then((maps) => dispatch(renderIterative_Map(maps)))
+
+        // Request latest SPaT data to handle deduplicated feed.
+        // SPaT messages are sorted, so getting an older message
+        // here after a newer message is received on the websocket won't cause any issues
+        abortController = new AbortController()
+        dispatch(addInitialDataAbortController(abortController))
+        MessageMonitorApi.getSpatMessages({
+          token: authToken,
+          intersectionId: queryParams.intersectionId,
+          latest: true,
+          abortController,
+        }).then((spats) => dispatch(renderIterative_Spat(spats)))
       },
     })
 
     localWsClient.debug = (msg) => console.debug(msg)
 
     localWsClient.activate()
-
-    // Get Current MAP Message
-    const currentState = getState() as RootState
-    const authToken = selectToken(currentState)!
-    const queryParams = selectQueryParams(currentState)
-
-    // Request current SPaT and MAP data. SPaT data is requested after the connection is established to ensure no gaps
-    let abortController = new AbortController()
-    dispatch(addInitialDataAbortController(abortController))
-    MessageMonitorApi.getMapMessages({
-      token: authToken,
-      intersectionId: queryParams.intersectionId,
-      latest: true,
-      abortController,
-    }).then((maps) => dispatch(renderIterative_Map(maps)))
-
-    // Request latest SPaT data to handle deduplicated feed.
-    // SPaT messages are sorted, so getting an older message
-    // here after a newer message is received on the websocket won't cause any issues
-    abortController = new AbortController()
-    dispatch(addInitialDataAbortController(abortController))
-    MessageMonitorApi.getSpatMessages({
-      token: authToken,
-      intersectionId: queryParams.intersectionId,
-      latest: true,
-      abortController,
-    }).then((spats) => dispatch(renderIterative_Spat(spats)))
 
     async function forceReconnect() {
       console.info(`Forcing live data reconnect`, 'session ID:', sessionId)

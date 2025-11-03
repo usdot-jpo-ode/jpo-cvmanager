@@ -18,7 +18,7 @@ services:
       - '8089:8089'
     restart: always
     environment:
-      AUTH_SERVER_URL: ${KEYCLOAK_ENDPOINT:-http://cvmanager_keycloak:8084}
+      AUTH_SERVER_URL: ${KEYCLOAK_ENDPOINT:-http://${DOCKER_HOST_IP:?error}:8084}
       DB_HOST_IP: ${DB_HOST_IP:-mongo}
       DB_HOST_PORT: ${DB_HOST_PORT:-27017}
       SPRING_KAFKA_BOOTSTRAPSERVERS: ${KAFKA_BOOTSTRAP_SERVERS:-kafka:9092}

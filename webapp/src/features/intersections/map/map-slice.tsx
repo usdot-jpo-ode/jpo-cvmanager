@@ -1091,22 +1091,22 @@ export const initializeLiveStreaming = createAsyncThunk(
     async function forceReconnect() {
       console.info(`Forcing live data reconnect for connection ID ${connectionId}`)
       dispatch(cleanUpLiveStreaming(true))
-      //   dispatch(
-      //     setLiveDataRestartTimeoutId(
-      //       setTimeout(
-      //         () =>
-      //           dispatch(
-      //             initializeLiveStreaming({
-      //               token,
-      //               intersectionId,
-      //               numRestarts: 0,
-      //               shouldResetMapView: false,
-      //             })
-      //           ),
-      //         2000
-      //       )
-      //     )
-      //   )
+      dispatch(
+        setLiveDataRestartTimeoutId(
+          setTimeout(
+            () =>
+              dispatch(
+                initializeLiveStreaming({
+                  token,
+                  intersectionId,
+                  numRestarts: 0,
+                  shouldResetMapView: false,
+                })
+              ),
+            5000
+          )
+        )
+      )
     }
 
     localWsClient.onStompError = (frame) => {

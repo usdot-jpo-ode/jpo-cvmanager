@@ -987,12 +987,17 @@ export const initializeLiveStreaming = createAsyncThunk(
       webSocketFactory: () => {
         // Pass token as a subprotocol
         console.log('Token being sent:', token?.substring(0, 20) + '...')
-        const ws = new WebSocket(url, ['v10.stomp', 'v11.stomp', token])
-        ws.onopen = () => console.log('WebSocket opened')
-        ws.onerror = (error) => console.error('WebSocket error:', error)
-        ws.onclose = (event) => console.log('WebSocket closed:', event.code, event.reason)
-
-        return ws
+        try {
+          const ws = new WebSocket(url, ['v10.stomp', 'v11.stomp', token])
+          ws.onopen = () => console.log('WebSocket opened')
+          ws.onerror = (error) => console.error('WebSocket error:', error)
+          ws.onclose = (event) => console.log('WebSocket closed:', event.code, event.reason)
+          return ws
+        } catch (error) {
+          console.error('Error creating WebSocket:', error)
+          forceReconnect()
+          return null
+        }
       },
       onConnect: () => {
         console.log('Successfully connected to STOMP websocket')
@@ -1121,12 +1126,12 @@ export const initializeLiveStreaming = createAsyncThunk(
 
     localWsClient.onWebSocketClose = (frame) => {
       console.error('Live Streaming STOMP WebSocket Close', frame)
-      forceReconnect()
     }
 
     localWsClient.onWebSocketError = (frame) => {
       // TODO: Consider restarting connection on error
       console.error('Live Streaming STOMP WebSocket Error', frame)
+      //   forceReconnect()
     }
 
     return localWsClient

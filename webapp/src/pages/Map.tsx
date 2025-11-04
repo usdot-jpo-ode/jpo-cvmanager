@@ -1338,7 +1338,7 @@ function MapPage() {
                       dispatch(setSelectedIntersectionId(intersection.intersectionID))
                     }}
                   >
-                    <img src="/icons/intersection_icon.png" style={{ width: 70 }} />
+                    <img src="/icons/intersection_icon.png" style={{ width: 40 }} />
                   </Marker>
                 )
               })}

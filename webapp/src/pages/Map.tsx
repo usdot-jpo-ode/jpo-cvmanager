@@ -638,7 +638,7 @@ function MapPage() {
           }}
         >
           <div onClick={() => openPopup(index)}>
-            <img src="/workzone_icon.png" height={60} alt="Work Zone Icon" />
+            <img src="/workzone_icon.png" height={40} alt="Work Zone Icon" />
           </div>
         </Marker>
       )

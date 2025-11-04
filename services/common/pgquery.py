@@ -104,7 +104,6 @@ def query_db(query_string, params=None):
     logging.info("DB connection starting...")
     with db.connect() as conn:
         logging.debug("Executing query...")
-        logging.info(f"Query: {query_string} with params: {params}")
         data = conn.execute(sqlalchemy.text(query_string), params).fetchall()
         return data
 

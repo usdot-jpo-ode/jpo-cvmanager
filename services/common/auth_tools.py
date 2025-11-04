@@ -97,7 +97,7 @@ def get_rsu_set_for_org(organizations: list[str]) -> set[str]:
     logging.debug(f'Executing query: "{query};"')
     data = pgquery.query_db(query, params=params)
 
-    return set([rsu[0] for rsu in data])
+    return set([str(rsu[0]).replace("/32", "") for rsu in data])
 
 
 def check_rsu_with_org(rsu_ip: str, organizations: list[str]) -> bool:
@@ -120,7 +120,7 @@ def check_rsu_with_org(rsu_ip: str, organizations: list[str]) -> bool:
     logging.debug(f'Executing query: "{query};"')
     data = pgquery.query_db(query, params=params)
 
-    return data[0][0] == rsu_ip if data else False
+    return str(data[0][0]).replace("/32", "") == rsu_ip if data else False
 
 
 def check_intersection_with_org(intersection_id: str, organizations: list[str]) -> bool:

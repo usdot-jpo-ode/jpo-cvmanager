@@ -11,9 +11,9 @@ rsu_set_for_org_query_statement: tuple[str, dict] = (
 )
 
 rsu_query_return = [
-    {"ipv4_address": "1.1.1.1"},
-    {"ipv4_address": "1.1.1.2"},
-    {"ipv4_address": "1.1.1.3"},
+    ["1.1.1.1/32"],
+    ["1.1.1.2/32"],
+    ["1.1.1.3/32"],
 ]
 rsu_query_statement: tuple[str, dict] = (
     (
@@ -27,9 +27,9 @@ rsu_query_statement: tuple[str, dict] = (
 )
 
 intersection_query_return = [
-    {"intersection_number": "1"},
-    {"intersection_number": "2"},
-    {"intersection_number": "3"},
+    ["1"],
+    ["2"],
+    ["3"],
 ]
 intersection_query_statement: tuple[str, dict] = (
     (
@@ -43,7 +43,7 @@ intersection_query_statement: tuple[str, dict] = (
 )
 
 user_query_return = [
-    {"email": "test1@gmail.com"},
+    ["test1@gmail.com"],
 ]
 user_query_statement: tuple[str, dict] = (
     (

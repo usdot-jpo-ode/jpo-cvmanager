@@ -1102,7 +1102,7 @@ export const initializeLiveStreaming = createAsyncThunk(
       },
     })
 
-    localWsClient.debug = (msg) => console.debug(msg)
+    localWsClient.debug = (msg) => console.debug('Live STOMP Websocket Debug Message:', msg)
 
     localWsClient.activate()
 

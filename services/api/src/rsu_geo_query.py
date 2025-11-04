@@ -22,7 +22,6 @@ def query_org_rsus(orgName):
         "WHERE ron_v.name = :org_name"
     )
     params = {"org_name": orgName}
-    logging.debug(query)
     data = pgquery.query_db(query, params=params)
 
     result = set()
@@ -69,7 +68,6 @@ def query_rsu_devices(ipList, pointList, vendor=None):
         params["vendor"] = vendor
     query += "AND ST_Contains(ST_SetSRID(ST_GeomFromText(:polygon), 4326), rsus.geography::geometry)) as row"
 
-    logging.debug(query)
     logging.info("Running query_rsu_devices")
 
     query_job = pgquery.query_db(query, params=params)

@@ -55,7 +55,7 @@ point_list_vendor = [
 rsu_devices_query = (
     "SELECT to_jsonb(row) FROM (SELECT ipv4_address as ip, ST_X(geography::geometry) AS long, ST_Y(geography::geometry) AS lat FROM rsus WHERE ipv4_address = ANY(:ip_list::inet[]) AND ST_Contains(ST_SetSRID(ST_GeomFromText(:polygon), 4326), rsus.geography::geometry)) as row",
     {
-        "ip_list": "{10.11.81.12}",
+        "ip_list": ["10.11.81.12"],
         "polygon": "POLYGON((-105.34460908203145 39.724583197251334,-105.34666901855489 39.670180083300174,-105.25122529296911 39.679162192647944,-105.2539718750002 39.72088725644132,-105.34460908203145 39.724583197251334))",
     },
 )
@@ -63,7 +63,7 @@ rsu_devices_query = (
 rsu_devices_query_vendor = (
     "SELECT to_jsonb(row) FROM (SELECT ipv4_address as ip, ST_X(geography::geometry) AS long, ST_Y(geography::geometry) AS lat FROM rsus WHERE ipv4_address = ANY(:ip_list::inet[])  AND ipv4_address IN (SELECT rd.ipv4_address FROM public.rsus as rd JOIN public.rsu_models as rm ON rm.rsu_model_id = rd.model JOIN public.manufacturers as man on man.manufacturer_id = rm.manufacturer WHERE man.name = :vendor) AND ST_Contains(ST_SetSRID(ST_GeomFromText(:polygon), 4326), rsus.geography::geometry)) as row",
     {
-        "ip_list": "{10.11.81.12}",
+        "ip_list": ["10.11.81.12"],
         "vendor": "Test",
         "polygon": "POLYGON((-105.34460908203145 39.724583197251334,-105.34666901855489 39.670180083300174,-105.25122529296911 39.679162192647944,-105.2539718750002 39.72088725644132,-105.34460908203145 39.724583197251334))",
     },

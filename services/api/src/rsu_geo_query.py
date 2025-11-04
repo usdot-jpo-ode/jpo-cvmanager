@@ -43,7 +43,10 @@ def query_rsu_devices(ipList, pointList, vendor=None):
         geogString += long + " " + lat + ","
 
     geogString = geogString[:-1] + "))"
-    params = {"ip_list": "{" + ", ".join(ipList) + "}"}
+
+    # Use proper parameter binding for IP list with PostgreSQL array
+    params = {"ip_list": list(ipList), "polygon": geogString}
+
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
@@ -63,7 +66,6 @@ def query_rsu_devices(ipList, pointList, vendor=None):
         )
         params["vendor"] = vendor
     query += "AND ST_Contains(ST_SetSRID(ST_GeomFromText(:polygon), 4326), rsus.geography::geometry)) as row"
-    params["polygon"] = geogString
 
     logging.debug(query)
     logging.info("Running query_rsu_devices")

@@ -56,7 +56,7 @@ def query_rsu_devices(ipList, pointList, vendor=None):
         "ST_X(geography::geometry) AS long, "
         "ST_Y(geography::geometry) AS lat "
         "FROM rsus "
-        f"WHERE ipv4_address IN({ip_list_placeholder})) "
+        f"WHERE ipv4_address IN ({ip_list_placeholder}) "
     )
     if vendor is not None:
         query += (

@@ -136,4 +136,21 @@ class DefaultConfigRepositoryImplTest {
         assertThat(((Document) updateCaptor.getValue().getUpdateObject().get("$set")).get("value"))
                 .isEqualTo("topic.CmAssessment");
     }
+
+    @Test
+    void testSaveBooleanType() {
+        DefaultConfig<Boolean> config = new DefaultConfig<>(
+                "aggregation.debug", "category", true,
+                "java.lang.Boolean",
+                UnitsEnum.CENTIMETERS, "Whether to log diagnostic information for debugging");
+
+        doReturn(null).when(mongoTemplate).upsert(any(Query.class), any(Update.class), anyString());
+
+        repository.save(config);
+
+        ArgumentCaptor<Update> updateCaptor = ArgumentCaptor.forClass(Update.class);
+        verify(mongoTemplate).upsert(any(Query.class), updateCaptor.capture(), eq("CmDefaultConfig"));
+        assertThat(((Document) updateCaptor.getValue().getUpdateObject().get("$set")).get("value"))
+                .isEqualTo(true);
+    }
 }

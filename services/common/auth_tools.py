@@ -192,7 +192,6 @@ def get_user_info(email: str) -> Optional[UserInfo]:
     )
     org_rows = pgquery.query_db(org_query, params={"email": email})
     # Combine into JWT token-like structure for UserInfo constructor
-    print(org_rows)
     user_info_dict["cvmanager_data"] = {
         "super_user": user_info_dict.get("super_user", "0"),
         "organizations": [dict(row[0]) for row in org_rows],

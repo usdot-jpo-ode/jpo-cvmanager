@@ -10,6 +10,7 @@ from werkzeug.exceptions import BadRequest
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
     PermissionResult,
+    generate_sql_placeholders_for_list,
     require_permission,
 )
 
@@ -45,7 +46,8 @@ def query_rsu_devices(ipList, pointList, vendor=None):
     geogString = geogString[:-1] + "))"
 
     # Use proper parameter binding for IP list with PostgreSQL array
-    params = {"ip_list": list(ipList), "polygon": geogString}
+    ip_list_placeholder, params = generate_sql_placeholders_for_list(ipList)
+    params["polygon"] = geogString
 
     query = (
         "SELECT to_jsonb(row) "
@@ -54,11 +56,11 @@ def query_rsu_devices(ipList, pointList, vendor=None):
         "ST_X(geography::geometry) AS long, "
         "ST_Y(geography::geometry) AS lat "
         "FROM rsus "
-        "WHERE ipv4_address = ANY(:ip_list::inet[]) "
+        f"WHERE ipv4_address IN({ip_list_placeholder})) "
     )
     if vendor is not None:
         query += (
-            " AND ipv4_address IN (SELECT rd.ipv4_address "
+            "AND ipv4_address IN (SELECT rd.ipv4_address "
             "FROM public.rsus as rd "
             "JOIN public.rsu_models as rm ON rm.rsu_model_id = rd.model "
             "JOIN public.manufacturers as man on man.manufacturer_id = rm.manufacturer "

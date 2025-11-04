@@ -91,7 +91,7 @@ def get_rsu_set_for_org(organizations: list[str]) -> set[str]:
         "FROM public.rsus rsu "
         "JOIN public.rsu_organization AS rsu_org ON rsu_org.rsu_id = rsu.rsu_id "
         "JOIN public.organizations AS org ON org.organization_id = rsu_org.organization_id "
-        f"WHERE org.name = ANY ({allowed_orgs_placeholder})"
+        f"WHERE org.name IN ({allowed_orgs_placeholder})"
     )
 
     logging.debug(f'Executing query: "{query};"')
@@ -113,7 +113,7 @@ def check_rsu_with_org(rsu_ip: str, organizations: list[str]) -> bool:
         "FROM public.rsus rsu "
         "JOIN public.rsu_organization AS rsu_org ON rsu_org.rsu_id = rsu.rsu_id "
         "JOIN public.organizations AS org ON org.organization_id = rsu_org.organization_id "
-        f"WHERE org.name = ANY ({allowed_orgs_placeholder}) "
+        f"WHERE org.name IN ({allowed_orgs_placeholder}) "
         "AND rsu.ipv4_address = :rsu_ip"
     )
 
@@ -136,7 +136,7 @@ def check_intersection_with_org(intersection_id: str, organizations: list[str]) 
         "FROM public.intersections intersection "
         "JOIN public.intersection_organization AS intersection_org ON intersection_org.intersection_id = intersection.intersection_id "
         "JOIN public.organizations AS org ON org.organization_id = intersection_org.organization_id "
-        f"WHERE org.name = ANY ({allowed_orgs_placeholder}) "
+        f"WHERE org.name IN ({allowed_orgs_placeholder}) "
         "AND intersection.intersection_number = :intersection_id"
     )
 
@@ -159,7 +159,7 @@ def check_user_with_org(user_email: str, organizations: list[str]) -> bool:
         "FROM public.users u "
         "JOIN public.user_organization AS user_org ON user_org.user_id = u.user_id "
         "JOIN public.organizations AS org ON org.organization_id = user_org.organization_id "
-        f"WHERE org.name = ANY ({allowed_orgs_placeholder}) "
+        f"WHERE org.name IN ({allowed_orgs_placeholder}) "
         "AND u.email = :user_email"
     )
 

@@ -97,7 +97,7 @@ def get_rsu_set_for_org(organizations: list[str]) -> set[str]:
     logging.debug(f'Executing query: "{query};"')
     data = pgquery.query_db(query, params=params)
 
-    return set([rsu["ipv4_address"] for rsu in data])
+    return set([rsu[0] for rsu in data])
 
 
 def check_rsu_with_org(rsu_ip: str, organizations: list[str]) -> bool:
@@ -120,7 +120,7 @@ def check_rsu_with_org(rsu_ip: str, organizations: list[str]) -> bool:
     logging.debug(f'Executing query: "{query};"')
     data = pgquery.query_db(query, params=params)
 
-    return data[0]["ipv4_address"] == rsu_ip if data else False
+    return data[0][0] == rsu_ip if data else False
 
 
 def check_intersection_with_org(intersection_id: str, organizations: list[str]) -> bool:
@@ -143,7 +143,7 @@ def check_intersection_with_org(intersection_id: str, organizations: list[str]) 
     logging.debug(f'Executing query: "{query};"')
     data = pgquery.query_db(query, params=params)
 
-    return data[0]["intersection_number"] == intersection_id if data else False
+    return data[0][0] == intersection_id if data else False
 
 
 def check_user_with_org(user_email: str, organizations: list[str]) -> bool:
@@ -166,7 +166,7 @@ def check_user_with_org(user_email: str, organizations: list[str]) -> bool:
     logging.debug(f'Executing query: "{query};"')
     data = pgquery.query_db(query, params=params)
 
-    return data[0]["email"] == user_email if data else False
+    return data[0][0] == user_email if data else False
 
 
 def get_user_info(email: str) -> Optional[UserInfo]:

@@ -103,7 +103,7 @@ public class LaneDirectionOfTravelNotificationRepositoryImplTest {
         Page<LaneDirectionOfTravelNotification> page = repository.findLatest(intersectionID, startTime, endTime);
 
         assertThat(page.getContent()).hasSize(1);
-        assertThat(page.getContent().get(0).getIntersectionID()).isEqualTo(intersectionID);
+        assertThat(page.getContent().getFirst().getIntersectionID()).isEqualTo(intersectionID);
         verify(mongoTemplate).findOne(any(Query.class), eq(LaneDirectionOfTravelNotification.class),
                 eq("CmLaneDirectionOfTravelNotification"));
     }

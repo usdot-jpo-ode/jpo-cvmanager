@@ -50,7 +50,7 @@ class ReportRepositoryImplTest {
         Page<ReportDocument> page = repository.findLatest("report1", 123, 1000L, 2000L, true);
 
         assertThat(page.getContent()).hasSize(1);
-        assertThat(page.getContent().get(0)).isEqualTo(doc);
+        assertThat(page.getContent().getFirst()).isEqualTo(doc);
         verify(mongoTemplate).findOne(any(Query.class), eq(ReportDocument.class), eq("CmReport"));
     }
 
@@ -67,7 +67,7 @@ class ReportRepositoryImplTest {
         Page<ReportDocument> page = spyRepo.find("report1", 123, 1000L, 2000L, false, pageable);
 
         assertThat(page.getContent()).hasSize(1);
-        assertThat(page.getContent().get(0)).isEqualTo(doc);
+        assertThat(page.getContent().getFirst()).isEqualTo(doc);
     }
 
     @Test

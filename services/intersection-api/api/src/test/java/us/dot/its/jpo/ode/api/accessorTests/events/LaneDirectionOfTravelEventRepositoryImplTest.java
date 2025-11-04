@@ -189,7 +189,7 @@ public class LaneDirectionOfTravelEventRepositoryImplTest {
         Aggregation capturedAggregation = aggregationCaptor.getValue();
 
         // Extract the MatchOperation from the Aggregation pipeline
-        Document pipeline = capturedAggregation.toPipeline(Aggregation.DEFAULT_CONTEXT).get(0);
+        Document pipeline = capturedAggregation.toPipeline(Aggregation.DEFAULT_CONTEXT).getFirst();
 
         // Assert the Match operation Criteria
         assertThat(pipeline.toJson())
@@ -198,7 +198,7 @@ public class LaneDirectionOfTravelEventRepositoryImplTest {
                         intersectionID, startTimeString, endTimeString));
 
         // Serialize results to JSON and compare with the original JSON
-        String resultJson = objectMapper.writeValueAsString(findResponse.getContent().get(0));
+        String resultJson = objectMapper.writeValueAsString(findResponse.getContent().getFirst());
 
         // Remove unused fields from each entry
         List<Document> expectedResult = sampleDocuments.stream().map(doc -> {
@@ -206,7 +206,7 @@ public class LaneDirectionOfTravelEventRepositoryImplTest {
             doc.remove("recordGeneratedAt");
             return doc;
         }).toList();
-        String expectedJson = objectMapper.writeValueAsString(expectedResult.get(0));
+        String expectedJson = objectMapper.writeValueAsString(expectedResult.getFirst());
 
         // Compare JSON with ignored fields
         JSONAssert.assertEquals(expectedJson, resultJson, new CustomComparator(
@@ -231,8 +231,8 @@ public class LaneDirectionOfTravelEventRepositoryImplTest {
         List<IDCount> result = repository.countEventsByCenterlineDistance(intersectionID, startTime, endTime);
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getId()).isEqualTo("5.0");
-        assertThat(result.get(0).getCount()).isEqualTo(10);
+        assertThat(result.getFirst().getId()).isEqualTo("5.0");
+        assertThat(result.getFirst().getCount()).isEqualTo(10);
         verify(mongoTemplate).aggregate(any(Aggregation.class), eq("CmLaneDirectionOfTravelEvent"),
                 eq(IDCount.class));
     }
@@ -253,8 +253,8 @@ public class LaneDirectionOfTravelEventRepositoryImplTest {
         List<IDCount> result = repository.getMedianDistanceByDegree(intersectionID, startTime, endTime);
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getId()).isEqualTo("15.0");
-        assertThat(result.get(0).getCount()).isEqualTo(7);
+        assertThat(result.getFirst().getId()).isEqualTo("15.0");
+        assertThat(result.getFirst().getCount()).isEqualTo(7);
         verify(mongoTemplate).aggregate(any(Aggregation.class), eq("CmLaneDirectionOfTravelEvent"),
                 eq(IDCount.class));
     }
@@ -270,7 +270,7 @@ public class LaneDirectionOfTravelEventRepositoryImplTest {
         Page<LaneDirectionOfTravelEvent> page = repository.findLatest(intersectionID, startTime, endTime);
 
         assertThat(page.getContent()).hasSize(1);
-        assertThat(page.getContent().get(0).getIntersectionID()).isEqualTo(intersectionID);
+        assertThat(page.getContent().getFirst().getIntersectionID()).isEqualTo(intersectionID);
         verify(mongoTemplate).findOne(any(Query.class), eq(LaneDirectionOfTravelEvent.class),
                 eq("CmLaneDirectionOfTravelEvent"));
     }

@@ -105,7 +105,7 @@ public class IntersectionReferenceAlignmentNotificationRepositoryImplTest {
                 endTime);
 
         assertThat(page.getContent()).hasSize(1);
-        assertThat(page.getContent().get(0).getIntersectionID()).isEqualTo(intersectionID);
+        assertThat(page.getContent().getFirst().getIntersectionID()).isEqualTo(intersectionID);
         verify(mongoTemplate).findOne(any(Query.class), eq(IntersectionReferenceAlignmentNotification.class),
                 eq("CmIntersectionReferenceAlignmentNotification"));
     }

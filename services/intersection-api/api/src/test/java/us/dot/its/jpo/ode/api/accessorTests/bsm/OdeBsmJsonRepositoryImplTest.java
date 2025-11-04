@@ -355,7 +355,7 @@ public class OdeBsmJsonRepositoryImplTest {
         Aggregation capturedAggregation = aggregationCaptor.getValue();
 
         // Extract the MatchOperation from the Aggregation pipeline
-        Document pipeline = capturedAggregation.toPipeline(Aggregation.DEFAULT_CONTEXT).get(0);
+        Document pipeline = capturedAggregation.toPipeline(Aggregation.DEFAULT_CONTEXT).getFirst();
 
         // Assert the Match operation Criteria
         assertThat(pipeline.toJson())
@@ -363,10 +363,10 @@ public class OdeBsmJsonRepositoryImplTest {
                         "{\"$match\": {\"metadata.originIp\": \"%s\", \"payload.data.coreData.id\": \"%s\", \"metadata.odeReceivedAt\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}, \"payload.data.coreData.position.latitude\": {\"$gte\": 36.799549443581746, \"$lte\": 36.80045055638405}, \"payload.data.coreData.position.longitude\": {\"$gte\": -104.10056026011259, \"$lte\": -104.0994397398874}}}",
                         originIp, vehicleId, startTimeString, endTimeString));
 
-        // OdeMessageFrameData message = findResponse.getContent().get(0);
+        // OdeMessageFrameData message = findResponse.getContent().getFirst();
 
         // Serialize results to JSON and compare with the original JSON
-        String resultJson = objectMapper.writeValueAsString(findResponse.getContent().get(0));
+        String resultJson = objectMapper.writeValueAsString(findResponse.getContent().getFirst());
 
         // Remove unused fields from each entry
         List<Document> expectedResult = sampleDocuments.stream().map(doc -> {
@@ -374,7 +374,7 @@ public class OdeBsmJsonRepositoryImplTest {
             doc.remove("recordGeneratedAt");
             return doc;
         }).toList();
-        String expectedJson = objectMapper.writeValueAsString(expectedResult.get(0));
+        String expectedJson = objectMapper.writeValueAsString(expectedResult.getFirst());
 
         // Compare JSON with ignored fields
         JSONAssert.assertEquals(expectedJson, resultJson, new CustomComparator(

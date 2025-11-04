@@ -45,7 +45,7 @@ public class IntersectionControllerTest {
         ResponseEntity<List<IntersectionReferenceData>> response = controller.getIntersections(null, true);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).hasSize(1);
-        assertThat(response.getBody().get(0).getIntersectionID()).isEqualTo(12109);
+        assertThat(response.getBody().getFirst().getIntersectionID()).isEqualTo(12109);
     }
 
     @Test
@@ -80,7 +80,7 @@ public class IntersectionControllerTest {
             ResponseEntity<List<IntersectionReferenceData>> response = controller.getIntersections(null, false);
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
             assertThat(response.getBody()).hasSize(1);
-            assertThat(response.getBody().get(0)).isEqualTo(intersection);
+            assertThat(response.getBody().getFirst()).isEqualTo(intersection);
         }
     }
 
@@ -90,7 +90,7 @@ public class IntersectionControllerTest {
                 true);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).hasSize(1);
-        assertThat(response.getBody().get(0).getIntersectionID()).isEqualTo(12109);
+        assertThat(response.getBody().getFirst().getIntersectionID()).isEqualTo(12109);
     }
 
     @Test

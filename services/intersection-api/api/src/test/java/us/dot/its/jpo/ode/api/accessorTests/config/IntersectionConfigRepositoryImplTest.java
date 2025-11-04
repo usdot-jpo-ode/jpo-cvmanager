@@ -77,7 +77,7 @@ class IntersectionConfigRepositoryImplTest {
         List<IntersectionConfig> result = repository.find(query);
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0)).isEqualTo(config);
+        assertThat(result.getFirst()).isEqualTo(config);
         verify(mongoTemplate).find(eq(query), eq(IntersectionConfig.class), eq("CmIntersectionConfig"));
     }
 

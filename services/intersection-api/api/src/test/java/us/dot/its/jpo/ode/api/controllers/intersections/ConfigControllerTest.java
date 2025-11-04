@@ -390,7 +390,7 @@ public class ConfigControllerTest {
         ResponseEntity<List<Config<?>>> response = controller.intersection_config_unique(1);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().get(0).getValue()).isEqualTo("defaultVal");
+        assertThat(response.getBody().getFirst().getValue()).isEqualTo("defaultVal");
     }
 
     @Test

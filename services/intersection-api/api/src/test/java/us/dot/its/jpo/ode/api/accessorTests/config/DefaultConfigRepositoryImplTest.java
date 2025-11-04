@@ -63,7 +63,7 @@ class DefaultConfigRepositoryImplTest {
         List<DefaultConfig> result = repository.find(query);
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0)).isEqualTo(config);
+        assertThat(result.getFirst()).isEqualTo(config);
         verify(mongoTemplate).find(eq(query), eq(DefaultConfig.class), eq("CmDefaultConfig"));
     }
 

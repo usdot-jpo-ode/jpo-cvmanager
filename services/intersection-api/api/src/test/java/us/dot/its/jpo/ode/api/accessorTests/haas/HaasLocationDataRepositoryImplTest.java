@@ -30,136 +30,136 @@ import us.dot.its.jpo.ode.mockdata.MockHaasGenerator;
 @ExtendWith(MockitoExtension.class)
 public class HaasLocationDataRepositoryImplTest {
 
-        @Mock
-        private MongoTemplate mongoTemplate;
+    @Mock
+    private MongoTemplate mongoTemplate;
 
-        private HaasLocationDataRepositoryImpl repository;
+    private HaasLocationDataRepositoryImpl repository;
 
-        @BeforeEach
-        void setUp() {
-                repository = new HaasLocationDataRepositoryImpl(mongoTemplate);
-        }
+    @BeforeEach
+    void setUp() {
+        repository = new HaasLocationDataRepositoryImpl(mongoTemplate);
+    }
 
-        @Test
-        void testFindWithLimit_ActiveOnly() {
-                boolean activeOnly = true;
-                Long startTime = 1000L;
-                Long endTime = 2000L;
-                int limit = 10;
+    @Test
+    void testFindWithLimit_ActiveOnly() {
+        boolean activeOnly = true;
+        Long startTime = 1000L;
+        Long endTime = 2000L;
+        int limit = 10;
 
-                List<HaasLocation> mockLocations = MockHaasGenerator.getHaasLocations();
-                AggregationResults<HaasLocation> mockMainResults = new AggregationResults<>(mockLocations,
-                                new Document());
-                AggregationResults<Document> mockInactiveResults = new AggregationResults<>(new ArrayList<>(),
-                                new Document());
+        List<HaasLocation> mockLocations = MockHaasGenerator.getHaasLocations();
+        AggregationResults<HaasLocation> mockMainResults = new AggregationResults<>(mockLocations,
+                new Document());
+        AggregationResults<Document> mockInactiveResults = new AggregationResults<>(new ArrayList<>(),
+                new Document());
 
-                // Stub both aggregate calls that happen when activeOnly = true
-                when(mongoTemplate.aggregate(any(Aggregation.class), eq("HaasAlertLocation"), eq(HaasLocation.class)))
-                                .thenReturn(mockMainResults);
-                when(mongoTemplate.aggregate(any(Aggregation.class), eq("HaasAlertLocation"), eq(Document.class)))
-                                .thenReturn(mockInactiveResults);
+        // Stub both aggregate calls that happen when activeOnly = true
+        when(mongoTemplate.aggregate(any(Aggregation.class), eq("HaasAlertLocation"), eq(HaasLocation.class)))
+                .thenReturn(mockMainResults);
+        when(mongoTemplate.aggregate(any(Aggregation.class), eq("HaasAlertLocation"), eq(Document.class)))
+                .thenReturn(mockInactiveResults);
 
-                HaasLocationResult result = repository.findWithLimit(activeOnly, startTime, endTime, limit);
+        HaasLocationResult result = repository.findWithLimit(activeOnly, startTime, endTime, limit);
 
-                assertNotNull(result);
-                assertEquals(mockLocations.size(), result.getLocations().size());
-                assertFalse(result.isHasMoreResults());
-                verify(mongoTemplate).aggregate(any(Aggregation.class), eq("HaasAlertLocation"),
-                                eq(HaasLocation.class));
-                verify(mongoTemplate).aggregate(any(Aggregation.class), eq("HaasAlertLocation"), eq(Document.class));
-        }
+        assertNotNull(result);
+        assertEquals(mockLocations.size(), result.getLocations().size());
+        assertFalse(result.isHasMoreResults());
+        verify(mongoTemplate).aggregate(any(Aggregation.class), eq("HaasAlertLocation"),
+                eq(HaasLocation.class));
+        verify(mongoTemplate).aggregate(any(Aggregation.class), eq("HaasAlertLocation"), eq(Document.class));
+    }
 
-        @Test
-        void testFindWithLimit_NotActiveOnly() {
-                boolean activeOnly = false;
-                Long startTime = 1000L;
-                Long endTime = 2000L;
-                int limit = 5;
+    @Test
+    void testFindWithLimit_NotActiveOnly() {
+        boolean activeOnly = false;
+        Long startTime = 1000L;
+        Long endTime = 2000L;
+        int limit = 5;
 
-                List<HaasLocation> mockLocations = MockHaasGenerator.getHaasLocations();
-                AggregationResults<HaasLocation> mockMainResults = new AggregationResults<>(mockLocations,
-                                new Document());
+        List<HaasLocation> mockLocations = MockHaasGenerator.getHaasLocations();
+        AggregationResults<HaasLocation> mockMainResults = new AggregationResults<>(mockLocations,
+                new Document());
 
-                // When activeOnly = false, only one aggregate call is made
-                when(mongoTemplate.aggregate(any(Aggregation.class), eq("HaasAlertLocation"), eq(HaasLocation.class)))
-                                .thenReturn(mockMainResults);
+        // When activeOnly = false, only one aggregate call is made
+        when(mongoTemplate.aggregate(any(Aggregation.class), eq("HaasAlertLocation"), eq(HaasLocation.class)))
+                .thenReturn(mockMainResults);
 
-                HaasLocationResult result = repository.findWithLimit(activeOnly, startTime, endTime, limit);
+        HaasLocationResult result = repository.findWithLimit(activeOnly, startTime, endTime, limit);
 
-                assertNotNull(result);
-                assertEquals(mockLocations.size(), result.getLocations().size());
-                assertFalse(result.isHasMoreResults());
-                verify(mongoTemplate).aggregate(any(Aggregation.class), eq("HaasAlertLocation"),
-                                eq(HaasLocation.class));
-        }
+        assertNotNull(result);
+        assertEquals(mockLocations.size(), result.getLocations().size());
+        assertFalse(result.isHasMoreResults());
+        verify(mongoTemplate).aggregate(any(Aggregation.class), eq("HaasAlertLocation"),
+                eq(HaasLocation.class));
+    }
 
-        @Test
-        void testFindWithLimit_WithTruncation() {
-                boolean activeOnly = true;
-                Long startTime = 1000L;
-                Long endTime = 2000L;
-                int limit = 1;
+    @Test
+    void testFindWithLimit_WithTruncation() {
+        boolean activeOnly = true;
+        Long startTime = 1000L;
+        Long endTime = 2000L;
+        int limit = 1;
 
-                List<HaasLocation> mockLocations = MockHaasGenerator.getHaasLocations();
-                // Add one more location than the limit to simulate truncation
-                mockLocations.add(MockHaasGenerator.getHaasLocations().get(0));
+        List<HaasLocation> mockLocations = MockHaasGenerator.getHaasLocations();
+        // Add one more location than the limit to simulate truncation
+        mockLocations.add(MockHaasGenerator.getHaasLocations().getFirst());
 
-                AggregationResults<HaasLocation> mockMainResults = new AggregationResults<>(mockLocations,
-                                new Document());
-                AggregationResults<Document> mockInactiveResults = new AggregationResults<>(new ArrayList<>(),
-                                new Document());
+        AggregationResults<HaasLocation> mockMainResults = new AggregationResults<>(mockLocations,
+                new Document());
+        AggregationResults<Document> mockInactiveResults = new AggregationResults<>(new ArrayList<>(),
+                new Document());
 
-                // Stub both aggregate calls that happen when activeOnly = true
-                when(mongoTemplate.aggregate(any(Aggregation.class), eq("HaasAlertLocation"), eq(HaasLocation.class)))
-                                .thenReturn(mockMainResults);
-                when(mongoTemplate.aggregate(any(Aggregation.class), eq("HaasAlertLocation"), eq(Document.class)))
-                                .thenReturn(mockInactiveResults);
+        // Stub both aggregate calls that happen when activeOnly = true
+        when(mongoTemplate.aggregate(any(Aggregation.class), eq("HaasAlertLocation"), eq(HaasLocation.class)))
+                .thenReturn(mockMainResults);
+        when(mongoTemplate.aggregate(any(Aggregation.class), eq("HaasAlertLocation"), eq(Document.class)))
+                .thenReturn(mockInactiveResults);
 
-                HaasLocationResult result = repository.findWithLimit(activeOnly, startTime, endTime, limit);
+        HaasLocationResult result = repository.findWithLimit(activeOnly, startTime, endTime, limit);
 
-                assertNotNull(result);
-                assertEquals(limit, result.getLocations().size());
-                assertTrue(result.isHasMoreResults());
-                verify(mongoTemplate).aggregate(any(Aggregation.class), eq("HaasAlertLocation"),
-                                eq(HaasLocation.class));
-                verify(mongoTemplate).aggregate(any(Aggregation.class), eq("HaasAlertLocation"), eq(Document.class));
-        }
+        assertNotNull(result);
+        assertEquals(limit, result.getLocations().size());
+        assertTrue(result.isHasMoreResults());
+        verify(mongoTemplate).aggregate(any(Aggregation.class), eq("HaasAlertLocation"),
+                eq(HaasLocation.class));
+        verify(mongoTemplate).aggregate(any(Aggregation.class), eq("HaasAlertLocation"), eq(Document.class));
+    }
 
-        @Test
-        void testAdd() {
-                HaasLocation location = MockHaasGenerator.getHaasLocations().getFirst();
+    @Test
+    void testAdd() {
+        HaasLocation location = MockHaasGenerator.getHaasLocations().getFirst();
 
-                repository.add(location);
+        repository.add(location);
 
-                verify(mongoTemplate).insert(location, "HaasAlertLocation");
-        }
+        verify(mongoTemplate).insert(location, "HaasAlertLocation");
+    }
 
-        @Test
-        void testFindWithLimit_NoTimeWindow() {
-                boolean activeOnly = true;
-                Long startTime = null;
-                Long endTime = null;
-                int limit = 10;
+    @Test
+    void testFindWithLimit_NoTimeWindow() {
+        boolean activeOnly = true;
+        Long startTime = null;
+        Long endTime = null;
+        int limit = 10;
 
-                List<HaasLocation> mockLocations = MockHaasGenerator.getHaasLocations();
-                AggregationResults<HaasLocation> mockMainResults = new AggregationResults<>(mockLocations,
-                                new Document());
-                AggregationResults<Document> mockInactiveResults = new AggregationResults<>(new ArrayList<>(),
-                                new Document());
+        List<HaasLocation> mockLocations = MockHaasGenerator.getHaasLocations();
+        AggregationResults<HaasLocation> mockMainResults = new AggregationResults<>(mockLocations,
+                new Document());
+        AggregationResults<Document> mockInactiveResults = new AggregationResults<>(new ArrayList<>(),
+                new Document());
 
-                // Stub both aggregate calls that happen when activeOnly = true
-                when(mongoTemplate.aggregate(any(Aggregation.class), eq("HaasAlertLocation"), eq(HaasLocation.class)))
-                                .thenReturn(mockMainResults);
-                when(mongoTemplate.aggregate(any(Aggregation.class), eq("HaasAlertLocation"), eq(Document.class)))
-                                .thenReturn(mockInactiveResults);
+        // Stub both aggregate calls that happen when activeOnly = true
+        when(mongoTemplate.aggregate(any(Aggregation.class), eq("HaasAlertLocation"), eq(HaasLocation.class)))
+                .thenReturn(mockMainResults);
+        when(mongoTemplate.aggregate(any(Aggregation.class), eq("HaasAlertLocation"), eq(Document.class)))
+                .thenReturn(mockInactiveResults);
 
-                HaasLocationResult result = repository.findWithLimit(activeOnly, startTime, endTime, limit);
+        HaasLocationResult result = repository.findWithLimit(activeOnly, startTime, endTime, limit);
 
-                assertNotNull(result);
-                assertEquals(mockLocations.size(), result.getLocations().size());
-                assertFalse(result.isHasMoreResults());
-                verify(mongoTemplate).aggregate(any(Aggregation.class), eq("HaasAlertLocation"),
-                                eq(HaasLocation.class));
-                verify(mongoTemplate).aggregate(any(Aggregation.class), eq("HaasAlertLocation"), eq(Document.class));
-        }
+        assertNotNull(result);
+        assertEquals(mockLocations.size(), result.getLocations().size());
+        assertFalse(result.isHasMoreResults());
+        verify(mongoTemplate).aggregate(any(Aggregation.class), eq("HaasAlertLocation"),
+                eq(HaasLocation.class));
+        verify(mongoTemplate).aggregate(any(Aggregation.class), eq("HaasAlertLocation"), eq(Document.class));
+    }
 }

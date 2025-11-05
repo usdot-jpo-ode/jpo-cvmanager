@@ -55,7 +55,7 @@ Run all docker images
 docker compose up -d
 ```
 
-### 3. Setup Docker Environment Variables
+### 3. Setup Environment Variables
 
 Make sure to set the JPO ConflictMonitor and cvmanager intersection api environment variables in the root .env file (from sample.env)
 
@@ -63,7 +63,7 @@ Make sure to set the JPO ConflictMonitor and cvmanager intersection api environm
 
 #### Github Token
 
-A GitHub token is required to pull artifacts from GitHub repositories. This is required to obtain the jpo-ode jars and must be done before attempting to build this repository.
+A GitHub token is required to pull required java artifacts from GitHub repositories. This is required to obtain the jpo-ode jars and must be done before attempting to build this repository.
 
 1. Log into GitHub.
 2. Navigate to Settings -> Developer settings -> Personal access tokens.
@@ -74,42 +74,6 @@ A GitHub token is required to pull artifacts from GitHub repositories. This is r
 6. Select the read:packages scope.
 7. Click "Generate token" and copy the token.
 8. Set this token as the MAVEN_GITHUB_TOKEN environment variable in the .env file (root and ./services/intersection-api/.env)
-9. For local development:
-   1. Create a copy of [settings.xml](api/settings.xml) and save it to `~/.m2/settings.xml`
-   2. Update the variables in your `~/.m2/settings.xml` with the token value and target usdot-jpo-ode organization. Here is an example filled in `settings.xml` file:
-
-```XML
-<?xml version="1.0" encoding="UTF-8"?>
-<settings>
-    <activeProfiles>
-        <activeProfile>default</activeProfile>
-    </activeProfiles>
-    <servers>
-        <server>
-            <id>github</id>
-            <username>cvmanager_intersection_api</username>
-            <password>**github_token**</password>
-        </server>
-    ... apply same to other servers
-    </servers>
-    <profiles>
-        <profile>
-            <id>default</id>
-            <repositories>
-                <repository>
-                    <id>github</id>
-                    <name>GitHub Apache Maven Packages</name>
-                    <url>https://maven.pkg.github.com/usdot-jpo-ode/jpo-ode</url>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                </repository>
-                ... apply same to other repositories
-            </repositories>
-        </profile>
-    </profiles>
-</settings>
-```
 
 ### 4. Start Intersection API
 
@@ -125,37 +89,29 @@ The below section provides additional instruction on how to setup the intersecti
 
 ### 1. Running Intersection API Locally
 
-See the [api/README.md](api/README.md#running-locally) for more information
+See the [api/README.md](api/README.md#running-locally) for instructions
 
 ### 2. Running Smtp4dev
 
 An Smtp4dev server can be used locally to test the Email capabilities of the conflict monitor API: [smtp4dev](https://github.com/rnwood/smtp4dev). Once running, this server can be connected to the api (and Keycloak).
 
-## Synchronizing ConflictVisualizer API
+## Updating the Asn.1 FFM Decoder Binaries
 
-Currently, the Intersection Api is a slightly modified clone of the [jpo-conflictvisualizer](https://github.com/usdot-jpo-ode/jpo-conflictvisualizer/tree/cvmgr-cimms-integration), specifically the cvmgr-cimms-integration branch. The initial codebase was pulled in with `git subtree merge`, to preserve the Git history and enable easier updates in the future. Updates made on the jpo-conflictvisualizer repo can be sync'd using the commands shown below:
+1. View the FFM project tags on https://github.com/usdot-jpo-ode/j2735-ffm-java/tags and record the desired tag
+2. Update the asnapplication binaries in the intersection-api resources directories
+
+Example sh script:
 
 ```sh
-# Setup
-pip install git-filter-repo
+export TAG=j2735-ffm-java-2.0.2
+wget -O libasnapplication.so https://github.com/usdot-jpo-ode/j2735-ffm-java/raw/$TAG/lib/libasnapplication.so
+wget -O asnapplication.dll https://github.com/usdot-jpo-ode/j2735-ffm-java/raw/$TAG/lib/asnapplication.dll
 
-# Clone jpo-conflictvisualizer
-git clone https://github.com/usdot-jpo-ode/jpo-conflictvisualizer jpo-conflictvisualizer-sync
+# Copy new files to main resources
+cp libasnapplication.so ./api/src/main/resources/asn1/libasnapplication.so
+cp asnapplication.dll ./api/src/main/resources/asn1/asnapplication.dll
 
-# Configure up jpo-conflictvisualizer local repo
-cd jpo-conflictvisualizer-sync
-git checkout cvmgr-cimms-integration
-git pull
-git filter-repo --subdirectory-filter api --tag-rename '':'subdir-' --force
-
-# Add jpo-conflictvisualizer repo to cvmanager
-cd ../jpo-cvmanager
-git remote add jpo-conflictvisualizer ../jpo-conflictvisualizer-sync
-git fetch jpo-conflictvisualizer
-
-# Pull jpo-conflictvisualizer api contents into cvmanager services/intersection-api
-git subtree pull --prefix=services/intersection-api jpo-conflictvisualizer cvmgr-cimms-integration
+# Copy new files to test resources
+cp libasnapplication.so ./api/src/test/resources/asn1/libasnapplication.so
+cp asnapplication.dll ./api/src/test/resources/asn1/asnapplication.dll
 ```
-
-**Notes**
-The jpo-conflictvisualizer `jpo-conflictvisualizer-api` folder was re-named to `intersection-api`, and new files added to the jpo-conflictvisualizer-api folder will need to be manually copied into the intersection-api folder upon a pull/merge.

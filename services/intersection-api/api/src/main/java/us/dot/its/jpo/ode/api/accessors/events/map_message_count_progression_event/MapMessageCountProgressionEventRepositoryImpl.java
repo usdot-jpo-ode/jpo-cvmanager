@@ -16,7 +16,7 @@ import us.dot.its.jpo.ode.api.accessors.PageableQuery;
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.MapMessageCountProgressionEvent;
 
 @Component
-public class MapMessageCountProgressionRepositoryImpl
+public class MapMessageCountProgressionEventRepositoryImpl
         implements MapMessageCountProgressionEventRepository, PageableQuery {
 
     private final MongoTemplate mongoTemplate;
@@ -26,7 +26,7 @@ public class MapMessageCountProgressionRepositoryImpl
     private final String INTERSECTION_ID_FIELD = "intersectionID";
 
     @Autowired
-    public MapMessageCountProgressionRepositoryImpl(MongoTemplate mongoTemplate) {
+    public MapMessageCountProgressionEventRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
 
@@ -100,8 +100,4 @@ public class MapMessageCountProgressionRepositoryImpl
                 MapMessageCountProgressionEvent.class);
     }
 
-    @Override
-    public void add(MapMessageCountProgressionEvent item) {
-        mongoTemplate.insert(item, collectionName);
-    }
 }

@@ -1,177 +1,168 @@
 package us.dot.its.jpo.ode.api.asn1;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.HexFormat;
+
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+
+import j2735ffm.MessageFrameCodec;
 import us.dot.its.jpo.ode.api.models.messages.SpatDecodedMessage;
-import us.dot.its.jpo.geojsonconverter.converter.spat.SpatProcessedJsonConverter;
-import us.dot.its.jpo.geojsonconverter.partitioner.RsuIntersectionKey;
-import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
-import us.dot.its.jpo.geojsonconverter.validator.JsonValidatorResult;
-import us.dot.its.jpo.geojsonconverter.validator.SpatJsonValidator;
 import us.dot.its.jpo.ode.api.models.messages.DecodedMessage;
 import us.dot.its.jpo.ode.api.models.messages.EncodedMessage;
-import us.dot.its.jpo.ode.model.OdeMsgMetadata;
-import us.dot.its.jpo.ode.model.Asn1Encoding;
-import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
-import us.dot.its.jpo.ode.model.OdeAsn1Data;
-import us.dot.its.jpo.ode.model.OdeAsn1Payload;
-import us.dot.its.jpo.ode.model.OdeSpatData;
-import us.dot.its.jpo.ode.model.OdeSpatMetadata;
-import us.dot.its.jpo.ode.model.OdeSpatMetadata.SpatSource;
-import us.dot.its.jpo.ode.model.OdeSpatPayload;
-import us.dot.its.jpo.ode.model.OdeData;
-import us.dot.its.jpo.ode.model.OdeHexByteArray;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
 import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
-import us.dot.its.jpo.ode.model.OdeLogMsgMetadataLocation;
-import us.dot.its.jpo.ode.model.OdeMsgPayload;
-import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
-import us.dot.its.jpo.ode.model.RxSource;
-import us.dot.its.jpo.ode.plugin.j2735.J2735IntersectionState;
-import us.dot.its.jpo.ode.plugin.j2735.builders.SPATBuilder;
-import us.dot.its.jpo.ode.util.JsonUtils;
-import us.dot.its.jpo.ode.util.XmlUtils;
-import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
+import us.dot.its.jpo.ode.model.OdeMessageFrameData;
+import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata.Source;
+import us.dot.its.jpo.ode.model.OdeMessageFramePayload;
+import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata;
+import us.dot.its.jpo.ode.util.DateTimeUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import us.dot.its.jpo.asn.j2735.r2024.MessageFrame.MessageFrame;
+import us.dot.its.jpo.asn.j2735.r2024.SPAT.SPATMessageFrame;
+import us.dot.its.jpo.geojsonconverter.converter.spat.SpatProcessedJsonConverter;
+import us.dot.its.jpo.geojsonconverter.pojos.spat.DeserializedRawSpat;
+import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
+import us.dot.its.jpo.geojsonconverter.utils.ProcessedSchemaVersions;
+import us.dot.its.jpo.geojsonconverter.validator.SpatJsonValidator;
+import us.dot.its.jpo.geojsonconverter.validator.JsonValidatorResult;
 
+/**
+ * Decoder implementation for Basic Safety Message (SPAT) messages.
+ * Converts ASN.1 encoded SPAT messages to processed SPAT objects.
+ */
 @Slf4j
 @Component
 public class SpatDecoder implements Decoder {
 
-    private final SpatJsonValidator spatJsonValidator;
+    MessageFrameCodec codec;
+    SpatJsonValidator spatJsonValidator;
+    public static final SpatProcessedJsonConverter converter = new SpatProcessedJsonConverter();
+    public static final XmlMapper xmlMapper = new XmlMapper();
 
-    public SpatProcessedJsonConverter converter = new SpatProcessedJsonConverter();
-
+    /**
+     * Constructs a SpatDecoder with required dependencies.
+     *
+     * @param codec             MessageFrameCodec for ASN.1 decoding
+     * @param spatJsonValidator Validator for SPAT JSON messages
+     */
     @Autowired
-    public SpatDecoder(SpatJsonValidator spatJsonValidator) {
+    SpatDecoder(MessageFrameCodec codec, SpatJsonValidator spatJsonValidator) {
+        this.codec = codec;
         this.spatJsonValidator = spatJsonValidator;
     }
 
+    /**
+     * Decodes an ASN.1 encoded SPAT message to a processed SPAT object.
+     *
+     * @param message EncodedMessage containing ASN.1 SPAT data
+     * @return DecodedMessage containing processed SPAT or error details
+     */
     @Override
     public DecodedMessage decode(EncodedMessage message) {
 
-        // Convert to Ode Data type and Add Metadata
-        OdeData data = getAsOdeData(message.getAsn1Message());
-
-        XmlUtils xmlUtils = new XmlUtils();
+        String xer = decodeAsnToXERString(message.getAsn1Message());
 
         try {
-            // Convert to XML for ASN.1 Decoder
-            String xml = xmlUtils.toXml(data);
+            OdeMessageFrameData odeMessageFrameData = convertXERToMessageFrame(xer);
+            ProcessedSpat processedSpat = convertMessageFrameToProcessedSpat(odeMessageFrameData);
+            return new SpatDecodedMessage(processedSpat, message.getAsn1Message(), "");
 
-            // Send String through ASN.1 Decoder to get Decoded XML Data
-            String decodedXml = DecoderManager.decodeXmlWithAcm(xml);
-
-            // Convert to Ode Json
-            OdeSpatData spat = getAsOdeJson(decodedXml);
-
-            // build output data structure
-            try {
-                ProcessedSpat processedSpat = createProcessedSpat(spat);
-                return new SpatDecodedMessage(processedSpat, spat, message.getAsn1Message(), "");
-            } catch (Exception e) {
-                return new SpatDecodedMessage(null, spat, message.getAsn1Message(), e.getMessage());
-            }
-
-        } catch (Exception e) {
-            log.error("Exception decoding SPaT message", e);
-            return new SpatDecodedMessage(null, null, message.getAsn1Message(), e.getMessage());
+        } catch (JsonProcessingException e) {
+            return new SpatDecodedMessage(null, message.getAsn1Message(), e.getMessage());
         }
+
     }
 
+    /**
+     * Converts an ASN.1 hex string to XER (XML Encoding Rules) string.
+     *
+     * @param asnHex ASN.1 encoded hex string
+     * @return XER string representation of the message
+     */
     @Override
-    public OdeData getAsOdeData(String encodedData) {
-        OdeMsgPayload payload = new OdeAsn1Payload(new OdeHexByteArray(encodedData));
+    public String decodeAsnToXERString(String asnHex) {
+        byte[] bytes = HexFormat.of().parseHex(asnHex);
+        String xer = codec.uperToXer(bytes);
+        return xer;
+    }
 
-        // construct metadata
-        OdeSpatMetadata metadata = new OdeSpatMetadata(payload);
-
-        metadata.setOdeReceivedAt(DecoderManager.getCurrentIsoTimestamp());
-        metadata.setOriginIp(DecoderManager.getStaticUserOriginIp());
+    /**
+     * Converts an XER-encoded XML string to an OdeMessageFrameData object.
+     *
+     * @param encodedXml XER-encoded XML string
+     * @return OdeMessageFrameData object
+     * @throws JsonMappingException    if XML mapping fails
+     * @throws JsonProcessingException if XML processing fails
+     */
+    @Override
+    public OdeMessageFrameData convertXERToMessageFrame(String encodedXml)
+            throws JsonMappingException, JsonProcessingException {
+        OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
+        metadata.setOdeReceivedAt(DateTimeUtils.now());
         metadata.setRecordType(RecordType.spatTx);
         metadata.setSecurityResultCode(SecurityResultCode.success);
+        metadata.setRecordGeneratedBy(GeneratedBy.RSU);
+        metadata.setSource(Source.EV);
 
-        // construct metadata: receivedMessageDetails
-        ReceivedMessageDetails receivedMessageDetails = new ReceivedMessageDetails();
-        receivedMessageDetails.setRxSource(RxSource.NA);
+        JsonNode rootNode = xmlMapper.readTree(encodedXml);
 
-        // construct metadata: locationData
-        OdeLogMsgMetadataLocation locationData = new OdeLogMsgMetadataLocation();
-        receivedMessageDetails.setLocationData(locationData);
+        MessageFrame<?> messageFrame = xmlMapper.convertValue(rootNode, MessageFrame.class);
 
-        metadata.setReceivedMessageDetails(receivedMessageDetails);
-        metadata.setSpatSource(SpatSource.V2X);
+        OdeMessageFramePayload payload = new OdeMessageFramePayload(messageFrame);
 
-        Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",
-                EncodingRule.UPER);
-        metadata.addEncoding(unsecuredDataEncoding);
-
-        // construct odeData
-        return new OdeAsn1Data(metadata, payload);
-    }
-
-    @Override
-    public OdeSpatData getAsOdeJson(String consumedData) throws XmlUtilsException {
-        ObjectNode consumed = XmlUtils.toObjectNode(consumedData);
-
-        JsonNode metadataNode = consumed.findValue(OdeMsgMetadata.METADATA_STRING);
-        if (metadataNode instanceof ObjectNode object) {
-            // Removing encodings to match ODE behavior
-            object.remove(OdeMsgMetadata.ENCODINGS_STRING);
-
-            // Spat header file does not have a location and use predefined set required
-            // RxSource
-            ReceivedMessageDetails receivedMessageDetails = new ReceivedMessageDetails();
-            receivedMessageDetails.setRxSource(RxSource.NA);
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode;
-            try {
-                jsonNode = objectMapper.readTree(receivedMessageDetails.toJson());
-                object.set(OdeMsgMetadata.RECEIVEDMSGDETAILS_STRING, jsonNode);
-            } catch (JsonProcessingException e) {
-                log.error("Exception decoding SPaT to ODE json", e);
-            }
-        }
-
-        OdeSpatMetadata metadata = (OdeSpatMetadata) JsonUtils.fromJson(metadataNode.toString(), OdeSpatMetadata.class);
-
-        if (metadataNode.findValue("certPresent") != null) {
-            boolean isCertPresent = metadataNode.findValue("certPresent").asBoolean();
-            metadata.setIsCertPresent(isCertPresent);
-        }
-
-        if (metadata.getSchemaVersion() <= 4) {
-            metadata.setReceivedMessageDetails(null);
-        }
-
-        OdeSpatPayload payload = new OdeSpatPayload(SPATBuilder.genericSPAT(consumed.findValue("SPAT")));
-        return new OdeSpatData(metadata, payload);
-    }
-
-    public ProcessedSpat createProcessedSpat(OdeSpatData odeSpat) {
-
-        JsonValidatorResult validationResults = spatJsonValidator.validate(odeSpat.toString());
-        OdeSpatData rawValue = new OdeSpatData();
-        rawValue.setMetadata(odeSpat.getMetadata());
-        OdeSpatMetadata spatMetadata = (OdeSpatMetadata) rawValue.getMetadata();
-
-        rawValue.setPayload(odeSpat.getPayload());
-        OdeSpatPayload spatPayload = (OdeSpatPayload) rawValue.getPayload();
-        J2735IntersectionState intersectionState = spatPayload.getSpat().getIntersectionStateList()
-                .getIntersectionStatelist().get(0);
-
-        ProcessedSpat processedSpat = converter.createProcessedSpat(intersectionState, spatMetadata, validationResults);
-
-        var key = new RsuIntersectionKey();
-        key.setRsuId(spatMetadata.getOriginIp());
-        key.setIntersectionReferenceID(intersectionState.getId());
-        return processedSpat;
+        return new OdeMessageFrameData(metadata, payload);
 
     }
 
+    /**
+     * Converts OdeMessageFrameData to a processed SPAT object.
+     * Validates the message and returns either a processed or failure SPAT.
+     *
+     * @param odeMessageFrameData OdeMessageFrameData to process
+     * @return ProcessedSpat object containing SPAT data or validation failure
+     */
+    public ProcessedSpat convertMessageFrameToProcessedSpat(OdeMessageFrameData odeMessageFrameData) {
+        DeserializedRawSpat deserializedSpat = new DeserializedRawSpat();
+        try {
+            JsonValidatorResult validationResults = spatJsonValidator.validate(odeMessageFrameData.toJson());
+            deserializedSpat.setOdeSpatMessageFrameData(odeMessageFrameData);
+            deserializedSpat.setValidatorResults(validationResults);
+        } catch (Exception e) {
+            JsonValidatorResult validatorResult = new JsonValidatorResult();
+
+            validatorResult.addException(e);
+            deserializedSpat.setValidationFailure(true);
+            deserializedSpat.setValidatorResults(validatorResult);
+            deserializedSpat.setFailedMessage(e.getMessage());
+        }
+
+        if (!deserializedSpat.isValidationFailure()) {
+            OdeMessageFrameData rawValue = new OdeMessageFrameData();
+            rawValue.setMetadata(odeMessageFrameData.getMetadata());
+            OdeMessageFrameMetadata spatMetadata = rawValue.getMetadata();
+
+            rawValue.setPayload(odeMessageFrameData.getPayload());
+            SPATMessageFrame spatMessageFrame = (SPATMessageFrame) rawValue.getPayload().getData();
+
+            ProcessedSpat processedSpat = converter.createProcessedSpat(spatMessageFrame.getValue(), spatMetadata,
+                    deserializedSpat.getValidatorResults());
+
+            // Set the schema version
+            processedSpat.setSchemaVersion(ProcessedSchemaVersions.PROCESSED_SPAT_SCHEMA_VERSION);
+            return processedSpat;
+        } else {
+            ProcessedSpat processedSpat = converter.createFailureProcessedSpat(
+                    deserializedSpat.getValidatorResults(),
+                    deserializedSpat.getFailedMessage());
+            processedSpat.setSchemaVersion(ProcessedSchemaVersions.PROCESSED_SPAT_SCHEMA_VERSION);
+            return processedSpat;
+        }
+
+    }
 }

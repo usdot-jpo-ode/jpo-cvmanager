@@ -133,9 +133,4 @@ public class TimeChangeDetailsEventRepositoryImpl
         return result.getMappedResults();
     }
 
-    @Override
-    public void add(TimeChangeDetailsEvent item) {
-        mongoTemplate.insert(item, collectionName);
-    }
-
 }

@@ -12,15 +12,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
-import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.MediaType;
 
 import us.dot.its.jpo.ode.api.accessors.haas.HaasLocationDataRepository;
-import us.dot.its.jpo.ode.api.converters.HaasLocationConverter;
 import us.dot.its.jpo.ode.api.models.LimitedGeoJsonResponse;
-import us.dot.its.jpo.ode.api.models.haas.HaasLocation;
 import us.dot.its.jpo.ode.api.models.haas.HaasLocationResult;
 
 @Slf4j

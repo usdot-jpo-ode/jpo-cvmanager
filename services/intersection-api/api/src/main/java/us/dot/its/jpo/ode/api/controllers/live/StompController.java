@@ -17,9 +17,10 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.ser.ZonedDateTimeSerializer;
 
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
+import us.dot.its.jpo.geojsonconverter.pojos.geojson.Point;
+import us.dot.its.jpo.geojsonconverter.pojos.geojson.bsm.ProcessedBsm;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
 import us.dot.its.jpo.geojsonconverter.pojos.spat.ProcessedSpat;
-import us.dot.its.jpo.ode.model.OdeBsmData;
 
 @Controller
 @Slf4j
@@ -55,7 +56,7 @@ public class StompController {
         return String.format("/live/%d/%s", intersectionID, messageType);
     }
 
-    public void broadcastSpat(ProcessedSpat spat) {
+    public void broadcastProcessedSpat(ProcessedSpat spat) {
         if (spat != null) {
             Integer intersectionID = spat.getIntersectionId();
             if (intersectionID == null) {
@@ -73,7 +74,7 @@ public class StompController {
         }
     }
 
-    public void broadcastMap(ProcessedMap<LineString> map) {
+    public void broadcastProcessedMap(ProcessedMap<LineString> map) {
         if (map != null) {
             Integer intersectionID = map.getProperties().getIntersectionId();
             if (intersectionID == null) {
@@ -90,11 +91,11 @@ public class StompController {
         }
     }
 
-    public void broadcastBSM(int intersectionId, OdeBsmData bsm) {
+    public void broadcastBSM(int intersectionId, ProcessedBsm<Point> bsm) {
         if (bsm != null) {
             if (intersectionId != -1) {
                 try {
-                    broadcastMessage(buildTopicName(intersectionId, "ode-bsm-json"),
+                    broadcastMessage(buildTopicName(intersectionId, "processed-bsm"),
                             mapper.writeValueAsString(bsm));
                 } catch (JsonProcessingException e) {
                     log.error("Exception encoding BSM data to STOMP topic", e);

@@ -99,9 +99,4 @@ public class SpatMessageCountProgressionRepositoryImpl
         return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null,
                 SpatMessageCountProgressionEvent.class);
     }
-
-    @Override
-    public void add(SpatMessageCountProgressionEvent item) {
-        mongoTemplate.insert(item, collectionName);
-    }
 }

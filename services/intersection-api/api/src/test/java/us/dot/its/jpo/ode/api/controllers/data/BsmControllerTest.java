@@ -15,7 +15,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -27,7 +27,7 @@ import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.ode.api.accessors.bsm.OdeBsmJsonRepository;
 import us.dot.its.jpo.ode.api.services.PermissionService;
 import us.dot.its.jpo.ode.mockdata.MockBsmGenerator;
-import us.dot.its.jpo.ode.model.OdeBsmData;
+import us.dot.its.jpo.ode.model.OdeMessageFrameData;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -35,102 +35,105 @@ import us.dot.its.jpo.ode.model.OdeBsmData;
 @AutoConfigureEmbeddedDatabase
 public class BsmControllerTest {
 
-    private final BsmController controller;
+	private final BsmController controller;
 
-    @MockBean
-    OdeBsmJsonRepository odeBsmJsonRepo;
+	@MockitoBean
+	OdeBsmJsonRepository odeBsmJsonRepo;
 
-    @MockBean
-    PermissionService permissionService;
+	@MockitoBean
+	PermissionService permissionService;
 
-    @Autowired
-    public BsmControllerTest(BsmController controller) {
-        this.controller = controller;
-    }
+	@Autowired
+	public BsmControllerTest(BsmController controller) {
+		this.controller = controller;
+	}
 
-    @Test
-    public void testBsmJson() {
+	@Test
+	public void testBsmJson() {
 
-        when(permissionService.hasRole("USER")).thenReturn(true);
+		when(permissionService.hasRole("USER")).thenReturn(true);
 
-        List<OdeBsmData> list = new ArrayList<>();
+		List<OdeMessageFrameData> list = new ArrayList<>();
 
-        PageRequest page = PageRequest.of(0, 1);
-        when(odeBsmJsonRepo.find(null, null, null, null, null, null, null,
-                PageRequest.of(0, 1)))
-                .thenReturn(new PageImpl<>(list, page, 1L));
+		PageRequest page = PageRequest.of(0, 1);
+		when(odeBsmJsonRepo.find(null, null, null, null, null, null, null,
+				PageRequest.of(0, 1)))
+				.thenReturn(new PageImpl<>(list, page, 1L));
 
-        ResponseEntity<Page<OdeBsmData>> result = controller.findBSMs(null, null, null, null, null, null, null, 0, 1,
-                false);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody().getContent()).isEqualTo(list);
-    }
+		ResponseEntity<Page<OdeMessageFrameData>> result = controller.findBSMs(null, null, null,
+				null, null, null, null,
+				0, 1,
+				false);
+		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(result.getBody().getContent()).isEqualTo(list);
+	}
 
-    @Test
-    void testFindOdeBsmWithTestData() {
-        when(permissionService.hasRole("USER")).thenReturn(true);
-        boolean testData = true;
+	@Test
+	void testFindOdeBsmWithTestData() {
+		when(permissionService.hasRole("USER")).thenReturn(true);
+		boolean testData = true;
 
-        ResponseEntity<Page<OdeBsmData>> response = controller
-                .findBSMs(null, null, null, null, null, null, null,
-                        0, 10,
-                        testData);
+		ResponseEntity<Page<OdeMessageFrameData>> response = controller
+				.findBSMs(null, null, null, null, null, null, null,
+						0, 10,
+						testData);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertFalse(response.getBody().getContent().isEmpty());
-    }
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-    @Test
-    void testFindOdeBsmsWithPagination() {
-        List<OdeBsmData> events = MockBsmGenerator.getJsonBsms();
+		assertFalse(response.getBody().getContent().isEmpty());
+	}
 
-        when(permissionService.hasRole("USER")).thenReturn(true);
+	@Test
+	void testFindOdeBsmsWithPagination() {
+		List<OdeMessageFrameData> events = MockBsmGenerator.getJsonBsms();
 
-        Page<OdeBsmData> mockPage = new PageImpl<>(events, PageRequest.of(0, 10), 1);
-        when(odeBsmJsonRepo.find(any(), any(), any(), any(), any(), any(), any(),
-                any(PageRequest.class)))
-                .thenReturn(mockPage);
+		when(permissionService.hasRole("USER")).thenReturn(true);
 
-        ResponseEntity<Page<OdeBsmData>> response = controller
-                .findBSMs(null, null, null, null, null, null, null,
-                        0, 10,
-                        false);
+		Page<OdeMessageFrameData> mockPage = new PageImpl<>(events, PageRequest.of(0, 10), 1);
+		when(odeBsmJsonRepo.find(any(), any(), any(), any(), any(), any(), any(),
+				any(PageRequest.class)))
+				.thenReturn(mockPage);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getContent()).isEqualTo(events);
-        verify(odeBsmJsonRepo, times(1))
-                .find(any(), any(), any(), any(), any(), any(), any(), any(PageRequest.class));
-    }
+		ResponseEntity<Page<OdeMessageFrameData>> response = controller
+				.findBSMs(null, null, null, null, null, null, null,
+						0, 10,
+						false);
 
-    @Test
-    public void testCountOdeBsmsWithTestData() {
-        boolean testData = true;
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(response.getBody().getContent()).isEqualTo(events);
+		verify(odeBsmJsonRepo, times(1))
+				.find(any(), any(), any(), any(), any(), any(), any(), any(PageRequest.class));
+	}
 
-        when(permissionService.hasRole("USER")).thenReturn(true);
+	@Test
+	public void testCountOdeBsmsWithTestData() {
+		boolean testData = true;
 
-        ResponseEntity<Long> response = controller.countBSMs(null, null, null, null, null,
-                null, null, testData);
+		when(permissionService.hasRole("USER")).thenReturn(true);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(10L); // Test data should return 10 items
-    }
+		ResponseEntity<Long> response = controller.countBSMs(null, null, null, null, null,
+				null, null, testData);
 
-    @Test
-    public void testCountOdeBsms() {
-        Long startTime = 1000L;
-        Long endTime = 2000L;
-        Long expectedCount = 5L;
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(response.getBody()).isEqualTo(10L); // Test data should return 10 items
+	}
 
-        when(permissionService.hasIntersection(null, "USER")).thenReturn(true);
-        when(permissionService.hasRole("USER")).thenReturn(true);
-        when(odeBsmJsonRepo.count(null, null, startTime, endTime, null, null, null))
-                .thenReturn(expectedCount);
+	@Test
+	public void testCountOdeBsms() {
+		Long startTime = 1000L;
+		Long endTime = 2000L;
+		Long expectedCount = 5L;
 
-        ResponseEntity<Long> response = controller.countBSMs(null, null,
-                startTime, endTime, null, null, null, false);
+		when(permissionService.hasIntersection(null, "USER")).thenReturn(true);
+		when(permissionService.hasRole("USER")).thenReturn(true);
+		when(odeBsmJsonRepo.count(null, null, startTime, endTime, null, null, null))
+				.thenReturn(expectedCount);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(expectedCount);
-        verify(odeBsmJsonRepo, times(1)).count(null, null, startTime, endTime, null, null, null);
-    }
+		ResponseEntity<Long> response = controller.countBSMs(null, null,
+				startTime, endTime, null, null, null, false);
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(response.getBody()).isEqualTo(expectedCount);
+		verify(odeBsmJsonRepo, times(1)).count(null, null, startTime, endTime, null, null, null);
+	}
 }

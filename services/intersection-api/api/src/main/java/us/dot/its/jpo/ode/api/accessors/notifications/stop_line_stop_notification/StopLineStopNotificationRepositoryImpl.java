@@ -95,12 +95,8 @@ public class StopLineStopNotificationRepositoryImpl
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
                 .withinTimeWindow(DATE_FIELD, startTime, endTime, false);
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null, StopLineStopNotification.class);
-    }
-
-    @Override
-    public void add(StopLineStopNotification item) {
-        mongoTemplate.insert(item, collectionName);
+        return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null,
+                StopLineStopNotification.class);
     }
 
 }

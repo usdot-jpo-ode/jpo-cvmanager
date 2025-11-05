@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -90,4 +91,19 @@ public class StopLineStopAssessmentRepositoryImplTest {
         assertThat(results).isEqualTo(mockPage);
     }
 
+    @Test
+    void testFindLatest() {
+        StopLineStopAssessment event = new StopLineStopAssessment();
+        event.setIntersectionID(intersectionID);
+
+        doReturn(event).when(mongoTemplate).findOne(any(Query.class), eq(StopLineStopAssessment.class),
+                anyString());
+
+        Page<StopLineStopAssessment> page = repository.findLatest(intersectionID, startTime, endTime);
+
+        assertThat(page.getContent()).hasSize(1);
+        assertThat(page.getContent().getFirst().getIntersectionID()).isEqualTo(intersectionID);
+        verify(mongoTemplate).findOne(any(Query.class), eq(StopLineStopAssessment.class),
+                eq("CmStopLineStopAssessment"));
+    }
 }

@@ -45,8 +45,8 @@ import us.dot.its.jpo.ode.api.models.AggregationResultCount;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -59,7 +59,7 @@ import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 @AutoConfigureEmbeddedDatabase
 public class SpatMinimumDataEventRepositoryImplTest {
 
-    @SpyBean
+    @MockitoSpyBean
     private MongoTemplate mongoTemplate;
 
     @Mock
@@ -133,12 +133,15 @@ public class SpatMinimumDataEventRepositoryImplTest {
         aggregatedResults.add(result1);
         aggregatedResults.add(result2);
 
-        AggregationResults<IDCount> aggregationResults = new AggregationResults<>(aggregatedResults, new Document());
+        AggregationResults<IDCount> aggregationResults = new AggregationResults<>(aggregatedResults,
+                new Document());
         doReturn(aggregationResults).when(
                 mongoTemplate)
-                .aggregate(Mockito.any(Aggregation.class), Mockito.anyString(), Mockito.eq(IDCount.class));
+                .aggregate(Mockito.any(Aggregation.class), Mockito.anyString(),
+                        Mockito.eq(IDCount.class));
 
-        List<IDCount> actualResults = repository.getAggregatedDailySpatMinimumDataEventCounts(intersectionID, startTime,
+        List<IDCount> actualResults = repository.getAggregatedDailySpatMinimumDataEventCounts(intersectionID,
+                startTime,
                 endTime);
 
         assertThat(actualResults.size()).isEqualTo(2);
@@ -186,7 +189,7 @@ public class SpatMinimumDataEventRepositoryImplTest {
         Aggregation capturedAggregation = aggregationCaptor.getValue();
 
         // Extract the MatchOperation from the Aggregation pipeline
-        Document pipeline = capturedAggregation.toPipeline(Aggregation.DEFAULT_CONTEXT).get(0);
+        Document pipeline = capturedAggregation.toPipeline(Aggregation.DEFAULT_CONTEXT).getFirst();
 
         // Assert the Match operation Criteria
         assertThat(pipeline.toJson())
@@ -195,7 +198,7 @@ public class SpatMinimumDataEventRepositoryImplTest {
                         intersectionID, startTimeString, endTimeString));
 
         // Serialize results to JSON and compare with the original JSON
-        String resultJson = objectMapper.writeValueAsString(findResponse.getContent().get(0));
+        String resultJson = objectMapper.writeValueAsString(findResponse.getContent().getFirst());
 
         // Remove unused fields from each entry
         List<Document> expectedResult = sampleDocuments.stream().map(doc -> {
@@ -203,13 +206,28 @@ public class SpatMinimumDataEventRepositoryImplTest {
             doc.remove("recordGeneratedAt");
             return doc;
         }).toList();
-        String expectedJson = objectMapper.writeValueAsString(expectedResult.get(0));
+        String expectedJson = objectMapper.writeValueAsString(expectedResult.getFirst());
 
         // Compare JSON with ignored fields
         JSONAssert.assertEquals(expectedJson, resultJson, new CustomComparator(
                 JSONCompareMode.LENIENT, // Allows different key orders
-                new Customization("properties.timeStamp", (o1, o2) -> true),
-                new Customization("properties.odeReceivedAt", (o1, o2) -> true)));
+                new Customization("properties.timeStamp", (_, _) -> true),
+                new Customization("properties.odeReceivedAt", (_, _) -> true)));
     }
 
+    @Test
+    void testFindLatest() {
+        SpatMinimumDataEvent event = new SpatMinimumDataEvent();
+        event.setIntersectionID(intersectionID);
+
+        doReturn(event).when(mongoTemplate).findOne(any(Query.class), eq(SpatMinimumDataEvent.class),
+                anyString());
+
+        Page<SpatMinimumDataEvent> page = repository.findLatest(intersectionID, startTime, endTime);
+
+        assertThat(page.getContent()).hasSize(1);
+        assertThat(page.getContent().getFirst().getIntersectionID()).isEqualTo(intersectionID);
+        verify(mongoTemplate).findOne(any(Query.class), eq(SpatMinimumDataEvent.class),
+                eq("CmSpatMinimumDataEvents"));
+    }
 }

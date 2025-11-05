@@ -44,8 +44,8 @@ import us.dot.its.jpo.ode.api.models.AggregationResultCount;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,7 +58,7 @@ import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 @AutoConfigureEmbeddedDatabase
 public class ConnectionOfTravelNotificationRepositoryImplTest {
 
-    @SpyBean
+    @MockitoSpyBean
     private MongoTemplate mongoTemplate;
 
     @Mock
@@ -101,7 +101,8 @@ public class ConnectionOfTravelNotificationRepositoryImplTest {
 
     @Test
     public void testFind() {
-        ConnectionOfTravelNotificationRepositoryImpl repo = mock(ConnectionOfTravelNotificationRepositoryImpl.class);
+        ConnectionOfTravelNotificationRepositoryImpl repo = mock(
+                ConnectionOfTravelNotificationRepositoryImpl.class);
 
         when(repo.findPage(
                 any(),
@@ -157,7 +158,7 @@ public class ConnectionOfTravelNotificationRepositoryImplTest {
         Aggregation capturedAggregation = aggregationCaptor.getValue();
 
         // Extract the MatchOperation from the Aggregation pipeline
-        Document pipeline = capturedAggregation.toPipeline(Aggregation.DEFAULT_CONTEXT).get(0);
+        Document pipeline = capturedAggregation.toPipeline(Aggregation.DEFAULT_CONTEXT).getFirst();
 
         // Assert the Match operation Criteria
         assertThat(pipeline.toJson())
@@ -166,7 +167,7 @@ public class ConnectionOfTravelNotificationRepositoryImplTest {
                         intersectionID, startTimeString, endTimeString));
 
         // Serialize results to JSON and compare with the original JSON
-        String resultJson = objectMapper.writeValueAsString(findResponse.getContent().get(0));
+        String resultJson = objectMapper.writeValueAsString(findResponse.getContent().getFirst());
 
         // Remove unused fields from each entry
         List<Document> expectedResult = sampleDocuments.stream().map(doc -> {
@@ -174,12 +175,28 @@ public class ConnectionOfTravelNotificationRepositoryImplTest {
             doc.remove("recordGeneratedAt");
             return doc;
         }).toList();
-        String expectedJson = objectMapper.writeValueAsString(expectedResult.get(0));
+        String expectedJson = objectMapper.writeValueAsString(expectedResult.getFirst());
 
         // Compare JSON with ignored fields
         JSONAssert.assertEquals(expectedJson, resultJson, new CustomComparator(
                 JSONCompareMode.LENIENT, // Allows different key orders
-                new Customization("properties.timeStamp", (o1, o2) -> true),
-                new Customization("properties.odeReceivedAt", (o1, o2) -> true)));
+                new Customization("properties.timeStamp", (_, _) -> true),
+                new Customization("properties.odeReceivedAt", (_, _) -> true)));
+    }
+
+    @Test
+    void testFindLatest() {
+        ConnectionOfTravelNotification event = new ConnectionOfTravelNotification();
+        event.setIntersectionID(intersectionID);
+
+        doReturn(event).when(mongoTemplate).findOne(any(Query.class), eq(ConnectionOfTravelNotification.class),
+                anyString());
+
+        Page<ConnectionOfTravelNotification> page = repository.findLatest(intersectionID, startTime, endTime);
+
+        assertThat(page.getContent()).hasSize(1);
+        assertThat(page.getContent().getFirst().getIntersectionID()).isEqualTo(intersectionID);
+        verify(mongoTemplate).findOne(any(Query.class), eq(ConnectionOfTravelNotification.class),
+                eq("CmConnectionOfTravelNotification"));
     }
 }

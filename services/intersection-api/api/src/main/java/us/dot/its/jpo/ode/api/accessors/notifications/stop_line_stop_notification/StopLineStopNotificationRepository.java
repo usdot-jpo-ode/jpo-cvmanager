@@ -3,9 +3,8 @@ package us.dot.its.jpo.ode.api.accessors.notifications.stop_line_stop_notificati
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.StopLineStopNotification;
-import us.dot.its.jpo.ode.api.models.DataLoader;
 
-public interface StopLineStopNotificationRepository extends DataLoader<StopLineStopNotification> {
+public interface StopLineStopNotificationRepository {
     long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<StopLineStopNotification> findLatest(Integer intersectionID, Long startTime, Long endTime);

@@ -6,9 +6,8 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import us.dot.its.jpo.conflictmonitor.monitor.models.assessments.LaneDirectionOfTravelAssessment;
-import us.dot.its.jpo.ode.api.models.DataLoader;
 
-public interface LaneDirectionOfTravelAssessmentRepository extends DataLoader<LaneDirectionOfTravelAssessment> {
+public interface LaneDirectionOfTravelAssessmentRepository {
     long count(Integer intersectionID, Long startTime, Long endTime);
 
     Page<LaneDirectionOfTravelAssessment> findLatest(Integer intersectionID, Long startTime, Long endTime);

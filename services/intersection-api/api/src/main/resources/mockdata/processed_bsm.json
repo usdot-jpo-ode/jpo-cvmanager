@@ -1,0 +1,55 @@
+{
+  "type": "Feature",
+  "geometry": { "type": "Point", "coordinates": [-105.0317754, 40.5659938] },
+  "properties": {
+    "schemaVersion": 2,
+    "messageType": "BSM",
+    "odeReceivedAt": "2025-08-29T16:09:34.416Z",
+    "timeStamp": "2025-08-29T16:09:25.399Z",
+    "validationMessages": [
+      {
+        "message": "$.metadata.logFileName: is missing but it is required",
+        "jsonPath": "$.metadata",
+        "schemaPath": "#/properties/metadata/required"
+      },
+      {
+        "message": "$.metadata.receivedMessageDetails: is missing but it is required",
+        "jsonPath": "$.metadata",
+        "schemaPath": "#/properties/metadata/required"
+      },
+      {
+        "message": "$.metadata.recordGeneratedAt: is missing but it is required",
+        "jsonPath": "$.metadata",
+        "schemaPath": "#/properties/metadata/required"
+      },
+      {
+        "message": "$.metadata.asn1: is missing but it is required",
+        "jsonPath": "$.metadata",
+        "schemaPath": "#/properties/metadata/required"
+      }
+    ],
+    "accelSet": { "accelLat": 0.0, "accelLong": 0.27, "accelVert": 0.0, "accelYaw": 0.0 },
+    "accuracy": { "semiMajor": 9.3, "semiMinor": 12.05 },
+    "brakes": {
+      "wheelBrakes": {
+        "UNAVAILABLE": true,
+        "leftFront": false,
+        "leftRear": false,
+        "rightFront": false,
+        "rightRear": false
+      },
+      "traction": "UNAVAILABLE",
+      "abs": "UNAVAILABLE",
+      "scs": "UNAVAILABLE",
+      "brakeBoost": "UNAVAILABLE",
+      "auxBrakes": "UNAVAILABLE"
+    },
+    "heading": 313.25,
+    "id": "31325433",
+    "msgCnt": 37,
+    "secMark": 25399,
+    "size": { "width": 190, "length": 570 },
+    "speed": 0.28,
+    "transmission": "UNAVAILABLE"
+  }
+}

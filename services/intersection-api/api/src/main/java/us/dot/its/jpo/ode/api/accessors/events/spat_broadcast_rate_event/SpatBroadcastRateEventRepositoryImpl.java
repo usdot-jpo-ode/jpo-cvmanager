@@ -131,9 +131,4 @@ public class SpatBroadcastRateEventRepositoryImpl
         return result.getMappedResults();
     }
 
-    @Override
-    public void add(SpatBroadcastRateEvent item) {
-        mongoTemplate.insert(item, collectionName);
-    }
-
 }

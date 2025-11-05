@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,11 +40,11 @@ import static org.mockito.Mockito.when;
 import us.dot.its.jpo.ode.api.accessors.bsm.OdeBsmJsonRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.AggregationResult;
 import us.dot.its.jpo.ode.api.models.AggregationResultCount;
-import us.dot.its.jpo.ode.model.OdeBsmData;
+import us.dot.its.jpo.ode.model.OdeMessageFrameData;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -57,7 +57,7 @@ import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 @AutoConfigureEmbeddedDatabase
 public class OdeBsmJsonRepositoryImplTest {
 
-    @SpyBean
+    @MockitoSpyBean
     private MongoTemplate mongoTemplate;
 
     @Mock
@@ -279,7 +279,8 @@ public class OdeBsmJsonRepositoryImplTest {
         assertThat(capturedCriteria.getCriteriaObject().toJson())
                 .isEqualTo(String.format(
                         "{\"metadata.odeReceivedAt\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}}",
-                        startTimeString, endTimeString)); // Verify the Criteria passed to findPage
+                        startTimeString, endTimeString)); // Verify the Criteria passed to
+                                                          // findPage
         Mockito.verify(repo).findDocumentsWithPagination(
                 any(),
                 any(),
@@ -321,16 +322,20 @@ public class OdeBsmJsonRepositoryImplTest {
                 Files.readAllBytes(
                         Paths.get("src/test/resources/json/ConflictMonitor.OdeBsmJson.json")));
 
-        List<Document> sampleDocuments = List.of(Document.parse(json));
+        List<Document> sampleDocuments = new ArrayList<>();
+
+        // List<Document> sampleDocuments = List.of(Document.parse(json));
+        sampleDocuments.add(Document.parse(json));
+        sampleDocuments.add(Document.parse(json));
 
         // Mock dependencies
         when(mockDocumentPage.getContent()).thenReturn(sampleDocuments);
-        when(mockDocumentPage.getTotalElements()).thenReturn(1L);
+        when(mockDocumentPage.getTotalElements()).thenReturn(2L);
 
         AggregationResult aggregationResult = new AggregationResult();
         aggregationResult.setResults(sampleDocuments);
         AggregationResultCount aggregationResultCount = new AggregationResultCount();
-        aggregationResultCount.setCount(1L);
+        aggregationResultCount.setCount(2L);
         aggregationResult.setMetadata(List.of(aggregationResultCount));
 
         when(mockAggregationResult.getUniqueMappedResult()).thenReturn(aggregationResult);
@@ -342,7 +347,7 @@ public class OdeBsmJsonRepositoryImplTest {
 
         // Call the repository find method
         PageRequest pageRequest = PageRequest.of(0, 1);
-        Page<OdeBsmData> findResponse = repository.find(originIp, vehicleId, startTime, endTime, -104.1, 36.8,
+        Page<OdeMessageFrameData> findResponse = repository.find(originIp, vehicleId, startTime, endTime, -104.1, 36.8,
                 50.0,
                 pageRequest);
 
@@ -350,7 +355,7 @@ public class OdeBsmJsonRepositoryImplTest {
         Aggregation capturedAggregation = aggregationCaptor.getValue();
 
         // Extract the MatchOperation from the Aggregation pipeline
-        Document pipeline = capturedAggregation.toPipeline(Aggregation.DEFAULT_CONTEXT).get(0);
+        Document pipeline = capturedAggregation.toPipeline(Aggregation.DEFAULT_CONTEXT).getFirst();
 
         // Assert the Match operation Criteria
         assertThat(pipeline.toJson())
@@ -358,8 +363,10 @@ public class OdeBsmJsonRepositoryImplTest {
                         "{\"$match\": {\"metadata.originIp\": \"%s\", \"payload.data.coreData.id\": \"%s\", \"metadata.odeReceivedAt\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}, \"payload.data.coreData.position.latitude\": {\"$gte\": 36.799549443581746, \"$lte\": 36.80045055638405}, \"payload.data.coreData.position.longitude\": {\"$gte\": -104.10056026011259, \"$lte\": -104.0994397398874}}}",
                         originIp, vehicleId, startTimeString, endTimeString));
 
+        // OdeMessageFrameData message = findResponse.getContent().getFirst();
+
         // Serialize results to JSON and compare with the original JSON
-        String resultJson = objectMapper.writeValueAsString(findResponse.getContent().get(0));
+        String resultJson = objectMapper.writeValueAsString(findResponse.getContent().getFirst());
 
         // Remove unused fields from each entry
         List<Document> expectedResult = sampleDocuments.stream().map(doc -> {
@@ -367,12 +374,12 @@ public class OdeBsmJsonRepositoryImplTest {
             doc.remove("recordGeneratedAt");
             return doc;
         }).toList();
-        String expectedJson = objectMapper.writeValueAsString(expectedResult.get(0));
+        String expectedJson = objectMapper.writeValueAsString(expectedResult.getFirst());
 
         // Compare JSON with ignored fields
         JSONAssert.assertEquals(expectedJson, resultJson, new CustomComparator(
                 JSONCompareMode.LENIENT, // Allows different key orders
-                new Customization("properties.timeStamp", (o1, o2) -> true),
-                new Customization("properties.odeReceivedAt", (o1, o2) -> true)));
+                new Customization("properties.timeStamp", (_, _) -> true),
+                new Customization("properties.odeReceivedAt", (_, _) -> true)));
     }
 }

@@ -13,6 +13,7 @@ Enhancements in this release:
 - [CDOT PR 202](https://github.com/CDOT-CV/jpo-cvmanager/pull/202): Upgrading keycloak to version 26
 - [CDOT PR 207](https://github.com/CDOT-CV/jpo-cvmanager/pull/207): Adding Intersection API global path prefix
 - [CDOT PR 210](https://github.com/CDOT-CV/jpo-cvmanager/pull/210): Intersection API Endpoint Refactoring for Combination
+- [CDOT PR 211](https://github.com/CDOT-CV/jpo-cvmanager/pull/211): Live Intersection Map Timing Rework
 - [CDOT PR 212](https://github.com/CDOT-CV/jpo-cvmanager/pull/212): IAPI package renaming v2
 - [CDOT PR 214](https://github.com/CDOT-CV/jpo-cvmanager/pull/214): SNMP-suggestions
 - [CDOT PR 216](https://github.com/CDOT-CV/jpo-cvmanager/pull/216): Fix temporary 'object not found' issue on admin pages

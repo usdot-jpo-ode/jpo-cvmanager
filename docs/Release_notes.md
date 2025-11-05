@@ -34,6 +34,7 @@ Enhancements in this release:
 - [CDOT PR 237](https://github.com/CDOT-CV/jpo-cvmanager/pull/237): Intersection API Unit Testing #3
 - [CDOT PR 238](https://github.com/CDOT-CV/jpo-cvmanager/pull/238): Processed msg updates
 - [CDOT PR 239](https://github.com/CDOT-CV/jpo-cvmanager/pull/239): Processed msg visualization updates
+- [CDOT PR 241](https://github.com/CDOT-CV/jpo-cvmanager/pull/241): Max Files Change Limit
 - [CDOT PR 242](https://github.com/CDOT-CV/jpo-cvmanager/pull/242): 2025/Q3 Bug Fixes
 
 ## Version 1.6.1

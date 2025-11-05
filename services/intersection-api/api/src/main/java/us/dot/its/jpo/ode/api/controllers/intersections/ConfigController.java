@@ -118,6 +118,9 @@ public class ConfigController {
                         "Conflict Monitor API was unable to change setting on conflict monitor.");
             }
         } catch (Exception e) {
+            if (e instanceof ResponseStatusException) {
+                throw (ResponseStatusException) e; // rethrow, don't handle here
+            }
             log.error("Failed to set default config param", e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Unable to identify Message Type from ASN.1");
@@ -170,6 +173,9 @@ public class ConfigController {
                         "Conflict Monitor API was unable to change setting on conflict monitor");
             }
         } catch (Exception e) {
+            if (e instanceof ResponseStatusException) {
+                throw (ResponseStatusException) e; // rethrow, don't handle here
+            }
             log.error("Failed to set intersection config param", e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                     String.format(

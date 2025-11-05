@@ -35,7 +35,7 @@ class HaasLocationConverterTest {
         assertNotNull(result.getFeatures());
         assertEquals(1, result.getFeatures().size());
 
-        var feature = result.getFeatures().get(0);
+        var feature = result.getFeatures().getFirst();
         assertNotNull(feature.getGeometry());
         assertEquals("Point", feature.getGeometry().getType());
         List<Double> coords = feature.getGeometry().getCoordinates();

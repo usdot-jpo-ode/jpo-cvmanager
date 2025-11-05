@@ -5,6 +5,7 @@ import { RootState } from '../../../store'
 import DecoderApi from '../../../apis/intersections/decoder-api'
 import { getTimestamp } from '../map/map-component'
 import {
+  addInitialDataAbortPromise,
   pullInitialData,
   resetMapView,
   selectInitialSourceDataType,
@@ -194,9 +195,10 @@ export const updateAllDataOnMap = createAsyncThunk(
         loadOnNull,
       })
     )
-    dispatch(pullInitialData())
+    dispatch(addInitialDataAbortPromise(dispatch(pullInitialData())))
   }
 )
+
 export const decoderModeToggled = createAsyncThunk(
   'asn1Decoder/decoderModeToggled',
   async (enabled: boolean, { getState, dispatch }) => {
@@ -222,7 +224,7 @@ export const decoderModeToggled = createAsyncThunk(
           loadOnNull,
         })
       )
-      dispatch(pullInitialData())
+      dispatch(addInitialDataAbortPromise(dispatch(pullInitialData())))
     }
   }
 )

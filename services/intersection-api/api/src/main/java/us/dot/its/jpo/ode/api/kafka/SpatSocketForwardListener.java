@@ -17,7 +17,7 @@ public class SpatSocketForwardListener extends BaseSeekToEndListener {
         super(stompController);
     }
 
-    @KafkaListener(id = ListenerIds.SPAT, idIsGroup = false, topics = "topic.ProcessedSpat", concurrency = "1", containerFactory = "spatListenerContainerFactory", autoStartup = "${conflict.monitor.api.kafka-consumers-always-on}")
+    @KafkaListener(id = ListenerIds.SPAT, idIsGroup = false, topics = "topic.DeduplicatedProcessedSpat", concurrency = "1", containerFactory = "spatListenerContainerFactory", autoStartup = "${conflict.monitor.api.kafka-consumers-always-on}")
     public void listen(ConsumerRecord<String, ProcessedSpat> record) {
         stompController.broadcastProcessedSpat(record.value());
         log.trace("Received spat with offset {}", record.offset());

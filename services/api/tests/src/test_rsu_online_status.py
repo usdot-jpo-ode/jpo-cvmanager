@@ -78,14 +78,19 @@ def test_ping_data_query(mock_pgquery):
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
         "JOIN ("
         "SELECT * FROM public.ping AS ping_data "
-        f"WHERE ping_data.timestamp >= {t.strftime("%Y/%m/%dT%H:%M:%S")}::timestamp"
+        f"WHERE ping_data.timestamp >= '{t.strftime('%Y/%m/%dT%H:%M:%S')}'::timestamp"
         ") AS ping_data ON rd.rsu_id = ping_data.rsu_id "
         "WHERE ron_v.name IN (:item_0, :item_1, :item_2) "
-        "ORDER BY rd.rsu_id, ping_data.timestamp DESC"
+        "ORDER BY rd.rsu_id, ping_data.timestamp DESC "
     )
+    expected_params = {
+        "item_0": "Test Org",
+        "item_1": "Test Org 2",
+        "item_2": "Test Org 3",
+    }
 
     rsu_online_status.get_ping_data(user_valid_no_super)
-    mock_pgquery.query_db.assert_called_with(expected_query, params={})
+    mock_pgquery.query_db.assert_called_with(expected_query, params=expected_params)
 
 
 @patch("api.src.rsu_online_status.pgquery")

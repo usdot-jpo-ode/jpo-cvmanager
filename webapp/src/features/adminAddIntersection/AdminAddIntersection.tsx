@@ -260,9 +260,7 @@ const AdminAddIntersection = () => {
                 value={selectedRsus.map((rsu) => rsu.name)}
                 onChange={(event) => {
                   const selectedRsus = event.target.value as string[]
-                  console.log('selectedRsus', selectedRsus)
                   const filteredRsus = rsus.filter((rsu) => selectedRsus.includes(rsu.name))
-                  console.log('filteredRsus', filteredRsus)
                   dispatch(updateSelectedRsus(rsus.filter((rsu) => selectedRsus.includes(rsu.name))))
                 }}
               >

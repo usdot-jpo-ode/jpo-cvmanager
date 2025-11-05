@@ -91,13 +91,13 @@ def get_rsu_set_for_org(organizations: list[str]) -> set[str]:
         "FROM public.rsus rsu "
         "JOIN public.rsu_organization AS rsu_org ON rsu_org.rsu_id = rsu.rsu_id "
         "JOIN public.organizations AS org ON org.organization_id = rsu_org.organization_id "
-        f"WHERE org.name = ANY ({allowed_orgs_placeholder})"
+        f"WHERE org.name IN ({allowed_orgs_placeholder})"
     )
 
     logging.debug(f'Executing query: "{query};"')
     data = pgquery.query_db(query, params=params)
 
-    return set([rsu["ipv4_address"] for rsu in data])
+    return set([str(rsu[0]).replace("/32", "") for rsu in data])
 
 
 def check_rsu_with_org(rsu_ip: str, organizations: list[str]) -> bool:
@@ -113,14 +113,14 @@ def check_rsu_with_org(rsu_ip: str, organizations: list[str]) -> bool:
         "FROM public.rsus rsu "
         "JOIN public.rsu_organization AS rsu_org ON rsu_org.rsu_id = rsu.rsu_id "
         "JOIN public.organizations AS org ON org.organization_id = rsu_org.organization_id "
-        f"WHERE org.name = ANY ({allowed_orgs_placeholder}) "
+        f"WHERE org.name IN ({allowed_orgs_placeholder}) "
         "AND rsu.ipv4_address = :rsu_ip"
     )
 
     logging.debug(f'Executing query: "{query};"')
     data = pgquery.query_db(query, params=params)
 
-    return data[0]["ipv4_address"] == rsu_ip if data else False
+    return str(data[0][0]).replace("/32", "") == rsu_ip if data else False
 
 
 def check_intersection_with_org(intersection_id: str, organizations: list[str]) -> bool:
@@ -136,14 +136,14 @@ def check_intersection_with_org(intersection_id: str, organizations: list[str]) 
         "FROM public.intersections intersection "
         "JOIN public.intersection_organization AS intersection_org ON intersection_org.intersection_id = intersection.intersection_id "
         "JOIN public.organizations AS org ON org.organization_id = intersection_org.organization_id "
-        f"WHERE org.name = ANY ({allowed_orgs_placeholder}) "
+        f"WHERE org.name IN ({allowed_orgs_placeholder}) "
         "AND intersection.intersection_number = :intersection_id"
     )
 
     logging.debug(f'Executing query: "{query};"')
     data = pgquery.query_db(query, params=params)
 
-    return data[0]["intersection_number"] == intersection_id if data else False
+    return data[0][0] == intersection_id if data else False
 
 
 def check_user_with_org(user_email: str, organizations: list[str]) -> bool:
@@ -159,14 +159,14 @@ def check_user_with_org(user_email: str, organizations: list[str]) -> bool:
         "FROM public.users u "
         "JOIN public.user_organization AS user_org ON user_org.user_id = u.user_id "
         "JOIN public.organizations AS org ON org.organization_id = user_org.organization_id "
-        f"WHERE org.name = ANY ({allowed_orgs_placeholder}) "
+        f"WHERE org.name IN ({allowed_orgs_placeholder}) "
         "AND u.email = :user_email"
     )
 
     logging.debug(f'Executing query: "{query};"')
     data = pgquery.query_db(query, params=params)
 
-    return data[0]["email"] == user_email if data else False
+    return data[0][0] == user_email if data else False
 
 
 def get_user_info(email: str) -> Optional[UserInfo]:
@@ -192,7 +192,6 @@ def get_user_info(email: str) -> Optional[UserInfo]:
     )
     org_rows = pgquery.query_db(org_query, params={"email": email})
     # Combine into JWT token-like structure for UserInfo constructor
-    print(org_rows)
     user_info_dict["cvmanager_data"] = {
         "super_user": user_info_dict.get("super_user", "0"),
         "organizations": [dict(row[0]) for row in org_rows],

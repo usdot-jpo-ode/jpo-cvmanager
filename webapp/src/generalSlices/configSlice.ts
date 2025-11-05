@@ -235,7 +235,7 @@ export const configSlice = createSlice({
       })
       .addCase(refreshSnmpFwdConfig.fulfilled, (state, action) => {
         state.loading = false
-        state.value.msgFwdConfig = action.payload.msgFwdConfig
+        state.value.msgFwdConfig = action.payload.msgFwdConfig ?? ({} as RsuDsrcFwdConfigs | RsuRxTxMsgFwdConfigs)
         state.value.errorState = action.payload.errorState
       })
       .addCase(refreshSnmpFwdConfig.rejected, (state) => {

@@ -21,10 +21,10 @@ class HaasWebsocketLocationTest {
 
         assertNotNull(location.getFeatures());
         assertEquals(1, location.getFeatures().size());
-        assertEquals("point", location.getFeatures().get(0).getType());
-        assertEquals(1, location.getFeatures().get(0).getGeometry().size());
-        assertEquals(-100, location.getFeatures().get(0).getGeometry().get(0).getLon());
-        assertEquals(10, location.getFeatures().get(0).getGeometry().get(0).getLat());
+        assertEquals("point", location.getFeatures().getFirst().getType());
+        assertEquals(1, location.getFeatures().getFirst().getGeometry().size());
+        assertEquals(-100, location.getFeatures().getFirst().getGeometry().getFirst().getLon());
+        assertEquals(10, location.getFeatures().getFirst().getGeometry().getFirst().getLat());
 
         assertEquals("000000000000000000000000-2025-02-25T20:35:26.155Z", location.getExternalId());
         assertEquals("emergency", location.getLocationType());
@@ -34,8 +34,8 @@ class HaasWebsocketLocationTest {
         String serialized = mapper.writeValueAsString(location);
         HaasLocation deserialized = mapper.readValue(serialized, HaasLocation.class);
 
-        assertEquals(location.getFeatures().get(0).getGeometry().get(0).getLon(),
-                deserialized.getFeatures().get(0).getGeometry().get(0).getLon());
+        assertEquals(location.getFeatures().getFirst().getGeometry().getFirst().getLon(),
+                deserialized.getFeatures().getFirst().getGeometry().getFirst().getLon());
         assertEquals(location.getExternalId(), deserialized.getExternalId());
     }
 }

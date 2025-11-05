@@ -16,7 +16,7 @@
             <repositories>
                 <repository>
                     <id>github</id>
-                    <name>GitHub Apache Maven Packages Other</name>
+                    <name>GitHub Apache Maven Packages</name>
                     <url>https://maven.pkg.github.com/${env.MAVEN_GITHUB_ORG}/*</url>
                     <snapshots>
                         <enabled>false</enabled>

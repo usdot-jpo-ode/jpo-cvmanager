@@ -37,6 +37,7 @@ Enhancements in this release:
 - [CDOT PR 241](https://github.com/CDOT-CV/jpo-cvmanager/pull/241): Max Files Change Limit
 - [CDOT PR 242](https://github.com/CDOT-CV/jpo-cvmanager/pull/242): 2025/Q3 Bug Fixes
 - [CDOT PR 243](https://github.com/CDOT-CV/jpo-cvmanager/pull/243): Re-generating MongoDB Intersection Data
+- [CDOT PR 247](https://github.com/CDOT-CV/jpo-cvmanager/pull/247): Updating Released Dependencies
 
 ## Version 1.6.1
 

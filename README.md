@@ -43,7 +43,7 @@ To provide feedback, we recommend that you create an "issue" in this repository 
 docker-compose up -d
 ```
 
-4. Access the CV Manager webapp at [http://localhost](http://localhost) in your web browser.
+4. Access the CV Manager webapp at [http://localhost:3000](http://localhost:3000) in your web browser.
 
 ```
 Default Username: test@gmail.com

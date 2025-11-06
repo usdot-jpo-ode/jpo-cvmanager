@@ -115,7 +115,7 @@ services:
         condition: service_healthy
         required: false
     ports:
-      - '80:80'
+      - '${WEBAPP_PORT:-3000}:80'
     logging:
       options:
         max-size: '10m'
@@ -162,7 +162,7 @@ services:
     environment:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
-      WEBAPP_ENDPOINT: ${WEBAPP_ENDPOINT:-http://localhost:80}
+      WEBAPP_ENDPOINT: ${WEBAPP_ENDPOINT:-http://localhost:${WEBAPP_PORT:-3000}}
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN:-admin}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
       KC_HEALTH_ENABLED: 'true'

@@ -28,7 +28,7 @@ export const getIntersectionDataById = async (intersection_id: string, token: st
 
 export const getIntersectionData = createAsyncThunk(
   'adminOrganizationTabIntersection/getIntersectionData',
-  async (orgName: string, { getState, dispatch }) => {
+  async (orgName: string, { getState }) => {
     const currentState = getState() as RootState
     const token = selectToken(currentState)
 
@@ -51,7 +51,7 @@ export const intersectionDeleteSingle = createAsyncThunk(
     const currentState = getState() as RootState
     const token = selectToken(currentState)
 
-    let promises = []
+    const promises = []
     const intersectionData = (await getIntersectionDataById(intersection.intersection_id, token)).body
     if (intersectionData?.intersection_data?.organizations?.length > 1) {
       const patchJson: adminOrgPatch = {
@@ -69,7 +69,7 @@ export const intersectionDeleteSingle = createAsyncThunk(
           ' because it must belong to at least one organization.'
       )
     }
-    var res = await Promise.all(promises)
+    const res = await Promise.all(promises)
     dispatch(refresh({ selectedOrg, updateTableData }))
 
     if ((res[0].payload as any).success) {
@@ -103,7 +103,7 @@ export const intersectionDeleteMultiple = createAsyncThunk(
       }
     }
     if (invalidIntersections.length === 0) {
-      var res = await dispatch(editOrg(patchJson))
+      const res = await dispatch(editOrg(patchJson))
       dispatch(refresh({ selectedOrg, updateTableData }))
       if ((res.payload as any).success) {
         return { success: true, message: 'Intersection(s) deleted successfully' }
@@ -125,7 +125,7 @@ export const intersectionDeleteMultiple = createAsyncThunk(
 
 export const intersectionAddMultiple = createAsyncThunk(
   'adminOrganizationTabIntersection/intersectionAddMultiple',
-  async (payload: AdminOrgTabIntersectionAddMultiple, { getState, dispatch }) => {
+  async (payload: AdminOrgTabIntersectionAddMultiple, { dispatch }) => {
     const { intersectionList, selectedOrg, selectedOrgEmail, updateTableData } = payload
 
     const patchJson: adminOrgPatch = {
@@ -136,7 +136,7 @@ export const intersectionAddMultiple = createAsyncThunk(
     for (const row of intersectionList) {
       patchJson.intersections_to_add.push(row.intersection_id)
     }
-    var res = await dispatch(editOrg(patchJson))
+    const res = await dispatch(editOrg(patchJson))
     dispatch(refresh({ selectedOrg, updateTableData }))
     if ((res.payload as any).success) {
       return { success: true, message: 'Intersection(s) added successfully' }
@@ -183,13 +183,13 @@ export const adminOrganizationTabIntersectionSlice = createSlice({
         state.loading = false
         if (action.payload.success) {
           const intersectionData = action.payload.data
-          let availableIntersectionList = [] as AdminOrgIntersectionWithId[]
+          const availableIntersectionList = [] as AdminOrgIntersectionWithId[]
           let counter = 0
           if (intersectionData?.intersection_data) {
             for (const intersection of intersectionData.intersection_data) {
               const intersectionOrgs = intersection?.organizations
               if (!intersectionOrgs.includes(action.payload.orgName)) {
-                let tempValue = {
+                const tempValue = {
                   id: counter,
                   intersection_id: intersection.intersection_id,
                 } as AdminOrgIntersectionWithId

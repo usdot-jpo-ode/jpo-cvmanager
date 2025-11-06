@@ -51,9 +51,7 @@ exports[`should take a snapshot 1`] = `
                 />
                 <span
                   class="rw-dropdown-list-value"
-                >
-                  [object Object]
-                </span>
+                />
               </div>
               <span
                 aria-hidden="true"

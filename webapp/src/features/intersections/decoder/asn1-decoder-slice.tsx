@@ -5,6 +5,7 @@ import { RootState } from '../../../store'
 import DecoderApi from '../../../apis/intersections/decoder-api'
 import { getTimestamp } from '../map/map-component'
 import {
+  addInitialDataAbortPromise,
   pullInitialData,
   resetMapView,
   selectInitialSourceDataType,
@@ -18,7 +19,7 @@ const initialState = {
   data: {} as { [id: string]: DecoderDataEntry },
   selectedMapMessage: undefined as undefined | { id: string; intersectionId: number; rsuIp: string },
   selectedBsms: [] as string[],
-  currentBsms: [] as OdeBsmData[],
+  currentBsms: [] as ProcessedBsmFeature[],
   dialogOpen: false,
 }
 
@@ -37,7 +38,7 @@ const getTimestampFromType = (type: DECODER_MESSAGE_TYPE, decodedResponse: Decod
     case 'SPAT':
       return getTimestamp(decodedResponse?.processedSpat?.utcTimeStamp)
     case 'BSM':
-      return getTimestamp(decodedResponse?.bsm?.metadata.odeReceivedAt)
+      return getTimestamp(decodedResponse?.bsm?.properties.odeReceivedAt)
   }
 }
 
@@ -47,12 +48,14 @@ const getIntersectionId = (decodedResponse: DecoderApiResponseGeneric | undefine
   }
 
   switch (decodedResponse.type) {
-    case 'MAP':
+    case 'MAP': {
       const mapPayload = decodedResponse.processedMap
       return mapPayload?.properties?.intersectionId
-    case 'SPAT':
+    }
+    case 'SPAT': {
       const spatPayload = decodedResponse.processedSpat
       return spatPayload?.intersectionId
+    }
     default:
       return undefined
   }
@@ -96,12 +99,12 @@ export const onTextChanged = createAsyncThunk(
         decodedResponse: undefined,
       },
     }
-    let newEntry = {}
+    const newEntry = {}
     if (
       prevData[id].text != undefined &&
-      Object.values(prevData).find((v) => v.type == type && v.text == '') == undefined
+      Object.values(prevData).find((v: any) => v.type == type && v.text == '') == undefined
     ) {
-      let newId = uuidv4()
+      const newId = uuidv4()
       newEntry[newId] = {
         id: newId,
         type: type,
@@ -132,7 +135,7 @@ export const onFileUploaded = createAsyncThunk(
 
     const keyedContents: { id: string; text: string }[] = contents.map((text) => ({ id: uuidv4(), text: text }))
 
-    let newEntries = {}
+    const newEntries = {}
     keyedContents.forEach(({ id, text }) => {
       promises.push(submitDecoderRequest(token, text, type))
       newEntries[id] = {
@@ -175,26 +178,27 @@ export const updateAllDataOnMap = createAsyncThunk(
       setMapProps({
         sourceData: {
           map: Object.values(data)
-            .filter((v) => v.type === 'MAP' && v.status == 'COMPLETED' && v.id == selectedMapMessage?.id)
-            .map((v) => v.decodedResponse?.processedMap!),
+            .filter((v: any) => v.type === 'MAP' && v.status == 'COMPLETED' && v.id == selectedMapMessage?.id)
+            .map((v: any) => v.decodedResponse?.processedMap),
           spat: Object.values(data)
             .filter(
-              (v) =>
+              (v: any) =>
                 v.type === 'SPAT' &&
                 v.status == 'COMPLETED' &&
                 !isGreyedOut(selectedMapMessage.intersectionId, getIntersectionId(v.decodedResponse))
             )
-            .map((v) => v.decodedResponse?.processedSpat!),
-          bsm: currentBsms,
+            .map((v: any) => v.decodedResponse?.processedSpat),
+          bsm: { type: 'FeatureCollection', features: currentBsms },
         },
         sourceDataType: null,
         intersectionId,
         loadOnNull,
       })
     )
-    dispatch(pullInitialData())
+    dispatch(addInitialDataAbortPromise(dispatch(pullInitialData())))
   }
 )
+
 export const decoderModeToggled = createAsyncThunk(
   'asn1Decoder/decoderModeToggled',
   async (enabled: boolean, { getState, dispatch }) => {
@@ -213,14 +217,14 @@ export const decoderModeToggled = createAsyncThunk(
           sourceData: {
             map: [],
             spat: [],
-            bsm: [],
+            bsm: { type: 'FeatureCollection', features: [] },
           },
           sourceDataType: initialSourceDataType,
           intersectionId,
           loadOnNull,
         })
       )
-      dispatch(pullInitialData())
+      dispatch(addInitialDataAbortPromise(dispatch(pullInitialData())))
     }
   }
 )
@@ -250,6 +254,23 @@ export const asn1DecoderSlice = createSlice({
     onItemDeleted: (state, action: PayloadAction<string>) => {
       const id = action.payload
       if (state.value.data[id]?.text != '') {
+        const type = state.value.data[id].type
+        switch (type) {
+          case 'MAP': {
+            if (state.value.selectedMapMessage?.id === id) {
+              state.value.selectedMapMessage = undefined
+            }
+            break
+          }
+          case 'SPAT': {
+            // No specific action needed for SPAT deletion
+            break
+          }
+          case 'BSM': {
+            state.value.selectedBsms = state.value.selectedBsms.filter((bsmId) => bsmId !== id)
+            break
+          }
+        }
         delete state.value.data[id]
       }
     },
@@ -272,7 +293,7 @@ export const asn1DecoderSlice = createSlice({
         .map(({ id, type }) => (type == 'BSM' ? id : null))
         .filter((id) => id != null)
       const data: { [id: string]: DecoderDataEntry } = {}
-      responses.forEach(({ id, type, response }) => {
+      responses.forEach(({ id, response }) => {
         data[id] = updateRecordWithResponse(state.value.data[id], id, response)
       })
       state.value.selectedBsms = [...state.value.selectedBsms, ...selectedBsms]
@@ -282,19 +303,21 @@ export const asn1DecoderSlice = createSlice({
       const id = action.payload
       const type = state.value.data[id].type
       switch (type) {
-        case 'MAP':
+        case 'MAP': {
           const intersectionId = state.value.data[id]?.decodedResponse?.processedMap?.properties?.intersectionId
           const rsuIp = state.value.data[id]?.decodedResponse?.processedMap?.properties?.originIp
-          if (intersectionId) {
+          if (intersectionId != null) {
             state.value.selectedMapMessage = { id, intersectionId, rsuIp: rsuIp! }
           }
           return
-        case 'BSM':
+        }
+        case 'BSM': {
           if (state.value.selectedBsms.includes(id)) {
             state.value.selectedBsms = state.value.selectedBsms.filter((bsmId) => bsmId !== id)
           } else {
             state.value.selectedBsms = [...state.value.selectedBsms, id]
           }
+        }
       }
     },
     initializeData: (state) => {

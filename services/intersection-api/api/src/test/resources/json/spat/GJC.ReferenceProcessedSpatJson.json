@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 2,
+  "messageType": "SPAT",
+  "odeReceivedAt": "2025-08-29T16:09:34.416Z",
+  "validationMessages": [
+    {
+      "message": "$.metadata.source: does not have a value in the enumeration [RSU, V2X, MMITSS, UNKNOWN]",
+      "jsonPath": "$.metadata.source",
+      "schemaPath": "#/properties/metadata/properties/source/enum"
+    },
+    {
+      "message": "$.metadata.logFileName: is missing but it is required",
+      "jsonPath": "$.metadata",
+      "schemaPath": "#/properties/metadata/required"
+    },
+    {
+      "message": "$.metadata.receivedMessageDetails: is missing but it is required",
+      "jsonPath": "$.metadata",
+      "schemaPath": "#/properties/metadata/required"
+    },
+    {
+      "message": "$.metadata.recordGeneratedAt: is missing but it is required",
+      "jsonPath": "$.metadata",
+      "schemaPath": "#/properties/metadata/required"
+    },
+    {
+      "message": "$.metadata.asn1: is missing but it is required",
+      "jsonPath": "$.metadata",
+      "schemaPath": "#/properties/metadata/required"
+    },
+    { "message": "CTI-4501 conformance issue: The SPAT 'timeStamp' DE_MinuteOfTheYear is missing" },
+    { "message": "CTI-4501 conformance issue: The intersections 'id.region' DE_RoadRegulatorID is missing" },
+    { "message": "CTI-4501 conformance issue: The state-time-speed 'timing.nextTime' DE_TimeMark is missing" },
+    { "message": "CTI-4501 conformance issue: The state-time-speed 'timing.startTime' DE_TimeMark is missing" }
+  ],
+  "intersectionId": 12111,
+  "cti4501Conformant": false,
+  "revision": 0,
+  "status": {
+    "manualControlIsEnabled": false,
+    "stopTimeIsActivated": false,
+    "failureFlash": false,
+    "preemptIsActive": false,
+    "signalPriorityIsActive": false,
+    "fixedTimeOperation": false,
+    "trafficDependentOperation": false,
+    "standbyOperation": false,
+    "failureMode": false,
+    "off": false,
+    "recentMAPmessageUpdate": false,
+    "recentChangeInMAPassignedLanesIDsUsed": false,
+    "noValidMAPisAvailableAtThisTime": false,
+    "noValidSPATisAvailableAtThisTime": false
+  },
+  "utcTimeStamp": "2025-08-29T16:09:35.176Z",
+  "enabledLanes": [],
+  "states": [
+    {
+      "signalGroup": 2,
+      "stateTimeSpeed": [
+        {
+          "eventState": "PROTECTED_MOVEMENT_ALLOWED",
+          "timing": { "minEndTime": "2025-08-29T16:36:52Z", "maxEndTime": "2025-08-29T16:36:52.1Z" }
+        }
+      ]
+    },
+    {
+      "signalGroup": 4,
+      "stateTimeSpeed": [
+        {
+          "eventState": "STOP_AND_REMAIN",
+          "timing": { "minEndTime": "2025-08-29T16:36:58.1Z", "maxEndTime": "2025-08-29T16:36:58.1Z" }
+        }
+      ]
+    },
+    {
+      "signalGroup": 6,
+      "stateTimeSpeed": [
+        {
+          "eventState": "PROTECTED_MOVEMENT_ALLOWED",
+          "timing": { "minEndTime": "2025-08-29T16:36:52Z", "maxEndTime": "2025-08-29T16:36:52.1Z" }
+        }
+      ]
+    },
+    {
+      "signalGroup": 8,
+      "stateTimeSpeed": [
+        {
+          "eventState": "STOP_AND_REMAIN",
+          "timing": { "minEndTime": "2025-08-29T16:36:25.2Z", "maxEndTime": "2025-08-29T16:36:25.2Z" }
+        }
+      ]
+    },
+    {
+      "signalGroup": 1,
+      "stateTimeSpeed": [
+        {
+          "eventState": "STOP_AND_REMAIN",
+          "timing": { "minEndTime": "2025-08-29T16:36:25.2Z", "maxEndTime": "2025-08-29T16:36:25.2Z" }
+        }
+      ]
+    },
+    {
+      "signalGroup": 5,
+      "stateTimeSpeed": [
+        {
+          "eventState": "STOP_AND_REMAIN",
+          "timing": { "minEndTime": "2025-08-29T16:36:25.2Z", "maxEndTime": "2025-08-29T16:36:25.2Z" }
+        }
+      ]
+    }
+  ]
+}

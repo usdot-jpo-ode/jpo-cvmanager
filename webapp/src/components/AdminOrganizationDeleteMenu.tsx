@@ -1,6 +1,5 @@
 import React from 'react'
 import { confirmAlert } from 'react-confirm-alert'
-import DeleteIcon from '@mui/icons-material/Delete'
 import 'react-confirm-alert/src/react-confirm-alert.css'
 import { Options } from './AdminDeletionOptions'
 

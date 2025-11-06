@@ -4,7 +4,6 @@ import EnvironmentVars from '../../EnvironmentVars'
 import apiHelper from '../../apis/api-helper'
 import { getAvailableUsers } from '../adminUserTab/adminUserTabSlice'
 import { RootState } from '../../store'
-import { AdminOrgUser } from '../adminOrganizationTab/adminOrganizationTabSlice'
 
 export type AdminUserForm = {
   email: string
@@ -71,7 +70,7 @@ export const createUser = createAsyncThunk(
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
 )
 
-export const resetForm = createAsyncThunk('adminAddUser/resetForm', async (reset: () => void, { dispatch }) => {
+export const resetForm = createAsyncThunk('adminAddUser/resetForm', async (reset: () => void, {}) => {
   reset()
 })
 
@@ -88,7 +87,7 @@ export const submitForm = createAsyncThunk(
         ...data,
         organizations: submitOrgs,
       }
-      let res = await dispatch(createUser({ json: tempData, reset }))
+      const res = await dispatch(createUser({ json: tempData, reset }))
       if ((res.payload as any).success) {
         return { submitAttempt: false, success: true, message: 'User Created Successfully' }
       } else {
@@ -110,7 +109,7 @@ export const adminAddUserSlice = createSlice({
   reducers: {
     updateOrganizationNamesApiData: (state) => {
       if (Object.keys(state.value.apiData).length !== 0) {
-        let orgData = [] as { id: number; name: string }[]
+        const orgData = [] as { id: number; name: string }[]
         state.value.apiData.organizations.forEach((organization, index) =>
           orgData.push({ id: index, name: organization })
         )
@@ -119,16 +118,16 @@ export const adminAddUserSlice = createSlice({
     },
     updateAvailableRolesApiData: (state) => {
       if (Object.keys(state.value.apiData).length !== 0) {
-        let roleData = [] as { role: string }[]
+        const roleData = [] as { role: string }[]
         state.value.apiData.roles.forEach((role) => roleData.push({ role }))
         state.value.availableRoles = roleData
       }
     },
     updateOrganizations: (state, action) => {
-      let newOrganizations = []
+      const newOrganizations = []
       for (const name of action.payload) {
         if (state.value.selectedOrganizations.some((e) => e.name === name.name)) {
-          var index = state.value.selectedOrganizations.findIndex(function (item, i) {
+          const index = state.value.selectedOrganizations.findIndex(function (item) {
             return item.name === name.name
           })
           newOrganizations.push(state.value.selectedOrganizations[index])
@@ -173,7 +172,7 @@ export const adminAddUserSlice = createSlice({
       .addCase(createUser.pending, (state) => {
         state.loading = true
       })
-      .addCase(createUser.fulfilled, (state, action) => {
+      .addCase(createUser.fulfilled, (state) => {
         state.loading = false
       })
       .addCase(createUser.rejected, (state) => {

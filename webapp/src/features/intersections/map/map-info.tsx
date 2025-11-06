@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 import { Paper, Box, IconButton, Typography, Fab, AccordionSummary } from '@mui/material'
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion'
@@ -19,10 +19,10 @@ import '../../../components/css/RsuMapView.css'
 import { InfoOutlined, Close, ExpandMoreOutlined } from '@mui/icons-material'
 
 const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(
-  ({ theme }) => ({})
+  () => ({})
 )
 
-const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({}))
+const AccordionDetails = styled(MuiAccordionDetails)(() => ({}))
 
 interface SidePanelProps {
   laneInfo: ConnectingLanesFeatureCollection | undefined
@@ -48,7 +48,11 @@ export const SidePanel = (props: SidePanelProps) => {
   const selectedIntersection = useSelector(selectSelectedIntersection)
 
   const toggleOpen = () => {
-    props.openPanel === 'map-info' ? props.setOpenPanel('') : props.setOpenPanel('map-info')
+    if (props.openPanel === 'map-info') {
+      props.setOpenPanel('')
+    } else {
+      props.setOpenPanel('map-info')
+    }
   }
 
   const getDataTable = (sourceData: MAP_PROPS['sourceData'], sourceDataType: MAP_PROPS['sourceDataType']) => {
@@ -82,31 +86,33 @@ export const SidePanel = (props: SidePanelProps) => {
       case 'IntersectionReferenceAlignmentNotification':
         break
       case 'ConnectionOfTravelNotification':
-        const connectionOfTravelNotification = notification as ConnectionOfTravelNotification
-        fields.push([
-          'ingress Lane ID',
-          // connectionOfTravelNotification?.assessment?.connectionOfTravelAssessmentGroups?.[0]?.ingressLaneID.toString(),
-          connectionOfTravelNotification?.ingressLane.toString(),
-        ])
-        fields.push([
-          'egress Lane ID',
-          // connectionOfTravelNotification?.assessment?.connectionOfTravelAssessmentGroups?.[0]?.egressLaneID.toString(),
-          connectionOfTravelNotification?.egressLane.toString(),
-        ])
-        fields.push([
-          'event count',
-          connectionOfTravelNotification?.assessment?.connectionOfTravelAssessmentGroups?.[0]?.eventCount.toString(),
-        ])
-        break
+        {
+          const connectionOfTravelNotification = notification as ConnectionOfTravelNotification
+          fields.push([
+            'ingress Lane ID',
+            // connectionOfTravelNotification?.assessment?.connectionOfTravelAssessmentGroups?.[0]?.ingressLaneID.toString(),
+            connectionOfTravelNotification?.ingressLane.toString(),
+          ])
+          fields.push([
+            'egress Lane ID',
+            // connectionOfTravelNotification?.assessment?.connectionOfTravelAssessmentGroups?.[0]?.egressLaneID.toString(),
+            connectionOfTravelNotification?.egressLane.toString(),
+          ])
+          fields.push([
+            'event count',
+            connectionOfTravelNotification?.assessment?.connectionOfTravelAssessmentGroups?.[0]?.eventCount.toString(),
+          ])
+          break
+        }
+        return (
+          <>
+            <Typography variant="h6">{notification?.notificationText}</Typography>
+            <Box sx={{ mt: 1 }}>
+              <CustomTable headers={['Field', 'Value']} data={notification == undefined ? [] : fields} />
+            </Box>
+          </>
+        )
     }
-    return (
-      <>
-        <Typography variant="h6">{notification?.notificationText}</Typography>
-        <Box sx={{ mt: 1 }}>
-          <CustomTable headers={['Field', 'Value']} data={notification == undefined ? [] : fields} />
-        </Box>
-      </>
-    )
   }
 
   const getSsmSrmTable = (msgList, rsuIpv4: string | undefined, ssmCount: number, srmCount: number) => {

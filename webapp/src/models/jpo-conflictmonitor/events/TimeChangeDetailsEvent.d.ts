@@ -1,4 +1,4 @@
-/// <reference path="Event.d.ts" />
+import './Event.d.ts'
 type TimeChangeDetailsEvent = MessageMonitor.Event & {
   signalGroup: number
   firstSpatTimestamp: number

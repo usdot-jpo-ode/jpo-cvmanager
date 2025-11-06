@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { format } from 'date-fns'
-import { Box, Checkbox, IconButton, TableCell, TableRow, TextField, Typography, useTheme } from '@mui/material'
+import { Box, Checkbox, IconButton, TableCell, TableRow, TextField, Typography } from '@mui/material'
 import MapRoundedIcon from '@mui/icons-material/MapRounded'
 import DeleteIcon from '@mui/icons-material/Delete'
 import DownloadIcon from '@mui/icons-material/Download'
@@ -20,7 +20,6 @@ export const DecoderEntry = (props: DecoderDataEntry & DecoderEntryProps) => {
   const { id, status, selected, text, type, isGreyedOut, decodedResponse, timestamp, onSelected, onDeleted } = props
 
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-  const theme = useTheme()
 
   const [localText, setLocalText] = React.useState(text)
   const [previouslySubmittedText, setPreviouslySubmittedText] = React.useState(text)
@@ -36,15 +35,17 @@ export const DecoderEntry = (props: DecoderDataEntry & DecoderEntryProps) => {
     }
 
     switch (decodedResponse.type) {
-      case 'MAP':
+      case 'MAP': {
         const mapPayload = decodedResponse.processedMap
         return mapPayload?.properties?.intersectionId
-      case 'SPAT':
+      }
+      case 'SPAT': {
         const spatPayload = decodedResponse.processedSpat
         return spatPayload?.intersectionId
-      case 'BSM':
-        const bsmPayload = decodedResponse.bsm
-        return bsmPayload?.metadata.originIp
+      }
+      case 'BSM': {
+        return null
+      }
     }
   }
 
@@ -136,8 +137,8 @@ export const DecoderEntry = (props: DecoderDataEntry & DecoderEntryProps) => {
       if (refPoint) dispatch(centerMapOnPoint(refPoint))
     } else if (type == 'BSM') {
       const bsmPayload = decodedResponse.bsm
-      const position = bsmPayload?.payload.data.coreData.position
-      if (position) dispatch(centerMapOnPoint(position))
+      const position = bsmPayload?.geometry.coordinates
+      if (position) dispatch(centerMapOnPoint({ latitude: position[1], longitude: position[0] }))
     }
   }
 

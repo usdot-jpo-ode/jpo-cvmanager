@@ -53,12 +53,15 @@ function IntersectionDashboard() {
           style={{
             width: `fit-content`,
             position: 'absolute',
-            left: `calc(250px + ${theme.spacing(3)})`,
+            left: `calc(226px + ${theme.spacing(3)})`,
             backgroundColor: theme.palette.background.default,
             justifyContent: 'flex-start',
             display: 'flex',
             zIndex: 100,
-            marginTop: '15px',
+            padding: '15px',
+            paddingBottom: '17px',
+            paddingLeft: '24px',
+            borderRadius: '0 0 10px 0', // Only round the bottom-right corner
           }}
         >
           <FormControl

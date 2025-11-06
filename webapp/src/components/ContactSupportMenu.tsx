@@ -21,7 +21,7 @@ const ContactSupportMenu = () => {
     formState: { errors },
   } = useForm()
 
-  const onSubmit = async (data: Object) => {
+  const onSubmit = async (data: object) => {
     try {
       const res = await RsuApi.postContactSupport(data)
       const status = res.status
@@ -32,6 +32,7 @@ const ContactSupportMenu = () => {
         toast.error('Something went wrong: ' + status)
       }
     } catch (exception_var) {
+      console.error('Error in ContactSupportMenu onSubmit', exception_var)
       toast.error('An exception occurred, please try again later')
     }
     setHidden(true)

@@ -73,8 +73,8 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                     class="MuiFormGroup-root css-mocked-MuiFormGroup-root"
                   >
                     <div>
-                      <p
-                        class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+                      <div
+                        style="font-size: small; display: flex; align-items: center;"
                       >
                         <label
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
@@ -106,11 +106,11 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                             RSU Viewer
                           </p>
                         </label>
-                      </p>
+                      </div>
                     </div>
                     <div>
-                      <p
-                        class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+                      <div
+                        style="font-size: small; display: flex; align-items: center;"
                       >
                         <label
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
@@ -141,11 +141,11 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                             Heatmap
                           </p>
                         </label>
-                      </p>
+                      </div>
                     </div>
                     <div>
-                      <p
-                        class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+                      <div
+                        style="font-size: small; display: flex; align-items: center;"
                       >
                         <label
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
@@ -176,11 +176,11 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                             V2x Message Viewer
                           </p>
                         </label>
-                      </p>
+                      </div>
                     </div>
                     <div>
-                      <p
-                        class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+                      <div
+                        style="font-size: small; display: flex; align-items: center;"
                       >
                         <label
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
@@ -211,11 +211,11 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                             WZDx Viewer
                           </p>
                         </label>
-                      </p>
+                      </div>
                     </div>
                     <div>
-                      <p
-                        class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+                      <div
+                        style="font-size: small; display: flex; align-items: center;"
                       >
                         <label
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
@@ -246,11 +246,11 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                             Intersections
                           </p>
                         </label>
-                      </p>
+                      </div>
                     </div>
                     <div>
-                      <p
-                        class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+                      <div
+                        style="font-size: small; display: flex; align-items: center;"
                       >
                         <label
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
@@ -281,7 +281,42 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                             Moove AI Viewer
                           </p>
                         </label>
-                      </p>
+                      </div>
+                    </div>
+                    <div>
+                      <div
+                        style="font-size: small; display: flex; align-items: center;"
+                      >
+                        <label
+                          class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
+                        >
+                          <span
+                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
+                          >
+                            <input
+                              class="PrivateSwitchBase-input css-j8yymo"
+                              data-indeterminate="false"
+                              type="checkbox"
+                            />
+                            <svg
+                              aria-hidden="true"
+                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                              data-testid="CheckBoxOutlineBlankIcon"
+                              focusable="false"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"
+                              />
+                            </svg>
+                          </span>
+                          <p
+                            class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+                          >
+                            HAAS Alert Viewer
+                          </p>
+                        </label>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -625,8 +660,8 @@ exports[`snapshot bsmData clicked 1`] = `
                     class="MuiFormGroup-root css-mocked-MuiFormGroup-root"
                   >
                     <div>
-                      <p
-                        class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+                      <div
+                        style="font-size: small; display: flex; align-items: center;"
                       >
                         <label
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
@@ -658,11 +693,11 @@ exports[`snapshot bsmData clicked 1`] = `
                             RSU Viewer
                           </p>
                         </label>
-                      </p>
+                      </div>
                     </div>
                     <div>
-                      <p
-                        class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+                      <div
+                        style="font-size: small; display: flex; align-items: center;"
                       >
                         <label
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
@@ -693,11 +728,11 @@ exports[`snapshot bsmData clicked 1`] = `
                             Heatmap
                           </p>
                         </label>
-                      </p>
+                      </div>
                     </div>
                     <div>
-                      <p
-                        class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+                      <div
+                        style="font-size: small; display: flex; align-items: center;"
                       >
                         <label
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
@@ -728,11 +763,11 @@ exports[`snapshot bsmData clicked 1`] = `
                             V2x Message Viewer
                           </p>
                         </label>
-                      </p>
+                      </div>
                     </div>
                     <div>
-                      <p
-                        class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+                      <div
+                        style="font-size: small; display: flex; align-items: center;"
                       >
                         <label
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
@@ -763,11 +798,11 @@ exports[`snapshot bsmData clicked 1`] = `
                             WZDx Viewer
                           </p>
                         </label>
-                      </p>
+                      </div>
                     </div>
                     <div>
-                      <p
-                        class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+                      <div
+                        style="font-size: small; display: flex; align-items: center;"
                       >
                         <label
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
@@ -798,11 +833,11 @@ exports[`snapshot bsmData clicked 1`] = `
                             Intersections
                           </p>
                         </label>
-                      </p>
+                      </div>
                     </div>
                     <div>
-                      <p
-                        class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+                      <div
+                        style="font-size: small; display: flex; align-items: center;"
                       >
                         <label
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
@@ -833,7 +868,42 @@ exports[`snapshot bsmData clicked 1`] = `
                             Moove AI Viewer
                           </p>
                         </label>
-                      </p>
+                      </div>
+                    </div>
+                    <div>
+                      <div
+                        style="font-size: small; display: flex; align-items: center;"
+                      >
+                        <label
+                          class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
+                        >
+                          <span
+                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
+                          >
+                            <input
+                              class="PrivateSwitchBase-input css-j8yymo"
+                              data-indeterminate="false"
+                              type="checkbox"
+                            />
+                            <svg
+                              aria-hidden="true"
+                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                              data-testid="CheckBoxOutlineBlankIcon"
+                              focusable="false"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"
+                              />
+                            </svg>
+                          </span>
+                          <p
+                            class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
+                          >
+                            HAAS Alert Viewer
+                          </p>
+                        </label>
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -4,7 +4,6 @@ from unittest.mock import patch, MagicMock, call, mock_open
 from api.src.smtp_error_handler import SMTP_SSLHandler
 import api.src.smtp_error_handler as smtp_error_handler
 import api.tests.data.smtp_error_handler_data as smtp_error_handler_data
-import logging
 from unittest.mock import ANY
 
 
@@ -116,7 +115,6 @@ def test_send(mock_get_subscribed_users, mock_smtplib, mock_file):
     smtp_obj.login.assert_called_once_with(EMAIL_APP_USERNAME, EMAIL_APP_PASSWORD)
 
     smtp_obj.sendmail.call_count == 2
-    print(smtp_obj.sendmail.call_args_list)
     smtp_obj.sendmail.assert_any_call(EMAIL_TO_SEND_FROM, "test1@gmail.com", ANY)
     smtp_obj.sendmail.assert_any_call(EMAIL_TO_SEND_FROM, "test2@gmail.com", ANY)
 

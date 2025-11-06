@@ -2,26 +2,25 @@ type DECODER_MESSAGE_TYPE = 'SPAT' | 'MAP' | 'BSM'
 
 type DecoderApiResponseGeneric = {
   type: DECODER_MESSAGE_TYPE
-  payload: any
   decodeTime: number
   decodeErrors: string
   asn1Text: string
   processedMap: ProcessedMap | undefined
   processedSpat: ProcessedSpat | undefined
-  bsm: OdeBsmData | undefined
+  bsm: ProcessedBsmFeature | undefined
 }
 
 type DecoderApiResponseSpat = DecoderApiResponseGeneric & {
   type: 'SPAT'
-  payload: ProcessedSpat
+  processedSpat: ProcessedSpat
 }
 type DecoderApiResponseMap = DecoderApiResponseGeneric & {
   type: 'MAP'
-  payload: ProcessedMap
+  processedMap: ProcessedMap
 }
 type DecoderApiResponseBsm = DecoderApiResponseGeneric & {
   type: 'BSM'
-  payload: OdeBsmData
+  bsm: ProcessedBsmFeature
 }
 
 type DECODER_PROGRESS_TYPE = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED' | 'ERROR'

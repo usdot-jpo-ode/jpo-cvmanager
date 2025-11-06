@@ -4,8 +4,8 @@ from unittest.mock import MagicMock
 import api.src.rsu_error_summary as rsu_error_summary
 import api.tests.data.rsu_error_summary_data as rsu_error_summary_data
 
-# RSUErrorSummarySchema class tests ---
 
+# RSUErrorSummarySchema class tests ---
 def test_rsu_error_summary_schema():
     # prepare
     schema = rsu_error_summary.RSUErrorSummarySchema()
@@ -28,7 +28,7 @@ def test_rsu_error_summary_schema_invalid():
     # execute
     exceptionOccurred = False
     try:
-        schema.load(rsu_error_summary_data.rsu_error_summary_data_bada)
+        schema.load(rsu_error_summary_data.rsu_error_summary_data_bad)
     except Exception as e:
         exceptionOccurred = True
 
@@ -37,16 +37,17 @@ def test_rsu_error_summary_schema_invalid():
 
 
 # RSUErrorSummaryResource class tests ---
-
 def test_options():
     # prepare
     os.environ["CSM_EMAIL_TO_SEND_FROM"] = rsu_error_summary_data.CSM_EMAIL_TO_SEND_FROM
     os.environ["CSM_EMAIL_APP_USERNAME"] = rsu_error_summary_data.CSM_EMAIL_APP_USERNAME
     os.environ["CSM_EMAIL_APP_PASSWORD"] = rsu_error_summary_data.CSM_EMAIL_APP_PASSWORD
-    os.environ[
-        "CSM_TARGET_SMTP_SERVER_ADDRESS"
-    ] = rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS
-    os.environ["CSM_TARGET_SMTP_SERVER_PORT"] = str(rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_PORT)
+    os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"] = (
+        rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS
+    )
+    os.environ["CSM_TARGET_SMTP_SERVER_PORT"] = str(
+        rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_PORT
+    )
     RSUErrorSummaryResource = rsu_error_summary.RSUErrorSummaryResource()
 
     # execute
@@ -68,10 +69,12 @@ def test_post_success():
     os.environ["CSM_EMAIL_TO_SEND_FROM"] = rsu_error_summary_data.CSM_EMAIL_TO_SEND_FROM
     os.environ["CSM_EMAIL_APP_USERNAME"] = rsu_error_summary_data.CSM_EMAIL_APP_USERNAME
     os.environ["CSM_EMAIL_APP_PASSWORD"] = rsu_error_summary_data.CSM_EMAIL_APP_PASSWORD
-    os.environ[
-        "CSM_TARGET_SMTP_SERVER_ADDRESS"
-    ] = rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS
-    os.environ["CSM_TARGET_SMTP_SERVER_PORT"] = str(rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_PORT)
+    os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"] = (
+        rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS
+    )
+    os.environ["CSM_TARGET_SMTP_SERVER_PORT"] = str(
+        rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_PORT
+    )
     RSUErrorSummaryResource = rsu_error_summary.RSUErrorSummaryResource()
     RSUErrorSummaryResource.validate_input = MagicMock()
     RSUErrorSummaryResource.send = MagicMock()
@@ -97,10 +100,12 @@ def test_post_no_json_body():
     os.environ["CSM_EMAIL_TO_SEND_FROM"] = rsu_error_summary_data.CSM_EMAIL_TO_SEND_FROM
     os.environ["CSM_EMAIL_APP_USERNAME"] = rsu_error_summary_data.CSM_EMAIL_APP_USERNAME
     os.environ["CSM_EMAIL_APP_PASSWORD"] = rsu_error_summary_data.CSM_EMAIL_APP_PASSWORD
-    os.environ[
-        "CSM_TARGET_SMTP_SERVER_ADDRESS"
-    ] = rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS
-    os.environ["CSM_TARGET_SMTP_SERVER_PORT"] = str(rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_PORT)
+    os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"] = (
+        rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS
+    )
+    os.environ["CSM_TARGET_SMTP_SERVER_PORT"] = str(
+        rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_PORT
+    )
     RSUErrorSummaryResource = rsu_error_summary.RSUErrorSummaryResource()
     RSUErrorSummaryResource.validate_input = MagicMock()
     RSUErrorSummaryResource.send = MagicMock()
@@ -128,10 +133,12 @@ def test_validate_input_good():
     os.environ["CSM_EMAIL_TO_SEND_FROM"] = rsu_error_summary_data.CSM_EMAIL_TO_SEND_FROM
     os.environ["CSM_EMAIL_APP_USERNAME"] = rsu_error_summary_data.CSM_EMAIL_APP_USERNAME
     os.environ["CSM_EMAIL_APP_PASSWORD"] = rsu_error_summary_data.CSM_EMAIL_APP_PASSWORD
-    os.environ[
-        "CSM_TARGET_SMTP_SERVER_ADDRESS"
-    ] = rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS
-    os.environ["CSM_TARGET_SMTP_SERVER_PORT"] = str(rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_PORT)
+    os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"] = (
+        rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS
+    )
+    os.environ["CSM_TARGET_SMTP_SERVER_PORT"] = str(
+        rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_PORT
+    )
     RSUErrorSummaryResource = rsu_error_summary.RSUErrorSummaryResource()
 
     # execute

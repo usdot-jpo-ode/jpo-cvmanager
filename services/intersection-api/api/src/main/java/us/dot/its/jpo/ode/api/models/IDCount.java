@@ -1,14 +1,12 @@
 package us.dot.its.jpo.ode.api.models;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-@ToString
-@Setter
-@EqualsAndHashCode
-@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 public class IDCount {
     private String id;
     private double count;

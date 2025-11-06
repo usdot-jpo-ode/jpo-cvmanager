@@ -111,9 +111,4 @@ public class ProcessedSpatRepositoryImpl implements ProcessedSpatRepository, Pag
         Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
         return findPage(mongoTemplate, collectionName, pageable, criteria, sort, List.of(), ProcessedSpat.class);
     }
-
-    @Override
-    public void add(ProcessedSpat item) {
-        mongoTemplate.insert(item, collectionName);
-    }
 }

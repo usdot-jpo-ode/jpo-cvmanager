@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,11 +40,11 @@ import static org.mockito.Mockito.when;
 import us.dot.its.jpo.ode.api.accessors.bsm.OdeBsmJsonRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.AggregationResult;
 import us.dot.its.jpo.ode.api.models.AggregationResultCount;
-import us.dot.its.jpo.ode.model.OdeBsmData;
+import us.dot.its.jpo.ode.model.OdeMessageFrameData;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -57,7 +57,7 @@ import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 @AutoConfigureEmbeddedDatabase
 public class OdeBsmJsonRepositoryImplTest {
 
-    @SpyBean
+    @MockitoSpyBean
     private MongoTemplate mongoTemplate;
 
     @Mock
@@ -115,7 +115,7 @@ public class OdeBsmJsonRepositoryImplTest {
         // Assert the Match operation Criteria
         assertThat(capturedCriteria.getCriteriaObject().toJson())
                 .isEqualTo(String.format(
-                        "{\"metadata.originIp\": \"%s\", \"payload.data.coreData.id\": \"%s\", \"metadata.odeReceivedAt\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}, \"payload.data.coreData.position.latitude\": {\"$gte\": 9.995479521105077, \"$lte\": 10.004520477669782}, \"payload.data.coreData.position.longitude\": {\"$gte\": 9.995439594125543, \"$lte\": 10.004560405874457}}",
+                        "{\"metadata.originIp\": \"%s\", \"payload.data.value.BasicSafetyMessage.coreData.id\": \"%s\", \"metadata.odeReceivedAt\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}, \"payload.data.value.BasicSafetyMessage.coreData.lat\": {\"$gte\": 99954795, \"$lte\": 100045204}, \"payload.data.value.BasicSafetyMessage.coreData.long\": {\"$gte\": 99954395, \"$lte\": 100045604}}",
                         originIp, vehicleId, startTimeString, endTimeString));
     }
 
@@ -145,7 +145,7 @@ public class OdeBsmJsonRepositoryImplTest {
         // Assert the Match operation Criteria
         assertThat(capturedCriteria.getCriteriaObject().toJson())
                 .isEqualTo(String.format(
-                        "{\"metadata.originIp\": \"%s\", \"payload.data.coreData.id\": \"%s\", \"metadata.odeReceivedAt\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}, \"payload.data.coreData.position.latitude\": {\"$gte\": 9.995479521105077, \"$lte\": 10.004520477669782}, \"payload.data.coreData.position.longitude\": {\"$gte\": 9.995439594125543, \"$lte\": 10.004560405874457}}",
+                        "{\"metadata.originIp\": \"%s\", \"payload.data.value.BasicSafetyMessage.coreData.id\": \"%s\", \"metadata.odeReceivedAt\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}, \"payload.data.value.BasicSafetyMessage.coreData.lat\": {\"$gte\": 99954795, \"$lte\": 100045204}, \"payload.data.value.BasicSafetyMessage.coreData.long\": {\"$gte\": 99954395, \"$lte\": 100045604}}",
                         originIp, vehicleId, startTimeString, endTimeString));
 
         // Verify the Criteria passed to findPage
@@ -159,7 +159,7 @@ public class OdeBsmJsonRepositoryImplTest {
                             .isEqualTo(originIp);
 
                     // Verify VEHICLE_ID_FIELD
-                    assertThat(criteria.getCriteriaObject().get("payload.data.coreData.id"))
+                    assertThat(criteria.getCriteriaObject().get("payload.data.value.BasicSafetyMessage.coreData.id"))
                             .isEqualTo(vehicleId);
 
                     // Verify DATE_FIELD
@@ -172,16 +172,15 @@ public class OdeBsmJsonRepositoryImplTest {
 
                     // Verify latitude
                     Document latitudeField = (Document) criteria.getCriteriaObject()
-                            .get("payload.data.coreData.position.latitude");
-                    assertThat((Double) latitudeField.get("$gte")).isCloseTo(9.995, within(0.001));
-                    assertThat((Double) latitudeField.get("$lte")).isCloseTo(10.005, within(0.001));
+                            .get("payload.data.value.BasicSafetyMessage.coreData.lat");
+                    assertThat((Integer) latitudeField.get("$gte")).isCloseTo(99950000, within(10000));
+                    assertThat((Integer) latitudeField.get("$lte")).isCloseTo(100050000, within(100000));
 
                     // Verify longitude with tolerance
                     Document longitudeField = (Document) criteria.getCriteriaObject()
-                            .get("payload.data.coreData.position.longitude");
-                    assertThat((Double) longitudeField.get("$gte")).isCloseTo(9.995, within(0.001));
-                    assertThat((Double) longitudeField.get("$lte")).isCloseTo(10.005,
-                            within(0.001));
+                            .get("payload.data.value.BasicSafetyMessage.coreData.long");
+                    assertThat((Integer) longitudeField.get("$gte")).isCloseTo(99950000, within(10000));
+                    assertThat((Integer) longitudeField.get("$lte")).isCloseTo(100005000, within(100000));
 
                     return true;
                 }),
@@ -215,7 +214,7 @@ public class OdeBsmJsonRepositoryImplTest {
         // Assert the Match operation Criteria
         assertThat(capturedCriteria.getCriteriaObject().toJson())
                 .isEqualTo(String.format(
-                        "{\"metadata.originIp\": \"%s\", \"payload.data.coreData.id\": \"%s\", \"metadata.odeReceivedAt\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}}",
+                        "{\"metadata.originIp\": \"%s\", \"payload.data.value.BasicSafetyMessage.coreData.id\": \"%s\", \"metadata.odeReceivedAt\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}}",
                         originIp, vehicleId, startTimeString, endTimeString));
 
         // Verify the Criteria passed to findPage
@@ -229,7 +228,7 @@ public class OdeBsmJsonRepositoryImplTest {
                             .isEqualTo(originIp);
 
                     // Verify VEHICLE_ID_FIELD
-                    assertThat(criteria.getCriteriaObject().get("payload.data.coreData.id"))
+                    assertThat(criteria.getCriteriaObject().get("payload.data.value.BasicSafetyMessage.coreData.id"))
                             .isEqualTo(vehicleId);
 
                     // Verify DATE_FIELD
@@ -242,11 +241,11 @@ public class OdeBsmJsonRepositoryImplTest {
 
                     // Verify latitude
                     assertThat(criteria.getCriteriaObject()
-                            .get("payload.data.coreData.position.latitude")).isNull();
+                            .get("payload.data.value.BasicSafetyMessage.coreData.lat")).isNull();
 
                     // Verify longitude with tolerance
                     assertThat(criteria.getCriteriaObject()
-                            .get("payload.data.coreData.position.longitude")).isNull();
+                            .get("payload.data.value.BasicSafetyMessage.coreData.long")).isNull();
 
                     return true;
                 }),
@@ -279,7 +278,8 @@ public class OdeBsmJsonRepositoryImplTest {
         assertThat(capturedCriteria.getCriteriaObject().toJson())
                 .isEqualTo(String.format(
                         "{\"metadata.odeReceivedAt\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}}",
-                        startTimeString, endTimeString)); // Verify the Criteria passed to findPage
+                        startTimeString, endTimeString)); // Verify the Criteria passed to
+                                                          // findPage
         Mockito.verify(repo).findDocumentsWithPagination(
                 any(),
                 any(),
@@ -289,7 +289,7 @@ public class OdeBsmJsonRepositoryImplTest {
                     assertThat(criteria.getCriteriaObject().get("metadata.originIp")).isNull();
 
                     // Verify VEHICLE_ID_FIELD
-                    assertThat(criteria.getCriteriaObject().get("payload.data.coreData.id"))
+                    assertThat(criteria.getCriteriaObject().get("payload.data.value.BasicSafetyMessage.coreData.id"))
                             .isNull();
 
                     // Verify DATE_FIELD
@@ -302,11 +302,11 @@ public class OdeBsmJsonRepositoryImplTest {
 
                     // Verify latitude
                     assertThat(criteria.getCriteriaObject()
-                            .get("payload.data.coreData.position.latitude")).isNull();
+                            .get("payload.data.value.BasicSafetyMessage.coreData.lat")).isNull();
 
                     // Verify longitude with tolerance
                     assertThat(criteria.getCriteriaObject()
-                            .get("payload.data.coreData.position.longitude")).isNull();
+                            .get("payload.data.value.BasicSafetyMessage.coreData.long")).isNull();
 
                     return true;
                 }),
@@ -321,16 +321,20 @@ public class OdeBsmJsonRepositoryImplTest {
                 Files.readAllBytes(
                         Paths.get("src/test/resources/json/ConflictMonitor.OdeBsmJson.json")));
 
-        List<Document> sampleDocuments = List.of(Document.parse(json));
+        List<Document> sampleDocuments = new ArrayList<>();
+
+        // List<Document> sampleDocuments = List.of(Document.parse(json));
+        sampleDocuments.add(Document.parse(json));
+        sampleDocuments.add(Document.parse(json));
 
         // Mock dependencies
         when(mockDocumentPage.getContent()).thenReturn(sampleDocuments);
-        when(mockDocumentPage.getTotalElements()).thenReturn(1L);
+        when(mockDocumentPage.getTotalElements()).thenReturn(2L);
 
         AggregationResult aggregationResult = new AggregationResult();
         aggregationResult.setResults(sampleDocuments);
         AggregationResultCount aggregationResultCount = new AggregationResultCount();
-        aggregationResultCount.setCount(1L);
+        aggregationResultCount.setCount(2L);
         aggregationResult.setMetadata(List.of(aggregationResultCount));
 
         when(mockAggregationResult.getUniqueMappedResult()).thenReturn(aggregationResult);
@@ -342,7 +346,7 @@ public class OdeBsmJsonRepositoryImplTest {
 
         // Call the repository find method
         PageRequest pageRequest = PageRequest.of(0, 1);
-        Page<OdeBsmData> findResponse = repository.find(originIp, vehicleId, startTime, endTime, -104.1, 36.8,
+        Page<OdeMessageFrameData> findResponse = repository.find(originIp, vehicleId, startTime, endTime, -104.1, 36.8,
                 50.0,
                 pageRequest);
 
@@ -355,8 +359,10 @@ public class OdeBsmJsonRepositoryImplTest {
         // Assert the Match operation Criteria
         assertThat(pipeline.toJson())
                 .isEqualTo(String.format(
-                        "{\"$match\": {\"metadata.originIp\": \"%s\", \"payload.data.coreData.id\": \"%s\", \"metadata.odeReceivedAt\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}, \"payload.data.coreData.position.latitude\": {\"$gte\": 36.799549443581746, \"$lte\": 36.80045055638405}, \"payload.data.coreData.position.longitude\": {\"$gte\": -104.10056026011259, \"$lte\": -104.0994397398874}}}",
+                        "{\"$match\": {\"metadata.originIp\": \"%s\", \"payload.data.value.BasicSafetyMessage.coreData.id\": \"%s\", \"metadata.odeReceivedAt\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}, \"payload.data.value.BasicSafetyMessage.coreData.lat\": {\"$gte\": 367995494, \"$lte\": 368004505}, \"payload.data.value.BasicSafetyMessage.coreData.long\": {\"$gte\": -1041005602, \"$lte\": -1040994397}}}",
                         originIp, vehicleId, startTimeString, endTimeString));
+
+        // OdeMessageFrameData message = findResponse.getContent().get(0);
 
         // Serialize results to JSON and compare with the original JSON
         String resultJson = objectMapper.writeValueAsString(findResponse.getContent().get(0));

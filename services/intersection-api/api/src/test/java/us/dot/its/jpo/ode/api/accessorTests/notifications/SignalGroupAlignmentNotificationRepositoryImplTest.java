@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,7 +29,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalGroupAlignmentNotification;
-import us.dot.its.jpo.ode.api.accessors.notifications.SignalGroupAlignmentNotificationRepo.SignalGroupAlignmentNotificationRepositoryImpl;
+import us.dot.its.jpo.ode.api.accessors.notifications.signal_group_alignment_notification.SignalGroupAlignmentNotificationRepositoryImpl;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -90,4 +91,19 @@ public class SignalGroupAlignmentNotificationRepositoryImplTest {
         assertThat(results).isEqualTo(mockPage);
     }
 
+    @Test
+    void testFindLatest() {
+        SignalGroupAlignmentNotification event = new SignalGroupAlignmentNotification();
+        event.setIntersectionID(intersectionID);
+
+        doReturn(event).when(mongoTemplate).findOne(any(Query.class), eq(SignalGroupAlignmentNotification.class),
+                anyString());
+
+        Page<SignalGroupAlignmentNotification> page = repository.findLatest(intersectionID, startTime, endTime);
+
+        assertThat(page.getContent()).hasSize(1);
+        assertThat(page.getContent().getFirst().getIntersectionID()).isEqualTo(intersectionID);
+        verify(mongoTemplate).findOne(any(Query.class), eq(SignalGroupAlignmentNotification.class),
+                eq("CmSignalGroupAlignmentNotification"));
+    }
 }

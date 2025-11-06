@@ -84,16 +84,16 @@ describe('async thunks', () => {
 
       const action = refreshSnmpFwdConfig(rsu_ip)
 
-      let resp = await action(dispatch, getState, undefined)
+      const resp = await action(dispatch, getState, undefined)
       expect(RsuApi.getRsuMsgFwdConfigs).toHaveBeenCalledWith('token', 'name', '', { rsu_ip })
       expect(resp.payload).toEqual({ msgFwdConfig: 'test', errorState: '' })
     })
 
     it('Updates the state correctly pending', async () => {
-      let loading = true
-      let msgFwdConfig = {}
-      let rebootChangeSuccess = false
-      let errorState = ''
+      const loading = true
+      const msgFwdConfig = {}
+      const rebootChangeSuccess = false
+      const errorState = ''
       const state = reducer(initialState, {
         type: 'config/refreshSnmpFwdConfig/pending',
       })
@@ -104,9 +104,9 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly fulfilled', async () => {
-      let loading = false
-      let msgFwdConfig = 'test'
-      let errorState = 'error'
+      const loading = false
+      const msgFwdConfig = 'test'
+      const errorState = 'error'
       const state = reducer(initialState, {
         type: 'config/refreshSnmpFwdConfig/fulfilled',
         payload: { msgFwdConfig, errorState },
@@ -115,7 +115,7 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly rejected', async () => {
-      let loading = false
+      const loading = false
       const state = reducer(initialState, {
         type: 'config/refreshSnmpFwdConfig/rejected',
       })
@@ -170,9 +170,8 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly pending', async () => {
-      let loading = true
-      let changeSuccess = false
-      let errorState = ''
+      const loading = true
+      const changeSuccess = false
       const state = reducer(initialState, {
         type: 'config/submitSnmpSet/pending',
       })
@@ -180,9 +179,9 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly fulfilled', async () => {
-      let loading = false
-      let changeSuccess = false
-      let errorState = 'error'
+      const loading = false
+      const changeSuccess = false
+      const errorState = 'error'
       const state = reducer(initialState, {
         type: 'config/submitSnmpSet/fulfilled',
         payload: { changeSuccess, errorState },
@@ -191,7 +190,7 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly rejected', async () => {
-      let loading = false
+      const loading = false
       const state = reducer(initialState, {
         type: 'config/submitSnmpSet/rejected',
       })
@@ -241,9 +240,8 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly pending', async () => {
-      let loading = true
-      let changeSuccess = false
-      let errorState = ''
+      const loading = true
+      const changeSuccess = false
       const state = reducer(initialState, {
         type: 'config/deleteSnmpSet/pending',
       })
@@ -251,9 +249,9 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly fulfilled', async () => {
-      let loading = false
-      let changeSuccess = false
-      let errorState = 'error'
+      const loading = false
+      const changeSuccess = false
+      const errorState = 'error'
       const state = reducer(initialState, {
         type: 'config/deleteSnmpSet/fulfilled',
         payload: { changeSuccess, errorState },
@@ -262,7 +260,7 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly rejected', async () => {
-      let loading = false
+      const loading = false
       const state = reducer(initialState, {
         type: 'config/deleteSnmpSet/rejected',
       })
@@ -287,7 +285,7 @@ describe('async thunks', () => {
 
       const action = rebootRsu(arg)
 
-      let resp = await action(dispatch, getState, undefined)
+      const resp = await action(dispatch, getState, undefined)
       expect(RsuApi.postRsuData).toHaveBeenCalledWith(
         'token',
         'name',
@@ -302,8 +300,8 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly pending', async () => {
-      let loading = true
-      let rebootChangeSuccess = false
+      const loading = true
+      const rebootChangeSuccess = false
       const state = reducer(initialState, {
         type: 'config/rebootRsu/pending',
       })
@@ -311,8 +309,8 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly fulfilled', async () => {
-      let loading = false
-      let rebootChangeSuccess = true
+      const loading = false
+      const rebootChangeSuccess = true
       const state = reducer(initialState, {
         type: 'config/rebootRsu/fulfilled',
       })
@@ -320,8 +318,8 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly rejected', async () => {
-      let loading = false
-      let rebootChangeSuccess = false
+      const loading = false
+      const rebootChangeSuccess = false
       const state = reducer(initialState, {
         type: 'config/rebootRsu/rejected',
       })
@@ -346,7 +344,7 @@ describe('async thunks', () => {
 
       const action = checkFirmwareUpgrade(arg)
 
-      let resp = await action(dispatch, getState, undefined)
+      const resp = await action(dispatch, getState, undefined)
       expect(RsuApi.postRsuData).toHaveBeenCalledWith(
         'token',
         'name',
@@ -361,10 +359,10 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly pending', async () => {
-      let loading = true
-      let firmwareUpgradeAvailable = false
-      let firmwareUpgradeName = ''
-      let firmwareUpgradeErr = false
+      const loading = true
+      const firmwareUpgradeAvailable = false
+      const firmwareUpgradeName = ''
+      const firmwareUpgradeErr = false
       const state = reducer(initialState, {
         type: 'config/checkFirmwareUpgrade/pending',
       })
@@ -375,10 +373,10 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly fulfilled', async () => {
-      let loading = false
-      let firmwareUpgradeAvailable = false
-      let firmwareUpgradeName = ''
-      let firmwareUpgradeMsg = 'Firmware is up to date!'
+      const loading = false
+      const firmwareUpgradeAvailable = false
+      const firmwareUpgradeName = ''
+      const firmwareUpgradeMsg = 'Firmware is up to date!'
       const state = reducer(initialState, {
         type: 'config/checkFirmwareUpgrade/fulfilled',
         payload: { firmwareUpgradeAvailable, firmwareUpgradeName },
@@ -390,11 +388,11 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly rejected', async () => {
-      let loading = false
-      let firmwareUpgradeAvailable = false
-      let firmwareUpgradeName = ''
-      let firmwareUpgradeMsg = 'An error occurred while checking for an upgrade'
-      let firmwareUpgradeErr = true
+      const loading = false
+      const firmwareUpgradeAvailable = false
+      const firmwareUpgradeName = ''
+      const firmwareUpgradeMsg = 'An error occurred while checking for an upgrade'
+      const firmwareUpgradeErr = true
       const state = reducer(initialState, {
         type: 'config/checkFirmwareUpgrade/rejected',
       })
@@ -428,7 +426,7 @@ describe('async thunks', () => {
 
       const action = startFirmwareUpgrade(arg)
 
-      let resp = await action(dispatch, getState, undefined)
+      const resp = await action(dispatch, getState, undefined)
       expect(RsuApi.postRsuData).toHaveBeenCalledWith(
         'token',
         'name',
@@ -443,8 +441,8 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly pending', async () => {
-      let loading = true
-      let firmwareUpgradeErr = false
+      const loading = true
+      const firmwareUpgradeErr = false
       const state = reducer(initialState, {
         type: 'config/startFirmwareUpgrade/pending',
       })
@@ -455,12 +453,12 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly fulfilled', async () => {
-      let loading = false
-      let firmwareUpgradeAvailable = false
-      let firmwareUpgradeName = ''
-      let firmwareUpgradeMsg = 'Firmware is up to date!'
-      let firmwareUpgradeErr = false
-      let statusCode = 201
+      const loading = false
+      const firmwareUpgradeAvailable = false
+      const firmwareUpgradeName = ''
+      const firmwareUpgradeMsg = 'Firmware is up to date!'
+      const firmwareUpgradeErr = false
+      const statusCode = 201
       const state = reducer(initialState, {
         type: 'config/startFirmwareUpgrade/fulfilled',
         payload: { message: firmwareUpgradeMsg, statusCode },
@@ -478,11 +476,11 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly rejected', async () => {
-      let loading = false
-      let firmwareUpgradeAvailable = false
-      let firmwareUpgradeName = ''
-      let firmwareUpgradeMsg = 'An error occurred while starting the firmware upgrade'
-      let firmwareUpgradeErr = true
+      const loading = false
+      const firmwareUpgradeAvailable = false
+      const firmwareUpgradeName = ''
+      const firmwareUpgradeMsg = 'An error occurred while starting the firmware upgrade'
+      const firmwareUpgradeErr = true
       const state = reducer(initialState, {
         type: 'config/startFirmwareUpgrade/rejected',
       })

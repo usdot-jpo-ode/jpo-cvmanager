@@ -91,9 +91,11 @@ const AdminAddRsu = () => {
 
   const handleFormSubmit = (data: AdminAddRsuForm) => {
     dispatch(submitForm({ data, reset })).then((data: any) => {
-      data.payload.success
-        ? notifySuccess(data.payload.message)
-        : notifyError('Failed to add RSU due to error: ' + data.payload.message)
+      if (data.payload.success) {
+        notifySuccess(data.payload.message)
+      } else {
+        notifyError('Failed to add RSU due to error: ' + data.payload.message)
+      }
     })
     setOpen(false)
     navigate('/dashboard/admin/rsus')
@@ -241,7 +243,7 @@ const AdminAddRsu = () => {
                     defaultValue={selectedRoute}
                     required
                     onChange={(event) => {
-                      const route = event.target.value as String
+                      const route = event.target.value as string
                       dispatch(updateSelectedRoute(route))
                     }}
                   >
@@ -305,7 +307,7 @@ const AdminAddRsu = () => {
                     defaultValue={selectedModel}
                     required
                     onChange={(event) => {
-                      const selectedRSUModel = event.target.value as String
+                      const selectedRSUModel = event.target.value as string
                       dispatch(updateSelectedModel(selectedRSUModel))
                     }}
                   >
@@ -355,7 +357,7 @@ const AdminAddRsu = () => {
                 defaultValue={selectedSshGroup}
                 required
                 onChange={(event) => {
-                  const selectedSSHGroup = event.target.value as String
+                  const selectedSSHGroup = event.target.value as string
                   dispatch(updateSelectedSshGroup(selectedSSHGroup))
                 }}
               >
@@ -383,7 +385,7 @@ const AdminAddRsu = () => {
                     value={selectedSnmpGroup}
                     defaultValue={selectedSnmpGroup}
                     onChange={(event) => {
-                      const selectedGroup = event.target.value as String
+                      const selectedGroup = event.target.value as string
                       dispatch(updateSelectedSnmpGroup(selectedGroup))
                     }}
                   >
@@ -411,7 +413,7 @@ const AdminAddRsu = () => {
                     defaultValue={selectedSnmpVersion}
                     required
                     onChange={(event) => {
-                      const selectedVersion = event.target.value as String
+                      const selectedVersion = event.target.value as string
                       dispatch(updateSelectedSnmpVersion(selectedVersion))
                     }}
                   >
@@ -439,7 +441,7 @@ const AdminAddRsu = () => {
                 required
                 value={selectedOrganizations.map((org) => org.name)}
                 onChange={(event) => {
-                  const selectedOrgs = event.target.value as String[]
+                  const selectedOrgs = event.target.value as string[]
                   dispatch(updateSelectedOrganizations(organizations.filter((org) => selectedOrgs.includes(org.name))))
                 }}
               >

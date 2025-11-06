@@ -2,12 +2,15 @@ from unittest.mock import patch, MagicMock, call
 import pytest
 import api.src.admin_new_rsu as admin_new_rsu
 import api.tests.data.admin_new_rsu_data as admin_new_rsu_data
-import sqlalchemy
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from werkzeug.exceptions import HTTPException
+from api.tests.data import auth_data
+from werkzeug.exceptions import BadRequest, InternalServerError
 
-###################################### Testing Requests ##########################################
+user_valid = auth_data.get_request_environ()
 
 
+# ##################################### Testing Requests ##########################################
 def test_request_options():
     info = admin_new_rsu.AdminNewRsu()
     (body, code, headers) = info.options()
@@ -17,68 +20,55 @@ def test_request_options():
 
 
 @patch("api.src.admin_new_rsu.get_allowed_selections")
+@patch(
+    "api.src.admin_new_rsu.request",
+    MagicMock(
+        json=admin_new_rsu_data.request_json_good,
+    ),
+)
 def test_entry_get(mock_get_allowed_selections):
-    req = MagicMock()
-    req.environ = admin_new_rsu_data.request_params_good
     mock_get_allowed_selections.return_value = {}
-    with patch("api.src.admin_new_rsu.request", req):
-        status = admin_new_rsu.AdminNewRsu()
-        (body, code, headers) = status.get()
+    status = admin_new_rsu.AdminNewRsu()
+    (body, code, headers) = status.get()
 
-        mock_get_allowed_selections.assert_called_once()
-        assert code == 200
-        assert headers["Access-Control-Allow-Origin"] == "test.com"
-        assert body == {}
+    mock_get_allowed_selections.assert_called_once()
+    assert code == 200
+    assert headers["Access-Control-Allow-Origin"] == "test.com"
+    assert body == {}
 
 
 @patch("api.src.admin_new_rsu.add_rsu")
+@patch(
+    "api.src.admin_new_rsu.request",
+    MagicMock(
+        json=admin_new_rsu_data.request_json_good,
+    ),
+)
 def test_entry_post(mock_add_rsu):
-    req = MagicMock()
-    req.environ = admin_new_rsu_data.request_params_good
-    req.json = admin_new_rsu_data.request_json_good
-    mock_add_rsu.return_value = {}, 200
-    with patch("api.src.admin_new_rsu.request", req):
-        status = admin_new_rsu.AdminNewRsu()
-        (body, code, headers) = status.post()
+    mock_add_rsu.return_value = {}
+    status = admin_new_rsu.AdminNewRsu()
+    (body, code, headers) = status.post()
 
-        mock_add_rsu.assert_called_once()
-        assert code == 200
-        assert headers["Access-Control-Allow-Origin"] == "test.com"
-        assert body == {}
+    mock_add_rsu.assert_called_once()
+    assert code == 200
+    assert headers["Access-Control-Allow-Origin"] == "test.com"
+    assert body == {}
 
 
+@patch(
+    "api.src.admin_new_rsu.request",
+    MagicMock(
+        json=admin_new_rsu_data.request_json_bad,
+    ),
+)
 def test_entry_post_schema():
-    req = MagicMock()
-    req.environ = admin_new_rsu_data.request_params_good
-    req.json = admin_new_rsu_data.request_json_bad
-    with patch("api.src.admin_new_rsu.request", req):
-        status = admin_new_rsu.AdminNewRsu()
-        with pytest.raises(HTTPException):
-            status.post()
+    status = admin_new_rsu.AdminNewRsu()
+    with pytest.raises(HTTPException):
+        status.post()
 
 
 ###################################### Testing Functions ##########################################
-
-
-@patch("api.src.admin_new_rsu.pgquery")
-def test_query_and_return_list(mock_pgquery):
-    # sqlalchemy returns a list of tuples. This test replicates the tuple list
-    mock_pgquery.query_db.return_value = [
-        (
-            "Vendor",
-            "Model",
-        ),
-        ("road",),
-    ]
-    expected_rsu_data = ["Vendor Model", "road"]
-    expected_query = "SELECT * FROM test"
-    actual_result = admin_new_rsu.query_and_return_list("SELECT * FROM test")
-
-    mock_pgquery.query_db.assert_called_with(expected_query)
-    assert actual_result == expected_rsu_data
-
-
-@patch("api.src.admin_new_rsu.query_and_return_list")
+@patch("common.pgquery.query_and_return_list")
 def test_get_allowed_selections(mock_query_and_return_list):
     mock_query_and_return_list.return_value = ["test"]
     expected_result = {
@@ -89,7 +79,7 @@ def test_get_allowed_selections(mock_query_and_return_list):
         "snmp_version_groups": ["test"],
         "organizations": ["test"],
     }
-    actual_result = admin_new_rsu.get_allowed_selections()
+    actual_result = admin_new_rsu.get_allowed_selections(user_valid)
 
     calls = [
         call(
@@ -123,10 +113,8 @@ def test_check_safe_input_bad():
 @patch("api.src.admin_new_rsu.pgquery.write_db")
 def test_add_rsu_success_commsignia(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
-    expected_msg, expected_code = {"message": "New RSU successfully added"}, 200
-    actual_msg, actual_code = admin_new_rsu.add_rsu(
-        admin_new_rsu_data.mock_post_body_commsignia
-    )
+    expected_msg = {"message": "New RSU successfully added"}
+    actual_msg = admin_new_rsu.add_rsu(admin_new_rsu_data.mock_post_body_commsignia)
 
     calls = [
         call(admin_new_rsu_data.rsu_query_commsignia),
@@ -134,17 +122,14 @@ def test_add_rsu_success_commsignia(mock_pgquery, mock_check_safe_input):
     ]
     mock_pgquery.assert_has_calls(calls)
     assert actual_msg == expected_msg
-    assert actual_code == expected_code
 
 
 @patch("api.src.admin_new_rsu.check_safe_input")
 @patch("api.src.admin_new_rsu.pgquery.write_db")
 def test_add_rsu_success_yunex(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
-    expected_msg, expected_code = {"message": "New RSU successfully added"}, 200
-    actual_msg, actual_code = admin_new_rsu.add_rsu(
-        admin_new_rsu_data.mock_post_body_yunex
-    )
+    expected_msg = {"message": "New RSU successfully added"}
+    actual_msg = admin_new_rsu.add_rsu(admin_new_rsu_data.mock_post_body_yunex)
 
     calls = [
         call(admin_new_rsu_data.rsu_query_yunex),
@@ -152,53 +137,48 @@ def test_add_rsu_success_yunex(mock_pgquery, mock_check_safe_input):
     ]
     mock_pgquery.assert_has_calls(calls)
     assert actual_msg == expected_msg
-    assert actual_code == expected_code
 
 
 @patch("api.src.admin_new_rsu.check_safe_input")
 @patch("api.src.admin_new_rsu.pgquery.write_db")
 def test_add_rsu_safety_fail(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = False
-    expected_msg, expected_code = {
-        "message": "No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
-    }, 500
-    actual_msg, actual_code = admin_new_rsu.add_rsu(
-        admin_new_rsu_data.mock_post_body_commsignia
-    )
 
-    calls = []
-    mock_pgquery.assert_has_calls(calls)
-    assert actual_msg == expected_msg
-    assert actual_code == expected_code
+    with pytest.raises(BadRequest) as exc_info:
+        admin_new_rsu.add_rsu(admin_new_rsu_data.mock_post_body_commsignia)
+
+    assert (
+        str(exc_info.value)
+        == "400 Bad Request: No special characters are allowed: !\"#$%&'()*+,./:;<=>?@[\\]^`{|}~. No sequences of '-' characters are allowed"
+    )
+    mock_pgquery.assert_has_calls([])
 
 
 @patch("api.src.admin_new_rsu.check_safe_input")
 @patch("api.src.admin_new_rsu.pgquery.write_db")
 def test_add_rsu_fail_yunex_no_scms_id(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
-    expected_msg, expected_code = {"message": "SCMS ID must be specified"}, 500
-    actual_msg, actual_code = admin_new_rsu.add_rsu(
-        admin_new_rsu_data.mock_post_body_yunex_no_scms
-    )
 
-    calls = []
-    mock_pgquery.assert_has_calls(calls)
-    assert actual_msg == expected_msg
-    assert actual_code == expected_code
+    with pytest.raises(BadRequest) as exc_info:
+        admin_new_rsu.add_rsu(admin_new_rsu_data.mock_post_body_yunex_no_scms)
+
+    assert str(exc_info.value) == "400 Bad Request: SCMS ID must be specified"
+    mock_pgquery.assert_has_calls([])
 
 
 @patch("api.src.admin_new_rsu.check_safe_input")
 @patch("api.src.admin_new_rsu.pgquery.write_db")
 def test_add_rsu_generic_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
-    mock_pgquery.side_effect = Exception("Test")
-    expected_msg, expected_code = {"message": "Encountered unknown issue"}, 500
-    actual_msg, actual_code = admin_new_rsu.add_rsu(
-        admin_new_rsu_data.mock_post_body_commsignia
-    )
+    mock_pgquery.side_effect = SQLAlchemyError("Test")
 
-    assert actual_msg == expected_msg
-    assert actual_code == expected_code
+    with pytest.raises(InternalServerError) as exc_info:
+        admin_new_rsu.add_rsu(admin_new_rsu_data.mock_post_body_commsignia)
+
+    assert (
+        str(exc_info.value)
+        == "500 Internal Server Error: Encountered unknown issue executing query"
+    )
 
 
 @patch("api.src.admin_new_rsu.check_safe_input")
@@ -207,11 +187,9 @@ def test_add_rsu_sql_exception(mock_pgquery, mock_check_safe_input):
     mock_check_safe_input.return_value = True
     orig = MagicMock()
     orig.args = ({"D": "SQL issue encountered"},)
-    mock_pgquery.side_effect = sqlalchemy.exc.IntegrityError("", {}, orig)
-    expected_msg, expected_code = {"message": "SQL issue encountered"}, 500
-    actual_msg, actual_code = admin_new_rsu.add_rsu(
-        admin_new_rsu_data.mock_post_body_commsignia
-    )
+    mock_pgquery.side_effect = IntegrityError("", {}, orig)
 
-    assert actual_msg == expected_msg
-    assert actual_code == expected_code
+    with pytest.raises(InternalServerError) as exc_info:
+        admin_new_rsu.add_rsu(admin_new_rsu_data.mock_post_body_commsignia)
+
+    assert str(exc_info.value) == "500 Internal Server Error: SQL issue encountered"

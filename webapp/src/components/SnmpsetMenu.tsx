@@ -59,7 +59,7 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
                 variant="outlined"
                 value={destIp}
                 onChange={(event) => {
-                  var ip = event.target.value as string
+                  const ip = event.target.value as string
                   dispatch(setDestIp(ip))
                 }}
                 slotProps={{
@@ -78,7 +78,7 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
                 id="msg-type-select"
                 value={snmpMsgType}
                 onChange={(event) => {
-                  var msgType = event.target.value as string
+                  const msgType = event.target.value as string
                   dispatch(setMsgType(msgType))
                 }}
               >
@@ -110,9 +110,11 @@ const SnmpsetMenu = (props: SnmpsetMenuProps) => {
           startIcon={<ControlPointOutlined />}
           onClick={() =>
             dispatch(submitSnmpSet(rsuIpList)).then((data: any) => {
-              data.payload.changeSuccess
-                ? toast.success('Forwarding Changes Applied Successfully')
-                : toast.error('Failed to add forwarding: ', data.errorState)
+              if (data.payload.changeSuccess) {
+                toast.success('Forwarding Changes Applied Successfully')
+              } else {
+                toast.error('Failed to add forwarding: ' + data.errorState)
+              }
             })
           }
           sx={{

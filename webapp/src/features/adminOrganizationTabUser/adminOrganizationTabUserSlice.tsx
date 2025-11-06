@@ -89,7 +89,7 @@ export const userDeleteSingle = createAsyncThunk(
     const currentState = getState() as RootState
     const token = selectToken(currentState)
 
-    let promises = []
+    const promises = []
     const userData = (await getUserData(user.email, token)).body as { user_data: AdminOrgUser }
     if (userData?.user_data?.organizations?.length > 1) {
       const userRole = { email: user.email, role: user.role }
@@ -108,7 +108,7 @@ export const userDeleteSingle = createAsyncThunk(
           ' because they must belong to at least one organization.'
       )
     }
-    var res = await Promise.all(promises)
+    const res = await Promise.all(promises)
     dispatch(refresh({ selectedOrg, updateTableData }))
 
     if ((res[0].payload as any).success) {
@@ -143,7 +143,7 @@ export const userDeleteMultiple = createAsyncThunk(
       }
     }
     if (invalidUsers.length === 0) {
-      var res = await dispatch(editOrg(patchJson))
+      const res = await dispatch(editOrg(patchJson))
       dispatch(refresh({ selectedOrg, updateTableData }))
       if ((res.payload as any).success) {
         return { success: true, message: 'User(s) deleted successfully' }
@@ -177,7 +177,7 @@ export const userAddMultiple = createAsyncThunk(
       const userRole = { email: user?.email, role: user?.role }
       patchJson.users_to_add.push(userRole)
     }
-    var res = await dispatch(editOrg(patchJson))
+    const res = await dispatch(editOrg(patchJson))
     dispatch(refresh({ selectedOrg, updateTableData }))
     if ((res.payload as any).success) {
       return { success: true, message: 'User(s) added successfully' }
@@ -202,15 +202,15 @@ export const userBulkEdit = createAsyncThunk(
       users_to_modify: [],
     }
     const rows = Object.values(json)
-    var orgUpdateVal = {}
-    for (var row of rows) {
+    let orgUpdateVal = {}
+    for (const row of rows) {
       if (row.newData.email === selectedUser) {
         orgUpdateVal = { name: selectedOrg, role: row.newData.role }
       }
       const userRole = { email: row.newData.email, role: row.newData.role }
       patchJson.users_to_modify.push(userRole)
     }
-    var res = await dispatch(editOrg(patchJson))
+    const res = await dispatch(editOrg(patchJson))
     dispatch(refresh({ selectedOrg, updateTableData }))
 
     if (Object.keys(orgUpdateVal).length > 0) {
@@ -294,13 +294,13 @@ export const adminOrganizationTabUserSlice = createSlice({
         state.loading = false
         if (action.payload.success) {
           const userData = action.payload.data
-          let availableUserList = []
+          const availableUserList = []
           let counter = 0
           if (userData?.user_data) {
             for (const user of userData.user_data) {
               const userOrgs = user?.organizations
               if (!userOrgs.some((e) => e.name === action.payload.orgName)) {
-                let tempValue = {
+                const tempValue = {
                   id: counter,
                   email: user.email,
                   role: 'user',

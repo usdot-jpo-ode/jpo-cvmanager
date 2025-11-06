@@ -19,7 +19,6 @@ import {
   onFileUploaded,
   onItemDeleted,
   onItemSelected,
-  onTextChanged,
   selectData,
   selectSelectedBsms,
   selectSelectedMapMessage,
@@ -45,12 +44,14 @@ export const DecoderTables = () => {
     }
 
     switch (decodedResponse.type) {
-      case 'MAP':
+      case 'MAP': {
         const mapPayload = decodedResponse.processedMap
         return mapPayload?.properties?.intersectionId
-      case 'SPAT':
+      }
+      case 'SPAT': {
         const spatPayload = decodedResponse.processedSpat
         return spatPayload?.intersectionId
+      }
       default:
         return undefined
     }
@@ -80,7 +81,9 @@ export const DecoderTables = () => {
   }
 
   const handleDownloadClick = (type: DECODER_MESSAGE_TYPE) => {
-    let files = contents.filter((v) => v.type === type && v.decodedResponse != undefined).map((v) => v.decodedResponse)
+    const files = contents
+      .filter((v) => v.type === type && v.decodedResponse != undefined)
+      .map((v) => v.decodedResponse)
     if (files.length > 0) {
       downloadJsonFile(files, `${type}_decoded_${new Date().toISOString()}.json`)
     }

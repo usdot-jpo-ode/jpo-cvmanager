@@ -12,24 +12,9 @@ import { BrowserRouter } from 'react-router-dom'
 // Mock date-fns format to use a specific timezone
 jest.mock('date-fns', () => {
   const originalDateFns = jest.requireActual('date-fns')
-  const { toZonedTime, fromZonedTime, format } = jest.requireActual('date-fns-tz')
-
-  function formatDateToCustomString(date: Date): string {
-    const options: Intl.DateTimeFormatOptions = {
-      month: 'short', // Abbreviated month (e.g., "Mar")
-      day: '2-digit', // Day of the month (e.g., "08")
-      hour: 'numeric', // Hour (e.g., "1", "12")
-      minute: '2-digit', // Minutes (e.g., "05")
-      second: '2-digit', // Seconds (e.g., "30")
-      hour12: true, // Use 12-hour format with AM/PM
-    }
-
-    return new Intl.DateTimeFormat('en-US', options).format(date)
-  }
-
   return {
     ...originalDateFns,
-    format: (date: Date, formatString) => date.toISOString(),
+    format: (date: Date) => date.toISOString(),
   }
 })
 

@@ -1,3 +1,4 @@
+import { LaneDirectionOfTravelNotification } from '../../../../models/jpo-conflictmonitor/notifications/LaneDirectionOfTravelNotification'
 import { getTimestamp } from '../map-component'
 import { getBearingBetweenPoints } from './map-utils'
 import * as turf from '@turf/turf'
@@ -7,7 +8,7 @@ export const parseMapSignalGroups = (mapMessage: ProcessedMap): SignalStateFeatu
 
   mapMessage?.mapFeatureCollection?.features?.forEach((mapFeature: MapFeature) => {
     // Find non-null signal group. connectsTo can have multiple entries, but only 1 may be non-null
-    var signalGroup: number | undefined = undefined
+    let signalGroup: number | undefined = undefined
     mapFeature?.properties?.connectsTo?.forEach((connection: J2735Connection) => {
       if (connection?.signalGroup) signalGroup = connection?.signalGroup
     })
@@ -32,7 +33,7 @@ export const parseMapSignalGroups = (mapMessage: ProcessedMap): SignalStateFeatu
   })
 
   return {
-    type: 'FeatureCollection' as 'FeatureCollection',
+    type: 'FeatureCollection' as const,
     features: features,
   }
 }
@@ -44,7 +45,7 @@ export const createMarkerForNotification = (
 ) => {
   const features: any[] = []
   const markerCollection = {
-    type: 'FeatureCollection' as 'FeatureCollection',
+    type: 'FeatureCollection' as const,
     features: features,
   }
   switch (notification.notificationType) {
@@ -82,7 +83,7 @@ export const createMarkerForNotification = (
     case 'IntersectionReferenceAlignmentNotification':
       console.warn('IntersectionReferenceAlignmentNotification type does not have a graphical display yet')
       break
-    case 'LaneDirectionOfTravelNotification':
+    case 'LaneDirectionOfTravelNotification': {
       const laneDirTravelNotification = notification as LaneDirectionOfTravelNotification
       const laneDirTravelAssessmentGroups = laneDirTravelNotification.assessment.laneDirectionOfTravelAssessmentGroup
       laneDirTravelAssessmentGroups?.forEach((assessmentGroup) => {
@@ -108,10 +109,11 @@ export const createMarkerForNotification = (
         markerCollection.features.push(marker)
       })
       break
+    }
     case 'SignalGroupAlignmentNotification':
       console.warn('SignalGroupAlignmentNotification type does not have a graphical display yet')
       break
-    case 'SignalStateConflictNotification':
+    case 'SignalStateConflictNotification': {
       const sigStateConflictNotification = notification as SignalStateConflictNotification
       const sigStateConflictEvent = sigStateConflictNotification.event
       const sigStateConflictMarker = {
@@ -127,6 +129,7 @@ export const createMarkerForNotification = (
       }
       markerCollection.features.push(sigStateConflictMarker)
       break
+    }
     case 'TimeChangeDetailsNotification':
       console.warn('TimeChangeDetailsNotification type does not have a graphical display yet')
       break
@@ -171,98 +174,100 @@ export const parseSpatSignalGroups = (spats: ProcessedSpat[]): SpatSignalGroups 
   return timedSignalGroups
 }
 
-export const parseBsmToGeojson = (bsmData: OdeBsmData[]): BsmFeatureCollection => {
+export const addBsmTimestamps = (bsmFeatureCollection: BsmFeatureCollection): BsmFeatureCollection => {
   return {
-    type: 'FeatureCollection' as 'FeatureCollection',
-    features: bsmData.map((bsm) => {
+    type: 'FeatureCollection' as const,
+    features: bsmFeatureCollection.features.map((bsm) => {
       return {
-        type: 'Feature',
+        ...bsm,
         properties: {
-          ...bsm.payload.data.coreData,
-          odeReceivedAt: new Date(bsm.metadata.odeReceivedAt as unknown as string).getTime() / 1000,
-        },
-        geometry: {
-          type: 'Point',
-          coordinates: [bsm.payload.data.coreData.position.longitude, bsm.payload.data.coreData.position.latitude],
+          ...bsm.properties,
+          odeReceivedAtEpochSeconds: new Date(bsm.properties.odeReceivedAt).getTime() / 1000,
         },
       }
     }),
   }
 }
+
+export const isValidDate = (d: Date) => {
+  if (d == null) return false
+  return d instanceof Date && !isNaN(d?.getTime())
+}
+
 export const addConnections = (
   connectingLanes: ConnectingLanesFeatureCollection,
   signalGroups: SpatSignalGroup[],
   mapFeatures: MapFeatureCollection
 ): ConnectingLanesFeatureCollectionWithSignalState => {
   //bounding box representing the edges of the intersection
-  var bbox = turf.bbox(connectingLanes)
+  const bbox = turf.bbox(connectingLanes)
 
   //for each connecting lane, fetch its ingress and egress lanes
   connectingLanes = {
     ...connectingLanes,
     features: connectingLanes.features
       ?.map((connectionFeature: ConnectingLanesFeature) => {
-        var ingressLaneId = connectionFeature.properties.ingressLaneId
-        var egressLaneId = connectionFeature.properties.egressLaneId
-        var ingressLane = mapFeatures.features.find((feature) => feature.id === ingressLaneId)
-        var egressLane = mapFeatures.features.find((feature) => feature.id === egressLaneId)
+        const ingressLaneId = connectionFeature.properties.ingressLaneId
+        const egressLaneId = connectionFeature.properties.egressLaneId
+        const ingressLane = mapFeatures.features.find((feature) => feature.id === ingressLaneId)
+        const egressLane = mapFeatures.features.find((feature) => feature.id === egressLaneId)
 
         if (ingressLane && egressLane) {
-          var ingressCoords = ingressLane.geometry.coordinates
-          var egressCoords = egressLane.geometry.coordinates
+          const ingressCoords = ingressLane.geometry.coordinates
+          const egressCoords = egressLane.geometry.coordinates
 
-          var ingressBearing = turf.bearing(ingressCoords[1], ingressCoords[0])
-          var egressBearing = turf.bearing(egressCoords[1], egressCoords[0])
+          const ingressBearing = turf.bearing(ingressCoords[1], ingressCoords[0])
+          const egressBearing = turf.bearing(egressCoords[1], egressCoords[0])
 
           //project the ingress/egress lanes through the intersection to the edge of the bbox
-          var ingressLine = turf.lineString([
+          const ingressLine = turf.lineString([
             ingressCoords[0],
             turf.destination(ingressCoords[0], 0.05, ingressBearing).geometry.coordinates,
           ])
-          var egressLine = turf.lineString([
+          const egressLine = turf.lineString([
             egressCoords[0],
             turf.destination(egressCoords[0], 0.05, egressBearing).geometry.coordinates,
           ])
-          var clippedIngress = turf.bboxClip(ingressLine, bbox)
-          var clippedEgress = turf.bboxClip(egressLine, bbox)
+          const clippedIngress = turf.bboxClip(ingressLine, bbox)
+          const clippedEgress = turf.bboxClip(egressLine, bbox)
 
           //find the intersection point of the projected lanes, if it exists
-          var intersect = turf.lineIntersect(clippedIngress.geometry, clippedEgress.geometry)
+          const intersect = turf.lineIntersect(clippedIngress.geometry, clippedEgress.geometry)
 
           //if the lanes intersect within the intersection, this is a ~90 degree turn and we add 1 more point to round the curve
           if (intersect.features.length > 0) {
-            var intersectPoint = intersect.features[0].geometry.coordinates
+            const intersectPoint = intersect.features[0].geometry.coordinates
             //the intersection would overshoot the curve, so curveMidpoint is a weighted average the intersection and connectingLanes edges
-            var curveMidpoint = turf.centroid(
+            const curveMidpoint = turf.centroid(
               turf.points([ingressCoords[0], egressCoords[0], intersectPoint, intersectPoint, intersectPoint])
             )
 
-            var connectingLaneLine = turf.lineString([
+            const connectingLaneLine = turf.lineString([
               ingressCoords[0],
               curveMidpoint.geometry.coordinates,
               egressCoords[0],
             ])
-            var curve = turf.bezierSpline(connectingLaneLine)
+            const curve = turf.bezierSpline(connectingLaneLine)
             connectionFeature = { ...connectionFeature, geometry: curve.geometry }
           }
 
           //If the ingress and egress lanes are going in generally opposite directions and didn't intersect, use the U-turn calculations
           else if (Math.abs(ingressBearing - egressBearing) < 45) {
             //this formula was found experimentally to give a round curve and allow parallel curving lanes to not intersect
-            var leadupLength = Math.min(turf.distance(ingressCoords[0], egressCoords[0]) * -7 + 0.045, -0.02)
+            const leadupLength = Math.min(turf.distance(ingressCoords[0], egressCoords[0]) * -7 + 0.045, -0.02)
 
-            var normalizedIngressPoint = turf.destination(ingressCoords[0], leadupLength, ingressBearing)
-            var normalizedEgressPoint = turf.destination(egressCoords[0], leadupLength, egressBearing)
-            var connectingLaneLine = turf.lineString([
+            const normalizedIngressPoint = turf.destination(ingressCoords[0], leadupLength, ingressBearing)
+            const normalizedEgressPoint = turf.destination(egressCoords[0], leadupLength, egressBearing)
+            const connectingLaneLine = turf.lineString([
               normalizedIngressPoint.geometry.coordinates,
               ingressCoords[0],
               egressCoords[0],
               normalizedEgressPoint.geometry.coordinates,
             ])
 
-            var rawCurve = turf.bezierSpline(connectingLaneLine)
+            const rawCurve = turf.bezierSpline(connectingLaneLine)
             //slice the curve back to remove the redundant ends
-            var curve = turf.lineSlice(ingressCoords[0], egressCoords[0], rawCurve)
+            const curve = turf.lineSlice(ingressCoords[0], egressCoords[0], rawCurve)
             connectionFeature = { ...connectionFeature, geometry: curve.geometry }
           }
           //anything else is mostly straight and doesn't require a bezier curve

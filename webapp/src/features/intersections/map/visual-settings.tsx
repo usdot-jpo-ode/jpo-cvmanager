@@ -36,7 +36,11 @@ function VisualSettings(props: VisualSettingsProps) {
   const theme = useTheme()
 
   const toggleOpen = () => {
-    props.openPanel === 'visual-settings' ? props.setOpenPanel('') : props.setOpenPanel('visual-settings')
+    if (props.openPanel === 'visual-settings') {
+      props.setOpenPanel('')
+    } else {
+      props.setOpenPanel('visual-settings')
+    }
   }
   const [bsmTrailLengthLocal, setBsmTrailLengthLocal] = useState<string | undefined>(bsmTrailLength.toString())
 

@@ -1,32 +1,28 @@
+from typing import Any
+from flask import request, abort
+from flask_restful import Resource
 from marshmallow import Schema, fields
 import common.pgquery as pgquery
 import logging
-import common.rsufwdsnmpwalk as rsufwdsnmpwalk
-import common.rsufwdsnmpset as rsufwdsnmpset
-import common.update_rsu_snmp_pg as update_rsu_snmp_pg
 import rsu_upgrade
+from werkzeug.exceptions import BadRequest
+from common.auth_tools import (
+    ORG_ROLE_LITERAL,
+    EnvironWithOrg,
+    PermissionResult,
+    require_permission,
+)
 import ssh_commands
+import rsu_snmpset
 import os
 
 # Dict of functions
 command_data = {
-    "rsufwdsnmpwalk": {
-        "function": rsufwdsnmpwalk.get,
-        "roles": ["user", "operator", "admin"],
-        "ssh_required": False,
-        "snmp_required": True,
-    },
     "rsufwdsnmpset": {
-        "function": rsufwdsnmpset.post,
         "roles": ["operator", "admin"],
-        "ssh_required": True,
-        "snmp_required": True,
     },
     "rsufwdsnmpset-del": {
-        "function": rsufwdsnmpset.delete,
         "roles": ["operator", "admin"],
-        "ssh_required": False,
-        "snmp_required": True,
     },
     "reboot": {
         "function": ssh_commands.reboot,
@@ -89,19 +85,19 @@ def fetch_rsu_info(rsu_ip, organization):
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
-        "SELECT rd.rsu_id AS rsu_id, man.name AS manufacturer_name, rcred.username AS ssh_username, rcred.password AS ssh_password, snmp.username AS snmp_username, snmp.password AS snmp_password, snmp.encrypt_password as snmp_encrypt_pw, sver.protocol_code AS snmp_version "
+        "SELECT rd.rsu_id AS rsu_id, man.name AS manufacturer_name, rsu_creds.username AS ssh_username, rsu_creds.password AS ssh_password, snmp.username AS snmp_username, snmp.password AS snmp_password, snmp.encrypt_password as snmp_encrypt_pw, snmp_ver.protocol_code AS snmp_version "
         "FROM public.rsus AS rd "
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
         "JOIN public.rsu_models AS rm ON rm.rsu_model_id = rd.model "
         "JOIN public.manufacturers AS man ON man.manufacturer_id = rm.manufacturer "
-        "LEFT JOIN public.rsu_credentials AS rcred ON rcred.credential_id = rd.credential_id "
+        "LEFT JOIN public.rsu_credentials AS rsu_creds ON rsu_creds.credential_id = rd.credential_id "
         "LEFT JOIN public.snmp_credentials AS snmp ON snmp.snmp_credential_id = rd.snmp_credential_id "
-        "LEFT JOIN public.snmp_protocols AS sver ON sver.snmp_protocol_id = rd.snmp_protocol_id "
-        f"WHERE ron_v.name = '{organization}' AND rd.ipv4_address = '{rsu_ip}'"
+        "LEFT JOIN public.snmp_protocols AS snmp_ver ON snmp_ver.snmp_protocol_id = rd.snmp_protocol_id "
+        "WHERE ron_v.name = :org_name AND rd.ipv4_address = :rsu_ip"
         ") as row"
     )
-
-    data = pgquery.query_db(query)
+    params = {"org_name": organization, "rsu_ip": rsu_ip}
+    data = pgquery.query_db(query, params=params)
     logging.info("Parsing results...")
     if len(data) > 0:
         # Grab the first result, it should be the only result
@@ -122,95 +118,7 @@ def fetch_rsu_info(rsu_ip, organization):
     return None
 
 
-# Returns the appropriate snmp_walk index given add/del command
-def fetch_index(command, rsu_ip, rsu_info, message_type=None, target_ip=None):
-    index = 0
-    data, code = execute_command("rsufwdsnmpwalk", rsu_ip, {}, rsu_info)
-    if code == 200:
-        walkResult = {}
-        if rsu_info["snmp_version"] == "1218":
-            if message_type.upper() == "BSM" or message_type.upper() == "SRM":
-                walkResult = data["RsuFwdSnmpwalk"]["rsuReceivedMsgTable"]
-            else:
-                walkResult = data["RsuFwdSnmpwalk"]["rsuXmitMsgFwdingTable"]
-        elif rsu_info["snmp_version"] == "41":
-            walkResult = data["RsuFwdSnmpwalk"]
-        else:
-            # SNMP version not supported
-            logging.error("Requested SNMP standard version is not supported")
-            return -1
-
-        # finds the next available index
-        if command == "add":
-            for entry in walkResult:
-                if int(entry) > index:
-                    index = int(entry)
-            index += 1
-
-        # grabs the highest index matching the message type and target ip
-        if command == "del" and message_type != None and target_ip != None:
-            for entry in walkResult:
-                if (
-                    int(entry) > index
-                    and walkResult[entry]["Message Type"].upper()
-                    == message_type.upper()
-                    and walkResult[entry]["IP"] == target_ip
-                ):
-                    index = int(entry)
-
-    return index if index != 0 else 1
-
-
-def execute_rsufwdsnmpset(command, organization, rsu_list, args):
-    return_dict = {}
-    if command == "rsufwdsnmpset-del":
-        dest_ip = args["dest_ip"]
-        del args["dest_ip"]
-
-    rsu_info_list = []
-    for rsu in rsu_list:
-        rsu_info = fetch_rsu_info(rsu, organization)
-        rsu_info_list.append(
-            {
-                "rsu_id": rsu_info["rsu_id"],
-                "ipv4_address": rsu,
-                "snmp_username": rsu_info["snmp_username"],
-                "snmp_password": rsu_info["snmp_password"],
-                "snmp_encrypt_pw": rsu_info["snmp_encrypt_pw"],
-                "snmp_version": rsu_info["snmp_version"],
-            }
-        )
-
-        if rsu_info is None:
-            return_dict[rsu] = {
-                "code": 400,
-                "data": f"Provided RSU IP does not have complete RSU data for organization: {organization}::{rsu}",
-            }
-        else:
-            # Fetch the proper index based on the provided arguments
-            if command == "rsufwdsnmpset-del":
-                index = fetch_index("del", rsu, rsu_info, args["msg_type"], dest_ip)
-            else:
-                index = fetch_index("add", rsu, rsu_info, args["msg_type"])
-
-            if index != -1:
-                args["rsu_index"] = index
-                data, code = execute_command(command, rsu, args, rsu_info)
-                return_dict[rsu] = {"code": code, "data": data}
-            else:
-                return_dict[rsu] = {
-                    "code": 400,
-                    "data": f"Invalid index for RSU: {rsu}",
-                }
-
-    # Regardless of what occurred, update PostgreSQL with latest SNMP configs
-    configs = update_rsu_snmp_pg.get_snmp_configs(rsu_info_list)
-    update_rsu_snmp_pg.update_postgresql(configs, subset=True)
-
-    return return_dict
-
-
-def execute_upgradersu(organization, rsu_list):
+def execute_upgrade_rsu(organization, rsu_list):
     return_dict = {}
     for rsu in rsu_list:
         if fetch_rsu_info(rsu, organization) is None:
@@ -236,10 +144,13 @@ def perform_command(command, organization, role, rsu_list, args):
 
     # Handle functions supporting multiple RSUs
     if command == "rsufwdsnmpset" or command == "rsufwdsnmpset-del":
-        return execute_rsufwdsnmpset(command, organization, rsu_list, args), 200
+        return (
+            rsu_snmpset.execute_rsufwdsnmpset(command, organization, rsu_list, args),
+            200,
+        )
 
     if command == "upgrade-rsu":
-        return execute_upgradersu(organization, rsu_list), 200
+        return execute_upgrade_rsu(organization, rsu_list), 200
 
     # Handle remaining functions with only one RSU
     rsu_ip = rsu_list[0]
@@ -257,11 +168,6 @@ def perform_command(command, organization, role, rsu_list, args):
 
 
 # REST endpoint resource class and schema
-from flask import request, abort
-from flask_restful import Resource
-from marshmallow import Schema, fields
-
-
 class RsuCommandRequestSchema(Schema):
     command = fields.Str(required=True)
     rsu_ip = fields.List(fields.IPv4(required=True))
@@ -282,26 +188,35 @@ class RsuCommandRequest(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
-    def get(self):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.OPERATOR,
+    )
+    def get(self, permission_result: PermissionResult):
         logging.debug("RsuCommandRequest GET requested")
-        return self.universal()
+        return self.universal(permission_result.user)
 
-    def post(self):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.OPERATOR,
+    )
+    def post(self, permission_result: PermissionResult):
         logging.debug("RsuCommandRequest POST requested")
-        return self.universal()
+        return self.universal(permission_result.user)
 
-    def universal(self):
+    def universal(self, user: EnvironWithOrg):
         schema = RsuCommandRequestSchema()
-        errors = schema.validate(request.json)
+        if request.json is None:
+            raise BadRequest("No JSON body found")
+        body: dict[str, Any] = request.json
+        errors = schema.validate(body)
         if errors:
             logging.error(str(errors))
             abort(400, str(errors))
 
         data, code = perform_command(
-            request.json["command"],
-            request.environ["organization"],
-            request.environ["role"],
-            request.json["rsu_ip"],
-            request.json["args"],
+            body["command"],
+            user.organization,
+            user.role,
+            body["rsu_ip"],
+            body["args"],
         )
         return (data, code, self.headers)

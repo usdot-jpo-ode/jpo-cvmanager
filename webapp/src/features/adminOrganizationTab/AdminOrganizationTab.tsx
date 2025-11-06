@@ -56,7 +56,7 @@ const AdminOrganizationTab = () => {
   const notifySuccess = (message: string) => toast.success(message)
   const notifyError = (message: string) => toast.error(message)
   const defaultOrgName = useSelector(selectOrganizationName)
-  var defaultOrgData = orgData.find((org) => org.name === defaultOrgName)
+  let defaultOrgData = orgData.find((org) => org.name === defaultOrgName)
 
   useEffect(() => {
     dispatch(getOrgData({ orgName: 'all', all: true, specifiedOrg: undefined })).then(() => {
@@ -101,7 +101,9 @@ const AdminOrganizationTab = () => {
   }
 
   useEffect(() => {
-    getSelectedOrgData()
+    if (selectedOrgName != undefined) {
+      getSelectedOrgData()
+    }
   }, [selectedOrgName, dispatch])
 
   useEffect(() => {
@@ -114,9 +116,11 @@ const AdminOrganizationTab = () => {
 
   const handleOrgDelete = (orgName) => {
     dispatch(deleteOrg(orgName)).then((data: any) => {
-      data.payload.success
-        ? notifySuccess(data.payload.message)
-        : notifyError('Failed to delete organization due to error: ' + data.payload.message)
+      if (data.payload.success) {
+        notifySuccess(data.payload.message)
+      } else {
+        notifyError('Failed to delete organization due to error: ' + data.payload.message)
+      }
     })
     dispatch(setOrganizationList({ value: { name: orgName }, type: 'delete' }))
     dispatch(changeOrganization(orgData[0].name))

@@ -1,4 +1,4 @@
-/// <reference path="Event.d.ts" />
+import './Event.d.ts'
 type StopLinePassageEvent = MessageMonitor.Event & {
   source: string
   timestamp: number

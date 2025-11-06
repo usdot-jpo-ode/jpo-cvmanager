@@ -1,17 +1,28 @@
+from typing import Any
+from flask import request, abort
+from flask_restful import Resource
+from marshmallow import Schema, fields, validate
 import common.pgquery as pgquery
 import logging
 import os
+from werkzeug.exceptions import BadRequest
+
+from common.auth_tools import (
+    ORG_ROLE_LITERAL,
+    PermissionResult,
+    generate_sql_placeholders_for_list,
+    require_permission,
+)
 
 
 def query_org_rsus(orgName):
     query = (
         "SELECT ipv4_address from public.rsus as rd "
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
-        f"WHERE ron_v.name = '{orgName}'"
+        "WHERE ron_v.name = :org_name"
     )
-
-    logging.debug(query)
-    data = pgquery.query_db(query)
+    params = {"org_name": orgName}
+    data = pgquery.query_db(query, params=params)
 
     result = set()
     for row in data:
@@ -19,7 +30,7 @@ def query_org_rsus(orgName):
         device_ip = str(ip).replace("'", "")
         result.add(device_ip)
 
-    logging.info(f"Successfully Query for query_org_rsus")
+    logging.info("Successfully Query for query_org_rsus")
 
     return result
 
@@ -32,30 +43,34 @@ def query_rsu_devices(ipList, pointList, vendor=None):
         geogString += long + " " + lat + ","
 
     geogString = geogString[:-1] + "))"
-    ipList = ", ".join(ipList)
+
+    # Use proper parameter binding for IP list with PostgreSQL array
+    ip_list_placeholder, params = generate_sql_placeholders_for_list(ipList)
+    params["polygon"] = geogString
+
     query = (
         "SELECT to_jsonb(row) "
         "FROM ("
         "SELECT ipv4_address as ip, "
-        f"ST_X(geography::geometry) AS long, "
-        f"ST_Y(geography::geometry) AS lat "
-        f"FROM rsus "
-        f"WHERE ipv4_address = ANY('{{{ipList}}}'::inet[]) "
+        "ST_X(geography::geometry) AS long, "
+        "ST_Y(geography::geometry) AS lat "
+        "FROM rsus "
+        f"WHERE ipv4_address IN ({ip_list_placeholder}) "
     )
     if vendor is not None:
         query += (
-            f" AND ipv4_address IN (SELECT rd.ipv4_address "
+            "AND ipv4_address IN (SELECT rd.ipv4_address "
             "FROM public.rsus as rd "
             "JOIN public.rsu_models as rm ON rm.rsu_model_id = rd.model "
             "JOIN public.manufacturers as man on man.manufacturer_id = rm.manufacturer "
-            f"WHERE man.name = '{vendor}') "
+            "WHERE man.name = :vendor) "
         )
-    query +=  f"AND ST_Contains(ST_SetSRID(ST_GeomFromText('{geogString}'), 4326), rsus.geography::geometry)) as row"
+        params["vendor"] = vendor
+    query += "AND ST_Contains(ST_SetSRID(ST_GeomFromText(:polygon), 4326), rsus.geography::geometry)) as row"
 
-    logging.debug(query)
-    logging.info(f"Running query_rsu_devices")
+    logging.info("Running query_rsu_devices")
 
-    query_job = pgquery.query_db(query)
+    query_job = pgquery.query_db(query, params=params)
 
     result = []
     count = 0
@@ -67,15 +82,10 @@ def query_rsu_devices(ipList, pointList, vendor=None):
     logging.info(f"Query successful. Record returned: {count}")
     logging.info(result)
 
-    return result, 200
+    return result
 
 
 # REST endpoint resource class and schema
-from flask import request, abort
-from flask_restful import Resource
-from marshmallow import Schema, fields, validate
-
-
 class RsuGeoQuerySchema(Schema):
     geometry = fields.List(
         fields.List(fields.Float, required=True, validate=validate.Length(min=2)),
@@ -102,7 +112,10 @@ class RsuGeoQuery(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
-    def post(self):
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.USER,
+    )
+    def post(self, permission_result: PermissionResult):
         logging.debug("RsuGeoQuery POST requested")
 
         schema = RsuGeoQuerySchema()
@@ -111,18 +124,19 @@ class RsuGeoQuery(Resource):
             logging.debug(errors)
             abort(400, str(errors))
 
+        if request.json is None:
+            raise BadRequest("No JSON body found")
+
         # Get arguments from request
         try:
-            data = request.json
-            logging.debug(data)
-            organization = request.environ["organization"]
-            pointList = data["geometry"]
-            vendor = data["vendor"] if data["vendor"] != "Select Vendor" else None
-        except:
+            body: dict[str, Any] = request.json
+            organization = permission_result.user.organization
+            pointList = body["geometry"]
+            vendor = body["vendor"] if body["vendor"] != "Select Vendor" else None
+        except KeyError:
             logging.debug("failed to parse request")
             return ('Body format: {"geometry": coordinate list}', 400, self.headers)
 
         ipList = query_org_rsus(organization)
         if ipList:
-            data, code = query_rsu_devices(ipList, pointList, vendor)
-            return (data, code, self.headers)
+            return (query_rsu_devices(ipList, pointList, vendor), 200, self.headers)

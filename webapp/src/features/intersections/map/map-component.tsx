@@ -3,7 +3,7 @@ import Map, { Source, Layer, MapRef } from 'react-map-gl'
 
 import { Container, Col } from 'reactstrap'
 
-import { Paper, Box, Fab, useTheme, Button } from '@mui/material'
+import { Paper, Box, Fab, useTheme } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 
 import ControlPanel from './control-panel'
@@ -22,6 +22,7 @@ import {
 } from './map-layer-style-slice'
 import {
   MAP_PROPS,
+  addInitialDataAbortPromise,
   cleanUpLiveStreaming,
   clearHoveredFeature,
   clearSelectedFeature,
@@ -34,6 +35,7 @@ import {
   onMapMouseMove,
   pullInitialData,
   resetInitialDataAbortControllers,
+  resetMapView,
   selectAllInteractiveLayerIds,
   selectBsmData,
   selectConnectingLanes,
@@ -57,10 +59,11 @@ import {
   selectShowPopupOnHover,
   selectSigGroupLabelsVisible,
   selectSignalStateData,
-  selectSliderValue,
+  selectSliderValueDeciseconds,
   selectSpatSignalGroups,
   selectTimeWindowSeconds,
   selectViewState,
+  setDecoderModeEnabled,
   setLoadInitialDataTimeoutId,
   setMapProps,
   setMapRef,
@@ -83,6 +86,11 @@ import { Remove } from '@mui/icons-material'
 import VisualSettings from './visual-settings'
 import { useDispatch, useSelector } from 'react-redux'
 
+/**
+ *  Converts a date string or timestamp to a timestamp in milliseconds since epoch.
+ * @param dt - Date or timestamp to be converted - can be a string, seconds since epoch, or milliseconds since epoch
+ * @returns timestamp in milliseconds since epoch
+ */
 export const getTimestamp = (dt: any): number => {
   try {
     const dtFromString = Date.parse(dt as any as string)
@@ -99,10 +107,6 @@ export const getTimestamp = (dt: any): number => {
     console.error('Failed to parse timestamp from value: ' + dt, e)
     return 0
   }
-}
-
-type timestamp = {
-  timestamp: number
 }
 
 const IntersectionMap = (props: MAP_PROPS) => {
@@ -138,7 +142,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
   const filteredSurroundingNotifications = useSelector(selectFilteredSurroundingNotifications)
   const viewState = useSelector(selectViewState)
   const timeWindowSeconds = useSelector(selectTimeWindowSeconds)
-  const sliderValue = useSelector(selectSliderValue)
+  const sliderValueDeciseconds = useSelector(selectSliderValueDeciseconds)
   const renderTimeInterval = useSelector(selectRenderTimeInterval)
   const hoveredFeature = useSelector(selectHoveredFeature)
   const selectedFeature = useSelector(selectSelectedFeature)
@@ -167,7 +171,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
     dispatch(setMapProps(props))
   }, [props])
 
-  // Increment sliderValue by 1 every second when playbackModeActive is true
+  // Increment selectSliderValueDeciseconds by 1 every second when playbackModeActive is true
   useEffect(() => {
     if (playbackModeActive) {
       const playbackPeriod = 100 //ms
@@ -191,7 +195,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
         })
       )
       if (liveDataActive && authToken && props.intersectionId) {
-        cleanUpLiveStreaming()
+        dispatch(cleanUpLiveStreaming())
         dispatch(
           initializeLiveStreaming({
             token: authToken,
@@ -219,7 +223,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
     if (loadInitialDataTimeoutId) {
       clearTimeout(loadInitialDataTimeoutId)
     }
-    const timeoutId = setTimeout(() => dispatch(pullInitialData()), 500)
+    const timeoutId = setTimeout(() => dispatch(addInitialDataAbortPromise(dispatch(pullInitialData()))), 500)
     dispatch(setLoadInitialDataTimeoutId(timeoutId))
   }, [queryParams])
 
@@ -228,8 +232,10 @@ const IntersectionMap = (props: MAP_PROPS) => {
   }, [bsmData, mapSignalGroups, renderTimeInterval, spatSignalGroups])
 
   useEffect(() => {
-    dispatch(updateRenderTimeInterval())
-  }, [sliderValue, queryParams, timeWindowSeconds])
+    if (!liveDataActive) {
+      dispatch(updateRenderTimeInterval())
+    }
+  }, [sliderValueDeciseconds, queryParams, timeWindowSeconds])
 
   useEffect(() => {
     if (liveDataActive) {
@@ -373,7 +379,7 @@ const IntersectionMap = (props: MAP_PROPS) => {
           cursor={cursor}
           onMouseMove={(e) => dispatch(onMapMouseMove({ features: e.features, lngLat: e.lngLat }))}
           onMouseEnter={(e) => dispatch(onMapMouseEnter({ features: e.features, lngLat: e.lngLat }))}
-          onMouseLeave={(e) => dispatch(onMapMouseLeave())}
+          onMouseLeave={() => dispatch(onMapMouseLeave())}
           onLoad={(e: mapboxgl.MapboxEvent<undefined>) => {
             const map = e.target
             if (!map) return

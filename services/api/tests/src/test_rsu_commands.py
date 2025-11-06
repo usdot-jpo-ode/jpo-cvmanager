@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 import api.src.rsu_commands as rsu_commands
 
 # shared arguments
@@ -16,9 +16,8 @@ rsu_info = {
 }
 organization = "test"
 
-### RSU_COMMANDS TESTS ###
 
-
+# ## RSU_COMMANDS TESTS ###
 def test_rsu_commands_snmpfilter_option_present():
     expected_value = {
         "roles": ["operator", "admin"],
@@ -35,56 +34,6 @@ def test_rsu_commands_snmpfilter_option_present():
         rsu_commands.command_data["snmpfilter"]["snmp_required"]
         == expected_value["snmp_required"]
     )
-
-
-@patch("api.src.rsu_commands.rsufwdsnmpwalk.get")
-def test_execute_command_rsufwdsnmpwalk(mock_rsufwdsnmpwalk_get):
-    # mock
-    mock_rsufwdsnmpwalk_get.return_value = "mocked rsufwdsnmpwalk.get"
-    rsu_commands.command_data["rsufwdsnmpwalk"]["function"] = mock_rsufwdsnmpwalk_get
-
-    # call
-    command = "rsufwdsnmpwalk"
-    result = rsu_commands.execute_command(command, rsu_ip, args, rsu_info)
-
-    # check
-    mock_rsufwdsnmpwalk_get.assert_called_once()
-    expected_result = "mocked rsufwdsnmpwalk.get"
-    assert result == expected_result
-
-
-@patch("api.src.rsu_commands.rsufwdsnmpset.post")
-def test_execute_command_rsufwdsnmpset(mock_rsufwdsnmpset_post):
-    # mock
-    mock_rsufwdsnmpset_post.return_value = "mocked rsufwdsnmpset.post"
-    rsu_commands.command_data["rsufwdsnmpset"]["function"] = mock_rsufwdsnmpset_post
-
-    # call
-    command = "rsufwdsnmpset"
-    result = rsu_commands.execute_command(command, rsu_ip, args, rsu_info)
-
-    # check
-    mock_rsufwdsnmpset_post.assert_called_once()
-    expected_result = "mocked rsufwdsnmpset.post"
-    assert result == expected_result
-
-
-@patch("api.src.rsu_commands.rsufwdsnmpset.delete")
-def test_execute_command_rsufwdsnmpset_del(mock_rsufwdsnmpset_delete):
-    # mock
-    mock_rsufwdsnmpset_delete.return_value = "mocked rsufwdsnmpset.delete"
-    rsu_commands.command_data["rsufwdsnmpset-del"][
-        "function"
-    ] = mock_rsufwdsnmpset_delete
-
-    # call
-    command = "rsufwdsnmpset-del"
-    result = rsu_commands.execute_command(command, rsu_ip, args, rsu_info)
-
-    # check
-    mock_rsufwdsnmpset_delete.assert_called_once()
-    expected_result = "mocked rsufwdsnmpset.delete"
-    assert result == expected_result
 
 
 @patch("api.src.rsu_commands.ssh_commands.reboot")
@@ -120,8 +69,6 @@ def test_execute_command_snmpfilter(mock_ssh_commands_snmpfilter):
 
 
 # test queries for RSU manufacturer, SSH credentials, and SNMP credentials
-
-
 @patch("api.src.rsu_commands.pgquery.query_db")
 def test_fetch_rsu_info(mock_query_db):
     # mock

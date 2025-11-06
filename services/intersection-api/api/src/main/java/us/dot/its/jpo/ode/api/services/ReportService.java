@@ -19,18 +19,18 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.MapMini
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.minimum_data.SpatMinimumDataEvent;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
-import us.dot.its.jpo.ode.api.accessors.assessments.LaneDirectionOfTravelAssessment.LaneDirectionOfTravelAssessmentRepository;
-import us.dot.its.jpo.ode.api.accessors.events.ConnectionOfTravelEvent.ConnectionOfTravelEventRepository;
-import us.dot.its.jpo.ode.api.accessors.events.IntersectionReferenceAlignmentEvent.IntersectionReferenceAlignmentEventRepository;
-import us.dot.its.jpo.ode.api.accessors.events.LaneDirectionOfTravelEvent.LaneDirectionOfTravelEventRepository;
-import us.dot.its.jpo.ode.api.accessors.events.MapBroadcastRateEvents.MapBroadcastRateEventRepository;
-import us.dot.its.jpo.ode.api.accessors.events.MapMinimumDataEvent.MapMinimumDataEventRepository;
-import us.dot.its.jpo.ode.api.accessors.events.SignalStateConflictEvent.SignalStateConflictEventRepository;
-import us.dot.its.jpo.ode.api.accessors.events.SpatBroadcastRateEvent.SpatBroadcastRateEventRepository;
-import us.dot.its.jpo.ode.api.accessors.events.SpatMinimumDataEvent.SpatMinimumDataEventRepository;
-import us.dot.its.jpo.ode.api.accessors.events.StopLinePassageEvent.StopLinePassageEventRepository;
-import us.dot.its.jpo.ode.api.accessors.events.StopLineStopEvent.StopLineStopEventRepository;
-import us.dot.its.jpo.ode.api.accessors.events.TimeChangeDetailsEvent.TimeChangeDetailsEventRepository;
+import us.dot.its.jpo.ode.api.accessors.assessments.lane_direction_of_travel_assessment.LaneDirectionOfTravelAssessmentRepository;
+import us.dot.its.jpo.ode.api.accessors.events.connection_of_travel_event.ConnectionOfTravelEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.intersection_reference_alignment_event.IntersectionReferenceAlignmentEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.lane_direction_of_travel_event.LaneDirectionOfTravelEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.map_broadcast_rate_event.MapBroadcastRateEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.map_minimum_data_event.MapMinimumDataEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.signal_state_conflict_event.SignalStateConflictEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.spat_broadcast_rate_event.SpatBroadcastRateEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.spat_minimum_data_event.SpatMinimumDataEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.stop_line_passage_event.StopLinePassageEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.stop_line_stop_event.StopLineStopEventRepository;
+import us.dot.its.jpo.ode.api.accessors.events.time_change_details_event.TimeChangeDetailsEventRepository;
 import us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository;
 
 import us.dot.its.jpo.ode.api.accessors.reports.ReportRepository;
@@ -93,7 +93,6 @@ public class ReportService {
                 this.mapBroadcastRateEventRepo = mapBroadcastRateEventRepo;
                 this.reportRepo = reportRepo;
                 this.maximumResponseSize = maximumResponseSize;
-
         }
 
         private List<String> cleanMissingElements(List<String> elements, boolean isMap) {

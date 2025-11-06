@@ -1,6 +1,8 @@
 package us.dot.its.jpo.ode.api.services;
 
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import java.io.IOException;
@@ -75,11 +77,15 @@ public class EmailService {
     }
 
     public void sendEmailViaSpringMail(String to, String subject, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
-        mailSender.send(message);
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(to);
+            message.setSubject(subject);
+            message.setText(text);
+            mailSender.send(message);
+        } catch (MailException e) {
+            log.error("Exception sending spring mail email", e);
+        }
     }
 
     public void sendSimpleMessage(String to, String subject, String text) {

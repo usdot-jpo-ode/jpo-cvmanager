@@ -6,7 +6,6 @@ import { ThemeProvider } from '@mui/material'
 import { testTheme } from '../../styles'
 import { setupStore } from '../../store'
 import { replaceChaoticIds } from '../../utils/test-utils'
-import ReactDOM from 'react-dom'
 
 it('should take a snapshot', () => {
   const { container } = render(

@@ -6,14 +6,16 @@ import { RootState } from '../store'
 const authDataLocalStorage = LocalStorageManager.getAuthData()
 const authLoginData = UserManager.isLoginActive(authDataLocalStorage) ? authDataLocalStorage : null
 
-export const keycloakLogin = createAsyncThunk('user/login', async (token: string, { dispatch, rejectWithValue }) => {
+export const keycloakLogin = createAsyncThunk('user/login', async (token: string, { rejectWithValue }) => {
   try {
     if (token) {
       const response = await AuthApi.logIn(token)
       switch (response.status) {
         case 200:
-          let authLoginData = {
-            data: JSON.parse(response.json.toString()),
+          const authLoginData = {
+            data: response.json
+              ? { ...response.json, name: `${response.json.first_name} ${response.json.last_name}` }
+              : null,
             token: token,
             expires_at: Date.now() + 590000,
           }
@@ -59,7 +61,7 @@ export const userSlice = createSlice({
       SecureStorageManager.removeUserRole()
     },
     changeOrganization: (state, action) => {
-      var organization =
+      const organization =
         UserManager.getOrganization(state.value.authLoginData, action.payload) ?? state.value.organization
       state.value.organization = organization
       SecureStorageManager.setUserRole({ name: organization.name, role: organization.role })
@@ -71,18 +73,20 @@ export const userSlice = createSlice({
           action.payload.value,
         ]
       } else if (action.payload.type === 'delete') {
-        var index = state.value.authLoginData.data.organizations.findIndex(
+        const index = state.value.authLoginData.data.organizations.findIndex(
           (org) => org.name === action.payload.value.name
         )
         if (index > -1) {
-          var updatedOrgList = state.value.authLoginData.data.organizations
+          const updatedOrgList = state.value.authLoginData.data.organizations
           updatedOrgList.splice(index, 1)
           state.value.authLoginData.data.organizations = [...updatedOrgList]
         }
       } else if (action.payload.type === 'update') {
-        var index = state.value.authLoginData.data.organizations.findIndex((org) => org.name === action.payload.orgName)
+        const index = state.value.authLoginData.data.organizations.findIndex(
+          (org) => org.name === action.payload.orgName
+        )
         if (index > -1) {
-          var updatedOrgList = state.value.authLoginData.data.organizations
+          const updatedOrgList = state.value.authLoginData.data.organizations
           updatedOrgList[index] = action.payload.value
           state.value.authLoginData.data.organizations = [...updatedOrgList]
         }
@@ -114,7 +118,7 @@ export const userSlice = createSlice({
         state.value.authLoginData = action.payload
         state.value.organization = action.payload?.data?.organizations?.[0]
         LocalStorageManager.setAuthData(action.payload)
-        SecureStorageManager.setUserRole(action.payload['data']['organizations'][0])
+        SecureStorageManager.setUserRole(action.payload?.data?.organizations?.[0])
       })
       .addCase(keycloakLogin.rejected, (state, action: PayloadAction<unknown>) => {
         state.loading = false
@@ -143,8 +147,8 @@ export const selectRouteNotFound = (state: RootState) => state.user.value.routeN
 export const selectLoading = (state: RootState) => state.user.loading
 export const selectLoadingGlobal = (state: RootState) => {
   let loading = false
-  for (const [key, value] of Object.entries(state)) {
-    const valueObj = value as Object
+  for (const [, value] of Object.entries(state)) {
+    const valueObj = value as object
     if ('loading' in valueObj) {
       const valLoading = valueObj as { loading: boolean }
       if (valLoading.loading) {

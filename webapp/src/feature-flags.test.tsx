@@ -22,7 +22,7 @@ jest.mock('./EnvironmentVars', () => ({
   },
 }))
 
-const EnvironmentVars = require('./EnvironmentVars').default
+import EnvironmentVars from './EnvironmentVars'
 
 describe('Feature Flags', () => {
   beforeEach(() => {

@@ -5,7 +5,6 @@ import apiHelper from '../../apis/api-helper'
 import { getRsuInfoOnly } from '../../generalSlices/rsuSlice'
 import { RootState } from '../../store'
 import { AdminEditRsuFormType } from '../adminEditRsu/AdminEditRsu'
-import { AdminRsu } from '../../models/Rsu'
 
 const initialState = {
   tableData: [] as AdminEditRsuFormType[],
@@ -61,7 +60,7 @@ export const deleteRsu = createAsyncThunk(
       tag: 'rsu',
     })
 
-    var return_val = {}
+    let return_val = {}
 
     switch (data.status) {
       case 200:
@@ -83,11 +82,11 @@ export const deleteRsu = createAsyncThunk(
 export const deleteMultipleRsus = createAsyncThunk(
   'adminRsuTabSlice/deleteMultipleRsus',
   async (rows: AdminEditRsuFormType[], { dispatch }) => {
-    let promises = []
+    const promises = []
     for (const row of rows) {
       promises.push(dispatch(deleteRsu({ rsu_ip: row.ip, shouldUpdateTableData: false })))
     }
-    var res = await Promise.all(promises)
+    const res = await Promise.all(promises)
     dispatch(updateTableData())
     for (const r of res) {
       if (!r.payload.success) {
@@ -106,7 +105,7 @@ export const adminRsuTabSlice = createSlice({
     value: initialState,
   },
   reducers: {
-    setTitle: (state) => {},
+    setTitle: () => {},
     setEditRsuRowData: (state, action) => {
       state.value.editRsuRowData = action.payload
     },
@@ -126,7 +125,7 @@ export const adminRsuTabSlice = createSlice({
       .addCase(deleteRsu.pending, (state) => {
         state.loading = true
       })
-      .addCase(deleteRsu.fulfilled, (state, action) => {
+      .addCase(deleteRsu.fulfilled, (state) => {
         state.loading = false
       })
       .addCase(deleteRsu.rejected, (state) => {

@@ -1,1 +1,1 @@
-type MapBroadcastRateNotification = {}
+type MapBroadcastRateNotification = object

@@ -92,7 +92,7 @@
 }
 
 .scroll-div-tab {
-  height: calc(100vh - 340px);
+  height: calc(100vh - 170px);
   overflow-y: auto;
 }
 

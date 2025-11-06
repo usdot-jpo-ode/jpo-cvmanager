@@ -1,15 +1,11 @@
 import React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { Box, Container } from '@mui/material'
 import IntersectionMap from '../../../features/intersections/map/map-component'
 import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../../../store'
 import { headerTabHeight } from '../../../styles/index'
 
 function BaseMapPage() {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-
   const intersectionId = useSelector(selectSelectedIntersectionId)
 
   return (

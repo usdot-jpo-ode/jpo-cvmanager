@@ -19,13 +19,13 @@ import static org.mockito.Mockito.verify;
 
 import org.bson.Document;
 
+import us.dot.its.jpo.asn.j2735.r2024.SPAT.SPATMessageFrame;
 import us.dot.its.jpo.ode.api.accessors.spat.OdeSpatDataRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.AggregationResult;
-import us.dot.its.jpo.ode.model.OdeSpatData;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
@@ -36,7 +36,7 @@ import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 @AutoConfigureEmbeddedDatabase
 public class OdeSpatDataRepositoryImplTest {
 
-    @SpyBean
+    @MockitoSpyBean
     private MongoTemplate mongoTemplate;
 
     @Mock
@@ -46,7 +46,7 @@ public class OdeSpatDataRepositoryImplTest {
     private Page<Document> mockDocumentPage;
 
     @Mock
-    private Page<OdeSpatData> mockPage;
+    private Page<SPATMessageFrame> mockPage;
 
     @InjectMocks
     private OdeSpatDataRepositoryImpl repository;

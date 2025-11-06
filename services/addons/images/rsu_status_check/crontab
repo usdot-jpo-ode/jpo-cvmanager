@@ -2,4 +2,6 @@ PYTHONPATH=/home
 * * * * * /usr/local/bin/python3 /home/rsu_ping_fetch.py
 * * * * * /usr/local/bin/python3 /home/rsu_pinger.py
 0 0 * * * /usr/local/bin/python3 /home/purger.py
-0 */4 * * * /usr/local/bin/python3 /home/rsu_snmp_fetch.py
+0 */4 * * * /usr/local/bin/python3 /home/rsu_msgfwd_fetch.py
+0 */1 * * * /usr/local/bin/python3 /home/rsu_security_fetch.py
+*/20 * * * * /usr/local/bin/python3 /home/rsu_health_fetch.py

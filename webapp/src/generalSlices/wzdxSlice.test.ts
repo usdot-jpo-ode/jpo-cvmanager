@@ -47,7 +47,7 @@ describe('async thunks', () => {
 
       const data = 'data'
       RsuApi.getWzdxData = jest.fn().mockReturnValue(data)
-      let resp = await action(dispatch, getState, undefined)
+      const resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual(data)
       expect(RsuApi.getWzdxData).toHaveBeenCalledWith('token')
     })

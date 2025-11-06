@@ -26,7 +26,8 @@ import us.dot.its.jpo.ode.api.models.MessageType;
         @JsonSubTypes.Type(value = SpatDecodedMessage.class, name = "SPAT"),
         @JsonSubTypes.Type(value = SrmDecodedMessage.class, name = "SRM"),
         @JsonSubTypes.Type(value = SsmDecodedMessage.class, name = "SSM"),
-        @JsonSubTypes.Type(value = TimDecodedMessage.class, name = "TIM")
+        @JsonSubTypes.Type(value = TimDecodedMessage.class, name = "TIM"),
+        @JsonSubTypes.Type(value = PsmDecodedMessage.class, name = "PSM")
 })
 public class DecodedMessage {
     private static final Logger logger = LoggerFactory.getLogger(DecodedMessage.class);

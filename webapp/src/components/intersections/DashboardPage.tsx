@@ -1,4 +1,4 @@
-import { Box, Container, Grid2 } from '@mui/material'
+import { Box, Grid2 } from '@mui/material'
 import { NotificationsTable } from '../../features/intersections/notifications/notifications-table'
 import { ConnectionOfTravelAssessmentCard } from '../../features/intersections/assessments/connection-of-travel-assessment'
 import { LaneDirectionOfTravelAssessmentCard } from '../../features/intersections/assessments/lane-direction-of-travel-assessment'
@@ -32,28 +32,28 @@ const Page = () => {
       setStopLineStopAssessment(
         (await AssessmentsApi.getLatestAssessment(
           token,
-          'stop_line_stop_assessment',
+          'stop-line-stop-assessment',
           intersectionId
         )) as StopLineStopAssessment
       )
       setStopLinePassageAssessment(
         (await AssessmentsApi.getLatestAssessment(
           token,
-          'stop_line_passage_assessment',
+          'stop-line-passage-assessment',
           intersectionId
         )) as StopLinePassageAssessment
       )
       setConnectionOfTravelAssessment(
         (await AssessmentsApi.getLatestAssessment(
           token,
-          'connection_of_travel',
+          'connection-of-travel',
           intersectionId
         )) as ConnectionOfTravelAssessment
       )
       setLaneDirectionOfTravelAssessment(
         (await AssessmentsApi.getLatestAssessment(
           token,
-          'lane_direction_of_travel',
+          'lane-direction-of-travel',
           intersectionId
         )) as LaneDirectionOfTravelAssessment
       )

@@ -3,14 +3,15 @@ package us.dot.its.jpo.ode.api.kafka;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.TopicPartition;
 import org.springframework.kafka.listener.AbstractConsumerSeekAware;
-import us.dot.its.jpo.ode.api.controllers.StompController;
+import us.dot.its.jpo.ode.api.controllers.live.StompController;
 
 import java.util.Map;
 
 /**
- * Base class for Kafka listeners that seek to the last offset before consuming when starting up.
+ * Base class for Kafka listeners that seek to the last offset before consuming
+ * when starting up.
  * See <a href="https://docs.spring.io/spring-kafka/reference/kafka/seek.html">
- *     Spring Kafka: Seeking to a specific offset</a>
+ * Spring Kafka: Seeking to a specific offset</a>
  */
 @Slf4j
 public class BaseSeekToEndListener extends AbstractConsumerSeekAware {

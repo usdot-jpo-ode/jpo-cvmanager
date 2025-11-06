@@ -14,6 +14,7 @@ import {
   submitForm,
   setSelectedOrganizations,
   setSelectedRsus,
+  selectLoading,
 } from './adminEditIntersectionSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -35,7 +36,6 @@ import {
   Typography,
 } from '@mui/material'
 import toast from 'react-hot-toast'
-import CloseIcon from '@mui/icons-material/Close'
 import { AdminButton } from '../../styles/components/AdminButton'
 import { ErrorMessageText } from '../../styles/components/Messages'
 import '../../styles/fonts/museo-slab.css'
@@ -59,6 +59,7 @@ const AdminEditIntersection = () => {
   const selectedRsus = useSelector(selectSelectedRsus)
   const submitAttempt = useSelector(selectSubmitAttempt)
   const intersectionTableData = useSelector(selectTableData)
+  const loading = useSelector(selectLoading)
 
   const [open, setOpen] = useState(true)
   const navigate = useNavigate()
@@ -108,8 +109,10 @@ const AdminEditIntersection = () => {
       setValue('bbox.longitude2', currIntersection.bbox?.longitude2?.toString())
       setValue('intersection_name', currIntersection.intersection_name)
       setValue('origin_ip', currIntersection.origin_ip)
+    } else {
+      console.error('Unknown Intersection ID: ', intersectionId)
     }
-  }, [apiData, setValue])
+  }, [apiData, intersectionId, intersectionTableData, setValue])
 
   useEffect(() => {
     dispatch(updateTableData())
@@ -129,7 +132,7 @@ const AdminEditIntersection = () => {
 
   return (
     <Dialog open={open}>
-      {Object.keys(apiData ?? {}).length != 0 ? (
+      {apiData && !loading ? (
         <>
           <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
             <SideBarHeader
@@ -310,7 +313,7 @@ const AdminEditIntersection = () => {
                     value={selectedOrganizations.map((org) => org.name)}
                     defaultValue={selectedOrganizations.map((org) => org.name)}
                     onChange={(event) => {
-                      const selectedOrgs = event.target.value as String[]
+                      const selectedOrgs = event.target.value as string[]
                       dispatch(setSelectedOrganizations(organizations.filter((org) => selectedOrgs.includes(org.name))))
                     }}
                   >
@@ -336,10 +339,8 @@ const AdminEditIntersection = () => {
                     value={selectedRsus.map((rsu) => rsu.name)}
                     defaultValue={selectedRsus.map((rsu) => rsu.name)}
                     onChange={(event) => {
-                      const selectedRsus = event.target.value as String[]
-                      console.log('selectedRsus', selectedRsus)
-                      var filteredRsus = rsus.filter((rsu) => selectedRsus.includes(rsu.name))
-                      console.log('filteredRsus', filteredRsus)
+                      const selectedRsus = event.target.value as string[]
+                      const filteredRsus = rsus.filter((rsu) => selectedRsus.includes(rsu.name))
                       dispatch(setSelectedRsus(rsus.filter((rsu) => selectedRsus.includes(rsu.name))))
                     }}
                   >
@@ -378,19 +379,21 @@ const AdminEditIntersection = () => {
           </DialogActions>
         </>
       ) : (
-        <DialogContent>
-          <Typography variant={'h4'}>
-            Unknown Intersection ID. Either this Intersection does not exist, or you do not have access to it.
-          </Typography>
-          <AdminButton
-            onClick={() => {
-              setOpen(false)
-              navigate('/dashboard/admin/intersections')
-            }}
-          >
-            Close
-          </AdminButton>
-        </DialogContent>
+        !loading && (
+          <DialogContent>
+            <Typography variant={'h4'}>
+              Unknown Intersection ID. Either this Intersection does not exist, or you do not have access to it.
+            </Typography>
+            <AdminButton
+              onClick={() => {
+                setOpen(false)
+                navigate('/dashboard/admin/intersections')
+              }}
+            >
+              Close
+            </AdminButton>
+          </DialogContent>
+        )
       )}
     </Dialog>
   )

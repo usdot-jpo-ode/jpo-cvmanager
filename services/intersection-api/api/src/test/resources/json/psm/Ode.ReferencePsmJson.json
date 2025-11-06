@@ -1,0 +1,39 @@
+{
+  "metadata": {
+    "recordType": "psmTx",
+    "securityResultCode": "success",
+    "payloadType": "us.dot.its.jpo.ode.model.OdeMessageFramePayload",
+    "serialId": {
+      "streamId": "44a6d71c-8af1-4f45-848c-10bd7f919be8",
+      "bundleSize": 1,
+      "bundleId": 0,
+      "recordId": 0,
+      "serialNumber": 0
+    },
+    "odeReceivedAt": "2025-08-29T16:09:34.416Z",
+    "schemaVersion": 9,
+    "maxDurationTime": 0,
+    "recordGeneratedBy": "OBU",
+    "sanitized": false,
+    "source": "EV",
+    "isCertPresent": false
+  },
+  "payload": {
+    "data": {
+      "messageId": 32,
+      "value": {
+        "PersonalSafetyMessage": {
+          "basicType": "aPEDESTRIAN",
+          "secMark": 3564,
+          "msgCnt": 26,
+          "id": "24779D7E",
+          "position": { "lat": 402397377, "long": -742761437 },
+          "accuracy": { "semiMajor": 20, "semiMinor": 20, "orientation": 8191 },
+          "speed": 0,
+          "heading": 8898
+        }
+      }
+    },
+    "dataType": "us.dot.its.jpo.asn.j2735.r2024.PersonalSafetyMessage.PersonalSafetyMessageMessageFrame"
+  }
+}

@@ -94,8 +94,8 @@ describe('async thunks', () => {
     it('Updates the state correctly fulfilled', async () => {
       const loading = false
       let success = true
-      let data = { user_data: [{ name: 'username1' }, { name: 'username2' }] }
-      let tableData = [
+      const data = { user_data: [{ name: 'username1' }, { name: 'username2' }] }
+      const tableData = [
         { name: 'username1', id: 0 },
         { name: 'username2', id: 1 },
       ]
@@ -132,7 +132,7 @@ describe('async thunks', () => {
 
   describe('deleteUsers', () => {
     it('returns and calls the api correctly', async () => {
-      let dispatch = jest.fn()
+      const dispatch = jest.fn()
       const getState = jest.fn().mockReturnValue({
         user: {
           value: {
@@ -142,7 +142,7 @@ describe('async thunks', () => {
       })
       const data = [{ email: 'test1@gmail.com' }, { email: 'test2@gmail.com' }, { email: 'test3@gmail.com' }]
 
-      let action = deleteUsers(data)
+      const action = deleteUsers(data)
 
       apiHelper._deleteData = jest
         .fn()

@@ -1,3 +1,7 @@
+from typing import Any
+from flask import request, abort
+from flask_restful import Resource
+from marshmallow import Schema, fields
 from datetime import datetime, timedelta
 import logging
 
@@ -6,11 +10,20 @@ import common.util as util
 import common.pgquery as pgquery
 import os
 
+from common.auth_tools import (
+    ORG_ROLE_LITERAL,
+    RESOURCE_TYPE,
+    EnvironWithOrg,
+    PermissionResult,
+    require_permission,
+    generate_sql_placeholders_for_list,
+)
 
-# Function for querying PostgreSQL db for the last 15 minutes of ping data for every RSU
-def get_ping_data(organization):
+
+# Function for querying PostgreSQL db for the last 20 minutes of ping data for every RSU
+def get_ping_data(user: EnvironWithOrg):
     logging.info("Grabbing the last 20 minutes of the data")
-    result = {}
+    result: dict[str, Any] = {}
 
     t = datetime.now(pytz.utc) - timedelta(minutes=20)
     # Execute the query and fetch all results
@@ -22,12 +35,24 @@ def get_ping_data(organization):
         "SELECT * FROM public.ping AS ping_data "
         f"WHERE ping_data.timestamp >= '{t.strftime('%Y/%m/%dT%H:%M:%S')}'::timestamp"
         ") AS ping_data ON rd.rsu_id = ping_data.rsu_id "
-        f"WHERE ron_v.name = '{organization}' "
-        "ORDER BY rd.rsu_id, ping_data.timestamp DESC"
     )
 
+    where_clause = None
+    params: dict[str, Any] = {}
+    if user.organization:
+        where_clause = "ron_v.name = :org_name"
+        params = {"org_name": user.organization}
+    elif not user.user_info.super_user:
+        org_names_placeholder, _ = generate_sql_placeholders_for_list(
+            list(user.user_info.organizations.keys()), params_to_update=params
+        )
+        where_clause = f"ron_v.name IN ({org_names_placeholder})"
+    if where_clause:
+        query += f"WHERE {where_clause} "
+    query += "ORDER BY rd.rsu_id, ping_data.timestamp DESC "
+
     logging.debug(f'Executing query: "{query};"')
-    data = pgquery.query_db(query)
+    data = pgquery.query_db(query, params=params)
 
     logging.info("Parsing results...")
     for row in data:
@@ -44,10 +69,14 @@ def get_ping_data(organization):
     return result
 
 
+@require_permission(
+    required_role=ORG_ROLE_LITERAL.USER,
+    resource_type=RESOURCE_TYPE.RSU,
+)
 # Function for querying PostgreSQL db for the last online timestamp of a specified RSU
-def get_last_online_data(ip, organization):
+def get_last_online_data_authorized(ip: str):
     logging.info(f"Preparing to query last RSU online status for {ip}...")
-    result = {}
+    result: list[datetime] = []
 
     # Execute the query and fetch all results
     query = (
@@ -57,17 +86,17 @@ def get_last_online_data(ip, organization):
         "SELECT rsus.rsu_id, rsus.ipv4_address "
         "FROM public.rsus "
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rsus.rsu_id "
-        f"WHERE rsus.ipv4_address = '{ip}' "
-        f"AND ron_v.name = '{organization}'"
+        "WHERE rsus.ipv4_address = :rsu_ip "
         ") AS rd ON ping.rsu_id = rd.rsu_id "
         "WHERE ping.rsu_id = rd.rsu_id "
         "AND result = '1' "
         "ORDER BY ping.timestamp DESC "
         "LIMIT 1"
     )
+    params = {"rsu_ip": ip}
 
     logging.debug(f'Executing query: "{query};"')
-    data = pgquery.query_db(query)
+    data = pgquery.query_db(query, params=params)
     result = [value[0] for value in data]
 
     return {
@@ -81,10 +110,10 @@ def get_last_online_data(ip, organization):
 
 
 # duration - duration of online status calculated (in minutes)
-def get_rsu_online_statuses(organization):
+def get_rsu_online_statuses(user: EnvironWithOrg):
     result = {}
     # query ping data
-    ping_result = get_ping_data(organization)
+    ping_result = get_ping_data(user)
 
     # calculate online status
     for key, value in ping_result.items():
@@ -99,11 +128,6 @@ def get_rsu_online_statuses(organization):
 
 
 # REST endpoint resource class
-from flask import request, abort
-from flask_restful import Resource
-from marshmallow import Schema, fields
-
-
 class RsuOnlineStatusSchema(Schema):
     rsu_ip = fields.IPv4(required=False)
 
@@ -125,7 +149,8 @@ class RsuOnlineStatus(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
-    def get(self):
+    @require_permission(required_role=ORG_ROLE_LITERAL.USER)
+    def get(self, permission_result: PermissionResult):
         logging.debug("RsuOnlineStatus GET requested")
         schema = RsuOnlineStatusSchema()
         errors = schema.validate(request.args)
@@ -135,15 +160,13 @@ class RsuOnlineStatus(Resource):
 
         if "rsu_ip" in request.args:
             return (
-                get_last_online_data(
-                    request.args["rsu_ip"], request.environ["organization"]
-                ),
+                get_last_online_data_authorized(request.args["rsu_ip"]),
                 200,
                 self.headers,
             )
         else:
             return (
-                get_rsu_online_statuses(request.environ["organization"]),
+                get_rsu_online_statuses(permission_result.user),
                 200,
                 self.headers,
             )

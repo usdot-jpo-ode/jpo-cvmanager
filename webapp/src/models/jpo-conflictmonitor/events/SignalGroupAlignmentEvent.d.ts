@@ -1,4 +1,4 @@
-/// <reference path="Event.d.ts" />
+import './Event.d.ts'
 type SignalGroupAlignmentEvent = MessageMonitor.Event & {
   source: string
   timestamp: number

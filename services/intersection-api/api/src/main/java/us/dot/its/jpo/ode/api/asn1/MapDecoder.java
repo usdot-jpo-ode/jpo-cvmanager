@@ -1,172 +1,185 @@
 package us.dot.its.jpo.ode.api.asn1;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
+import lombok.extern.slf4j.Slf4j;
+import java.util.HexFormat;
+
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+
+import j2735ffm.MessageFrameCodec;
+import us.dot.its.jpo.asn.j2735.r2024.MapData.IntersectionGeometry;
+import us.dot.its.jpo.asn.j2735.r2024.MapData.MapDataMessageFrame;
 import us.dot.its.jpo.ode.api.models.messages.MapDecodedMessage;
+import us.dot.its.jpo.ode.api.models.messages.DecodedMessage;
+import us.dot.its.jpo.ode.api.models.messages.EncodedMessage;
+import us.dot.its.jpo.ode.model.OdeMsgMetadata.GeneratedBy;
+import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
+import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
+import us.dot.its.jpo.ode.model.OdeMessageFrameData;
+import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata.Source;
+import us.dot.its.jpo.ode.model.OdeMessageFramePayload;
+import us.dot.its.jpo.ode.model.OdeMessageFrameMetadata;
+import us.dot.its.jpo.ode.util.DateTimeUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import us.dot.its.jpo.asn.j2735.r2024.MessageFrame.MessageFrame;
 import us.dot.its.jpo.geojsonconverter.converter.map.MapProcessedJsonConverter;
-import us.dot.its.jpo.geojsonconverter.partitioner.RsuIntersectionKey;
-import us.dot.its.jpo.geojsonconverter.pojos.geojson.LineString;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.connectinglanes.ConnectingLanesFeatureCollection;
+import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.DeserializedRawMap;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.MapFeatureCollection;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.MapSharedProperties;
 import us.dot.its.jpo.geojsonconverter.pojos.geojson.map.ProcessedMap;
-import us.dot.its.jpo.geojsonconverter.validator.JsonValidatorResult;
+import us.dot.its.jpo.geojsonconverter.utils.ProcessedSchemaVersions;
 import us.dot.its.jpo.geojsonconverter.validator.MapJsonValidator;
-import us.dot.its.jpo.ode.api.models.messages.DecodedMessage;
-import us.dot.its.jpo.ode.api.models.messages.EncodedMessage;
-import us.dot.its.jpo.ode.model.OdeMsgMetadata;
-import us.dot.its.jpo.ode.model.Asn1Encoding;
-import us.dot.its.jpo.ode.model.Asn1Encoding.EncodingRule;
-import us.dot.its.jpo.ode.model.OdeAsn1Data;
-import us.dot.its.jpo.ode.model.OdeAsn1Payload;
-import us.dot.its.jpo.ode.model.OdeMapData;
-import us.dot.its.jpo.ode.model.OdeMapMetadata;
-import us.dot.its.jpo.ode.model.OdeMapMetadata.MapSource;
-import us.dot.its.jpo.ode.model.OdeMapPayload;
-import us.dot.its.jpo.ode.model.OdeData;
-import us.dot.its.jpo.ode.model.OdeHexByteArray;
-import us.dot.its.jpo.ode.model.OdeLogMetadata.RecordType;
-import us.dot.its.jpo.ode.model.OdeLogMetadata.SecurityResultCode;
-import us.dot.its.jpo.ode.model.OdeMsgPayload;
-import us.dot.its.jpo.ode.model.ReceivedMessageDetails;
-import us.dot.its.jpo.ode.model.RxSource;
-import us.dot.its.jpo.ode.plugin.j2735.J2735IntersectionGeometry;
-import us.dot.its.jpo.ode.plugin.j2735.builders.MAPBuilder;
-import us.dot.its.jpo.ode.util.JsonUtils;
-import us.dot.its.jpo.ode.util.XmlUtils;
-import us.dot.its.jpo.ode.util.XmlUtils.XmlUtilsException;
+import us.dot.its.jpo.geojsonconverter.validator.JsonValidatorResult;
 
+/**
+ * Decoder implementation for Basic Safety Message (MAP) messages.
+ * Converts ASN.1 encoded MAP messages to processed MAP objects.
+ */
+@Slf4j
 @Component
 public class MapDecoder implements Decoder {
-    private static final Logger logger = LoggerFactory.getLogger(MapDecoder.class);
 
-    private final MapJsonValidator mapJsonValidator;
+    MessageFrameCodec codec;
+    MapJsonValidator mapJsonValidator;
+    public static final MapProcessedJsonConverter converter = new MapProcessedJsonConverter();
+    public static final XmlMapper xmlMapper = new XmlMapper();
 
-    public MapProcessedJsonConverter converter = new MapProcessedJsonConverter();
-
+    /**
+     * Constructs a MapDecoder with required dependencies.
+     *
+     * @param codec            MessageFrameCodec for ASN.1 decoding
+     * @param mapJsonValidator Validator for MAP JSON messages
+     */
     @Autowired
-    public MapDecoder(MapJsonValidator mapJsonValidator) {
+    MapDecoder(MessageFrameCodec codec, MapJsonValidator mapJsonValidator) {
+        this.codec = codec;
         this.mapJsonValidator = mapJsonValidator;
     }
 
+    /**
+     * Decodes an ASN.1 encoded MAP message to a processed MAP object.
+     *
+     * @param message EncodedMessage containing ASN.1 MAP data
+     * @return DecodedMessage containing processed MAP or error details
+     */
     @Override
     public DecodedMessage decode(EncodedMessage message) {
 
-        // Convert to Ode Data type and Add Metadata
-        OdeData data = getAsOdeData(message.getAsn1Message());
-
-        XmlUtils xmlUtils = new XmlUtils();
+        String xer = decodeAsnToXERString(message.getAsn1Message());
 
         try {
-            // Convert to XML for ASN.1 Decoder
-            String xml = xmlUtils.toXml(data);
-
-            // Send String through ASN.1 Decoder to get Decoded XML Data
-            String decodedXml = DecoderManager.decodeXmlWithAcm(xml);
-
-            // Convert to Ode Json
-            OdeMapData map = getAsOdeJson(decodedXml);
-
-            try {
-                ProcessedMap<LineString> processedMap = createProcessedMap(map);
-                // build output data structure
-                return new MapDecodedMessage(processedMap, map, message.getAsn1Message(), "");
-            } catch (Exception e) {
-                logger.error("XML Exception: {}", e.getMessage());
-                return new MapDecodedMessage(null, map, message.getAsn1Message(), e.getMessage());
-            }
+            OdeMessageFrameData odeMessageFrameData = convertXERToMessageFrame(xer);
+            ProcessedMap<LineString> processedMap = convertMessageFrameToProcessedMap(odeMessageFrameData);
+            return new MapDecodedMessage(processedMap, message.getAsn1Message(), "");
 
         } catch (JsonProcessingException e) {
-            logger.error("JSON Processing Exception: {}", e.getMessage(), e);
-            return new MapDecodedMessage(null, null, message.getAsn1Message(), e.getMessage());
-        } catch (Exception e) {
-            logger.error("Generic Exception: {}", e.getMessage(), e);
-            return new MapDecodedMessage(null, null, message.getAsn1Message(), e.getMessage());
+            return new MapDecodedMessage(null, message.getAsn1Message(), e.getMessage());
         }
+
     }
 
+    /**
+     * Converts an ASN.1 hex string to XER (XML Encoding Rules) string.
+     *
+     * @param asnHex ASN.1 encoded hex string
+     * @return XER string representation of the message
+     */
     @Override
-    public OdeData getAsOdeData(String encodedData) {
-        OdeMsgPayload payload = new OdeAsn1Payload(new OdeHexByteArray(encodedData));
+    public String decodeAsnToXERString(String asnHex) {
+        byte[] bytes = HexFormat.of().parseHex(asnHex);
+        String xer = codec.uperToXer(bytes);
+        return xer;
+    }
 
-        // construct metadata
-        OdeMapMetadata metadata = new OdeMapMetadata(payload);
+    /**
+     * Converts an XER-encoded XML string to an OdeMessageFrameData object.
+     *
+     * @param encodedXml XER-encoded XML string
+     * @return OdeMessageFrameData object
+     * @throws JsonMappingException    if XML mapping fails
+     * @throws JsonProcessingException if XML processing fails
+     */
+    @Override
+    public OdeMessageFrameData convertXERToMessageFrame(String encodedXml)
+            throws JsonMappingException, JsonProcessingException {
 
-        metadata.setOdeReceivedAt(DecoderManager.getCurrentIsoTimestamp());
-        metadata.setOriginIp(DecoderManager.getStaticUserOriginIp());
+        OdeMessageFrameMetadata metadata = new OdeMessageFrameMetadata();
+        metadata.setOdeReceivedAt(DateTimeUtils.now());
         metadata.setRecordType(RecordType.mapTx);
         metadata.setSecurityResultCode(SecurityResultCode.success);
+        metadata.setRecordGeneratedBy(GeneratedBy.RSU);
+        metadata.setSource(Source.EV);
 
-        metadata.setMapSource(MapSource.RSU);
+        JsonNode rootNode = xmlMapper.readTree(encodedXml);
 
-        Asn1Encoding unsecuredDataEncoding = new Asn1Encoding("unsecuredData", "MessageFrame",
-                EncodingRule.UPER);
-        metadata.addEncoding(unsecuredDataEncoding);
+        MessageFrame<?> messageFrame = xmlMapper.convertValue(rootNode, MessageFrame.class);
 
-        // construct odeData
-        return new OdeAsn1Data(metadata, payload);
+        OdeMessageFramePayload payload = new OdeMessageFramePayload(messageFrame);
+
+        return new OdeMessageFrameData(metadata, payload);
+
     }
 
-    @Override
-    public OdeMapData getAsOdeJson(String consumedData) throws XmlUtilsException {
-        ObjectNode consumed = XmlUtils.toObjectNode(consumedData);
+    /**
+     * Converts OdeMessageFrameData to a processed MAP object.
+     * Validates the message and returns either a processed or failure MAP.
+     *
+     * @param odeMessageFrameData OdeMessageFrameData to process
+     * @return ProcessedMap object containing MAP data or validation failure
+     */
+    public ProcessedMap<LineString> convertMessageFrameToProcessedMap(OdeMessageFrameData odeMessageFrameData) {
+        DeserializedRawMap deserializedMap = new DeserializedRawMap();
+        try {
+            JsonValidatorResult validationResults = mapJsonValidator.validate(odeMessageFrameData.toJson());
+            deserializedMap.setOdeMapMessageFrameData(odeMessageFrameData);
+            deserializedMap.setValidatorResults(validationResults);
+        } catch (Exception e) {
+            JsonValidatorResult validatorResult = new JsonValidatorResult();
 
-        JsonNode metadataNode = consumed.findValue(OdeMsgMetadata.METADATA_STRING);
-        if (metadataNode instanceof ObjectNode object) {
-            // Removing encodings to match ODE behavior
-            object.remove(OdeMsgMetadata.ENCODINGS_STRING);
-
-            // Map header file does not have a location and use predefined set required
-            // RxSource
-            ReceivedMessageDetails receivedMessageDetails = new ReceivedMessageDetails();
-            receivedMessageDetails.setRxSource(RxSource.NA);
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode;
-            try {
-                jsonNode = objectMapper.readTree(receivedMessageDetails.toJson());
-                object.set(OdeMsgMetadata.RECEIVEDMSGDETAILS_STRING, jsonNode);
-            } catch (JsonProcessingException e) {
-                logger.error("Exception deserializing MAP message", e);
-            }
+            validatorResult.addException(e);
+            deserializedMap.setValidationFailure(true);
+            deserializedMap.setValidatorResults(validatorResult);
+            deserializedMap.setFailedMessage(e.getMessage());
         }
 
-        OdeMapMetadata metadata = (OdeMapMetadata) JsonUtils.fromJson(metadataNode.toString(), OdeMapMetadata.class);
+        if (!deserializedMap.isValidationFailure()) {
+            OdeMessageFrameData rawValue = new OdeMessageFrameData();
+            rawValue.setMetadata(odeMessageFrameData.getMetadata());
+            OdeMessageFrameMetadata mapMetadata = rawValue.getMetadata();
 
-        if (metadata.getSchemaVersion() <= 4) {
-            metadata.setReceivedMessageDetails(null);
+            rawValue.setPayload(odeMessageFrameData.getPayload());
+            MapDataMessageFrame mapMessageFrame = (MapDataMessageFrame) rawValue.getPayload().getData();
+            IntersectionGeometry intersection = mapMessageFrame.getValue().getIntersections().get(0);
+
+            MapSharedProperties sharedProps = converter.createProperties(mapMessageFrame.getValue(), mapMetadata,
+                    intersection, deserializedMap.getValidatorResults());
+
+            // Set the schema version
+            sharedProps.setSchemaVersion(ProcessedSchemaVersions.PROCESSED_MAP_SCHEMA_VERSION);
+
+            MapFeatureCollection<LineString> mapFeatureCollection = converter.createFeatureCollection(intersection);
+            ConnectingLanesFeatureCollection<LineString> connectingLanesFeatureCollection = converter
+                    .createConnectingLanesFeatureCollection(
+                            mapMetadata, intersection);
+
+            ProcessedMap<LineString> processedMapObject = new ProcessedMap<LineString>();
+            processedMapObject.setMapFeatureCollection(mapFeatureCollection);
+            processedMapObject.setConnectingLanesFeatureCollection(connectingLanesFeatureCollection);
+            processedMapObject.setProperties(sharedProps);
+            return processedMapObject;
+        } else {
+            ProcessedMap<LineString> processedMap = converter.createFailureProcessedMap(
+                    deserializedMap.getValidatorResults(),
+                    deserializedMap.getFailedMessage());
+            processedMap.getProperties().setSchemaVersion(ProcessedSchemaVersions.PROCESSED_MAP_SCHEMA_VERSION);
+            return processedMap;
         }
 
-        OdeMapPayload payload = new OdeMapPayload(MAPBuilder.genericMAP(consumed.findValue("MapData")));
-        return new OdeMapData(metadata, payload);
-    }
-
-    public ProcessedMap<LineString> createProcessedMap(OdeMapData odeMap) {
-        JsonValidatorResult validationResults = mapJsonValidator.validate(odeMap.toString());
-        OdeMapMetadata mapMetadata = (OdeMapMetadata) odeMap.getMetadata();
-        OdeMapPayload mapPayload = (OdeMapPayload) odeMap.getPayload();
-        J2735IntersectionGeometry intersection = mapPayload.getMap().getIntersections().getIntersections().getFirst();
-
-        MapSharedProperties sharedProps = converter.createProperties(mapPayload, mapMetadata, intersection,
-                validationResults);
-        MapFeatureCollection<LineString> mapFeatureCollection = converter.createFeatureCollection(intersection);
-        ConnectingLanesFeatureCollection<LineString> connectingLanesFeatureCollection = converter
-                .createConnectingLanesFeatureCollection(mapMetadata, intersection);
-
-        ProcessedMap<LineString> processedMapObject = new ProcessedMap<LineString>();
-        processedMapObject.setMapFeatureCollection(mapFeatureCollection);
-        processedMapObject.setConnectingLanesFeatureCollection(connectingLanesFeatureCollection);
-        processedMapObject.setProperties(sharedProps);
-
-        var key = new RsuIntersectionKey();
-        key.setRsuId(mapMetadata.getOriginIp());
-        key.setIntersectionReferenceID(intersection.getId());
-        return processedMapObject;
     }
 }

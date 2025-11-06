@@ -9,13 +9,13 @@ server:
 ### keycloak configuration
 keycloak:
   realm: cvmanager
-  auth-server-url: ${AUTH_SERVER_URL}
-  client-id: ${KEYCLOAK_CLIENT_API_ID}
-  client-secret: ${KEYCLOAK_CLIENT_API_SECRET}
+  auth-server-url: ${AUTH_SERVER_URL:http://localhost:8084}
+  client-id: ${KEYCLOAK_CLIENT_API_ID:cvmanager-api}
+  client-secret: ${KEYCLOAK_CLIENT_API_SECRET:w8zpoArUwIVN6TSDY5WQgX9TlVAgH9OF}
 
 spring.security.oauth2.resourceserver.jwt:
-  issuer-uri: ${AUTH_SERVER_URL}/realms/cvmanager
-  jwk-set-uri: ${AUTH_SERVER_URL}/realms/cvmanager/protocol/openid-connect/certs
+  issuer-uri: ${AUTH_SERVER_URL:http://localhost:8084}/realms/cvmanager
+  jwk-set-uri: ${AUTH_SERVER_URL:http://localhost:8084}/realms/cvmanager/protocol/openid-connect/certs
 
 spring.kafka.bootstrap-servers: ${KAFKA_BROKER_IP:localhost}:${KAFKA_BROKER_PORT:9092}
 logging.level.org.apache.kafka: INFO
@@ -25,6 +25,7 @@ schema.bsm: classpath:schemas/bsm.schema.json
 schema.map: classpath:schemas/map.schema.json
 schema.spat: classpath:schemas/spat.schema.json
 schema.psm: classpath:schemas/psm.schema.json
+schema.rtcm: classpath:schemas/rtcm.schema.json
 
 # Amount of time to wait to try and increase batching
 kafka.linger_ms: 50
@@ -50,12 +51,12 @@ conflict:
 spring:
   data:
     mongodb:
-      database: ConflictMonitor
+      database: ${CM_DATABASE_NAME:CV}
       host: ${DB_HOST_IP:localhost}
       port: 27017
-      username: ${CM_MONGO_API_USERNAME:api}
-      password: ${CM_MONGO_API_PASSWORD:api}
-      authenticationDatabase: ${CM_MONGO_AUTH_DB:ConflictMonitor}
+      username: ${MONGO_READ_WRITE_USER:ode}
+      password: ${MONGO_READ_WRITE_PASS:replace_me}
+      authenticationDatabase: ${CM_MONGO_AUTH_DB:admin}
       uri: ${CM_MONGO_URI:null}
   # Postgres Configuration
   datasource:
@@ -81,6 +82,8 @@ enable:
   api: ${INTERSECTION_API_ENABLE_API:true}
   email: ${INTERSECTION_API_ENABLE_EMAILER:true}
   report: ${INTERSECTION_API_ENABLE_REPORTS:true}
+  haas: ${INTERSECTION_API_ENABLE_HAAS:true}
+  asn1-decoder: ${INTERSECTION_API_ENABLE_ASN1_DECODER:true}
 
 cmServerURL: ${CM_SERVER_URL:http://localhost:8082}
 mongoTimeoutMs: ${CM_MONGO_TIMEOUT_MS:5000}
@@ -88,6 +91,8 @@ cors: '*'
 maximumResponseSize: ${CM_MAXIMUM_RESPONSE_SIZE:10000}
 
 spring.main.allow-circular-references: true
+
+server.servlet.context-path: ${BASE_ROUTE_PREFIX:/}
 
 ### General Email Settings
 
@@ -102,3 +107,8 @@ sendgrid:
 
 ### Postmark Email Settings
 postmark.api.secretKey: ${CM_POSTMARK_SECRET_KEY:""}
+
+j2735.api:
+  text-buffer-size: ${J2735_ASN_TEXT_BUFFER_SIZE:262144}
+  uper-buffer-size: ${J2735_UPER_BUFFER_SIZE:8192}
+  error-buffer-size: ${J2735_ERROR_BUFFER_SIZE:256}

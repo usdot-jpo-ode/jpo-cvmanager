@@ -4,14 +4,14 @@ import multidict
 
 request_environ = multidict.MultiDict([])
 
-request_args_good = {"org_name": "test org"}
+request_args_get_delete_good = {"org_name": "Test Org"}
 
-request_args_bad = {"org_name": 5}
+request_args_get_delete_bad = {"org_name": 5}
 
 request_json_good = {
-    "orig_name": "test org",
-    "name": "test org",
-    "email": "test@email.com",
+    "orig_name": "Test Org",
+    "name": "Test Org",
+    "email": "test@gmail.com",
     "users_to_add": [{"email": "test1@email.com", "role": "admin"}],
     "users_to_modify": [{"email": "test2@email.com", "role": "user"}],
     "users_to_remove": [{"email": "test3@email.com", "role": "user"}],
@@ -22,9 +22,9 @@ request_json_good = {
 }
 
 request_json_bad = {
-    "orig_name": "test org",
-    "name": "test org",
-    "email": "test@email.com",
+    "orig_name": "Test Org",
+    "name": "Test Org",
+    "email": "test@gmail.com",
     "users_to_add": [{"email": "test1@email.com", "role": "admin"}],
     "users_to_modify": [{"email": "test2@email.com", "role": "user"}],
     "rsus_to_add": ["10.0.0.2"],
@@ -34,9 +34,9 @@ request_json_bad = {
 }
 
 request_json_unsafe_input = {
-    "orig_name": "test org",
-    "name": "test org",
-    "email": "test@email.com",
+    "orig_name": "Test Org",
+    "name": "Test Org",
+    "email": "test@gmail.com",
     "users_to_add": [{"email": "test1@email.com", "role": "admin"}],
     "users_to_modify": [{"email": "tes@t2@email.com", "role": "user"}],
     "users_to_remove": [{"email": "test3@email.com", "role": "operator"}],
@@ -53,8 +53,8 @@ request_json_unsafe_input = {
 get_all_orgs_pgdb_return = [
     (
         {
-            "name": "test org",
-            "email": "test@email.com",
+            "name": "Test Org",
+            "email": "test@gmail.com",
             "num_users": 12,
             "num_rsus": 30,
             "num_intersections": 42,
@@ -64,8 +64,8 @@ get_all_orgs_pgdb_return = [
 
 get_all_orgs_result = [
     {
-        "name": "test org",
-        "email": "test@email.com",
+        "name": "Test Org",
+        "email": "test@gmail.com",
         "user_count": 12,
         "rsu_count": 30,
         "intersection_count": 42,
@@ -79,16 +79,15 @@ get_all_orgs_sql = (
     "(SELECT COUNT(*) FROM public.user_organization uo WHERE uo.organization_id = org.organization_id) num_users, "
     "(SELECT COUNT(*) FROM public.rsu_organization ro WHERE ro.organization_id = org.organization_id) num_rsus, "
     "(SELECT COUNT(*) FROM public.intersection_organization io WHERE io.organization_id = org.organization_id) num_intersections "
-    "FROM public.organizations org"
-    ") as row"
+    "FROM public.organizations org WHERE org.name IN (:item_0, :item_1, :item_2) "
+    ") as row",
+    {"item_0": "Test Org", "item_1": "Test Org 2", "item_2": "Test Org 3"},
 )
-
-# get_org_data
 
 get_org_data_user_return = [
     (
         {
-            "email": "test@email.com",
+            "email": "test@gmail.com",
             "first_name": "first",
             "last_name": "last",
             "role_name": "user",
@@ -113,7 +112,7 @@ get_org_data_intersection_return = [
 get_org_data_result = {
     "org_users": [
         {
-            "email": "test@email.com",
+            "email": "test@gmail.com",
             "first_name": "first",
             "last_name": "last",
             "role": "user",
@@ -140,7 +139,7 @@ get_org_data_user_sql = (
     "JOIN public.users ON uo.user_id = users.user_id "
     "JOIN public.roles ON uo.role_id = roles.role_id"
     ") u ON u.organization_id = org.organization_id "
-    f"WHERE org.name = 'test org'"
+    "WHERE org.name = :org_name"
     ") as row"
 )
 
@@ -154,7 +153,7 @@ get_org_data_rsu_sql = (
     "FROM public.rsu_organization ro "
     "JOIN public.rsus ON ro.rsu_id = rsus.rsu_id"
     ") r ON r.organization_id = org.organization_id "
-    f"WHERE org.name = 'test org'"
+    "WHERE org.name = :org_name"
     ") as row"
 )
 
@@ -168,7 +167,7 @@ get_org_data_intersection_sql = (
     "FROM public.intersection_organization io "
     "JOIN public.intersections ON io.intersection_id = intersections.intersection_id"
     ") i ON i.organization_id = org.organization_id "
-    f"WHERE org.name = 'test org'"
+    "WHERE org.name = :org_name"
     ") as row"
 )
 
@@ -188,67 +187,106 @@ get_allowed_selections_sql = (
 # modify_org
 
 modify_org_sql = (
-    "UPDATE public.organizations SET "
-    "name = 'test org', "
-    "email = 'test@email.com' "
-    "WHERE name = 'test org'"
+    (
+        "UPDATE public.organizations SET "
+        "name = :name, "
+        "email = :email "
+        "WHERE name = :orig_name"
+    ),
+    {
+        "name": "Test Org",
+        "email": "test@gmail.com",
+        "orig_name": "Test Org",
+    },
 )
 
 modify_org_add_user_sql = (
-    "INSERT INTO public.user_organization(user_id, organization_id, role_id) VALUES"
-    " ("
-    f"(SELECT user_id FROM public.users WHERE email = 'test1@email.com'), "
-    f"(SELECT organization_id FROM public.organizations WHERE name = 'test org'), "
-    f"(SELECT role_id FROM public.roles WHERE name = 'admin')"
-    ")"
+    (
+        "INSERT INTO public.user_organization(user_id, organization_id, role_id) VALUES"
+        " ("
+        "(SELECT user_id FROM public.users WHERE email = :user_email_0), "
+        "(SELECT organization_id FROM public.organizations WHERE name = :org_name), "
+        "(SELECT role_id FROM public.roles WHERE name = :user_role_0)"
+        ")"
+    ),
+    {"org_name": "Test Org", "user_email_0": "test1@email.com", "user_role_0": "admin"},
 )
 
 modify_org_modify_user_sql = (
-    "UPDATE public.user_organization "
-    "SET role_id = (SELECT role_id FROM public.roles WHERE name = 'user') "
-    "WHERE user_id = (SELECT user_id FROM public.users WHERE email = 'test2@email.com') "
-    "AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = 'test org')"
+    (
+        "UPDATE public.user_organization "
+        "SET role_id = (SELECT role_id FROM public.roles WHERE name = :role) "
+        "WHERE user_id = (SELECT user_id FROM public.users WHERE email = :email) "
+        "AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = :org_name)"
+    ),
+    {"role": "user", "email": "test2@email.com", "org_name": "Test Org"},
 )
 
 modify_org_remove_user_sql = (
-    "DELETE FROM public.user_organization WHERE "
-    "user_id = (SELECT user_id FROM public.users WHERE email = 'test3@email.com') "
-    "AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = 'test org')"
+    (
+        "DELETE FROM public.user_organization WHERE "
+        "user_id IN (SELECT user_id FROM public.users WHERE email IN (:email_0)) "
+        "AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = :org_name)"
+    ),
+    {"org_name": "Test Org", "email_0": "test3@email.com"},
 )
 
 modify_org_add_rsu_sql = (
-    "INSERT INTO public.rsu_organization(rsu_id, organization_id) VALUES"
-    " ("
-    "(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '10.0.0.2'), "
-    "(SELECT organization_id FROM public.organizations WHERE name = 'test org')"
-    ")"
+    (
+        "INSERT INTO public.rsu_organization(rsu_id, organization_id) VALUES"
+        " ("
+        "(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip_0), "
+        "(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
+        ")"
+    ),
+    {"org_name": "Test Org", "rsu_ip_0": "10.0.0.2"},
 )
 
 modify_org_remove_rsu_sql = (
-    "DELETE FROM public.rsu_organization WHERE "
-    "rsu_id=(SELECT rsu_id FROM public.rsus WHERE ipv4_address = '10.0.0.1') "
-    "AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = 'test org')"
+    (
+        "DELETE FROM public.rsu_organization WHERE "
+        "rsu_id IN (SELECT rsu_id FROM public.rsus WHERE ipv4_address IN (:rsu_ip_0)) "
+        "AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = :org_name)"
+    ),
+    {"org_name": "Test Org", "rsu_ip_0": "10.0.0.1"},
 )
 
 modify_org_add_intersection_sql = (
-    "INSERT INTO public.intersection_organization(intersection_id, organization_id) VALUES"
-    " ("
-    "(SELECT intersection_id FROM public.intersections WHERE intersection_number = '1111'), "
-    "(SELECT organization_id FROM public.organizations WHERE name = 'test org')"
-    ")"
+    (
+        "INSERT INTO public.intersection_organization(intersection_id, organization_id) VALUES ("
+        "(SELECT intersection_id FROM public.intersections WHERE intersection_number = :intersection_id_0), "
+        "(SELECT organization_id FROM public.organizations WHERE name = :org_name)"
+        ")"
+    ),
+    {"org_name": "Test Org", "intersection_id_0": "1111"},
 )
 
 modify_org_remove_intersection_sql = (
-    "DELETE FROM public.intersection_organization WHERE "
-    "intersection_id=(SELECT intersection_id FROM public.intersections WHERE intersection_number = '1112') "
-    "AND organization_id=(SELECT organization_id FROM public.organizations WHERE name = 'test org')"
+    (
+        "DELETE FROM public.intersection_organization WHERE "
+        "intersection_id IN (SELECT intersection_id FROM public.intersections WHERE intersection_number IN (:intersection_id_0)) "
+        "AND organization_id = (SELECT organization_id FROM public.organizations WHERE name = :org_name)"
+    ),
+    {"org_name": "Test Org", "intersection_id_0": "1112"},
 )
 
 # delete_org
 
 delete_org_calls = [
-    "DELETE FROM public.user_organization WHERE organization_id = (SELECT organization_id FROM public.organizations WHERE name = 'test org')",
-    "DELETE FROM public.rsu_organization WHERE organization_id = (SELECT organization_id FROM public.organizations WHERE name = 'test org')",
-    "DELETE FROM public.intersection_organization WHERE organization_id = (SELECT organization_id FROM public.organizations WHERE name = 'test org')",
-    "DELETE FROM public.organizations WHERE name = 'test org'",
+    (
+        "DELETE FROM public.user_organization WHERE organization_id = (SELECT organization_id FROM public.organizations WHERE name = :org_name)",
+        {"org_name": "Test Org"},
+    ),
+    (
+        "DELETE FROM public.rsu_organization WHERE organization_id = (SELECT organization_id FROM public.organizations WHERE name = :org_name)",
+        {"org_name": "Test Org"},
+    ),
+    (
+        "DELETE FROM public.intersection_organization WHERE organization_id = (SELECT organization_id FROM public.organizations WHERE name = :org_name)",
+        {"org_name": "Test Org"},
+    ),
+    (
+        "DELETE FROM public.organizations WHERE name = :org_name",
+        {"org_name": "Test Org"},
+    ),
 ]

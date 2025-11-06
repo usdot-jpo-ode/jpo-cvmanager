@@ -22,6 +22,9 @@ The JPO Connected Vehicle Manager is a web-based application that helps an organ
 - Device firmware upgrade support for Kapsch, Commsignia and Yunex devices
 - Admin controls for adding, modifying and removing devices and users
 - Fully customizable theming with Material UI - [cvmanager theming documentation](webapp/src/styles/README.md)
+- Organizations allow fine tuned access control of users and devices. Multiple organizations can be run concurrently within 1 CV-Manager deployment.
+- Role-based access supports three user roles: Admin, Operator, and User. See the chart below for a breakdown of role-based access within and between organizations
+  <img src=docs/organization-permissions-chart.png alt="organization permission chart"/>
 
 To provide feedback, we recommend that you create an "issue" in this repository (<https://github.com/usdot-jpo-ode/jpo-cvmanager/issues>). You will need a GitHub account to create an issue. If you don’t have an account, a dialog will be presented to you to create one at no cost.
 
@@ -107,10 +110,12 @@ Ease of local development has been a major consideration in the integration of i
   - Base kafka image used to supply required topics to the intersection api
 - kafka-setup
   - Kafka topic creation image, to create required topics for the intersection api
-- MongoDB
+- mongo
   - Base MongoDB image, with sample data, used to supply data to the intersection api
+- mongo-setup
+  - MongoDB collection creation image, to create required collections for the intersection api
 
-It should be noted that the `kafka` and `kafka-setup` services are provided by the jpo-utils repository.
+It should be noted that the `kafka`, `kafka-setup`, `mongo` and `mongo-setup` services are provided by the jpo-utils repository.
 
 **Intersection API Submodules**
 The Intersection API uses nested submodules for asn1 encoding and decoding [usdot-jpo-ode/asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec) and kafka management. These submodules need to be initialized and updated before the API can be built and run locally. Run the following command to initialize the submodules:
@@ -133,9 +138,52 @@ If any issues occur, try re-building all images, with:
 docker compose up --build -d
 ```
 
-**ConflictMonitor Configuration Scripts**
+**Re-generating ConflictMonitor Sample Data**
 
-A set of scripts and data dumps exists in the [./resources/mongo_scripts](./resources/mongo_scripts) and [./resources/mongodumps](./resources/mongodumps) folders, see the included [README](./resources/mongo_scripts/README.md) for more information.
+A set of data dumps exists in the [./resources/mongodumps](./resources/mongodumps) folder, which can each be automatically injected into MongoDB using the `MONGO_SAMPLE_DATA_RELATIVE_PATH` environment variable, such as `MONGO_SAMPLE_DATA_RELATIVE_PATH=../resources/mongodumps/dump_2025_07_21`.
+
+To create a new sample dataset, simply follow the below steps, and see the sample commands below the steps.
+
+1. Configure MongoDB to not restore any data on boot by leaving the env var `MONGO_SAMPLE_DATA_RELATIVE_PATH` blank
+2. Clear all existing docker volumes
+
+```sh
+docker compose down -v
+```
+
+3. Bring up the cv-manager including the conflictmonitor components with the env var `COMPOSE_PROFILES=basic,webapp,intersection,conflictmonitor,mongo_full,kafka_full,kafka_connect_standalone`
+
+```sh
+docker compose up -d
+```
+
+4. Clone the [ConflictMonitor repository](https://github.com/usdot-jpo-ode/jpo-conflictmonitor) and run the [test-message-sender](https://github.com/usdot-jpo-ode/jpo-conflictmonitor/blob/develop/test-message-sender/README.md) to generate sample data
+   1. If data is not being sync'd to mongodb, ensure that you have set your env var `CONNECT_URL=http://${DOCKER_HOST_IP}:8083`
+
+```sh
+git clone https://github.com/usdot-jpo-ode/jpo-conflictmonitor
+cd jpo-conflictmonitor/test-message-sender/script-runner
+mvn clean install
+cd ../
+java -jar ./script-runner/target/script-runner-cli.jar ../jpo-conflictmonitor/scripts/IntegrationTestScripts/ConnectionOfTravel-u-turn.csv
+```
+
+5. Export the newly generated data to create a new dump of the MongoDB database
+
+```sh
+cd ../../jpo-cvmanager
+# Update the username and password to match your MongoDB instance (MONGO_READ_WRITE_USER and MONGO_READ_WRITE_PASSWORD)
+docker exec -it jpo-cvmanager-mongo-1 mongodump --db CV --out /dump --username=ode --password=replace_me --authenticationDatabase admin
+# This command requires an unix shell - if running in powershell, replace `$(date +%Y_%m_%d)` with `$formattedDate` where `$formattedDate = Get-Date -Format "yyyy_MM_dd"`.
+docker cp jpo-cvmanager-mongo-1:/dump ./resources/mongodumps/dump_$(date +%Y_%m_%d)
+```
+
+6. Update your `MONGO_SAMPLE_DATA_RELATIVE_PATH` in the `.env` file to point to the new dump folder and restart the docker compose to use the new data dump:
+   1. e.x. `MONGO_SAMPLE_DATA_RELATIVE_PATH=../resources/mongodumps/dump_2025_07_21`
+
+```sh
+docker compose up -d
+```
 
 #### MongoDB
 
@@ -153,15 +201,15 @@ Some simple sample data is injected into the MongoDB instance when created. If m
 
 The following steps are intended to help get a new user up and running the JPO CV Manager in their own environment.
 
-1. Follow the Requirements and Limitations section and make sure all requirements are met.
-2. Run the following command to initialize submodules:
+1.  Follow the Requirements and Limitations section and make sure all requirements are met.
+2.  Run the following command to initialize submodules:
     ```sh
     git submodule update --init --recursive
     ```
-3. Create a copy of the sample.env named ".env" and refer to the Environmental variables section below for more information on each variable.
-    1.  Make sure at least the DOCKER_HOST_IP, KEYCLOAK_ADMIN_PASSWORD, KEYCLOAK_API_CLIENT_SECRET_KEY, and MAPBOX_TOKEN are set for this.
-    2.  Some of these variables, delineated by sections, pertain to the [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor), [jpo-geojsonconverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter), and [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode). Please see the documentation provided for these projects when setting these variables.
-4. The CV Manager has four components that need to be containerized and deployed: the API, the PostgreSQL database, Keycloak, and the webapp.
+3.  Create a copy of the sample.env named ".env" and refer to the Environmental variables section below for more information on each variable.
+    1. Make sure at least the DOCKER_HOST_IP, KEYCLOAK_ADMIN_PASSWORD, KEYCLOAK_API_CLIENT_SECRET_KEY, and MAPBOX_TOKEN are set for this.
+    2. Some of these variables, delineated by sections, pertain to the [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor), [jpo-geojsonconverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter), and [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode). Please see the documentation provided for these projects when setting these variables.
+4.  The CV Manager has four components that need to be containerized and deployed: the API, the PostgreSQL database, Keycloak, and the webapp.
 
     - If you are looking to deploy the CV Manager locally, you can simply run the docker-compose, make sure to fill out the .env file to ensure it launches properly. Also, edit your host file ([How to edit the host file](<[resources/kubernetes](https://docs.rackspace.com/support/how-to/modify-your-hosts-file/)>)) and add IP address of your docker host to these custom domains (remove the carrot brackets and just put the IP address):
 
@@ -170,7 +218,7 @@ The following steps are intended to help get a new user up and running the JPO C
          <DOCKER_HOST_IP> cvmanager.local.com
          <DOCKER_HOST_IP> cvmanager.auth.com
 
-5. Apply the docker compose to start the required components:
+5.  Apply the docker compose to start the required components:
 
     ```sh
     docker compose up -d
@@ -182,7 +230,7 @@ The following steps are intended to help get a new user up and running the JPO C
     docker compose up --build -d
     ```
 
-6. Access the website by going to:
+6.  Access the website by going to:
 
     ```
       http://cvmanager.local.com
@@ -190,7 +238,7 @@ The following steps are intended to help get a new user up and running the JPO C
       Default Password: tester
     ```
 
-7. To access keycloak go to:
+7.  To access keycloak go to:
 
     ```
       http://cvmanager.auth.com:8084/
@@ -216,9 +264,10 @@ In addition to the groups defined in the table below, each service may also be a
 | cvmanager_postgres                 | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌      |
 | cvmanager_keycloak                 | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌      |
 | intersection_api                   | ❌    | ❌     | ✅           | ❌                  | ❌              | ❌     | ❌      |
-| mongodb_container                  | ❌    | ❌     | ✅           | ✅                  | ✅              | ❌     | ❌      |
 | conflictmonitor                    | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
 | ode                                | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
+| aem                                | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
+| adm                                | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
 | geojsonconverter                   | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
 | deduplicator                       | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
 | connect                            | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
@@ -230,9 +279,10 @@ In addition to the groups defined in the table below, each service may also be a
 | jpo_ota_backend                    | ❌    | ❌     | ❌           | ❌                  | ❌              | ❌     | ✅      |
 | jpo_ota_nginx                      | ❌    | ❌     | ❌           | ❌                  | ❌              | ❌     | ✅      |
 
-##### Note on Kafka
-While `kafka` and `kafka-setup` are not included in the table above, they are required for the intersection API to run. These services 
-are provided by the jpo-utils repository. To enable these services, you must include the `kafka_full` profile.
+##### Note on JPO-Utils Profiles
+
+While `kafka`, `kafka-setup`, `mongo`, `mongo-setup`, and `kafka-connect` are not included in the table above, they are required for the intersection API to run. These services
+are provided by the jpo-utils repository. To enable these services, you must include the `kafka_full`, `mongo_full`, and `kafka_connect_standalone` profiles.
 
 ### Debugging
 

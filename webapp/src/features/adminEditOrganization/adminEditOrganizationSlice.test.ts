@@ -13,8 +13,6 @@ import {
   selectSuccessMsg,
   selectLoading,
 } from './adminEditOrganizationSlice'
-import apiHelper from '../../apis/api-helper'
-import EnvironmentVars from '../../EnvironmentVars'
 import { RootState } from '../../store'
 
 describe('admin add User reducer', () => {
@@ -74,7 +72,7 @@ describe('async thunks', () => {
 
       global.setTimeout = jest.fn((cb) => cb()) as any
       try {
-        let resp = await action(dispatch, getState, undefined)
+        const resp = await action(dispatch, getState, undefined)
         console.error(JSON.stringify(resp))
         expect(resp.payload).toEqual({ success: true, message: 'Changes were successfully applied!' })
         expect(global.setTimeout).toHaveBeenCalledTimes(1)
@@ -93,7 +91,7 @@ describe('async thunks', () => {
       setValue = jest.fn()
       global.setTimeout = jest.fn((cb) => cb()) as any
       try {
-        let resp = await action(dispatch, getState, undefined)
+        const resp = await action(dispatch, getState, undefined)
         expect(resp.payload).toEqual({ success: false, message: 'message' })
         expect(global.setTimeout).toHaveBeenCalledTimes(1)
         expect(dispatch).toHaveBeenCalledTimes(2 + 2)

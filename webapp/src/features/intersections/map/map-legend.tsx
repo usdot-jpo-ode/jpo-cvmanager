@@ -1,4 +1,4 @@
-import { Paper, Box, IconButton, Typography, Divider, Fab, AccordionSummary, AccordionDetails } from '@mui/material'
+import { Paper, Box, IconButton, Typography, Fab, AccordionSummary, AccordionDetails } from '@mui/material'
 import React from 'react'
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion'
 import { styled, useTheme } from '@mui/material/styles'
@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux'
 import { Close, ExpandMoreOutlined, FormatListBulleted } from '@mui/icons-material'
 
 const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(
-  ({ theme }) => ({})
+  () => ({})
 )
 
 type MapLegendProps = {
@@ -20,7 +20,11 @@ export const MapLegend = (props: MapLegendProps) => {
   const theme = useTheme()
 
   const toggleOpen = () => {
-    props.openPanel === 'map-legend' ? props.setOpenPanel('') : props.setOpenPanel('map-legend')
+    if (props.openPanel === 'map-legend') {
+      props.setOpenPanel('')
+    } else {
+      props.setOpenPanel('map-legend')
+    }
   }
 
   const { bsmColors, travelConnectionColors, laneColors, signalHeadIcons } = mapLegendColors
@@ -37,7 +41,7 @@ export const MapLegend = (props: MapLegendProps) => {
             margin: '5px',
           }}
         >
-          <div style={{ height: 20, width: 20, backgroundColor: value }} />
+          <div style={{ height: 20, width: 20, backgroundColor: value as string }} />
           <Typography fontSize="14px" sx={{ ml: 1, textTransform: 'capitalize' }}>
             {key.toLowerCase()}
           </Typography>
@@ -89,7 +93,7 @@ export const MapLegend = (props: MapLegendProps) => {
             margin: '5px',
           }}
         >
-          <div style={{ height: 20, width: 20, backgroundColor: value }} />
+          <div style={{ height: 20, width: 20, backgroundColor: value as string }} />
           <Typography fontSize="14px" sx={{ ml: 1, textTransform: 'capitalize' }}>
             {key.toLowerCase()}
           </Typography>
@@ -110,7 +114,7 @@ export const MapLegend = (props: MapLegendProps) => {
             margin: '5px',
           }}
         >
-          <img src={value} style={{ height: 40, width: 30 }} />
+          <img src={value as string} style={{ height: 40, width: 30 }} />
           <Typography fontSize="14px" sx={{ ml: 1, textTransform: 'capitalize' }}>
             {key.toLowerCase()}
           </Typography>

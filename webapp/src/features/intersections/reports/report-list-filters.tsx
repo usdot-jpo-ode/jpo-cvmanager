@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { Box, Button, CircularProgress, Drawer, IconButton, Stack, Typography } from '@mui/material'
-import { styled } from '@mui/material/styles'
+import { Box, Button, CircularProgress, Typography } from '@mui/material'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
-import { Close } from '@mui/icons-material'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import dayjs from 'dayjs'
 
@@ -18,12 +15,12 @@ interface ReportListFiltersProps {
   filters: ReportListFilter
   onChange: (filters: ReportListFilter) => void
   loading: boolean
-  containerRef: any
+  containerRef: React.RefObject<Element>
   setOpenReportGenerationDialog: (open: boolean) => void
 }
 
 export const ReportListFilters = (props: ReportListFiltersProps) => {
-  const { containerRef, filters, onChange, loading, setOpenReportGenerationDialog, ...other } = props
+  const { filters, onChange, loading, setOpenReportGenerationDialog } = props
   const [currentFilters, setCurrentFilters] = useState(filters)
   const [filtersValid, setFiltersValid] = useState([true, ''])
 

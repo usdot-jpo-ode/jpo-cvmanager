@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, ChangeEvent } from 'react'
 import Slider from '@mui/material/Slider'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -27,28 +27,28 @@ import { format } from 'date-fns'
 import JSZip from 'jszip'
 import {
   BSM_COUNTS_CHART_DATA,
+  cleanUpLiveStreaming,
   downloadMapData,
   handleImportedMapMessageData,
-  onTimeQueryChanged,
   selectBsmEventsByMinute,
-  selectBsmTrailLength,
   selectDecoderModeEnabled,
   selectPlaybackModeActive,
   selectSliderTimeValue,
-  setBsmTrailLength,
-  setSliderValue,
+  setSliderValueDeciseconds,
   setTimeWindowSeconds,
-  toggleLiveDataActive,
+  setLiveDataActive,
   togglePlaybackModeActive,
+  updateQueryParams,
+  selectLiveSpatLatestLatencyMs,
 } from './map-slice'
 import {
   selectLiveDataActive,
   selectMapSpatTimes,
   selectQueryParams,
-  selectSliderValue,
+  selectSliderValueDeciseconds,
   selectTimeWindowSeconds,
 } from './map-slice'
-import { getTimeRange } from './utilities/map-utils'
+import { getTimeRangeDeciseconds } from './utilities/map-utils'
 import {
   selectIntersections,
   setSelectedIntersection,
@@ -77,7 +77,7 @@ const formatMinutesAfterMidnightTime = (minutes: number) => {
   return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`
 }
 
-const TimelineTooltip = ({ active, payload, label }) => {
+const TimelineTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     return (
       <div
@@ -144,7 +144,7 @@ const TimelineAxisTick: React.FC<TimelineAxisTickProps> = ({ x = 0, y = 0, paylo
 }
 
 const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(
-  ({ theme }) => ({})
+  () => ({})
 )
 
 const VisuallyHiddenInput = styled('input')({
@@ -159,86 +159,53 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 })
 
-const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({}))
+const AccordionDetails = styled(MuiAccordionDetails)(() => ({}))
 
 function ControlPanel() {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
 
   const queryParams = useSelector(selectQueryParams)
   const timeWindowSeconds = useSelector(selectTimeWindowSeconds)
-  const sliderValue = useSelector(selectSliderValue)
+  const sliderValueDeciseconds = useSelector(selectSliderValueDeciseconds)
   const mapSpatTimes = useSelector(selectMapSpatTimes)
   const liveDataActive = useSelector(selectLiveDataActive)
   const sliderTimeValue = useSelector(selectSliderTimeValue)
-  const bsmTrailLength = useSelector(selectBsmTrailLength)
   const selectedIntersectionId = useSelector(selectSelectedIntersectionId)
   const intersectionsList = useSelector(selectIntersections)
   const decoderModeEnabled = useSelector(selectDecoderModeEnabled)
 
   const bsmEventsByMinute = useSelector(selectBsmEventsByMinute)
   const playbackModeActive = useSelector(selectPlaybackModeActive)
+  const liveSpatLatestLatencyMs = useSelector(selectLiveSpatLatestLatencyMs)
 
   const theme = useTheme()
 
   const getQueryParams = ({ startDate, endDate, eventDate }: { startDate: Date; endDate: Date; eventDate: Date }) => {
     return {
       eventTime: eventDate,
-      timeBefore: Math.round((eventDate.getTime() - startDate.getTime()) / 1000),
-      timeAfter: Math.round((endDate.getTime() - eventDate.getTime()) / 1000),
+      timeBeforeSeconds: Math.round((eventDate.getTime() - startDate.getTime()) / 1000),
+      timeAfterSeconds: Math.round((endDate.getTime() - eventDate.getTime()) / 1000),
     }
   }
 
-  const [bsmTrailLengthLocal, setBsmTrailLengthLocal] = useState<string | undefined>(bsmTrailLength.toString())
-  const [eventTime, setEventTime] = useState<dayjs.Dayjs | null>(
-    dayjs(getQueryParams(queryParams).eventTime.toString())
-  )
-  const [timeBefore, setTimeBefore] = useState<string | undefined>(getQueryParams(queryParams).timeBefore.toString())
-  const [timeAfter, setTimeAfter] = useState<string | undefined>(getQueryParams(queryParams).timeAfter.toString())
+  const queryParamTimes = useMemo(() => getQueryParams(queryParams), [queryParams])
+
+  const [eventTime, setEventTime] = useState<dayjs.Dayjs | null>(dayjs(queryParamTimes.eventTime.toString()))
+  const [timeBeforeSeconds, setTimeBeforeSeconds] = useState<number | undefined>(queryParamTimes.timeBeforeSeconds)
+  const [timeAfterSeconds, setTimeAfterSeconds] = useState<number | undefined>(queryParamTimes.timeAfterSeconds)
   const [timeWindowSecondsLocal, setTimeWindowSecondsLocal] = useState<string | undefined>(
     timeWindowSeconds?.toString()
   )
 
   const [isExpandedTimeQuery, setIsExpandedTimeQuery] = useState(true)
   const [isExpandedDownload, setIsExpandedDownload] = useState(false)
-  const [isExpandedSettings, setIsExpandedSettings] = useState(false)
   const [isExpandedDecoder, setIsExpandedDecoder] = useState(false)
-
-  const isQueryParamFormValid = () => {
-    try {
-      const d = eventTime?.toDate().getTime()!
-      return (
-        !isNaN(d) &&
-        getNumber(timeBefore) !== null &&
-        getNumber(timeAfter) !== null &&
-        getNumber(timeWindowSecondsLocal) !== null
-      )
-    } catch (e) {
-      return false
-    }
-  }
-
-  const isNewQueryAllowed = useMemo(() => {
-    if (!isQueryParamFormValid()) return false
-    const eventTimeDate = eventTime?.toDate()
-    const timeBeforeNum = getNumber(timeBefore)
-    const timeAfterNum = getNumber(timeAfter)
-    const currentQueryParams = {
-      eventDate: eventTimeDate,
-      startDate: new Date(eventTimeDate.getTime() - (timeBeforeNum ?? 0) * 1000),
-      endDate: new Date(eventTimeDate.getTime() + (timeAfterNum ?? 0) * 1000),
-    }
-    return (
-      currentQueryParams.eventDate.getTime() !== queryParams.eventDate.getTime() ||
-      currentQueryParams.startDate.getTime() !== queryParams.startDate.getTime() ||
-      currentQueryParams.endDate.getTime() !== queryParams.endDate.getTime()
-    )
-  }, [eventTime, timeBefore, timeAfter, queryParams])
 
   useEffect(() => {
     const newDateParams = getQueryParams(queryParams)
     setEventTime(dayjs(newDateParams.eventTime))
-    setTimeBefore(newDateParams.timeBefore.toString())
-    setTimeAfter(newDateParams.timeAfter.toString())
+    setTimeBeforeSeconds(newDateParams.timeBeforeSeconds)
+    setTimeAfterSeconds(newDateParams.timeAfterSeconds)
   }, [queryParams])
 
   useEffect(() => {
@@ -256,15 +223,15 @@ function ControlPanel() {
   const openMessageData = (files: FileList | null) => {
     if (files == null) return
     const file = files[0]
-    var jsZip = new JSZip()
+    const jsZip = new JSZip()
     const messageData: {
       mapData: ProcessedMap[]
-      bsmData: OdeBsmData[]
+      bsmData: BsmFeatureCollection
       spatData: ProcessedSpat[]
       notificationData: any
     } = {
       mapData: [],
-      bsmData: [],
+      bsmData: { type: 'FeatureCollection', features: [] },
       spatData: [],
       notificationData: undefined,
     }
@@ -320,10 +287,10 @@ function ControlPanel() {
         </button>
         <Slider
           sx={{ ml: 2, width: 'calc(100% - 80px)' }}
-          value={sliderValue}
-          onChange={(event: Event, value: number | number[], activeThumb: number) => dispatch(setSliderValue(value))}
+          value={sliderValueDeciseconds}
+          onChange={(event: Event, value: number | number[]) => dispatch(setSliderValueDeciseconds(value))}
           min={0}
-          max={getTimeRange(queryParams.startDate, queryParams.endDate)}
+          max={getTimeRangeDeciseconds(queryParams.startDate, queryParams.endDate)}
           valueLabelDisplay="auto"
           disableSwap
           color="primary"
@@ -382,19 +349,19 @@ function ControlPanel() {
                 <Grid2 size={{ xs: 12, md: 5 }}>
                   <FormControl fullWidth>
                     <TextField
-                      label="Time Before Event"
-                      name="timeRangeBefore"
+                      label="Time Render Window"
+                      name="timeRenderWindow"
                       type="number"
                       sx={{ mt: 1 }}
                       onChange={(e) => {
-                        setTimeBefore(e.target.value)
+                        setTimeWindowSecondsLocal(e.target.value)
                       }}
                       slotProps={{
                         input: {
                           endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
                         },
                       }}
-                      value={timeBefore}
+                      value={timeWindowSeconds.toString()}
                     />
                   </FormControl>
                 </Grid2>
@@ -415,32 +382,13 @@ function ControlPanel() {
                 <Grid2 size={{ xs: 12, md: 5 }}>
                   <FormControl fullWidth>
                     <TextField
-                      label="Time After Event"
-                      name="timeRangeAfter"
-                      type="number"
-                      sx={{ mt: 1 }}
-                      onChange={(e) => {
-                        setTimeAfter(e.target.value)
-                      }}
-                      slotProps={{
-                        input: {
-                          endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
-                        },
-                      }}
-                      value={timeAfter}
-                    />
-                  </FormControl>
-                </Grid2>
-                <Grid2 size={{ xs: 12, md: 5 }}>
-                  <FormControl fullWidth>
-                    <TextField
-                      label="Time Render Window"
-                      name="timeRangeAfter"
+                      label="Time Before Event"
+                      name="timeRangeBefore"
                       type="number"
                       sx={{ mt: 1 }}
                       onChange={(e) => {
                         if (Number.isInteger(Number(e.target.value))) {
-                          dispatch(setTimeWindowSeconds(parseInt(e.target.value)))
+                          setTimeBeforeSeconds(parseInt(e.target.value))
                         }
                       }}
                       slotProps={{
@@ -448,7 +396,28 @@ function ControlPanel() {
                           endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
                         },
                       }}
-                      value={timeWindowSeconds}
+                      value={timeBeforeSeconds}
+                    />
+                  </FormControl>
+                </Grid2>
+                <Grid2 size={{ xs: 12, md: 5 }}>
+                  <FormControl fullWidth>
+                    <TextField
+                      label="Time After Event"
+                      name="timeRangeAfter"
+                      type="number"
+                      sx={{ mt: 1 }}
+                      onChange={(e) => {
+                        if (Number.isInteger(Number(e.target.value))) {
+                          setTimeAfterSeconds(parseInt(e.target.value))
+                        }
+                      }}
+                      slotProps={{
+                        input: {
+                          endAdornment: <InputAdornment position="end">seconds</InputAdornment>,
+                        },
+                      }}
+                      value={timeAfterSeconds}
                     />
                   </FormControl>
                 </Grid2>
@@ -456,13 +425,41 @@ function ControlPanel() {
               <Button
                 sx={{ mt: 2 }}
                 onClick={() => {
-                  dispatch(toggleLiveDataActive())
+                  if (liveDataActive) {
+                    dispatch(cleanUpLiveStreaming())
+                    dispatch(setLiveDataActive(false))
+                  } else {
+                    dispatch(setLiveDataActive(true))
+                  }
                 }}
                 color="info"
                 variant="outlined"
                 className="capital-case"
               >
                 {liveDataActive ? 'Stop Live Data' : 'Render Live Data'}
+              </Button>
+              <Button
+                sx={{ mt: 2, ml: 2 }}
+                onClick={() => {
+                  dispatch(
+                    updateQueryParams({
+                      ...queryParams,
+                      eventDate: eventTime.toDate(),
+                      startDate: new Date(eventTime.toDate().getTime() - timeBeforeSeconds * 1000),
+                      endDate: new Date(eventTime.toDate().getTime() + timeAfterSeconds * 1000),
+                    })
+                  )
+                }}
+                color="info"
+                variant="outlined"
+                className="capital-case"
+                disabled={
+                  queryParamTimes.eventTime.getTime() === eventTime.toDate().getTime() &&
+                  queryParamTimes.timeBeforeSeconds === timeBeforeSeconds &&
+                  queryParamTimes.timeAfterSeconds === timeAfterSeconds
+                }
+              >
+                Update Time Range
               </Button>
             </Box>
           </AccordionDetails>
@@ -491,13 +488,19 @@ function ControlPanel() {
               </Typography>
               <Typography fontSize="16px">
                 MAP Message Time:{' '}
-                {mapSpatTimes.mapTime === 0 ? 'No Data' : format(mapSpatTimes.mapTime * 1000, 'MM/dd/yyyy HH:mm:ss')}
+                {!mapSpatTimes.mapTime ? 'No Data' : format(mapSpatTimes.mapTime, 'MM/dd/yyyy HH:mm:ss')}
               </Typography>
 
               <Typography fontSize="16px">
                 SPAT Message Time:{' '}
-                {mapSpatTimes.spatTime === 0 ? 'No Data' : format(mapSpatTimes.spatTime * 1000, 'MM/dd/yyyy HH:mm:ss')}
+                {!mapSpatTimes.spatTime ? 'No Data' : format(mapSpatTimes.spatTime, 'MM/dd/yyyy HH:mm:ss')}
               </Typography>
+              {liveDataActive && (
+                <Typography fontSize="16px">
+                  Latest spat message age:{' '}
+                  {(liveSpatLatestLatencyMs == undefined ? 'N/A' : liveSpatLatestLatencyMs / 1000) + ' seconds'}
+                </Typography>
+              )}
               <Typography fontSize="16px">Activity Chart for {format(sliderTimeValue.start, 'MM/dd/yyyy')}:</Typography>
 
               <ResponsiveContainer
@@ -530,9 +533,7 @@ function ControlPanel() {
                   <Bar dataKey="count" barSize={10} minPointSize={10}></Bar>
                   <Tooltip
                     cursor={<TimelineCursor bsmEventsByMinute={[]} />}
-                    content={({ active, payload, label }) => (
-                      <TimelineTooltip active={active} payload={payload} label={label} />
-                    )}
+                    content={({ active, payload }) => <TimelineTooltip active={active} payload={payload} />}
                   />
                 </BarChart>
               </ResponsiveContainer>

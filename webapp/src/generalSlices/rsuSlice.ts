@@ -16,7 +16,7 @@ import { SelectedSrm } from '../models/Srm'
 import { CountsListElement } from '../models/Rsu'
 import { MessageType } from '../models/MessageTypes'
 import { toast } from 'react-hot-toast'
-const { DateTime } = require('luxon')
+import { DateTime } from 'luxon'
 
 const currentDate = DateTime.local()
 
@@ -68,8 +68,6 @@ export const getRsuData = createAsyncThunk(
   'rsu/getRsuData',
   async (_, { getState, dispatch }) => {
     const currentState = getState() as RootState
-    const token = selectToken(currentState)
-    const organization = selectOrganizationName(currentState)
 
     await Promise.all([
       dispatch(resetCountsDates()),
@@ -180,9 +178,13 @@ export const updateRowData = createAsyncThunk(
     const token = selectToken(currentState)
     const organization = selectOrganizationName(currentState)
 
-    const countsMsgType = data.hasOwnProperty('message') ? data['message'] : currentState.rsu.value.countsMsgType
-    const startDate = data.hasOwnProperty('start') ? data['start'] : currentState.rsu.value.startDate
-    const endDate = data.hasOwnProperty('end') ? data['end'] : currentState.rsu.value.endDate
+    const countsMsgType = Object.prototype.hasOwnProperty.call(data, 'message')
+      ? data['message']
+      : currentState.rsu.value.countsMsgType
+    const startDate = Object.prototype.hasOwnProperty.call(data, 'start')
+      ? data['start']
+      : currentState.rsu.value.startDate
+    const endDate = Object.prototype.hasOwnProperty.call(data, 'end') ? data['end'] : currentState.rsu.value.endDate
 
     const warningMessage = new Date(endDate).getTime() - new Date(startDate).getTime() > 86400000
 
@@ -192,7 +194,7 @@ export const updateRowData = createAsyncThunk(
       end: endDate,
     })
 
-    var countList = Object.entries(rsuCountsData).map(([key, value]) => {
+    const countList = Object.entries(rsuCountsData).map(([key, value]) => {
       return {
         key: key,
         rsu: key,
@@ -400,8 +402,8 @@ export const rsuSlice = createSlice({
       .addCase(getRsuLastOnline.fulfilled, (state, action) => {
         state.loading = false
         const payload = action.payload as RsuOnlineStatusRespSingle
-        if (state.value.rsuOnlineStatus.hasOwnProperty(payload.ip)) {
-          ;(state.value.rsuOnlineStatus as RsuOnlineStatusRespMultiple)[payload.ip]['last_online'] = payload.last_online
+        if (Object.prototype.hasOwnProperty.call(state.value.rsuOnlineStatus, payload.ip)) {
+          (state.value.rsuOnlineStatus as RsuOnlineStatusRespMultiple)[payload.ip]['last_online'] = payload.last_online
         }
       })
       .addCase(getRsuLastOnline.rejected, (state) => {

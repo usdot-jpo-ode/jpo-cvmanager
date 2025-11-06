@@ -7,9 +7,9 @@ services:
       context: webapp
       dockerfile: Dockerfile
       args:
-        API_URI: ${WEBAPP_DOMAIN} # e.g. http://localhost
+        API_URI: ${API_ENDPOINT}
         MAPBOX_TOKEN: ${MAPBOX_TOKEN}
-        KEYCLOAK_HOST_URL: ${KEYCLOAK_DOMAIN} # e.g. http://localhost
+        KEYCLOAK_HOST_URL: ${KEYCLOAK_ENDPOINT}
         COUNT_MESSAGE_TYPES: ${COUNTS_MSG_TYPES}
         VIEWER_MESSAGE_TYPES: ${VIEWER_MSG_TYPES}
         DOT_NAME: ${DOT_NAME}

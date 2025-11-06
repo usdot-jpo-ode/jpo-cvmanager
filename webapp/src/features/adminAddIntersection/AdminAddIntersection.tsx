@@ -70,9 +70,11 @@ const AdminAddIntersection = () => {
 
   const handleFormSubmit = (data: AdminAddIntersectionForm) => {
     dispatch(submitForm({ data, reset })).then((data: any) => {
-      data.payload.success
-        ? notifySuccess(data.payload.message)
-        : notifyError('Failed to add Intersection due to error: ' + data.payload.message)
+      if (data.payload.success) {
+        notifySuccess(data.payload.message)
+      } else {
+        notifyError('Failed to add Intersection due to error: ' + data.payload.message)
+      }
     })
     setOpen(false)
     navigate('/dashboard/admin/intersections')
@@ -232,7 +234,7 @@ const AdminAddIntersection = () => {
                 multiple
                 value={selectedOrganizations.map((org) => org.name)}
                 onChange={(event) => {
-                  const selectedOrgs = event.target.value as String[]
+                  const selectedOrgs = event.target.value as string[]
                   dispatch(updateSelectedOrganizations(organizations.filter((org) => selectedOrgs.includes(org.name))))
                 }}
               >
@@ -257,10 +259,8 @@ const AdminAddIntersection = () => {
                 multiple
                 value={selectedRsus.map((rsu) => rsu.name)}
                 onChange={(event) => {
-                  const selectedRsus = event.target.value as String[]
-                  console.log('selectedRsus', selectedRsus)
-                  var filteredRsus = rsus.filter((rsu) => selectedRsus.includes(rsu.name))
-                  console.log('filteredRsus', filteredRsus)
+                  const selectedRsus = event.target.value as string[]
+                  const filteredRsus = rsus.filter((rsu) => selectedRsus.includes(rsu.name))
                   dispatch(updateSelectedRsus(rsus.filter((rsu) => selectedRsus.includes(rsu.name))))
                 }}
               >

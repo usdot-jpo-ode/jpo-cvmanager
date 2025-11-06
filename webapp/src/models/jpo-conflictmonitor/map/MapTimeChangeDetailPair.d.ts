@@ -1,1 +1,1 @@
-type MapTimeChangeDetailPair = {}
+type MapTimeChangeDetailPair = object

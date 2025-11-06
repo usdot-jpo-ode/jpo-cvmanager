@@ -33,26 +33,26 @@ interface Item {
 // TODO: Add processing_time_period event type when supported by the API
 const EVENT_TYPES: Item[] = [
   { label: 'All', value: 'All' },
-  { label: 'ConnectionOfTravelEvent', value: 'connection_of_travel' },
-  { label: 'IntersectionReferenceAlignmentEvent', value: 'intersection_reference_alignment' },
-  { label: 'LaneDirectionOfTravelEvent', value: 'lane_direction_of_travel' },
-  { label: 'SignalGroupAlignmentEvent', value: 'signal_group_alignment' },
-  { label: 'SignalStateConflictEvent', value: 'signal_state_conflict' },
-  { label: 'StopLinePassageEvent', value: 'stop_line_passage' },
-  { label: 'StopLineStopEvent', value: 'stop_line_stop' },
-  { label: 'TimeChangeDetailsEvent', value: 'time_change_details' },
-  { label: 'MapMinimumDataEvent', value: 'map_minimum_data' },
-  { label: 'SpatMinimumDataEvent', value: 'spat_minimum_data' },
-  { label: 'MapBroadcastRateEvent', value: 'map_broadcast_rate' },
-  { label: 'SpatBroadcastRateEvent', value: 'spat_broadcast_rate' },
+  { label: 'ConnectionOfTravelEvent', value: 'connection-of-travel' },
+  { label: 'IntersectionReferenceAlignmentEvent', value: 'intersection-reference-alignment' },
+  { label: 'LaneDirectionOfTravelEvent', value: 'lane-direction-of-travel' },
+  { label: 'SignalGroupAlignmentEvent', value: 'signal-group-alignment' },
+  { label: 'SignalStateConflictEvent', value: 'signal-state-conflict' },
+  { label: 'StopLinePassageEvent', value: 'stop-line-passage' },
+  { label: 'StopLineStopEvent', value: 'stop-line-stop' },
+  { label: 'TimeChangeDetailsEvent', value: 'time-change-details' },
+  { label: 'MapMinimumDataEvent', value: 'map-minimum-data' },
+  { label: 'SpatMinimumDataEvent', value: 'spat-minimum-data' },
+  { label: 'MapBroadcastRateEvent', value: 'map-broadcast-rate' },
+  { label: 'SpatBroadcastRateEvent', value: 'spat-broadcast-rate' },
 ]
 
 const ASSESSMENT_TYPES: Item[] = [
   { label: 'All', value: 'All' },
-  { label: 'StopLinePassageAssessment', value: 'stop_line_passage_assessment' },
-  { label: 'StopLineStopAssessment', value: 'stop_line_stop_assessment' },
-  { label: 'LaneDirectionOfTravelAssessment', value: 'lane_direction_of_travel' },
-  { label: 'ConnectionOfTravelAssessment', value: 'connection_of_travel' },
+  { label: 'StopLinePassageAssessment', value: 'stop-line-passage-assessment' },
+  { label: 'StopLineStopAssessment', value: 'stop-line-stop-assessment' },
+  { label: 'LaneDirectionOfTravelAssessment', value: 'lane-direction-of-travel' },
+  { label: 'ConnectionOfTravelAssessment', value: 'connection-of-travel' },
 ]
 
 export const DataSelectorEditForm = (props: { onQuery: (query: any) => void; onVisualize: (query: any) => void }) => {
@@ -103,7 +103,7 @@ export const DataSelectorEditForm = (props: { onQuery: (query: any) => void; onV
     },
   })
 
-  const onTypeChange = (newType) => {
+  const onTypeChange = () => {
     formik.setFieldValue('eventTypes', [] as Item[])
     formik.setFieldValue('assessmentTypes', [] as Item[])
   }

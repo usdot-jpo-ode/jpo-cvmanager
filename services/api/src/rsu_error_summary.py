@@ -6,11 +6,17 @@ from marshmallow import Schema
 from marshmallow import fields
 
 from common.emailSender import EmailSender
+from common.auth_tools import (
+    ORG_ROLE_LITERAL,
+    require_permission,
+)
+
 
 class RSUErrorSummarySchema(Schema):
     emails = fields.Str(required=True)
     subject = fields.Str(required=True)
     message = fields.Str(required=True)
+
 
 class RSUErrorSummaryResource(Resource):
     options_headers = {
@@ -31,15 +37,16 @@ class RSUErrorSummaryResource(Resource):
         # CORS support
         return ("", 204, self.options_headers)
 
+    @require_permission(required_role=ORG_ROLE_LITERAL.OPERATOR)
     def post(self):
         logging.debug("RSUErrorSummary POST requested")
+
         # Check for main body values
         if not request.json:
             logging.error("No JSON body provided")
             abort(400)
 
         self.validate_input(request.json)
-
         try:
             email_addresses = request.json["emails"].split(",")
             subject = request.json["subject"]

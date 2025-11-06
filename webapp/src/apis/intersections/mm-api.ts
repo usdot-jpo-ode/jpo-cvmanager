@@ -2,8 +2,8 @@ import { authApiHelper } from './api-helper-cviz'
 
 class MessageMonitorApi {
   async getIntersections({ token }): Promise<IntersectionReferenceData[]> {
-    var response = await authApiHelper.invokeApi({
-      path: '/intersection/list',
+    const response = await authApiHelper.invokeApi({
+      path: '/intersections',
       token: token,
       failureMessage: 'Failed to retrieve intersection list',
       tag: 'intersection',
@@ -93,8 +93,8 @@ class MessageMonitorApi {
     if (latest) queryParams['latest'] = latest.toString()
     if (compact) queryParams['compact'] = compact.toString()
 
-    var response: PagedResponse<ProcessedSpat> = await authApiHelper.invokeApi({
-      path: '/spat/json',
+    const response: PagedResponse<ProcessedSpat> = await authApiHelper.invokeApi({
+      path: '/data/processed-spat',
       token: token,
       queryParams,
       abortController,
@@ -125,8 +125,8 @@ class MessageMonitorApi {
     if (endTime) queryParams['end_time_utc_millis'] = endTime.getTime().toString()
     if (latest !== undefined) queryParams['latest'] = latest.toString()
 
-    var response = await authApiHelper.invokeApi({
-      path: '/map/json',
+    const response = await authApiHelper.invokeApi({
+      path: '/data/processed-map',
       token: token,
       queryParams,
       abortController,
@@ -154,7 +154,7 @@ class MessageMonitorApi {
     lat?: number
     distance?: number
     abortController?: AbortController
-  }): Promise<OdeBsmData[]> {
+  }): Promise<ProcessedBsmFeature[]> {
     const queryParams: Record<string, string> = {}
     if (vehicleId) queryParams['origin_ip'] = vehicleId
     if (startTime) queryParams['start_time_utc_millis'] = startTime.getTime().toString()
@@ -163,15 +163,15 @@ class MessageMonitorApi {
     if (lat) queryParams['latitude'] = lat.toString()
     if (distance) queryParams['distance'] = distance.toString()
 
-    var response: PagedResponse<OdeBsmData> = await authApiHelper.invokeApi({
-      path: '/bsm/json',
+    const response: PagedResponse<ProcessedBsmFeature> = await authApiHelper.invokeApi({
+      path: '/data/processed-bsm',
       token: token,
       queryParams,
       abortController,
       failureMessage: 'Failed to retrieve BSM messages',
       tag: 'intersection',
     })
-    return response?.content ?? ([] as OdeBsmData[])
+    return response?.content ?? ([] as ProcessedBsmFeature[])
   }
 
   async getMessageCount(
@@ -182,7 +182,7 @@ class MessageMonitorApi {
     endTime: Date,
     abortController?: AbortController
   ): Promise<number> {
-    var queryParams: Record<string, string> = {
+    const queryParams: Record<string, string> = {
       start_time_utc_millis: startTime.getTime().toString(),
       end_time_utc_millis: endTime.getTime().toString(),
       test: 'false',
@@ -209,7 +209,7 @@ class MessageMonitorApi {
     }
 
     const response: PagedResponse<number> = await authApiHelper.invokeApi({
-      path: `/${messageType}/count`,
+      path: `/data/${messageType}/count`,
       token: token,
       queryParams: queryParams,
       abortController,

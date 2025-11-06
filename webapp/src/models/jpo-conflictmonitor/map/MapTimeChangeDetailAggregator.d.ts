@@ -1,1 +1,1 @@
-type MapTimeChangeDetailAggregator = {}
+type MapTimeChangeDetailAggregator = object

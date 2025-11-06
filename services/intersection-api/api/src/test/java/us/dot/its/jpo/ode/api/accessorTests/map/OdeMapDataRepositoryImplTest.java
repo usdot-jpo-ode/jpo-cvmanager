@@ -27,11 +27,11 @@ import static org.mockito.Mockito.when;
 
 import us.dot.its.jpo.ode.api.accessors.map.OdeMapDataRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.AggregationResult;
-import us.dot.its.jpo.ode.model.OdeMapData;
+import us.dot.its.jpo.ode.model.OdeMessageFrameData;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
@@ -42,7 +42,7 @@ import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 @AutoConfigureEmbeddedDatabase
 public class OdeMapDataRepositoryImplTest {
 
-    @SpyBean
+    @MockitoSpyBean
     private MongoTemplate mongoTemplate;
 
     @Mock
@@ -52,7 +52,7 @@ public class OdeMapDataRepositoryImplTest {
     private Page<Document> mockDocumentPage;
 
     @Mock
-    private Page<OdeMapData> mockPage;
+    private Page<OdeMessageFrameData> mockPage;
 
     @InjectMocks
     private OdeMapDataRepositoryImpl repository;
@@ -93,12 +93,26 @@ public class OdeMapDataRepositoryImplTest {
                 any(Criteria.class),
                 any(Sort.class),
                 any(),
-                eq(OdeMapData.class))).thenReturn(mockPage);
+                eq(OdeMessageFrameData.class))).thenReturn(mockPage);
         PageRequest pageRequest = PageRequest.of(0, 1);
         doCallRealMethod().when(repo).find(1, null, null, pageRequest);
 
-        Page<OdeMapData> results = repo.find(1, null, null, pageRequest);
+        Page<OdeMessageFrameData> results = repo.find(1, null, null, pageRequest);
 
         assertThat(results).isEqualTo(mockPage);
+    }
+
+    @Test
+    void testFindLatest() {
+        OdeMessageFrameData event = new OdeMessageFrameData();
+
+        doReturn(event).when(mongoTemplate).findOne(any(Query.class), eq(OdeMessageFrameData.class),
+                        anyString());
+
+        Page<OdeMessageFrameData> page = repository.findLatest(intersectionID, startTime, endTime);
+
+        assertThat(page.getContent()).hasSize(1);
+        verify(mongoTemplate).findOne(any(Query.class), eq(OdeMessageFrameData.class),
+                        eq("OdeMapJson"));
     }
 }

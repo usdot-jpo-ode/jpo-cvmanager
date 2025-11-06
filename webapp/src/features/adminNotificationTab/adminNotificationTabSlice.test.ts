@@ -59,7 +59,7 @@ describe('async thunks', () => {
 
   describe('getUserNotifications', () => {
     it('returns and calls the api correctly', async () => {
-      let dispatch = jest.fn()
+      const dispatch = jest.fn()
       const getState = jest.fn().mockReturnValue({
         user: {
           value: {
@@ -70,7 +70,7 @@ describe('async thunks', () => {
       const action = getUserNotifications()
 
       apiHelper._getDataWithCodes = jest.fn().mockReturnValue({ status: 200, message: 'message', body: 'data' })
-      let resp = await action(dispatch, getState, undefined)
+      const resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual('data')
     })
 
@@ -88,12 +88,11 @@ describe('async thunks', () => {
 
     it('Updates the state correctly fulfilled', async () => {
       const loading = false
-      let success = true
-      let notification_data = [
+      const notification_data = [
         { first_name: 'first-name', last_name: 'last-name', email: 'test@gmail.com', email_type: 'some-type' },
         { first_name: 'first-name', last_name: 'last-name', email: 'test2@gmail.com', email_type: 'some-type-2' },
       ]
-      let tableData = [
+      const tableData = [
         {
           email: 'test@gmail.com',
           email_type: 'some-type',
@@ -107,7 +106,7 @@ describe('async thunks', () => {
           last_name: 'last-name',
         },
       ]
-      let state = reducer(initialState, {
+      const state = reducer(initialState, {
         type: 'adminNotificationTab/getUserNotifications/fulfilled',
         payload: { notification_data },
       })
@@ -129,7 +128,7 @@ describe('async thunks', () => {
 
   describe('deleteNotifications', () => {
     it('returns and calls the api correctly', async () => {
-      let dispatch = jest.fn()
+      const dispatch = jest.fn()
       const getState = jest.fn().mockReturnValue({
         user: {
           value: {
@@ -158,7 +157,7 @@ describe('async thunks', () => {
         },
       ]
 
-      let action = deleteNotifications(data)
+      const action = deleteNotifications(data)
 
       apiHelper._deleteData = jest
         .fn()

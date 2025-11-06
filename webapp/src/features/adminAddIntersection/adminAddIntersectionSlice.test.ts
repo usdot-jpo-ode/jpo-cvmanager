@@ -63,7 +63,7 @@ describe('async thunks', () => {
 
   describe('getIntersectionCreationData', () => {
     it('returns and calls the api correctly', async () => {
-      let dispatch = jest.fn()
+      const dispatch = jest.fn()
       const getState = jest.fn().mockReturnValue({
         user: {
           value: {
@@ -73,9 +73,8 @@ describe('async thunks', () => {
       })
       const action = getIntersectionCreationData()
 
-      const apiJson = { data: 'data' }
       apiHelper._getData = jest.fn().mockReturnValue('_getData_response')
-      let resp = await action(dispatch, getState, undefined)
+      const resp = await action(dispatch, getState, undefined)
       expect(resp.payload).toEqual(undefined)
       expect(apiHelper._getData).toHaveBeenCalledWith({
         url: EnvironmentVars.adminAddIntersection,
@@ -137,7 +136,7 @@ describe('async thunks', () => {
       global.setTimeout = jest.fn((cb) => cb()) as any
       try {
         apiHelper._postData = jest.fn().mockReturnValue({ status: 200, message: 'message' })
-        let resp = await action(dispatch, getState, undefined)
+        const resp = await action(dispatch, getState, undefined)
         expect(resp.payload).toEqual({ success: true, message: '' })
         expect(apiHelper._postData).toHaveBeenCalledWith({
           url: EnvironmentVars.adminAddIntersection,
@@ -158,7 +157,7 @@ describe('async thunks', () => {
       global.setTimeout = jest.fn((cb) => cb()) as any
       try {
         apiHelper._postData = jest.fn().mockReturnValue({ status: 500, message: 'message' })
-        let resp = await action(dispatch, getState, undefined)
+        const resp = await action(dispatch, getState, undefined)
         expect(resp.payload).toEqual({ success: false, message: 'message' })
         expect(apiHelper._postData).toHaveBeenCalledWith({
           url: EnvironmentVars.adminAddIntersection,
@@ -241,7 +240,7 @@ describe('async thunks', () => {
       })
       const data = { data: 'data' } as any
 
-      let reset = jest.fn()
+      const reset = jest.fn()
       let action = submitForm({ data, reset })
       let resp = await action(dispatch, getState, undefined)
       expect(dispatch).toHaveBeenCalledTimes(2)

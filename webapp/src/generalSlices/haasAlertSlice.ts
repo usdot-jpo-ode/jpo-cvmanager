@@ -23,7 +23,6 @@ export const getHaasLocationData = createAsyncThunk(
         ...(params.limit && { limit: params.limit.toString() }),
       }
       const response = await HaasApi.getHaasLocationData({ token, query_params })
-      console.debug(response)
       // Validate response structure
       if (!response?.data?.features) {
         throw new Error('Invalid response format from server')

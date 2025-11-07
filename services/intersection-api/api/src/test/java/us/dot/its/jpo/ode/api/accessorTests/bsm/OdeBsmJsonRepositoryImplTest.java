@@ -115,7 +115,7 @@ public class OdeBsmJsonRepositoryImplTest {
         // Assert the Match operation Criteria
         assertThat(capturedCriteria.getCriteriaObject().toJson())
                 .isEqualTo(String.format(
-                        "{\"metadata.originIp\": \"%s\", \"payload.data.coreData.id\": \"%s\", \"metadata.odeReceivedAt\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}, \"payload.data.coreData.position.latitude\": {\"$gte\": 9.995479521105077, \"$lte\": 10.004520477669782}, \"payload.data.coreData.position.longitude\": {\"$gte\": 9.995439594125543, \"$lte\": 10.004560405874457}}",
+                        "{\"metadata.originIp\": \"%s\", \"payload.data.value.BasicSafetyMessage.coreData.id\": \"%s\", \"metadata.odeReceivedAt\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}, \"payload.data.value.BasicSafetyMessage.coreData.lat\": {\"$gte\": 99954795, \"$lte\": 100045204}, \"payload.data.value.BasicSafetyMessage.coreData.long\": {\"$gte\": 99954395, \"$lte\": 100045604}}",
                         originIp, vehicleId, startTimeString, endTimeString));
     }
 
@@ -145,7 +145,7 @@ public class OdeBsmJsonRepositoryImplTest {
         // Assert the Match operation Criteria
         assertThat(capturedCriteria.getCriteriaObject().toJson())
                 .isEqualTo(String.format(
-                        "{\"metadata.originIp\": \"%s\", \"payload.data.coreData.id\": \"%s\", \"metadata.odeReceivedAt\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}, \"payload.data.coreData.position.latitude\": {\"$gte\": 9.995479521105077, \"$lte\": 10.004520477669782}, \"payload.data.coreData.position.longitude\": {\"$gte\": 9.995439594125543, \"$lte\": 10.004560405874457}}",
+                        "{\"metadata.originIp\": \"%s\", \"payload.data.value.BasicSafetyMessage.coreData.id\": \"%s\", \"metadata.odeReceivedAt\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}, \"payload.data.value.BasicSafetyMessage.coreData.lat\": {\"$gte\": 99954795, \"$lte\": 100045204}, \"payload.data.value.BasicSafetyMessage.coreData.long\": {\"$gte\": 99954395, \"$lte\": 100045604}}",
                         originIp, vehicleId, startTimeString, endTimeString));
 
         // Verify the Criteria passed to findPage
@@ -159,7 +159,7 @@ public class OdeBsmJsonRepositoryImplTest {
                             .isEqualTo(originIp);
 
                     // Verify VEHICLE_ID_FIELD
-                    assertThat(criteria.getCriteriaObject().get("payload.data.coreData.id"))
+                    assertThat(criteria.getCriteriaObject().get("payload.data.value.BasicSafetyMessage.coreData.id"))
                             .isEqualTo(vehicleId);
 
                     // Verify DATE_FIELD
@@ -172,16 +172,15 @@ public class OdeBsmJsonRepositoryImplTest {
 
                     // Verify latitude
                     Document latitudeField = (Document) criteria.getCriteriaObject()
-                            .get("payload.data.coreData.position.latitude");
-                    assertThat((Double) latitudeField.get("$gte")).isCloseTo(9.995, within(0.001));
-                    assertThat((Double) latitudeField.get("$lte")).isCloseTo(10.005, within(0.001));
+                            .get("payload.data.value.BasicSafetyMessage.coreData.lat");
+                    assertThat((Integer) latitudeField.get("$gte")).isCloseTo(99950000, within(10000));
+                    assertThat((Integer) latitudeField.get("$lte")).isCloseTo(100050000, within(100000));
 
                     // Verify longitude with tolerance
                     Document longitudeField = (Document) criteria.getCriteriaObject()
-                            .get("payload.data.coreData.position.longitude");
-                    assertThat((Double) longitudeField.get("$gte")).isCloseTo(9.995, within(0.001));
-                    assertThat((Double) longitudeField.get("$lte")).isCloseTo(10.005,
-                            within(0.001));
+                            .get("payload.data.value.BasicSafetyMessage.coreData.long");
+                    assertThat((Integer) longitudeField.get("$gte")).isCloseTo(99950000, within(10000));
+                    assertThat((Integer) longitudeField.get("$lte")).isCloseTo(100005000, within(100000));
 
                     return true;
                 }),
@@ -215,7 +214,7 @@ public class OdeBsmJsonRepositoryImplTest {
         // Assert the Match operation Criteria
         assertThat(capturedCriteria.getCriteriaObject().toJson())
                 .isEqualTo(String.format(
-                        "{\"metadata.originIp\": \"%s\", \"payload.data.coreData.id\": \"%s\", \"metadata.odeReceivedAt\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}}",
+                        "{\"metadata.originIp\": \"%s\", \"payload.data.value.BasicSafetyMessage.coreData.id\": \"%s\", \"metadata.odeReceivedAt\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}}",
                         originIp, vehicleId, startTimeString, endTimeString));
 
         // Verify the Criteria passed to findPage
@@ -229,7 +228,7 @@ public class OdeBsmJsonRepositoryImplTest {
                             .isEqualTo(originIp);
 
                     // Verify VEHICLE_ID_FIELD
-                    assertThat(criteria.getCriteriaObject().get("payload.data.coreData.id"))
+                    assertThat(criteria.getCriteriaObject().get("payload.data.value.BasicSafetyMessage.coreData.id"))
                             .isEqualTo(vehicleId);
 
                     // Verify DATE_FIELD
@@ -242,11 +241,11 @@ public class OdeBsmJsonRepositoryImplTest {
 
                     // Verify latitude
                     assertThat(criteria.getCriteriaObject()
-                            .get("payload.data.coreData.position.latitude")).isNull();
+                            .get("payload.data.value.BasicSafetyMessage.coreData.lat")).isNull();
 
                     // Verify longitude with tolerance
                     assertThat(criteria.getCriteriaObject()
-                            .get("payload.data.coreData.position.longitude")).isNull();
+                            .get("payload.data.value.BasicSafetyMessage.coreData.long")).isNull();
 
                     return true;
                 }),
@@ -290,7 +289,7 @@ public class OdeBsmJsonRepositoryImplTest {
                     assertThat(criteria.getCriteriaObject().get("metadata.originIp")).isNull();
 
                     // Verify VEHICLE_ID_FIELD
-                    assertThat(criteria.getCriteriaObject().get("payload.data.coreData.id"))
+                    assertThat(criteria.getCriteriaObject().get("payload.data.value.BasicSafetyMessage.coreData.id"))
                             .isNull();
 
                     // Verify DATE_FIELD
@@ -303,11 +302,11 @@ public class OdeBsmJsonRepositoryImplTest {
 
                     // Verify latitude
                     assertThat(criteria.getCriteriaObject()
-                            .get("payload.data.coreData.position.latitude")).isNull();
+                            .get("payload.data.value.BasicSafetyMessage.coreData.lat")).isNull();
 
                     // Verify longitude with tolerance
                     assertThat(criteria.getCriteriaObject()
-                            .get("payload.data.coreData.position.longitude")).isNull();
+                            .get("payload.data.value.BasicSafetyMessage.coreData.long")).isNull();
 
                     return true;
                 }),
@@ -355,18 +354,18 @@ public class OdeBsmJsonRepositoryImplTest {
         Aggregation capturedAggregation = aggregationCaptor.getValue();
 
         // Extract the MatchOperation from the Aggregation pipeline
-        Document pipeline = capturedAggregation.toPipeline(Aggregation.DEFAULT_CONTEXT).getFirst();
+        Document pipeline = capturedAggregation.toPipeline(Aggregation.DEFAULT_CONTEXT).get(0);
 
         // Assert the Match operation Criteria
         assertThat(pipeline.toJson())
                 .isEqualTo(String.format(
-                        "{\"$match\": {\"metadata.originIp\": \"%s\", \"payload.data.coreData.id\": \"%s\", \"metadata.odeReceivedAt\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}, \"payload.data.coreData.position.latitude\": {\"$gte\": 36.799549443581746, \"$lte\": 36.80045055638405}, \"payload.data.coreData.position.longitude\": {\"$gte\": -104.10056026011259, \"$lte\": -104.0994397398874}}}",
+                        "{\"$match\": {\"metadata.originIp\": \"%s\", \"payload.data.value.BasicSafetyMessage.coreData.id\": \"%s\", \"metadata.odeReceivedAt\": {\"$gte\": \"%s\", \"$lte\": \"%s\"}, \"payload.data.value.BasicSafetyMessage.coreData.lat\": {\"$gte\": 367995494, \"$lte\": 368004505}, \"payload.data.value.BasicSafetyMessage.coreData.long\": {\"$gte\": -1041005602, \"$lte\": -1040994397}}}",
                         originIp, vehicleId, startTimeString, endTimeString));
 
-        // OdeMessageFrameData message = findResponse.getContent().getFirst();
+        // OdeMessageFrameData message = findResponse.getContent().get(0);
 
         // Serialize results to JSON and compare with the original JSON
-        String resultJson = objectMapper.writeValueAsString(findResponse.getContent().getFirst());
+        String resultJson = objectMapper.writeValueAsString(findResponse.getContent().get(0));
 
         // Remove unused fields from each entry
         List<Document> expectedResult = sampleDocuments.stream().map(doc -> {
@@ -374,12 +373,12 @@ public class OdeBsmJsonRepositoryImplTest {
             doc.remove("recordGeneratedAt");
             return doc;
         }).toList();
-        String expectedJson = objectMapper.writeValueAsString(expectedResult.getFirst());
+        String expectedJson = objectMapper.writeValueAsString(expectedResult.get(0));
 
         // Compare JSON with ignored fields
         JSONAssert.assertEquals(expectedJson, resultJson, new CustomComparator(
                 JSONCompareMode.LENIENT, // Allows different key orders
-                new Customization("properties.timeStamp", (_, _) -> true),
-                new Customization("properties.odeReceivedAt", (_, _) -> true)));
+                new Customization("properties.timeStamp", (o1, o2) -> true),
+                new Customization("properties.odeReceivedAt", (o1, o2) -> true)));
     }
 }

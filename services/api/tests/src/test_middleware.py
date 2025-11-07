@@ -131,9 +131,7 @@ def test_middleware_class_call_exception(
     middleware_instance = middleware.Middleware(app)
 
     response = middleware_instance(environ, start_response)
-    print(type(response))
     response_body = b"".join(response).decode("utf-8")
-    print(response_body)
     assert str(response_body) == '{"error": "Unauthorized", "message": "test"}'
     app.assert_not_called()
     mock_request.assert_called_once_with(environ)

@@ -26,16 +26,12 @@ export const syncTimeOffset = createAsyncThunk('timeSync/syncTimeOffset', async 
   const end = Date.now() // Record the end time
 
   let rtt = end - start // Calculate round-trip time
-  if (rtt > MAX_ACCEPTABLE_RTT_MS) {
-    rtt = 0 // Discard RTT if too high
-  }
+  console.debug('Time sync round trip time (unused):', rtt, 'ms')
   const data = await response.json()
   const serverTime = new Date(data.dateTime + 'Z').getTime()
 
-  // Adjust for half the round-trip time
-  const correctedTime = serverTime + rtt / 2
   const currentTime = Date.now()
-  return correctedTime - currentTime
+  return serverTime - currentTime
 })
 
 const timeSyncSlice = createSlice({

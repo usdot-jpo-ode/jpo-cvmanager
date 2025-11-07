@@ -249,7 +249,6 @@ class UpdatePostgresRsuMessageForward(UpdatePostgresSnmpAbstractClass):
                         "active": "1" if value["Config Active"] == "Enabled" else "0",
                         "security": "1" if value["Full WSMP"] == "Enabled" else "0",
                     }
-                    logging.info(config)
                     config_list.append(config)
 
             config_obj[rsu["rsu_id"]] = config_list

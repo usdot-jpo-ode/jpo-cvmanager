@@ -5,7 +5,6 @@ import { RootState } from '../../../store'
 import DecoderApi from '../../../apis/intersections/decoder-api'
 import { getTimestamp } from '../map/map-component'
 import {
-  addInitialDataAbortController,
   addInitialDataAbortPromise,
   pullInitialData,
   resetMapView,

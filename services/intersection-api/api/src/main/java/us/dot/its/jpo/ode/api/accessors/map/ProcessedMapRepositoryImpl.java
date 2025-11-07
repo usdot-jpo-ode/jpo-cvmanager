@@ -210,7 +210,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
             data.setRsuIP(map.getProperties().getOriginIp());
 
             if (map.getProperties().getIntersectionName() != null
-                    && map.getProperties().getIntersectionName().isEmpty()) {
+                    && !map.getProperties().getIntersectionName().isEmpty()) {
                 data.setIntersectionName(map.getProperties().getIntersectionName());
             }
 
@@ -306,10 +306,4 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
 
         return results;
     }
-
-    @Override
-    public void add(ProcessedMap<LineString> item) {
-        mongoTemplate.insert(item, collectionName);
-    }
-
 }

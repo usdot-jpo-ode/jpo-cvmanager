@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import Grid2 from '@mui/material/Grid2'
 import { useSelector, useDispatch } from 'react-redux'
 import EnvironmentVars from '../EnvironmentVars'
@@ -27,7 +27,6 @@ import {
   FormControl,
   FormControlLabel,
   Menu,
-  MenuItem,
   Paper,
   Radio,
   RadioGroup,
@@ -97,9 +96,9 @@ const Header = () => {
                 <Box display="flex" flexDirection="column" alignItems="start">
                   <Typography fontSize="small" color={theme.palette.text.primary} className="capital-case museo-slab">
                     {userName}
-                    <Typography fontSize="small" color={theme.palette.text.primary} className="capital-case museo-slab">
-                      {organizationName}
-                    </Typography>
+                  </Typography>
+                  <Typography fontSize="small" color={theme.palette.text.primary} className="capital-case museo-slab">
+                    {organizationName}
                   </Typography>
                 </Box>
               </Button>
@@ -141,6 +140,7 @@ const Header = () => {
                     >
                       {(authLoginData?.data?.organizations ?? []).map((permission) => (
                         <FormControlLabel
+                          key={permission.name}
                           label={permission.name}
                           control={<Radio size="small" />}
                           value={permission.name}

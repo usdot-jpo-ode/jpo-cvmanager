@@ -1,0 +1,40 @@
+FROM maven:3.9.6-eclipse-temurin-22-jammy AS builder
+
+WORKDIR /home/intersection-api
+
+COPY ./intersection-api/api/pom.xml .
+COPY ./intersection-api/api/settings.xml .
+
+ARG MAVEN_GITHUB_TOKEN
+ARG MAVEN_GITHUB_ORG
+
+ENV MAVEN_GITHUB_TOKEN=$MAVEN_GITHUB_TOKEN
+ENV MAVEN_GITHUB_ORG=$MAVEN_GITHUB_ORG
+
+
+RUN mvn -s settings.xml dependency:resolve
+
+
+COPY ./intersection-api/api/src ./src
+RUN mvn -s settings.xml install -DskipTests
+
+
+# Create a new stage for runtime
+FROM eclipse-temurin:22-jre-noble
+
+WORKDIR /home
+
+COPY --from=builder /home/intersection-api/src/main/resources/application.yaml /home
+COPY --from=builder /home/intersection-api/target/intersection-api.jar /home
+
+ENTRYPOINT ["java", \
+    "-Djava.rmi.server.hostname=$DOCKER_HOST_IP", \
+    "-Dcom.sun.management.jmxremote.port=9090", \
+    "-Dcom.sun.management.jmxremote.rmi.port=9090", \
+    "-Dcom.sun.management.jmxremote", \
+    "-Dcom.sun.management.jmxremote.local.only=true", \
+    "-Dcom.sun.management.jmxremote.authenticate=false", \
+    "-Dcom.sun.management.jmxremote.ssl=false", \
+    "-Dlogback.configurationFile=/home/logback.xml", \
+    "-jar", \
+    "/home/intersection-api.jar"]

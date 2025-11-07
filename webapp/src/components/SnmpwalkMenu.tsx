@@ -45,9 +45,11 @@ const SnmpwalkMenu = () => {
               destIp: ip,
             })
           ).then((data: any) => {
-            data.payload.changeSuccess
-              ? toast.success('Successfully deleted SNMP forwarding')
-              : toast.error('Failed to delete SNMP forwarding: ' + data.payload.errorState)
+            if (data.payload.changeSuccess) {
+              toast.success('Successfully deleted SNMP forwarding')
+            } else {
+              toast.error('Failed to delete SNMP forwarding: ' + data.payload.errorState)
+            }
           })
         },
       },

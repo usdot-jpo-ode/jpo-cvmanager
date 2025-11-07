@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { SelectedSrm } from '../models/Srm'
 
-import { Button, Divider, Paper, Typography, useTheme } from '@mui/material'
+import { Button, Divider, Paper, Typography } from '@mui/material'
 
 export type SsmSrmItemProps = {
   elem: SelectedSrm
@@ -9,8 +9,6 @@ export type SsmSrmItemProps = {
 }
 
 const SsmSrmItem = (props: SsmSrmItemProps) => {
-  const theme = useTheme()
-
   const { setSelectedSrm } = props
   useEffect(() => {
     return () => {

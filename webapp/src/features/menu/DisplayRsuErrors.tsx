@@ -49,44 +49,46 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
   }, [])
 
   const getRSUOnlineStatus = (rsuIpv4: string) => {
-    return rsuIpv4 in rsuOnlineStatus && rsuOnlineStatus[rsuIpv4].hasOwnProperty('current_status')
+    return rsuIpv4 in rsuOnlineStatus &&
+      Object.prototype.hasOwnProperty.call(rsuOnlineStatus[rsuIpv4], 'current_status')
       ? rsuOnlineStatus[rsuIpv4].current_status
       : 'Offline'
   }
 
   const getRSULastOnline = (rsuIpv4: string): string => {
-    return rsuIpv4 in rsuOnlineStatus && rsuOnlineStatus[rsuIpv4].hasOwnProperty('last_online')
+    return rsuIpv4 in rsuOnlineStatus && Object.prototype.hasOwnProperty.call(rsuOnlineStatus[rsuIpv4], 'last_online')
       ? rsuOnlineStatus[rsuIpv4].last_online
       : 'No Data'
   }
 
   const getRSUSCMSStatus = (rsuIpv4: string) => {
-    return issScmsStatusData.hasOwnProperty(rsuIpv4) && issScmsStatusData[rsuIpv4]
+    return Object.prototype.hasOwnProperty.call(issScmsStatusData, rsuIpv4) && issScmsStatusData[rsuIpv4]
       ? issScmsStatusData[rsuIpv4].health
       : '0'
   }
 
   const getRSUSCMSExpiration = (rsuIpv4: string) => {
-    return issScmsStatusData.hasOwnProperty(rsuIpv4) &&
+    return Object.prototype.hasOwnProperty.call(issScmsStatusData, rsuIpv4) &&
       issScmsStatusData[rsuIpv4] !== null &&
-      issScmsStatusData[rsuIpv4].hasOwnProperty('expiration')
+      Object.prototype.hasOwnProperty.call(issScmsStatusData[rsuIpv4], 'expiration')
       ? issScmsStatusData[rsuIpv4].expiration
       : 'Never downloaded certificates'
   }
 
   const getRSUSCMSDisplay = (rsuIpv4: string) => {
     if (getRSUSCMSStatus(rsuIpv4) === '0') {
+      // eslint-disable-next-line no-var
       var rsu_scms_status = 'SCMS Unhealthy'
-      let rsu_scms_expiration = getRSUSCMSExpiration(rsuIpv4)
+      const rsu_scms_expiration = getRSUSCMSExpiration(rsuIpv4)
       switch (rsu_scms_expiration) {
         case 'Never downloaded certificates':
           rsu_scms_status += ' (RSU Never downloaded certificates)'
           break
         default:
           try {
-            let expiration_date = new Date(rsu_scms_expiration)
-            let now = new Date()
-            let diff = expiration_date.getTime() - now.getTime()
+            const expiration_date = new Date(rsu_scms_expiration)
+            const now = new Date()
+            const diff = expiration_date.getTime() - now.getTime()
             if (diff < 0) {
               rsu_scms_status += ' (RSU SCMS certificate expired)'
             }
@@ -184,16 +186,15 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
                 <Typography>Online Status</Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <div style={errorPageStyle}>
-                  <p>
+                <div>
+                  <Typography fontSize="small" sx={{ color: theme.palette.text.secondary }}>
                     <b>RSU Online Status: </b>
                     {getRSUOnlineStatus(selectedRSU.properties.ipv4_address)}
-                  </p>
-                  <br />
-                  <p>
+                  </Typography>
+                  <Typography fontSize="small" sx={{ color: theme.palette.text.secondary }}>
                     <b>RSU Last Online: </b>
                     {getRSULastOnline(selectedRSU.properties.ipv4_address)}
-                  </p>
+                  </Typography>
                 </div>
               </AccordionDetails>
             </Accordion>
@@ -202,16 +203,15 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
                 <Typography>SCMS Status</Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <div style={errorPageStyle}>
-                  <p>
+                <div>
+                  <Typography fontSize="small" sx={{ color: theme.palette.text.secondary }}>
                     <b>SCMS Status: </b>
                     {getRSUSCMSStatus(selectedRSU.properties.ipv4_address) === '1' ? 'Healthy' : 'Unhealthy'}
-                  </p>
-                  <br />
-                  <p>
+                  </Typography>
+                  <Typography fontSize="small" sx={{ color: theme.palette.text.secondary }}>
                     <b>SCMS Expiration: </b>
                     {getRSUSCMSExpiration(selectedRSU.properties.ipv4_address)}
-                  </p>
+                  </Typography>
                 </div>
               </AccordionDetails>
             </Accordion>

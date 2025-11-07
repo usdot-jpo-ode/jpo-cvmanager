@@ -1,1 +1,1 @@
-type MapBroadcastRateEvent = {}
+type MapBroadcastRateEvent = object

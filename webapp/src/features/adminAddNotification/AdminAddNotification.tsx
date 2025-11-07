@@ -2,13 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import {
-  selectSuccessMsg,
   selectSelectedType,
   selectAvailableTypes,
   selectApiData,
-  selectErrorState,
-  selectErrorMsg,
-  selectSubmitAttempt,
 
   // actions
   submitForm,
@@ -24,31 +20,25 @@ import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
-import { ErrorMessageText, SuccessMessageText } from '../../styles/components/Messages'
+import { ErrorMessageText } from '../../styles/components/Messages'
 import {
   Button,
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
   FormControl,
-  IconButton,
   InputLabel,
   MenuItem,
   Select,
   Typography,
 } from '@mui/material'
-import CloseIcon from '@mui/icons-material/Close'
 import { useNavigate } from 'react-router-dom'
 import { SideBarHeader } from '../../styles/components/SideBarHeader'
+import toast from 'react-hot-toast'
 
 const AdminAddNotification = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-  const successMsg = useSelector(selectSuccessMsg)
   const apiData = useSelector(selectApiData)
-  const errorState = useSelector(selectErrorState)
-  const errorMsg = useSelector(selectErrorMsg)
-  const submitAttempt = useSelector(selectSubmitAttempt)
   const selectedType = useSelector(selectSelectedType)
   const availableTypes = useSelector(selectAvailableTypes)
   const userEmail = useSelector(selectEmail)
@@ -57,7 +47,7 @@ const AdminAddNotification = () => {
   const {
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { isSubmitted },
   } = useForm<AdminNotificationForm>()
 
   useEffect(() => {
@@ -68,9 +58,21 @@ const AdminAddNotification = () => {
     dispatch(updateEmailTypesApiData())
   }, [apiData, dispatch])
 
+  const notifySuccess = (message: string) => toast.success(message)
+  const notifyError = (message: string) => toast.error(message)
+
   const onSubmit = (data: AdminNotificationForm) => {
+    if (selectedType.type === '') {
+      return
+    }
     data.email = userEmail
-    dispatch(submitForm({ data, reset }))
+    dispatch(submitForm({ data, reset })).then((data: any) => {
+      data.payload.success
+        ? notifySuccess(data.payload.message)
+        : notifyError('Failed to add user notification due to error: ' + data.payload.message)
+      setOpen(false)
+      navigate('..')
+    })
   }
 
   return (
@@ -118,13 +120,8 @@ const AdminAddNotification = () => {
             </FormControl>
           </Form.Group>
 
-          {selectedType.type === '' && submitAttempt && (
+          {selectedType.type === '' && isSubmitted && (
             <ErrorMessageText role="alert">Must select at least one email notification type</ErrorMessageText>
-          )}
-
-          {successMsg && <SuccessMessageText role="status">{successMsg}</SuccessMessageText>}
-          {errorState && (
-            <ErrorMessageText role="alert">Failed to add email notification due to error: {errorMsg}</ErrorMessageText>
           )}
         </Form>
       </DialogContent>

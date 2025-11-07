@@ -45,7 +45,7 @@ export const adminAddOrganizationSlice = createSlice({
       .addCase(addOrg.pending, (state) => {
         state.loading = true
       })
-      .addCase(addOrg.fulfilled, (state, action) => {
+      .addCase(addOrg.fulfilled, (state) => {
         state.loading = false
       })
       .addCase(addOrg.rejected, (state) => {

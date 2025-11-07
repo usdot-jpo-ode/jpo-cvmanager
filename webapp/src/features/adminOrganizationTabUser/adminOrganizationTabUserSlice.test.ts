@@ -59,7 +59,7 @@ describe('async thunks', () => {
 
   describe('getAvailableRoles', () => {
     it('returns and calls the api correctly', async () => {
-      let dispatch = jest.fn()
+      const dispatch = jest.fn()
       const getState = jest.fn().mockReturnValue({
         user: {
           value: {
@@ -102,7 +102,7 @@ describe('async thunks', () => {
 
     it('Updates the state correctly fulfilled', async () => {
       const loading = false
-      let orgName = 'org2'
+      const orgName = 'org2'
       const data = {
         roles: ['role1', 'role2'],
       }
@@ -138,7 +138,7 @@ describe('async thunks', () => {
 
   describe('getAvailableUsers', () => {
     it('returns and calls the api correctly', async () => {
-      let dispatch = jest.fn()
+      const dispatch = jest.fn()
       const getState = jest.fn().mockReturnValue({
         user: {
           value: {
@@ -184,7 +184,7 @@ describe('async thunks', () => {
 
     it('Updates the state correctly fulfilled', async () => {
       const loading = false
-      let orgName = 'org3'
+      const orgName = 'org3'
       const data = {
         user_data: [
           { organizations: ['org1', 'org2'], email: 'test@gmail.com' },
@@ -294,7 +294,6 @@ describe('async thunks', () => {
       ]
       const selectedOrg = 'selectedOrg'
       const selectedOrgEmail = 'name@email.com'
-      let fetchPatchOrganization = jest.fn()
       const updateTableData = jest.fn()
 
       const userData = { user_data: { organizations: ['org1', 'org2', 'org3'] } }
@@ -338,7 +337,7 @@ describe('async thunks', () => {
 
   describe('userAddMultiple', () => {
     it('returns and calls the api correctly', async () => {
-      let dispatch = jest.fn()
+      const dispatch = jest.fn()
       const getState = jest.fn().mockReturnValue({
         user: {
           value: {
@@ -352,10 +351,9 @@ describe('async thunks', () => {
       ]
       const selectedOrg = 'selectedOrg'
       const selectedOrgEmail = 'name@email.com'
-      let fetchPatchOrganization = jest.fn()
       const updateTableData = jest.fn()
 
-      let action = userAddMultiple({ userList, selectedOrg, selectedOrgEmail, updateTableData })
+      const action = userAddMultiple({ userList, selectedOrg, selectedOrgEmail, updateTableData })
 
       await action(dispatch, getState, undefined)
       expect(dispatch).toHaveBeenCalledTimes(2 + 2)
@@ -364,7 +362,7 @@ describe('async thunks', () => {
 
   describe('userBulkEdit', () => {
     it('returns and calls the api correctly', async () => {
-      let dispatch = jest.fn()
+      const dispatch = jest.fn()
       const getState = jest.fn().mockReturnValue({
         user: {
           value: {
@@ -372,10 +370,6 @@ describe('async thunks', () => {
           },
         },
       })
-      const userList = [
-        { email: 'test@gmail.com', role: 'role1' },
-        { email: 'test2@gmail.com', role: 'role2' },
-      ]
       const json = {
         obj1: { newData: { email: 'test@gmail.com', role: 'role1' } },
         obj2: { newData: { email: 'test2@gmail.com', role: 'role2' } },
@@ -383,7 +377,6 @@ describe('async thunks', () => {
       const selectedOrg = 'selectedOrg'
       const selectedUser = 'selectedUser'
       const selectedOrgEmail = 'name@email.com'
-      const fetchPatchOrganization = jest.fn()
       const updateTableData = jest.fn()
 
       const action = userBulkEdit({ json, selectedOrg, selectedUser, selectedOrgEmail, updateTableData })
@@ -395,7 +388,7 @@ describe('async thunks', () => {
 
   describe('refresh', () => {
     it('returns and calls the api correctly', async () => {
-      let dispatch = jest.fn()
+      const dispatch = jest.fn()
       const getState = jest.fn().mockReturnValue({
         user: {
           value: {
@@ -406,7 +399,7 @@ describe('async thunks', () => {
       const selectedOrg = 'selectedOrg'
       const updateTableData = jest.fn()
 
-      let action = refresh({ selectedOrg, updateTableData })
+      const action = refresh({ selectedOrg, updateTableData })
 
       await action(dispatch, getState, undefined)
       expect(updateTableData).toHaveBeenCalledTimes(1)

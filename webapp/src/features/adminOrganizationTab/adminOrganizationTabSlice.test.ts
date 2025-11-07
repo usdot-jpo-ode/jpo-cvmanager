@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import reducer from './adminOrganizationTabSlice'
 import {
   // async thunks
@@ -31,7 +32,7 @@ describe('admin organization tab reducer', () => {
         activeDiv: 'organization_table',
         title: 'Organizations',
         orgData: [],
-        selectedOrg: {},
+        selectedOrg: undefined,
         rsuTableData: [],
         userTableData: [],
         intersectionTableData: [],
@@ -64,7 +65,7 @@ describe('async thunks', () => {
 
   describe('getOrgData', () => {
     it('returns and calls the api correctly', async () => {
-      let dispatch = jest.fn()
+      const dispatch = jest.fn()
       const getState = jest.fn().mockReturnValue({
         user: {
           value: {
@@ -74,7 +75,7 @@ describe('async thunks', () => {
       })
       const orgName = 'orgName'
       const specifiedOrg = 'specifiedOrg'
-      let all = false
+      const all = false
       const action = getOrgData({ orgName, all, specifiedOrg })
 
       apiHelper._getDataWithCodes = jest.fn().mockReturnValue({ status: 200, message: 'message' })
@@ -112,7 +113,7 @@ describe('async thunks', () => {
       const loading = false
       let specifiedOrg = 'org2'
       const orgData = [{ id: 0, name: 'org1', rsu_count: 24, user_count: 12 }]
-      let all = true
+      const all = true
       const data = {
         org_data: [
           {
@@ -149,7 +150,7 @@ describe('async thunks', () => {
 
     it('Updates the state correctly fulfilled not all', async () => {
       const loading = false
-      let all = false
+      const all = false
       const data = {
         org_data: {
           org_users: 'org_users',
@@ -158,7 +159,7 @@ describe('async thunks', () => {
         },
       }
 
-      let state = reducer(initialState, {
+      const state = reducer(initialState, {
         type: 'adminOrganizationTab/getOrgData/fulfilled',
         payload: { all, data, message: 'message', success: true },
       })
@@ -235,7 +236,7 @@ describe('async thunks', () => {
 
   describe('editOrg', () => {
     it('returns and calls the api correctly', async () => {
-      let dispatch = jest.fn()
+      const dispatch = jest.fn()
       const getState = jest.fn().mockReturnValue({
         user: {
           value: {

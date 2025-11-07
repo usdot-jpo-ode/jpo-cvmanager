@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,7 +29,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.TimeChangeDetailsNotification;
-import us.dot.its.jpo.ode.api.accessors.notifications.TimeChangeDetailsNotification.TimeChangeDetailsNotificationRepositoryImpl;
+import us.dot.its.jpo.ode.api.accessors.notifications.time_change_details_notification.TimeChangeDetailsNotificationRepositoryImpl;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -89,4 +90,19 @@ public class TimeChangeDetailsNotificationRepositoryImplTest {
         assertThat(results).isEqualTo(mockPage);
     }
 
+    @Test
+    void testFindLatest() {
+        TimeChangeDetailsNotification event = new TimeChangeDetailsNotification();
+        event.setIntersectionID(intersectionID);
+
+        doReturn(event).when(mongoTemplate).findOne(any(Query.class), eq(TimeChangeDetailsNotification.class),
+                anyString());
+
+        Page<TimeChangeDetailsNotification> page = repository.findLatest(intersectionID, startTime, endTime);
+
+        assertThat(page.getContent()).hasSize(1);
+        assertThat(page.getContent().getFirst().getIntersectionID()).isEqualTo(intersectionID);
+        verify(mongoTemplate).findOne(any(Query.class), eq(TimeChangeDetailsNotification.class),
+                eq("CmTimeChangeDetailsNotification"));
+    }
 }

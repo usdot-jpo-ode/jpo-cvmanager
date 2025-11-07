@@ -9,9 +9,8 @@ import api.tests.data.contact_support_data as contact_support_data
 DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS = "smtp.gmail.com"
 DEFAULT_CSM_TARGET_SMTP_SERVER_PORT = 587
 
+
 # tests for ContactSupportSchema class ---
-
-
 def test_contact_support_schema():
     # prepare
     schema = contact_support.ContactSupportSchema()
@@ -38,9 +37,8 @@ def test_contact_support_schema_invalid():
 
 # end of tests for ContactSupportSchema class ---
 
+
 # tests for ContactSupportResource class ---
-
-
 def test_contact_support_resource_initialization_success():
     # prepare
     os.environ["CSM_EMAIL_TO_SEND_FROM"] = contact_support_data.CSM_EMAIL_TO_SEND_FROM

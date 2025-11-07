@@ -20,6 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -29,7 +30,7 @@ import java.util.List;
 
 import org.bson.Document;
 
-import us.dot.its.jpo.ode.api.accessors.events.SignalGroupAlignmentEvent.SignalGroupAlignmentEventRepositoryImpl;
+import us.dot.its.jpo.ode.api.accessors.events.signal_group_alignment_event.SignalGroupAlignmentEventRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
 import org.springframework.boot.test.context.SpringBootTest;
@@ -126,4 +127,19 @@ public class SignalGroupAlignmentEventRepositoryImplTest {
         assertThat(actualResults.get(1).getCount()).isEqualTo(7200);
     }
 
+    @Test
+    void testFindLatest() {
+        SignalGroupAlignmentEvent event = new SignalGroupAlignmentEvent();
+        event.setIntersectionID(intersectionID);
+
+        doReturn(event).when(mongoTemplate).findOne(any(Query.class), eq(SignalGroupAlignmentEvent.class),
+                anyString());
+
+        Page<SignalGroupAlignmentEvent> page = repository.findLatest(intersectionID, startTime, endTime);
+
+        assertThat(page.getContent()).hasSize(1);
+        assertThat(page.getContent().getFirst().getIntersectionID()).isEqualTo(intersectionID);
+        verify(mongoTemplate).findOne(any(Query.class), eq(SignalGroupAlignmentEvent.class),
+                eq("CmSignalGroupAlignmentEvents"));
+    }
 }

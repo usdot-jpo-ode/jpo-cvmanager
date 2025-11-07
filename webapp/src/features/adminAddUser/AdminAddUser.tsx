@@ -183,7 +183,7 @@ const AdminAddUser = () => {
                 multiple
                 value={selectedOrganizationNames.map((name) => name.name)}
                 onChange={(event) => {
-                  const selectedOrgs = event.target.value as String[]
+                  const selectedOrgs = event.target.value as string[]
                   dispatch(updateOrganizations(organizationNames.filter((org) => selectedOrgs.includes(org.name))))
                 }}
               >
@@ -200,7 +200,7 @@ const AdminAddUser = () => {
             <Form.Group controlId="roles">
               <Typography fontSize="small">Roles</Typography>
               {selectedOrganizations.map((organization) => {
-                let role = { role: organization.role }
+                const role = { role: organization.role }
 
                 return (
                   <Form.Group controlId={organization.id.toString()}>

@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from 'react'
-import Map, { Source, Layer, Popup } from 'react-map-gl'
+import React from 'react'
+import { Popup } from 'react-map-gl'
 
-import { Container, Col } from 'reactstrap'
-
-import { Paper, Box, Typography } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import { CustomTable } from './custom-table'
 
 export const getSelectedLayerPopupContent = (feature: any) => {
   switch (feature?.layer?.id) {
-    case 'bsm':
-      let bsm = feature.properties
+    case 'bsm': {
+      const bsm = feature.properties
       return (
         <Box>
           <Typography>BSM</Typography>
@@ -25,9 +23,10 @@ export const getSelectedLayerPopupContent = (feature: any) => {
           />
         </Box>
       )
-    case 'map-message':
-      let map = feature.properties
-      let connectedObjs: any[] = []
+    }
+    case 'map-message': {
+      const map = feature.properties
+      const connectedObjs: any[] = []
       JSON.parse(map?.connectsTo ?? '[]')?.forEach((connectsTo) => {
         connectedObjs.push(['Connected Lane', connectsTo.connectingLane.lane])
         connectedObjs.push(['Signal Group', connectsTo.signalGroup])
@@ -39,7 +38,7 @@ export const getSelectedLayerPopupContent = (feature: any) => {
           <CustomTable headers={['Field', 'Value']} data={[['Lane Id', map.laneId], ...connectedObjs]} />
         </Box>
       )
-
+    }
     case 'connecting-lanes':
       return (
         <Box>

@@ -27,7 +27,7 @@ import { RootState } from '../../store'
 import { Action, Column } from '@material-table/core'
 import { AdminOrgIntersection } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import toast from 'react-hot-toast'
-import { Button, useTheme } from '@mui/material'
+import { useTheme } from '@mui/material'
 import { AddCircleOutline, DeleteOutline } from '@mui/icons-material'
 
 interface AdminOrganizationTabIntersectionProps {
@@ -50,7 +50,7 @@ const AdminOrganizationTabIntersection = (props: AdminOrganizationTabIntersectio
     { title: 'Name', field: 'intersection_name', id: 1, width: '45%' },
   ])
 
-  let intersectionActions: Action<AdminOrgIntersection>[] = [
+  const intersectionActions: Action<AdminOrgIntersection>[] = [
     {
       icon: () => <DeleteOutline sx={{ color: theme.palette.custom.rowActionIcon }} />,
       iconProps: {

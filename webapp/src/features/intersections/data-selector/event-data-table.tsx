@@ -1,6 +1,6 @@
-import { Box, Button, Card, Container, Divider, Grid2, TextFieldProps, CardHeader } from '@mui/material'
+import { Box, Button, Card, Container, Grid2, CardHeader } from '@mui/material'
 import { EventListResults } from './event-list-results'
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState } from 'react'
 
 const applyPagination = (parameters, page, rowsPerPage) =>
   parameters.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)

@@ -1,0 +1,83 @@
+{
+  "metadata": {
+    "recordType": "spatTx",
+    "securityResultCode": "success",
+    "payloadType": "us.dot.its.jpo.ode.model.OdeMessageFramePayload",
+    "serialId": {
+      "streamId": "44a6d71c-8af1-4f45-848c-10bd7f919be8",
+      "bundleSize": 1,
+      "bundleId": 0,
+      "recordId": 0,
+      "serialNumber": 0
+    },
+    "odeReceivedAt": "2025-08-29T16:09:34.416Z",
+    "schemaVersion": 9,
+    "maxDurationTime": 0,
+    "recordGeneratedBy": "RSU",
+    "sanitized": false,
+    "source": "EV",
+    "isCertPresent": false
+  },
+  "payload": {
+    "data": {
+      "messageId": 19,
+      "value": {
+        "SPAT": {
+          "intersections": [
+            {
+              "id": { "id": 12111 },
+              "revision": 0,
+              "status": "0000",
+              "timeStamp": 35176,
+              "states": [
+                {
+                  "signalGroup": 2,
+                  "state-time-speed": [
+                    {
+                      "eventState": "protected-Movement-Allowed",
+                      "timing": { "minEndTime": 22120, "maxEndTime": 22121 }
+                    }
+                  ]
+                },
+                {
+                  "signalGroup": 4,
+                  "state-time-speed": [
+                    { "eventState": "stop-And-Remain", "timing": { "minEndTime": 22181, "maxEndTime": 22181 } }
+                  ]
+                },
+                {
+                  "signalGroup": 6,
+                  "state-time-speed": [
+                    {
+                      "eventState": "protected-Movement-Allowed",
+                      "timing": { "minEndTime": 22120, "maxEndTime": 22121 }
+                    }
+                  ]
+                },
+                {
+                  "signalGroup": 8,
+                  "state-time-speed": [
+                    { "eventState": "stop-And-Remain", "timing": { "minEndTime": 21852, "maxEndTime": 21852 } }
+                  ]
+                },
+                {
+                  "signalGroup": 1,
+                  "state-time-speed": [
+                    { "eventState": "stop-And-Remain", "timing": { "minEndTime": 21852, "maxEndTime": 21852 } }
+                  ]
+                },
+                {
+                  "signalGroup": 5,
+                  "state-time-speed": [
+                    { "eventState": "stop-And-Remain", "timing": { "minEndTime": 21852, "maxEndTime": 21852 } }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "dataType": "us.dot.its.jpo.asn.j2735.r2024.SPAT.SPATMessageFrame"
+  }
+}

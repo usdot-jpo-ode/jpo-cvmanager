@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import reducer from './adminIntersectionTabSlice'
 import {
   // async thunks
@@ -108,7 +109,7 @@ describe('async thunks', () => {
     it('Updates the state correctly fulfilled', async () => {
       const loading = false
       let intersection_data = [{ rsus: ['1.1.1.1', '1.1.1.2'] }]
-      let intersection_data_expected = [{ rsus: '1.1.1.1, 1.1.1.2' }]
+      const intersection_data_expected = [{ rsus: '1.1.1.1, 1.1.1.2' }]
       let state = reducer(initialState, {
         type: 'adminIntersectionTab/updateTableData/fulfilled',
         payload: { intersection_data },
@@ -190,7 +191,7 @@ describe('async thunks', () => {
 
     it('Updates the state correctly fulfilled', async () => {
       const loading = false
-      let state = reducer(initialState, {
+      const state = reducer(initialState, {
         type: 'adminIntersectionTab/deleteIntersection/fulfilled',
       })
       expect(state).toEqual({ ...initialState, loading, value: { ...initialState.value } })
@@ -207,7 +208,7 @@ describe('async thunks', () => {
 
   describe('deleteMultipleIntersections', () => {
     it('returns and calls the api correctly', async () => {
-      let dispatch = jest.fn()
+      const dispatch = jest.fn()
       const getState = jest.fn().mockReturnValue({
         user: {
           value: {
@@ -217,7 +218,7 @@ describe('async thunks', () => {
       })
       const rows = [{ intersection_id: '1' }, { intersection_id: '2' }, { intersection_id: '3' }] as any
 
-      let action = deleteMultipleIntersections(rows)
+      const action = deleteMultipleIntersections(rows)
 
       await action(dispatch, getState, undefined)
       expect(dispatch).toHaveBeenCalledTimes(rows.length + 1 + 2)

@@ -128,15 +128,21 @@ const AdminRsuTab = () => {
 
   const onDelete = (row: AdminEditRsuFormType) => {
     dispatch(deleteRsu({ rsu_ip: row.ip, shouldUpdateTableData: true })).then((data: any) => {
-      data.payload.success
-        ? toast.success('RSU Deleted Successfully')
-        : toast.error('Failed to delete RSU due to error: ' + data.payload)
+      if (data.payload.success) {
+        toast.success('RSU Deleted Successfully')
+      } else {
+        toast.error('Failed to delete RSU due to error: ' + data.payload)
+      }
     })
   }
 
   const multiDelete = (rows: AdminEditRsuFormType[]) => {
     dispatch(deleteMultipleRsus(rows)).then((data: any) => {
-      data.payload.success ? toast.success('RSUs Deleted Successfully') : toast.error(data.payload.message)
+      if (data.payload.success) {
+        toast.success('RSUs Deleted Successfully')
+      } else {
+        toast.error(data.payload.message)
+      }
     })
   }
 

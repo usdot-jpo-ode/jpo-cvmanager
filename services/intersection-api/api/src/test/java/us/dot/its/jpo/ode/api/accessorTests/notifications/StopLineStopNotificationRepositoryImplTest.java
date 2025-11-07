@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,7 +29,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.StopLineStopNotification;
-import us.dot.its.jpo.ode.api.accessors.notifications.StopLineStopNotification.StopLineStopNotificationRepositoryImpl;
+import us.dot.its.jpo.ode.api.accessors.notifications.stop_line_stop_notification.StopLineStopNotificationRepositoryImpl;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -89,4 +90,19 @@ public class StopLineStopNotificationRepositoryImplTest {
         assertThat(results).isEqualTo(mockPage);
     }
 
+    @Test
+    void testFindLatest() {
+        StopLineStopNotification event = new StopLineStopNotification();
+        event.setIntersectionID(intersectionID);
+
+        doReturn(event).when(mongoTemplate).findOne(any(Query.class), eq(StopLineStopNotification.class),
+                anyString());
+
+        Page<StopLineStopNotification> page = repository.findLatest(intersectionID, startTime, endTime);
+
+        assertThat(page.getContent()).hasSize(1);
+        assertThat(page.getContent().getFirst().getIntersectionID()).isEqualTo(intersectionID);
+        verify(mongoTemplate).findOne(any(Query.class), eq(StopLineStopNotification.class),
+                eq("CmStopLineStopNotification"));
+    }
 }

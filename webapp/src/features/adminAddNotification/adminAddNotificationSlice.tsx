@@ -94,10 +94,14 @@ export const submitForm = createAsyncThunk(
     data.email_type = (getState() as RootState).adminAddNotification.value.selectedType.type
     const currentState = getState() as RootState
     if (currentState.adminAddNotification.value.selectedType.type !== '') {
-      dispatch(createNotification({ json: data, reset }))
-      return false
+      var res = await dispatch(createNotification({ json: data, reset }))
+      if ((res as any).payload && (res as any).payload.success) {
+        return { submitAttempt: false, success: true, message: 'Notification Added Successfully' }
+      } else {
+        return { submitAttempt: false, success: false, message: (res as any).payload?.message }
+      }
     } else {
-      return true
+      return { submitAttempt: true, success: false, message: 'Please fill out all required fields' }
     }
   },
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
@@ -112,7 +116,7 @@ export const adminAddNotificationSlice = createSlice({
   reducers: {
     updateEmailTypesApiData: (state) => {
       if (Object.keys(state.value.apiData).length !== 0) {
-        let typeData = [] as { type: string }[]
+        const typeData = [] as { type: string }[]
         state.value.apiData.email_types.forEach((type) => typeData.push({ type }))
         state.value.availableTypes = [...typeData]
       }
@@ -172,7 +176,7 @@ export const adminAddNotificationSlice = createSlice({
         state.value.selectedType = { type: '' }
       })
       .addCase(submitForm.fulfilled, (state, action) => {
-        state.value.submitAttempt = action.payload
+        state.value.submitAttempt = action.payload.submitAttempt
       })
   },
 })

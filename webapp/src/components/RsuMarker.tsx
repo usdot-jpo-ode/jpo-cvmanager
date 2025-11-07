@@ -7,7 +7,7 @@ export type RsuMarkerProps = {
 }
 
 function RsuMarker(props: RsuMarkerProps) {
-  var circleStyle = {
+  const circleStyle = {
     padding: 5,
     display: 'inline-block',
     borderRadius: '50%',

@@ -1,7 +1,6 @@
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { Link } from 'react-router-dom'
 import { RootState } from '../store'
 import { setRouteNotFound } from '../generalSlices/userSlice'
 import { useNavigate } from 'react-router-dom'

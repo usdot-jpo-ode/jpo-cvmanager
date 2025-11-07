@@ -61,7 +61,7 @@ export const LaneDirectionOfTravelAssessmentCard = (props: {
     }
   } = {}
   for (let i = 0; i < (assessment?.laneDirectionOfTravelAssessmentGroup ?? []).length; i++) {
-    const group = assessment?.laneDirectionOfTravelAssessmentGroup[i]!
+    const group = assessment?.laneDirectionOfTravelAssessmentGroup[i]
     if (!compressedGroups[group.laneID]) {
       compressedGroups[group.laneID] = {
         laneId: group.laneID,
@@ -92,7 +92,7 @@ export const LaneDirectionOfTravelAssessmentCard = (props: {
                 In Tolerance:{' '}
                 {segmentIds.map((segId) => obj.inTolerance[segId]).reduce((partialSum, a) => partialSum + (a ?? 0), 0)}
               </b>
-              {segmentIds.map((segmentId, index) => {
+              {segmentIds.map((segmentId) => {
                 return (
                   <p>
                     {segmentId}: {obj.inTolerance[segmentId] ?? 0}
@@ -107,7 +107,7 @@ export const LaneDirectionOfTravelAssessmentCard = (props: {
                   .map((segId) => obj.outOfTolerance[segId])
                   .reduce((partialSum, a) => partialSum + (a ?? 0), 0)}
               </b>
-              {segmentIds.map((segmentId, index) => {
+              {segmentIds.map((segmentId) => {
                 return (
                   <p>
                     {segmentId}: {obj.outOfTolerance[segmentId] ?? 0}

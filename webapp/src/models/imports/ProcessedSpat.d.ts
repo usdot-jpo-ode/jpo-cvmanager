@@ -1,5 +1,6 @@
 type ProcessedSpat = {
-  messageType: string
+  schemaVersion: number
+  messageType: 'SPAT'
   odeReceivedAt: string
   originIp: string
   name?: string

@@ -49,7 +49,6 @@ services:
       INTERSECTION_API_ENABLE_REPORTS: ${INTERSECTION_API_ENABLE_REPORTS:-false}
 
       BASE_ROUTE_PREFIX: ${INTERSECTION_API_ROUTE_PREFIX:-/}
-      DOCKER_HOST_IP: ${DOCKER_HOST_IP:-host.docker.internal}
     entrypoint:
       - sh
       - -c

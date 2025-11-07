@@ -6,6 +6,8 @@ import api_environment
 
 from common.auth_tools import require_permission
 
+from common.auth_tools import require_permission
+
 
 def get_wzdx_data():
     # Execute the query and fetch all results

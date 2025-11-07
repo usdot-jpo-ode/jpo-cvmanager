@@ -14,7 +14,6 @@ from common.auth_tools import (
 
 
 def get_rsu_data(user: EnvironWithOrg, qualified_orgs: list[str]):
-
     # Execute the query and fetch all results
     query = (
         "SELECT jsonb_build_object('type', 'Feature', 'id', row.rsu_id, 'geometry', ST_AsGeoJSON(row.geography)::jsonb, 'properties', to_jsonb(row)) "

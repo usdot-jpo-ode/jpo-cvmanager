@@ -284,7 +284,7 @@ The following steps are intended to help get a new user up and running the JPO C
     docker compose up --build -d
     ```
 
-6.  Access the website by going to http://localhost
+6.  Access the website by going to http://localhost:3000
 
     ```
       Default Username: test@gmail.com

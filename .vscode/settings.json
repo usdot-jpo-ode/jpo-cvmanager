@@ -109,7 +109,6 @@
     "SASL",
     "secretmanager",
     "Scms",
-    "secretmanager",
     "SNMP",
     "snmpcredential",
     "snmperrorcheck",

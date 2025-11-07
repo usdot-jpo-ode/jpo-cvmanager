@@ -38,7 +38,9 @@ def query_rsu_counts_mongo(allowed_ips_dict, message_type, start, end):
     )
 
     try:
-        client = MongoClient(api_environment.MONGO_DB_URI, serverSelectionTimeoutMS=5000)
+        client = MongoClient(
+            api_environment.MONGO_DB_URI, serverSelectionTimeoutMS=5000
+        )
         mongo_db = client[api_environment.MONGO_DB_NAME]
         collection = mongo_db["CVCounts"]
     except Exception as e:

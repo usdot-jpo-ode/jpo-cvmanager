@@ -26,6 +26,8 @@ To provide feedback, we recommend that you create an "issue" in this repository 
 
 ## Quick Start
 
+This section is brief - for more detailed instructions, please see [Getting Started](#getting-started)
+
 ### Requirements
 
 - Docker and Docker Compose installed on your machine

@@ -37,13 +37,19 @@ To provide feedback, we recommend that you create an "issue" in this repository 
    - `DOCKER_HOST_IP`: The IP address of your Docker host. This can be found through linux/wsl through the command "ifconfig", or "localhost" if using Docker Desktop on Windows or Linux (not mac).
    - `MAPBOX_TOKEN`: Any valid mapbox token. Please see [Creating a Mapbox Token](#creating-a-mapbox-token) for instructions on how to create and account/generate a new token
    - `MAVEN_GITHUB_TOKEN`: A GitHub access token used to access public GitHub Maven packages. See [Github Token](#github-token) section for instructions on generating this token.
-3. Run the following command to start the CV Manager:
+3. Initialize the jpo-utils submodule:
+
+```sh
+git submodule update --init --recursive
+```
+
+4. Run the following command to start the CV Manager:
 
 ```sh
 docker-compose up -d
 ```
 
-4. Access the CV Manager webapp at [http://localhost:3000](http://localhost:3000) in your web browser.
+5. Access the CV Manager webapp at [http://localhost:3000](http://localhost:3000) in your web browser.
 
 ```
 Default Username: test@gmail.com
@@ -175,13 +181,6 @@ Ease of local development has been a major consideration in the integration of i
   - MongoDB collection creation image, to create required collections for the intersection api
 
 It should be noted that the `kafka`, `kafka-setup`, `mongo` and `mongo-setup` services are provided by the jpo-utils repository.
-
-**Intersection API Submodules**
-The Intersection API uses nested submodules for asn1 encoding and decoding [usdot-jpo-ode/asn1_codec](https://github.com/usdot-jpo-ode/asn1_codec) and kafka management. These submodules need to be initialized and updated before the API can be built and run locally. Run the following command to initialize the submodules:
-
-```sh
-git submodule update --init --recursive
-```
 
 **Running a Simple Local Environment**
 

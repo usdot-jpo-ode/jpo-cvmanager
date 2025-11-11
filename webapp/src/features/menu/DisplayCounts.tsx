@@ -8,7 +8,6 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import EnvironmentVars from '../../EnvironmentVars'
 import BounceLoader from 'react-spinners/BounceLoader'
 import {
-  selectRequestOut,
   selectMsgType,
   selectCountList,
   selectStartDate,
@@ -43,7 +42,6 @@ const DisplayCounts = () => {
   const countsMsgType = useSelector(selectMsgType)
   const startDate = useSelector(selectStartDate)
   const endDate = useSelector(selectEndDate)
-  const requestOut = useSelector(selectRequestOut)
   const warning = useSelector(selectWarningMessage)
   const messageLoading = useSelector(selectMessageLoading)
   const countList = useSelector(selectCountList)
@@ -52,7 +50,7 @@ const DisplayCounts = () => {
 
   const dateChanged = (e: Date, type: 'start' | 'end') => {
     if (!Number.isNaN(Date.parse(e.toString()))) {
-      dispatch(changeDate(e, type, requestOut))
+      dispatch(changeDate(e, type))
     }
   }
 

@@ -18,6 +18,7 @@ from common.auth_tools import (
     generate_sql_placeholders_for_list,
 )
 
+
 message_types = {
     "bsm": "BSM",
     "map": "Map",
@@ -73,6 +74,73 @@ def query_rsu_counts_mongo(allowed_ips_dict, message_type, start, end):
             raise InternalServerError("Encountered unknown issue") from e
 
     return result
+
+
+def query_rsu_counts_mongo_aggregated(allowed_ips_dict, start, end):
+    start_dt = util.format_date_utc(start, "DATETIME").replace(
+        hour=0, minute=0, second=0, microsecond=0
+    )
+    end_dt = util.format_date_utc(end, "DATETIME").replace(
+        hour=0, minute=0, second=0, microsecond=0
+    )
+
+    try:
+        client = MongoClient(
+            api_environment.MONGO_DB_URI, serverSelectionTimeoutMS=5000
+        )
+        mongo_db = client[api_environment.MONGO_DB_NAME]
+        collection = mongo_db["CVCounts"]
+    except Exception as e:
+        logging.error(
+            f"Failed to connect to Mongo counts collection with error message: {e}"
+        )
+        raise Forbidden("Failed to connect to Mongo") from e
+
+    # MongoDB aggregation query to get message counts by RSU IP
+    pipeline = [
+        {
+            "$match": {
+                "rsuIp": {"$in": list(allowed_ips_dict.keys())},
+                "timestamp": {"$gte": start_dt, "$lt": end_dt},
+            }
+        },
+        {"$project": {"rsuIp": 1, "messageType": 1, "count": 1, "_id": 0}},
+        {
+            "$group": {
+                "_id": "$rsuIp",
+                "messageTypeCounts": {"$push": {"k": "$messageType", "v": "$count"}},
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "rsuIp": "$_id",
+                "messageTypeCounts": {"$arrayToObject": "$messageTypeCounts"},
+            }
+        },
+    ]
+
+    try:
+        logging.debug(f"Running aggregation on {collection.name}")
+        cursor = collection.aggregate(pipeline, allowDiskUse=False)  # Keep in memory
+
+        # Initialize result
+        result = {
+            rsu_ip: {"road": road, "messageTypeCounts": {}}
+            for rsu_ip, road in allowed_ips_dict.items()
+        }
+
+        # Update with actual counts
+        for doc in cursor:
+            rsu_ip = doc["rsuIp"]
+            if rsu_ip in result:
+                result[rsu_ip]["messageTypeCounts"] = doc["messageTypeCounts"]
+
+        return result
+
+    except Exception as e:
+        logging.error(f"Aggregation failed: {e}")
+        raise InternalServerError("Encountered unknown issue") from e
 
 
 def get_organization_rsus(user: EnvironWithOrg, qualified_orgs: list[str]):
@@ -166,5 +234,31 @@ class RsuQueryCounts(Resource):
             permission_result.user, permission_result.qualified_orgs
         )
         data = query_rsu_counts_mongo(rsu_dict, message, start, end)
+
+        return (data, 200, self.headers)
+
+    @require_permission(
+        required_role=ORG_ROLE_LITERAL.USER,
+    )
+    def post(self, permission_result: PermissionResult):
+        logging.debug("RsuQueryCounts POST requested")
+        # Schema check for arguments
+        schema = RsuQueryCountsSchema()
+        errors = schema.validate(request.args)
+        if errors:
+            abort(400, str(errors))
+        # Get arguments from request and set defaults if not provided
+        start = request.args.get(
+            "start",
+            default=((datetime.now() - timedelta(1)).strftime("%Y-%m-%dT%H:%M:%S")),
+        )
+        end = request.args.get(
+            "end", default=((datetime.now()).strftime("%Y-%m-%dT%H:%M:%S"))
+        )
+
+        rsu_dict = get_organization_rsus(
+            permission_result.user, permission_result.qualified_orgs
+        )
+        data = query_rsu_counts_mongo_aggregated(rsu_dict, start, end)
 
         return (data, 200, self.headers)

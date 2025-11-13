@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -7,22 +7,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import EnvironmentVars from '../../EnvironmentVars'
 import BounceLoader from 'react-spinners/BounceLoader'
-import {
-  selectMsgType,
-  selectCountList,
-  selectStartDate,
-  selectEndDate,
-  selectWarningMessage,
-  selectMessageLoading,
-  updateMessageType,
-} from '../../generalSlices/rsuSlice'
-import {
-  selectCurrentSort,
-  selectSortedCountList,
-  sortCountList,
-  changeDate,
-  toggleMapMenuSelection,
-} from './menuSlice'
+import { selectWarningMessage, selectMessageLoading } from '../../generalSlices/rsuSlice'
+import { toggleMapMenuSelection } from './menuSlice'
 
 import '../../components/css/SnmpwalkMenu.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
@@ -31,6 +17,8 @@ import { CountsListElement } from '../../models/Rsu'
 import { MessageType } from '../../models/MessageTypes'
 import { Box, FormControl, InputLabel, MenuItem, Paper, Select, Stack, Typography, useTheme } from '@mui/material'
 import { SideBarHeader } from '../../styles/components/SideBarHeader'
+import { useGetRsuCountsQuery } from '../api/rsuCountsApiSlice'
+import { selectOrganizationName } from '../../generalSlices/userSlice'
 
 const messageTypeOptions = EnvironmentVars.getMessageTypes().map((type) => {
   return { value: type, label: type }
@@ -39,20 +27,27 @@ const messageTypeOptions = EnvironmentVars.getMessageTypes().map((type) => {
 const DisplayCounts = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const theme = useTheme()
-  const countsMsgType = useSelector(selectMsgType)
-  const startDate = useSelector(selectStartDate)
-  const endDate = useSelector(selectEndDate)
   const warning = useSelector(selectWarningMessage)
   const messageLoading = useSelector(selectMessageLoading)
-  const countList = useSelector(selectCountList)
-  const currentSort = useSelector(selectCurrentSort)
-  const sortedCountList = useSelector(selectSortedCountList)
+  const organization = useSelector(selectOrganizationName)
 
-  const dateChanged = (e: Date, type: 'start' | 'end') => {
-    if (!Number.isNaN(Date.parse(e.toString()))) {
-      dispatch(changeDate(e, type))
-    }
-  }
+  const [countsMsgType, setCountsMsgType] = React.useState<MessageType>('BSM')
+  const [startDate, setStartDate] = React.useState<Date>(new Date())
+  const [endDate, setEndDate] = React.useState<Date>(new Date())
+  const [currentSort, setCurrentSort] = React.useState<string | null>(null)
+
+  const { data: rsuCounts } = useGetRsuCountsQuery({ organization, startDate, endDate })
+
+  const countList = useMemo(() => {
+    return Object.entries(rsuCounts).map(([key, value]) => {
+      return {
+        key: key,
+        rsu: key,
+        road: value.road,
+        count: value.messageTypeCounts?.[countsMsgType] || 0,
+      }
+    })
+  }, [rsuCounts, countsMsgType])
 
   const getWarningMessage = (warning: boolean) =>
     warning ? (
@@ -65,8 +60,29 @@ const DisplayCounts = () => {
       </Typography>
     ) : null
 
+  const sortedCountList = useMemo(() => {
+    if (!currentSort) return countList
+
+    const key = currentSort.replace('__desc', '')
+    const isDescending = currentSort.includes('__desc')
+
+    return [...countList].sort((a, b) => {
+      const aVal = a[key]
+      const bVal = b[key]
+
+      if (aVal < bVal) return isDescending ? 1 : -1
+      if (aVal > bVal) return isDescending ? -1 : 1
+      return 0
+    })
+  }, [currentSort, countList])
+
   const sortBy = (key: string) => {
-    dispatch(sortCountList(key, currentSort, countList))
+    // Default to ascending. If re-pressed (already sorting by this key), switch to descending.
+    if (key === currentSort) {
+      setCurrentSort(key + '__desc')
+    } else {
+      setCurrentSort(key)
+    }
   }
 
   const getTable = (messageLoading: boolean, sortedCountList: CountsListElement[]) =>
@@ -131,8 +147,9 @@ const DisplayCounts = () => {
               value={dayjs(startDate)}
               maxDateTime={dayjs(endDate)}
               onChange={(e) => {
-                if (e === null) return
-                dateChanged(e.toDate(), 'start')
+                if (e && !Number.isNaN(Date.parse(e.toString()))) {
+                  setStartDate(e.toDate())
+                }
               }}
             />
           </LocalizationProvider>
@@ -146,8 +163,9 @@ const DisplayCounts = () => {
               minDateTime={dayjs(startDate)}
               maxDateTime={dayjs(endDate)}
               onChange={(e) => {
-                if (e === null) return
-                dateChanged(e.toDate(), 'end')
+                if (e && !Number.isNaN(Date.parse(e.toString()))) {
+                  setEndDate(e.toDate())
+                }
               }}
             />
           </LocalizationProvider>
@@ -159,7 +177,7 @@ const DisplayCounts = () => {
               label="Message Type"
               id="counts-msg-dropdown"
               value={countsMsgType}
-              onChange={(event) => dispatch(updateMessageType(event.target.value as MessageType))}
+              onChange={(event) => setCountsMsgType(event.target.value as MessageType)}
               sx={{
                 textAlign: 'left',
               }}

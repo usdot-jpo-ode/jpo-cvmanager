@@ -8,7 +8,7 @@ import common.util as util
 import api_environment
 import logging
 from pymongo import MongoClient
-from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden
+from werkzeug.exceptions import InternalServerError, Forbidden
 
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
@@ -19,64 +19,7 @@ from common.auth_tools import (
 )
 
 
-message_types = {
-    "bsm": "BSM",
-    "map": "Map",
-    "spat": "SPaT",
-    "srm": "SRM",
-    "ssm": "SSM",
-    "tim": "TIM",
-    "psm": "PSM",
-}
-
-
-def query_rsu_counts_mongo(allowed_ips_dict, message_type, start, end):
-    start_dt = util.format_date_utc(start, "DATETIME").replace(
-        hour=0, minute=0, second=0, microsecond=0
-    )
-    end_dt = util.format_date_utc(end, "DATETIME").replace(
-        hour=0, minute=0, second=0, microsecond=0
-    )
-
-    try:
-        client = MongoClient(
-            api_environment.MONGO_DB_URI, serverSelectionTimeoutMS=5000
-        )
-        mongo_db = client[api_environment.MONGO_DB_NAME]
-        collection = mongo_db["CVCounts"]
-    except Exception as e:
-        logging.error(
-            f"Failed to connect to Mongo counts collection with error message: {e}"
-        )
-        raise Forbidden("Failed to connect to Mongo") from e
-
-    result = {}
-    for rsu_ip in allowed_ips_dict:
-        query = {
-            "messageType": message_types[message_type.lower()],
-            "rsuIp": rsu_ip,
-            "timestamp": {
-                "$gte": start_dt,
-                "$lt": end_dt,
-            },
-        }
-
-        try:
-            logging.debug(f"Running query: {query}, on collection: {collection.name}")
-            response = collection.find_one(query)
-            if not response:
-                item = {"road": allowed_ips_dict[rsu_ip], "count": 0}
-            else:
-                item = {"road": allowed_ips_dict[rsu_ip], "count": response["count"]}
-            result[rsu_ip] = item
-        except Exception as e:
-            logging.error(f"Filter failed: {e}")
-            raise InternalServerError("Encountered unknown issue") from e
-
-    return result
-
-
-def query_rsu_counts_mongo_aggregated(allowed_ips_dict, start, end):
+def query_rsu_counts_aggregated(allowed_ips_dict, start, end):
     start_dt = util.format_date_utc(start, "DATETIME").replace(
         hour=0, minute=0, second=0, microsecond=0
     )
@@ -107,8 +50,16 @@ def query_rsu_counts_mongo_aggregated(allowed_ips_dict, start, end):
         {"$project": {"rsuIp": 1, "messageType": 1, "count": 1, "_id": 0}},
         {
             "$group": {
-                "_id": "$rsuIp",
-                "messageTypeCounts": {"$push": {"k": "$messageType", "v": "$count"}},
+                "_id": {"rsuIp": "$rsuIp", "messageType": "$messageType"},
+                "totalCount": {"$sum": "$count"},
+            }
+        },
+        {
+            "$group": {
+                "_id": "$_id.rsuIp",
+                "messageTypeCounts": {
+                    "$push": {"k": "$_id.messageType", "v": "$totalCount"}
+                },
             }
         },
         {
@@ -214,40 +165,6 @@ class RsuQueryCounts(Resource):
         if errors:
             abort(400, str(errors))
         # Get arguments from request and set defaults if not provided
-        message = request.args.get("message", default="BSM")
-        start = request.args.get(
-            "start",
-            default=((datetime.now() - timedelta(1)).strftime("%Y-%m-%dT%H:%M:%S")),
-        )
-        end = request.args.get(
-            "end", default=((datetime.now()).strftime("%Y-%m-%dT%H:%M:%S"))
-        )
-
-        # Validate request with supported message types
-        msgList = api_environment.COUNTS_MSG_TYPES
-        if message.upper() not in msgList:
-            raise BadRequest(
-                "Invalid Message Type.\nValid message types: " + ", ".join(msgList)
-            )
-
-        rsu_dict = get_organization_rsus(
-            permission_result.user, permission_result.qualified_orgs
-        )
-        data = query_rsu_counts_mongo(rsu_dict, message, start, end)
-
-        return (data, 200, self.headers)
-
-    @require_permission(
-        required_role=ORG_ROLE_LITERAL.USER,
-    )
-    def post(self, permission_result: PermissionResult):
-        logging.debug("RsuQueryCounts POST requested")
-        # Schema check for arguments
-        schema = RsuQueryCountsSchema()
-        errors = schema.validate(request.args)
-        if errors:
-            abort(400, str(errors))
-        # Get arguments from request and set defaults if not provided
         start = request.args.get(
             "start",
             default=((datetime.now() - timedelta(1)).strftime("%Y-%m-%dT%H:%M:%S")),
@@ -259,6 +176,6 @@ class RsuQueryCounts(Resource):
         rsu_dict = get_organization_rsus(
             permission_result.user, permission_result.qualified_orgs
         )
-        data = query_rsu_counts_mongo_aggregated(rsu_dict, start, end)
+        data = query_rsu_counts_aggregated(rsu_dict, start, end)
 
         return (data, 200, self.headers)

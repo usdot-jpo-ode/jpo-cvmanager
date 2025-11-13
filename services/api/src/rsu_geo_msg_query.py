@@ -100,7 +100,7 @@ def query_geo_data_mongo(pointList, start, end, msg_type):
         logging.debug(f"Returned records: {num_docs}")
 
         for doc in collection.find(filter=filter):
-            if doc["properties"]["schemaVersion"] != 8:
+            if doc["properties"]["schemaVersion"] != 2:
                 logging.warning(
                     f"Skipping message with schema version {doc['properties']['schemaVersion']}"
                 )

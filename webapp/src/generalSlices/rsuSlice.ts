@@ -292,7 +292,6 @@ export const rsuSlice = createSlice({
   name: 'rsu',
   initialState: {
     loading: false,
-    requestOut: false,
     value: initialState,
   },
   reducers: {
@@ -403,7 +402,7 @@ export const rsuSlice = createSlice({
         state.loading = false
         const payload = action.payload as RsuOnlineStatusRespSingle
         if (Object.prototype.hasOwnProperty.call(state.value.rsuOnlineStatus, payload.ip)) {
-          (state.value.rsuOnlineStatus as RsuOnlineStatusRespMultiple)[payload.ip]['last_online'] = payload.last_online
+          ;(state.value.rsuOnlineStatus as RsuOnlineStatusRespMultiple)[payload.ip]['last_online'] = payload.last_online
         }
       })
       .addCase(getRsuLastOnline.rejected, (state) => {
@@ -432,7 +431,6 @@ export const rsuSlice = createSlice({
         state.value.issScmsStatusData = action.payload ?? state.value.issScmsStatusData
       })
       .addCase(updateRowData.pending, (state) => {
-        state.requestOut = true
         state.value.messageLoading = false
       })
       .addCase(updateRowData.fulfilled, (state, action) => {
@@ -445,14 +443,12 @@ export const rsuSlice = createSlice({
             ip in action.payload.rsuCounts ? action.payload.rsuCounts[ip].count : 0
         })
         state.value.warningMessage = action.payload.warningMessage
-        state.requestOut = false
         state.value.messageLoading = false
         state.value.countsMsgType = action.payload.countsMsgType
         state.value.startDate = action.payload.startDate
         state.value.endDate = action.payload.endDate
       })
       .addCase(updateRowData.rejected, (state) => {
-        state.requestOut = false
         state.value.messageLoading = false
       })
       .addCase(updateGeoMsgData.pending, (state) => {
@@ -473,7 +469,6 @@ export const rsuSlice = createSlice({
 })
 
 export const selectLoading = (state: RootState) => state.rsu.loading
-export const selectRequestOut = (state: RootState) => state.rsu.requestOut
 
 export const selectSelectedRsu = (state: RootState) => state.rsu.value.selectedRsu
 export const selectRsuManufacturer = (state: RootState) => state.rsu.value.selectedRsu?.properties?.manufacturer_name

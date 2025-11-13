@@ -4,9 +4,8 @@ from flask_restful import Resource
 from marshmallow import Schema, fields, validate
 import common.pgquery as pgquery
 import logging
-import os
+import api_environment
 from werkzeug.exceptions import BadRequest
-
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
     PermissionResult,
@@ -97,14 +96,14 @@ class RsuGeoQuerySchema(Schema):
 
 class RsuGeoQuery(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization,Organization",
         "Access-Control-Allow-Methods": "POST",
         "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Content-Type": "application/json",
     }
 

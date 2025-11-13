@@ -2,7 +2,7 @@ from typing import Any
 from flask_restful import Resource
 import logging
 import common.pgquery as pgquery
-import os
+import api_environment
 
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
@@ -14,7 +14,6 @@ from common.auth_tools import (
 
 
 def get_rsu_data(user: EnvironWithOrg, qualified_orgs: list[str]):
-
     # Execute the query and fetch all results
     query = (
         "SELECT jsonb_build_object('type', 'Feature', 'id', row.rsu_id, 'geometry', ST_AsGeoJSON(row.geography)::jsonb, 'properties', to_jsonb(row)) "
@@ -54,14 +53,14 @@ def get_rsu_data(user: EnvironWithOrg, qualified_orgs: list[str]):
 # REST endpoint resource class
 class RsuInfo(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization,Organization",
         "Access-Control-Allow-Methods": "GET",
         "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Content-Type": "application/json",
     }
 

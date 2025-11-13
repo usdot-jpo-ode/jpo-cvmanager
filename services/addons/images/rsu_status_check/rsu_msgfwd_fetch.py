@@ -1,20 +1,17 @@
-import os
 import logging
 from common.snmp.update_pg.update_rsu_message_forward import (
     UpdatePostgresRsuMessageForward,
 )
+import rsu_status_check_environment
+from common import common_environment
 
 
 # Pulls the latest message forwarding configuration information from all RSUs in the PostgreSQL database
 # through SNMP and updates the PostgreSQL database with the latest information
 def main():
-    # Configure logging based on ENV var or use default if not set
-    log_level = os.environ.get("LOGGING_LEVEL", "INFO")
-    log_level = "INFO" if log_level == "" else log_level
-    logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
+    common_environment.configure_logging()
 
-    run_service = os.environ.get("RSU_MSGFWD_FETCH", "False").lower() == "true"
-    if not run_service:
+    if not rsu_status_check_environment.RSU_MSGFWD_FETCH:
         logging.info("The rsu-msgfwd-fetch service is disabled and will not run")
         return
 

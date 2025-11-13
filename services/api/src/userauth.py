@@ -1,4 +1,4 @@
-import os
+import api_environment
 
 from flask_restful import Resource
 
@@ -7,14 +7,14 @@ from common.auth_tools import PermissionResult, require_permission
 
 class UserAuth(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization",
         "Access-Control-Allow-Methods": "GET",
         "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Content-Type": "application/json",
     }
 

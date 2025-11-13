@@ -4,12 +4,11 @@ from waitress import serve
 from marshmallow import Schema, fields
 import json
 import logging
-import os
+from common import common_environment
 
 app = Flask(__name__)
 
-log_level = os.environ.get("LOGGING_LEVEL", "INFO")
-logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
+common_environment.configure_logging()
 
 manufacturer_upgrade_scripts = {
     "Commsignia": "commsignia_upgrader.py",

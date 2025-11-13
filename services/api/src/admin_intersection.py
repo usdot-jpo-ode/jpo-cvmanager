@@ -6,7 +6,7 @@ import logging
 import common.pgquery as pgquery
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 import admin_new_intersection
-import os
+import api_environment
 from werkzeug.exceptions import InternalServerError, BadRequest
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
@@ -350,14 +350,14 @@ class AdminIntersectionPatchSchema(Schema):
 
 class AdminIntersection(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization",
         "Access-Control-Allow-Methods": "GET,PATCH,DELETE",
         "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Content-Type": "application/json",
     }
 

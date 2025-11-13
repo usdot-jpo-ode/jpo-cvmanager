@@ -1,9 +1,10 @@
-import os
 import logging
 import time
 import common.pgquery as pgquery
 from datetime import datetime
 from subprocess import Popen, DEVNULL
+import rsu_status_check_environment
+from common import common_environment
 
 
 def insert_ping_data(ping_data, ping_time):
@@ -83,14 +84,10 @@ def run_rsu_pinger():
 
 
 if __name__ == "__main__":
-    # Configure logging based on ENV var or use default if not set
-    log_level = os.environ.get("LOGGING_LEVEL", "INFO")
-    log_level = "INFO" if log_level == "" else log_level
-    logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
+    common_environment.configure_logging()
 
     run_service = (
-        os.environ.get("RSU_PING", "False").lower() == "true"
-        and os.environ.get("ZABBIX", "False").lower() == "false"
+        rsu_status_check_environment.RSU_PING and rsu_status_check_environment.ZABBIX
     )
     if not run_service:
         logging.info("The rsu-pinger service is disabled and will not run")

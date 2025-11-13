@@ -1,7 +1,7 @@
 from typing import Any
 from flask_restful import Resource
 import common.util as util
-import os
+import api_environment
 import logging
 from datetime import datetime, timedelta
 from pymongo import MongoClient
@@ -23,18 +23,11 @@ def query_ssm_data_mongo() -> list:
     start_utc = util.format_date_utc(start_date.isoformat())
 
     try:
-        client: MongoClient = MongoClient(
-            os.getenv("MONGO_DB_URI"), serverSelectionTimeoutMS=5000
+        client = MongoClient(
+            api_environment.MONGO_DB_URI, serverSelectionTimeoutMS=5000
         )
-        mongo_db_name = os.getenv("MONGO_DB_NAME")
-        srm_db_name = os.getenv("SSM_DB_NAME")
-        if not mongo_db_name or not srm_db_name:
-            logging.error(
-                "Missing one ore more environment variables for MongoDB: MONGO_DB_NAME, SSM_DB_NAME"
-            )
-            raise Exception("Missing environment variables for MongoDB")
-        db = client[mongo_db_name]
-        collection = db[srm_db_name]
+        db = client[api_environment.MONGO_DB_NAME]
+        collection = db[api_environment.MONGO_SSM_COLLECTION_NAME]
     except Exception as e:
         logging.error(
             f"Failed to connect to Mongo counts collection with error message: {e}"
@@ -88,18 +81,11 @@ def query_srm_data_mongo() -> list:
     start_utc = util.format_date_utc(start_date.isoformat())
 
     try:
-        client: MongoClient = MongoClient(
-            os.getenv("MONGO_DB_URI"), serverSelectionTimeoutMS=5000
+        client = MongoClient(
+            api_environment.MONGO_DB_URI, serverSelectionTimeoutMS=5000
         )
-        mongo_db_name = os.getenv("MONGO_DB_NAME")
-        srm_db_name = os.getenv("SRM_DB_NAME")
-        if not mongo_db_name or not srm_db_name:
-            logging.error(
-                "Missing one ore more environment variables for MongoDB: MONGO_DB_NAME, SSM_DB_NAME"
-            )
-            raise Exception("Missing environment variables for MongoDB")
-        db = client[mongo_db_name]
-        collection = db[srm_db_name]
+        db = client[api_environment.MONGO_DB_NAME]
+        collection = db[api_environment.MONGO_SRM_COLLECTION_NAME]
     except Exception as e:
         logging.error(
             f"Failed to connect to Mongo counts collection with error message: {e}"
@@ -156,14 +142,14 @@ def filter_results_by_ip_address(
 
 class RsuSsmSrmData(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization",
         "Access-Control-Allow-Methods": "GET",
         "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Content-Type": "application/json",
     }
 

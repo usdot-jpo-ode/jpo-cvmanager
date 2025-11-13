@@ -2,7 +2,7 @@ from unittest.mock import patch, MagicMock
 from addons.images.rsu_status_check.rsu_msgfwd_fetch import main
 
 
-@patch("os.environ", {"RSU_MSGFWD_FETCH": "False"})
+@patch("rsu_status_check_environment.RSU_MSGFWD_FETCH", False)
 @patch(
     "addons.images.rsu_status_check.rsu_msgfwd_fetch.UpdatePostgresRsuMessageForward"
 )
@@ -15,7 +15,7 @@ def test_main_service_disabled(mock_logging, mock_update_pg):
     mock_update_pg.assert_not_called()
 
 
-@patch("os.environ", {"RSU_MSGFWD_FETCH": "True"})
+@patch("rsu_status_check_environment.RSU_MSGFWD_FETCH", True)
 @patch(
     "addons.images.rsu_status_check.rsu_msgfwd_fetch.UpdatePostgresRsuMessageForward"
 )

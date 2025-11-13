@@ -1,7 +1,8 @@
 import common.pgquery as pgquery
 import json
 import logging
-import os
+
+import api_environment
 import requests
 from werkzeug.exceptions import Conflict, NotImplemented
 
@@ -44,7 +45,7 @@ def check_for_upgrade(rsu_ip):
 
 
 def mark_rsu_for_upgrade(rsu_ip):
-    if os.getenv("FIRMWARE_MANAGER_ENDPOINT") is None:
+    if api_environment.FIRMWARE_MANAGER_ENDPOINT is None:
         raise NotImplemented(  # noqa: F901
             "The firmware manager is not supported for this CV Manager deployment"
         )
@@ -52,7 +53,7 @@ def mark_rsu_for_upgrade(rsu_ip):
     # Verify requested target RSU is eligible for upgrade and determine next upgrade
     upgrade_info = check_for_upgrade(rsu_ip)
 
-    if upgrade_info["upgrade_available"] is False:
+    if not upgrade_info["upgrade_available"]:
         raise Conflict(
             f"Requested RSU '{rsu_ip}' is already up to date with the latest firmware"
         )
@@ -63,7 +64,7 @@ def mark_rsu_for_upgrade(rsu_ip):
 
     logging.info(f"Initiating firmware upgrade with the firmware manager for {rsu_ip}")
     # Environment variable FIRMWARE_MANAGER_ENDPOINT must contain "http://" and port
-    firmware_manager_endpoint = os.getenv("FIRMWARE_MANAGER_ENDPOINT")
+    firmware_manager_endpoint = api_environment.FIRMWARE_MANAGER_ENDPOINT
     post_body = {"rsu_ip": rsu_ip}
     response = requests.post(
         f"{firmware_manager_endpoint}/init_firmware_upgrade", json=post_body

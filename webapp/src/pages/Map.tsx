@@ -43,6 +43,7 @@ import {
   setGeoMsgFilterOffset,
   changeGeoMsgType,
   selectGeoMsgType,
+  updateMessageType,
 } from '../generalSlices/rsuSlice'
 import { selectWzdxData, getWzdxData } from '../generalSlices/wzdxSlice'
 import {
@@ -128,6 +129,7 @@ import { DateTime } from 'luxon'
 
 // eslint-disable-next-line
 // eslint-disable-next-line import/no-webpack-loader-syntax, @typescript-eslint/no-require-imports
+import { MessageType } from '../models/MessageTypes'
 ;(mapboxgl as any).workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default
 
 const MILLISECONDS_PER_MINUTE = 60000
@@ -137,6 +139,10 @@ const calculateTimeWindow = (baseDate: string | Date, offset: number, step: numb
   const end = new Date(start.getTime() + MILLISECONDS_PER_MINUTE * step)
   return { start, end }
 }
+
+const countsMessageTypeOptions = EnvironmentVars.getMessageTypes().map((type) => {
+  return { value: type, label: type }
+})
 
 function MapPage() {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -864,23 +870,48 @@ function MapPage() {
           .map((layer) => (
             <div key={layer.id}>
               <div style={{ fontSize: 'small', display: 'flex', alignItems: 'center' }}>
-                {layer.control && (
-                  <IconButton
-                    onClick={() => toggleExpandLayer(layer.id)}
-                    size="small"
-                    edge="end"
-                    aria-label={expandedLayers.includes(layer.id) ? 'Collapse' : 'Expand'}
-                  >
-                    {expandedLayers.includes(layer.id) ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                  </IconButton>
+                {layer.id === 'heatmap-layer' ? (
+                  <FormControlLabel
+                    onClick={(e) => {
+                      toggleLayer(layer.id)
+                    }}
+                    label={
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Typography>{layer.label}</Typography>
+                        <Box onClick={(e) => e.stopPropagation()}>
+                          <FormControl size="small">
+                            <InputLabel htmlFor="counts-msg-dropdown">Msg Type</InputLabel>
+                            <Select
+                              label="Message Type"
+                              id="counts-msg-dropdown"
+                              value={countsMsgType}
+                              onChange={(event) => dispatch(updateMessageType(event.target.value as MessageType))}
+                              sx={{
+                                textAlign: 'left',
+                              }}
+                            >
+                              {countsMessageTypeOptions.map((option) => {
+                                return (
+                                  <MenuItem value={option.value} key={option.value}>
+                                    {option.label}
+                                  </MenuItem>
+                                )
+                              })}
+                            </Select>
+                          </FormControl>
+                        </Box>
+                      </Box>
+                    }
+                    control={<Checkbox checked={activeLayers.includes(layer.id)} />}
+                  />
+                ) : (
+                  <FormControlLabel
+                    onClick={() => toggleLayer(layer.id)}
+                    label={<Typography>{layer.label}</Typography>}
+                    control={<Checkbox checked={activeLayers.includes(layer.id)} />}
+                  />
                 )}
-                <FormControlLabel
-                  onClick={() => toggleLayer(layer.id)}
-                  label={<Typography>{layer.label}</Typography>}
-                  control={<Checkbox checked={activeLayers.includes(layer.id)} />}
-                />
               </div>
-              {layer.control && <Collapse in={expandedLayers.includes(layer.id)}>{layer.control}</Collapse>}
             </div>
           ))}
       </FormGroup>

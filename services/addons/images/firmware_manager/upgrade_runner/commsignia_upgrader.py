@@ -4,9 +4,8 @@ from scp import SCPClient
 import upgrader
 import json
 import logging
-import os
 import sys
-
+from common import common_environment
 
 class CommsigniaUpgrader(upgrader.UpgraderAbstractClass):
     def __init__(self, upgrade_info):
@@ -103,8 +102,8 @@ class CommsigniaUpgrader(upgrader.UpgraderAbstractClass):
 
             # Change permissions and execute post upgrade script
             logging.info("Running post upgrade script for " + self.rsu_ip + "...")
-            ssh.exec_command(f"chmod +x /tmp/post_upgrade.sh")
-            _stdin, _stdout, _stderr = ssh.exec_command(f"/tmp/post_upgrade.sh")
+            ssh.exec_command("chmod +x /tmp/post_upgrade.sh")
+            _stdin, _stdout, _stderr = ssh.exec_command("/tmp/post_upgrade.sh")
             decoded_stdout = _stdout.read().decode()
             logging.info(decoded_stdout)
             if "ALL OK" not in decoded_stdout:
@@ -135,8 +134,7 @@ class CommsigniaUpgrader(upgrader.UpgraderAbstractClass):
 # - target_firmware_version
 # - install_package
 if __name__ == "__main__":
-    log_level = os.environ.get("LOGGING_LEVEL", "INFO")
-    logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
+    common_environment.configure_logging()
     # Trimming outer single quotes from the json.loads
     upgrade_info = json.loads(sys.argv[1][1:-1])
     commsignia_upgrader = CommsigniaUpgrader(upgrade_info)

@@ -90,7 +90,10 @@ def test_ping_data_query(mock_pgquery):
     }
 
     rsu_online_status.get_ping_data(user_valid_no_super)
-    mock_pgquery.query_db.assert_called_with(expected_query, params=expected_params)
+    mock_pgquery.query_db.assert_called_with(
+        expected_query,
+        params=expected_params,
+    )
 
 
 @patch("api.src.rsu_online_status.pgquery")

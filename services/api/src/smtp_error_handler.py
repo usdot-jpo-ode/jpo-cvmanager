@@ -7,26 +7,26 @@ from logging.handlers import SMTPHandler
 import smtplib
 import datetime
 import ssl
-import os
+import api_environment
 
 
 def get_subscribed_users():
-    emails = os.environ["CSM_EMAILS_TO_SEND_TO"].split(",")
+    emails = api_environment.CSM_EMAILS_TO_SEND_TO
     return emails
 
 
 def configure_error_emails(app):
     mail_handler = SMTP_SSLHandler(
         mailhost=[
-            os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"],
-            int(os.environ["CSM_TARGET_SMTP_SERVER_PORT"]),
+            api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS,
+            api_environment.CSM_TARGET_SMTP_SERVER_PORT,
         ],
-        fromaddr=os.environ["CSM_EMAIL_TO_SEND_FROM"],
+        fromaddr=api_environment.CSM_EMAIL_TO_SEND_FROM,
         toaddrs=[],
         subject="Automated CV Manager API Error",
         credentials=[
-            os.environ["CSM_EMAIL_APP_USERNAME"],
-            os.environ["CSM_EMAIL_APP_PASSWORD"],
+            api_environment.CSM_EMAIL_APP_USERNAME,
+            api_environment.CSM_EMAIL_APP_PASSWORD,
         ],
         secure=(),
     )
@@ -52,42 +52,45 @@ class SMTP_SSLHandler(SMTPHandler):
         )
 
     def emit(self, record):
-        try:
-            subscribed_users = get_subscribed_users()
+        # try:
+        subscribed_users = get_subscribed_users()
 
-            if not hasattr(record, "asctime"):
-                # For some reason, asctime is not always available. So we update it to the current time in the same format (2023-08-23 15:39:29,115)
-                record.asctime = datetime.datetime.now().strftime(
-                    "%Y-%m-%d %H:%M:%S,%f"
-                )[:-3]
+        if not hasattr(record, "asctime"):
+            # For some reason, asctime is not always available. So we update it to the current time in the same format (2023-08-23 15:39:29,115)
+            record.asctime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S,%f")[
+                :-3
+            ]
 
-            body_content = open("./error_email/error_email_template.html").read()
+        body_content = open("./error_email/error_email_template.html").read()
 
-            EMAIL_KEYS = {
-                "ENVIRONMENT": os.environ["ENVIRONMENT_NAME"],
-                "ERROR_MESSAGE": self.format(record).replace("\n", "<br>"),
-                "ERROR_TIME": str(record.asctime),
-                "LOGS_LINK": os.environ["LOGS_LINK"],
-            }
+        EMAIL_KEYS = {
+            "ENVIRONMENT": api_environment.ENVIRONMENT_NAME,
+            "ERROR_MESSAGE": self.format(record).replace("\n", "<br>"),
+            "ERROR_TIME": str(record.asctime),
+            "LOGS_LINK": api_environment.LOGS_LINK,
+        }
 
-            context = ssl._create_unverified_context()
-            smtp = smtplib.SMTP(host=self.mailhost, port=self.mailport)
-            smtp.starttls(context=context)
-            smtp.ehlo()
-            smtp.login(self.username, self.password)
+        context = ssl._create_unverified_context()
+        smtp = smtplib.SMTP(host=self.mailhost, port=self.mailport)
+        logging.error("real_smtplib", smtp)
+        smtp.starttls(context=context)
+        smtp.ehlo()
+        smtp.login(self.username, self.password)
 
-            for email in subscribed_users:
-                message = MIMEMultipart()
-                message["Subject"] = self.subject
-                message["From"] = self.fromaddr
-                message["To"] = email
+        print("Subscribed Users", subscribed_users)
 
-                for key, value in EMAIL_KEYS.items():
-                    body_content = body_content.replace(f"##_{key}_##", value)
-                message.attach(MIMEText(body_content, "html"))
-                smtp.sendmail(self.fromaddr, email, message.as_string())
-            smtp.quit()
+        for email in subscribed_users:
+            message = MIMEMultipart()
+            message["Subject"] = self.subject
+            message["From"] = self.fromaddr
+            message["To"] = email
 
-            logging.debug(f"Successfully sent error email to {subscribed_users}")
-        except Exception as e:
-            logging.exception(e)
+            for key, value in EMAIL_KEYS.items():
+                body_content = body_content.replace(f"##_{key}_##", value)
+            message.attach(MIMEText(body_content, "html"))
+            smtp.sendmail(self.fromaddr, email, message.as_string())
+        smtp.quit()
+
+        logging.debug(f"Successfully sent error email to {subscribed_users}")
+        # except Exception as e:
+        #     logging.exception(e)

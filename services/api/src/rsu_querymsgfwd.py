@@ -4,7 +4,7 @@ from marshmallow import Schema, fields
 import common.pgquery as pgquery
 import common.snmp.rsu_message_forward_helpers as rsu_message_forward_helpers
 import common.util as util
-import os
+import api_environment
 import logging
 
 from common.auth_tools import (
@@ -95,14 +95,14 @@ class RsuQueryMsgFwdSchema(Schema):
 
 class RsuQueryMsgFwd(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization,Organization",
         "Access-Control-Allow-Methods": "GET",
         "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Content-Type": "application/json",
     }
 

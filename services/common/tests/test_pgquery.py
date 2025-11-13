@@ -1,7 +1,6 @@
 from unittest.mock import MagicMock, patch, Mock
 from common import pgquery
 import sqlalchemy
-import os
 
 
 # test that init_tcp_connection_engine is calling sqlalchemy.create_engine with expected arguments
@@ -93,6 +92,10 @@ def test_init_socket_connection_engine():
     "common.pgquery.db_config",
     new={"pool_size": 5, "max_overflow": 2, "pool_timeout": 30, "pool_recycle": 1800},
 )
+@patch("common.common_environment.PG_DB_USER", "user")
+@patch("common.common_environment.PG_DB_PASS", "pass")
+@patch("common.common_environment.PG_DB_NAME", "my_database")
+@patch("common.common_environment.PG_DB_HOST", "my_hostname:3000")
 def test_init_connection_engine_target_tcp():
     # mock return values for function dependencies
     pgquery.init_tcp_connection_engine = MagicMock(return_value="my_engine1")
@@ -102,12 +105,6 @@ def test_init_connection_engine_target_tcp():
     db_pass = "pass"
     db_name = "my_database"
     db_hostname = "my_hostname:3000"
-
-    # set environment variables
-    os.environ["PG_DB_USER"] = db_user
-    os.environ["PG_DB_PASS"] = db_pass
-    os.environ["PG_DB_NAME"] = db_name
-    os.environ["PG_DB_HOST"] = db_hostname
 
     host_args = db_hostname.split(":")
     db_hostname, db_port = host_args[0], int(host_args[1])
@@ -133,6 +130,13 @@ def test_init_connection_engine_target_tcp():
     new={"pool_size": 5, "max_overflow": 2, "pool_timeout": 30, "pool_recycle": 1800},
 )
 @patch("common.pgquery.db", new=None)
+@patch("common.common_environment.PG_DB_USER", "user")
+@patch("common.common_environment.PG_DB_PASS", "pass")
+@patch("common.common_environment.PG_DB_NAME", "my_database")
+@patch(
+    "common.common_environment.INSTANCE_CONNECTION_NAME",
+    "myproject:us-central1:myinstance",
+)
 def test_init_connection_engine_target_socket():
     # mock return values for function dependencies
     pgquery.init_tcp_connection_engine = MagicMock(return_value="my_engine1")
@@ -142,14 +146,8 @@ def test_init_connection_engine_target_socket():
     db_pass = "pass"
     db_name = "my_database"
 
-    # set environment variables
-    os.environ["PG_DB_USER"] = db_user
-    os.environ["PG_DB_PASS"] = db_pass
-    os.environ["PG_DB_NAME"] = db_name
-    os.environ["INSTANCE_CONNECTION_NAME"] = "my_project:us-central1:my_instance"
-
     unix_query = {
-        "unix_sock": f"/cloudsql/{os.environ['INSTANCE_CONNECTION_NAME']}/.s.PGSQL.5432"
+        "unix_sock": "/cloudsql/myproject:us-central1:myinstance/.s.PGSQL.5432"
     }
 
     # call function

@@ -4,8 +4,8 @@ from flask_restful import Resource
 from marshmallow import Schema, fields, validate
 import logging
 import common.pgquery as pgquery
+import api_environment
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-import os
 import time
 from werkzeug.exceptions import InternalServerError, BadRequest
 from common.auth_tools import (
@@ -150,14 +150,14 @@ class AdminNewUserSchema(Schema):
 
 class AdminNewUser(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization",
         "Access-Control-Allow-Methods": "GET,POST",
         "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Content-Type": "application/json",
     }
 

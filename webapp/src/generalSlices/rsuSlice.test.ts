@@ -33,7 +33,6 @@ import {
 
   // selectors
   selectLoading,
-  selectRequestOut,
   selectSelectedRsu,
   selectRsuManufacturer,
   selectRsuIpv4,
@@ -89,7 +88,6 @@ describe('rsu reducer', () => {
   it('should handle initial state', () => {
     expect(reducer(undefined, { type: 'unknown' })).toEqual({
       loading: false,
-      requestOut: false,
       value: {
         selectedRsu: null,
         rsuData: [],
@@ -132,7 +130,6 @@ describe('rsu reducer', () => {
 describe('async thunks', () => {
   const initialState: RootState['rsu'] = {
     loading: null,
-    requestOut: null,
     value: {
       selectedRsu: null,
       rsuData: null,
@@ -740,7 +737,6 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly pending', async () => {
-      const requestOut = true
       const messageLoading = false
       const state = reducer(initialState, {
         type: 'rsu/updateRowData/pending',
@@ -748,7 +744,6 @@ describe('async thunks', () => {
 
       expect(state).toEqual({
         ...initialState,
-        requestOut,
         value: { ...initialState.value, messageLoading },
       })
     })
@@ -772,7 +767,6 @@ describe('async thunks', () => {
         ],
       } as any
       const warningMessage = 'warningMessage'
-      const requestOut = false
       const messageLoading = false
       const countsMsgType = 'countsMsgType'
       const startDate = 'startDate'
@@ -804,7 +798,6 @@ describe('async thunks', () => {
 
       expect(state).toEqual({
         ...initialState,
-        requestOut,
         value: {
           ...initialState.value,
           rsuCounts,
@@ -820,7 +813,6 @@ describe('async thunks', () => {
     })
 
     it('Updates the state correctly rejected', async () => {
-      const requestOut = false
       const messageLoading = false
       const state = reducer(initialState, {
         type: 'rsu/updateRowData/rejected',
@@ -828,7 +820,6 @@ describe('async thunks', () => {
 
       expect(state).toEqual({
         ...initialState,
-        requestOut,
         value: { ...initialState.value, messageLoading },
       })
     })
@@ -988,7 +979,6 @@ describe('functions', () => {
 describe('reducers', () => {
   const initialState: RootState['rsu'] = {
     loading: null,
-    requestOut: null,
     value: {
       selectedRsu: null,
       rsuData: null,
@@ -1178,7 +1168,6 @@ describe('reducers', () => {
 describe('selectors', () => {
   const initialState = {
     loading: 'loading',
-    requestOut: 'requestOut',
     value: {
       selectedRsu: {
         properties: {
@@ -1221,7 +1210,6 @@ describe('selectors', () => {
 
   it('selectors return the correct value', async () => {
     expect(selectLoading(rsuState)).toEqual('loading')
-    expect(selectRequestOut(rsuState)).toEqual('requestOut')
 
     expect(selectSelectedRsu(rsuState)).toEqual(initialState.value.selectedRsu)
     expect(selectRsuManufacturer(rsuState)).toEqual('manufacturer_name')

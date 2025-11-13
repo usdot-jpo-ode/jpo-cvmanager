@@ -1,7 +1,8 @@
 from dateutil.parser import parse
 import pytz
-import os
 import logging
+import datetime
+from common import common_environment
 
 
 # expects datetime string
@@ -24,7 +25,7 @@ def format_date_denver(d):
     if not d:
         return None
     tmp = parse(d)
-    denver_tz = tmp.astimezone(pytz.timezone(os.getenv("TIMEZONE", "America/Denver")))
+    denver_tz = tmp.astimezone(pytz.timezone(common_environment.TIMEZONE))
     return denver_tz.strftime("%m/%d/%Y %I:%M:%S %p")
 
 
@@ -33,19 +34,19 @@ def format_date_denver_iso(d):
     if not d:
         return None
     tmp = parse(d)
-    denver_tz = tmp.astimezone(pytz.timezone(os.getenv("TIMEZONE", "America/Denver")))
+    denver_tz = tmp.astimezone(pytz.timezone(common_environment.TIMEZONE))
     return denver_tz.isoformat()
 
 
 # expects datetime, utilizes environment variable to custom timezone
-def utc2tz(d):
+def utc2tz(d: datetime.datetime):
     if not d:
         return None
-    tz_d = d.astimezone(pytz.timezone(os.getenv("TIMEZONE", "America/Denver")))
+    tz_d = d.astimezone(pytz.timezone(common_environment.TIMEZONE))
     return tz_d
 
 
-def validate_file_type(file_name, extension=".tar"):
+def validate_file_type(file_name: str, extension=".tar"):
     """Validate the file type of the file to be downloaded.
 
     Args:

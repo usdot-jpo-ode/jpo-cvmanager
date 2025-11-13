@@ -2,7 +2,6 @@ import os
 import datetime
 import re
 from typing import List
-import os
 import copy
 
 document = {

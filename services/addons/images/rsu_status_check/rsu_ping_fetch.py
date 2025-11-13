@@ -1,7 +1,8 @@
 import requests
-import os
 import logging
 import common.pgquery as pgquery
+import rsu_status_check_environment
+from common import common_environment
 
 
 def get_rsu_data():
@@ -37,7 +38,7 @@ def insert_rsu_ping(request_json):
 
 class RsuStatusFetch:
     def __init__(self):
-        self.ZABBIX_ENDPOINT = os.environ["ZABBIX_ENDPOINT"]
+        self.ZABBIX_ENDPOINT = rsu_status_check_environment.ZABBIX_ENDPOINT
         self.ZABBIX_AUTH = ""
 
     def setZabbixAuth(self):
@@ -47,8 +48,8 @@ class RsuStatusFetch:
             "method": "user.login",
             "id": 1,
             "params": {
-                "username": os.environ["ZABBIX_USER"],
-                "password": os.environ["ZABBIX_PASSWORD"],
+                "username": rsu_status_check_environment.ZABBIX_USER,
+                "password": rsu_status_check_environment.ZABBIX_PASSWORD,
             },
         }
 
@@ -144,14 +145,10 @@ class RsuStatusFetch:
 
 
 if __name__ == "__main__":
-    # Configure logging based on ENV var or use default if not set
-    log_level = os.environ.get("LOGGING_LEVEL", "INFO")
-    log_level = "INFO" if log_level == "" else log_level
-    logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
+    common_environment.configure_logging()
 
     run_service = (
-        os.environ.get("RSU_PING", "False").lower() == "true"
-        and os.environ.get("ZABBIX", "False").lower() == "true"
+        rsu_status_check_environment.RSU_PING and rsu_status_check_environment.ZABBIX
     )
     if not run_service:
         logging.info("The rsu-ping-fetch service is disabled and will not run")

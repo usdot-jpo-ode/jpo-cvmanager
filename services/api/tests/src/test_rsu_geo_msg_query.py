@@ -1,8 +1,6 @@
 from copy import deepcopy
 from datetime import datetime, timedelta
 from unittest.mock import patch, MagicMock
-import os
-
 import pytest
 from api.src.rsu_geo_msg_query import (
     query_geo_data_mongo,
@@ -10,7 +8,6 @@ from api.src.rsu_geo_msg_query import (
     get_collection,
     create_geo_filter,
 )
-import json
 import api.tests.data.rsu_geo_msg_query_data as rsu_geo_msg_query_data
 from werkzeug.exceptions import InternalServerError
 
@@ -20,15 +17,6 @@ def test_geo_hash():
     assert result is not None
 
 
-@patch.dict(
-    os.environ,
-    {
-        "MONGO_DB_URI": "uri",
-        "MONGO_DB_NAME": "name",
-        "MONGO_PROCESSED_BSM_COLLECTION_NAME": "col",
-        "MAX_GEO_QUERY_RECORDS": "10000",
-    },
-)
 @patch("api.src.rsu_geo_msg_query.MongoClient")
 def test_query_geo_data_mongo_bsm(mock_mongo):
     mock_db = MagicMock()
@@ -57,15 +45,6 @@ def test_query_geo_data_mongo_bsm(mock_mongo):
     assert response == expected_response
 
 
-@patch.dict(
-    os.environ,
-    {
-        "MONGO_DB_URI": "uri",
-        "MONGO_DB_NAME": "name",
-        "MONGO_PROCESSED_BSM_COLLECTION_NAME": "col",
-        "MAX_GEO_QUERY_RECORDS": "10000",
-    },
-)
 @patch("api.src.rsu_geo_msg_query.MongoClient")
 def test_query_geo_data_mongo_filter_failed(mock_mongo):
     mock_db = MagicMock()
@@ -90,14 +69,6 @@ def test_query_geo_data_mongo_filter_failed(mock_mongo):
     mock_collection.find.assert_called()
 
 
-@patch.dict(
-    os.environ,
-    {
-        "MONGO_DB_URI": "uri",
-        "MONGO_DB_NAME": "name",
-        "MONGO_PROCESSED_BSM_COLLECTION_NAME": "col",
-    },
-)
 @patch("api.src.rsu_geo_msg_query.MongoClient")
 def test_query_geo_data_mongo_failed_to_connect(mock_mongo):
     mock_mongo.side_effect = Exception("Failed to connect")
@@ -114,15 +85,6 @@ def test_query_geo_data_mongo_failed_to_connect(mock_mongo):
     assert response == expected_response
 
 
-@patch.dict(
-    os.environ,
-    {
-        "MONGO_DB_URI": "uri",
-        "MONGO_DB_NAME": "name",
-        "MONGO_PROCESSED_PSM_COLLECTION_NAME": "col",
-        "MAX_GEO_QUERY_RECORDS": "10000",
-    },
-)
 @patch("api.src.rsu_geo_msg_query.MongoClient")
 def test_query_geo_data_mongo_psm(mock_mongo):
     mock_db = MagicMock()
@@ -161,14 +123,6 @@ def test_query_geo_data_mongo_psm(mock_mongo):
     # mock_collection.find.assert_called()
 
 
-@patch.dict(
-    os.environ,
-    {
-        "MONGO_DB_URI": "uri",
-        "MONGO_DB_NAME": "name",
-        "MAX_GEO_QUERY_RECORDS": "10000",
-    },
-)
 @patch("api.src.rsu_geo_msg_query.MongoClient")
 def test_query_geo_data_mongo_unsupported_msg_type(mock_mongo):
     start = "2023-07-01T00:00:00Z"
@@ -181,15 +135,8 @@ def test_query_geo_data_mongo_unsupported_msg_type(mock_mongo):
     assert response == []
 
 
-@patch.dict(
-    os.environ,
-    {
-        "MONGO_DB_URI": "uri",
-        "MONGO_DB_NAME": "name",
-        "MONGO_PROCESSED_BSM_COLLECTION_NAME": "bsm_col",
-        "MONGO_PROCESSED_PSM_COLLECTION_NAME": "psm_col",
-    },
-)
+@patch("api_environment.MONGO_PROCESSED_BSM_COLLECTION_NAME", "bsm_col")
+@patch("api_environment.MONGO_PROCESSED_PSM_COLLECTION_NAME", "psm_col")
 @patch("api.src.rsu_geo_msg_query.MongoClient")
 def test_get_collection(mock_mongo):
     mock_db = MagicMock()
@@ -236,15 +183,6 @@ def test_create_geo_filter():
     assert filter["geometry"]["$geoWithin"]["$geometry"]["coordinates"] == [point_list]
 
 
-@patch.dict(
-    os.environ,
-    {
-        "MONGO_DB_URI": "uri",
-        "MONGO_DB_NAME": "name",
-        "MONGO_PROCESSED_BSM_COLLECTION_NAME": "col",
-        "MAX_GEO_QUERY_RECORDS": "10000",
-    },
-)
 @patch("api.src.rsu_geo_msg_query.MongoClient")
 def test_query_geo_data_mongo_schema_version_filter(mock_mongo):
     mock_db = MagicMock()
@@ -270,15 +208,6 @@ def test_query_geo_data_mongo_schema_version_filter(mock_mongo):
 
 
 # checks deduplication and sorting by timestamp
-@patch.dict(
-    os.environ,
-    {
-        "MONGO_DB_URI": "uri",
-        "MONGO_DB_NAME": "name",
-        "MONGO_PROCESSED_BSM_COLLECTION_NAME": "col",
-        "MAX_GEO_QUERY_RECORDS": "10000",
-    },
-)
 @patch("api.src.rsu_geo_msg_query.MongoClient")
 def test_order_by_time_stamp(mock_mongo):
     mock_db = MagicMock()
@@ -302,15 +231,8 @@ def test_order_by_time_stamp(mock_mongo):
     )
 
 
-@patch.dict(
-    os.environ,
-    {
-        "MONGO_DB_URI": "uri",
-        "MONGO_DB_NAME": "name",
-        "MONGO_PROCESSED_BSM_COLLECTION_NAME": "col",
-        "MAX_GEO_QUERY_RECORDS": "5",
-    },
-)
+@patch("api_environment.MONGO_PROCESSED_BSM_COLLECTION_NAME", "col")
+@patch("api_environment.MAX_GEO_QUERY_RECORDS", 5)
 @patch("api.src.rsu_geo_msg_query.MongoClient")
 def test_query_limit(mock_mongo):
     mock_db = MagicMock()

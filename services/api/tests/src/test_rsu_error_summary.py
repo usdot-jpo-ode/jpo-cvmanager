@@ -1,5 +1,6 @@
-import os
 from unittest.mock import MagicMock
+
+from mock import patch
 
 import api.src.rsu_error_summary as rsu_error_summary
 import api.tests.data.rsu_error_summary_data as rsu_error_summary_data
@@ -14,11 +15,11 @@ def test_rsu_error_summary_schema():
     exceptionOccurred = False
     try:
         schema.load(rsu_error_summary_data.rsu_error_summary_data_good)
-    except Exception as e:
+    except Exception:
         exceptionOccurred = True
 
     # assert
-    assert exceptionOccurred == False
+    assert exceptionOccurred is False
 
 
 def test_rsu_error_summary_schema_invalid():
@@ -29,25 +30,37 @@ def test_rsu_error_summary_schema_invalid():
     exceptionOccurred = False
     try:
         schema.load(rsu_error_summary_data.rsu_error_summary_data_bad)
-    except Exception as e:
+    except Exception:
         exceptionOccurred = True
 
     # assert
-    assert exceptionOccurred == True
+    assert exceptionOccurred is True
 
 
 # RSUErrorSummaryResource class tests ---
+@patch(
+    "api_environment.CSM_EMAIL_TO_SEND_FROM",
+    rsu_error_summary_data.CSM_EMAIL_TO_SEND_FROM,
+)
+@patch(
+    "api_environment.CSM_EMAIL_APP_USERNAME",
+    rsu_error_summary_data.CSM_EMAIL_APP_USERNAME,
+)
+@patch(
+    "api_environment.CSM_EMAIL_APP_PASSWORD",
+    rsu_error_summary_data.CSM_EMAIL_APP_PASSWORD,
+)
+@patch(
+    "api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
+    rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS,
+)
+@patch(
+    "api_environment.CSM_TARGET_SMTP_SERVER_PORT",
+    rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_PORT,
+)
+@patch("api_environment.CSM_TLS_ENABLED", True)
+@patch("api_environment.CSM_AUTH_ENABLED", True)
 def test_options():
-    # prepare
-    os.environ["CSM_EMAIL_TO_SEND_FROM"] = rsu_error_summary_data.CSM_EMAIL_TO_SEND_FROM
-    os.environ["CSM_EMAIL_APP_USERNAME"] = rsu_error_summary_data.CSM_EMAIL_APP_USERNAME
-    os.environ["CSM_EMAIL_APP_PASSWORD"] = rsu_error_summary_data.CSM_EMAIL_APP_PASSWORD
-    os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"] = (
-        rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS
-    )
-    os.environ["CSM_TARGET_SMTP_SERVER_PORT"] = str(
-        rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_PORT
-    )
     RSUErrorSummaryResource = rsu_error_summary.RSUErrorSummaryResource()
 
     # execute
@@ -56,25 +69,30 @@ def test_options():
     # assert
     assert result == ("", 204, RSUErrorSummaryResource.options_headers)
 
-    # cleanup
-    del os.environ["CSM_EMAIL_TO_SEND_FROM"]
-    del os.environ["CSM_EMAIL_APP_USERNAME"]
-    del os.environ["CSM_EMAIL_APP_PASSWORD"]
-    del os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"]
-    del os.environ["CSM_TARGET_SMTP_SERVER_PORT"]
 
-
+@patch(
+    "api_environment.CSM_EMAIL_TO_SEND_FROM",
+    rsu_error_summary_data.CSM_EMAIL_TO_SEND_FROM,
+)
+@patch(
+    "api_environment.CSM_EMAIL_APP_USERNAME",
+    rsu_error_summary_data.CSM_EMAIL_APP_USERNAME,
+)
+@patch(
+    "api_environment.CSM_EMAIL_APP_PASSWORD",
+    rsu_error_summary_data.CSM_EMAIL_APP_PASSWORD,
+)
+@patch(
+    "api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
+    rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS,
+)
+@patch(
+    "api_environment.CSM_TARGET_SMTP_SERVER_PORT",
+    rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_PORT,
+)
+@patch("api_environment.CSM_TLS_ENABLED", True)
+@patch("api_environment.CSM_AUTH_ENABLED", True)
 def test_post_success():
-    # prepare
-    os.environ["CSM_EMAIL_TO_SEND_FROM"] = rsu_error_summary_data.CSM_EMAIL_TO_SEND_FROM
-    os.environ["CSM_EMAIL_APP_USERNAME"] = rsu_error_summary_data.CSM_EMAIL_APP_USERNAME
-    os.environ["CSM_EMAIL_APP_PASSWORD"] = rsu_error_summary_data.CSM_EMAIL_APP_PASSWORD
-    os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"] = (
-        rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS
-    )
-    os.environ["CSM_TARGET_SMTP_SERVER_PORT"] = str(
-        rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_PORT
-    )
     RSUErrorSummaryResource = rsu_error_summary.RSUErrorSummaryResource()
     RSUErrorSummaryResource.validate_input = MagicMock()
     RSUErrorSummaryResource.send = MagicMock()
@@ -87,25 +105,30 @@ def test_post_success():
     # assert
     assert result == ("", 200, RSUErrorSummaryResource.headers)
 
-    # cleanup
-    del os.environ["CSM_EMAIL_TO_SEND_FROM"]
-    del os.environ["CSM_EMAIL_APP_USERNAME"]
-    del os.environ["CSM_EMAIL_APP_PASSWORD"]
-    del os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"]
-    del os.environ["CSM_TARGET_SMTP_SERVER_PORT"]
 
-
+@patch(
+    "api_environment.CSM_EMAIL_TO_SEND_FROM",
+    rsu_error_summary_data.CSM_EMAIL_TO_SEND_FROM,
+)
+@patch(
+    "api_environment.CSM_EMAIL_APP_USERNAME",
+    rsu_error_summary_data.CSM_EMAIL_APP_USERNAME,
+)
+@patch(
+    "api_environment.CSM_EMAIL_APP_PASSWORD",
+    rsu_error_summary_data.CSM_EMAIL_APP_PASSWORD,
+)
+@patch(
+    "api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
+    rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS,
+)
+@patch(
+    "api_environment.CSM_TARGET_SMTP_SERVER_PORT",
+    rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_PORT,
+)
+@patch("api_environment.CSM_TLS_ENABLED", True)
+@patch("api_environment.CSM_AUTH_ENABLED", True)
 def test_post_no_json_body():
-    # prepare
-    os.environ["CSM_EMAIL_TO_SEND_FROM"] = rsu_error_summary_data.CSM_EMAIL_TO_SEND_FROM
-    os.environ["CSM_EMAIL_APP_USERNAME"] = rsu_error_summary_data.CSM_EMAIL_APP_USERNAME
-    os.environ["CSM_EMAIL_APP_PASSWORD"] = rsu_error_summary_data.CSM_EMAIL_APP_PASSWORD
-    os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"] = (
-        rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS
-    )
-    os.environ["CSM_TARGET_SMTP_SERVER_PORT"] = str(
-        rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_PORT
-    )
     RSUErrorSummaryResource = rsu_error_summary.RSUErrorSummaryResource()
     RSUErrorSummaryResource.validate_input = MagicMock()
     RSUErrorSummaryResource.send = MagicMock()
@@ -120,25 +143,30 @@ def test_post_no_json_body():
     assert rsu_error_summary.abort.call_count == 2
     assert result == ("", 200, RSUErrorSummaryResource.headers)
 
-    # cleanup
-    del os.environ["CSM_EMAIL_TO_SEND_FROM"]
-    del os.environ["CSM_EMAIL_APP_USERNAME"]
-    del os.environ["CSM_EMAIL_APP_PASSWORD"]
-    del os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"]
-    del os.environ["CSM_TARGET_SMTP_SERVER_PORT"]
 
-
+@patch(
+    "api_environment.CSM_EMAIL_TO_SEND_FROM",
+    rsu_error_summary_data.CSM_EMAIL_TO_SEND_FROM,
+)
+@patch(
+    "api_environment.CSM_EMAIL_APP_USERNAME",
+    rsu_error_summary_data.CSM_EMAIL_APP_USERNAME,
+)
+@patch(
+    "api_environment.CSM_EMAIL_APP_PASSWORD",
+    rsu_error_summary_data.CSM_EMAIL_APP_PASSWORD,
+)
+@patch(
+    "api_environment.CSM_TARGET_SMTP_SERVER_ADDRESS",
+    rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS,
+)
+@patch(
+    "api_environment.CSM_TARGET_SMTP_SERVER_PORT",
+    rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_PORT,
+)
+@patch("api_environment.CSM_TLS_ENABLED", True)
+@patch("api_environment.CSM_AUTH_ENABLED", True)
 def test_validate_input_good():
-    # prepare
-    os.environ["CSM_EMAIL_TO_SEND_FROM"] = rsu_error_summary_data.CSM_EMAIL_TO_SEND_FROM
-    os.environ["CSM_EMAIL_APP_USERNAME"] = rsu_error_summary_data.CSM_EMAIL_APP_USERNAME
-    os.environ["CSM_EMAIL_APP_PASSWORD"] = rsu_error_summary_data.CSM_EMAIL_APP_PASSWORD
-    os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"] = (
-        rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_ADDRESS
-    )
-    os.environ["CSM_TARGET_SMTP_SERVER_PORT"] = str(
-        rsu_error_summary_data.DEFAULT_CSM_TARGET_SMTP_SERVER_PORT
-    )
     RSUErrorSummaryResource = rsu_error_summary.RSUErrorSummaryResource()
 
     # execute
@@ -147,11 +175,4 @@ def test_validate_input_good():
     )
 
     # assert
-    assert result == None
-
-    # cleanup
-    del os.environ["CSM_EMAIL_TO_SEND_FROM"]
-    del os.environ["CSM_EMAIL_APP_USERNAME"]
-    del os.environ["CSM_EMAIL_APP_PASSWORD"]
-    del os.environ["CSM_TARGET_SMTP_SERVER_ADDRESS"]
-    del os.environ["CSM_TARGET_SMTP_SERVER_PORT"]
+    assert result is None

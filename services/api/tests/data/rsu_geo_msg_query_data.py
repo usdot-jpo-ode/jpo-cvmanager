@@ -35,7 +35,7 @@ mongo_geo_bsm_data_response = [
         "type": "Feature",
         "properties": {
             "validationMessages": [],
-            "schemaVersion": 8,
+            "schemaVersion": 2,
             "secMark": 1000,
             "heading": 1000,
             "brakes": {
@@ -81,7 +81,7 @@ mongo_geo_psm_data_response = [
         "geometry": {"type": "Point", "coordinates": [-105.0, 40.0]},
         "type": "Feature",
         "properties": {
-            "schemaVersion": 8,
+            "schemaVersion": 2,
             "messageType": "PSM",
             "odeReceivedAt": datetime.datetime.now(pytz.utc).strftime(
                 "%Y-%m-%dT%H:%M:%SZ"
@@ -116,7 +116,7 @@ mongo_geo_data_not_time_sorted = [
         "geometry": {"type": "Point", "coordinates": [-105.0, 40.0]},
         "type": "Feature",
         "properties": {
-            "schemaVersion": 8,
+            "schemaVersion": 2,
             "messageType": "",
             "odeReceivedAt": (
                 datetime.datetime.now(pytz.utc) - datetime.timedelta(hours=2)
@@ -135,7 +135,7 @@ mongo_geo_data_not_time_sorted = [
         "geometry": {"type": "Point", "coordinates": [-105.0, 40.0]},
         "type": "Feature",
         "properties": {
-            "schemaVersion": 8,
+            "schemaVersion": 2,
             "messageType": "",
             "odeReceivedAt": datetime.datetime.now(pytz.utc).strftime(
                 "%Y-%m-%dT%H:%M:%SZ"
@@ -150,7 +150,7 @@ mongo_geo_data_not_time_sorted = [
         "geometry": {"type": "Point", "coordinates": [-105.0, 40.0]},
         "type": "Feature",
         "properties": {
-            "schemaVersion": 8,
+            "schemaVersion": 2,
             "messageType": "",
             "odeReceivedAt": datetime.datetime.now(pytz.utc).strftime(
                 "%Y-%m-%dT%H:%M:%SZ"
@@ -165,7 +165,7 @@ mongo_geo_data_not_time_sorted = [
         "geometry": {"type": "Point", "coordinates": [-105.0, 40.0]},
         "type": "Feature",
         "properties": {
-            "schemaVersion": 8,
+            "schemaVersion": 2,
             "messageType": "",
             "odeReceivedAt": (
                 datetime.datetime.now(pytz.utc) - datetime.timedelta(hours=1)

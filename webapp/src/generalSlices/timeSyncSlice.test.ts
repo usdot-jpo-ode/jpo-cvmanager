@@ -75,7 +75,6 @@ describe('async thunks', () => {
   it('syncTimeOffset should synchronize time offset (mocked fetch)', async () => {
     const mockServerTime = '2025-10-20T21:28:30.0960336Z'
     const mockServerTimeMillis = new Date(mockServerTime).getTime()
-    console.error('Mock server time millis:', mockServerTimeMillis)
     const mockResponse = {
       year: 2025,
       month: 10,

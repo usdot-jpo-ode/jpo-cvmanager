@@ -73,7 +73,9 @@ describe('async thunks', () => {
   })
 
   it('syncTimeOffset should synchronize time offset (mocked fetch)', async () => {
-    const mockServerTime = '2025-10-20T21:28:30.0960336'
+    const mockServerTime = '2025-10-20T21:28:30.0960336Z'
+    const mockServerTimeMillis = new Date(mockServerTime).getTime()
+    console.error('Mock server time millis:', mockServerTimeMillis)
     const mockResponse = {
       year: 2025,
       month: 10,
@@ -93,20 +95,23 @@ describe('async thunks', () => {
       json: jest.fn().mockResolvedValueOnce(mockResponse),
     })
 
+    // Mock Date.now() to return the server time
+    const originalDateNow = Date.now
+    Date.now = jest.fn(() => mockServerTimeMillis)
+
     const dispatch = jest.fn()
     const getState = jest.fn()
     const action = syncTimeOffset()
 
-    const start = Date.now()
     const result = await action(dispatch, getState, undefined)
-    const end = Date.now()
 
-    const serverTime = new Date(mockServerTime).getTime()
-    const rtt = end - start
-    const expectedOffset = serverTime + rtt / 2 - Date.now()
+    const expectedOffset = 0
 
     expect(result.payload).toBeCloseTo(expectedOffset, -2) // Allow slight timing differences
     expect(global.fetch).toHaveBeenCalledWith(TIME_SERVER_URL_UTC)
+
+    // Restore original Date.now
+    Date.now = originalDateNow
   })
 })
 

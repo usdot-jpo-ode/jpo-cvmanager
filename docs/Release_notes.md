@@ -1,5 +1,15 @@
 ## JPO CV Manager Release Notes
 
+## Version 2.0.1
+
+### **Summary**
+
+In this hotfix, the V2X message viewer backend functionality has been modified to be compatible with the latest jpo-geojsonconverter output.
+
+Enhancements in this release:
+
+- [USDOT PR 60](https://github.com/usdot-jpo-ode/jpo-cvmanager/pull/60): Hotfix/2.0.1: Update V2X Message Viewer Schema Validation
+
 ## Version 2.0.0
 
 This version introduces updates across both backend and frontend components, enhancing system performance, reliability, and user experience. This release includes a complete rework of SNMP message forwarding, upgraded authentication with Keycloak 26, and refactored Intersection API endpoints with the new reworked jpo-geojsonconverter's (3.1.0) processed message output. The update also streamlines standalone deployments and adds new interface improvements such as toast notifications and updated visualization tools. Numerous bug fixes, dependency cleanups, and UI refinements have also been made.

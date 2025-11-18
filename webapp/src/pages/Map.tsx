@@ -125,11 +125,7 @@ import { Feature, Point } from 'geojson'
 import { PrimaryButton } from '../styles/components/PrimaryButton'
 import { ConditionalRenderRsu, evaluateFeatureFlags } from '../feature-flags'
 import { DateTime } from 'luxon'
-
-// eslint-disable-next-line
-// eslint-disable-next-line import/no-webpack-loader-syntax, @typescript-eslint/no-require-imports
 import { MessageType } from '../models/MessageTypes'
-;(mapboxgl as any).workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default
 
 const MILLISECONDS_PER_MINUTE = 60000
 

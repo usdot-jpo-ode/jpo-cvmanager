@@ -1475,17 +1475,31 @@ function MapPage() {
                 filter={['has', 'point_count']}
                 paint={{
                   'circle-color': [
-                    'step',
+                    'interpolate',
+                    ['linear'],
                     ['get', 'sum_count'],
-                    '#51bbd6',
+                    0,
+                    '#ffffcc', // Light yellow (low)
+                    1000,
+                    '#ffeda0',
+                    2500,
+                    '#fed976',
                     5000,
-                    '#f1f075',
+                    '#feb24c',
+                    7500,
+                    '#fd8d3c',
                     10000,
-                    '#f28cb1',
-                    50000,
-                    '#ff0000',
+                    '#fc4e2a', // Orange-red (high)
+                    15000,
+                    '#e31a1c',
+                    20000,
+                    '#bd0026', // Deep red (very high)
+                    25000,
+                    '#800026', // Dark red (extreme)
                   ],
                   'circle-radius': ['step', ['get', 'point_count'], 20, 10, 30, 50, 40, 100, 50],
+                  'circle-stroke-width': 2,
+                  'circle-stroke-color': '#000',
                 }}
               />
               {/* Cluster count labels */}
@@ -1495,23 +1509,78 @@ function MapPage() {
                 filter={['has', 'point_count']}
                 layout={{
                   'text-field': '{sum_count}',
-                  'text-font': ['Open Sans Bold'],
+                  'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
                   'text-size': 14,
                 }}
                 paint={{
-                  'text-color': '#ffffff',
+                  'text-color': ['interpolate', ['linear'], ['get', 'sum_count'], 0, '#000000', 10000, '#ffffff'],
+                  'text-halo-color': '#000000',
+                  'text-halo-width': 2,
                 }}
               />
-              {/* Individual RSU points (when zoomed in) */}
+              {/* Individual RSU points (when zoomed in) - sized by count */}
               <Layer
                 id="unclustered-point"
                 type="circle"
                 filter={['!', ['has', 'point_count']]}
                 paint={{
-                  'circle-radius': 8,
-                  'circle-color': '#11b4da',
-                  'circle-stroke-width': 1,
-                  'circle-stroke-color': '#fff',
+                  'circle-radius': [
+                    'interpolate',
+                    ['linear'],
+                    ['get', 'count'],
+                    0,
+                    5, // Min count = 5px radius
+                    1000,
+                    15, // 1000 messages = 15px
+                    5000,
+                    25, // 5000 messages = 25px
+                    10000,
+                    35, // 10000+ messages = 35px
+                  ],
+                  'circle-color': [
+                    'interpolate',
+                    ['linear'],
+                    ['get', 'count'],
+                    0,
+                    '#ffffcc', // Light yellow (low)
+                    1000,
+                    '#ffeda0',
+                    2500,
+                    '#fed976',
+                    5000,
+                    '#feb24c',
+                    7500,
+                    '#fd8d3c',
+                    10000,
+                    '#fc4e2a', // Orange-red (high)
+                    15000,
+                    '#e31a1c',
+                    20000,
+                    '#bd0026', // Deep red (very high)
+                    25000,
+                    '#800026', // Dark red (extreme)
+                  ],
+                  'circle-stroke-width': 2,
+                  'circle-stroke-color': '#000',
+                  'circle-opacity': 0.8,
+                }}
+              />
+              {/* Individual point count labels */}
+              <Layer
+                id="unclustered-point-label"
+                type="symbol"
+                filter={['!', ['has', 'point_count']]}
+                layout={{
+                  'text-field': ['to-string', ['get', 'count']],
+                  'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+                  'text-size': ['interpolate', ['linear'], ['get', 'count'], 0, 10, 5000, 12, 10000, 14, 20000, 16],
+                  'text-allow-overlap': true,
+                  'text-ignore-placement': true,
+                }}
+                paint={{
+                  'text-color': ['interpolate', ['linear'], ['get', 'count'], 0, '#000000', 10000, '#ffffff'],
+                  'text-halo-color': '#000000',
+                  'text-halo-width': 2,
                 }}
               />
             </Source>

@@ -5,7 +5,7 @@ import { MessageType } from '../../models/RsuApi'
 import dayjs from 'dayjs'
 
 const initialState = {
-  countsMsgType: 'bsm' as MessageType,
+  countsMsgType: 'BSM' as MessageType,
   countsStartDate: dayjs().subtract(1, 'day').toDate(),
   countsEndDate: dayjs().toDate(),
   displayCounts: false,

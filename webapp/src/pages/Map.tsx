@@ -129,6 +129,7 @@ import { ConditionalRenderRsu, evaluateFeatureFlags } from '../feature-flags'
 import { DateTime } from 'luxon'
 import { MessageType } from '../models/MessageTypes'
 import { useGetRsuCountsQuery } from '../features/api/rsuCountsApiSlice'
+import { CustomTable } from '../features/intersections/map/custom-table'
 
 const MILLISECONDS_PER_MINUTE = 60000
 
@@ -1630,13 +1631,10 @@ function MapPage() {
                 }
               }}
               maxWidth="350px"
+              className="rsu-popup"
             >
-              <Stack
-                sx={{
-                  height: '240px',
-                  width: '350px',
-                }}
-              >
+              <Box>
+                {/* Header Section */}
                 <Grid2
                   container
                   columnSpacing={0.5}
@@ -1644,6 +1642,7 @@ function MapPage() {
                   sx={{
                     color: theme.palette.text.secondary,
                     backgroundColor: theme.palette.background.paper,
+                    paddingY: '8px',
                   }}
                 >
                   <Grid2 size={1} display="flex" justifyContent="flex-start" sx={{ ml: '16px' }}>
@@ -1680,31 +1679,24 @@ function MapPage() {
                   </Grid2>
                 </Grid2>
 
+                {/* Body Section */}
                 <Grid2
-                  id="popup-body"
                   container
                   columnSpacing={1}
-                  rowSpacing={0}
+                  rowSpacing={1}
                   sx={{
                     color: theme.palette.text.secondary,
                     backgroundColor: theme.palette.background.default,
-                    width: '350px',
-                    height: '140px',
-                    position: 'absolute',
-                    left: '0px',
-                    bottom: '40px',
-                    paddingTop: '10px',
+                    paddingY: '10px',
                   }}
                 >
-                  <Grid2 size={5} justifyContent="flex-start">
-                    <Typography fontSize="medium" sx={{ ml: '16px' }}>
-                      {countsMsgType} Counts:
-                    </Typography>
-                  </Grid2>
-                  <Grid2 size={6} justifyContent="flex-start">
-                    <Typography fontSize="medium">
-                      {Object.entries((selectedRsu.properties as any).counts ?? {})}
-                    </Typography>
+                  <Grid2 size={12} justifyContent="flex-start">
+                    <CustomTable
+                      data={EnvironmentVars.getMessageTypes().map((type) => {
+                        return [type, (selectedRsu.properties as any).counts?.[type]?.toString() ?? '0']
+                      })}
+                      headers={['Msg Type', 'Count']}
+                    />
                   </Grid2>
                   <Grid2 size={5} justifyContent="flex-start">
                     <Typography fontSize="medium" sx={{ ml: '16px' }}>
@@ -1749,16 +1741,14 @@ function MapPage() {
                     )}
                   </Grid2>
                 </Grid2>
+
+                {/* Footer Section */}
                 <Box
                   sx={{
-                    position: 'absolute',
-                    bottom: '0px',
-                    left: '0px',
-                    width: '350px',
-                    height: '40px',
                     color: theme.palette.text.secondary,
                     backgroundColor: theme.palette.background.default,
                     borderRadius: '4px',
+                    paddingY: '10px',
                   }}
                 >
                   <Divider />
@@ -1767,7 +1757,7 @@ function MapPage() {
                     {selectedRsu.properties.serial_number ? selectedRsu.properties.serial_number : 'Unknown'}
                   </Typography>
                 </Box>
-              </Stack>
+              </Box>
             </Popup>
           ) : null}
           {activeLayers.includes('haas-alert-layer') && haasLocationData.data && (

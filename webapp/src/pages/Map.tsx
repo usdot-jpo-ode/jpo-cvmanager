@@ -130,6 +130,7 @@ import { DateTime } from 'luxon'
 import { MessageType } from '../models/MessageTypes'
 import { useGetRsuCountsQuery } from '../features/api/rsuCountsApiSlice'
 import { CustomTable } from '../features/intersections/map/custom-table'
+import { getStackGroupsByAxisId } from 'recharts/types/util/ChartUtils'
 
 const MILLISECONDS_PER_MINUTE = 60000
 
@@ -730,17 +731,17 @@ function MapPage() {
     setSelectedWZDxMarkerIndex(null)
   }
 
-  //   function getStops() {
-  //     // populate tmp array with rsuCounts to get max count value
-  //     const max = Math.max(...Object.entries(rsuCounts).map(([, value]) => (value as { count: number }).count))
-  //     const stopsArray = [[0, 0.25]]
-  //     let weight = 0.5
-  //     for (let i = 1; i < max; i += 500) {
-  //       stopsArray.push([i, weight])
-  //       weight += 0.25
-  //     }
-  //     return stopsArray
-  //   }
+  function getStops() {
+    // populate tmp array with rsuCounts to get max count value
+    const max = Math.max(...heatMapData.features.map((f) => f.properties.count as number))
+    const stopsArray = [[0, 0]]
+    let weight = 0.5
+    for (let i = 1; i < max; i += 500) {
+      stopsArray.push([i, weight])
+      weight += 0.25
+    }
+    return stopsArray
+  }
 
   const isOnline = () => {
     return rsuIpv4 in rsuOnlineStatus && Object.prototype.hasOwnProperty.call(rsuOnlineStatus[rsuIpv4], 'last_online')
@@ -903,7 +904,7 @@ function MapPage() {
         'heatmap-weight': {
           property: 'count',
           type: 'exponential',
-          //   stops: getStops(),
+          stops: getStops(),
         },
         'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 0, 0, 10, 1, 13, 2],
         'heatmap-color': [

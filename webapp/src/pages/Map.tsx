@@ -7,13 +7,12 @@ import EnvironmentVars from '../EnvironmentVars'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-
+import TuneIcon from '@mui/icons-material/Tune'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import Slider from '@mui/material/Slider'
 import {
   selectRsuOnlineStatus,
   selectRsuData,
-  selectRsuCounts,
   selectIssScmsStatusData,
   selectSelectedRsu,
   selectMsgType,
@@ -152,7 +151,6 @@ function MapPage() {
   const mapRef = React.useRef(null)
   const organization = useSelector(selectOrganizationName)
   const rsuData = useSelector(selectRsuData)
-  const rsuCounts = useSelector(selectRsuCounts)
   const selectedRsu = useSelector(selectSelectedRsu)
   const countsMsgType = useSelector(selectMsgType)
   const issScmsStatusData = useSelector(selectIssScmsStatusData)
@@ -704,17 +702,17 @@ function MapPage() {
     setSelectedWZDxMarkerIndex(null)
   }
 
-  function getStops() {
-    // populate tmp array with rsuCounts to get max count value
-    const max = Math.max(...Object.entries(rsuCounts).map(([, value]) => (value as { count: number }).count))
-    const stopsArray = [[0, 0.25]]
-    let weight = 0.5
-    for (let i = 1; i < max; i += 500) {
-      stopsArray.push([i, weight])
-      weight += 0.25
-    }
-    return stopsArray
-  }
+  //   function getStops() {
+  //     // populate tmp array with rsuCounts to get max count value
+  //     const max = Math.max(...Object.entries(rsuCounts).map(([, value]) => (value as { count: number }).count))
+  //     const stopsArray = [[0, 0.25]]
+  //     let weight = 0.5
+  //     for (let i = 1; i < max; i += 500) {
+  //       stopsArray.push([i, weight])
+  //       weight += 0.25
+  //     }
+  //     return stopsArray
+  //   }
 
   const isOnline = () => {
     return rsuIpv4 in rsuOnlineStatus && Object.prototype.hasOwnProperty.call(rsuOnlineStatus[rsuIpv4], 'last_online')
@@ -759,17 +757,126 @@ function MapPage() {
       tag: 'rsu',
     },
     {
+      id: 'message-count-circles',
+      label: 'Message Count Circles',
+      type: 'circle',
+      source: 'rsuMessageCounts',
+      paint: {
+        'circle-radius': [
+          'interpolate',
+          ['linear'],
+          ['get', 'count'],
+          0,
+          5, // Min count = 5px radius
+          1000,
+          20, // 1000 messages = 20px
+          5000,
+          40, // 5000 messages = 40px
+          10000,
+          60, // 10000+ messages = 60px
+        ],
+        'circle-color': [
+          'interpolate',
+          ['linear'],
+          ['get', 'count'],
+          0,
+          '#ffffcc', // Light yellow (low)
+          1000,
+          '#ffeda0',
+          2500,
+          '#fed976',
+          5000,
+          '#feb24c',
+          7500,
+          '#fd8d3c',
+          10000,
+          '#fc4e2a', // Orange-red (high)
+          15000,
+          '#e31a1c',
+          20000,
+          '#bd0026', // Deep red (very high)
+          25000,
+          '#800026', // Dark red (extreme)
+        ],
+        'circle-opacity': 0.7,
+        'circle-stroke-width': 2,
+        'circle-stroke-color': '#000',
+      },
+      tag: 'rsu',
+    },
+    {
+      id: 'message-count-labels',
+      label: 'Message Count Labels',
+      type: 'symbol',
+      source: 'rsuMessageCounts',
+      layout: {
+        'text-field': ['to-string', ['get', 'count']],
+        'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+        'text-size': ['interpolate', ['linear'], ['get', 'count'], 0, 12, 5000, 16, 10000, 20, 20000, 24],
+        'text-allow-overlap': true,
+        'text-ignore-placement': true,
+        'icon-image': 'circle-15', // Background icon if available
+        'icon-text-fit': 'both',
+      },
+      paint: {
+        'text-color': ['interpolate', ['linear'], ['get', 'count'], 0, '#000000', 10000, '#ffffff'],
+        'text-halo-color': '#ffffff',
+        'text-halo-width': 2,
+      },
+      tag: 'rsu',
+    },
+    {
+      id: 'heatmap-layer-extrusion',
+      label: 'Heatmap Extrusion',
+      type: 'fill-extrusion',
+      source: 'rsuMessageCounts',
+      filter: ['has', 'count'],
+      paint: {
+        'fill-extrusion-color': [
+          'interpolate',
+          ['linear'],
+          ['get', 'count'],
+          0,
+          '#ffffcc',
+          5000,
+          '#feb24c',
+          10000,
+          '#fc4e2a',
+          20000,
+          '#800026',
+        ],
+        'fill-extrusion-height': [
+          'interpolate',
+          ['linear'],
+          ['coalesce', ['get', 'count'], 0],
+          0,
+          0,
+          1000,
+          1000, // 1000 messages = 1000m height
+          5000,
+          5000,
+          10000,
+          10000,
+          50000,
+          50000,
+        ],
+        'fill-extrusion-base': 0,
+        'fill-extrusion-opacity': 0.8,
+      },
+      tag: 'rsu',
+    },
+    {
       id: 'heatmap-layer',
       label: 'Heatmap',
       type: 'heatmap',
       maxzoom: 14,
       source: 'heatMapData',
       paint: {
-        'heatmap-weight': {
-          property: 'count',
-          type: 'exponential',
-          stops: getStops(),
-        },
+        // 'heatmap-weight': {
+        //   property: 'count',
+        //   type: 'exponential',
+        //   stops: getStops(),
+        // },
         'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 0, 0, 10, 1, 13, 2],
         'heatmap-color': [
           'interpolate',
@@ -790,6 +897,12 @@ function MapPage() {
         ],
         'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 10, 1, 13, 0.6, 14, 0],
       },
+      tag: 'rsu',
+    },
+    {
+      id: 'heatmap-cluster',
+      label: 'Heatmap Cluster',
+      type: 'circle',
       tag: 'rsu',
     },
     {
@@ -879,26 +992,14 @@ function MapPage() {
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <Typography>{layer.label}</Typography>
                         <Box onClick={(e) => e.stopPropagation()}>
-                          <FormControl size="small">
-                            <InputLabel htmlFor="counts-msg-dropdown">Msg Type</InputLabel>
-                            <Select
-                              label="Message Type"
-                              id="counts-msg-dropdown"
-                              value={countsMsgType}
-                              onChange={(event) => dispatch(updateMessageType(event.target.value as MessageType))}
-                              sx={{
-                                textAlign: 'left',
-                              }}
-                            >
-                              {countsMessageTypeOptions.map((option) => {
-                                return (
-                                  <MenuItem value={option.value} key={option.value}>
-                                    {option.label}
-                                  </MenuItem>
-                                )
-                              })}
-                            </Select>
-                          </FormControl>
+                          <IconButton
+                            size="small"
+                            onClick={() => {
+                              dispatch(toggleMapMenuSelection('Display Message Counts'))
+                            }}
+                          >
+                            <TuneIcon />
+                          </IconButton>
                         </Box>
                       </Box>
                     }
@@ -1271,9 +1372,10 @@ function MapPage() {
                     dispatch(clearFirmware()) // TODO: Should remove??
                     dispatch(getRsuLastOnline(rsu.properties.ipv4_address))
                     dispatch(getIssScmsStatus())
-                    if (Object.prototype.hasOwnProperty.call(rsuCounts, rsu.properties.ipv4_address))
-                      setSelectedRsuCount(rsuCounts[rsu.properties.ipv4_address].count)
-                    else setSelectedRsuCount(0)
+                    // TODO: Select RSU count
+                    // if (Object.prototype.hasOwnProperty.call(rsuCounts, rsu.properties.ipv4_address))
+                    //   setSelectedRsuCount(rsuCounts[rsu.properties.ipv4_address].count)
+                    // else setSelectedRsuCount(0)
                   }}
                 >
                   <button
@@ -1288,9 +1390,10 @@ function MapPage() {
                       setSelectedWZDxMarker(null)
                       dispatch(getRsuLastOnline(rsu.properties.ipv4_address))
                       dispatch(getIssScmsStatus())
-                      if (Object.prototype.hasOwnProperty.call(rsuCounts, rsu.properties.ipv4_address))
-                        setSelectedRsuCount(rsuCounts[rsu.properties.ipv4_address].count)
-                      else setSelectedRsuCount(0)
+                      // TODO: Select RSU count
+                      //   if (Object.prototype.hasOwnProperty.call(rsuCounts, rsu.properties.ipv4_address))
+                      //     setSelectedRsuCount(rsuCounts[rsu.properties.ipv4_address].count)
+                      //   else setSelectedRsuCount(0)
                     }}
                   >
                     <RsuMarker
@@ -1311,9 +1414,84 @@ function MapPage() {
                 </Marker>,
               ]
           )}
-          {activeLayers.includes('heatmap-layer') && (
+          {activeLayers.includes('message-count-circles') && (
             <Source id={layers[1].id} type="geojson" data={heatMapData}>
               <Layer {...layers[1]} />
+            </Source>
+          )}
+          {activeLayers.includes('message-count-labels') && (
+            <Source id={layers[2].id} type="geojson" data={heatMapData}>
+              <Layer {...layers[2]} />
+            </Source>
+          )}
+          {activeLayers.includes('heatmap-layer-extrusion') && (
+            <Source id={layers[3].id} type="geojson" data={heatMapData}>
+              <Layer {...layers[3]} />
+            </Source>
+          )}
+          {activeLayers.includes('heatmap-layer') && (
+            <Source id={layers[4].id} type="geojson" data={heatMapData}>
+              <Layer {...layers[4]} />
+            </Source>
+          )}
+          {activeLayers.includes('heatmap-cluster') && (
+            <Source
+              id="heatmap-cluster"
+              type="geojson"
+              data={heatMapData}
+              cluster={true}
+              clusterMaxZoom={14}
+              clusterRadius={50}
+              clusterProperties={{
+                sum_count: ['+', ['get', 'count']],
+              }}
+            >
+              {/* Clusters */}
+              <Layer
+                id="clusters"
+                type="circle"
+                filter={['has', 'point_count']}
+                paint={{
+                  'circle-color': [
+                    'step',
+                    ['get', 'sum_count'],
+                    '#51bbd6',
+                    5000,
+                    '#f1f075',
+                    10000,
+                    '#f28cb1',
+                    50000,
+                    '#ff0000',
+                  ],
+                  'circle-radius': ['step', ['get', 'point_count'], 20, 10, 30, 50, 40, 100, 50],
+                }}
+              />
+              {/* Cluster count labels */}
+              <Layer
+                id="cluster-count"
+                type="symbol"
+                filter={['has', 'point_count']}
+                layout={{
+                  'text-field': '{sum_count}',
+                  'text-font': ['Open Sans Bold'],
+                  'text-size': 14,
+                }}
+                paint={{
+                  'text-color': '#ffffff',
+                }}
+              />
+              {/* Individual RSU points (when zoomed in) */}
+              <Layer
+                id="unclustered-point"
+                type="circle"
+                filter={['!', ['has', 'point_count']]}
+                paint={{
+                  'circle-radius': 8,
+                  'circle-color': '#11b4da',
+                  'circle-stroke-width': 1,
+                  'circle-stroke-color': '#fff',
+                }}
+              />
             </Source>
           )}
           {activeLayers.includes('msg-viewer-layer') && (
@@ -1708,7 +1886,7 @@ function MapPage() {
                   label="Message Type"
                   value={geoMsgType}
                   sx={{ width: '100%' }}
-                  onChange={(event) => dispatch(changeGeoMsgType(event.target.value))}
+                  onChange={(event) => dispatch(changeGeoMsgType(event.target.value as MessageType))}
                 >
                   {messageTypeOptions.map((option) => {
                     return (

@@ -39,7 +39,7 @@ const DisplayCounts = () => {
   const { data: rsuCounts } = useGetRsuCountsQuery({ organization, startDate, endDate })
 
   const countList = useMemo(() => {
-    return Object.entries(rsuCounts).map(([key, value]) => {
+    return Object.entries(rsuCounts ?? {}).map(([key, value]) => {
       return {
         key: key,
         rsu: key,

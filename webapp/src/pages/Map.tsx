@@ -790,6 +790,7 @@ function MapPage() {
       label: 'Message Count Circles',
       type: 'circle',
       source: 'heatMapData',
+      filter: ['all', ['has', 'count'], ['>', ['get', 'count'], 0]],
       paint: {
         'circle-radius': [
           'interpolate',
@@ -838,6 +839,7 @@ function MapPage() {
       label: 'Message Count Labels',
       type: 'symbol',
       source: 'heatMapData',
+      filter: ['all', ['has', 'count'], ['>', ['get', 'count'], 0]],
       layout: {
         'text-field': ['to-string', ['get', 'count']],
         'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
@@ -900,6 +902,7 @@ function MapPage() {
       type: 'heatmap',
       maxzoom: 14,
       source: 'heatMapData',
+      filter: ['all', ['has', 'count'], ['>', ['get', 'count'], 0]],
       paint: {
         'heatmap-weight': {
           property: 'count',

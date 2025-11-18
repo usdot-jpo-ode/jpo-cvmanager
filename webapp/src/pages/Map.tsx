@@ -94,7 +94,7 @@ import {
   Grid2,
   Stack,
 } from '@mui/material'
-
+import * as turf from '@turf/turf'
 import './css/MsgMap.css'
 import './css/Map.css'
 import { WZDxFeature, WZDxWorkZoneFeed } from '../models/wzdx/WzdxWorkZoneFeed42'
@@ -516,20 +516,47 @@ function MapPage() {
   const heatMapData = useMemo(() => {
     return {
       type: 'FeatureCollection' as 'FeatureCollection',
-      features: rsuData.map(
-        (rsu) =>
-          ({
-            type: 'Feature',
-            geometry: {
-              type: 'Point',
-              coordinates: [rsu.geometry.coordinates[0], rsu.geometry.coordinates[1]],
-            },
+      features: rsuData
+        .map(
+          (rsu) =>
+            ({
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [rsu.geometry.coordinates[0], rsu.geometry.coordinates[1]],
+              },
+              properties: {
+                ipv4_address: rsu.properties.ipv4_address,
+                count: rsuCounts?.[rsu.properties.ipv4_address]?.messageTypeCounts?.[countsMsgType] ?? 0,
+              },
+            } as GeoJSON.Feature<GeoJSON.Geometry>)
+        )
+        .filter((feature) => feature.properties.count > 0),
+    }
+  }, [rsuData, rsuCounts, countsMsgType])
+
+  const heatMapExtrusionData = useMemo(() => {
+    return {
+      type: 'FeatureCollection' as 'FeatureCollection',
+      features: rsuData
+        .map((rsu) => {
+          const count = rsuCounts?.[rsu.properties.ipv4_address]?.messageTypeCounts?.[countsMsgType] ?? 0
+          if (count === 0) return null
+
+          // Create a buffered circle around the point (radius in kilometers)
+          const point = turf.point([rsu.geometry.coordinates[0], rsu.geometry.coordinates[1]])
+          const buffered = turf.buffer(point, 0.05, { units: 'kilometers' }) // 50 meter radius
+
+          return {
+            type: 'Feature' as 'Feature',
+            geometry: buffered.geometry,
             properties: {
               ipv4_address: rsu.properties.ipv4_address,
-              count: rsuCounts?.[rsu.properties.ipv4_address]?.messageTypeCounts?.[countsMsgType] ?? 0,
+              count: count,
             },
-          } as GeoJSON.Feature<GeoJSON.Geometry>)
-      ),
+          }
+        })
+        .filter((f) => f !== null),
     }
   }, [rsuData, rsuCounts, countsMsgType])
 
@@ -790,7 +817,6 @@ function MapPage() {
       label: 'Message Count Circles',
       type: 'circle',
       source: 'heatMapData',
-      filter: ['all', ['has', 'count'], ['>', ['get', 'count'], 0]],
       paint: {
         'circle-radius': [
           'interpolate',
@@ -839,7 +865,6 @@ function MapPage() {
       label: 'Message Count Labels',
       type: 'symbol',
       source: 'heatMapData',
-      filter: ['all', ['has', 'count'], ['>', ['get', 'count'], 0]],
       layout: {
         'text-field': ['to-string', ['get', 'count']],
         'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
@@ -861,7 +886,6 @@ function MapPage() {
       label: 'Heatmap Extrusion',
       type: 'fill-extrusion',
       source: 'heatMapData',
-      filter: ['all', ['has', 'count'], ['>', ['get', 'count'], 0]],
       paint: {
         'fill-extrusion-color': [
           'interpolate',
@@ -1447,7 +1471,7 @@ function MapPage() {
             </Source>
           )}
           {activeLayers.includes('heatmap-layer-extrusion') && (
-            <Source id={layers[3].id} type="geojson" data={heatMapData}>
+            <Source id={layers[3].id} type="geojson" data={heatMapExtrusionData}>
               <Layer {...layers[3]} />
             </Source>
           )}

@@ -1,15 +1,7 @@
-import {
-  AnyAction,
-  createAsyncThunk,
-  createSelector,
-  createSlice,
-  PayloadAction,
-  ThunkDispatch,
-} from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import RsuApi from '../apis/rsu-api'
 import {
   IssScmsStatus,
-  RsuCounts,
   RsuInfo,
   RsuMapInfo,
   RsuMapInfoIpList,
@@ -20,7 +12,6 @@ import {
 import { RootState } from '../store'
 import { selectToken, selectOrganizationName } from './userSlice'
 import { SelectedSrm } from '../models/Srm'
-import { CountsListElement } from '../models/Rsu'
 import { MessageType } from '../models/MessageTypes'
 import { toast } from 'react-hot-toast'
 import { DateTime } from 'luxon'
@@ -36,7 +27,6 @@ const initialState = {
   endDate: currentDate.toString(),
   messageLoading: false,
   warningMessage: false,
-  countsMsgType: 'BSM' as MessageType | undefined,
   geoMsgType: 'BSM' as MessageType | undefined,
   rsuMapData: {} as RsuMapInfo['geojson'],
   mapList: [] as RsuMapInfoIpList,
@@ -57,17 +47,7 @@ const initialState = {
   ssmDisplay: false,
   srmSsmList: [] as SsmSrmData,
   selectedSrm: [] as SelectedSrm[],
-  heatMapData: {
-    type: 'FeatureCollection',
-    features: [],
-  } as GeoJSON.FeatureCollection<GeoJSON.Geometry>,
 }
-
-export const updateMessageType =
-  (messageType: MessageType) => async (dispatch: ThunkDispatch<RootState, void, AnyAction>) => {
-    dispatch(changeCountsMsgType(messageType))
-    dispatch(updateRowData({ message: messageType }))
-  }
 
 export const getRsuData = createAsyncThunk(
   'rsu/getRsuData',
@@ -158,9 +138,6 @@ export const updateRowData = createAsyncThunk(
     const token = selectToken(currentState)
     const organization = selectOrganizationName(currentState)
 
-    const countsMsgType = Object.prototype.hasOwnProperty.call(data, 'message')
-      ? data['message']
-      : currentState.rsu.value.countsMsgType
     const startDate = Object.prototype.hasOwnProperty.call(data, 'start')
       ? data['start']
       : currentState.rsu.value.startDate
@@ -169,7 +146,6 @@ export const updateRowData = createAsyncThunk(
     const warningMessage = new Date(endDate).getTime() - new Date(startDate).getTime() > 86400000
 
     return {
-      countsMsgType,
       startDate,
       endDate,
       warningMessage,
@@ -241,11 +217,7 @@ export const updateGeoMsgData = createAsyncThunk(
     // Will guard thunk from being executed
     condition: (_, { getState }) => {
       const { rsu } = getState() as RootState
-      const valid =
-        rsu.value.geoMsgStart !== '' &&
-        rsu.value.geoMsgEnd !== '' &&
-        rsu.value.geoMsgCoordinates.length > 2 &&
-        rsu.value.countsMsgType !== undefined
+      const valid = rsu.value.geoMsgStart !== '' && rsu.value.geoMsgEnd !== '' && rsu.value.geoMsgCoordinates.length > 2
       return valid
     },
   }
@@ -288,9 +260,6 @@ export const rsuSlice = createSlice({
     triggerGeoMsgDateError: (state) => {
       state.value.geoMsgDateError = true
     },
-    changeCountsMsgType: (state, action) => {
-      state.value.countsMsgType = action.payload
-    },
     changeGeoMsgType: (state, action: PayloadAction<MessageType | undefined>) => {
       state.value.geoMsgType = action.payload
     },
@@ -318,28 +287,8 @@ export const rsuSlice = createSlice({
         state.loading = true
         state.value.rsuData = []
         state.value.rsuOnlineStatus = {}
-        state.value.heatMapData = {
-          type: 'FeatureCollection',
-          features: [],
-        }
       })
       .addCase(getRsuData.fulfilled, (state) => {
-        state.value.heatMapData = {
-          type: 'FeatureCollection',
-          features: state.value.rsuData.map(
-            (rsu) =>
-              ({
-                type: 'Feature',
-                geometry: {
-                  type: 'Point',
-                  coordinates: [rsu.geometry.coordinates[0], rsu.geometry.coordinates[1]],
-                },
-                properties: {
-                  ipv4_address: rsu.properties.ipv4_address,
-                },
-              } as GeoJSON.Feature<GeoJSON.Geometry>)
-          ),
-        }
         state.loading = false
       })
       .addCase(getRsuData.rejected, (state) => {
@@ -392,7 +341,6 @@ export const rsuSlice = createSlice({
         if (action.payload === null) return
         state.value.warningMessage = action.payload.warningMessage
         state.value.messageLoading = false
-        state.value.countsMsgType = action.payload.countsMsgType
         state.value.startDate = action.payload.startDate
         state.value.endDate = action.payload.endDate
       })
@@ -429,7 +377,6 @@ export const selectStartDate = (state: RootState) => state.rsu.value.startDate
 export const selectEndDate = (state: RootState) => state.rsu.value.endDate
 export const selectMessageLoading = (state: RootState) => state.rsu.value.messageLoading
 export const selectWarningMessage = (state: RootState) => state.rsu.value.warningMessage
-export const selectMsgType = (state: RootState) => state.rsu.value.countsMsgType
 export const selectGeoMsgType = (state: RootState) => state.rsu.value.geoMsgType
 export const selectRsuMapData = (state: RootState) => state.rsu.value.rsuMapData
 export const selectMapList = (state: RootState) => state.rsu.value.mapList
@@ -448,7 +395,6 @@ export const selectIssScmsStatusData = (state: RootState) => state.rsu.value.iss
 export const selectSsmDisplay = (state: RootState) => state.rsu.value.ssmDisplay
 export const selectSrmSsmList = (state: RootState) => state.rsu.value.srmSsmList
 export const selectSelectedSrm = (state: RootState) => state.rsu.value.selectedSrm
-export const selectHeatMapData = (state: RootState) => state.rsu.value.heatMapData
 
 export const {
   selectRsu,
@@ -460,7 +406,6 @@ export const {
   updateGeoMsgPoints,
   updateGeoMsgDate,
   triggerGeoMsgDateError,
-  changeCountsMsgType,
   changeGeoMsgType,
   setGeoMsgFilter,
   setGeoMsgFilterStep,

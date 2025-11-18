@@ -8,7 +8,7 @@ class EnvironmentVars {
     if (!COUNT_MESSAGE_TYPES) {
       return []
     }
-    const messageTypes = COUNT_MESSAGE_TYPES.split(',').map((item) => item.trim())
+    const messageTypes = COUNT_MESSAGE_TYPES.split(',').map((item) => item.trim().toLowerCase())
     return messageTypes
   }
 

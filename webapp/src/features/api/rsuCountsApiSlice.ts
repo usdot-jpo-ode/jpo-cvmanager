@@ -19,7 +19,7 @@ export const rsuCountsApiSlice = createApi({
       const endpointsWithoutToken = []
 
       if (token && !endpointsWithoutToken.includes(endpoint)) {
-        headers.set('Authorization', `Bearer ${token}`)
+        headers.set('Authorization', `${token}`)
       }
 
       return headers
@@ -30,8 +30,8 @@ export const rsuCountsApiSlice = createApi({
       query: ({ organization, startDate, endDate }) => {
         return {
           url: `/rsucounts${getQueryString({
-            start_time_utc_millis: startDate.toISOString(),
-            end_time_utc_millis: endDate.toISOString(),
+            start: startDate.toISOString(),
+            end: endDate.toISOString(),
           })}`,
           headers: {
             Organization: organization,

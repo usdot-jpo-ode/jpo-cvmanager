@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { AnyAction, PayloadAction, ThunkDispatch, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { updateRowData } from '../../generalSlices/rsuSlice'
+import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
-import { CountsListElement } from '../../models/Rsu'
-import { DateTime } from 'luxon'
+import { MessageType } from '../../models/RsuApi'
+import dayjs from 'dayjs'
 
 const initialState = {
-  sortedCountList: [] as CountsListElement[],
+  countsMsgType: 'bsm' as MessageType,
+  countsStartDate: dayjs().subtract(1, 'day').toDate(),
+  countsEndDate: dayjs().toDate(),
   displayCounts: false,
   displayRsuErrors: false,
   menuSelection: [],
@@ -53,6 +54,15 @@ export const menuSlice = createSlice({
     value: initialState,
   },
   reducers: {
+    setCountsMsgType: (state, action: PayloadAction<MessageType>) => {
+      state.value.countsMsgType = action.payload
+    },
+    setCountsStartDate: (state, action: PayloadAction<Date>) => {
+      state.value.countsStartDate = action.payload
+    },
+    setCountsEndDate: (state, action: PayloadAction<Date>) => {
+      state.value.countsEndDate = action.payload
+    },
     setDisplay: (state, action: PayloadAction<string>) => {
       state.value.displayCounts = action.payload == 'displayCounts'
       state.value.displayRsuErrors = action.payload == 'displayRsuErrors'
@@ -65,11 +75,14 @@ export const menuSlice = createSlice({
   },
 })
 
-export const { setCurrentSort, setSortedCountList, setDisplay } = menuSlice.actions
+export const { setCountsMsgType, setCountsStartDate, setCountsEndDate, setDisplay } = menuSlice.actions
 
 export const selectLoading = (state: RootState) => state.menu.loading
+export const selectCountsMsgType = (state: RootState) => state.menu.value.countsMsgType
 export const selectDisplayCounts = (state: RootState) => state.menu.value.displayCounts
 export const selectDisplayRsuErrors = (state: RootState) => state.menu.value.displayRsuErrors
 export const selectMenuSelection = (state: RootState) => state.menu.value.menuSelection
+export const selectCountsStartDate = (state: RootState) => state.menu.value.countsStartDate
+export const selectCountsEndDate = (state: RootState) => state.menu.value.countsEndDate
 
 export default menuSlice.reducer

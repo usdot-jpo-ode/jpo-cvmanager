@@ -8,7 +8,15 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import EnvironmentVars from '../../EnvironmentVars'
 import BounceLoader from 'react-spinners/BounceLoader'
 import { selectWarningMessage, selectMessageLoading } from '../../generalSlices/rsuSlice'
-import { toggleMapMenuSelection } from './menuSlice'
+import {
+  selectCountsEndDate,
+  selectCountsMsgType,
+  selectCountsStartDate,
+  setCountsEndDate,
+  setCountsMsgType,
+  setCountsStartDate,
+  toggleMapMenuSelection,
+} from './menuSlice'
 
 import '../../components/css/SnmpwalkMenu.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
@@ -30,10 +38,10 @@ const DisplayCounts = () => {
   const warning = useSelector(selectWarningMessage)
   const messageLoading = useSelector(selectMessageLoading)
   const organization = useSelector(selectOrganizationName)
+  const countsMsgType = useSelector(selectCountsMsgType)
+  const startDate = useSelector(selectCountsStartDate)
+  const endDate = useSelector(selectCountsEndDate)
 
-  const [countsMsgType, setCountsMsgType] = React.useState<MessageType>('BSM')
-  const [startDate, setStartDate] = React.useState<Date>(new Date())
-  const [endDate, setEndDate] = React.useState<Date>(new Date())
   const [currentSort, setCurrentSort] = React.useState<string | null>(null)
 
   const { data: rsuCounts } = useGetRsuCountsQuery({ organization, startDate, endDate })
@@ -148,7 +156,7 @@ const DisplayCounts = () => {
               maxDateTime={dayjs(endDate)}
               onChange={(e) => {
                 if (e && !Number.isNaN(Date.parse(e.toString()))) {
-                  setStartDate(e.toDate())
+                  dispatch(setCountsStartDate(e.toDate()))
                 }
               }}
             />
@@ -164,7 +172,7 @@ const DisplayCounts = () => {
               maxDateTime={dayjs(endDate)}
               onChange={(e) => {
                 if (e && !Number.isNaN(Date.parse(e.toString()))) {
-                  setEndDate(e.toDate())
+                  dispatch(setCountsEndDate(e.toDate()))
                 }
               }}
             />
@@ -177,7 +185,7 @@ const DisplayCounts = () => {
               label="Message Type"
               id="counts-msg-dropdown"
               value={countsMsgType}
-              onChange={(event) => setCountsMsgType(event.target.value as MessageType)}
+              onChange={(event) => dispatch(setCountsMsgType(event.target.value as MessageType))}
               sx={{
                 textAlign: 'left',
               }}

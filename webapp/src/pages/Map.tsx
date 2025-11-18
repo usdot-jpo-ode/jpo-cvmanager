@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react'
-import mapboxgl, { CircleLayer, FillLayer, LineLayer } from 'mapbox-gl' // This is a dependency of react-map-gl even if you didn't explicitly install it
+import { CircleLayer, FillLayer, LineLayer } from 'mapbox-gl' // This is a dependency of react-map-gl even if you didn't explicitly install it
 import Map, { Marker, Popup, Source, Layer } from 'react-map-gl'
 import { Container } from 'reactstrap'
 import RsuMarker from '../components/RsuMarker'
@@ -15,9 +15,7 @@ import {
   selectRsuData,
   selectIssScmsStatusData,
   selectSelectedRsu,
-  selectMsgType,
   selectRsuIpv4,
-  selectHeatMapData,
   selectAddGeoMsgPoint,
   selectGeoMsgStart,
   selectGeoMsgEnd,
@@ -42,7 +40,6 @@ import {
   setGeoMsgFilterOffset,
   changeGeoMsgType,
   selectGeoMsgType,
-  updateMessageType,
 } from '../generalSlices/rsuSlice'
 import { selectWzdxData, getWzdxData } from '../generalSlices/wzdxSlice'
 import {
@@ -70,7 +67,6 @@ import {
 } from '../generalSlices/configSlice'
 import ClearIcon from '@mui/icons-material/Clear'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import {
   Button,
   FormGroup,
@@ -113,7 +109,13 @@ import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 import { headerTabHeight } from '../styles/index'
 import { selectActiveLayers, selectViewState, setMapViewState, toggleLayerActive } from './mapSlice'
-import { selectMenuSelection, toggleMapMenuSelection } from '../features/menu/menuSlice'
+import {
+  selectCountsEndDate,
+  selectCountsMsgType,
+  selectCountsStartDate,
+  selectMenuSelection,
+  toggleMapMenuSelection,
+} from '../features/menu/menuSlice'
 import { MapLayer } from '../models/MapLayer'
 import { toast } from 'react-hot-toast'
 import { RoomOutlined } from '@mui/icons-material'
@@ -126,6 +128,7 @@ import { PrimaryButton } from '../styles/components/PrimaryButton'
 import { ConditionalRenderRsu, evaluateFeatureFlags } from '../feature-flags'
 import { DateTime } from 'luxon'
 import { MessageType } from '../models/MessageTypes'
+import { useGetRsuCountsQuery } from '../features/api/rsuCountsApiSlice'
 
 const MILLISECONDS_PER_MINUTE = 60000
 
@@ -134,10 +137,6 @@ const calculateTimeWindow = (baseDate: string | Date, offset: number, step: numb
   const end = new Date(start.getTime() + MILLISECONDS_PER_MINUTE * step)
   return { start, end }
 }
-
-const countsMessageTypeOptions = EnvironmentVars.getMessageTypes().map((type) => {
-  return { value: type, label: type }
-})
 
 function MapPage() {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -148,7 +147,6 @@ function MapPage() {
   const organization = useSelector(selectOrganizationName)
   const rsuData = useSelector(selectRsuData)
   const selectedRsu = useSelector(selectSelectedRsu)
-  const countsMsgType = useSelector(selectMsgType)
   const issScmsStatusData = useSelector(selectIssScmsStatusData)
   const rsuOnlineStatus = useSelector(selectRsuOnlineStatus)
   const rsuIpv4 = useSelector(selectRsuIpv4)
@@ -156,7 +154,9 @@ function MapPage() {
   const configCoordinates = useSelector(selectConfigCoordinates)
   const geoMsgType = useSelector(selectGeoMsgType)
 
-  const heatMapData = useSelector(selectHeatMapData)
+  const countsMsgType = useSelector(selectCountsMsgType)
+  const countsStartDate = useSelector(selectCountsStartDate)
+  const countsEndDate = useSelector(selectCountsEndDate)
 
   const geoMsgData = useSelector(selectGeoMsgData)
   const geoMsgCoordinates = useSelector(selectGeoMsgCoordinates)
@@ -188,8 +188,9 @@ function MapPage() {
   const activeLayers = useSelector(selectActiveLayers)
 
   // RSU layer local state variables
-  const [selectedRsuCount, setSelectedRsuCount] = useState(null)
   const [displayType, setDisplayType] = useState('online')
+
+  const { data: rsuCounts } = useGetRsuCountsQuery({ organization, startDate: countsStartDate, endDate: countsEndDate })
 
   // Add these new state variables near the other source states
   const [previewPoint, setPreviewPoint] = useState<GeoJSON.Feature<GeoJSON.Point> | null>(null)
@@ -510,6 +511,36 @@ function MapPage() {
     return availability
   }, [geoMsgData, startGeoMsgDate, filterStep, geoMsgFilterMaxOffset])
 
+  const heatMapData = useMemo(() => {
+    return {
+      type: 'FeatureCollection' as 'FeatureCollection',
+      features: rsuData.map(
+        (rsu) =>
+          ({
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [rsu.geometry.coordinates[0], rsu.geometry.coordinates[1]],
+            },
+            properties: {
+              ipv4_address: rsu.properties.ipv4_address,
+              count: rsuCounts?.[rsu.properties.ipv4_address]?.messageTypeCounts?.[countsMsgType] ?? 0,
+            },
+          } as GeoJSON.Feature<GeoJSON.Geometry>)
+      ),
+    }
+  }, [rsuData, rsuCounts, countsMsgType])
+
+  const rsuDataWithCounts = useMemo(() => {
+    return rsuData.map((rsu) => ({
+      ...rsu,
+      properties: {
+        ...rsu.properties,
+        counts: rsuCounts?.[rsu.properties.ipv4_address]?.messageTypeCounts ?? {},
+      },
+    }))
+  }, [rsuData, rsuCounts])
+
   function dateChanged(e: Date, type: 'start' | 'end') {
     try {
       const date = DateTime.fromISO(e.toISOString())
@@ -756,7 +787,7 @@ function MapPage() {
       id: 'message-count-circles',
       label: 'Message Count Circles',
       type: 'circle',
-      source: 'rsuMessageCounts',
+      source: 'heatMapData',
       paint: {
         'circle-radius': [
           'interpolate',
@@ -804,7 +835,7 @@ function MapPage() {
       id: 'message-count-labels',
       label: 'Message Count Labels',
       type: 'symbol',
-      source: 'rsuMessageCounts',
+      source: 'heatMapData',
       layout: {
         'text-field': ['to-string', ['get', 'count']],
         'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
@@ -825,8 +856,8 @@ function MapPage() {
       id: 'heatmap-layer-extrusion',
       label: 'Heatmap Extrusion',
       type: 'fill-extrusion',
-      source: 'rsuMessageCounts',
-      filter: ['has', 'count'],
+      source: 'heatMapData',
+      filter: ['all', ['has', 'count'], ['>', ['get', 'count'], 0]],
       paint: {
         'fill-extrusion-color': [
           'interpolate',
@@ -844,7 +875,7 @@ function MapPage() {
         'fill-extrusion-height': [
           'interpolate',
           ['linear'],
-          ['coalesce', ['get', 'count'], 0],
+          ['get', 'count'],
           0,
           0,
           1000,
@@ -868,11 +899,11 @@ function MapPage() {
       maxzoom: 14,
       source: 'heatMapData',
       paint: {
-        // 'heatmap-weight': {
-        //   property: 'count',
-        //   type: 'exponential',
-        //   stops: getStops(),
-        // },
+        'heatmap-weight': {
+          property: 'count',
+          type: 'exponential',
+          //   stops: getStops(),
+        },
         'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 0, 0, 10, 1, 13, 2],
         'heatmap-color': [
           'interpolate',
@@ -945,7 +976,6 @@ function MapPage() {
           case 'rsu-layer':
             dispatch(selectRsu(null))
             dispatch(clearFirmware())
-            setSelectedRsuCount(null)
             break
           case 'wzdx-layer':
             setSelectedWZDxMarkerIndex(null)
@@ -1022,7 +1052,6 @@ function MapPage() {
     // Deselect any selected RSU when toggling point select tools
     dispatch(selectRsu(null))
     dispatch(clearFirmware())
-    setSelectedRsuCount(null)
 
     // Toggle the corresponding point select tool based on the origin
     if (origin === 'config') {
@@ -1350,7 +1379,7 @@ function MapPage() {
               )}
             </div>
           )}
-          {rsuData?.map(
+          {rsuDataWithCounts?.map(
             (rsu) =>
               activeLayers.includes('rsu-layer') &&
               (selectedVendor === 'Select Vendor' || rsu['properties']['manufacturer_name'] === selectedVendor) && [
@@ -1368,10 +1397,6 @@ function MapPage() {
                     dispatch(clearFirmware()) // TODO: Should remove??
                     dispatch(getRsuLastOnline(rsu.properties.ipv4_address))
                     dispatch(getIssScmsStatus())
-                    // TODO: Select RSU count
-                    // if (Object.prototype.hasOwnProperty.call(rsuCounts, rsu.properties.ipv4_address))
-                    //   setSelectedRsuCount(rsuCounts[rsu.properties.ipv4_address].count)
-                    // else setSelectedRsuCount(0)
                   }}
                 >
                   <button
@@ -1386,10 +1411,6 @@ function MapPage() {
                       setSelectedWZDxMarker(null)
                       dispatch(getRsuLastOnline(rsu.properties.ipv4_address))
                       dispatch(getIssScmsStatus())
-                      // TODO: Select RSU count
-                      //   if (Object.prototype.hasOwnProperty.call(rsuCounts, rsu.properties.ipv4_address))
-                      //     setSelectedRsuCount(rsuCounts[rsu.properties.ipv4_address].count)
-                      //   else setSelectedRsuCount(0)
                     }}
                   >
                     <RsuMarker
@@ -1606,7 +1627,6 @@ function MapPage() {
                 if (pageOpen) {
                   dispatch(selectRsu(null))
                   dispatch(clearFirmware())
-                  setSelectedRsuCount(null)
                 }
               }}
               maxWidth="350px"
@@ -1682,7 +1702,9 @@ function MapPage() {
                     </Typography>
                   </Grid2>
                   <Grid2 size={6} justifyContent="flex-start">
-                    <Typography fontSize="medium">{selectedRsuCount}</Typography>
+                    <Typography fontSize="medium">
+                      {Object.entries((selectedRsu.properties as any).counts ?? {})}
+                    </Typography>
                   </Grid2>
                   <Grid2 size={5} justifyContent="flex-start">
                     <Typography fontSize="medium" sx={{ ml: '16px' }}>

@@ -1521,7 +1521,22 @@ function MapPage() {
                     25000,
                     '#800026', // Dark red (extreme)
                   ],
-                  'circle-radius': ['step', ['get', 'point_count'], 20, 10, 30, 50, 40, 100, 50],
+                  'circle-radius': [
+                    'step',
+                    ['get', 'sum_count'],
+                    0,
+                    0, // Min count = 10px radius
+                    1000,
+                    10, // 1000 messages = 20px
+                    5000,
+                    20, // 5000 messages = 35px
+                    10000,
+                    30, // 10000 messages = 50px
+                    50000,
+                    40, // 10000 messages = 50px
+                    100000,
+                    50, // 25000+ messages = 70px
+                  ],
                   'circle-stroke-width': 2,
                   'circle-stroke-color': '#000',
                 }}
@@ -1553,13 +1568,17 @@ function MapPage() {
                     ['linear'],
                     ['get', 'count'],
                     0,
-                    5, // Min count = 5px radius
+                    0, // Min count = 10px radius
                     1000,
-                    15, // 1000 messages = 15px
+                    10, // 1000 messages = 20px
                     5000,
-                    25, // 5000 messages = 25px
+                    20, // 5000 messages = 35px
                     10000,
-                    35, // 10000+ messages = 35px
+                    30, // 10000 messages = 50px
+                    50000,
+                    40, // 10000 messages = 50px
+                    100000,
+                    50, // 25000+ messages = 70px
                   ],
                   'circle-color': [
                     'interpolate',

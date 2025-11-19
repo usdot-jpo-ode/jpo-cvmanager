@@ -545,7 +545,7 @@ function MapPage() {
 
           // Create a buffered circle around the point (radius in kilometers)
           const point = turf.point([rsu.geometry.coordinates[0], rsu.geometry.coordinates[1]])
-          const buffered = turf.buffer(point, 0.05, { units: 'kilometers' }) // 50 meter radius
+          const buffered = turf.buffer(point, 0.2, { units: 'kilometers' }) // 200 meter radius
 
           return {
             type: 'Feature' as 'Feature',
@@ -907,13 +907,13 @@ function MapPage() {
           0,
           0,
           1000,
-          1000, // 1000 messages = 1000m height
+          100,
           5000,
+          500,
+          10000,
+          1000,
+          50000,
           5000,
-          10000,
-          10000,
-          50000,
-          50000,
         ],
         'fill-extrusion-base': 0,
         'fill-extrusion-opacity': 0.8,
@@ -1537,7 +1537,7 @@ function MapPage() {
                   'text-size': 14,
                 }}
                 paint={{
-                  'text-color': ['interpolate', ['linear'], ['get', 'sum_count'], 0, '#000000', 10000, '#ffffff'],
+                  'text-color': '#ffffff',
                   'text-halo-color': '#000000',
                   'text-halo-width': 2,
                 }}

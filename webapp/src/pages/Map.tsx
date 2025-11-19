@@ -906,12 +906,16 @@ function MapPage() {
           ['get', 'count'],
           0,
           0,
-          1000,
           100,
-          5000,
+          800,
           500,
-          10000,
+          2000,
           1000,
+          3000,
+          5000,
+          4000,
+          10000,
+          4500,
           50000,
           5000,
         ],
@@ -1522,7 +1526,8 @@ function MapPage() {
                     '#800026', // Dark red (extreme)
                   ],
                   'circle-radius': [
-                    'step',
+                    'interpolate',
+                    ['linear'],
                     ['get', 'sum_count'],
                     0,
                     0, // Min count = 10px radius
@@ -1621,7 +1626,7 @@ function MapPage() {
                   'text-ignore-placement': true,
                 }}
                 paint={{
-                  'text-color': ['interpolate', ['linear'], ['get', 'count'], 0, '#000000', 10000, '#ffffff'],
+                  'text-color': '#ffffff',
                   'text-halo-color': '#000000',
                   'text-halo-width': 2,
                 }}

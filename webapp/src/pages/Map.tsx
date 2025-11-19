@@ -875,8 +875,8 @@ function MapPage() {
         'icon-text-fit': 'both',
       },
       paint: {
-        'text-color': ['interpolate', ['linear'], ['get', 'count'], 0, '#000000', 10000, '#ffffff'],
-        'text-halo-color': '#ffffff',
+        'text-color': '#ffffff',
+        'text-halo-color': '#000000',
         'text-halo-width': 2,
       },
       tag: 'rsu',

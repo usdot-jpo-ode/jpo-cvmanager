@@ -535,31 +535,6 @@ function MapPage() {
     }
   }, [rsuData, rsuCounts, countsMsgType])
 
-  const heatMapExtrusionData = useMemo(() => {
-    return {
-      type: 'FeatureCollection' as 'FeatureCollection',
-      features: rsuData
-        .map((rsu) => {
-          const count = rsuCounts?.[rsu.properties.ipv4_address]?.messageTypeCounts?.[countsMsgType] ?? 0
-          if (count === 0) return null
-
-          // Create a buffered circle around the point (radius in kilometers)
-          const point = turf.point([rsu.geometry.coordinates[0], rsu.geometry.coordinates[1]])
-          const buffered = turf.buffer(point, 0.2, { units: 'kilometers' }) // 200 meter radius
-
-          return {
-            type: 'Feature' as 'Feature',
-            geometry: buffered.geometry,
-            properties: {
-              ipv4_address: rsu.properties.ipv4_address,
-              count: count,
-            },
-          }
-        })
-        .filter((f) => f !== null),
-    }
-  }, [rsuData, rsuCounts, countsMsgType])
-
   const rsuDataWithCounts = useMemo(() => {
     return rsuData.map((rsu) => ({
       ...rsu,
@@ -810,118 +785,6 @@ function MapPage() {
       id: 'rsu-layer',
       label: 'RSU Viewer',
       type: 'symbol',
-      tag: 'rsu',
-    },
-    {
-      id: 'message-count-circles',
-      label: 'Message Count Circles',
-      type: 'circle',
-      source: 'heatMapData',
-      paint: {
-        'circle-radius': [
-          'interpolate',
-          ['linear'],
-          ['get', 'count'],
-          0,
-          5, // Min count = 5px radius
-          1000,
-          20, // 1000 messages = 20px
-          5000,
-          40, // 5000 messages = 40px
-          10000,
-          60, // 10000+ messages = 60px
-        ],
-        'circle-color': [
-          'interpolate',
-          ['linear'],
-          ['get', 'count'],
-          0,
-          '#ffffcc', // Light yellow (low)
-          1000,
-          '#ffeda0',
-          2500,
-          '#fed976',
-          5000,
-          '#feb24c',
-          7500,
-          '#fd8d3c',
-          10000,
-          '#fc4e2a', // Orange-red (high)
-          15000,
-          '#e31a1c',
-          20000,
-          '#bd0026', // Deep red (very high)
-          25000,
-          '#800026', // Dark red (extreme)
-        ],
-        'circle-opacity': 0.7,
-        'circle-stroke-width': 2,
-        'circle-stroke-color': '#000',
-      },
-      tag: 'rsu',
-    },
-    {
-      id: 'message-count-labels',
-      label: 'Message Count Labels',
-      type: 'symbol',
-      source: 'heatMapData',
-      layout: {
-        'text-field': ['to-string', ['get', 'count']],
-        'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-        'text-size': ['interpolate', ['linear'], ['get', 'count'], 0, 12, 5000, 16, 10000, 20, 20000, 24],
-        'text-allow-overlap': true,
-        'text-ignore-placement': true,
-        'icon-image': 'circle-15', // Background icon if available
-        'icon-text-fit': 'both',
-      },
-      paint: {
-        'text-color': '#ffffff',
-        'text-halo-color': '#000000',
-        'text-halo-width': 2,
-      },
-      tag: 'rsu',
-    },
-    {
-      id: 'heatmap-layer-extrusion',
-      label: 'Heatmap Extrusion',
-      type: 'fill-extrusion',
-      source: 'heatMapData',
-      paint: {
-        'fill-extrusion-color': [
-          'interpolate',
-          ['linear'],
-          ['get', 'count'],
-          0,
-          '#ffffcc',
-          5000,
-          '#feb24c',
-          10000,
-          '#fc4e2a',
-          20000,
-          '#800026',
-        ],
-        'fill-extrusion-height': [
-          'interpolate',
-          ['linear'],
-          ['get', 'count'],
-          0,
-          0,
-          100,
-          800,
-          500,
-          2000,
-          1000,
-          3000,
-          5000,
-          4000,
-          10000,
-          4500,
-          50000,
-          5000,
-        ],
-        'fill-extrusion-base': 0,
-        'fill-extrusion-opacity': 0.8,
-      },
       tag: 'rsu',
     },
     {
@@ -1464,21 +1327,6 @@ function MapPage() {
                 </Marker>,
               ]
           )}
-          {activeLayers.includes('message-count-circles') && (
-            <Source id={layers[1].id} type="geojson" data={heatMapData}>
-              <Layer {...layers[1]} />
-            </Source>
-          )}
-          {activeLayers.includes('message-count-labels') && (
-            <Source id={layers[2].id} type="geojson" data={heatMapData}>
-              <Layer {...layers[2]} />
-            </Source>
-          )}
-          {activeLayers.includes('heatmap-layer-extrusion') && (
-            <Source id={layers[3].id} type="geojson" data={heatMapExtrusionData}>
-              <Layer {...layers[3]} />
-            </Source>
-          )}
           {activeLayers.includes('heatmap-layer') && (
             <Source id={layers[4].id} type="geojson" data={heatMapData}>
               <Layer {...layers[4]} />
@@ -1532,15 +1380,15 @@ function MapPage() {
                     0,
                     0, // Min count = 10px radius
                     1000,
-                    10, // 1000 messages = 20px
+                    20, // 1000 messages = 20px
                     5000,
-                    20, // 5000 messages = 35px
+                    22, // 5000 messages = 35px
                     10000,
-                    30, // 10000 messages = 50px
+                    25, // 10000 messages = 50px
                     50000,
-                    40, // 10000 messages = 50px
+                    30, // 10000 messages = 50px
                     100000,
-                    50, // 25000+ messages = 70px
+                    35, // 25000+ messages = 70px
                   ],
                   'circle-stroke-width': 2,
                   'circle-stroke-color': '#000',
@@ -1568,23 +1416,7 @@ function MapPage() {
                 type="circle"
                 filter={['!', ['has', 'point_count']]}
                 paint={{
-                  'circle-radius': [
-                    'interpolate',
-                    ['linear'],
-                    ['get', 'count'],
-                    0,
-                    0, // Min count = 10px radius
-                    1000,
-                    10, // 1000 messages = 20px
-                    5000,
-                    20, // 5000 messages = 35px
-                    10000,
-                    30, // 10000 messages = 50px
-                    50000,
-                    40, // 10000 messages = 50px
-                    100000,
-                    50, // 25000+ messages = 70px
-                  ],
+                  'circle-radius': 20,
                   'circle-color': [
                     'interpolate',
                     ['linear'],
@@ -1811,14 +1643,6 @@ function MapPage() {
                     paddingY: '10px',
                   }}
                 >
-                  <Grid2 size={12} justifyContent="flex-start">
-                    <CustomTable
-                      data={EnvironmentVars.getMessageTypes().map((type) => {
-                        return [type, (selectedRsu.properties as any).counts?.[type]?.toString() ?? '0']
-                      })}
-                      headers={['Msg Type', 'Count']}
-                    />
-                  </Grid2>
                   <Grid2 size={5} justifyContent="flex-start">
                     <Typography fontSize="medium" sx={{ ml: '16px' }}>
                       Last Online:

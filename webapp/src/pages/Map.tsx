@@ -889,6 +889,10 @@ function MapPage() {
           case 'wzdx-layer':
             dispatch(getWzdxData())
             break
+          case 'heatmap-layer':
+          case 'heatmap-cluster':
+            dispatch(toggleMapMenuSelection('Display Message Counts'))
+            break
           case 'moove-ai-layer':
             if (activeLayers.includes('msg-viewer-layer')) dispatch(toggleLayerActive('msg-viewer-layer'))
             break
@@ -905,35 +909,11 @@ function MapPage() {
           .map((layer) => (
             <div key={layer.id}>
               <div style={{ fontSize: 'small', display: 'flex', alignItems: 'center' }}>
-                {layer.id === 'heatmap-layer' ? (
-                  <FormControlLabel
-                    onClick={(e) => {
-                      toggleLayer(layer.id)
-                    }}
-                    label={
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Typography>{layer.label}</Typography>
-                        <Box onClick={(e) => e.stopPropagation()}>
-                          <IconButton
-                            size="small"
-                            onClick={() => {
-                              dispatch(toggleMapMenuSelection('Display Message Counts'))
-                            }}
-                          >
-                            <TuneIcon />
-                          </IconButton>
-                        </Box>
-                      </Box>
-                    }
-                    control={<Checkbox checked={activeLayers.includes(layer.id)} />}
-                  />
-                ) : (
-                  <FormControlLabel
-                    onClick={() => toggleLayer(layer.id)}
-                    label={<Typography>{layer.label}</Typography>}
-                    control={<Checkbox checked={activeLayers.includes(layer.id)} />}
-                  />
-                )}
+                <FormControlLabel
+                  onClick={() => toggleLayer(layer.id)}
+                  label={<Typography>{layer.label}</Typography>}
+                  control={<Checkbox checked={activeLayers.includes(layer.id)} />}
+                />
               </div>
             </div>
           ))}

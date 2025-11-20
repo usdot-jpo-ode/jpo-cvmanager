@@ -19,6 +19,8 @@ import CloseIcon from '@mui/icons-material/Close'
 import { RoomOutlined } from '@mui/icons-material'
 import { headerTabHeight } from '../../styles'
 import { SideBarHeader } from '../../styles/components/SideBarHeader'
+import { CustomTable } from '../intersections/map/custom-table'
+import EnvironmentVars from '../../EnvironmentVars'
 
 const ConfigMenu = ({ children }) => {
   return <Box>{children}</Box>
@@ -88,6 +90,23 @@ const ConfigureRSU = () => {
             color: theme.palette.text.secondary,
           }}
         >
+          <Accordion
+            expanded={expanded === 'selected-rsu-message-counts'}
+            onChange={handleChange('selected-rsu-message-counts')}
+            elevation={0}
+          >
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1bh-content" id="panel1bh-header">
+              <Typography>Message Counts</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <CustomTable
+                data={EnvironmentVars.getMessageTypes().map((type) => {
+                  return [type, (selectedRsu.properties as any).counts?.[type]?.toString() ?? '0']
+                })}
+                headers={['Msg Type', 'Count']}
+              />
+            </AccordionDetails>
+          </Accordion>
           <Accordion
             expanded={expanded === 'selected-rsu-current-config'}
             onChange={handleChange('selected-rsu-current-config')}

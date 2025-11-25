@@ -891,7 +891,9 @@ function MapPage() {
             break
           case 'heatmap-layer':
           case 'heatmap-cluster':
-            dispatch(toggleMapMenuSelection('Display Message Counts'))
+            if (!menuSelection.includes('Display Message Counts')) {
+              dispatch(toggleMapMenuSelection('Display Message Counts'))
+            }
             break
           case 'moove-ai-layer':
             if (activeLayers.includes('msg-viewer-layer')) dispatch(toggleLayerActive('msg-viewer-layer'))

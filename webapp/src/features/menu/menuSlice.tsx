@@ -16,6 +16,7 @@ const initialState = {
 export const toggleMapMenuSelection = createAsyncThunk(
   'menu/toggleMapMenuSelection',
   async (label: string, { getState, dispatch }) => {
+    // TODO: Re-factor this to not store list of menuSelection. This should be broken out into separate menu variables if needed
     const currentState = getState() as RootState
     let menuSelection = [...selectMenuSelection(currentState)]
     if (menuSelection.includes(label)) {
@@ -66,6 +67,9 @@ export const menuSlice = createSlice({
     setDisplay: (state, action: PayloadAction<string>) => {
       state.value.displayCounts = action.payload == 'displayCounts'
       state.value.displayRsuErrors = action.payload == 'displayRsuErrors'
+    },
+    setMenuSelection: (state, action: PayloadAction<string[]>) => {
+      state.value.menuSelection = action.payload
     },
   },
   extraReducers: (builder) => {

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import AdminAddIntersection from '../adminAddIntersection/AdminAddIntersection'
 import AdminEditIntersection, { AdminEditIntersectionFormType } from '../adminEditIntersection/AdminEditIntersection'
 import AdminTable from '../../components/AdminTable'
@@ -15,6 +15,7 @@ import {
   setEditIntersectionRowData,
   selectColumns,
 } from './adminIntersectionTabSlice'
+import { selectOrganizationName } from '../../generalSlices/userSlice'
 import { clear, getIntersectionInfo } from '../adminEditIntersection/adminEditIntersectionSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -31,6 +32,11 @@ const AdminIntersectionTab = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const navigate = useNavigate()
   const theme = useTheme()
+
+  const organization = useSelector(selectOrganizationName)
+  useEffect(() =>{
+    dispatch(updateTableData())
+  }, [organization, dispatch])
 
   const tableData = useSelector(selectTableData)
   const columns = useSelector(selectColumns)
@@ -94,7 +100,7 @@ const AdminIntersectionTab = () => {
         itemType: 'outlined',
       },
       onClick: () => {
-        updateTableData()
+        dispatch(updateTableData())
       },
     },
     {

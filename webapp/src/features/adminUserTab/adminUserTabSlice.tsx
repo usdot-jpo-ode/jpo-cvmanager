@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { selectToken } from '../../generalSlices/userSlice'
+import {selectOrganizationName, selectToken} from '../../generalSlices/userSlice'
 import EnvironmentVars from '../../EnvironmentVars'
 import apiHelper from '../../apis/api-helper'
 import { RootState } from '../../store'
@@ -11,12 +11,12 @@ const initialState = {
   editUserRowData: {} as AdminUserWithId,
 }
 
-export const getUserData = async (user_email: string, token: string) => {
+export const getUserData = async (user_email: string, token: string, organization: string) => {
   return await apiHelper._getDataWithCodes({
     url: EnvironmentVars.adminUser,
     token,
     query_params: { user_email },
-    additional_headers: { 'Content-Type': 'application/json' },
+    additional_headers: { 'Content-Type': 'application/json', Organization: organization },
   })
 }
 
@@ -42,8 +42,9 @@ export const getAvailableUsers = createAsyncThunk(
   async (_, { getState }) => {
     const currentState = getState() as RootState
     const token = selectToken(currentState)
+    const organization = selectOrganizationName(currentState)
 
-    const data = await getUserData('all', token)
+    const data = await getUserData('all', token, organization)
 
     switch (data.status) {
       case 200:

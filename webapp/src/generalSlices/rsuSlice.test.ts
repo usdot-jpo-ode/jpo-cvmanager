@@ -2,7 +2,6 @@ import reducer from './rsuSlice'
 import {
   // async thunks
   getRsuData,
-  getRsuInfoOnly,
   getRsuLastOnline,
   _getRsuInfo,
   _getRsuOnlineStatus,
@@ -271,55 +270,6 @@ describe('async thunks', () => {
       const loading = false
       const state = reducer(initialState, {
         type: 'rsu/getRsuData/rejected',
-      })
-      expect(state).toEqual({ ...initialState, loading, value: { ...initialState.value } })
-    })
-  })
-
-  describe('getRsuInfoOnly', () => {
-    it('returns and calls the api correctly', async () => {
-      const dispatch = jest.fn()
-      const getState = jest.fn().mockReturnValue({
-        user: {
-          value: {
-            authLoginData: { token: 'token' },
-            organization: { name: 'name' },
-          },
-        },
-      })
-      const action = getRsuInfoOnly()
-
-      const rsuData = ['1.1.1.1']
-      RsuApi.getRsuInfo = jest.fn().mockReturnValue({ rsuList: rsuData })
-      const resp = await action(dispatch, getState, undefined)
-      expect(resp.payload).toEqual(rsuData)
-      expect(RsuApi.getRsuInfo).toHaveBeenCalledWith('token', 'name')
-    })
-
-    it('Updates the state correctly pending', async () => {
-      const loading = true
-      const state = reducer(initialState, {
-        type: 'rsu/getRsuInfoOnly/pending',
-      })
-      expect(state).toEqual({
-        ...initialState,
-        loading,
-        value: { ...initialState.value },
-      })
-    })
-
-    it('Updates the state correctly fulfilled', async () => {
-      const loading = false
-      const state = reducer(initialState, {
-        type: 'rsu/getRsuInfoOnly/fulfilled',
-      })
-      expect(state).toEqual({ ...initialState, loading, value: { ...initialState.value } })
-    })
-
-    it('Updates the state correctly rejected', async () => {
-      const loading = false
-      const state = reducer(initialState, {
-        type: 'rsu/getRsuInfoOnly/rejected',
       })
       expect(state).toEqual({ ...initialState, loading, value: { ...initialState.value } })
     })

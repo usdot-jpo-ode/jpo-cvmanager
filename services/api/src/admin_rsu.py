@@ -38,7 +38,12 @@ def get_rsu_data(rsu_ip: str, user: EnvironWithOrg, qualified_orgs: list[str]):
 
     where_clauses = []
     params: dict[str, Any] = {}
-    if not user.user_info.super_user:
+
+    # Filter by user's organization
+    if user.organization:
+        where_clauses.append("org.name = :user_org_name")
+        params["user_org_name"] = user.organization
+    elif not user.user_info.super_user:
         org_names_placeholder, _ = generate_sql_placeholders_for_list(
             qualified_orgs, params_to_update=params
         )
@@ -284,7 +289,7 @@ class AdminRsuPatchSchema(Schema):
 class AdminRsu(Resource):
     options_headers = {
         "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
-        "Access-Control-Allow-Headers": "Content-Type,Authorization",
+        "Access-Control-Allow-Headers": "Content-Type,Authorization,Organization",
         "Access-Control-Allow-Methods": "GET,PATCH,DELETE",
         "Access-Control-Max-Age": "3600",
     }

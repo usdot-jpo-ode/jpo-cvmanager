@@ -22,11 +22,6 @@ const initialState = {
   selectedRsu: null as RsuInfo,
   rsuData: [] as RsuInfo[],
   rsuOnlineStatus: {} as RsuOnlineStatusRespMultiple,
-  currentSort: '',
-  startDate: currentDate.minus({ days: 1 }).toString(),
-  endDate: currentDate.toString(),
-  messageLoading: false,
-  warningMessage: false,
   geoMsgType: 'BSM' as MessageType | undefined,
   rsuMapData: {} as RsuMapInfo['geojson'],
   mapList: [] as RsuMapInfoIpList,
@@ -54,11 +49,7 @@ export const getRsuData = createAsyncThunk(
   async (_, { getState, dispatch }) => {
     const currentState = getState() as RootState
 
-    await Promise.all([
-      dispatch(resetCountsDates()),
-      dispatch(_getRsuInfo()),
-      dispatch(_getRsuOnlineStatus(currentState.rsu.value.rsuOnlineStatus)),
-    ])
+    await Promise.all([dispatch(_getRsuInfo()), dispatch(_getRsuOnlineStatus(currentState.rsu.value.rsuOnlineStatus))])
   },
   {
     condition: (_, { getState }) => selectToken(getState() as RootState) != undefined,
@@ -118,38 +109,6 @@ export const getIssScmsStatus = createAsyncThunk(
     const organization = selectOrganizationName(currentState)
 
     return await RsuApi.getIssScmsStatus(token, organization)
-  },
-  {
-    condition: (_, { getState }) => selectToken(getState() as RootState) != undefined,
-  }
-)
-
-export const updateRowData = createAsyncThunk(
-  'rsu/updateRowData',
-  async (
-    data: {
-      message?: MessageType
-      start?: string
-      end?: string
-    },
-    { getState }
-  ) => {
-    const currentState = getState() as RootState
-    const token = selectToken(currentState)
-    const organization = selectOrganizationName(currentState)
-
-    const startDate = Object.prototype.hasOwnProperty.call(data, 'start')
-      ? data['start']
-      : currentState.rsu.value.startDate
-    const endDate = Object.prototype.hasOwnProperty.call(data, 'end') ? data['end'] : currentState.rsu.value.endDate
-
-    const warningMessage = new Date(endDate).getTime() - new Date(startDate).getTime() > 86400000
-
-    return {
-      startDate,
-      endDate,
-      warningMessage,
-    }
   },
   {
     condition: (_, { getState }) => selectToken(getState() as RootState) != undefined,
@@ -275,11 +234,6 @@ export const rsuSlice = createSlice({
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload
     },
-    resetCountsDates: (state) => {
-      const now = DateTime.local().setZone(DateTime.local().zoneName)
-      state.value.startDate = now.minus({ days: 1 }).toString()
-      state.value.endDate = now.toString()
-    },
   },
   extraReducers: (builder) => {
     builder
@@ -334,19 +288,6 @@ export const rsuSlice = createSlice({
       .addCase(getIssScmsStatus.fulfilled, (state, action) => {
         state.value.issScmsStatusData = action.payload ?? state.value.issScmsStatusData
       })
-      .addCase(updateRowData.pending, (state) => {
-        state.value.messageLoading = false
-      })
-      .addCase(updateRowData.fulfilled, (state, action) => {
-        if (action.payload === null) return
-        state.value.warningMessage = action.payload.warningMessage
-        state.value.messageLoading = false
-        state.value.startDate = action.payload.startDate
-        state.value.endDate = action.payload.endDate
-      })
-      .addCase(updateRowData.rejected, (state) => {
-        state.value.messageLoading = false
-      })
       .addCase(updateGeoMsgData.pending, (state) => {
         state.loading = true
         state.value.addGeoMsgPoint = false
@@ -372,11 +313,6 @@ export const selectRsuIpv4 = (state: RootState) => state.rsu.value.selectedRsu?.
 export const selectRsuPrimaryRoute = (state: RootState) => state.rsu.value.selectedRsu?.properties?.primary_route
 export const selectRsuData = (state: RootState) => state.rsu.value.rsuData
 export const selectRsuOnlineStatus = (state: RootState) => state.rsu.value.rsuOnlineStatus
-export const selectCurrentSort = (state: RootState) => state.rsu.value.currentSort
-export const selectStartDate = (state: RootState) => state.rsu.value.startDate
-export const selectEndDate = (state: RootState) => state.rsu.value.endDate
-export const selectMessageLoading = (state: RootState) => state.rsu.value.messageLoading
-export const selectWarningMessage = (state: RootState) => state.rsu.value.warningMessage
 export const selectGeoMsgType = (state: RootState) => state.rsu.value.geoMsgType
 export const selectRsuMapData = (state: RootState) => state.rsu.value.rsuMapData
 export const selectMapList = (state: RootState) => state.rsu.value.mapList
@@ -411,7 +347,6 @@ export const {
   setGeoMsgFilterStep,
   setGeoMsgFilterOffset,
   setLoading,
-  resetCountsDates,
 } = rsuSlice.actions
 
 export default rsuSlice.reducer

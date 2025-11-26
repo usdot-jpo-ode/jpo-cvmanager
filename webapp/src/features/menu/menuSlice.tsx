@@ -33,13 +33,13 @@ export const toggleMapMenuSelection = createAsyncThunk(
       switch (label) {
         case 'Display Message Counts':
           if (menuSelection.includes('Display RSU Status')) {
-            menuSelection = [...menuSelection.filter((item) => item !== 'Display RSU Status'), 'Display Message Counts']
+            menuSelection = [...menuSelection.filter((item) => item !== 'Display RSU Status')]
           }
           dispatch(setDisplay('displayCounts'))
           break
         case 'Display RSU Status':
           if (menuSelection.includes('Display Message Counts')) {
-            menuSelection = [...menuSelection.filter((item) => item !== 'Display Message Counts'), 'Display RSU Status']
+            menuSelection = [...menuSelection.filter((item) => item !== 'Display Message Counts')]
           }
           dispatch(setDisplay('displayRsuErrors'))
       }

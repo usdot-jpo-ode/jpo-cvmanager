@@ -16,12 +16,33 @@ jest.mock('@mui/x-date-pickers', () => {
   }
 })
 
-// Mock the dayjs library
+// Mock the dayjs library with timezone support
 jest.mock('dayjs', () => {
   const actualDayjs = jest.requireActual('dayjs')
-  const mockDayjs = (date) => actualDayjs(date).tz('America/Denver')
+  const utc = require('dayjs/plugin/utc')
+  const timezone = require('dayjs/plugin/timezone')
+
+  // Extend dayjs with required plugins
+  actualDayjs.extend(utc)
+  actualDayjs.extend(timezone)
+
+  // Create mock function
+  const mockDayjs = (date?: any) => {
+    const instance = date ? actualDayjs(date) : actualDayjs()
+    return instance.tz('America/Denver')
+  }
+
+  // Copy all static methods and properties from actual dayjs
+  Object.keys(actualDayjs).forEach((key) => {
+    if (!(key in mockDayjs)) {
+      mockDayjs[key] = actualDayjs[key]
+    }
+  })
+
+  // Ensure timezone method is available
   mockDayjs.extend = actualDayjs.extend
   mockDayjs.Ls = actualDayjs.Ls
+
   return mockDayjs
 })
 

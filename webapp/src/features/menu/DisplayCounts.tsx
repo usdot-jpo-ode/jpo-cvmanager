@@ -6,8 +6,6 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import EnvironmentVars from '../../EnvironmentVars'
-import BounceLoader from 'react-spinners/BounceLoader'
-import { selectWarningMessage, selectMessageLoading } from '../../generalSlices/rsuSlice'
 import {
   selectCountsEndDate,
   selectCountsMsgType,
@@ -35,8 +33,6 @@ const messageTypeOptions = EnvironmentVars.getMessageTypes().map((type) => {
 const DisplayCounts = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const theme = useTheme()
-  const warning = useSelector(selectWarningMessage)
-  const messageLoading = useSelector(selectMessageLoading)
   const organization = useSelector(selectOrganizationName)
   const countsMsgType = useSelector(selectCountsMsgType)
   const startDate = useSelector(selectCountsStartDate)
@@ -57,6 +53,11 @@ const DisplayCounts = () => {
     })
   }, [rsuCounts, countsMsgType])
 
+  const dateRangeValid = useMemo(() => {
+    const ONE_WEEK_MILLISECONDS = 86400 * 1000 * 7
+    return endDate.getTime() - startDate.getTime() > ONE_WEEK_MILLISECONDS
+  }, [startDate, endDate])
+
   const getWarningMessage = (warning: boolean) =>
     warning ? (
       <Typography
@@ -64,7 +65,7 @@ const DisplayCounts = () => {
         role="alert"
         sx={{ backgroundColor: theme.palette.error.main, display: 'flex', justifyContent: 'center' }}
       >
-        Warning: time ranges greater than 24 hours may have longer load times.
+        Warning: time ranges greater than 7 days may have longer load times.
       </Typography>
     ) : null
 
@@ -93,36 +94,23 @@ const DisplayCounts = () => {
     }
   }
 
-  const getTable = (messageLoading: boolean, sortedCountList: CountsListElement[]) =>
-    messageLoading ? (
-      <div>
-        <div className="table">
-          <div className="header">
-            <div>RSU</div>
-            <div>Road</div>
-            <div>Count</div>
-          </div>
+  const getTable = (sortedCountList: CountsListElement[]) => (
+    <div className="table">
+      <div className="header">
+        <div onClick={() => sortBy('rsu')} style={{ borderBottom: `1px solid ${theme.palette.text.primary}` }}>
+          RSU
         </div>
-        <span className="bounceLoader">
-          <BounceLoader loading={true} color={theme.palette.text.primary}></BounceLoader>
-        </span>
-      </div>
-    ) : (
-      <div className="table">
-        <div className="header">
-          <div onClick={() => sortBy('rsu')} style={{ borderBottom: `1px solid ${theme.palette.text.primary}` }}>
-            RSU
-          </div>
-          <div onClick={() => sortBy('road')} style={{ borderBottom: `1px solid ${theme.palette.text.primary}` }}>
-            Road
-          </div>
-          <div onClick={() => sortBy('count')} style={{ borderBottom: `1px solid ${theme.palette.text.primary}` }}>
-            Count
-          </div>
+        <div onClick={() => sortBy('road')} style={{ borderBottom: `1px solid ${theme.palette.text.primary}` }}>
+          Road
         </div>
-        <div className="body">{formatRows(sortedCountList)}</div>
+        <div onClick={() => sortBy('count')} style={{ borderBottom: `1px solid ${theme.palette.text.primary}` }}>
+          Count
+        </div>
       </div>
-    )
+      <div className="body">{formatRows(sortedCountList)}</div>
+    </div>
+  )
+
   const formatRows = (rows: CountsListElement[]) => {
     if (rows.length === 0) {
       return (
@@ -200,8 +188,8 @@ const DisplayCounts = () => {
             </Select>
           </FormControl>
         </Box>
-        {getWarningMessage(warning)}
-        {getTable(messageLoading, sortedCountList)}
+        {getWarningMessage(dateRangeValid)}
+        {getTable(sortedCountList)}
       </Stack>
     </Paper>
   )

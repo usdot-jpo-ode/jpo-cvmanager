@@ -6,14 +6,9 @@ import {
   getRsuLastOnline,
   _getRsuInfo,
   _getRsuOnlineStatus,
-  _getRsuCounts,
   getSsmSrmData,
   getIssScmsStatus,
-  updateRowData,
   updateGeoMsgData,
-
-  // functions
-  updateMessageType,
 
   // reducers
   selectRsu,
@@ -25,7 +20,6 @@ import {
   updateGeoMsgPoints,
   updateGeoMsgDate,
   triggerGeoMsgDateError,
-  changeCountsMsgType,
   setGeoMsgFilter,
   setGeoMsgFilterStep,
   setGeoMsgFilterOffset,
@@ -39,14 +33,6 @@ import {
   selectRsuPrimaryRoute,
   selectRsuData,
   selectRsuOnlineStatus,
-  selectRsuCounts,
-  selectCountList,
-  selectCurrentSort,
-  selectStartDate,
-  selectEndDate,
-  selectMessageLoading,
-  selectWarningMessage,
-  selectMsgType,
   selectRsuMapData,
   selectMapList,
   selectMapDate,
@@ -64,7 +50,6 @@ import {
   selectSsmDisplay,
   selectSrmSsmList,
   selectSelectedSrm,
-  selectHeatMapData,
 } from './rsuSlice'
 import RsuApi from '../apis/rsu-api'
 import { RootState } from '../store'
@@ -92,18 +77,6 @@ describe('rsu reducer', () => {
         selectedRsu: null,
         rsuData: [],
         rsuOnlineStatus: {},
-        rsuCounts: {},
-        countList: [],
-        currentSort: '',
-        startDate: currentDate.minus({ days: 1 }).toString(),
-        endDate: currentDate.toString(),
-        heatMapData: {
-          features: [],
-          type: 'FeatureCollection',
-        },
-        messageLoading: false,
-        warningMessage: false,
-        countsMsgType: 'BSM',
         rsuMapData: {},
         mapList: [],
         mapDate: '',
@@ -134,17 +107,6 @@ describe('async thunks', () => {
       selectedRsu: null,
       rsuData: null,
       rsuOnlineStatus: null,
-      rsuCounts: null,
-      countList: null,
-      currentSort: null,
-      startDate: null,
-      endDate: null,
-      heatMapData: {
-        features: [],
-        type: 'FeatureCollection',
-      },
-      messageLoading: null,
-      warningMessage: null,
       countsMsgType: null,
       geoMsgType: null,
       rsuMapData: null,
@@ -188,23 +150,19 @@ describe('async thunks', () => {
         rsu: {
           value: {
             rsuOnlineStatus: {},
-            startDate: '',
-            endDate: '',
           },
         },
       })
       const action = getRsuData()
 
       await action(dispatch, getState, undefined)
-      expect(dispatch).toHaveBeenCalledTimes(4 + 2) // 4 for the 4 dispatched actions, 2 for the pending and fulfilled actions
+      expect(dispatch).toHaveBeenCalledTimes(2 + 2) // 2 for the 2 dispatched actions, 2 for the pending and fulfilled actions
     })
 
     it('Updates the state correctly pending', async () => {
       const loading = true
       const rsuData = [] as any
       const rsuOnlineStatus = {}
-      const rsuCounts = {}
-      const countList = [] as any
       const state = reducer(initialState, {
         type: 'rsu/getRsuData/pending',
       })
@@ -215,15 +173,12 @@ describe('async thunks', () => {
           ...initialState.value,
           rsuData,
           rsuOnlineStatus,
-          rsuCounts,
-          countList,
         },
       })
     })
 
     it('Updates the state correctly fulfilled', async () => {
       const loading = false
-      const rsuCounts = { ipv4_address: { count: 4 } } as any
       const rsuData = [
         {
           properties: {
@@ -235,32 +190,16 @@ describe('async thunks', () => {
         },
       ] as any
       const state = reducer(
-        { ...initialState, value: { ...initialState.value, rsuData, rsuCounts } },
+        { ...initialState, value: { ...initialState.value, rsuData } },
         {
           type: 'rsu/getRsuData/fulfilled',
         }
       )
 
-      const heatMapData = {
-        features: [
-          {
-            type: 'Feature',
-            geometry: {
-              type: 'Point',
-              coordinates: [-104.999824, 39.750392],
-            },
-            properties: {
-              ipv4_address: 'ipv4_address',
-              count: 4,
-            },
-          },
-        ],
-        type: 'FeatureCollection',
-      }
       expect(state).toEqual({
         ...initialState,
         loading,
-        value: { ...initialState.value, rsuData, rsuCounts, heatMapData },
+        value: { ...initialState.value, rsuData },
       })
     })
 
@@ -467,104 +406,6 @@ describe('async thunks', () => {
     })
   })
 
-  describe('_getRsuCounts', () => {
-    it('returns and calls the api correctly', async () => {
-      const dispatch = jest.fn()
-      const getState = jest.fn().mockReturnValue({
-        user: {
-          value: {
-            authLoginData: { token: 'token' },
-            organization: { name: 'name' },
-          },
-        },
-        rsu: {
-          value: {
-            countsMsgType: 'BSM',
-            startDate: '',
-            endDate: '',
-          },
-        },
-      })
-      const action = _getRsuCounts()
-
-      const rsuCounts = {
-        '1.1.1.1': { road: 'road', count: 'count' },
-      }
-      const countList = [
-        {
-          key: '1.1.1.1',
-          rsu: '1.1.1.1',
-          road: 'road',
-          count: 'count',
-        },
-      ]
-      RsuApi.getRsuCounts = jest.fn().mockReturnValue(rsuCounts)
-      const resp = await action(dispatch, getState, undefined)
-      expect(resp.payload).toEqual({ rsuCounts, countList })
-      expect(RsuApi.getRsuCounts).toHaveBeenCalledWith('token', 'name', '', {
-        message: 'BSM',
-        start: '',
-        end: '',
-      })
-    })
-    it('returns and calls the api correctly', async () => {
-      const rsuCounts = {
-        '1.1.1.1': { road: 'road', count: 'count' },
-      }
-
-      const dispatch = jest.fn()
-      const getState = jest.fn().mockReturnValue({
-        user: {
-          value: {
-            authLoginData: { token: 'token' },
-            organization: { name: 'name' },
-          },
-        },
-        rsu: {
-          value: {
-            countsMsgType: 'BSM',
-            startDate: '',
-            endDate: '',
-            rsuCounts,
-          },
-        },
-      })
-
-      const action = _getRsuCounts()
-      const countList = [
-        {
-          key: '1.1.1.1',
-          rsu: '1.1.1.1',
-          road: 'road',
-          count: 'count',
-        },
-      ]
-      RsuApi.getRsuCounts = jest.fn().mockReturnValue(null)
-      const resp = await action(dispatch, getState, undefined)
-      expect(resp.payload).toEqual({ rsuCounts, countList })
-      expect(RsuApi.getRsuCounts).toHaveBeenCalledWith('token', 'name', '', {
-        message: 'BSM',
-        start: '',
-        end: '',
-      })
-    })
-
-    it('Updates the state correctly fulfilled', async () => {
-      const rsuCounts = 'rsuCounts'
-      const countList = 'countList'
-      const payload = { rsuCounts, countList }
-      const state = reducer(initialState, {
-        type: 'rsu/_getRsuCounts/fulfilled',
-        payload: payload,
-      })
-
-      expect(state).toEqual({
-        ...initialState,
-        value: { ...initialState.value, rsuCounts, countList },
-      })
-    })
-  })
-
   describe('getSsmSrmData', () => {
     it('returns and calls the api correctly', async () => {
       const dispatch = jest.fn()
@@ -642,185 +483,6 @@ describe('async thunks', () => {
       expect(state).toEqual({
         ...initialState,
         value: { ...initialState.value, issScmsStatusData },
-      })
-    })
-  })
-
-  describe('updateRowData', () => {
-    it('returns and calls the api correctly', async () => {
-      const dispatch = jest.fn()
-      const getState = jest.fn().mockReturnValue({
-        user: {
-          value: {
-            authLoginData: { token: 'token' },
-            organization: { name: 'name' },
-          },
-        },
-      })
-      const data = {
-        message: 'message',
-        start: 1,
-        end: 86400000,
-      }
-      const action = updateRowData(data as any)
-
-      const rsuCounts = {
-        '1.1.1.1': { road: 'road', count: 'count' },
-      }
-      const countList = [
-        {
-          key: '1.1.1.1',
-          rsu: '1.1.1.1',
-          road: 'road',
-          count: 'count',
-        },
-      ]
-      RsuApi.getRsuCounts = jest.fn().mockReturnValue(rsuCounts)
-      const resp = await action(dispatch, getState, undefined)
-      expect(resp.payload).toEqual({
-        countsMsgType: 'message',
-        startDate: 1,
-        endDate: 86400000,
-        warningMessage: false,
-        rsuCounts,
-        countList,
-      })
-      expect(RsuApi.getRsuCounts).toHaveBeenCalledWith('token', 'name', '', data)
-    })
-
-    it('returns and calls the api correctly default values', async () => {
-      const dispatch = jest.fn()
-      const getState = jest.fn().mockReturnValue({
-        user: {
-          value: {
-            authLoginData: { token: 'token' },
-            organization: { name: 'name' },
-          },
-        },
-        rsu: {
-          value: {
-            countsMsgType: 'message',
-            startDate: 1,
-            endDate: 86400002,
-          },
-        },
-      })
-      const data = {}
-      const action = updateRowData(data)
-
-      const rsuCounts = {
-        '1.1.1.1': { road: 'road', count: 'count' },
-      }
-      const countList = [
-        {
-          key: '1.1.1.1',
-          rsu: '1.1.1.1',
-          road: 'road',
-          count: 'count',
-        },
-      ]
-      RsuApi.getRsuCounts = jest.fn().mockReturnValue(rsuCounts)
-      const resp = await action(dispatch, getState, undefined)
-      expect(resp.payload).toEqual({
-        countsMsgType: 'message',
-        startDate: 1,
-        endDate: 86400002,
-        warningMessage: true,
-        rsuCounts,
-        countList,
-      })
-      expect(RsuApi.getRsuCounts).toHaveBeenCalledWith('token', 'name', '', {
-        message: 'message',
-        start: 1,
-        end: 86400002,
-      })
-    })
-
-    it('Updates the state correctly pending', async () => {
-      const messageLoading = false
-      const state = reducer(initialState, {
-        type: 'rsu/updateRowData/pending',
-      })
-
-      expect(state).toEqual({
-        ...initialState,
-        value: { ...initialState.value, messageLoading },
-      })
-    })
-
-    it('Updates the state correctly fulfilled', async () => {
-      const rsuCounts = { '1.1.1.1': { count: 5 } }
-      const countList = 'countList'
-      const heatMapData = {
-        type: 'FeatureCollection',
-        features: [
-          {
-            properties: {
-              ipv4_address: '1.1.1.1',
-            },
-          },
-          {
-            properties: {
-              ipv4_address: '1.1.1.2',
-            },
-          },
-        ],
-      } as any
-      const warningMessage = 'warningMessage'
-      const messageLoading = false
-      const countsMsgType = 'countsMsgType'
-      const startDate = 'startDate'
-      const endDate = 'endDate'
-      const payload = {
-        rsuCounts,
-        countList,
-        warningMessage,
-        countsMsgType,
-        startDate,
-        endDate,
-      }
-      const state = reducer(
-        {
-          ...initialState,
-          value: {
-            ...initialState.value,
-            heatMapData,
-          },
-        },
-        {
-          type: 'rsu/updateRowData/fulfilled',
-          payload: payload,
-        }
-      )
-
-      heatMapData['features'][0]['properties']['count'] = 5
-      heatMapData['features'][1]['properties']['count'] = 0
-
-      expect(state).toEqual({
-        ...initialState,
-        value: {
-          ...initialState.value,
-          rsuCounts,
-          countList,
-          heatMapData,
-          warningMessage,
-          messageLoading,
-          countsMsgType,
-          startDate,
-          endDate,
-        },
-      })
-    })
-
-    it('Updates the state correctly rejected', async () => {
-      const messageLoading = false
-      const state = reducer(initialState, {
-        type: 'rsu/updateRowData/rejected',
-      })
-
-      expect(state).toEqual({
-        ...initialState,
-        value: { ...initialState.value, messageLoading },
       })
     })
   })
@@ -967,15 +629,6 @@ describe('async thunks', () => {
   })
 })
 
-describe('functions', () => {
-  it('updateMessageType', async () => {
-    const dispatch = jest.fn()
-
-    updateMessageType('messageType' as any)(dispatch)
-    expect(dispatch).toHaveBeenCalledTimes(2)
-  })
-})
-
 describe('reducers', () => {
   const initialState: RootState['rsu'] = {
     loading: null,
@@ -983,18 +636,6 @@ describe('reducers', () => {
       selectedRsu: null,
       rsuData: null,
       rsuOnlineStatus: null,
-      rsuCounts: null,
-      countList: null,
-      currentSort: null,
-      startDate: null,
-      endDate: null,
-      heatMapData: {
-        features: [],
-        type: 'FeatureCollection',
-      },
-      messageLoading: null,
-      warningMessage: null,
-      countsMsgType: null,
       geoMsgType: null,
       rsuMapData: null,
       mapList: null,
@@ -1123,14 +764,6 @@ describe('reducers', () => {
     })
   })
 
-  it('changeCountsMsgType reducer updates state correctly', async () => {
-    const countsMsgType = 'countsMsgType'
-    expect(reducer(initialState, changeCountsMsgType(countsMsgType))).toEqual({
-      ...initialState,
-      value: { ...initialState.value, countsMsgType },
-    })
-  })
-
   it('setGeoMsgFilter reducer updates state correctly', async () => {
     const geoMsgFilter = true
     expect(reducer(initialState, setGeoMsgFilter(geoMsgFilter))).toEqual({
@@ -1178,14 +811,6 @@ describe('selectors', () => {
       },
       rsuData: 'rsuData',
       rsuOnlineStatus: 'rsuOnlineStatus',
-      rsuCounts: 'rsuCounts',
-      countList: 'countList',
-      currentSort: 'currentSort',
-      startDate: 'startDate',
-      endDate: 'endDate',
-      heatMapData: 'heatMapData',
-      messageLoading: 'messageLoading',
-      warningMessage: 'warningMessage',
       countsMsgType: 'countsMsgType',
       rsuMapData: 'rsuMapData',
       mapList: 'mapList',
@@ -1217,14 +842,6 @@ describe('selectors', () => {
     expect(selectRsuPrimaryRoute(rsuState)).toEqual('primary_route')
     expect(selectRsuData(rsuState)).toEqual('rsuData')
     expect(selectRsuOnlineStatus(rsuState)).toEqual('rsuOnlineStatus')
-    expect(selectRsuCounts(rsuState)).toEqual('rsuCounts')
-    expect(selectCountList(rsuState)).toEqual('countList')
-    expect(selectCurrentSort(rsuState)).toEqual('currentSort')
-    expect(selectStartDate(rsuState)).toEqual('startDate')
-    expect(selectEndDate(rsuState)).toEqual('endDate')
-    expect(selectMessageLoading(rsuState)).toEqual('messageLoading')
-    expect(selectWarningMessage(rsuState)).toEqual('warningMessage')
-    expect(selectMsgType(rsuState)).toEqual('countsMsgType')
     expect(selectRsuMapData(rsuState)).toEqual('rsuMapData')
     expect(selectMapList(rsuState)).toEqual('mapList')
     expect(selectMapDate(rsuState)).toEqual('mapDate')
@@ -1242,6 +859,5 @@ describe('selectors', () => {
     expect(selectSsmDisplay(rsuState)).toEqual('ssmDisplay')
     expect(selectSrmSsmList(rsuState)).toEqual('srmSsmList')
     expect(selectSelectedSrm(rsuState)).toEqual('selectedSrm')
-    expect(selectHeatMapData(rsuState)).toEqual('heatMapData')
   })
 })

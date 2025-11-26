@@ -28,7 +28,7 @@ export const syncTimeOffset = createAsyncThunk('timeSync/syncTimeOffset', async 
   let rtt = end - start // Calculate round-trip time
   console.debug('Time sync round trip time (unused):', rtt, 'ms')
   const data = await response.json()
-  const serverTime = new Date(data.dateTime + 'Z').getTime()
+  const serverTime = new Date(data.dateTime).getTime()
 
   const currentTime = Date.now()
   return serverTime - currentTime

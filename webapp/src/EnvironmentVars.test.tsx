@@ -2,7 +2,7 @@ import EnvironmentVars from './EnvironmentVars'
 
 it('returns message types', () => {
   process.env.REACT_APP_COUNT_MESSAGE_TYPES = 'type1, type2, type3'
-  const expectedMessageTypes = ['type1', 'type2', 'type3']
+  const expectedMessageTypes = ['TYPE1', 'TYPE2', 'TYPE3']
   expect(EnvironmentVars.getMessageTypes()).toEqual(expectedMessageTypes)
 })
 

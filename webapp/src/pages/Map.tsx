@@ -516,33 +516,36 @@ function MapPage() {
   const heatMapData = useMemo(() => {
     return {
       type: 'FeatureCollection' as 'FeatureCollection',
-      features: rsuData
-        .map(
-          (rsu) =>
-            ({
-              type: 'Feature',
-              geometry: {
-                type: 'Point',
-                coordinates: [rsu.geometry.coordinates[0], rsu.geometry.coordinates[1]],
-              },
-              properties: {
-                ipv4_address: rsu.properties.ipv4_address,
-                count: rsuCounts?.[rsu.properties.ipv4_address]?.messageTypeCounts?.[countsMsgType] ?? 0,
-              },
-            } as GeoJSON.Feature<GeoJSON.Geometry>)
-        )
-        .filter((feature) => feature.properties.count > 0),
+      features:
+        rsuData
+          ?.map(
+            (rsu) =>
+              ({
+                type: 'Feature',
+                geometry: {
+                  type: 'Point',
+                  coordinates: [rsu.geometry.coordinates[0], rsu.geometry.coordinates[1]],
+                },
+                properties: {
+                  ipv4_address: rsu.properties.ipv4_address,
+                  count: rsuCounts?.[rsu.properties.ipv4_address]?.messageTypeCounts?.[countsMsgType] ?? 0,
+                },
+              } as GeoJSON.Feature<GeoJSON.Geometry>)
+          )
+          ?.filter((feature) => feature.properties.count > 0) ?? [],
     }
   }, [rsuData, rsuCounts, countsMsgType])
 
   const rsuDataWithCounts = useMemo(() => {
-    return rsuData.map((rsu) => ({
-      ...rsu,
-      properties: {
-        ...rsu.properties,
-        counts: rsuCounts?.[rsu.properties.ipv4_address]?.messageTypeCounts ?? {},
-      },
-    }))
+    return (
+      rsuData?.map((rsu) => ({
+        ...rsu,
+        properties: {
+          ...rsu.properties,
+          counts: rsuCounts?.[rsu.properties.ipv4_address]?.messageTypeCounts ?? {},
+        },
+      })) ?? []
+    )
   }, [rsuData, rsuCounts])
 
   function dateChanged(e: Date, type: 'start' | 'end') {

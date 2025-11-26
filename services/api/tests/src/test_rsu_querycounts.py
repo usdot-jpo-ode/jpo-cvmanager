@@ -112,7 +112,6 @@ def test_query_rsu_counts_aggregated_success(mock_mongo):
     ]
 
     allowed_ips = {"192.168.0.1": "A1", "192.168.0.2": "A2"}
-    message_type = "BSM"
     start = "2022-01-01T00:00:00"
     end = "2023-01-01T00:00:00"
 
@@ -133,7 +132,6 @@ def test_query_rsu_counts_aggregated_failure(mock_logging, mock_mongo):
     mock_mongo.side_effect = Exception("Failed to connect")
 
     allowed_ips = ["192.168.0.1", "192.168.0.2"]
-    message_type = "TYPE_A"
     start = "2022-01-01T00:00:00"
     end = "2023-01-01T00:00:00"
 

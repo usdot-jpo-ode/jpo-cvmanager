@@ -1,7 +1,7 @@
 from unittest.mock import patch, MagicMock
 import pytest
 import api.src.rsu_querycounts as rsu_querycounts
-from api.src.rsu_querycounts import query_rsu_counts_mongo
+from api.src.rsu_querycounts import query_rsu_counts_aggregated
 import api.tests.data.rsu_querycounts_data as querycounts_data
 from api.tests.data import auth_data
 from werkzeug.exceptions import Forbidden
@@ -20,7 +20,7 @@ def test_options_request():
 
 @patch("api_environment.COUNTS_MSG_TYPES", ["BSM", "SSM", "SPAT"])
 @patch("api.src.rsu_querycounts.get_organization_rsus")
-@patch("api.src.rsu_querycounts.query_rsu_counts_mongo")
+@patch("api.src.rsu_querycounts.query_rsu_counts_aggregated")
 @patch(
     "api.src.rsu_querycounts.request",
     MagicMock(
@@ -98,7 +98,7 @@ def test_rsu_counts_get_organization_rsus_empty(mock_pgquery):
 
 ##################################### Test query_rsu_counts ###########################################
 @patch("api.src.rsu_querycounts.MongoClient")
-def test_query_rsu_counts_mongo_success(mock_mongo):
+def test_query_rsu_counts_aggregated_success(mock_mongo):
     mock_db = MagicMock()
     mock_collection = MagicMock()
     mock_mongo.return_value.__getitem__.return_value = mock_db
@@ -106,35 +106,36 @@ def test_query_rsu_counts_mongo_success(mock_mongo):
     mock_db.validate_collection.return_value = "valid"
 
     # Mock data that would be returned from MongoDB
-    mock_collection.find_one.return_value = {"count": 5}
+    mock_collection.aggregate.return_value = [
+        {"rsuIp": "192.168.0.1", "messageTypeCounts": {"BSM": 5, "SPAT": 20}},
+        {"rsuIp": "192.168.0.2", "messageTypeCounts": {"BSM": 1, "SPAT": 8}},
+    ]
 
     allowed_ips = {"192.168.0.1": "A1", "192.168.0.2": "A2"}
-    message_type = "BSM"
     start = "2022-01-01T00:00:00"
     end = "2023-01-01T00:00:00"
 
     expected_result = {
-        "192.168.0.1": {"road": "A1", "count": 5},
-        "192.168.0.2": {"road": "A2", "count": 5},
+        "192.168.0.1": {"road": "A1", "messageTypeCounts": {"BSM": 5, "SPAT": 20}},
+        "192.168.0.2": {"road": "A2", "messageTypeCounts": {"BSM": 1, "SPAT": 8}},
     }
 
-    result = query_rsu_counts_mongo(allowed_ips, message_type, start, end)
+    result = query_rsu_counts_aggregated(allowed_ips, start, end)
 
     assert result == expected_result
 
 
 @patch("api.src.rsu_querycounts.MongoClient")
 @patch("api.src.rsu_querycounts.logging")
-def test_query_rsu_counts_mongo_failure(mock_logging, mock_mongo):
+def test_query_rsu_counts_aggregated_failure(mock_logging, mock_mongo):
     # Mock the MongoDB connection to throw an exception
     mock_mongo.side_effect = Exception("Failed to connect")
 
     allowed_ips = ["192.168.0.1", "192.168.0.2"]
-    message_type = "TYPE_A"
     start = "2022-01-01T00:00:00"
     end = "2023-01-01T00:00:00"
 
     with pytest.raises(Forbidden) as exc_info:
-        query_rsu_counts_mongo(allowed_ips, message_type, start, end)
+        query_rsu_counts_aggregated(allowed_ips, start, end)
 
     assert str(exc_info.value) == "403 Forbidden: Failed to connect to Mongo"

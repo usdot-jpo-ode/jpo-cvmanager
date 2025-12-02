@@ -788,7 +788,7 @@ function MapPage() {
     },
     {
       id: 'msg-viewer-layer',
-      label: 'V2x Message Viewer',
+      label: 'V2X Message Viewer',
       type: 'symbol',
       tag: 'rsu',
     },

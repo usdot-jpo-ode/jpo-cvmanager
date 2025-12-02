@@ -10,3 +10,19 @@ h2 {
   padding-bottom: 2vh;
   font-family: 'museo-slab', sans-serif;
 }
+
+#help ul {
+    padding-left: 1.5rem;
+    margin-left: 0;
+    list-style-type: disc;
+}
+
+#help ul ul {
+    padding-left: 1.5rem;
+    list-style-type: circle;
+}
+
+
+#help li {
+    margin-bottom: 0.25rem;
+}

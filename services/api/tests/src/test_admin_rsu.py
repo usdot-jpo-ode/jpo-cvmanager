@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from werkzeug.exceptions import HTTPException
 from api.tests.data import auth_data
 from werkzeug.exceptions import BadRequest, InternalServerError
+from copy import deepcopy
 
 user_valid = auth_data.get_request_environ()
 
@@ -162,6 +163,27 @@ def test_get_rsu_data_none(mock_query_db):
     mock_query_db.assert_called_with(expected_query, params={"rsu_ip": "10.11.81.12"})
     assert actual_result == expected_rsu_data
 
+@patch("api.src.admin_rsu.pgquery.query_db")
+def test_get_rsu_data_filter_by_org(mock_query_db):
+    mock_query_db.return_value = admin_rsu_data.get_rsu_data_return
+
+    # Clone user_valid and assign org for this test
+    user_with_org = deepcopy(user_valid)
+    user_with_org.organization = "TestOrg"
+
+    admin_rsu.get_rsu_data("all", user_with_org, qualified_orgs=[])
+
+    called_query = mock_query_db.call_args[0][0]
+    assert "org.name = :user_org_name" in called_query
+
+@patch("api.src.admin_rsu.pgquery.query_db")
+def test_get_rsu_data_no_org_no_filter(mock_query_db):
+    mock_query_db.return_value = admin_rsu_data.get_rsu_data_return
+
+    admin_rsu.get_rsu_data("all", user_valid, qualified_orgs=[])
+
+    called_query = mock_query_db.call_args[0][0]
+    assert "org.name = :user_org_name" not in called_query
 
 # get_modify_rsu_data
 @patch("api.src.admin_rsu.get_rsu_data")

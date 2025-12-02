@@ -1,10 +1,9 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { selectToken } from '../../generalSlices/userSlice'
+import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
+import {selectOrganizationName, selectToken} from '../../generalSlices/userSlice'
 import EnvironmentVars from '../../EnvironmentVars'
 import apiHelper from '../../apis/api-helper'
-import { getRsuInfoOnly } from '../../generalSlices/rsuSlice'
-import { RootState } from '../../store'
-import { AdminEditRsuFormType } from '../adminEditRsu/AdminEditRsu'
+import {RootState} from '../../store'
+import {AdminEditRsuFormType} from '../adminEditRsu/AdminEditRsu'
 
 const initialState = {
   tableData: [] as AdminEditRsuFormType[],
@@ -21,17 +20,16 @@ const initialState = {
 
 export const updateTableData = createAsyncThunk(
   'adminRsuTab/updateTableData',
-  async (_, { getState, dispatch }) => {
+  async (_, { getState }) => {
     const currentState = getState() as RootState
     const token = selectToken(currentState)
-
-    dispatch(getRsuInfoOnly())
+    const organization = selectOrganizationName(currentState)
 
     const data = await apiHelper._getDataWithCodes({
       url: EnvironmentVars.adminRsu,
       token,
       query_params: { rsu_ip: 'all' },
-      additional_headers: { 'Content-Type': 'application/json' },
+      additional_headers: { 'Content-Type': 'application/json', Organization: organization },
       tag: 'rsu',
     })
 

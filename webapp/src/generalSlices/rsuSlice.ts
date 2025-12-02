@@ -81,15 +81,6 @@ export const getRsuData = createAsyncThunk(
   }
 )
 
-export const getRsuInfoOnly = createAsyncThunk('rsu/getRsuInfoOnly', async (_, { getState }) => {
-  const currentState = getState() as RootState
-  const token = selectToken(currentState)
-  const organization = selectOrganizationName(currentState)
-  const rsuInfo = await RsuApi.getRsuInfo(token, organization)
-  const rsuData = rsuInfo.rsuList
-  return rsuData
-})
-
 export const getRsuLastOnline = createAsyncThunk('rsu/getRsuLastOnline', async (rsu_ip: string, { getState }) => {
   const currentState = getState() as RootState
   const token = selectToken(currentState)
@@ -385,15 +376,6 @@ export const rsuSlice = createSlice({
         state.loading = false
       })
       .addCase(getRsuData.rejected, (state) => {
-        state.loading = false
-      })
-      .addCase(getRsuInfoOnly.pending, (state) => {
-        state.loading = true
-      })
-      .addCase(getRsuInfoOnly.fulfilled, (state) => {
-        state.loading = false
-      })
-      .addCase(getRsuInfoOnly.rejected, (state) => {
         state.loading = false
       })
       .addCase(getRsuLastOnline.pending, (state) => {

@@ -82,9 +82,9 @@ export const HaasAlertVisualization: React.FC<HaasAlertVisualizationProps> = ({
           position: 'absolute',
           right: '10px',
           top:
-            menuSelection.includes('V2x Message Viewer') && menuSelection.includes('Configure RSUs')
+            menuSelection.includes('V2X Message Viewer') && menuSelection.includes('Configure RSUs')
               ? '540px'
-              : menuSelection.includes('V2x Message Viewer')
+              : menuSelection.includes('V2X Message Viewer')
               ? '380px'
               : menuSelection.includes('Configure RSUs')
               ? '180px'

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import AdminAddRsu from '../adminAddRsu/AdminAddRsu'
 import AdminEditRsu, { AdminEditRsuFormType } from '../adminEditRsu/AdminEditRsu'
 import AdminTable from '../../components/AdminTable'
@@ -14,6 +14,7 @@ import {
   deleteRsu,
   setEditRsuRowData,
 } from './adminRsuTabSlice'
+import { selectOrganizationName } from '../../generalSlices/userSlice'
 import { clear, getRsuInfo } from '../adminEditRsu/adminEditRsuSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -31,6 +32,10 @@ const AdminRsuTab = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const navigate = useNavigate()
   const theme = useTheme()
+  const organization = useSelector(selectOrganizationName)
+  useEffect(() =>{
+    dispatch(updateTableData())
+  }, [organization, dispatch])
 
   const tableData = useSelector(selectTableData)
   const [columns] = useState([
@@ -100,7 +105,7 @@ const AdminRsuTab = () => {
       },
       position: 'toolbar',
       onClick: () => {
-        updateTableData()
+        dispatch(updateTableData())
       },
     },
     {

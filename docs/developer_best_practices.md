@@ -1,5 +1,54 @@
 # CV Manager Developer Best Practices
 
+## Managing Fork Synchronization
+
+The majority of the CV-Manager development is completed on forks. This process enables development within a controlled environment. One major consideration is how often to synchronize with the upstream repository. The current recommended approach is to develop features within a fork, and contribute/push sets of features to the upstream repository (in this case, USDOT).
+
+### Upstream ahead of current
+
+When changes exist on the upstream repository which are not present on the current repository, the "Sync Fork" button can be used to bring those changes into the downstream repository. This can show 3 different menus depending on the diff:
+
+#### No changes present
+
+<img src="pr_screenshots/sync_fork_no_changes.png" alt="Sync Fork: No Changes" style="max-width: 800px;">
+
+1. No actions necessary, fork is in sync with upstream
+
+#### Changes present, no conflicts
+
+<img src="pr_screenshots/sync_fork_update_branch.png" alt="Sync Fork: Update branch | Discard N commits" style="max-width: 800px;">
+
+- Changes can be merged without review
+- If you press "Update Branch", GitHub will merge the upstream commits into the current repository immediately, without creating a PR. This is the preferred approach
+- If you would like to create a PR instead, please see [Changes present, conflicts](#changes-present-conflicts)
+- WARNING: If you press "Discard N commits", all local commits not present on the upstream repository will be removed. This process is instant and without additional confirmation. See the steps below for completing this process safely
+
+        1. Create a copy of the current branch (henceforth assumed to be develop). The naming convention is "history/2025_q3" for a major release, or "history/2025_12_31" for date-based
+        2. Navigate back to the develop branch, hit "Sync fork", and hit "Discard N commits"
+        3. Clone the repository. If the repository is already cloned, checkout the develop branch (the one you discarded the commits on) and run the following command (swap out develop if the branch has a different name)
+
+        ```sh
+        git reset --hard origin/develop
+        ```
+
+        4. Copy the history branch to a new branch (named something like "develop-rebase-2025_12_31")
+        5. Rebase develop into your new branch
+        ```
+        git rebase develop
+        ```
+        6. Resolve merge conflicts
+        7. Create a PR to merge the new branch changes into the default branch
+
+#### Changes present, conflicts
+
+<img src="pr_screenshots/sync_fork_open_pr.png" alt="Sync Fork: Open pull request | Discard N commits" style="max-width: 800px;">
+
+- Github has detected that the upstream branch cannot be merged into the current branch without conflicts. The PR that it offers to create is from the current branch into the upstream repository, which is the opposite direction of what we want. We want to resolve the conflicts on our fork, then push up the cleaned up changes at a later date. See the next bullet for instructions on how to create a PR from the upstream branch to the current/default branch
+- To create a PR from the upstream repo to yours, fill in the following url:
+  - https://github.com/{your-organization or user}/{repo name}/compare/{default branch}...{upstream org name}:{repo name}:{default branch}
+  - Example: https://github.com/cdot-cv/jpo-cvmanager/compare/develop...usdot-jpo-ode:jpo-cvmanager:develop
+- See the section above for a description of the "Discard N commits" button function
+
 ## Pull Requests
 
 Pull requests should be kept to a manageable size, able to be reviewed within a few hours. Loose guidelines include ~30 files changed and ~2000 lines changed.

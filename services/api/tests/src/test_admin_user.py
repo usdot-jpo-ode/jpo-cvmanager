@@ -5,6 +5,7 @@ import api.tests.data.admin_user_data as admin_user_data
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from api.tests.data import auth_data
 from werkzeug.exceptions import BadRequest, HTTPException, InternalServerError
+from copy import deepcopy
 
 user_valid = auth_data.get_request_environ()
 
@@ -159,6 +160,36 @@ def test_get_user_data_none(mock_query_db):
         params=admin_user_data.expected_get_user_query_one_params,
     )
     assert actual_result == expected_result
+
+@patch("api.src.admin_user.pgquery.query_db")
+def test_get_user_data_filter_by_org(mock_query_db):
+    mock_query_db.return_value = admin_user_data.get_user_data_return
+
+    # Clone user_valid and assign org for this test
+    user_with_org = deepcopy(user_valid)
+    user_with_org.organization = "TestOrg"
+
+    admin_user.get_user_data(
+        "test@gmail.com",
+        user_with_org,
+        [],
+    )
+
+    called_query = mock_query_db.call_args[0][0]
+    assert "org.name = :user_org_name" in called_query
+
+@patch("api.src.admin_user.pgquery.query_db")
+def test_get_user_data_no_org_no_filter(mock_query_db):
+    mock_query_db.return_value = admin_user_data.get_user_data_return
+
+    admin_user.get_user_data(
+        "test@gmail.com",
+        user_valid,
+        [],
+    )
+
+    called_query = mock_query_db.call_args[0][0]
+    assert "org.name = :user_org_name" not in called_query
 
 
 # get_modify_user_data

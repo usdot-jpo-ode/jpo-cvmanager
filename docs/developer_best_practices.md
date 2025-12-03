@@ -51,11 +51,15 @@ When changes exist on the upstream repository which are not present on the curre
 
 ## Pull Requests
 
-Pull requests should be kept to a manageable size, able to be reviewed within a few hours. Loose guidelines include ~30 files changed and ~2000 lines changed.
+Pull requests should be kept to a manageable size, able to be reviewed within 1-2 hours. An ideal PR should be under 400 lines of code changed, with an upper limit of 1000 lines of code changed (using the guideline of 500 lines per hour). If a PR exceeds this size, consider breaking it up into multiple smaller PRs. Exceptions can be made for lines which are auto-generated.
+
+For more information on PR best practices, see [best-practices-for-peer-code-review](https://smartbear.com/learn/code-review/best-practices-for-peer-code-review)
+
+When creating a pull request, use the provided [pull request template](../pull_request_template.md). This ensures that all necessary information is provided for reviewers.
 
 ### Squash Merge
 
-All pull requests should be squash merged into develop and master. This keeps the root commit history clean, and reduces the repository size.
+All pull requests should be squash merged into develop. This ensures that we have a history of feature additions without the noise of intermediate commits.
 
 When making a squash merge, both a message and a description are included. The message should be concise and accurate (this is what is seen first when scrolling through previous commits). This should resemble the PR title.
 The extended description should describe important details about the feature including the distinct changes involved and the affected services. This should resemble the PR description.

@@ -375,44 +375,6 @@ Note that it is recommended to work with the Python API from a [virtual environm
    pip install -r services/requirements.txt
    ```
 
-#### Setting up a virtual environment with VSCode
-
-See [Visual Studio Code](https://code.visualstudio.com/docs/python/environments) documentation for information on how to set up a virtual environment with VS Code.
-
-#### Debugging Profile
-
-A debugging profile has been set up for use with VSCode to allow ease of debugging with this application. To use this profile, simply open the project in VSCode and select the "Debug" tab on the left side of the screen. Then, select the "Debug Solution" profile and click the green play button. This will spin up a postgresql instance as well as the keycloak auth solution within docker containers. Once running, this will also start the debugger and attach it to the running API container. You can then set breakpoints and step through the code as needed.
-
-For the "Debug Solution" to run properly on Windows 10/11 using WSL, the following must be configured:
-
-1.  Apply the docker compose to start the required components:
-
-```sh
-docker compose up -d
-```
-
-To run only the critical cvmanager components (no intersection services), use this command:
-
-```sh
-docker compose up -d cvmanager_api cvmanager_webapp cvmanager_postgres cvmanager_keycloak
-```
-
-2.  Access the website by going to http://localhost
-
-    ```
-      Default Username: test@gmail.com
-      Default Password: tester
-    ```
-
-3.  To access keycloak go to http://localhost:8084/
-
-    ```
-      Default Username: admin
-      Default Password: admin
-    ```
-
-    This should automatically redirect you to http://host.docker.internal:8084/. If it does not, navigate to that URL directly.
-
 ### Environment Variables
 
 <b>Required Variables</b>

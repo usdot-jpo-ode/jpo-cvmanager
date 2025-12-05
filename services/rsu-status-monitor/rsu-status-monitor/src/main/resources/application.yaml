@@ -1,0 +1,71 @@
+# RSU Status Monitor properties
+rsu-status-monitor:
+  kafka:
+    topics:
+      monitoring-status: 'topic.RmMonitoringStatusRecords'
+  snmp:
+    retries: ${RSU_STATUS_MONITOR_SNMP_RETRY:2} # Number of times to retry
+    timeout: ${RSU_STATUS_MONITOR_SNMP_TIMEOUT_MS:5000} # Number of milliseconds before timeout
+    port: ${RSU_STATUS_MONITOR_SNMP_PORT:161} # Port to use for SNMP Operations
+
+logging:
+  level:
+    root: WARN
+    org.springframework.kafka: WARN
+    org.springframework.web: WARN
+    guru.springframework.controllers: WARN
+    us.dot.its.jpo.rsustatusmonitor: ${LOGGING_LEVEL:INFO}
+    org.apache.kafka: WARN
+
+# microservice actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  server:
+    port: 8082
+
+# Spring boot properties
+spring:
+  profiles:
+    default: 'none'
+    active: ${SPRING_PROFILES_ACTIVE:default}
+  # Postgres Configuration
+  datasource:
+    url: ${POSTGRES_SERVER_URL:jdbc:postgresql://localhost:5432}/${POSTGRES_DB:postgres}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+  # Kafka Configuration
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: rsu-status-monitor
+      fetch-min-size: 1
+      fetch-max-wait: 10
+      max-poll-records: 100
+      auto-offset-reset: latest
+      enable-auto-commit: true
+      auto-commit-interval: 50
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      heartbeat-interval: 3000
+    listener:
+      ack-mode: BATCH
+      poll-timeout: 100
+      idle-event-interval: 100
+      idle-between-polls: 0
+      concurrency: ${KAFKA_CONCURRENCY:1}
+  config:
+    import:
+      - classpath:application-confluent.yaml
+
+enable:
+  monitoring: ${RSU_STATUS_MONITOR_ENABLE_MONITORING:true}
+
+monitor:
+  interval: ${INTERSECTION_API_MONITOR_INTERVAL:300000} # Number of Milliseconds between RSU Status Checks

@@ -486,6 +486,19 @@ git config --global core.autocrlf false
    This indicates an issue within the cvmanager_api service, see the docker logs for more information. Common issues include:
    i. Unable to connect to PostgreSQL server (see postgres logs)
    ii. Keycloak authentication error (see keycloak logs)
+2. The webapp needs to be re-build after each environment variable change
+    This is due to the fact that environment variables are injected into the Docker image at *BUILD* time, not runtime. 
+```sh
+docker compose up --build -d cvmanager_webapp
+```
+3. The Keycloak Hostname needs to be accessible from docker and a browser
+    Keycloak needs to be accessible other docker containers (cvmanager_api, intersection_api) as well as the webapp (running in a browser). This means that using "localhost" will not work (not accessible from other docker containers), and using "", the docker container network name, will not work either (not accessible in the browser since it is outside of the docker network). This is why the suggested approach is to set your docker host IP address as your keycloak hostname. Keycloak will redirect any incomming connection to the hostname, therefore you cannot set the hostname to "localhost" and have docker services access it at cvmanager_keycloak:8080. 
+4. The Keycloak volume must be cleared if crucial parameters are changed
+    If the keycloak admin user credentials, client id(s), client secret, or webapp endpoint are changed by environment variable, those changes will not be reflected in keycloak unless the volume is cleared and re-built. This can be done by:
+```sh
+docker compose down -v
+docker compose up -d
+```
 
 ## License Information
 

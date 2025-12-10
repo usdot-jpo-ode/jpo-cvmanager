@@ -81,16 +81,16 @@ Ensure there are no pending changes. If there are any changes present, commit/st
 git reset --hard origin/develop
 ```
 
-The recommended approach for synchronizing feature branches after a squash is a [rebase](https://git-scm.com/book/ms/v2/Git-Branching-Rebasing). This will _remove all of the un-squashed commits_, then move through the new commits re-applying them to the updated history. Each step can have it's own merge conflicts, which can be extremely burdensome for large offsets.
+The recommended approach for synchronizing feature branches after a squash is a [merge](https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging). This will pull commits from the source branch into the feature branch, _retaining the un-squashed commits_, while presenting all merge conflicts in 1 wave. These additional un-squashed commits will be removed on the next squash merge into develop.
+
+```sh
+git checkout feature-branch
+git merge origin/develop
+```
+
+If removing the un-squashed commits is a priority, consider using a [rebase](https://git-scm.com/book/ms/v2/Git-Branching-Rebasing). This will _remove all of the un-squashed commits_, then go through the new commits and re-apply them to the updated history. Each step can have it's own merge conflicts, which can be extremely burdensome for large offsets, and each of the new commits will be re-applied, which will change their commit hashes. This can be a risky process, so ensure that the feature branch is backed up before proceeding.
 
 ```sh
 git checkout feature-branch
 git rebase develop
-```
-
-A secondary approach which can reduce conflicts is a [merge](https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging). This will pull commits from the source branch into the feature branch, _retaining the un-squashed commits_, while presenting all merge conflicts in 1 wave.
-
-```sh
-git checkout feature-branch
-git merge develop
 ```

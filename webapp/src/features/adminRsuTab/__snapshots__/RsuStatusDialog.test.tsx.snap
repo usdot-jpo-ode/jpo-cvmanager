@@ -1,0 +1,234 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should take a snapshot 1`] = `
+<body
+  style="padding-right: 1024px; overflow: hidden;"
+>
+  <div
+    aria-hidden="true"
+  />
+  <div
+    class="MuiDialog-root MuiModal-root css-mocked-MuiModal-root-MuiDialog-root"
+    role="presentation"
+  >
+    <div
+      aria-hidden="true"
+      class="MuiBackdrop-root MuiModal-backdrop css-mocked-MuiBackdrop-root-MuiDialog-backdrop"
+      style="opacity: 1; webkit-transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms; transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;"
+    />
+    <div
+      data-testid="sentinelStart"
+      tabindex="0"
+    />
+    <div
+      class="MuiDialog-container MuiDialog-scrollPaper css-mocked-MuiDialog-container"
+      role="presentation"
+      style="opacity: 1; webkit-transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms; transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;"
+      tabindex="-1"
+    >
+      <div
+        aria-labelledby="mui-1"
+        aria-modal="true"
+        class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation24 MuiDialog-paper MuiDialog-paperScrollPaper MuiDialog-paperWidthXl MuiDialog-paperFullWidth css-mocked-MuiPaper-root-MuiDialog-paper"
+        role="dialog"
+        style="--Paper-shadow: 0px 11px 15px -7px rgba(0,0,0,0.2),0px 24px 38px 3px rgba(0,0,0,0.14),0px 9px 46px 8px rgba(0,0,0,0.12);"
+      >
+        <h2
+          class="MuiTypography-root MuiTypography-h6 MuiDialogTitle-root css-mocked-MuiTypography-root-MuiDialogTitle-root"
+          id="mui-1"
+        >
+          Status of RSU at 10.0.0.180
+          <button
+            class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-mocked-MuiButtonBase-root-MuiIconButton-root"
+            style="position: absolute; right: 8px; top: 8px;"
+            tabindex="0"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+              data-testid="CloseIcon"
+              focusable="false"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+              />
+            </svg>
+          </button>
+        </h2>
+        <div
+          class="MuiDialogContent-root css-mocked-MuiDialogContent-root"
+        >
+          <h6
+            class="MuiTypography-root MuiTypography-subtitle2 css-mocked-MuiTypography-root"
+          >
+            No RSU status data.
+          </h6>
+          <h6
+            class="MuiTypography-root MuiTypography-subtitle2 css-mocked-MuiTypography-root"
+          >
+            No RSU reboot data.
+          </h6>
+          <div
+            style="display: flex; flex-direction: column; gap: 16px; margin: 24px 0px 16px;"
+          >
+            <div
+              style="display: flex; gap: 0px; margin: 0px 0px;"
+            >
+              <div
+                style="display: flex; flex-direction: column; flex: 1;"
+              >
+                <h6
+                  class="MuiTypography-root MuiTypography-subtitle2 css-mocked-MuiTypography-root"
+                >
+                  Start Date
+                </h6>
+                <div
+                  class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-mocked-MuiFormControl-root-MuiTextField-root"
+                >
+                  <div
+                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl css-mocked-MuiInputBase-root-MuiOutlinedInput-root"
+                  >
+                    <input
+                      class="MuiInputBase-input MuiOutlinedInput-input css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
+                      id="mui-2"
+                      type="date"
+                      value="2025-12-05"
+                    />
+                    <fieldset
+                      aria-hidden="true"
+                      class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
+                    >
+                      <legend
+                        class="css-w4cd9x"
+                      >
+                        <span
+                          class="notranslate"
+                        >
+                          ​
+                        </span>
+                      </legend>
+                    </fieldset>
+                  </div>
+                </div>
+              </div>
+              <div
+                style="display: flex; flex-direction: column; flex: 1;"
+              >
+                <h6
+                  class="MuiTypography-root MuiTypography-subtitle2 css-mocked-MuiTypography-root"
+                >
+                  End Date
+                </h6>
+                <div
+                  class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-mocked-MuiFormControl-root-MuiTextField-root"
+                >
+                  <div
+                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl css-mocked-MuiInputBase-root-MuiOutlinedInput-root"
+                  >
+                    <input
+                      class="MuiInputBase-input MuiOutlinedInput-input css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
+                      id="mui-3"
+                      type="date"
+                      value="2025-12-05"
+                    />
+                    <fieldset
+                      aria-hidden="true"
+                      class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
+                    >
+                      <legend
+                        class="css-w4cd9x"
+                      >
+                        <span
+                          class="notranslate"
+                        >
+                          ​
+                        </span>
+                      </legend>
+                    </fieldset>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              style="display: flex; align-items: center; gap: 16px; margin: 10px 0px;"
+            >
+              <div
+                style="display: flex; flex-direction: column; max-width: 150px;"
+              >
+                <h6
+                  class="MuiTypography-root MuiTypography-subtitle2 css-mocked-MuiTypography-root"
+                >
+                  Interval
+                </h6>
+                <div
+                  class="MuiFormControl-root css-mocked-MuiFormControl-root"
+                >
+                  <div
+                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl css-mocked-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
+                  >
+                    <div
+                      aria-controls="mui-4"
+                      aria-expanded="false"
+                      aria-haspopup="listbox"
+                      class="MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input css-mocked-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input"
+                      role="combobox"
+                      tabindex="0"
+                    >
+                      5 minutes
+                    </div>
+                    <input
+                      aria-hidden="true"
+                      class="MuiSelect-nativeInput css-mocked-MuiSelect-nativeInput"
+                      tabindex="-1"
+                      value="5"
+                    />
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-mocked-MuiSvgIcon-root-MuiSelect-icon"
+                      data-testid="ArrowDropDownIcon"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5z"
+                      />
+                    </svg>
+                    <fieldset
+                      aria-hidden="true"
+                      class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
+                    >
+                      <legend
+                        class="css-w4cd9x"
+                      >
+                        <span
+                          class="notranslate"
+                        >
+                          ​
+                        </span>
+                      </legend>
+                    </fieldset>
+                  </div>
+                </div>
+              </div>
+              <button
+                class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
+                style="padding: 10px; font-size: 16px;"
+                tabindex="0"
+                type="button"
+              >
+                Generate
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      data-testid="sentinelEnd"
+      tabindex="0"
+    />
+  </div>
+</body>
+`;

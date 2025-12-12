@@ -990,7 +990,7 @@ exports[`snapshot bsmData clicked 1`] = `
                       class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl css-mocked-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
                     >
                       <div
-                        aria-controls="mui-3"
+                        aria-controls="mui-4"
                         aria-expanded="false"
                         aria-haspopup="listbox"
                         aria-labelledby="vendor"
@@ -1057,7 +1057,7 @@ exports[`snapshot bsmData clicked 1`] = `
                           <input
                             checked=""
                             class="PrivateSwitchBase-input css-j8yymo"
-                            name="mui-4"
+                            name="mui-5"
                             type="radio"
                             value="online"
                           />
@@ -1102,7 +1102,7 @@ exports[`snapshot bsmData clicked 1`] = `
                         >
                           <input
                             class="PrivateSwitchBase-input css-j8yymo"
-                            name="mui-4"
+                            name="mui-5"
                             type="radio"
                             value="scms"
                           />

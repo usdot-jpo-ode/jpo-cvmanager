@@ -235,7 +235,9 @@ const AdminAddRsu = () => {
             <Grid2 size={6}>
               <Form.Group controlId="primary_route">
                 <FormControl fullWidth margin="normal">
-                  <InputLabel htmlFor="primary_route">Primary Route</InputLabel>
+                  <InputLabel htmlFor="primary_route" required>
+                    Primary Route
+                  </InputLabel>
                   <Select
                     id="primary_route"
                     label="Primary Route"
@@ -299,7 +301,9 @@ const AdminAddRsu = () => {
             <Grid2 size={5}>
               <Form.Group controlId="model">
                 <FormControl fullWidth margin="normal">
-                  <InputLabel htmlFor="model">RSU Model</InputLabel>
+                  <InputLabel htmlFor="model" required>
+                    RSU Model
+                  </InputLabel>
                   <Select
                     id="model"
                     label="RSU Model"
@@ -349,7 +353,9 @@ const AdminAddRsu = () => {
 
           <Form.Group controlId="ssh_credential_group">
             <FormControl fullWidth margin="normal">
-              <InputLabel htmlFor="ssh_credential_group">SSH Credential Group</InputLabel>
+              <InputLabel htmlFor="ssh_credential_group" required>
+                SSH Credential Group
+              </InputLabel>
               <Select
                 id="ssh_credential_group"
                 label="SSH Credential Group"
@@ -378,12 +384,15 @@ const AdminAddRsu = () => {
             <Grid2 size={6}>
               <Form.Group controlId="snmp_credential_group">
                 <FormControl fullWidth margin="normal">
-                  <InputLabel htmlFor="snmp_credential_group">SNMP Credential Group</InputLabel>
+                  <InputLabel htmlFor="snmp_credential_group" required>
+                    SNMP Credential Group
+                  </InputLabel>
                   <Select
                     id="snmp_credential_group"
                     label="SNMP Credential Group"
                     value={selectedSnmpGroup}
                     defaultValue={selectedSnmpGroup}
+                    required
                     onChange={(event) => {
                       const selectedGroup = event.target.value as string
                       dispatch(updateSelectedSnmpGroup(selectedGroup))
@@ -405,7 +414,9 @@ const AdminAddRsu = () => {
             <Grid2 size={6}>
               <Form.Group controlId="snmp_version_group">
                 <FormControl fullWidth margin="normal">
-                  <InputLabel htmlFor="snmp_version_group">SNMP Protocol</InputLabel>
+                  <InputLabel htmlFor="snmp_version_group" required>
+                    SNMP Protocol
+                  </InputLabel>
                   <Select
                     id="snmp_version_group"
                     label="SNMP Protocol"
@@ -433,7 +444,9 @@ const AdminAddRsu = () => {
           </Grid2>
           <Form.Group controlId="organizations">
             <FormControl fullWidth margin="normal">
-              <InputLabel htmlFor="organizations">Organizations</InputLabel>
+              <InputLabel htmlFor="organizations" required>
+                Organizations
+              </InputLabel>
               <Select
                 id="organizations"
                 label="Organizations"

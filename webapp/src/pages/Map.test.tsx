@@ -49,6 +49,7 @@ it('snapshot bsmCoordinates wzdx', () => {
         ],
       },
     },
+    user: { value: { authLoginData: { token: 'testToken' } } },
   } as RootState
   const { container } = render(
     <ThemeProvider theme={testTheme}>
@@ -96,6 +97,7 @@ it('snapshot bsmData clicked', () => {
         addConfigPoint: false,
       },
     },
+    user: { value: { authLoginData: { token: 'testToken' } } },
   } as RootState
   const { container } = render(
     <ThemeProvider theme={testTheme}>

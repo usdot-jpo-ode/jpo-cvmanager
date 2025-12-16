@@ -816,7 +816,7 @@ function MapPage() {
           type: 'exponential',
           stops: heatmapStops,
         },
-        'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 0, 0, 9, 1, 10, 2, 11, 3, 12, 4],
+        'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 0, 0, 9, 1, 10, 2],
         'heatmap-color': [
           'interpolate',
           ['linear'],

@@ -796,7 +796,7 @@ function MapPage() {
     setExpandedLayers((prev) => (prev.includes(layerId) ? prev.filter((id) => id !== layerId) : [...prev, layerId]))
   }
 
-  const MAP_LAYERS = {
+  const MAP_LAYERS: Record<string, MapLayer> = {
     RSU: {
       id: 'rsu-layer',
       label: 'RSU Viewer',
@@ -880,8 +880,6 @@ function MapPage() {
     },
   }
 
-  const layers: MapLayer[] = Object.values(MAP_LAYERS)
-
   const Legend = () => {
     const toggleLayer = (id: string) => {
       dispatch(toggleLayerActive(id))
@@ -924,7 +922,7 @@ function MapPage() {
 
     return (
       <FormGroup>
-        {layers
+        {Object.values(MAP_LAYERS)
           .filter((layer) => evaluateFeatureFlags(layer.tag))
           .map((layer) => (
             <div key={layer.id}>

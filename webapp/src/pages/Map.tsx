@@ -796,14 +796,14 @@ function MapPage() {
     setExpandedLayers((prev) => (prev.includes(layerId) ? prev.filter((id) => id !== layerId) : [...prev, layerId]))
   }
 
-  const layers: MapLayer[] = [
-    {
+  const MAP_LAYERS = {
+    RSU: {
       id: 'rsu-layer',
       label: 'RSU Viewer',
       type: 'symbol',
       tag: 'rsu',
     },
-    {
+    HEATMAP: {
       id: 'heatmap-layer',
       label: 'Heatmap',
       type: 'heatmap',
@@ -838,19 +838,19 @@ function MapPage() {
       },
       tag: 'rsu',
     },
-    {
+    HEATMAP_CLUSTER: {
       id: 'heatmap-cluster',
       label: 'Heatmap Cluster',
       type: 'circle',
       tag: 'rsu',
     },
-    {
+    MSG_VIEWER: {
       id: 'msg-viewer-layer',
       label: 'V2X Message Viewer',
       type: 'symbol',
       tag: 'rsu',
     },
-    {
+    WZDX: {
       id: 'wzdx-layer',
       label: 'WZDx Viewer',
       type: 'line',
@@ -860,25 +860,27 @@ function MapPage() {
         'line-width': 8,
       },
     },
-    {
+    INTERSECTION: {
       id: 'intersection-layer',
       label: 'Intersections',
       type: 'symbol',
       tag: 'intersection',
     },
-    {
+    MOOVE_AI: {
       id: 'moove-ai-layer',
       label: 'Moove AI Viewer',
       type: 'line',
       tag: 'mooveai',
     },
-    {
+    HAAS_ALERT: {
       id: 'haas-alert-layer',
       label: 'HAAS Alert Viewer',
       type: 'circle',
       tag: 'haas',
     },
-  ]
+  }
+
+  const layers: MapLayer[] = Object.values(MAP_LAYERS)
 
   const Legend = () => {
     const toggleLayer = (id: string) => {
@@ -1261,13 +1263,13 @@ function MapPage() {
           {activeLayers.includes('rsu-layer') && (
             <div>
               {configCoordinates.length >= 1 ? (
-                <Source id={layers[0].id + '-fill'} type="geojson" data={configPolygonSource}>
+                <Source id={LAYER_IDS.RSU + '-fill'} type="geojson" data={configPolygonSource}>
                   <Layer {...getConfigOutlineLayer(addConfigPoint)} />
                   <Layer {...configFillLayer} />
                 </Source>
               ) : null}
               {addConfigPoint && (
-                <Source id={layers[0].id + '-polygon-points'} type="geojson" data={configPolygonPointSource}>
+                <Source id={LAYER_IDS.RSU + '-polygon-points'} type="geojson" data={configPolygonPointSource}>
                   <Layer {...configPointLayer} />
                 </Source>
               )}
@@ -1326,13 +1328,13 @@ function MapPage() {
               ]
           )}
           {activeLayers.includes('heatmap-layer') && (
-            <Source id={layers[4].id} type="geojson" data={heatMapData}>
-              <Layer {...layers[4]} />
+            <Source id={MAP_LAYERS.HEATMAP.id} type="geojson" data={heatMapData}>
+              <Layer {...MAP_LAYERS.HEATMAP} />
             </Source>
           )}
           {activeLayers.includes('heatmap-cluster') && (
             <Source
-              id="heatmap-cluster"
+              id={MAP_LAYERS.HEATMAP_CLUSTER.id}
               type="geojson"
               data={heatMapData}
               cluster={true}
@@ -1406,18 +1408,18 @@ function MapPage() {
           {activeLayers.includes('msg-viewer-layer') && (
             <div>
               {geoMsgCoordinates.length >= 1 ? (
-                <Source id={layers[2].id + '-fill'} type="geojson" data={geoMsgPolygonSource}>
+                <Source id={MAP_LAYERS.MSG_VIEWER.id + '-fill'} type="geojson" data={geoMsgPolygonSource}>
                   <Layer {...getGeoMsgOutlineLayer(addGeoMsgPoint)} />
                   <Layer {...geoMsgFillLayer} />
                 </Source>
               ) : null}
               {addGeoMsgPoint && (
-                <Source id={layers[2].id + '-polygon-points'} type="geojson" data={geoMsgPolygonPointSource}>
+                <Source id={MAP_LAYERS.MSG_VIEWER.id + '-polygon-points'} type="geojson" data={geoMsgPolygonPointSource}>
                   <Layer {...geoMsgPolygonPointLayer} />
                 </Source>
               )}
               {filter && (
-                <Source id={layers[2].id + '-geo-msg-points'} type="geojson" data={geoMsgPointSource}>
+                <Source id={MAP_LAYERS.MSG_VIEWER.id + '-geo-msg-points'} type="geojson" data={geoMsgPointSource}>
                   <Layer {...geoMsgPointLayer} />
                 </Source>
               )}
@@ -1425,8 +1427,8 @@ function MapPage() {
           )}
           {activeLayers.includes('wzdx-layer') && (
             <div>
-              <Source id={layers[3].id} type="geojson" data={wzdxData}>
-                <Layer {...layers[3]} />
+              <Source id={MAP_LAYERS.WZDX.id} type="geojson" data={wzdxData}>
+                <Layer {...MAP_LAYERS.WZDX} />
               </Source>
               {wzdxMarkers}
             </div>
@@ -1494,18 +1496,18 @@ function MapPage() {
           {activeLayers.includes('moove-ai-layer') && (
             <div>
               {mooveAiCoordinates.length >= 1 ? (
-                <Source id={layers[4].id + '-fill'} type="geojson" data={mooveAiPolygonSource}>
+                <Source id={MAP_LAYERS.MOOVE_AI.id + '-fill'} type="geojson" data={mooveAiPolygonSource}>
                   <Layer {...getMooveAiDataOutlineLayer(addMooveAiPoint)} />
                   <Layer {...mooveAiDataFillLayer} />
                 </Source>
               ) : null}
               {addMooveAiPoint && (
-                <Source id={layers[4].id + '-polygon-points'} type="geojson" data={mooveAiPolygonPointSource}>
+                <Source id={MAP_LAYERS.MOOVE_AI.id + '-polygon-points'} type="geojson" data={mooveAiPolygonPointSource}>
                   <Layer {...mooveAiDataPolygonPointLayer} />
                 </Source>
               )}
               {mooveAiFilter && (
-                <Source id={layers[4].id + '-feature-lines'} type="geojson" data={mooveAiData}>
+                <Source id={MAP_LAYERS.MOOVE_AI.id + '-feature-lines'} type="geojson" data={mooveAiData}>
                   <Layer {...mooveAiDataLineLayer} />
                 </Source>
               )}

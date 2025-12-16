@@ -48,7 +48,7 @@ git submodule update --init --recursive
 4. Run the following command to start the CV Manager:
 
 ```sh
-docker-compose up -d
+docker compose up -d
 ```
 
 5. Access the CV Manager webapp at [http://localhost:3000](http://localhost:3000) in your web browser.
@@ -269,11 +269,12 @@ The following steps are intended to help get a new user up and running the JPO C
 3.  Create a copy of the sample.env named ".env" and refer to the Environmental variables section below for more information on each variable.
     1. Make sure at least the DOCKER_HOST_IP, MAVEN_GITHUB_TOKEN, and MAPBOX_TOKEN are set for this.
     2. For other services or different configuration, please make a copy of the sample-full.env. Some of these variables, delineated by sections, pertain to the [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor), [jpo-geojsonconverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter), and [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode). Please see the documentation provided for these projects when setting these variables.
-4.  The CV Manager has four components that need to be containerized and deployed: the API, the PostgreSQL database, Keycloak, and the webapp.
+4.  The CV Manager has four core components that need to be built and run: the API, the PostgreSQL database, Keycloak, and the webapp. Ensure that both of the following profiles are specified in the COMPOSE_PROFILES variable of your .env file:
+    - basic: brings up the API, PostgreSQL, and Keycloak
+    - webapp: brings up the CV-Manager webapp component
+    - intersection: Optional, brings up the Intersection API and enables visualization/management of connected intersections
 
-    - If you are looking to deploy the CV Manager locally, you can simply run the docker-compose, make sure to fill out the .env file to ensure it launches properly
-
-5.  Apply the docker compose to start the required components:
+5. Use the docker compose to start the required components:
 
     ```sh
     docker compose up -d

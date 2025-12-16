@@ -1350,7 +1350,7 @@ function MapPage() {
                 paint={{
                   'circle-color': ['interpolate', ['linear'], ['get', 'sum_count'], ...clusterColorStops.flat()],
                   'circle-radius': ['interpolate', ['linear'], ['get', 'sum_count'], ...clusterRadiusStops.flat()],
-                  'circle-stroke-width': 2,
+                  'circle-stroke-width': 3,
                   'circle-stroke-color': '#000',
                 }}
               />
@@ -1378,8 +1378,8 @@ function MapPage() {
                 paint={{
                   'circle-radius': 20,
                   'circle-color': ['interpolate', ['linear'], ['get', 'count'], ...clusterColorStops.flat()],
-                  'circle-stroke-width': 2,
-                  'circle-stroke-color': '#000',
+                  'circle-stroke-width': 3,
+                  'circle-stroke-color': '#ffffff',
                   'circle-opacity': 0.8,
                 }}
               />
@@ -1412,7 +1412,11 @@ function MapPage() {
                 </Source>
               ) : null}
               {addGeoMsgPoint && (
-                <Source id={MAP_LAYERS.MSG_VIEWER.id + '-polygon-points'} type="geojson" data={geoMsgPolygonPointSource}>
+                <Source
+                  id={MAP_LAYERS.MSG_VIEWER.id + '-polygon-points'}
+                  type="geojson"
+                  data={geoMsgPolygonPointSource}
+                >
                   <Layer {...geoMsgPolygonPointLayer} />
                 </Source>
               )}

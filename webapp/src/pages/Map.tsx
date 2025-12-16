@@ -108,7 +108,16 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 import { headerTabHeight } from '../styles/index'
-import { selectActiveLayers, selectViewState, setMapViewState, toggleLayerActive } from './mapSlice'
+import {
+  getClusterColorStops,
+  getClusterLabelSizeStops,
+  getClusterRadiusStops,
+  getHeatmapCountsStops,
+  selectActiveLayers,
+  selectViewState,
+  setMapViewState,
+  toggleLayerActive,
+} from './mapSlice'
 import {
   selectCountsEndDate,
   selectCountsMsgType,
@@ -609,6 +618,22 @@ function MapPage() {
     if (selectedWZDxMarkerIndex !== null) setSelectedWZDxMarker(wzdxMarkers[selectedWZDxMarkerIndex])
   }, [selectedWZDxMarkerIndex, wzdxMarkers])
 
+  const heatmapStops = useMemo(() => {
+    return getHeatmapCountsStops(countsMsgType, heatMapData)
+  }, [countsMsgType, heatMapData])
+
+  const clusterColorStops = useMemo(() => {
+    return getClusterColorStops(countsMsgType, heatMapData)
+  }, [countsMsgType, heatMapData])
+
+  const clusterRadiusStops = useMemo(() => {
+    return getClusterRadiusStops(countsMsgType, heatMapData)
+  }, [countsMsgType, heatMapData])
+
+  const clusterLabelSizeStops = useMemo(() => {
+    return getClusterLabelSizeStops(countsMsgType, heatMapData)
+  }, [countsMsgType, heatMapData])
+
   useEffect(() => {
     function createPopupTable(data: Array<Array<string>>) {
       const rows = []
@@ -736,18 +761,6 @@ function MapPage() {
     setSelectedWZDxMarkerIndex(null)
   }
 
-  function getStops() {
-    // populate tmp array with rsuCounts to get max count value
-    const max = Math.max(...heatMapData.features.map((f) => f.properties.count as number))
-    const stopsArray = [[0, 0]]
-    let weight = 0.5
-    for (let i = 1; i < max; i += 500) {
-      stopsArray.push([i, weight])
-      weight += 0.25
-    }
-    return stopsArray
-  }
-
   const isOnline = () => {
     return rsuIpv4 in rsuOnlineStatus && Object.prototype.hasOwnProperty.call(rsuOnlineStatus[rsuIpv4], 'last_online')
       ? rsuOnlineStatus[rsuIpv4].last_online
@@ -801,7 +814,7 @@ function MapPage() {
         'heatmap-weight': {
           property: 'count',
           type: 'exponential',
-          stops: getStops(),
+          stops: heatmapStops,
         },
         'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 0, 0, 10, 1, 13, 2],
         'heatmap-color': [
@@ -1335,46 +1348,8 @@ function MapPage() {
                 type="circle"
                 filter={['has', 'point_count']}
                 paint={{
-                  'circle-color': [
-                    'interpolate',
-                    ['linear'],
-                    ['get', 'sum_count'],
-                    0,
-                    '#ffffcc', // Light yellow (low)
-                    1000,
-                    '#ffeda0',
-                    2500,
-                    '#fed976',
-                    5000,
-                    '#feb24c',
-                    7500,
-                    '#fd8d3c',
-                    10000,
-                    '#fc4e2a', // Orange-red (high)
-                    15000,
-                    '#e31a1c',
-                    20000,
-                    '#bd0026', // Deep red (very high)
-                    25000,
-                    '#800026', // Dark red (extreme)
-                  ],
-                  'circle-radius': [
-                    'interpolate',
-                    ['linear'],
-                    ['get', 'sum_count'],
-                    0,
-                    0, // Min count = 10px radius
-                    1000,
-                    20, // 1000 messages = 20px
-                    5000,
-                    22, // 5000 messages = 35px
-                    10000,
-                    25, // 10000 messages = 50px
-                    50000,
-                    30, // 10000 messages = 50px
-                    100000,
-                    35, // 25000+ messages = 70px
-                  ],
+                  'circle-color': ['interpolate', ['linear'], ['get', 'sum_count'], ...clusterColorStops.flat()],
+                  'circle-radius': ['interpolate', ['linear'], ['get', 'sum_count'], ...clusterRadiusStops.flat()],
                   'circle-stroke-width': 2,
                   'circle-stroke-color': '#000',
                 }}
@@ -1402,29 +1377,7 @@ function MapPage() {
                 filter={['!', ['has', 'point_count']]}
                 paint={{
                   'circle-radius': 20,
-                  'circle-color': [
-                    'interpolate',
-                    ['linear'],
-                    ['get', 'count'],
-                    0,
-                    '#ffffcc', // Light yellow (low)
-                    1000,
-                    '#ffeda0',
-                    2500,
-                    '#fed976',
-                    5000,
-                    '#feb24c',
-                    7500,
-                    '#fd8d3c',
-                    10000,
-                    '#fc4e2a', // Orange-red (high)
-                    15000,
-                    '#e31a1c',
-                    20000,
-                    '#bd0026', // Deep red (very high)
-                    25000,
-                    '#800026', // Dark red (extreme)
-                  ],
+                  'circle-color': ['interpolate', ['linear'], ['get', 'count'], ...clusterColorStops.flat()],
                   'circle-stroke-width': 2,
                   'circle-stroke-color': '#000',
                   'circle-opacity': 0.8,
@@ -1438,7 +1391,7 @@ function MapPage() {
                 layout={{
                   'text-field': ['to-string', ['get', 'count']],
                   'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-                  'text-size': ['interpolate', ['linear'], ['get', 'count'], 0, 10, 5000, 12, 10000, 14, 20000, 16],
+                  'text-size': ['interpolate', ['linear'], ['get', 'count'], ...clusterLabelSizeStops.flat()],
                   'text-allow-overlap': true,
                   'text-ignore-placement': true,
                 }}

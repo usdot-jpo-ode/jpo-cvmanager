@@ -688,8 +688,20 @@
         "enabled": true,
         "alwaysDisplayInConsole": false,
         "clientAuthenticatorType": "client-secret",
-        "redirectUris": ["http://localhost:3000/*", "http://localhost/*", "${WEBAPP_ENDPOINT}/*"],
-        "webOrigins": ["http://localhost:3000", "http://localhost", "${WEBAPP_ENDPOINT}"],
+        "redirectUris": [
+          "http://localhost:3000/*",
+          "http://localhost:3001/*",
+          "http://localhost:3002/*",
+          "http://localhost/*",
+          "${WEBAPP_ENDPOINT}/*"
+        ],
+        "webOrigins": [
+          "http://localhost:3000",
+          "http://localhost:3001/*",
+          "http://localhost:3002/*",
+          "http://localhost",
+          "${WEBAPP_ENDPOINT}"
+        ],
         "notBefore": 0,
         "bearerOnly": false,
         "consentRequired": false,

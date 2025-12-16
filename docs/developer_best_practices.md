@@ -51,11 +51,15 @@ When changes exist on the upstream repository which are not present on the curre
 
 ## Pull Requests
 
-Pull requests should be kept to a manageable size, able to be reviewed within a few hours. Loose guidelines include ~30 files changed and ~2000 lines changed.
+Pull requests should be kept to a manageable size, able to be reviewed within 1-2 hours. An ideal PR should be under 400 lines of code changed, with an upper limit of 1000 lines of code changed (using the guideline of 500 lines per hour). If a PR exceeds this size, consider breaking it up into multiple smaller PRs. Exceptions can be made for lines which are auto-generated.
+
+For more information on PR best practices, see [best-practices-for-peer-code-review](https://smartbear.com/learn/code-review/best-practices-for-peer-code-review)
+
+When creating a pull request, use the provided [pull request template](../pull_request_template.md). This ensures that all necessary information is provided for reviewers.
 
 ### Squash Merge
 
-All pull requests should be squash merged into develop and master. This keeps the root commit history clean, and reduces the repository size.
+All pull requests should be squash merged into develop. This ensures that we have a history of feature additions without the noise of intermediate commits.
 
 When making a squash merge, both a message and a description are included. The message should be concise and accurate (this is what is seen first when scrolling through previous commits). This should resemble the PR title.
 The extended description should describe important details about the feature including the distinct changes involved and the affected services. This should resemble the PR description.
@@ -77,16 +81,16 @@ Ensure there are no pending changes. If there are any changes present, commit/st
 git reset --hard origin/develop
 ```
 
-The recommended approach for synchronizing feature branches after a squash is a [rebase](https://git-scm.com/book/ms/v2/Git-Branching-Rebasing). This will _remove all of the un-squashed commits_, then move through the new commits re-applying them to the updated history. Each step can have it's own merge conflicts, which can be extremely burdensome for large offsets.
+The recommended approach for synchronizing feature branches after a squash is a [merge](https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging). This will pull commits from the source branch into the feature branch, _retaining the un-squashed commits_, while presenting all merge conflicts in 1 wave. These additional un-squashed commits will be removed on the next squash merge into develop.
+
+```sh
+git checkout feature-branch
+git merge origin/develop
+```
+
+If removing the un-squashed commits is a priority, consider using a [rebase](https://git-scm.com/book/ms/v2/Git-Branching-Rebasing). This will _remove all of the un-squashed commits_, then go through the new commits and re-apply them to the updated history. Each step can have it's own merge conflicts, which can be extremely burdensome for large offsets, and each of the new commits will be re-applied, which will change their commit hashes. This can be a risky process, so ensure that the feature branch is backed up before proceeding.
 
 ```sh
 git checkout feature-branch
 git rebase develop
-```
-
-A secondary approach which can reduce conflicts is a [merge](https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging). This will pull commits from the source branch into the feature branch, _retaining the un-squashed commits_, while presenting all merge conflicts in 1 wave.
-
-```sh
-git checkout feature-branch
-git merge develop
 ```

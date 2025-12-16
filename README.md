@@ -312,27 +312,27 @@ In addition to the groups defined in the table below, each service may also be a
 
 #### Profiles and Services
 
-| Service                            | basic | webapp | intersection | intersection_no_api | conflictmonitor | addons | obu_ota |
-| ---------------------------------- | ----- | ------ | ------------ | ------------------- | --------------- | ------ | ------- |
-| cvmanager_api                      | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌      |
-| cvmanager_webapp                   | ❌    | ✅     | ❌           | ❌                  | ❌              | ❌     | ❌      |
-| cvmanager_postgres                 | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌      |
-| cvmanager_keycloak                 | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌      |
-| intersection_api                   | ❌    | ❌     | ✅           | ❌                  | ❌              | ❌     | ❌      |
-| conflictmonitor                    | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
-| ode                                | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
-| aem                                | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
-| adm                                | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
-| geojsonconverter                   | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
-| deduplicator                       | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
-| connect                            | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
-| jpo_count_metric                   | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌      |
-| rsu_status_check                   | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌      |
-| jpo_iss_health_check               | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌      |
-| firmware_manager_upgrade_scheduler | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌      |
-| firmware_manager_upgrade_runner    | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌      |
-| jpo_ota_backend                    | ❌    | ❌     | ❌           | ❌                  | ❌              | ❌     | ✅      |
-| jpo_ota_nginx                      | ❌    | ❌     | ❌           | ❌                  | ❌              | ❌     | ✅      |
+| Service                            | basic | webapp | intersection  | conflictmonitor  | addons | obu_ota  |
+| ---------------------------------- | ----- | ------ | ------------  | ---------------  | ------ | -------  |
+| cvmanager_api                      | ✅    | ❌     | ❌           | ❌              | ❌     | ❌      |
+| cvmanager_webapp                   | ❌    | ✅     | ❌           | ❌              | ❌     | ❌      |
+| cvmanager_postgres                 | ✅    | ❌     | ❌           | ❌              | ❌     | ❌      |
+| cvmanager_keycloak                 | ✅    | ❌     | ❌           | ❌              | ❌     | ❌      |
+| intersection_api                   | ❌    | ❌     | ✅           | ❌              | ❌     | ❌      |
+| conflictmonitor                    | ❌    | ❌     | ❌           | ✅              | ❌     | ❌      |
+| ode                                | ❌    | ❌     | ❌           | ✅              | ❌     | ❌      |
+| aem                                | ❌    | ❌     | ❌           | ✅              | ❌     | ❌      |
+| adm                                | ❌    | ❌     | ❌           | ✅              | ❌     | ❌      |
+| geojsonconverter                   | ❌    | ❌     | ❌           | ✅              | ❌     | ❌      |
+| deduplicator                       | ❌    | ❌     | ❌           | ✅              | ❌     | ❌      |
+| connect                            | ❌    | ❌     | ❌           | ✅              | ❌     | ❌      |
+| jpo_count_metric                   | ❌    | ❌     | ❌           | ❌              | ✅     | ❌      |
+| rsu_status_check                   | ❌    | ❌     | ❌           | ❌              | ✅     | ❌      |
+| jpo_iss_health_check               | ❌    | ❌     | ❌           | ❌              | ✅     | ❌      |
+| firmware_manager_upgrade_scheduler | ❌    | ❌     | ❌           | ❌              | ✅     | ❌      |
+| firmware_manager_upgrade_runner    | ❌    | ❌     | ❌           | ❌              | ✅     | ❌      |
+| jpo_ota_backend                    | ❌    | ❌     | ❌           | ❌              | ❌     | ✅      |
+| jpo_ota_nginx                      | ❌    | ❌     | ❌           | ❌              | ❌     | ✅      |
 
 ##### Note on JPO-Utils Profiles
 

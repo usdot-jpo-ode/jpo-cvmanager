@@ -124,7 +124,6 @@ services:
     profiles:
       - basic
       - cvmanager_postgres
-      - intersection_no_api
     image: postgis/postgis:15-master
     restart: always
     ports:
@@ -144,7 +143,6 @@ services:
       - basic
       - keycloak
       - cvmanager_keycloak
-      - intersection_no_api
     build:
       context: ./resources/keycloak
       dockerfile: Dockerfile

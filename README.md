@@ -394,7 +394,6 @@ Note that it is recommended to work with the Python API from a [virtual environm
 
 - WEBAPP_DOMAIN: The domain that the webapp will run on. This is required for Keycloak CORS authentication.
 - API_URI: The endpoint for the CV manager API, must be on a Keycloak Authorized domain.
-- COUNT_MESSAGE_TYPES: List of CV message types to query for counts.
 - VIEWER_MSG_TYPES: List of CV message types to query geospatially.
 - DOT_NAME: The name of the DOT using the CV Manager.
 - MAPBOX_INIT_LATITUDE: Initial latitude value to use for MapBox view state.
@@ -403,7 +402,6 @@ Note that it is recommended to work with the Python API from a [virtual environm
 
 <b>API Variables</b>
 
-- COUNTS_MSG_TYPES: Set to a list of message types to include in counts query. Sample format is described in the sample.env.
 - MONGO_PROCESSED_BSM_COLLECTION_NAME: The collection name in MongoDB for processed BSM messages.
 - MONGO_PROCESSED_PSM_COLLECTION_NAME: The collection name in MongoDB for processed PSM messages.
 - MONGO_SSM_COLLECTION_NAME: The database name for SSM visualization data.

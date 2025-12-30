@@ -3,15 +3,6 @@ class EnvironmentVars {
     return process.env.REACT_APP_GATEWAY_BASE_URL?.replace(/\/$/, '') // remove trailing slash
   }
 
-  static getMessageTypes() {
-    const COUNT_MESSAGE_TYPES = process.env.REACT_APP_COUNT_MESSAGE_TYPES
-    if (!COUNT_MESSAGE_TYPES) {
-      return []
-    }
-    const messageTypes = COUNT_MESSAGE_TYPES.split(',').map((item) => item.trim().toUpperCase())
-    return messageTypes
-  }
-
   static getMessageViewerTypes() {
     const VIEWER_MESSAGE_TYPES = process.env.REACT_APP_VIEWER_MESSAGE_TYPES
     if (!VIEWER_MESSAGE_TYPES) {

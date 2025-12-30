@@ -26,10 +26,6 @@ import { SideBarHeader } from '../../styles/components/SideBarHeader'
 import { useGetRsuCountsQuery } from '../api/rsuCountsApiSlice'
 import { selectOrganizationName } from '../../generalSlices/userSlice'
 
-const messageTypeOptions = EnvironmentVars.getMessageTypes().map((type) => {
-  return { value: type, label: type }
-})
-
 const DisplayCounts = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const theme = useTheme()
@@ -41,6 +37,18 @@ const DisplayCounts = () => {
   const [currentSort, setCurrentSort] = React.useState<string | null>(null)
 
   const { data: rsuCounts } = useGetRsuCountsQuery({ organization, startDate, endDate })
+
+  const messageTypeOptions = useMemo(() => {
+    // parse message types from rsuCounts count keys
+    const typesSet = new Set<string>()
+    Object.values(rsuCounts || {}).forEach((rsuCount) => {
+      Object.keys(rsuCount.messageTypeCounts || {}).forEach((msgType) => typesSet.add(msgType))
+    })
+    if (typesSet.size === 0) {
+      return [{ value: 'BSM', label: 'BSM' }]
+    }
+    return Array.from(typesSet).map((type) => ({ value: type, label: type?.toUpperCase() }))
+  }, [rsuCounts])
 
   const countList = useMemo(() => {
     return Object.entries(rsuCounts ?? {}).map(([key, value]) => {

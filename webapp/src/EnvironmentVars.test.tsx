@@ -1,11 +1,5 @@
 import EnvironmentVars from './EnvironmentVars'
 
-it('returns message types', () => {
-  process.env.REACT_APP_COUNT_MESSAGE_TYPES = 'type1, type2, type3'
-  const expectedMessageTypes = ['TYPE1', 'TYPE2', 'TYPE3']
-  expect(EnvironmentVars.getMessageTypes()).toEqual(expectedMessageTypes)
-})
-
 it('returns mapbox initial view state', () => {
   process.env.REACT_APP_MAPBOX_INIT_LATITUDE = '12.34'
   process.env.REACT_APP_MAPBOX_INIT_LONGITUDE = '56.78'

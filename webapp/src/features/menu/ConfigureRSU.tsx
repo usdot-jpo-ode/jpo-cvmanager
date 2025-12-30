@@ -100,8 +100,8 @@ const ConfigureRSU = () => {
             </AccordionSummary>
             <AccordionDetails>
               <CustomTable
-                data={EnvironmentVars.getMessageTypes().map((type) => {
-                  return [type, (selectedRsu.properties as any).counts?.[type]?.toString() ?? '0']
+                data={Object.entries((selectedRsu.properties as any).counts ?? {}).map(([type, count]) => {
+                  return [type, count?.toString() ?? '0']
                 })}
                 headers={['Msg Type', 'Count']}
               />

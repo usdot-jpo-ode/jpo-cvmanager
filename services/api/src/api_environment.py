@@ -1,11 +1,6 @@
 from common.common_environment import get_env_var
 
 
-def process_count_msg_types(type_string: str) -> list[str]:
-    """Process the COUNTS_MSG_TYPES environment variable into a list of uppercase strings"""
-    return [t.strip().upper() for t in type_string.split(",") if t.strip()]
-
-
 APPLICATION_PORT = int(get_env_var("FLASK_RUN_PORT", "5000"))
 
 ENABLE_RSU_FEATURES = get_env_var("ENABLE_RSU_FEATURES", "true").lower() != "false"

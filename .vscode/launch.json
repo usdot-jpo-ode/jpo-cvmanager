@@ -46,7 +46,6 @@
         "MONGO_DB_NAME": "CV",
         "MONGO_PROCESSED_BSM_COLLECTION_NAME": "processed_bsm",
         "MONGO_PROCESSED_PSM_COLLECTION_NAME": "processed_psm",
-        "COUNTS_MSG_TYPES": "BSM,SSM,SPAT,SRM,MAP",
         "ENABLE_WZDX_FEATURES": "false",
         "ENABLE_MOOVE_AI_FEATURES": "false",
         "CORS_DOMAIN": "*",

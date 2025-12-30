@@ -1,5 +1,4 @@
 # This file is used to build the webapp image for deployment.
-# The COUNTS_MSG_TYPES and DOT_NAME variables must be set in .env before building to populate
 # correctly in the deployed webapp as they are build-time variables.
 services:
   cvmanager_webapp:
@@ -10,7 +9,6 @@ services:
         API_URI: ${API_ENDPOINT:?error}
         MAPBOX_TOKEN: ${MAPBOX_TOKEN:?error}
         KEYCLOAK_HOST_URL: ${KEYCLOAK_ENDPOINT:?error}
-        COUNT_MESSAGE_TYPES: ${COUNTS_MSG_TYPES:-BSM,SSM,SPAT,SRM,MAP}
         VIEWER_MESSAGE_TYPES: ${VIEWER_MSG_TYPES:-BSM}
         DOT_NAME: ${DOT_NAME:-CDOT}
         MAPBOX_INIT_LATITUDE: ${MAPBOX_INIT_LATITUDE:-39.7392}

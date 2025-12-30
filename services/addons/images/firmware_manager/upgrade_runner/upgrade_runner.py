@@ -8,8 +8,6 @@ from common import common_environment
 
 app = Flask(__name__)
 
-common_environment.configure_logging()
-
 manufacturer_upgrade_scripts = {
     "Commsignia": "commsignia_upgrader.py",
     "Yunex": "yunex_upgrader.py",
@@ -95,4 +93,8 @@ def serve_rest_api():
 
 
 if __name__ == "__main__":
+    logging.info(
+        "Firmware manager running with LOGGING_LEVEL: "
+        + str(common_environment.LOGGING_LEVEL)
+    )
     serve_rest_api()

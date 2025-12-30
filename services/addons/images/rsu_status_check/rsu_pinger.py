@@ -4,7 +4,6 @@ import common.pgquery as pgquery
 from datetime import datetime
 from subprocess import Popen, DEVNULL
 import rsu_status_check_environment
-from common import common_environment
 
 
 def insert_ping_data(ping_data, ping_time):
@@ -84,8 +83,6 @@ def run_rsu_pinger():
 
 
 if __name__ == "__main__":
-    common_environment.configure_logging()
-
     run_service = (
         rsu_status_check_environment.RSU_PING and rsu_status_check_environment.ZABBIX
     )

@@ -2,7 +2,6 @@ from unittest.mock import patch, MagicMock
 import pytest
 import api.src.rsu_querycounts as rsu_querycounts
 from api.src.rsu_querycounts import query_rsu_counts_aggregated
-import api.tests.data.rsu_querycounts_data as querycounts_data
 from api.tests.data import auth_data
 from werkzeug.exceptions import Forbidden, InternalServerError
 from datetime import datetime

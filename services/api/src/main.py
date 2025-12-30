@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_restful import Api
 import api_environment
-
+import logging
 
 # Custom script imports
 from middleware import Middleware
@@ -32,9 +32,10 @@ from contact_support import ContactSupportResource
 from rsu_error_summary import RSUErrorSummaryResource
 import smtp_error_handler
 from common import common_environment
-import api_environment
 
-common_environment.configure_logging()
+logging.info(
+    "CVManager API running with LOGGING_LEVEL: " + str(common_environment.LOGGING_LEVEL)
+)
 
 app = Flask(__name__)
 
@@ -84,4 +85,4 @@ if api_environment.ENABLE_MOOVE_AI_FEATURES:
     api.add_resource(MooveAiData, "/moove-ai-data")
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=api_environment.FLASK_RUN_PORT)

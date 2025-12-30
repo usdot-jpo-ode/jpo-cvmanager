@@ -103,7 +103,7 @@ To generate a free mapbox access token:
 7. Press create a new token (it is easier to manage and re-create new tokens than the default public token)
    i. Enter a recognizable token name
    ii. No scopes are required, as this token will only be used for tile loading
-   iii. Under Token Restrictions, enter the URL paths the CV-Manager will be hosted on. For local development, this is http://localhost and http://${DOCKER_HOST_IP} 1. This is incredibly important. When the CV-Manager is deployed, the mapbox token can be extracted quite easily. The only way to protect the use of this token (and not incur additional access costs) is to restrict the allowed domains
+   iii. Under Token Restrictions, enter the URL paths the CV-Manager will be hosted on. For local development, this is http://localhost:3000 and http://${DOCKER_HOST_IP}:3000. This is incredibly important. When the CV-Manager is deployed, the mapbox token can be extracted quite easily. The only way to protect the use of this token (and not incur additional access costs) is to restrict the allowed domains
    iv. Select "Create Token"
 8. Copy the token value and paste it into the .env under MAPBOX_TOKEN=
 
@@ -270,11 +270,12 @@ The following steps are intended to help get a new user up and running the JPO C
     1. Make sure at least the DOCKER_HOST_IP, MAVEN_GITHUB_TOKEN, and MAPBOX_TOKEN are set for this.
     2. For other services or different configuration, please make a copy of the sample-full.env. Some of these variables, delineated by sections, pertain to the [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor), [jpo-geojsonconverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter), and [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode). Please see the documentation provided for these projects when setting these variables.
 4.  The CV Manager has four core components that need to be built and run: the API, the PostgreSQL database, Keycloak, and the webapp. Ensure that both of the following profiles are specified in the COMPOSE_PROFILES variable of your .env file:
+
     - basic: brings up the API, PostgreSQL, and Keycloak
     - webapp: brings up the CV-Manager webapp component
     - intersection: Optional, brings up the Intersection API and enables visualization/management of connected intersections
 
-5. Use the docker compose to start the required components:
+5.  Use the docker compose to start the required components:
 
     ```sh
     docker compose up -d
@@ -313,8 +314,8 @@ In addition to the groups defined in the table below, each service may also be a
 
 #### Profiles and Services
 
-| Service                            | basic | webapp | intersection  | conflictmonitor  | addons | obu_ota  |
-| ---------------------------------- | ----- | ------ | ------------  | ---------------  | ------ | -------  |
+| Service                            | basic | webapp | intersection | conflictmonitor | addons | obu_ota |
+| ---------------------------------- | ----- | ------ | ------------ | --------------- | ------ | ------- |
 | cvmanager_api                      | ✅    | ❌     | ❌           | ❌              | ❌     | ❌      |
 | cvmanager_webapp                   | ❌    | ✅     | ❌           | ❌              | ❌     | ❌      |
 | cvmanager_postgres                 | ✅    | ❌     | ❌           | ❌              | ❌     | ❌      |
@@ -488,14 +489,17 @@ git config --global core.autocrlf false
    i. Unable to connect to PostgreSQL server (see postgres logs)
    ii. Keycloak authentication error (see keycloak logs)
 2. The webapp needs to be re-build after each environment variable change
-    This is due to the fact that environment variables are injected into the Docker image at *BUILD* time, not runtime. 
+   This is due to the fact that environment variables are injected into the Docker image at _BUILD_ time, not runtime.
+
 ```sh
 docker compose up --build -d cvmanager_webapp
 ```
+
 3. The Keycloak Hostname needs to be accessible from docker and a browser
-    Keycloak needs to be accessible other docker containers (cvmanager_api, intersection_api) as well as the webapp (running in a browser). This means that using "localhost" will not work (not accessible from other docker containers), and using "", the docker container network name, will not work either (not accessible in the browser since it is outside of the docker network). This is why the suggested approach is to set your docker host IP address as your keycloak hostname. Keycloak will redirect any incomming connection to the hostname, therefore you cannot set the hostname to "localhost" and have docker services access it at cvmanager_keycloak:8080. 
+   Keycloak needs to be accessible other docker containers (cvmanager_api, intersection_api) as well as the webapp (running in a browser). This means that using "localhost" will not work (not accessible from other docker containers), and using "", the docker container network name, will not work either (not accessible in the browser since it is outside of the docker network). This is why the suggested approach is to set your docker host IP address as your keycloak hostname. Keycloak will redirect any incomming connection to the hostname, therefore you cannot set the hostname to "localhost" and have docker services access it at cvmanager_keycloak:8080.
 4. The Keycloak volume must be cleared if crucial parameters are changed
-    If the keycloak admin user credentials, client id(s), client secret, or webapp endpoint are changed by environment variable, those changes will not be reflected in keycloak unless the volume is cleared and re-built. This can be done by:
+   If the keycloak admin user credentials, client id(s), client secret, or webapp endpoint are changed by environment variable, those changes will not be reflected in keycloak unless the volume is cleared and re-built. This can be done by:
+
 ```sh
 docker compose down -v
 docker compose up -d

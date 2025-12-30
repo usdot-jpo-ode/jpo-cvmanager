@@ -35,7 +35,9 @@
       "stopOnEntry": false,
       "program": "${workspaceRoot}/services/api/src/main.py",
       "env": {
+        "PYTHONPATH": "${workspaceRoot}/services",
         "FLASK_APP": "${workspaceRoot}/services/api/src/main.py",
+        "FLASK_RUN_PORT": "8081",
         "PG_DB_HOST": "localhost:5432",
         "PG_DB_USER": "postgres",
         "PG_DB_PASS": "postgres",
@@ -70,7 +72,7 @@
   "compounds": [
     {
       "name": "Debug Solution",
-      "configurations": ["Python: Flask", "Launch web app with Intersection Data"]
+      "configurations": ["Python: Flask", "Launch web app with Intersection API"]
     }
   ]
 }

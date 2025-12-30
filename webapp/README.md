@@ -2,12 +2,13 @@
 
 This is a web application that is made with React JS that is a front-end for interfacing with CDOT RSUs. The code for the application is being hosted in a public repository to allow other CV projects to utilize. Automated deployment of the application is not included within the project.
 
-## Required Tools For Running The CV Manager React Webapp
+## Requirements
 
 - Mapbox Access Token
   - Create account at https://www.mapbox.com/
   - An access token will be provided on the account page once the account has been created
-  - Put the access key in the "sample.env.local" file for REACT_APP_MAPBOX_TOKEN and rename the file ".env.development.local"
+  - For more instructions, see the main README [Creating a Mapbox Token](../README.md#creating-a-mapbox-token)
+  - Set the access key in the "sample.env.local" file as the REACT_APP_MAPBOX_TOKEN
 - npm
   - Download instructions: https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
 - Nodejs
@@ -16,15 +17,18 @@ This is a web application that is made with React JS that is a front-end for int
   - Repository: https://github.com/usdot-jpo-ode/jpo-conflictmonitor
   - Follow the instructions in the README to build/deploy the tool
 
-## Building The Application
+## Running The Application
 
-1. Setup environment variables
-   - The project includes a sample environment variable file in [sample.env.local](sample.env.local) for running the application locally.
-   - Use the dev, test and prod environment var files for deploying in different environments. The commented out environment variables are required.
-2. Build the application
-   - Building for local: `npm run build`
-   - Building for specific environment: `npm run build:dev`
-   - Build for all environments: `npm run build:all`
+1. Copy the `sample.env.local` file to a new file named `.env.local`. Make sure this new file is located in this directory (webapp), not root
+2. Edit the `.env.local` file to set the required environment variables. At a minimum, you will need to set the following variables:
+   - `DOCKER_HOST_IP`: The IP address of your Docker host. This can be found through linux/wsl through the command "ifconfig", or "localhost" if using Docker Desktop on Windows or Linux (not mac).
+   - `REACT_APP_MAPBOX_TOKEN`: Any valid mapbox token. Please see the main README [Creating a Mapbox Token](../README.md#creating-a-mapbox-token) for instructions on how to create and account/generate a new token
+3. Build the application
+
+```sh
+npm install
+npm start
+```
 
 ## Theming
 

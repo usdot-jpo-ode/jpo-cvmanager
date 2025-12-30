@@ -2,7 +2,6 @@ import requests
 import logging
 import common.pgquery as pgquery
 import rsu_status_check_environment
-from common import common_environment
 
 
 def get_rsu_data():
@@ -145,8 +144,6 @@ class RsuStatusFetch:
 
 
 if __name__ == "__main__":
-    common_environment.configure_logging()
-
     run_service = (
         rsu_status_check_environment.RSU_PING and rsu_status_check_environment.ZABBIX
     )

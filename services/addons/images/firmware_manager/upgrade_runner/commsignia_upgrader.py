@@ -7,6 +7,7 @@ import logging
 import sys
 from common import common_environment
 
+
 class CommsigniaUpgrader(upgrader.UpgraderAbstractClass):
     def __init__(self, upgrade_info):
         # set file/blob location for post_upgrade script
@@ -134,7 +135,10 @@ class CommsigniaUpgrader(upgrader.UpgraderAbstractClass):
 # - target_firmware_version
 # - install_package
 if __name__ == "__main__":
-    common_environment.configure_logging()
+    logging.info(
+        "Commsignia upgrader running with LOGGING_LEVEL: "
+        + str(common_environment.LOGGING_LEVEL)
+    )
     # Trimming outer single quotes from the json.loads
     upgrade_info = json.loads(sys.argv[1][1:-1])
     commsignia_upgrader = CommsigniaUpgrader(upgrade_info)

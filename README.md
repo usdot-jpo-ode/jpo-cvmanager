@@ -48,7 +48,7 @@ git submodule update --init --recursive
 4. Run the following command to start the CV Manager:
 
 ```sh
-docker-compose up -d
+docker compose up -d
 ```
 
 5. Access the CV Manager webapp at [http://localhost:3000](http://localhost:3000) in your web browser.
@@ -103,7 +103,7 @@ To generate a free mapbox access token:
 7. Press create a new token (it is easier to manage and re-create new tokens than the default public token)
    i. Enter a recognizable token name
    ii. No scopes are required, as this token will only be used for tile loading
-   iii. Under Token Restrictions, enter the URL paths the CV-Manager will be hosted on. For local development, this is http://localhost and http://${DOCKER_HOST_IP} 1. This is incredibly important. When the CV-Manager is deployed, the mapbox token can be extracted quite easily. The only way to protect the use of this token (and not incur additional access costs) is to restrict the allowed domains
+   iii. Under Token Restrictions, enter the URL paths the CV-Manager will be hosted on. For local development, this is http://localhost:3000 and http://${DOCKER_HOST_IP}:3000. This is incredibly important. When the CV-Manager is deployed, the mapbox token can be extracted quite easily. The only way to protect the use of this token (and not incur additional access costs) is to restrict the allowed domains
    iv. Select "Create Token"
 8. Copy the token value and paste it into the .env under MAPBOX_TOKEN=
 
@@ -269,11 +269,13 @@ The following steps are intended to help get a new user up and running the JPO C
 3.  Create a copy of the sample.env named ".env" and refer to the Environmental variables section below for more information on each variable.
     1. Make sure at least the DOCKER_HOST_IP, MAVEN_GITHUB_TOKEN, and MAPBOX_TOKEN are set for this.
     2. For other services or different configuration, please make a copy of the sample-full.env. Some of these variables, delineated by sections, pertain to the [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor), [jpo-geojsonconverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter), and [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode). Please see the documentation provided for these projects when setting these variables.
-4.  The CV Manager has four components that need to be containerized and deployed: the API, the PostgreSQL database, Keycloak, and the webapp.
+4.  The CV Manager has four core components that need to be built and run: the API, the PostgreSQL database, Keycloak, and the webapp. Ensure that both of the following profiles are specified in the COMPOSE_PROFILES variable of your .env file:
 
-    - If you are looking to deploy the CV Manager locally, you can simply run the docker-compose, make sure to fill out the .env file to ensure it launches properly
+    - basic: brings up the API, PostgreSQL, and Keycloak
+    - webapp: brings up the CV-Manager webapp component
+    - intersection: Optional, brings up the Intersection API and enables visualization/management of connected intersections
 
-5.  Apply the docker compose to start the required components:
+5.  Use the docker compose to start the required components:
 
     ```sh
     docker compose up -d
@@ -312,27 +314,27 @@ In addition to the groups defined in the table below, each service may also be a
 
 #### Profiles and Services
 
-| Service                            | basic | webapp | intersection | intersection_no_api | conflictmonitor | addons | obu_ota |
-| ---------------------------------- | ----- | ------ | ------------ | ------------------- | --------------- | ------ | ------- |
-| cvmanager_api                      | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌      |
-| cvmanager_webapp                   | ❌    | ✅     | ❌           | ❌                  | ❌              | ❌     | ❌      |
-| cvmanager_postgres                 | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌      |
-| cvmanager_keycloak                 | ✅    | ❌     | ❌           | ❌                  | ❌              | ❌     | ❌      |
-| intersection_api                   | ❌    | ❌     | ✅           | ❌                  | ❌              | ❌     | ❌      |
-| conflictmonitor                    | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
-| ode                                | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
-| aem                                | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
-| adm                                | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
-| geojsonconverter                   | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
-| deduplicator                       | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
-| connect                            | ❌    | ❌     | ❌           | ❌                  | ✅              | ❌     | ❌      |
-| jpo_count_metric                   | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌      |
-| rsu_status_check                   | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌      |
-| jpo_iss_health_check               | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌      |
-| firmware_manager_upgrade_scheduler | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌      |
-| firmware_manager_upgrade_runner    | ❌    | ❌     | ❌           | ❌                  | ❌              | ✅     | ❌      |
-| jpo_ota_backend                    | ❌    | ❌     | ❌           | ❌                  | ❌              | ❌     | ✅      |
-| jpo_ota_nginx                      | ❌    | ❌     | ❌           | ❌                  | ❌              | ❌     | ✅      |
+| Service                            | basic | webapp | intersection | conflictmonitor | addons | obu_ota |
+| ---------------------------------- | ----- | ------ | ------------ | --------------- | ------ | ------- |
+| cvmanager_api                      | ✅    | ❌     | ❌           | ❌              | ❌     | ❌      |
+| cvmanager_webapp                   | ❌    | ✅     | ❌           | ❌              | ❌     | ❌      |
+| cvmanager_postgres                 | ✅    | ❌     | ❌           | ❌              | ❌     | ❌      |
+| cvmanager_keycloak                 | ✅    | ❌     | ❌           | ❌              | ❌     | ❌      |
+| intersection_api                   | ❌    | ❌     | ✅           | ❌              | ❌     | ❌      |
+| conflictmonitor                    | ❌    | ❌     | ❌           | ✅              | ❌     | ❌      |
+| ode                                | ❌    | ❌     | ❌           | ✅              | ❌     | ❌      |
+| aem                                | ❌    | ❌     | ❌           | ✅              | ❌     | ❌      |
+| adm                                | ❌    | ❌     | ❌           | ✅              | ❌     | ❌      |
+| geojsonconverter                   | ❌    | ❌     | ❌           | ✅              | ❌     | ❌      |
+| deduplicator                       | ❌    | ❌     | ❌           | ✅              | ❌     | ❌      |
+| connect                            | ❌    | ❌     | ❌           | ✅              | ❌     | ❌      |
+| jpo_count_metric                   | ❌    | ❌     | ❌           | ❌              | ✅     | ❌      |
+| rsu_status_check                   | ❌    | ❌     | ❌           | ❌              | ✅     | ❌      |
+| jpo_iss_health_check               | ❌    | ❌     | ❌           | ❌              | ✅     | ❌      |
+| firmware_manager_upgrade_scheduler | ❌    | ❌     | ❌           | ❌              | ✅     | ❌      |
+| firmware_manager_upgrade_runner    | ❌    | ❌     | ❌           | ❌              | ✅     | ❌      |
+| jpo_ota_backend                    | ❌    | ❌     | ❌           | ❌              | ❌     | ✅      |
+| jpo_ota_nginx                      | ❌    | ❌     | ❌           | ❌              | ❌     | ✅      |
 
 ##### Note on JPO-Utils Profiles
 
@@ -374,44 +376,6 @@ Note that it is recommended to work with the Python API from a [virtual environm
    ```cmd
    pip install -r services/requirements.txt
    ```
-
-#### Setting up a virtual environment with VSCode
-
-See [Visual Studio Code](https://code.visualstudio.com/docs/python/environments) documentation for information on how to set up a virtual environment with VS Code.
-
-#### Debugging Profile
-
-A debugging profile has been set up for use with VSCode to allow ease of debugging with this application. To use this profile, simply open the project in VSCode and select the "Debug" tab on the left side of the screen. Then, select the "Debug Solution" profile and click the green play button. This will spin up a postgresql instance as well as the keycloak auth solution within docker containers. Once running, this will also start the debugger and attach it to the running API container. You can then set breakpoints and step through the code as needed.
-
-For the "Debug Solution" to run properly on Windows 10/11 using WSL, the following must be configured:
-
-1.  Apply the docker compose to start the required components:
-
-```sh
-docker compose up -d
-```
-
-To run only the critical cvmanager components (no intersection services), use this command:
-
-```sh
-docker compose up -d cvmanager_api cvmanager_webapp cvmanager_postgres cvmanager_keycloak
-```
-
-2.  Access the website by going to http://localhost
-
-    ```
-      Default Username: test@gmail.com
-      Default Password: tester
-    ```
-
-3.  To access keycloak go to http://localhost:8084/
-
-    ```
-      Default Username: admin
-      Default Password: admin
-    ```
-
-    This should automatically redirect you to http://host.docker.internal:8084/. If it does not, navigate to that URL directly.
 
 ### Environment Variables
 
@@ -524,6 +488,22 @@ git config --global core.autocrlf false
    This indicates an issue within the cvmanager_api service, see the docker logs for more information. Common issues include:
    i. Unable to connect to PostgreSQL server (see postgres logs)
    ii. Keycloak authentication error (see keycloak logs)
+2. The webapp needs to be re-build after each environment variable change
+   This is due to the fact that environment variables are injected into the Docker image at _BUILD_ time, not runtime.
+
+```sh
+docker compose up --build -d cvmanager_webapp
+```
+
+3. The Keycloak Hostname needs to be accessible from docker and a browser
+   Keycloak needs to be accessible other docker containers (cvmanager_api, intersection_api) as well as the webapp (running in a browser). This means that using "localhost" will not work (not accessible from other docker containers), and using "", the docker container network name, will not work either (not accessible in the browser since it is outside of the docker network). This is why the suggested approach is to set your docker host IP address as your keycloak hostname. Keycloak will redirect any incomming connection to the hostname, therefore you cannot set the hostname to "localhost" and have docker services access it at cvmanager_keycloak:8080.
+4. The Keycloak volume must be cleared if crucial parameters are changed
+   If the keycloak admin user credentials, client id(s), client secret, or webapp endpoint are changed by environment variable, those changes will not be reflected in keycloak unless the volume is cleared and re-built. This can be done by:
+
+```sh
+docker compose down -v
+docker compose up -d
+```
 
 ## License Information
 

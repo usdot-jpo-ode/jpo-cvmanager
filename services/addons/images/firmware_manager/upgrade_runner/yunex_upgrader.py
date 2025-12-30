@@ -7,6 +7,7 @@ import tarfile
 import time
 from common import common_environment
 
+
 class YunexUpgrader(upgrader.UpgraderAbstractClass):
     def __init__(self, upgrade_info):
         super().__init__(upgrade_info, firmware_extension=".tar")
@@ -123,7 +124,10 @@ class YunexUpgrader(upgrader.UpgraderAbstractClass):
 # - target_firmware_version
 # - install_package
 if __name__ == "__main__":
-    common_environment.configure_logging()
+    logging.info(
+        "Yunex Upgrader running with LOGGING_LEVEL: "
+        + str(common_environment.LOGGING_LEVEL)
+    )
     # Trimming outer single quotes from the json.loads
     upgrade_info = json.loads(sys.argv[1][1:-1])
     yunex_upgrader = YunexUpgrader(upgrade_info)

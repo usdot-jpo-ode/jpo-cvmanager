@@ -6,7 +6,6 @@ import common.pgquery as pgquery
 from dataclasses import dataclass, field
 from typing import Dict
 import iss_health_check_environment
-from common import common_environment
 
 
 # Set up logging
@@ -192,7 +191,5 @@ def validate_scms_data(value):
 
 
 if __name__ == "__main__":
-    common_environment.configure_logging()
-
     scms_statuses = get_scms_status_data()
     insert_scms_data(scms_statuses)

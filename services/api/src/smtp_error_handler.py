@@ -77,7 +77,7 @@ class SMTP_SSLHandler(SMTPHandler):
         smtp.ehlo()
         smtp.login(self.username, self.password)
 
-        print("Subscribed Users", subscribed_users)
+        logging.debug(f"SMTP Error Email Subscribed Users: {subscribed_users}")
 
         for email in subscribed_users:
             message = MIMEMultipart()

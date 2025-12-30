@@ -133,11 +133,14 @@ export function getHeatmapCountsStops(msgType: MessageType, heatMapData: GeoJSON
   // Generate mapbox heatmap layer stops from 0 -> 1
   return [
     [0, 0],
-    [desiredValue * 0.2, 0.2],
-    [desiredValue * 0.4, 0.4],
-    [desiredValue * 0.6, 0.6],
-    [desiredValue * 0.8, 0.8],
-    [desiredValue, 1],
+    [desiredValue * 0.01, 0.1], // 1% = 0.1 intensity
+    [desiredValue * 0.05, 0.2], // 5% = 0.2 intensity
+    [desiredValue * 0.1, 0.3], // 10% = 0.3 intensity
+    [desiredValue * 0.2, 0.4], // 20% = 0.4 intensity
+    [desiredValue * 0.4, 0.6], // 40% = 0.6 intensity
+    [desiredValue * 0.6, 0.8], // 60% = 0.8 intensity
+    [desiredValue * 0.8, 0.9], // 80% = 0.9 intensity
+    [desiredValue, 1], // 100% = 1.0 intensity
   ] as [number, number][]
 }
 

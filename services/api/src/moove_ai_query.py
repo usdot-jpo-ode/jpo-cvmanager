@@ -2,7 +2,7 @@ from flask import abort, request
 from flask_restful import Resource
 from marshmallow import Schema, fields
 from google.cloud import bigquery
-import os
+import api_environment
 import logging
 import pandas as pd
 from shapely import wkt
@@ -18,9 +18,9 @@ def query_moove_ai(pointList):
         + "))"
     )
 
-    client = bigquery.Client(location="US", project=os.getenv("GCP_PROJECT_ID"))
-    segment_agg_stats_table = os.getenv("MOOVE_AI_SEGMENT_AGG_STATS_TABLE")
-    segment_event_stats_table = os.getenv("MOOVE_AI_SEGMENT_EVENT_STATS_TABLE")
+    client = bigquery.Client(location="US", project=api_environment.GCP_PROJECT_ID)
+    segment_agg_stats_table = api_environment.MOOVE_AI_SEGMENT_AGG_STATS_TABLE
+    segment_event_stats_table = api_environment.MOOVE_AI_SEGMENT_EVENT_STATS_TABLE
     query = f"""
         SELECT 
             sas.segment_id, 
@@ -77,14 +77,14 @@ class MooveAiDataSchema(Schema):
 
 class MooveAiData(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization",
         "Access-Control-Allow-Methods": "POST",
         "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Content-Type": "application/json",
     }
 

@@ -17,23 +17,21 @@ from addons.images.obu_ota_server.obu_ota_server import (
 )
 
 
-@patch("os.getenv")
+@patch("obu_ota_server_environment.BLOB_STORAGE_PROVIDER", "DOCKER")
 @patch("glob.glob")
-def test_get_firmware_list_local(mock_glob, mock_getenv):
-    mock_getenv.return_value = "DOCKER"
+def test_get_firmware_list_local(mock_glob):
     mock_glob.return_value = ["/firmwares/test1.tar.sig", "/firmwares/test2.tar.sig"]
 
     result = get_firmware_list()
 
-    mock_getenv.assert_called_once_with("BLOB_STORAGE_PROVIDER", "DOCKER")
     mock_glob.assert_called_once_with("/firmwares/*.tar.sig")
     assert result == ["/firmwares/test1.tar.sig", "/firmwares/test2.tar.sig"]
 
 
-@patch("os.getenv")
+@patch("obu_ota_server_environment.BLOB_STORAGE_PROVIDER", "GCP")
+@patch("obu_ota_server_environment.BLOB_STORAGE_PATH", "PATH")
 @patch("common.gcs_utils.list_gcs_blobs")
-def test_get_firmware_list_gcs(mock_list_gcs_blobs, mock_getenv):
-    mock_getenv.return_value = "GCP"
+def test_get_firmware_list_gcs(mock_list_gcs_blobs):
     mock_list_gcs_blobs.return_value = [
         "/firmwares/test1.tar.sig",
         "/firmwares/test2.tar.sig",
@@ -41,56 +39,46 @@ def test_get_firmware_list_gcs(mock_list_gcs_blobs, mock_getenv):
 
     result = get_firmware_list()
 
-    # mock_getenv.assert_called_once_with("BLOB_STORAGE_PROVIDER", "DOCKER")
-    mock_list_gcs_blobs.assert_called_once_with("GCP", ".tar.sig")
+    mock_list_gcs_blobs.assert_called_once_with("PATH", ".tar.sig")
     assert result == ["/firmwares/test1.tar.sig", "/firmwares/test2.tar.sig"]
 
 
-@patch("os.getenv")
+@patch("obu_ota_server_environment.BLOB_STORAGE_PROVIDER", "DOCKER")
 @patch("os.path.exists")
 @patch("common.gcs_utils.list_gcs_blobs")
-def test_get_firmware_local_fail(mock_gcs_utils, mock_os_path_exists, mock_os_getenv):
-    mock_os_getenv.return_value = "DOCKER"
+def test_get_firmware_local_fail(mock_gcs_utils, mock_os_path_exists):
     mock_os_path_exists.return_value = False
 
     firmware_id = "test_firmware_id"
     local_file_path = "test_local_file_path"
     result = get_firmware(firmware_id, local_file_path)
 
-    mock_os_getenv.assert_called_once_with("BLOB_STORAGE_PROVIDER", "DOCKER")
     mock_os_path_exists.assert_called_once_with(local_file_path)
     mock_gcs_utils.assert_not_called()
 
-    assert result == False
+    assert result is False
 
 
-@patch("os.getenv")
+@patch("obu_ota_server_environment.BLOB_STORAGE_PROVIDER", "DOCKER")
 @patch("os.path.exists")
 @patch("common.gcs_utils.list_gcs_blobs")
-def test_get_firmware_local_success(
-    mock_gcs_utils, mock_os_path_exists, mock_os_getenv
-):
-    mock_os_getenv.return_value = "DOCKER"
+def test_get_firmware_local_success(mock_gcs_utils, mock_os_path_exists):
     mock_os_path_exists.return_value = True
 
     firmware_id = "test_firmware_id"
     local_file_path = "test_local_file_path"
     result = get_firmware(firmware_id, local_file_path)
 
-    mock_os_getenv.assert_called_once_with("BLOB_STORAGE_PROVIDER", "DOCKER")
     mock_os_path_exists.assert_called_once_with(local_file_path)
     mock_gcs_utils.assert_not_called()
 
-    assert result == True
+    assert result is True
 
 
-@patch("os.getenv")
+@patch("obu_ota_server_environment.BLOB_STORAGE_PROVIDER", "GCP")
 @patch("os.path.exists")
 @patch("common.gcs_utils.download_gcp_blob")
-def test_get_firmware_gcs_success(
-    mock_download_gcp_blob, mock_os_path_exists, mock_os_getenv
-):
-    mock_os_getenv.return_value = "GCP"
+def test_get_firmware_gcs_success(mock_download_gcp_blob, mock_os_path_exists):
     mock_os_path_exists.return_value = False
     mock_download_gcp_blob.return_value = True
 
@@ -99,22 +87,18 @@ def test_get_firmware_gcs_success(
     local_file_path = "test_local_file_path"
     result = get_firmware(firmware_id, local_file_path)
 
-    mock_os_getenv.assert_called_with("BLOB_STORAGE_PROVIDER", "DOCKER")
     mock_os_path_exists.assert_called_with(local_file_path)
     mock_download_gcp_blob.assert_called_once_with(
         firmware_id, local_file_path, firmware_file_ext
     )
 
-    assert result == True
+    assert result is True
 
 
-@patch("os.getenv")
+@patch("obu_ota_server_environment.BLOB_STORAGE_PROVIDER", "GCP")
 @patch("os.path.exists")
 @patch("common.gcs_utils.download_gcp_blob")
-def test_get_firmware_gcs_failure(
-    mock_download_gcp_blob, mock_os_path_exists, mock_os_getenv
-):
-    mock_os_getenv.return_value = "GCP"
+def test_get_firmware_gcs_failure(mock_download_gcp_blob, mock_os_path_exists):
     mock_os_path_exists.return_value = False
     mock_download_gcp_blob.return_value = False
 
@@ -123,13 +107,12 @@ def test_get_firmware_gcs_failure(
     local_file_path = "test_local_file_path"
     result = get_firmware(firmware_id, local_file_path)
 
-    mock_os_getenv.assert_called_with("BLOB_STORAGE_PROVIDER", "DOCKER")
     mock_os_path_exists.assert_called_with(local_file_path)
     mock_download_gcp_blob.assert_called_once_with(
         firmware_id, local_file_path, firmware_file_ext
     )
 
-    assert result == False
+    assert result is False
 
 
 def test_parse_range_header_valid():
@@ -198,7 +181,14 @@ async def test_read_file_no_end_range():
     os.remove(temp_path)
 
 
-@patch.dict("os.environ", {"OTA_USERNAME": "username", "OTA_PASSWORD": "password"})
+@patch(
+    "obu_ota_server_environment.OTA_USERNAME",
+    "username",
+)
+@patch(
+    "obu_ota_server_environment.OTA_PASSWORD",
+    "password",
+)
 @pytest.mark.anyio
 async def test_read_root():
     async with AsyncClient(
@@ -209,10 +199,17 @@ async def test_read_root():
     assert response.json() == {"message": "obu ota server healthcheck", "root_path": ""}
 
 
-@patch.dict("os.environ", {"OTA_USERNAME": "username", "OTA_PASSWORD": "password"})
-@pytest.mark.anyio
+@patch(
+    "obu_ota_server_environment.OTA_USERNAME",
+    "username",
+)
+@patch(
+    "obu_ota_server_environment.OTA_PASSWORD",
+    "password",
+)
 @patch("addons.images.obu_ota_server.obu_ota_server.get_firmware_list")
 @patch("addons.images.obu_ota_server.obu_ota_server.commsignia_manifest.add_contents")
+@pytest.mark.anyio
 async def test_get_manifest(mock_commsignia_manifest, mock_get_firmware_list):
     mock_get_firmware_list.return_value = [
         "/firmwares/test1.tar.sig",
@@ -229,11 +226,18 @@ async def test_get_manifest(mock_commsignia_manifest, mock_get_firmware_list):
     assert response.json() == {"json": "data"}
 
 
-@patch.dict("os.environ", {"OTA_USERNAME": "username", "OTA_PASSWORD": "password"})
-@pytest.mark.anyio
+@patch(
+    "obu_ota_server_environment.OTA_USERNAME",
+    "username",
+)
+@patch(
+    "obu_ota_server_environment.OTA_PASSWORD",
+    "password",
+)
 @patch("addons.images.obu_ota_server.obu_ota_server.get_firmware")
 @patch("addons.images.obu_ota_server.obu_ota_server.parse_range_header")
 @patch("addons.images.obu_ota_server.obu_ota_server.read_file")
+@pytest.mark.anyio
 async def test_get_fw(mock_read_file, mock_parse_range_header, mock_get_firmware):
     mock_get_firmware.return_value = True
     mock_parse_range_header.return_value = 0, 100
@@ -250,10 +254,10 @@ async def test_get_fw(mock_read_file, mock_parse_range_header, mock_get_firmware
     assert response.headers["Content-Length"] == "100"
 
 
-@pytest.mark.asyncio
 @patch("addons.images.obu_ota_server.obu_ota_server.pgquery")
 @patch("addons.images.obu_ota_server.obu_ota_server.datetime")
 @patch("addons.images.obu_ota_server.obu_ota_server.removed_old_logs")
+@pytest.mark.asyncio
 async def test_log_request(mock_removed_old_logs, mock_datetime, mock_pgquery):
     fixed_datetime = datetime(2024, 7, 30, 0, 0, 0)
     mock_datetime.now.return_value = fixed_datetime
@@ -291,7 +295,7 @@ async def test_log_request(mock_removed_old_logs, mock_datetime, mock_pgquery):
     )
 
 
-@patch.dict("os.environ", {"MAX_COUNT": "10"})
+@patch("obu_ota_server_environment.MAX_COUNT", 10)
 @patch("addons.images.obu_ota_server.obu_ota_server.pgquery")
 def test_removed_old_logs_no_removal(mock_pgquery):
     mock_pgquery.query_db.side_effect = [
@@ -307,7 +311,7 @@ def test_removed_old_logs_no_removal(mock_pgquery):
     mock_pgquery.write_db.assert_not_called()
 
 
-@patch.dict("os.environ", {"MAX_COUNT": "5"})
+@patch("obu_ota_server_environment.MAX_COUNT", 5)
 @patch("addons.images.obu_ota_server.obu_ota_server.pgquery")
 def test_removed_old_logs_with_removal(mock_pgquery):
     mock_pgquery.query_db.side_effect = [
@@ -330,10 +334,17 @@ def test_removed_old_logs_with_removal(mock_pgquery):
     )
 
 
-@patch.dict("os.environ", {"OTA_USERNAME": "username", "OTA_PASSWORD": "password"})
-@pytest.mark.anyio
+@patch(
+    "obu_ota_server_environment.OTA_USERNAME",
+    "username",
+)
+@patch(
+    "obu_ota_server_environment.OTA_PASSWORD",
+    "password",
+)
 @patch("addons.images.obu_ota_server.obu_ota_server.get_firmware_list")
 @patch("addons.images.obu_ota_server.obu_ota_server.commsignia_manifest.add_contents")
+@pytest.mark.anyio
 async def test_get_manifest(mock_commsignia_manifest, mock_get_firmware_list):
     mock_get_firmware_list.return_value = [
         "/firmwares/test1.tar.sig",
@@ -350,17 +361,12 @@ async def test_get_manifest(mock_commsignia_manifest, mock_get_firmware_list):
     assert response.json() == {"json": "data"}
 
 
-@patch.dict(
-    "os.environ",
-    {
-        "OTA_USERNAME": "username",
-        "OTA_PASSWORD": "password",
-        "NGINX_ENCRYPTION": "plain",
-    },
-)
-@pytest.mark.anyio
+@patch("obu_ota_server_environment.OTA_USERNAME", "username")
+@patch("obu_ota_server_environment.OTA_PASSWORD", "password")
+@patch("obu_ota_server_environment.NGINX_ENCRYPTION", "plain")
 @patch("addons.images.obu_ota_server.obu_ota_server.get_firmware_list")
 @patch("addons.images.obu_ota_server.obu_ota_server.commsignia_manifest.add_contents")
+@pytest.mark.anyio
 async def test_fqdn_response_plain(mock_commsignia_manifest, mock_get_firmware_list):
     mock_get_firmware_list.return_value = []
     expected_hostname = "http://localhost"
@@ -377,17 +383,12 @@ async def test_fqdn_response_plain(mock_commsignia_manifest, mock_get_firmware_l
     mock_commsignia_manifest.assert_called_once_with(expected_hostname, [])
 
 
-@patch.dict(
-    "os.environ",
-    {
-        "OTA_USERNAME": "username",
-        "OTA_PASSWORD": "password",
-        "NGINX_ENCRYPTION": "SSL",
-    },
-)
-@pytest.mark.anyio
+@patch("obu_ota_server_environment.OTA_USERNAME", "username")
+@patch("obu_ota_server_environment.OTA_PASSWORD", "password")
+@patch("obu_ota_server_environment.NGINX_ENCRYPTION", "ssl")
 @patch("addons.images.obu_ota_server.obu_ota_server.get_firmware_list")
 @patch("addons.images.obu_ota_server.obu_ota_server.commsignia_manifest.add_contents")
+@pytest.mark.anyio
 async def test_fqdn_response_ssl(mock_commsignia_manifest, mock_get_firmware_list):
     mock_get_firmware_list.return_value = []
     expected_hostname = "https://localhost"

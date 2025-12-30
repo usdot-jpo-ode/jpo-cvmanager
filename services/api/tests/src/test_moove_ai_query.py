@@ -3,7 +3,6 @@ from unittest.mock import patch, MagicMock
 import pytest
 import api.src.moove_ai_query as moove_ai_query
 import api.tests.data.moove_ai_query_data as moove_ai_query_data
-import os
 import pandas as pd
 from werkzeug.exceptions import InternalServerError, BadRequest
 
@@ -51,13 +50,14 @@ def test_entry_post_bad_req(mock_query_moove_ai):
 
 
 ###################################### Testing Functions ##########################################
-@patch.dict(
-    os.environ,
-    {
-        "GCP_PROJECT_ID": "test_project",
-        "MOOVE_AI_SEGMENT_AGG_STATS_TABLE": "test_segment_agg_stats_table",
-        "MOOVE_AI_SEGMENT_EVENT_STATS_TABLE": "test_segment_event_stats_table",
-    },
+@patch("api_environment.GCP_PROJECT_ID", "test_project")
+@patch(
+    "api_environment.MOOVE_AI_SEGMENT_AGG_STATS_TABLE",
+    "test_segment_agg_stats_table",
+)
+@patch(
+    "api_environment.MOOVE_AI_SEGMENT_EVENT_STATS_TABLE",
+    "test_segment_event_stats_table",
 )
 @patch("api.src.moove_ai_query.bigquery")
 def test_query_moove_ai(mock_bigquery):
@@ -75,13 +75,14 @@ def test_query_moove_ai(mock_bigquery):
     assert resp == moove_ai_query_data.feature_list
 
 
-@patch.dict(
-    os.environ,
-    {
-        "GCP_PROJECT_ID": "test_project",
-        "MOOVE_AI_SEGMENT_AGG_STATS_TABLE": "test_segment_agg_stats_table",
-        "MOOVE_AI_SEGMENT_EVENT_STATS_TABLE": "test_segment_event_stats_table",
-    },
+@patch("api_environment.GCP_PROJECT_ID", "test_project")
+@patch(
+    "api_environment.MOOVE_AI_SEGMENT_AGG_STATS_TABLE",
+    "test_segment_agg_stats_table",
+)
+@patch(
+    "api_environment.MOOVE_AI_SEGMENT_EVENT_STATS_TABLE",
+    "test_segment_event_stats_table",
 )
 @patch("api.src.moove_ai_query.bigquery")
 def test_query_moove_ai_exception(mock_bigquery):

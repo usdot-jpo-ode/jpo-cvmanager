@@ -42,7 +42,10 @@ def test_get_rsu_upgrade_data_one(mock_querydb):
 
 
 # start_tasks_from_queue tests
-@patch.dict("os.environ", {"UPGRADE_RUNNER_ENDPOINT": "http://test-endpoint"})
+@patch(
+    "upgrade_scheduler_environment.UPGRADE_RUNNER_ENDPOINT",
+    "http://test-endpoint",
+)
 @patch(
     "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
     {},
@@ -133,7 +136,14 @@ def test_start_tasks_from_queue_no_env_var(mock_post, mock_logging):
     )
 
 
-@patch.dict("os.environ", {"UPGRADE_RUNNER_ENDPOINT": "http://test-endpoint"})
+@patch(
+    "upgrade_scheduler_environment.UPGRADE_RUNNER_ENDPOINT",
+    "http://test-endpoint",
+)
+@patch(
+    "upgrade_scheduler_environment.UPGRADE_RUNNER_ENDPOINT",
+    "http://test-endpoint",
+)
 @patch(
     "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
     {},
@@ -188,7 +198,10 @@ def test_start_tasks_from_queue_post_success(mock_post, mock_logging):
     mock_logging.error.assert_not_called()
 
 
-@patch.dict("os.environ", {"UPGRADE_RUNNER_ENDPOINT": "http://test-endpoint"})
+@patch(
+    "upgrade_scheduler_environment.UPGRADE_RUNNER_ENDPOINT",
+    "http://test-endpoint",
+)
 @patch(
     "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.active_upgrades",
     {},
@@ -845,7 +858,10 @@ def test_list_active_upgrades(mock_logging):
 
 
 # check_for_upgrades tests
-@patch.dict("os.environ", {"UPGRADE_RUNNER_ENDPOINT": "http://test-endpoint"})
+@patch(
+    "upgrade_scheduler_environment.UPGRADE_RUNNER_ENDPOINT",
+    "http://test-endpoint",
+)
 @patch(
     "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.was_latest_ping_successful_for_rsu"
 )
@@ -1007,7 +1023,10 @@ def test_reset_consecutive_failure_count_for_rsu(mock_write_db):
     mock_write_db.assert_called_with(expected_query)
 
 
-@patch.dict("os.environ", {"FW_UPGRADE_MAX_RETRY_LIMIT": "3"})
+@patch(
+    "upgrade_scheduler_environment.FW_UPGRADE_MAX_RETRY_LIMIT",
+    3,
+)
 @patch(
     "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.pgquery.query_db"
 )
@@ -1021,11 +1040,14 @@ def test_is_rsu_at_max_retries_limit_TRUE(mock_query_db):
     result = upgrade_scheduler.is_rsu_at_max_retries_limit(rsu_ip)
 
     # verify
-    assert result == True
+    assert result is True
     mock_query_db.assert_called_with(expected_query)
 
 
-@patch.dict("os.environ", {"FW_UPGRADE_MAX_RETRY_LIMIT": "3"})
+@patch(
+    "upgrade_scheduler_environment.FW_UPGRADE_MAX_RETRY_LIMIT",
+    3,
+)
 @patch(
     "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.pgquery.query_db"
 )
@@ -1039,11 +1061,14 @@ def test_is_rsu_at_max_retries_limit_FALSE(mock_query_db):
     result = upgrade_scheduler.is_rsu_at_max_retries_limit(rsu_ip)
 
     # verify
-    assert result == False
+    assert result is False
     mock_query_db.assert_called_with(expected_query)
 
 
-@patch.dict("os.environ", {"FW_UPGRADE_MAX_RETRY_LIMIT": "3"})
+@patch(
+    "upgrade_scheduler_environment.FW_UPGRADE_MAX_RETRY_LIMIT",
+    3,
+)
 @patch(
     "addons.images.firmware_manager.upgrade_scheduler.upgrade_scheduler.pgquery.query_db"
 )
@@ -1057,7 +1082,7 @@ def test_is_rsu_at_max_retries_limit_NO_RESULTS(mock_query_db):
     result = upgrade_scheduler.is_rsu_at_max_retries_limit(rsu_ip)
 
     # verify
-    assert result == False
+    assert result is False
     mock_query_db.assert_called_with(expected_query)
 
 
@@ -1099,21 +1124,10 @@ def test_init_background_task(mock_bgscheduler):
     mock_bgscheduler_obj.start.assert_called_with()
 
 
-def test_get_upgrade_limit_no_env():
-    limit = upgrade_scheduler.get_upgrade_limit()
-    assert limit == 1
-
-
-@patch.dict("os.environ", {"ACTIVE_UPGRADE_LIMIT": "5"})
+@patch(
+    "upgrade_scheduler_environment.ACTIVE_UPGRADE_LIMIT",
+    5,
+)
 def test_get_upgrade_limit_with_env():
     limit = upgrade_scheduler.get_upgrade_limit()
     assert limit == 5
-
-
-@patch.dict("os.environ", {"ACTIVE_UPGRADE_LIMIT": "bad_value"})
-def test_get_upgrade_limit_with_bad_env():
-    with pytest.raises(
-        ValueError,
-        match="The environment variable 'ACTIVE_UPGRADE_LIMIT' must be an integer.",
-    ):
-        upgrade_scheduler.get_upgrade_limit()

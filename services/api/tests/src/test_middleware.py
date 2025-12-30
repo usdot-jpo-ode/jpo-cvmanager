@@ -1,5 +1,4 @@
 from unittest.mock import patch, Mock
-
 from api.src import middleware
 from api.tests.data import auth_data
 from werkzeug.exceptions import Unauthorized
@@ -159,40 +158,48 @@ def test_middleware_class_call_contact_support(mock_request, mock_get_user_role)
     mock_request.assert_called_once_with(environ)
 
 
-@patch("api.src.middleware.ENABLE_RSU_FEATURES", True)
-@patch("api.src.middleware.ENABLE_INTERSECTION_FEATURES", True)
-@patch("api.src.middleware.ENABLE_WZDX_FEATURES", True)
+@patch("api_environment.ENABLE_RSU_FEATURES", True)
+@patch("api_environment.ENABLE_INTERSECTION_FEATURES", True)
+@patch("api_environment.ENABLE_WZDX_FEATURES", True)
 def test_evaluate_tag_all_enabled():
-    assert not middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.RSU)
-    assert not middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.INTERSECTION)
-    assert not middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.WZDX)
+    assert middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.RSU) is False
+    assert (
+        middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.INTERSECTION)
+        is False
+    )
+    assert middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.WZDX) is False
 
 
-@patch("api.src.middleware.ENABLE_RSU_FEATURES", False)
-@patch("api.src.middleware.ENABLE_INTERSECTION_FEATURES", False)
-@patch("api.src.middleware.ENABLE_WZDX_FEATURES", False)
+@patch("api_environment.ENABLE_RSU_FEATURES", False)
+@patch("api_environment.ENABLE_INTERSECTION_FEATURES", False)
+@patch("api_environment.ENABLE_WZDX_FEATURES", False)
 def test_evaluate_tag_all_disabled():
     from api.src import middleware as middleware
 
-    assert middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.RSU)
-    assert middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.INTERSECTION)
-    assert middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.WZDX)
+    assert middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.RSU) is True
+    assert (
+        middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.INTERSECTION) is True
+    )
+    assert middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.WZDX) is True
 
 
-@patch("api.src.middleware.ENABLE_RSU_FEATURES", False)
-@patch("api.src.middleware.ENABLE_INTERSECTION_FEATURES", True)
-@patch("api.src.middleware.ENABLE_WZDX_FEATURES", False)
+@patch("api_environment.ENABLE_RSU_FEATURES", False)
+@patch("api_environment.ENABLE_INTERSECTION_FEATURES", True)
+@patch("api_environment.ENABLE_WZDX_FEATURES", False)
 def test_evaluate_tag_different():
     from api.src import middleware as middleware
 
-    assert middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.RSU)
-    assert not middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.INTERSECTION)
-    assert middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.WZDX)
+    assert middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.RSU) is True
+    assert (
+        middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.INTERSECTION)
+        is False
+    )
+    assert middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.WZDX) is True
 
 
-@patch("api.src.middleware.ENABLE_RSU_FEATURES", False)
-@patch("api.src.middleware.ENABLE_INTERSECTION_FEATURES", False)
-@patch("api.src.middleware.ENABLE_WZDX_FEATURES", False)
+@patch("api_environment.ENABLE_RSU_FEATURES", False)
+@patch("api_environment.ENABLE_INTERSECTION_FEATURES", False)
+@patch("api_environment.ENABLE_WZDX_FEATURES", False)
 def test_is_feature_disabled_disabled():
     from api.src import middleware as middleware
 
@@ -203,16 +210,16 @@ def test_is_feature_disabled_disabled():
         "/d": None,
     }
 
-    assert middleware.is_endpoint_disabled(feature_tags, "/a")
-    assert middleware.is_endpoint_disabled(feature_tags, "/b")
-    assert middleware.is_endpoint_disabled(feature_tags, "/c")
-    assert not middleware.is_endpoint_disabled(feature_tags, "/d")
-    assert not middleware.is_endpoint_disabled(feature_tags, "/f")
+    assert middleware.is_endpoint_disabled(feature_tags, "/a") is True
+    assert middleware.is_endpoint_disabled(feature_tags, "/b") is True
+    assert middleware.is_endpoint_disabled(feature_tags, "/c") is True
+    assert middleware.is_endpoint_disabled(feature_tags, "/d") is False
+    assert middleware.is_endpoint_disabled(feature_tags, "/f") is False
 
 
-@patch("api.src.middleware.ENABLE_RSU_FEATURES", True)
-@patch("api.src.middleware.ENABLE_INTERSECTION_FEATURES", True)
-@patch("api.src.middleware.ENABLE_WZDX_FEATURES", True)
+@patch("api_environment.ENABLE_RSU_FEATURES", True)
+@patch("api_environment.ENABLE_INTERSECTION_FEATURES", True)
+@patch("api_environment.ENABLE_WZDX_FEATURES", True)
 def test_is_feature_disabled_enabled():
     from api.src import middleware as middleware
 
@@ -223,16 +230,16 @@ def test_is_feature_disabled_enabled():
         "/d": None,
     }
 
-    assert not middleware.is_endpoint_disabled(feature_tags, "/a")
-    assert not middleware.is_endpoint_disabled(feature_tags, "/b")
-    assert not middleware.is_endpoint_disabled(feature_tags, "/c")
-    assert not middleware.is_endpoint_disabled(feature_tags, "/d")
-    assert not middleware.is_endpoint_disabled(feature_tags, "/f")
+    assert middleware.is_endpoint_disabled(feature_tags, "/a") is False
+    assert middleware.is_endpoint_disabled(feature_tags, "/b") is False
+    assert middleware.is_endpoint_disabled(feature_tags, "/c") is False
+    assert middleware.is_endpoint_disabled(feature_tags, "/d") is False
+    assert middleware.is_endpoint_disabled(feature_tags, "/f") is False
 
 
-@patch("api.src.middleware.ENABLE_RSU_FEATURES", True)
-@patch("api.src.middleware.ENABLE_INTERSECTION_FEATURES", False)
-@patch("api.src.middleware.ENABLE_WZDX_FEATURES", False)
+@patch("api_environment.ENABLE_RSU_FEATURES", True)
+@patch("api_environment.ENABLE_INTERSECTION_FEATURES", False)
+@patch("api_environment.ENABLE_WZDX_FEATURES", False)
 def test_is_feature_disabled_different():
     from api.src import middleware as middleware
 
@@ -243,8 +250,8 @@ def test_is_feature_disabled_different():
         "/d": None,
     }
 
-    assert not middleware.is_endpoint_disabled(feature_tags, "/a")
-    assert middleware.is_endpoint_disabled(feature_tags, "/b")
-    assert middleware.is_endpoint_disabled(feature_tags, "/c")
-    assert not middleware.is_endpoint_disabled(feature_tags, "/d")
-    assert not middleware.is_endpoint_disabled(feature_tags, "/f")
+    assert middleware.is_endpoint_disabled(feature_tags, "/a") is False
+    assert middleware.is_endpoint_disabled(feature_tags, "/b") is True
+    assert middleware.is_endpoint_disabled(feature_tags, "/c") is True
+    assert middleware.is_endpoint_disabled(feature_tags, "/d") is False
+    assert middleware.is_endpoint_disabled(feature_tags, "/f") is False

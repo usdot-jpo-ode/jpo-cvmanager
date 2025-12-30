@@ -5,7 +5,7 @@ from marshmallow import Schema, fields
 from datetime import datetime, timedelta
 import common.pgquery as pgquery
 import common.util as util
-import os
+import api_environment
 import logging
 from pymongo import MongoClient
 from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden
@@ -38,8 +38,10 @@ def query_rsu_counts_mongo(allowed_ips_dict, message_type, start, end):
     )
 
     try:
-        client = MongoClient(os.getenv("MONGO_DB_URI"), serverSelectionTimeoutMS=5000)
-        mongo_db = client[os.getenv("MONGO_DB_NAME")]
+        client = MongoClient(
+            api_environment.MONGO_DB_URI, serverSelectionTimeoutMS=5000
+        )
+        mongo_db = client[api_environment.MONGO_DB_NAME]
         collection = mongo_db["CVCounts"]
     except Exception as e:
         logging.error(
@@ -118,14 +120,14 @@ class RsuQueryCountsSchema(Schema):
 
 class RsuQueryCounts(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization,Organization",
         "Access-Control-Allow-Methods": "GET",
         "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Content-Type": "application/json",
     }
 
@@ -154,10 +156,8 @@ class RsuQueryCounts(Resource):
         )
 
         # Validate request with supported message types
-        logging.debug(f"COUNTS_MSG_TYPES: {os.getenv('COUNTS_MSG_TYPES','NOT_SET')}")
-        msgListStr = os.getenv("COUNTS_MSG_TYPES", "BSM,SSM,SPAT,SRM,MAP")
-        msgList = [msg_type.strip().title() for msg_type in msgListStr.split(",")]
-        if message.title() not in msgList:
+        msgList = api_environment.COUNTS_MSG_TYPES
+        if message.upper() not in msgList:
             raise BadRequest(
                 "Invalid Message Type.\nValid message types: " + ", ".join(msgList)
             )

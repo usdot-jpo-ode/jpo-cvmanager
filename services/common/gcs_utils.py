@@ -1,8 +1,8 @@
 from google.cloud import storage
 from common.util import validate_file_type
 import logging
+from common import common_environment
 import os
-
 
 def download_gcp_blob(blob_name, destination_file_name, file_extension=None):
     """Download a file from a GCP Bucket Storage bucket to a local file.
@@ -18,8 +18,8 @@ def download_gcp_blob(blob_name, destination_file_name, file_extension=None):
         if not validate_file_type(blob_name, file_extension):
             return False
 
-    gcp_project = os.environ.get("GCP_PROJECT")
-    bucket_name = os.environ.get("BLOB_STORAGE_BUCKET")
+    gcp_project = common_environment.GCP_PROJECT
+    bucket_name = common_environment.BLOB_STORAGE_BUCKET
     storage_client = storage.Client(gcp_project)
     bucket = storage_client.get_bucket(bucket_name)
     blob = bucket.blob(blob_name)
@@ -35,8 +35,8 @@ def download_gcp_blob(blob_name, destination_file_name, file_extension=None):
 
 def list_gcs_blobs(gcs_prefix, file_extension):
     files = []
-    gcp_project = os.environ.get("GCP_PROJECT")
-    bucket_name = os.environ.get("BLOB_STORAGE_BUCKET")
+    gcp_project = common_environment.GCP_PROJECT
+    bucket_name = common_environment.BLOB_STORAGE_BUCKET
     logging.debug(f"Listing blobs in bucket {bucket_name} with prefix {gcs_prefix}.")
     storage_client = storage.Client(gcp_project)
     blobs = storage_client.list_blobs(bucket_name, prefix=gcs_prefix, delimiter="/")

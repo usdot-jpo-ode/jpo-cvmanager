@@ -45,9 +45,6 @@ MONGO_PROCESSED_PSM_COLLECTION_NAME = get_env_var(
     "MONGO_PROCESSED_PSM_COLLECTION_NAME", "ProcessedPsm", warn=False
 )
 MAX_GEO_QUERY_RECORDS = int(get_env_var("MAX_GEO_QUERY_RECORDS", "10000", warn=False))
-COUNTS_MSG_TYPES = process_count_msg_types(
-    get_env_var("COUNTS_MSG_TYPES", "BSM,SSM,SPAT,SRM,MAP", warn=False)
-)
 
 ENVIRONMENT_NAME = get_env_var("ENVIRONMENT_NAME")
 LOGS_LINK = get_env_var("LOGS_LINK")

@@ -208,7 +208,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                           <p
                             class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
                           >
-                            V2x Message Viewer
+                            V2X Message Viewer
                           </p>
                         </label>
                       </div>
@@ -830,7 +830,7 @@ exports[`snapshot bsmData clicked 1`] = `
                           <p
                             class="MuiTypography-root MuiTypography-body1 css-mocked-MuiTypography-root"
                           >
-                            V2x Message Viewer
+                            V2X Message Viewer
                           </p>
                         </label>
                       </div>

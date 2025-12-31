@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
-import { getIssScmsStatus, selectRsuData } from '../../generalSlices/rsuSlice'
+import { getIssScmsStatus, getRsuLastOnline, selectRsuData } from '../../generalSlices/rsuSlice'
 
 import '../../components/css/SnmpwalkMenu.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
@@ -46,7 +46,14 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
   // UseEffect to pull SCMS status data on first load
   useEffect(() => {
     dispatch(getIssScmsStatus())
-  }, [])
+  }, [dispatch])
+
+  // Fetch RSU online status data when an RSU is selected to ensure 'last online' is populated
+  useEffect(() => {
+    if (selectedRSU) {
+      dispatch(getRsuLastOnline(selectedRSU.properties.ipv4_address))
+    }
+  }, [selectedRSU, dispatch])
 
   const getRSUOnlineStatus = (rsuIpv4: string) => {
     return rsuIpv4 in rsuOnlineStatus &&

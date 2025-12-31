@@ -1,11 +1,6 @@
 from common.common_environment import get_env_var
 
 
-def process_count_msg_types(type_string: str) -> list[str]:
-    """Process the COUNTS_MSG_TYPES environment variable into a list of uppercase strings"""
-    return [t.strip().upper() for t in type_string.split(",") if t.strip()]
-
-
 APPLICATION_PORT = int(get_env_var("FLASK_RUN_PORT", "5000"))
 
 ENABLE_RSU_FEATURES = get_env_var("ENABLE_RSU_FEATURES", "true").lower() != "false"
@@ -45,9 +40,6 @@ MONGO_PROCESSED_PSM_COLLECTION_NAME = get_env_var(
     "MONGO_PROCESSED_PSM_COLLECTION_NAME", "ProcessedPsm", warn=False
 )
 MAX_GEO_QUERY_RECORDS = int(get_env_var("MAX_GEO_QUERY_RECORDS", "10000", warn=False))
-COUNTS_MSG_TYPES = process_count_msg_types(
-    get_env_var("COUNTS_MSG_TYPES", "BSM,SSM,SPAT,SRM,MAP", warn=False)
-)
 
 ENVIRONMENT_NAME = get_env_var("ENVIRONMENT_NAME")
 LOGS_LINK = get_env_var("LOGS_LINK")

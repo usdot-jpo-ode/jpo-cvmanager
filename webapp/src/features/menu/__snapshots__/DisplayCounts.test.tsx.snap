@@ -187,11 +187,7 @@ exports[`should take a snapshot 1`] = `
               role="combobox"
               tabindex="0"
             >
-              <span
-                class="notranslate"
-              >
-                ​
-              </span>
+              BSM
             </div>
             <input
               aria-hidden="true"

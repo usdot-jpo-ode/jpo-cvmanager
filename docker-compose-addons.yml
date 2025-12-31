@@ -17,7 +17,6 @@ services:
       SMTP_PASSWORD: ${SMTP_PASSWORD}
       SMTP_EMAIL: ${SMTP_EMAIL}
 
-      MESSAGE_TYPES: ${COUNT_MESSAGE_TYPES:-BSM,SSM,SPAT,SRM,MAP}
       PROJECT_ID: ${GCP_PROJECT_ID:-}
 
       PG_DB_HOST: ${PG_DB_HOST:-cvmanager_postgres:5432}

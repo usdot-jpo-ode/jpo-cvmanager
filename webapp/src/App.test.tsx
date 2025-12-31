@@ -10,7 +10,6 @@ import { replaceChaoticIds } from './utils/test-utils'
 jest.mock('./EnvironmentVars', () => ({
   WEBAPP_THEME_LIGHT: 'light',
   WEBAPP_THEME_DARK: 'dark',
-  getMessageTypes: jest.fn(() => ['BSM']),
   getMapboxInitViewState: jest.fn(() => ({
     latitude: 39.7392,
     longitude: -104.9903,

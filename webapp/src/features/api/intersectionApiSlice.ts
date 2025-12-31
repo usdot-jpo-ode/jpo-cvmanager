@@ -7,7 +7,7 @@ import { selectToken } from '../../generalSlices/userSlice'
 import { selectSelectedIntersectionId } from '../../generalSlices/intersectionSlice'
 import { combineUrlPaths } from '../../apis/intersections/api-helper-cviz'
 
-const getQueryString = (query_params: Record<string, string>) => {
+export const getQueryString = (query_params: Record<string, string>) => {
   // filter out undefined values from query params
   const filteredQueryParams: Record<string, string> = { ...query_params }
   Object.keys(filteredQueryParams).forEach((key) => query_params[key] === undefined && delete query_params[key])

@@ -6,6 +6,7 @@ import { ThemeProvider } from '@mui/material'
 import { testTheme } from '../../styles'
 import { setupStore } from '../../store'
 import { MockLocalizationProvider, replaceChaoticIds } from '../../utils/test-utils'
+import { MessageType } from '../../models/MessageTypes'
 
 // // Mock the @mui/x-date-pickers module
 jest.mock('@mui/x-date-pickers', () => {
@@ -16,19 +17,52 @@ jest.mock('@mui/x-date-pickers', () => {
   }
 })
 
-// Mock the dayjs library
+// Mock the dayjs library with timezone support
 jest.mock('dayjs', () => {
   const actualDayjs = jest.requireActual('dayjs')
-  const mockDayjs = (date) => actualDayjs(date).tz('America/Denver')
+  const utc = require('dayjs/plugin/utc')
+  const timezone = require('dayjs/plugin/timezone')
+
+  // Extend dayjs with required plugins
+  actualDayjs.extend(utc)
+  actualDayjs.extend(timezone)
+
+  // Create mock function
+  const mockDayjs = (date?: any) => {
+    const instance = date ? actualDayjs(date) : actualDayjs()
+    return instance.tz('America/Denver')
+  }
+
+  // Copy all static methods and properties from actual dayjs
+  Object.keys(actualDayjs).forEach((key) => {
+    if (!(key in mockDayjs)) {
+      mockDayjs[key] = actualDayjs[key]
+    }
+  })
+
+  // Ensure timezone method is available
   mockDayjs.extend = actualDayjs.extend
   mockDayjs.Ls = actualDayjs.Ls
+
   return mockDayjs
 })
 
 it('should take a snapshot', () => {
   const { container } = render(
     <ThemeProvider theme={testTheme}>
-      <Provider store={setupStore({})}>
+      <Provider
+        store={setupStore({
+          menu: {
+            value: {
+              countsStartDate: new Date('2024-04-09'),
+              countsEndDate: new Date('2024-04-10'),
+              countsMsgType: 'BSM' as MessageType,
+              display: 'displayCounts',
+              mapMenuSelection: ['Display Message Counts'],
+            },
+          },
+        })}
+      >
         <DisplayCounts />
       </Provider>
     </ThemeProvider>

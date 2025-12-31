@@ -132,8 +132,6 @@ spec:
               value: ""
             - name: MONGO_DB_NAME
               value: ""
-            - name: COUNTS_MSG_TYPES
-              value: ""
             - name: MONGO_PROCESSED_BSM_COLLECTION_NAME
               value: ""
             - name: MONGO_PROCESSED_PSM_COLLECTION_NAME

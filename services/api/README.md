@@ -335,7 +335,6 @@ HTTP URL Arguments:
 - PG_DB_PORT: The database port.
 - PG_PG_DB_USER: The database user that will be used to authenticate the cloud function when it queries the database.
 - PG_PG_DB_PASS: The database user's password that will be used to authenticate the cloud function.
-- COUNTS_MSG_TYPES: Set to a list of message types to include in counts query. Sample format is described in the sample.env.
 - MONGO_PROCESSED_BSM_COLLECTION_NAME: The database name for processed BSM messages output from the [Geojson Converter](https://github.com/usdot-jpo-ode/geojson-converter).
 - MONGO_PROCESSED_PSM_COLLECTION_NAME: The database name for processed PSM messages output from the [Geojson Converter](https://github.com/usdot-jpo-ode/geojson-converter).
 - MONGO_SSM_COLLECTION_NAME: The database name for SSM visualization data.

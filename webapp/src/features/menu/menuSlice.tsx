@@ -1,67 +1,22 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { AnyAction, PayloadAction, ThunkDispatch, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { updateRowData } from '../../generalSlices/rsuSlice'
+import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
-import { CountsListElement } from '../../models/Rsu'
-import { DateTime } from 'luxon'
+import { MessageType } from '../../models/RsuApi'
+import dayjs from 'dayjs'
 
 const initialState = {
-  currentSort: null as null | string,
-  sortedCountList: [] as CountsListElement[],
+  countsMsgType: 'BSM' as MessageType,
+  countsStartDate: dayjs().subtract(1, 'day').toDate(),
+  countsEndDate: dayjs().toDate(),
   displayCounts: false,
   displayRsuErrors: false,
   menuSelection: [],
 }
 
-export const sortCountList =
-  (key: string, currentSort: string, countList: CountsListElement[]) =>
-  (dispatch: ThunkDispatch<RootState, unknown, AnyAction>) => {
-    let sortFn = (
-      a: { [key: string]: string | number | void },
-      b: { [key: string]: string | number | void }
-    ): number => {
-      return 0
-    }
-    // Support both descending and ascending sort
-    // based on the current sort
-    // Default is ascending
-    if (key === currentSort) {
-      dispatch(setCurrentSort(key + 'desc'))
-      sortFn = function (a, b) {
-        if (a[key] > b[key]) return -1
-        if (a[key] < b[key]) return 1
-        return 0
-      }
-    } else {
-      dispatch(setCurrentSort(key))
-      sortFn = function (a, b) {
-        if (a[key] < b[key]) return -1
-        if (a[key] > b[key]) return 1
-        return 0
-      }
-    }
-
-    const arrayCopy = [...countList]
-    arrayCopy.sort(sortFn)
-    dispatch(setSortedCountList(arrayCopy))
-    return arrayCopy
-  }
-
-export const changeDate = (e: Date, type: 'start' | 'end') => (dispatch: ThunkDispatch<RootState, any, AnyAction>) => {
-  const mst = DateTime.fromJSDate(e).setZone('America/Denver')
-  let data
-  if (type === 'start') {
-    data = { start: mst.toString() }
-  } else {
-    data = { end: mst.toString() }
-  }
-  dispatch(updateRowData(data))
-  return data
-}
-
 export const toggleMapMenuSelection = createAsyncThunk(
   'menu/toggleMapMenuSelection',
   async (label: string, { getState, dispatch }) => {
+    // TODO: Re-factor this to not store list of menuSelection. This should be broken out into separate menu variables if needed
     const currentState = getState() as RootState
     let menuSelection = [...selectMenuSelection(currentState)]
     if (menuSelection.includes(label)) {
@@ -78,13 +33,13 @@ export const toggleMapMenuSelection = createAsyncThunk(
       switch (label) {
         case 'Display Message Counts':
           if (menuSelection.includes('Display RSU Status')) {
-            menuSelection = [...menuSelection.filter((item) => item !== 'Display RSU Status'), 'Display Message Counts']
+            menuSelection = [...menuSelection.filter((item) => item !== 'Display RSU Status')]
           }
           dispatch(setDisplay('displayCounts'))
           break
         case 'Display RSU Status':
           if (menuSelection.includes('Display Message Counts')) {
-            menuSelection = [...menuSelection.filter((item) => item !== 'Display Message Counts'), 'Display RSU Status']
+            menuSelection = [...menuSelection.filter((item) => item !== 'Display Message Counts')]
           }
           dispatch(setDisplay('displayRsuErrors'))
       }
@@ -100,15 +55,21 @@ export const menuSlice = createSlice({
     value: initialState,
   },
   reducers: {
-    setCurrentSort: (state, action) => {
-      state.value.currentSort = action.payload
+    setCountsMsgType: (state, action: PayloadAction<MessageType>) => {
+      state.value.countsMsgType = action.payload
     },
-    setSortedCountList: (state, action) => {
-      state.value.sortedCountList = action.payload
+    setCountsStartDate: (state, action: PayloadAction<Date>) => {
+      state.value.countsStartDate = action.payload
+    },
+    setCountsEndDate: (state, action: PayloadAction<Date>) => {
+      state.value.countsEndDate = action.payload
     },
     setDisplay: (state, action: PayloadAction<string>) => {
       state.value.displayCounts = action.payload == 'displayCounts'
       state.value.displayRsuErrors = action.payload == 'displayRsuErrors'
+    },
+    setMenuSelection: (state, action: PayloadAction<string[]>) => {
+      state.value.menuSelection = action.payload
     },
   },
   extraReducers: (builder) => {
@@ -118,13 +79,14 @@ export const menuSlice = createSlice({
   },
 })
 
-export const { setCurrentSort, setSortedCountList, setDisplay } = menuSlice.actions
+export const { setCountsMsgType, setCountsStartDate, setCountsEndDate, setDisplay } = menuSlice.actions
 
 export const selectLoading = (state: RootState) => state.menu.loading
-export const selectCurrentSort = (state: RootState) => state.menu.value.currentSort
-export const selectSortedCountList = (state: RootState) => state.menu.value.sortedCountList
+export const selectCountsMsgType = (state: RootState) => state.menu.value.countsMsgType
 export const selectDisplayCounts = (state: RootState) => state.menu.value.displayCounts
 export const selectDisplayRsuErrors = (state: RootState) => state.menu.value.displayRsuErrors
 export const selectMenuSelection = (state: RootState) => state.menu.value.menuSelection
+export const selectCountsStartDate = (state: RootState) => state.menu.value.countsStartDate
+export const selectCountsEndDate = (state: RootState) => state.menu.value.countsEndDate
 
 export default menuSlice.reducer

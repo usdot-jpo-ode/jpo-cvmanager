@@ -8,7 +8,7 @@ import common.util as util
 import api_environment
 import logging
 from pymongo import MongoClient
-from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden
+from werkzeug.exceptions import InternalServerError, Forbidden
 
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
@@ -18,18 +18,8 @@ from common.auth_tools import (
     generate_sql_placeholders_for_list,
 )
 
-message_types = {
-    "bsm": "BSM",
-    "map": "Map",
-    "spat": "SPaT",
-    "srm": "SRM",
-    "ssm": "SSM",
-    "tim": "TIM",
-    "psm": "PSM",
-}
 
-
-def query_rsu_counts_mongo(allowed_ips_dict, message_type, start, end):
+def query_rsu_counts_aggregated(allowed_ips_dict, start, end):
     start_dt = util.format_date_utc(start, "DATETIME").replace(
         hour=0, minute=0, second=0, microsecond=0
     )
@@ -49,30 +39,59 @@ def query_rsu_counts_mongo(allowed_ips_dict, message_type, start, end):
         )
         raise Forbidden("Failed to connect to Mongo") from e
 
-    result = {}
-    for rsu_ip in allowed_ips_dict:
-        query = {
-            "messageType": message_types[message_type.lower()],
-            "rsuIp": rsu_ip,
-            "timestamp": {
-                "$gte": start_dt,
-                "$lt": end_dt,
-            },
+    # MongoDB aggregation query to get message counts by RSU IP
+    pipeline = [
+        {
+            "$match": {
+                "rsuIp": {"$in": list(allowed_ips_dict.keys())},
+                "timestamp": {"$gte": start_dt, "$lt": end_dt},
+            }
+        },
+        {"$project": {"rsuIp": 1, "messageType": 1, "count": 1, "_id": 0}},
+        {
+            "$group": {
+                "_id": {"rsuIp": "$rsuIp", "messageType": "$messageType"},
+                "totalCount": {"$sum": "$count"},
+            }
+        },
+        {
+            "$group": {
+                "_id": "$_id.rsuIp",
+                "messageTypeCounts": {
+                    "$push": {"k": "$_id.messageType", "v": "$totalCount"}
+                },
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "rsuIp": "$_id",
+                "messageTypeCounts": {"$arrayToObject": "$messageTypeCounts"},
+            }
+        },
+    ]
+
+    try:
+        logging.debug(f"Running aggregation on {collection.name}")
+        cursor = collection.aggregate(pipeline, allowDiskUse=False)  # Keep in memory
+
+        # Initialize result
+        result = {
+            rsu_ip: {"road": road, "messageTypeCounts": {}}
+            for rsu_ip, road in allowed_ips_dict.items()
         }
 
-        try:
-            logging.debug(f"Running query: {query}, on collection: {collection.name}")
-            response = collection.find_one(query)
-            if not response:
-                item = {"road": allowed_ips_dict[rsu_ip], "count": 0}
-            else:
-                item = {"road": allowed_ips_dict[rsu_ip], "count": response["count"]}
-            result[rsu_ip] = item
-        except Exception as e:
-            logging.error(f"Filter failed: {e}")
-            raise InternalServerError("Encountered unknown issue") from e
+        # Update with actual counts
+        for doc in cursor:
+            rsu_ip = doc["rsuIp"]
+            if rsu_ip in result:
+                result[rsu_ip]["messageTypeCounts"] = doc["messageTypeCounts"]
 
-    return result
+        return result
+
+    except Exception as e:
+        logging.error(f"Aggregation failed: {e}")
+        raise InternalServerError("Encountered unknown issue") from e
 
 
 def get_organization_rsus(user: EnvironWithOrg, qualified_orgs: list[str]):
@@ -146,7 +165,6 @@ class RsuQueryCounts(Resource):
         if errors:
             abort(400, str(errors))
         # Get arguments from request and set defaults if not provided
-        message = request.args.get("message", default="BSM")
         start = request.args.get(
             "start",
             default=((datetime.now() - timedelta(1)).strftime("%Y-%m-%dT%H:%M:%S")),
@@ -155,16 +173,9 @@ class RsuQueryCounts(Resource):
             "end", default=((datetime.now()).strftime("%Y-%m-%dT%H:%M:%S"))
         )
 
-        # Validate request with supported message types
-        msgList = api_environment.COUNTS_MSG_TYPES
-        if message.upper() not in msgList:
-            raise BadRequest(
-                "Invalid Message Type.\nValid message types: " + ", ".join(msgList)
-            )
-
         rsu_dict = get_organization_rsus(
             permission_result.user, permission_result.qualified_orgs
         )
-        data = query_rsu_counts_mongo(rsu_dict, message, start, end)
+        data = query_rsu_counts_aggregated(rsu_dict, start, end)
 
         return (data, 200, self.headers)

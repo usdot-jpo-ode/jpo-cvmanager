@@ -4,6 +4,7 @@ import common.pgquery as pgquery
 import rsu_status_check_environment
 from common import common_environment
 
+
 def get_all_rsus():
     query = "SELECT to_jsonb(row) FROM (SELECT rsu_id FROM public.rsus) AS row ORDER BY rsu_id"
     data = pgquery.query_db(query)

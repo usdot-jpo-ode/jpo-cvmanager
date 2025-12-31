@@ -7,6 +7,7 @@ import tarfile
 import time
 from common import common_environment
 
+
 class YunexUpgrader(upgrader.UpgraderAbstractClass):
     def __init__(self, upgrade_info):
         super().__init__(upgrade_info, firmware_extension=".tar")

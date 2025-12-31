@@ -37,10 +37,14 @@ export type RsuOnlineStatusRespSingle = {
   last_online: string | undefined
 }
 
+export type MessageType = 'SPAT' | 'MAP' | 'BSM' | 'SRM' | 'SSM' | 'TIM' | 'PSM'
+
 export type RsuCounts = {
   [ip: string]: {
     road: string
-    count: number
+    messageTypeCounts: {
+      [messageType: string]: number
+    }
   }
 }
 

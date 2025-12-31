@@ -38,7 +38,6 @@ export function getClusterColorStops(msgType: MessageType, heatMapData: GeoJSON.
   // Generate color stops based on message type frequency
   return [
     [0, '#ffffcc'], // Light yellow (low)
-    [Math.round(desiredValue * 0.04), '#ffeda0'],
     [Math.round(desiredValue * 0.1), '#fed976'],
     [Math.round(desiredValue * 0.2), '#feb24c'],
     [Math.round(desiredValue * 0.3), '#fd8d3c'],
@@ -68,7 +67,7 @@ export function getClusterRadiusStops(msgType: MessageType, heatMapData: GeoJSON
   // Generate radius stops based on message type frequency
   return [
     [0, 0], // Min count = 0px radius
-    [Math.round(desiredValue * 0.04), 20], // 4% = 20px
+    [1, 20], // 1 = 20px
     [Math.round(desiredValue * 0.2), 22], // 20% = 22px
     [Math.round(desiredValue * 0.4), 25], // 40% = 25px
     [Math.round(desiredValue * 0.8), 30], // 80% = 30px
@@ -102,7 +101,6 @@ export function getClusterLabelSizeStops(
   // Text sizes range from 10px (low counts) to 16px (high counts)
   return [
     [0, 10], // Min count = 10px font
-    [Math.round(desiredValue * 0.04), 10], // 4% = 10px
     [Math.round(desiredValue * 0.2), 11], // 20% = 11px
     [Math.round(desiredValue * 0.4), 12], // 40% = 12px
     [Math.round(desiredValue * 0.6), 13], // 60% = 13px
@@ -133,7 +131,7 @@ export function getHeatmapCountsStops(msgType: MessageType, heatMapData: GeoJSON
   // Generate mapbox heatmap layer stops from 0 -> 1
   return [
     [0, 0],
-    [desiredValue * 0.01, 0.1], // 1% = 0.1 intensity
+    [1, 0.1], // 1% = 0.1 intensity
     [desiredValue * 0.05, 0.2], // 5% = 0.2 intensity
     [desiredValue * 0.1, 0.3], // 10% = 0.3 intensity
     [desiredValue * 0.2, 0.4], // 20% = 0.4 intensity

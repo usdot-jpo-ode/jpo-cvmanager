@@ -53,7 +53,7 @@ const Menu = () => {
           <DisplayRsuErrors />
         </div>
       )}
-      {SecureStorageManager.getUserRole() === 'admin' && (selectedRsu || selectedRsuList?.length > 0) && (
+      {SecureStorageManager.getUserRole() === 'operator' && (selectedRsu || selectedRsuList?.length > 0) && (
         <div
           style={{ ...menuStyle, backgroundColor: theme.palette.custom.mapLegendBackground, width: '400px' }}
           className="visibleProp map-control-container"

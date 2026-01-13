@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import './Menu.css'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { selectSelectedRsu } from '../../generalSlices/rsuSlice'
 import { selectConfigList } from '../../generalSlices/configSlice'
 import { selectDisplayCounts, selectDisplayRsuErrors } from './menuSlice'
@@ -8,8 +8,6 @@ import { SecureStorageManager } from '../../managers'
 import DisplayCounts from './DisplayCounts'
 import DisplayRsuErrors from './DisplayRsuErrors'
 import ConfigureRSU from './ConfigureRSU'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
 import { headerTabHeight } from '../../styles/index'
 import { useTheme } from '@mui/material'
 
@@ -24,12 +22,16 @@ const menuStyle: React.CSSProperties = {
 }
 
 const Menu = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const theme = useTheme()
   const selectedRsu = useSelector(selectSelectedRsu)
   const selectedRsuList = useSelector(selectConfigList)
   const displayCounts = useSelector(selectDisplayCounts)
   const displayRsuErrors = useSelector(selectDisplayRsuErrors)
+
+  const isOperatorOrAbove = useMemo(() => {
+    const allowedRoles = ['operator', 'admin']
+    return allowedRoles.includes(SecureStorageManager.getUserRole())
+  }, [])
 
   return (
     <div>
@@ -53,7 +55,7 @@ const Menu = () => {
           <DisplayRsuErrors />
         </div>
       )}
-      {SecureStorageManager.getUserRole() === 'operator' && (selectedRsu || selectedRsuList?.length > 0) && (
+      {isOperatorOrAbove && (selectedRsu || selectedRsuList?.length > 0) && (
         <div
           style={{ ...menuStyle, backgroundColor: theme.palette.custom.mapLegendBackground, width: '400px' }}
           className="visibleProp map-control-container"

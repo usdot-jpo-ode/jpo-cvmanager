@@ -42,6 +42,9 @@ class EmailServiceTest {
     @Mock
     private ConflictMonitorApiProperties props;
 
+    @Mock
+    private PostgresService postgresService;
+
     @InjectMocks
     private EmailService emailService;
 
@@ -236,5 +239,35 @@ class EmailServiceTest {
 
         // TODO: Test underlying logic when method is further implemented
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testGetUsersForConflictMonitorReports() {
+        List<String> mockUsers = List.of("user1@example.com", "user2@example.com");
+        when(postgresService.getUsersByNotificationType("Conflict Monitor Reports")).thenReturn(mockUsers);
+
+        List<String> result = emailService.getUsersForConflictMonitorReports();
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertTrue(result.contains("user1@example.com"));
+        assertTrue(result.contains("user2@example.com"));
+        verify(postgresService, times(1)).getUsersByNotificationType("Conflict Monitor Reports");
+    }
+
+    @Test
+    void testGetAllowedIntersectionIdsByEmail() {
+        String email = "user@example.com";
+        List<Integer> mockIntersectionIds = List.of(1, 2, 3);
+        when(postgresService.getAllowedIntersectionIdsByEmail(email)).thenReturn(mockIntersectionIds);
+
+        List<Integer> result = emailService.getAllowedIntersectionIdsByEmail(email);
+
+        assertNotNull(result);
+        assertEquals(3, result.size());
+        assertTrue(result.contains(1));
+        assertTrue(result.contains(2));
+        assertTrue(result.contains(3));
+        verify(postgresService, times(1)).getAllowedIntersectionIdsByEmail(email);
     }
 }

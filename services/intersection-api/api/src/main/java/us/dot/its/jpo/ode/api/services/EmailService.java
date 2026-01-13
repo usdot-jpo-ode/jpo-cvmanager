@@ -33,14 +33,17 @@ public class EmailService {
     private final SendGrid sendGrid;
     private final ApiClient postmark;
     private final ConflictMonitorApiProperties props;
+    private final PostgresService postgresService;
 
     @Autowired
     public EmailService(JavaMailSender mailSender, SendGrid sendGrid, ApiClient postmark,
-            ConflictMonitorApiProperties props) {
+            ConflictMonitorApiProperties props, PostgresService postgresService) {
         this.mailSender = mailSender;
         this.sendGrid = sendGrid;
         this.postmark = postmark;
         this.props = props;
+        this.postgresService = postgresService;
+
     }
 
     public void sendEmailViaSendGrid(String to, String subject, String text) {
@@ -79,6 +82,7 @@ public class EmailService {
     public void sendEmailViaSpringMail(String to, String subject, String text) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(props.getEmailFromAddress());
             message.setTo(to);
             message.setSubject(subject);
             message.setText(text);
@@ -111,5 +115,13 @@ public class EmailService {
     public List<UserRepresentation> getNotificationEmailList(EmailFrequency frequency) {
         // TODO: Pull email list from Postgres
         return new ArrayList<>();
+    }
+
+    public List<String> getUsersForConflictMonitorReports() {
+        return postgresService.getUsersByNotificationType("Conflict Monitor Reports");
+    }
+
+    public List<Integer> getAllowedIntersectionIdsByEmail(String email) {
+        return postgresService.getAllowedIntersectionIdsByEmail(email);
     }
 }

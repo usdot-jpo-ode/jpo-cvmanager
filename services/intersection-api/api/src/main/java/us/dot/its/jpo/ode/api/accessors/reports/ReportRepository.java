@@ -5,6 +5,8 @@ import org.springframework.data.domain.Pageable;
 import us.dot.its.jpo.ode.api.models.DataLoader;
 import us.dot.its.jpo.ode.api.models.ReportDocument;
 
+import java.util.List;
+
 public interface ReportRepository extends DataLoader<ReportDocument> {
     long count(String reportName, Integer intersectionID, Long startTime, Long endTime);
 
@@ -14,4 +16,6 @@ public interface ReportRepository extends DataLoader<ReportDocument> {
     Page<ReportDocument> find(String reportName, Integer intersectionID, Long startTime, Long endTime,
             boolean includeReportContents, Pageable pageable);
 
+    List<ReportDocument> findAll(String reportName, Integer intersectionID, Long startTime, Long endTime,
+            boolean includeReportContents);
 }

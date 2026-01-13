@@ -172,6 +172,18 @@ public class PostgresService {
         return !result.isEmpty() && result.get(0).equals(intersectionId);
     }
 
+    private final String findUsersByNotificationTypeQuery = "SELECT u.email " +
+            "FROM UserEmailNotification uen " +
+            "JOIN Users u ON uen.user_id = u.user_id " +
+            "JOIN EmailType et ON uen.email_type_id = et.email_type_id " +
+            "WHERE et.email_type = :notification_type";
+
+    public List<String> getUsersByNotificationType(String notificationType) {
+        TypedQuery<String> query = entityManager.createQuery(findUsersByNotificationTypeQuery, String.class);
+        query.setParameter("notification_type", notificationType);
+        return query.getResultList();
+    }
+
     public List<String> getQualifiedOrgList(String email, String requiredRole) {
         List<UserOrgRole> organizationRoles = findUserOrgRoles(email);
         return organizationRoles.stream()

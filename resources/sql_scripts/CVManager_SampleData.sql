@@ -72,7 +72,7 @@ INSERT INTO public.snmp_msgfwd_config(
 
 INSERT INTO public.email_type(
 	email_type)
-	VALUES ('Support Requests'), ('Firmware Upgrade Failures'), ('Daily Message Counts');
+	VALUES ('Support Requests'), ('Firmware Upgrade Failures'), ('Daily Message Counts'), ('Conflict Monitor Reports');
 
 INSERT INTO public.intersections(
 	intersection_number, ref_pt, intersection_name)

@@ -37,7 +37,7 @@ public class ReportEmailTask {
     private final us.dot.its.jpo.ode.api.accessors.map.ProcessedMapRepository processedMapRepo;
     private final EmailService emailService;
 
-    private static final String WEEKLY_EMAIL_CRON = "0 0 1 * * ?"; // Runs weekly at 1 am
+    private static final String WEEKLY_EMAIL_CRON = "0 0 1 ? * SUN"; // Runs weekly at 1 am on Sundays
 
     @Scheduled(cron = WEEKLY_EMAIL_CRON)
     public void sendWeeklyReportEmails() {

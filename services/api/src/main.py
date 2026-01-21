@@ -18,7 +18,6 @@ from rsu_snmp_fwd_fetch import RsuSnmpFwdFetch
 from rsu_geo_query import RsuGeoQuery
 from wzdx_feed import WzdxFeed
 from rsu_geo_msg_query import RsuGeoData
-from moove_ai_query import MooveAiData
 from iss_scms_status import IssScmsStatus
 from rsu_ssm_srm import RsuSsmSrmData
 from admin_new_rsu import AdminNewRsu
@@ -83,8 +82,6 @@ if api_environment.ENABLE_WZDX_FEATURES:
 if api_environment.ENABLE_INTERSECTION_FEATURES:
     api.add_resource(AdminNewIntersection, "/admin-new-intersection")
     api.add_resource(AdminIntersection, "/admin-intersection")
-if api_environment.ENABLE_MOOVE_AI_FEATURES:
-    api.add_resource(MooveAiData, "/moove-ai-data")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=api_environment.FLASK_RUN_PORT)

@@ -132,14 +132,13 @@ const Help = () => {
 
         <h3>Enabled Features</h3>
         <p>
-          The CV Manager can have different feature sets enabled or disabled. In this application, the
-          following features are currently enabled or disabled as shown below:
+          The CV Manager can have different feature sets enabled or disabled. In this application, the following
+          features are currently enabled or disabled as shown below:
         </p>
         <ul>
           <li>{`RSU Monitoring and Configuration: ${EnvironmentVars.ENABLE_RSU_FEATURES ? 'ENABLED' : 'DISABLED'}`}</li>
           <li>{`Intersection Map/Dashboard: ${EnvironmentVars.ENABLE_INTERSECTION_FEATURES ? 'ENABLED' : 'DISABLED'}`}</li>
           <li>{`WZDx Viewer: ${EnvironmentVars.ENABLE_WZDX_FEATURES ? 'ENABLED' : 'DISABLED'}`}</li>
-          <li>{`Moove AI Viewer: ${EnvironmentVars.ENABLE_MOOVE_AI_FEATURES ? 'ENABLED' : 'DISABLED'}`}</li>
           <li>{`HAAS Alert Viewer: ${EnvironmentVars.ENABLE_HAAS_FEATURES ? 'ENABLED' : 'DISABLED'}`}</li>
         </ul>
 
@@ -184,9 +183,6 @@ const Help = () => {
           </li>
           <li>
             <strong>Intersections:</strong> Shows connected intersections and IDs
-          </li>
-          <li>
-            <strong>Moove AI Viewer:</strong> Query harsh braking events
           </li>
           <li>
             <strong>HAAS Alert Viewer:</strong> Query alert incidents by time
@@ -280,7 +276,7 @@ const Help = () => {
           geographic region.
         </p>
       </Stack>
-      <ContactSupportMenu/>
+      <ContactSupportMenu />
     </Container>
   )
 }

@@ -47,7 +47,6 @@
         "MONGO_PROCESSED_BSM_COLLECTION_NAME": "processed_bsm",
         "MONGO_PROCESSED_PSM_COLLECTION_NAME": "processed_psm",
         "ENABLE_WZDX_FEATURES": "false",
-        "ENABLE_MOOVE_AI_FEATURES": "false",
         "CORS_DOMAIN": "*",
         "KEYCLOAK_ENDPOINT": "http://localhost:8084",
         "KEYCLOAK_REALM": "cvmanager",

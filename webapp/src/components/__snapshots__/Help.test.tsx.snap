@@ -374,9 +374,6 @@ exports[`should take a snapshot 1`] = `
           WZDx Viewer: ENABLED
         </li>
         <li>
-          Moove AI Viewer: ENABLED
-        </li>
-        <li>
           HAAS Alert Viewer: ENABLED
         </li>
       </ul>
@@ -468,12 +465,6 @@ exports[`should take a snapshot 1`] = `
             Intersections:
           </strong>
            Shows connected intersections and IDs
-        </li>
-        <li>
-          <strong>
-            Moove AI Viewer:
-          </strong>
-           Query harsh braking events
         </li>
         <li>
           <strong>

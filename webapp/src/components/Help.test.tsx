@@ -9,9 +9,8 @@ it('should take a snapshot', () => {
     EnvironmentVars: {
       ENABLE_RSU_FEATURES: true,
       ENABLE_WZDX_FEATURES: true,
-      ENABLE_MOOVE_AI_FEATURES: true,
-      ENABLE_HAAS_FEATURES: true
-    }
+      ENABLE_HAAS_FEATURES: true,
+    },
   }))
 
   const { container } = render(

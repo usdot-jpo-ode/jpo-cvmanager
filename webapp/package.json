@@ -29,7 +29,7 @@
     "html-to-image": "^1.11.11",
     "jest-fetch-mock": "^3.0.3",
     "js-sha256": "^0.11.0",
-    "jspdf": "^2.5.2",
+    "jspdf": "4.0.0",
     "jszip": "^3.10.1",
     "keycloak-js": "26.0.5",
     "luxon": "^3.5.0",
@@ -55,6 +55,10 @@
     "uuid": "^11.1.0",
     "worker-loader": "^3.0.8",
     "yup": "^1.4.0"
+  },
+  "overrides": {
+    "nth-check": "^2.0.1",
+    "postcss": "^8.4.31"
   },
   "scripts": {
     "start": "react-scripts start",

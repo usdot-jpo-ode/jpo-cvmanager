@@ -1,4 +1,5 @@
 import 'jest-canvas-mock'
+import { TextEncoder, TextDecoder } from 'util'
 
 // adds the 'fetchMock' global variable and rewires 'fetch' global to call 'fetchMock' instead of the real implementation
 import fetchMock from 'jest-fetch-mock'
@@ -40,3 +41,7 @@ jest.mock('luxon', () => {
     },
   }
 })
+
+// the new version of jspdf (4.0.0) requires this to be defined during tests
+global.TextEncoder = TextEncoder
+global.TextDecoder = TextDecoder as any

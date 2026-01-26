@@ -84,4 +84,4 @@ if api_environment.ENABLE_INTERSECTION_FEATURES:
     api.add_resource(AdminIntersection, "/admin-intersection")
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=api_environment.FLASK_RUN_PORT)
+    app.run(host="0.0.0.0", port=api_environment.APPLICATION_PORT)

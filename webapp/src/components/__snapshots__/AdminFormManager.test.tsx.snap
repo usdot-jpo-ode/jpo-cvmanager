@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`snapshot organization 1`] = `
 <div>
@@ -6,7 +6,7 @@ exports[`snapshot organization 1`] = `
     class="scroll-div"
   >
     <div
-      style="background-color: rgb(255, 255, 255); padding: 10px 0px;"
+      style="background-color: rgb(255, 255, 255); height: fit-content; padding: 10px 0px;"
     >
       <div
         style="display: flex; flex-direction: row; margin: 10px;"
@@ -195,15 +195,15 @@ exports[`snapshot organization 1`] = `
             <h3
               class="MuiAccordion-heading css-mocked-MuiAccordion-heading"
             >
-              <div
+              <button
                 aria-controls="panel1a-content"
                 aria-expanded="false"
                 class="MuiButtonBase-root MuiAccordionSummary-root MuiAccordionSummary-gutters css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
                 id="panel1a-header"
-                role="button"
                 tabindex="0"
+                type="button"
               >
-                <div
+                <span
                   class="MuiAccordionSummary-content MuiAccordionSummary-contentGutters css-mocked-MuiAccordionSummary-content"
                 >
                   <h6
@@ -211,8 +211,8 @@ exports[`snapshot organization 1`] = `
                   >
                     RSUs
                   </h6>
-                </div>
-                <div
+                </span>
+                <span
                   class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
                 >
                   <svg
@@ -226,8 +226,8 @@ exports[`snapshot organization 1`] = `
                       d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
                     />
                   </svg>
-                </div>
-              </div>
+                </span>
+              </button>
             </h3>
             <div
               class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-mocked-MuiCollapse-root"
@@ -264,15 +264,15 @@ exports[`snapshot organization 1`] = `
             <h3
               class="MuiAccordion-heading css-mocked-MuiAccordion-heading"
             >
-              <div
+              <button
                 aria-controls="panel1a-content"
                 aria-expanded="false"
                 class="MuiButtonBase-root MuiAccordionSummary-root MuiAccordionSummary-gutters css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
                 id="panel1a-header"
-                role="button"
                 tabindex="0"
+                type="button"
               >
-                <div
+                <span
                   class="MuiAccordionSummary-content MuiAccordionSummary-contentGutters css-mocked-MuiAccordionSummary-content"
                 >
                   <h6
@@ -280,8 +280,8 @@ exports[`snapshot organization 1`] = `
                   >
                     Intersections
                   </h6>
-                </div>
-                <div
+                </span>
+                <span
                   class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
                 >
                   <svg
@@ -295,8 +295,8 @@ exports[`snapshot organization 1`] = `
                       d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
                     />
                   </svg>
-                </div>
-              </div>
+                </span>
+              </button>
             </h3>
             <div
               class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-mocked-MuiCollapse-root"
@@ -331,15 +331,15 @@ exports[`snapshot organization 1`] = `
             <h3
               class="MuiAccordion-heading css-mocked-MuiAccordion-heading"
             >
-              <div
+              <button
                 aria-controls="panel1a-content"
                 aria-expanded="false"
                 class="MuiButtonBase-root MuiAccordionSummary-root MuiAccordionSummary-gutters css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
                 id="panel1a-header"
-                role="button"
                 tabindex="0"
+                type="button"
               >
-                <div
+                <span
                   class="MuiAccordionSummary-content MuiAccordionSummary-contentGutters css-mocked-MuiAccordionSummary-content"
                 >
                   <h6
@@ -347,8 +347,8 @@ exports[`snapshot organization 1`] = `
                   >
                     Users
                   </h6>
-                </div>
-                <div
+                </span>
+                <span
                   class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
                 >
                   <svg
@@ -362,8 +362,8 @@ exports[`snapshot organization 1`] = `
                       d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
                     />
                   </svg>
-                </div>
-              </div>
+                </span>
+              </button>
             </h3>
             <div
               class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-mocked-MuiCollapse-root"
@@ -578,10 +578,10 @@ exports[`snapshot rsu 1`] = `
                             style="background-color: rgb(255, 255, 255); width: 48px;"
                           >
                             <span
-                              class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
+                              class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiSwitchBase-root-MuiCheckbox-root"
                             >
                               <input
-                                class="PrivateSwitchBase-input css-1m9pwf3"
+                                class="PrivateSwitchBase-input css-mocked-MuiSwitchBase-root"
                                 data-indeterminate="false"
                                 type="checkbox"
                               />
@@ -604,7 +604,7 @@ exports[`snapshot rsu 1`] = `
                           <th
                             class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                             scope="col"
-                            style="background-color: rgb(255, 255, 255); box-sizing: border-box;"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.2 * (100% - 0px));"
                           >
                             <div
                               aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -646,7 +646,7 @@ exports[`snapshot rsu 1`] = `
                           <th
                             class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                             scope="col"
-                            style="background-color: rgb(255, 255, 255); box-sizing: border-box;"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.2 * (100% - 0px));"
                           >
                             <div
                               aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -688,7 +688,7 @@ exports[`snapshot rsu 1`] = `
                           <th
                             class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                             scope="col"
-                            style="background-color: rgb(255, 255, 255); box-sizing: border-box;"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.2 * (100% - 0px));"
                           >
                             <div
                               aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -730,7 +730,7 @@ exports[`snapshot rsu 1`] = `
                           <th
                             class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                             scope="col"
-                            style="background-color: rgb(255, 255, 255); box-sizing: border-box;"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.2 * (100% - 0px));"
                           >
                             <div
                               aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -772,7 +772,7 @@ exports[`snapshot rsu 1`] = `
                           <th
                             class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                             scope="col"
-                            style="background-color: rgb(255, 255, 255); box-sizing: border-box;"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.2 * (100% - 0px));"
                           >
                             <div
                               aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -972,7 +972,7 @@ exports[`snapshot rsu 1`] = `
                         </span>
                         <span
                           class="MuiTypography-root MuiTypography-caption css-mocked-MuiTypography-root"
-                          style="flex: 1; text-align: center; align-self: center; flex-basis: inherit;"
+                          style="flex-grow: 1; flex-shrink: 1; text-align: center; align-self: center; flex-basis: inherit;"
                         >
                           0-0 of 0
                         </span>
@@ -1222,10 +1222,10 @@ exports[`snapshot user 1`] = `
                             style="background-color: rgb(255, 255, 255); width: 48px;"
                           >
                             <span
-                              class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
+                              class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiSwitchBase-root-MuiCheckbox-root"
                             >
                               <input
-                                class="PrivateSwitchBase-input css-1m9pwf3"
+                                class="PrivateSwitchBase-input css-mocked-MuiSwitchBase-root"
                                 data-indeterminate="false"
                                 type="checkbox"
                               />
@@ -1248,7 +1248,7 @@ exports[`snapshot user 1`] = `
                           <th
                             class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                             scope="col"
-                            style="background-color: rgb(255, 255, 255); box-sizing: border-box;"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.25 * (100% - 0px));"
                           >
                             <div
                               aria-describedby="rfd-hidden-text-1-hidden-text-7"
@@ -1290,7 +1290,7 @@ exports[`snapshot user 1`] = `
                           <th
                             class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                             scope="col"
-                            style="background-color: rgb(255, 255, 255); box-sizing: border-box;"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.25 * (100% - 0px));"
                           >
                             <div
                               aria-describedby="rfd-hidden-text-1-hidden-text-7"
@@ -1332,7 +1332,7 @@ exports[`snapshot user 1`] = `
                           <th
                             class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                             scope="col"
-                            style="background-color: rgb(255, 255, 255); box-sizing: border-box;"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.25 * (100% - 0px));"
                           >
                             <div
                               aria-describedby="rfd-hidden-text-1-hidden-text-7"
@@ -1374,7 +1374,7 @@ exports[`snapshot user 1`] = `
                           <th
                             class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                             scope="col"
-                            style="background-color: rgb(255, 255, 255); box-sizing: border-box;"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.25 * (100% - 0px));"
                           >
                             <div
                               aria-describedby="rfd-hidden-text-1-hidden-text-7"
@@ -1574,7 +1574,7 @@ exports[`snapshot user 1`] = `
                         </span>
                         <span
                           class="MuiTypography-root MuiTypography-caption css-mocked-MuiTypography-root"
-                          style="flex: 1; text-align: center; align-self: center; flex-basis: inherit;"
+                          style="flex-grow: 1; flex-shrink: 1; text-align: center; align-self: center; flex-basis: inherit;"
                         >
                           0-0 of 0
                         </span>

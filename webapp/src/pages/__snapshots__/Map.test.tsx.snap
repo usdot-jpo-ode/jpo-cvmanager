@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`snapshot bsmCoordinates wzdx 1`] = `
 <div>
@@ -15,15 +15,15 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
         <h3
           class="MuiAccordion-heading css-mocked-MuiAccordion-heading"
         >
-          <div
+          <button
             aria-controls="panel1-content"
             aria-expanded="true"
             class="MuiButtonBase-root MuiAccordionSummary-root Mui-expanded css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
             id="panel1-header"
-            role="button"
             tabindex="0"
+            type="button"
           >
-            <div
+            <span
               class="MuiAccordionSummary-content Mui-expanded css-mocked-MuiAccordionSummary-content"
             >
               <p
@@ -31,8 +31,8 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
               >
                 Map Layers
               </p>
-            </div>
-            <div
+            </span>
+            <span
               class="MuiAccordionSummary-expandIconWrapper Mui-expanded css-mocked-MuiAccordionSummary-expandIconWrapper"
             >
               <svg
@@ -47,8 +47,8 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                   d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
                 />
               </svg>
-            </div>
-          </div>
+            </span>
+          </button>
         </h3>
         <div
           class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-entered css-mocked-MuiCollapse-root"
@@ -80,11 +80,11 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
                         >
                           <span
-                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium Mui-checked MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
+                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium Mui-checked MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiSwitchBase-root-MuiCheckbox-root"
                           >
                             <input
                               checked=""
-                              class="PrivateSwitchBase-input css-j8yymo"
+                              class="PrivateSwitchBase-input css-mocked-MuiSwitchBase-root"
                               data-indeterminate="false"
                               type="checkbox"
                             />
@@ -116,10 +116,10 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
                         >
                           <span
-                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
+                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiSwitchBase-root-MuiCheckbox-root"
                           >
                             <input
-                              class="PrivateSwitchBase-input css-j8yymo"
+                              class="PrivateSwitchBase-input css-mocked-MuiSwitchBase-root"
                               data-indeterminate="false"
                               type="checkbox"
                             />
@@ -151,10 +151,10 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
                         >
                           <span
-                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
+                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiSwitchBase-root-MuiCheckbox-root"
                           >
                             <input
-                              class="PrivateSwitchBase-input css-j8yymo"
+                              class="PrivateSwitchBase-input css-mocked-MuiSwitchBase-root"
                               data-indeterminate="false"
                               type="checkbox"
                             />
@@ -186,10 +186,10 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
                         >
                           <span
-                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
+                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiSwitchBase-root-MuiCheckbox-root"
                           >
                             <input
-                              class="PrivateSwitchBase-input css-j8yymo"
+                              class="PrivateSwitchBase-input css-mocked-MuiSwitchBase-root"
                               data-indeterminate="false"
                               type="checkbox"
                             />
@@ -221,10 +221,10 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
                         >
                           <span
-                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
+                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiSwitchBase-root-MuiCheckbox-root"
                           >
                             <input
-                              class="PrivateSwitchBase-input css-j8yymo"
+                              class="PrivateSwitchBase-input css-mocked-MuiSwitchBase-root"
                               data-indeterminate="false"
                               type="checkbox"
                             />
@@ -256,10 +256,10 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
                         >
                           <span
-                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
+                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiSwitchBase-root-MuiCheckbox-root"
                           >
                             <input
-                              class="PrivateSwitchBase-input css-j8yymo"
+                              class="PrivateSwitchBase-input css-mocked-MuiSwitchBase-root"
                               data-indeterminate="false"
                               type="checkbox"
                             />
@@ -291,10 +291,10 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
                         >
                           <span
-                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
+                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiSwitchBase-root-MuiCheckbox-root"
                           >
                             <input
-                              class="PrivateSwitchBase-input css-j8yymo"
+                              class="PrivateSwitchBase-input css-mocked-MuiSwitchBase-root"
                               data-indeterminate="false"
                               type="checkbox"
                             />
@@ -335,15 +335,15 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
         <h3
           class="MuiAccordion-heading css-mocked-MuiAccordion-heading"
         >
-          <div
+          <button
             aria-controls="panel3-content"
             aria-expanded="true"
             class="MuiButtonBase-root MuiAccordionSummary-root Mui-expanded css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
             id="panel3-header"
-            role="button"
             tabindex="0"
+            type="button"
           >
-            <div
+            <span
               class="MuiAccordionSummary-content Mui-expanded css-mocked-MuiAccordionSummary-content"
             >
               <p
@@ -351,8 +351,8 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
               >
                 Filter RSUs
               </p>
-            </div>
-            <div
+            </span>
+            <span
               class="MuiAccordionSummary-expandIconWrapper Mui-expanded css-mocked-MuiAccordionSummary-expandIconWrapper"
             >
               <svg
@@ -367,8 +367,8 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                   d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
                 />
               </svg>
-            </div>
-          </div>
+            </span>
+          </button>
         </h3>
         <div
           class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-entered css-mocked-MuiCollapse-root"
@@ -400,14 +400,13 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                       Vendor
                     </label>
                     <div
-                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl css-mocked-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MuiSelect-root css-mocked-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
                     >
                       <div
-                        aria-controls="mui-1"
                         aria-expanded="false"
                         aria-haspopup="listbox"
                         aria-labelledby="vendor"
-                        class="MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input css-mocked-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input"
+                        class="MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input css-mocked-MuiNativeSelect-root-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input"
                         id="vendor"
                         role="combobox"
                         tabindex="0"
@@ -426,7 +425,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                       />
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-mocked-MuiSvgIcon-root-MuiSelect-icon"
+                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-mocked-MuiSvgIcon-root-MuiNativeSelect-root-MuiSelect-icon"
                         data-testid="ArrowDropDownIcon"
                         focusable="false"
                         viewBox="0 0 24 24"
@@ -437,10 +436,10 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                       </svg>
                       <fieldset
                         aria-hidden="true"
-                        class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
+                        class="MuiOutlinedInput-notchedOutline css-mocked-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="css-w1u3ce"
+                          class="css-mocked-MuiNotchedOutlined-root"
                         >
                           <span>
                             Vendor
@@ -465,21 +464,21 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                         class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
                       >
                         <span
-                          class="MuiButtonBase-root MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-root MuiRadio-root MuiRadio-colorPrimary Mui-checked MuiRadio-root MuiRadio-colorPrimary css-mocked-MuiButtonBase-root-MuiRadio-root"
+                          class="MuiButtonBase-root MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-root MuiRadio-root MuiRadio-colorPrimary Mui-checked MuiRadio-root MuiRadio-colorPrimary css-mocked-MuiButtonBase-root-MuiSwitchBase-root-MuiRadio-root"
                         >
                           <input
                             checked=""
-                            class="PrivateSwitchBase-input css-j8yymo"
+                            class="PrivateSwitchBase-input css-mocked-MuiSwitchBase-root"
                             name="mui-2"
                             type="radio"
                             value="online"
                           />
                           <span
-                            class="css-1qiat4j"
+                            class="css-mocked-MuiRadioButtonIcon-root"
                           >
                             <svg
                               aria-hidden="true"
-                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root-MuiRadioButtonIcon-root"
                               data-testid="RadioButtonUncheckedIcon"
                               focusable="false"
                               viewBox="0 0 24 24"
@@ -490,7 +489,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                             </svg>
                             <svg
                               aria-hidden="true"
-                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root-MuiRadioButtonIcon-root"
                               data-testid="RadioButtonCheckedIcon"
                               focusable="false"
                               viewBox="0 0 24 24"
@@ -511,20 +510,20 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                         class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
                       >
                         <span
-                          class="MuiButtonBase-root MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-root MuiRadio-root MuiRadio-colorPrimary MuiRadio-root MuiRadio-colorPrimary css-mocked-MuiButtonBase-root-MuiRadio-root"
+                          class="MuiButtonBase-root MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-root MuiRadio-root MuiRadio-colorPrimary MuiRadio-root MuiRadio-colorPrimary css-mocked-MuiButtonBase-root-MuiSwitchBase-root-MuiRadio-root"
                         >
                           <input
-                            class="PrivateSwitchBase-input css-j8yymo"
+                            class="PrivateSwitchBase-input css-mocked-MuiSwitchBase-root"
                             name="mui-2"
                             type="radio"
                             value="scms"
                           />
                           <span
-                            class="css-1qiat4j"
+                            class="css-mocked-MuiRadioButtonIcon-root"
                           >
                             <svg
                               aria-hidden="true"
-                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root-MuiRadioButtonIcon-root"
                               data-testid="RadioButtonUncheckedIcon"
                               focusable="false"
                               viewBox="0 0 24 24"
@@ -535,7 +534,7 @@ exports[`snapshot bsmCoordinates wzdx 1`] = `
                             </svg>
                             <svg
                               aria-hidden="true"
-                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root-MuiRadioButtonIcon-root"
                               data-testid="RadioButtonCheckedIcon"
                               focusable="false"
                               viewBox="0 0 24 24"
@@ -602,15 +601,15 @@ exports[`snapshot bsmData clicked 1`] = `
         <h3
           class="MuiAccordion-heading css-mocked-MuiAccordion-heading"
         >
-          <div
+          <button
             aria-controls="panel1-content"
             aria-expanded="true"
             class="MuiButtonBase-root MuiAccordionSummary-root Mui-expanded css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
             id="panel1-header"
-            role="button"
             tabindex="0"
+            type="button"
           >
-            <div
+            <span
               class="MuiAccordionSummary-content Mui-expanded css-mocked-MuiAccordionSummary-content"
             >
               <p
@@ -618,8 +617,8 @@ exports[`snapshot bsmData clicked 1`] = `
               >
                 Map Layers
               </p>
-            </div>
-            <div
+            </span>
+            <span
               class="MuiAccordionSummary-expandIconWrapper Mui-expanded css-mocked-MuiAccordionSummary-expandIconWrapper"
             >
               <svg
@@ -634,8 +633,8 @@ exports[`snapshot bsmData clicked 1`] = `
                   d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
                 />
               </svg>
-            </div>
-          </div>
+            </span>
+          </button>
         </h3>
         <div
           class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-entered css-mocked-MuiCollapse-root"
@@ -667,11 +666,11 @@ exports[`snapshot bsmData clicked 1`] = `
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
                         >
                           <span
-                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium Mui-checked MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
+                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium Mui-checked MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiSwitchBase-root-MuiCheckbox-root"
                           >
                             <input
                               checked=""
-                              class="PrivateSwitchBase-input css-j8yymo"
+                              class="PrivateSwitchBase-input css-mocked-MuiSwitchBase-root"
                               data-indeterminate="false"
                               type="checkbox"
                             />
@@ -703,10 +702,10 @@ exports[`snapshot bsmData clicked 1`] = `
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
                         >
                           <span
-                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
+                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiSwitchBase-root-MuiCheckbox-root"
                           >
                             <input
-                              class="PrivateSwitchBase-input css-j8yymo"
+                              class="PrivateSwitchBase-input css-mocked-MuiSwitchBase-root"
                               data-indeterminate="false"
                               type="checkbox"
                             />
@@ -738,10 +737,10 @@ exports[`snapshot bsmData clicked 1`] = `
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
                         >
                           <span
-                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
+                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiSwitchBase-root-MuiCheckbox-root"
                           >
                             <input
-                              class="PrivateSwitchBase-input css-j8yymo"
+                              class="PrivateSwitchBase-input css-mocked-MuiSwitchBase-root"
                               data-indeterminate="false"
                               type="checkbox"
                             />
@@ -773,10 +772,10 @@ exports[`snapshot bsmData clicked 1`] = `
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
                         >
                           <span
-                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
+                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiSwitchBase-root-MuiCheckbox-root"
                           >
                             <input
-                              class="PrivateSwitchBase-input css-j8yymo"
+                              class="PrivateSwitchBase-input css-mocked-MuiSwitchBase-root"
                               data-indeterminate="false"
                               type="checkbox"
                             />
@@ -808,10 +807,10 @@ exports[`snapshot bsmData clicked 1`] = `
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
                         >
                           <span
-                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
+                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiSwitchBase-root-MuiCheckbox-root"
                           >
                             <input
-                              class="PrivateSwitchBase-input css-j8yymo"
+                              class="PrivateSwitchBase-input css-mocked-MuiSwitchBase-root"
                               data-indeterminate="false"
                               type="checkbox"
                             />
@@ -843,10 +842,10 @@ exports[`snapshot bsmData clicked 1`] = `
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
                         >
                           <span
-                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
+                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiSwitchBase-root-MuiCheckbox-root"
                           >
                             <input
-                              class="PrivateSwitchBase-input css-j8yymo"
+                              class="PrivateSwitchBase-input css-mocked-MuiSwitchBase-root"
                               data-indeterminate="false"
                               type="checkbox"
                             />
@@ -878,10 +877,10 @@ exports[`snapshot bsmData clicked 1`] = `
                           class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
                         >
                           <span
-                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
+                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiSwitchBase-root-MuiCheckbox-root"
                           >
                             <input
-                              class="PrivateSwitchBase-input css-j8yymo"
+                              class="PrivateSwitchBase-input css-mocked-MuiSwitchBase-root"
                               data-indeterminate="false"
                               type="checkbox"
                             />
@@ -922,15 +921,15 @@ exports[`snapshot bsmData clicked 1`] = `
         <h3
           class="MuiAccordion-heading css-mocked-MuiAccordion-heading"
         >
-          <div
+          <button
             aria-controls="panel3-content"
             aria-expanded="true"
             class="MuiButtonBase-root MuiAccordionSummary-root Mui-expanded css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
             id="panel3-header"
-            role="button"
             tabindex="0"
+            type="button"
           >
-            <div
+            <span
               class="MuiAccordionSummary-content Mui-expanded css-mocked-MuiAccordionSummary-content"
             >
               <p
@@ -938,8 +937,8 @@ exports[`snapshot bsmData clicked 1`] = `
               >
                 Filter RSUs
               </p>
-            </div>
-            <div
+            </span>
+            <span
               class="MuiAccordionSummary-expandIconWrapper Mui-expanded css-mocked-MuiAccordionSummary-expandIconWrapper"
             >
               <svg
@@ -954,8 +953,8 @@ exports[`snapshot bsmData clicked 1`] = `
                   d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
                 />
               </svg>
-            </div>
-          </div>
+            </span>
+          </button>
         </h3>
         <div
           class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-entered css-mocked-MuiCollapse-root"
@@ -987,14 +986,13 @@ exports[`snapshot bsmData clicked 1`] = `
                       Vendor
                     </label>
                     <div
-                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl css-mocked-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MuiSelect-root css-mocked-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
                     >
                       <div
-                        aria-controls="mui-3"
                         aria-expanded="false"
                         aria-haspopup="listbox"
                         aria-labelledby="vendor"
-                        class="MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input css-mocked-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input"
+                        class="MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input css-mocked-MuiNativeSelect-root-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input"
                         id="vendor"
                         role="combobox"
                         tabindex="0"
@@ -1013,7 +1011,7 @@ exports[`snapshot bsmData clicked 1`] = `
                       />
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-mocked-MuiSvgIcon-root-MuiSelect-icon"
+                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-mocked-MuiSvgIcon-root-MuiNativeSelect-root-MuiSelect-icon"
                         data-testid="ArrowDropDownIcon"
                         focusable="false"
                         viewBox="0 0 24 24"
@@ -1024,10 +1022,10 @@ exports[`snapshot bsmData clicked 1`] = `
                       </svg>
                       <fieldset
                         aria-hidden="true"
-                        class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
+                        class="MuiOutlinedInput-notchedOutline css-mocked-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="css-w1u3ce"
+                          class="css-mocked-MuiNotchedOutlined-root"
                         >
                           <span>
                             Vendor
@@ -1052,21 +1050,21 @@ exports[`snapshot bsmData clicked 1`] = `
                         class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
                       >
                         <span
-                          class="MuiButtonBase-root MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-root MuiRadio-root MuiRadio-colorPrimary Mui-checked MuiRadio-root MuiRadio-colorPrimary css-mocked-MuiButtonBase-root-MuiRadio-root"
+                          class="MuiButtonBase-root MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-root MuiRadio-root MuiRadio-colorPrimary Mui-checked MuiRadio-root MuiRadio-colorPrimary css-mocked-MuiButtonBase-root-MuiSwitchBase-root-MuiRadio-root"
                         >
                           <input
                             checked=""
-                            class="PrivateSwitchBase-input css-j8yymo"
-                            name="mui-4"
+                            class="PrivateSwitchBase-input css-mocked-MuiSwitchBase-root"
+                            name="mui-7"
                             type="radio"
                             value="online"
                           />
                           <span
-                            class="css-1qiat4j"
+                            class="css-mocked-MuiRadioButtonIcon-root"
                           >
                             <svg
                               aria-hidden="true"
-                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root-MuiRadioButtonIcon-root"
                               data-testid="RadioButtonUncheckedIcon"
                               focusable="false"
                               viewBox="0 0 24 24"
@@ -1077,7 +1075,7 @@ exports[`snapshot bsmData clicked 1`] = `
                             </svg>
                             <svg
                               aria-hidden="true"
-                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root-MuiRadioButtonIcon-root"
                               data-testid="RadioButtonCheckedIcon"
                               focusable="false"
                               viewBox="0 0 24 24"
@@ -1098,20 +1096,20 @@ exports[`snapshot bsmData clicked 1`] = `
                         class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
                       >
                         <span
-                          class="MuiButtonBase-root MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-root MuiRadio-root MuiRadio-colorPrimary MuiRadio-root MuiRadio-colorPrimary css-mocked-MuiButtonBase-root-MuiRadio-root"
+                          class="MuiButtonBase-root MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-root MuiRadio-root MuiRadio-colorPrimary MuiRadio-root MuiRadio-colorPrimary css-mocked-MuiButtonBase-root-MuiSwitchBase-root-MuiRadio-root"
                         >
                           <input
-                            class="PrivateSwitchBase-input css-j8yymo"
-                            name="mui-4"
+                            class="PrivateSwitchBase-input css-mocked-MuiSwitchBase-root"
+                            name="mui-7"
                             type="radio"
                             value="scms"
                           />
                           <span
-                            class="css-1qiat4j"
+                            class="css-mocked-MuiRadioButtonIcon-root"
                           >
                             <svg
                               aria-hidden="true"
-                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root-MuiRadioButtonIcon-root"
                               data-testid="RadioButtonUncheckedIcon"
                               focusable="false"
                               viewBox="0 0 24 24"
@@ -1122,7 +1120,7 @@ exports[`snapshot bsmData clicked 1`] = `
                             </svg>
                             <svg
                               aria-hidden="true"
-                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root-MuiRadioButtonIcon-root"
                               data-testid="RadioButtonCheckedIcon"
                               focusable="false"
                               viewBox="0 0 24 24"

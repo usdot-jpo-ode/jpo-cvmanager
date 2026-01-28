@@ -1,10 +1,10 @@
 class EnvironmentVars {
   static getBaseApiUrl() {
-    return process.env.REACT_APP_GATEWAY_BASE_URL?.replace(/\/$/, '') // remove trailing slash
+    return process.env.VITE_GATEWAY_BASE_URL?.replace(/\/$/, '') // remove trailing slash
   }
 
   static getMessageViewerTypes() {
-    const VIEWER_MESSAGE_TYPES = process.env.REACT_APP_VIEWER_MESSAGE_TYPES
+    const VIEWER_MESSAGE_TYPES = process.env.VITE_VIEWER_MESSAGE_TYPES
     if (!VIEWER_MESSAGE_TYPES) {
       return ['BSM'] // default to BSM if not set
     }
@@ -13,9 +13,9 @@ class EnvironmentVars {
   }
 
   static getMapboxInitViewState() {
-    const MAPBOX_INIT_LATITUDE = Number(process.env.REACT_APP_MAPBOX_INIT_LATITUDE)
-    const MAPBOX_INIT_LONGITUDE = Number(process.env.REACT_APP_MAPBOX_INIT_LONGITUDE)
-    const MAPBOX_INIT_ZOOM = Number(process.env.REACT_APP_MAPBOX_INIT_ZOOM)
+    const MAPBOX_INIT_LATITUDE = Number(process.env.VITE_MAPBOX_INIT_LATITUDE)
+    const MAPBOX_INIT_LONGITUDE = Number(process.env.VITE_MAPBOX_INIT_LONGITUDE)
+    const MAPBOX_INIT_ZOOM = Number(process.env.VITE_MAPBOX_INIT_ZOOM)
 
     const viewState = {
       latitude: MAPBOX_INIT_LATITUDE,
@@ -26,19 +26,19 @@ class EnvironmentVars {
     return viewState
   }
 
-  static MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN
-  static CVIZ_API_SERVER_URL = process.env.REACT_APP_CVIZ_API_SERVER_URL?.replace(/\/$/, '') // remove trailing slash
-  static CVIZ_API_WS_URL = process.env.REACT_APP_CVIZ_API_WS_URL?.replace(/\/$/, '') // remove trailing slash
-  static KEYCLOAK_HOST_URL = process.env.REACT_APP_KEYCLOAK_URL
-  static KEYCLOAK_REALM = process.env.REACT_APP_KEYCLOAK_REALM
-  static KEYCLOAK_CLIENT_ID = process.env.REACT_APP_KEYCLOAK_CLIENT_ID
-  static DOT_NAME = process.env.REACT_APP_DOT_NAME
-  static ENABLE_RSU_FEATURES = process.env.REACT_APP_ENABLE_RSU_FEATURES !== 'false'
-  static ENABLE_INTERSECTION_FEATURES = process.env.REACT_APP_ENABLE_INTERSECTION_FEATURES !== 'false'
-  static ENABLE_WZDX_FEATURES = process.env.REACT_APP_ENABLE_WZDX_FEATURES !== 'false'
-  static ENABLE_HAAS_FEATURES = process.env.REACT_APP_ENABLE_HAAS_FEATURES !== 'false'
-  static WEBAPP_THEME_LIGHT = process.env.REACT_APP_WEBAPP_THEME_LIGHT
-  static WEBAPP_THEME_DARK = process.env.REACT_APP_WEBAPP_THEME_DARK
+  static MAPBOX_TOKEN = process.env.VITE_MAPBOX_TOKEN
+  static CVIZ_API_SERVER_URL = process.env.VITE_CVIZ_API_SERVER_URL?.replace(/\/$/, '') // remove trailing slash
+  static CVIZ_API_WS_URL = process.env.VITE_CVIZ_API_WS_URL?.replace(/\/$/, '') // remove trailing slash
+  static KEYCLOAK_HOST_URL = process.env.VITE_KEYCLOAK_URL
+  static KEYCLOAK_REALM = process.env.VITE_KEYCLOAK_REALM
+  static KEYCLOAK_CLIENT_ID = process.env.VITE_KEYCLOAK_CLIENT_ID
+  static DOT_NAME = process.env.VITE_DOT_NAME
+  static ENABLE_RSU_FEATURES = process.env.VITE_ENABLE_RSU_FEATURES !== 'false'
+  static ENABLE_INTERSECTION_FEATURES = process.env.VITE_ENABLE_INTERSECTION_FEATURES !== 'false'
+  static ENABLE_WZDX_FEATURES = process.env.VITE_ENABLE_WZDX_FEATURES !== 'false'
+  static ENABLE_HAAS_FEATURES = process.env.VITE_ENABLE_HAAS_FEATURES !== 'false'
+  static WEBAPP_THEME_LIGHT = process.env.VITE_WEBAPP_THEME_LIGHT
+  static WEBAPP_THEME_DARK = process.env.VITE_WEBAPP_THEME_DARK
 
   static cvmanagerBaseEndpoint = `${this.getBaseApiUrl()}`
   static rsuInfoEndpoint = `${this.getBaseApiUrl()}/rsuinfo`

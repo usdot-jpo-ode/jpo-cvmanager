@@ -20,25 +20,29 @@ import reducer, {
 import { RootState } from '../../store'
 import dayjs from 'dayjs'
 import { configureStore } from '@reduxjs/toolkit'
+import { vi } from 'vitest'
 
 // Mock dayjs to ensure consistent test results
-jest.mock('dayjs', () => {
-  const actualDayjs = jest.requireActual('dayjs')
-  const mockNow = actualDayjs('2024-01-15T12:00:00.000Z')
+vi.mock('dayjs', async (importOriginal) => {
+  const actualDayjs: any = await importOriginal()
+  const defaultExport = actualDayjs.default || actualDayjs
+  const mockNow = defaultExport('2024-01-15T12:00:00.000Z')
 
-  const dayjsMock = jest.fn((date?: any) => {
+  const dayjsMock = vi.fn((date?: any) => {
     if (date) {
-      return actualDayjs(date)
+      return defaultExport(date)
     }
     return mockNow
   })
 
   // Copy all dayjs methods
-  Object.keys(actualDayjs).forEach((key) => {
-    dayjsMock[key] = actualDayjs[key]
+  Object.keys(defaultExport).forEach((key) => {
+    dayjsMock[key] = defaultExport[key]
   })
 
-  return dayjsMock
+  return {
+    default: dayjsMock,
+  }
 })
 
 describe('menu reducer', () => {

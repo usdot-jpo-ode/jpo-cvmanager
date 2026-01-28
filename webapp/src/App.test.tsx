@@ -7,29 +7,48 @@ import { testTheme } from './styles'
 import { setupStore } from './store'
 import { replaceChaoticIds } from './utils/test-utils'
 
-jest.mock('./EnvironmentVars', () => ({
-  WEBAPP_THEME_LIGHT: 'light',
-  WEBAPP_THEME_DARK: 'dark',
-  getMapboxInitViewState: jest.fn(() => ({
-    latitude: 39.7392,
-    longitude: -104.9903,
-    zoom: 10,
-  })),
-  KEYCLOAK_HOST_URL: 'https://keycloak.example.com',
-  KEYCLOAK_CLIENT_ID: 'keycloak-client-id',
-  KEYCLOAK_REALM: 'keycloak-realm',
+import { vi } from 'vitest'
+
+vi.mock('./EnvironmentVars', () => ({
+  default: {
+    WEBAPP_THEME_LIGHT: 'light',
+    WEBAPP_THEME_DARK: 'dark',
+    getMapboxInitViewState: vi.fn(() => ({
+      latitude: 39.7392,
+      longitude: -104.9903,
+      zoom: 10,
+    })),
+    KEYCLOAK_HOST_URL: 'https://keycloak.example.com',
+    KEYCLOAK_CLIENT_ID: 'keycloak-client-id',
+    KEYCLOAK_REALM: 'keycloak-realm',
+  },
+}))
+
+vi.mock('@react-keycloak/web', () => ({
+  useKeycloak: () => ({
+    keycloak: {
+      authenticated: false,
+      login: vi.fn(),
+      logout: vi.fn(),
+      register: vi.fn(),
+      accountManagement: vi.fn(),
+      loadUserProfile: vi.fn(),
+    },
+    initialized: true,
+  }),
+  ReactKeycloakProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }))
 
 beforeAll(() => {
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
-    value: jest.fn().mockImplementation((query) => ({
+    value: vi.fn().mockImplementation((query) => ({
       matches: query === '(prefers-color-scheme: dark)',
       media: query,
       onchange: null,
-      addEventListener: jest.fn(),
-      removeEventListener: jest.fn(),
-      dispatchEvent: jest.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
     })),
   })
 })

@@ -1,4 +1,15 @@
 import React, { useEffect, useState, useMemo } from 'react'
+import cdotDark from '../styles/mapbox-styles/cdot-dark.json'
+import mainLight from '../styles/mapbox-styles/main-light.json'
+import mainDark from '../styles/mapbox-styles/main-dark.json'
+import intersectionStyle from '../styles/intersectionMapStyle.json'
+
+const mapStyles: { [key: string]: any } = {
+  'mapbox-styles/cdot-dark.json': cdotDark,
+  'mapbox-styles/main-light.json': mainLight,
+  'mapbox-styles/main-dark.json': mainDark,
+  'intersectionMapStyle.json': intersectionStyle,
+}
 import { CircleLayer, FillLayer, LineLayer } from 'mapbox-gl' // This is a dependency of react-map-gl even if you didn't explicitly install it
 import Map, { Marker, Popup, Source, Layer } from 'react-map-gl'
 import { Container } from 'reactstrap'
@@ -241,8 +252,7 @@ function MapPage() {
     setSelectedWZDxMarkerIndex(null)
     setSelectedWZDxMarker(null)
   }
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const mbStyle = require(`../styles/${theme.palette.custom.mapStyleFilePath}`)
+  const mbStyle = mapStyles[theme.palette.custom.mapStyleFilePath] || mapStyles['mapbox-styles/cdot-dark.json']
 
   // useEffects for Mapbox
   useEffect(() => {

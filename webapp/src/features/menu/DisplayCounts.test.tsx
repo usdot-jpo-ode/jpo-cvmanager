@@ -9,8 +9,8 @@ import { MockLocalizationProvider, replaceChaoticIds } from '../../utils/test-ut
 import { MessageType } from '../../models/MessageTypes'
 
 // // Mock the @mui/x-date-pickers module
-jest.mock('@mui/x-date-pickers', () => {
-  const actual = jest.requireActual('@mui/x-date-pickers')
+vi.mock('@mui/x-date-pickers', async () => {
+  const actual: any = await vi.importActual('@mui/x-date-pickers')
   return {
     ...actual,
     LocalizationProvider: MockLocalizationProvider,
@@ -18,14 +18,14 @@ jest.mock('@mui/x-date-pickers', () => {
 })
 
 // Mock the dayjs library with timezone support
-jest.mock('dayjs', () => {
-  const actualDayjs = jest.requireActual('dayjs')
-  const utc = require('dayjs/plugin/utc')
-  const timezone = require('dayjs/plugin/timezone')
+vi.mock('dayjs', async () => {
+  const actualDayjs: any = await vi.importActual('dayjs')
+  const utc = await import('dayjs/plugin/utc')
+  const timezone = await import('dayjs/plugin/timezone')
 
   // Extend dayjs with required plugins
-  actualDayjs.extend(utc)
-  actualDayjs.extend(timezone)
+  actualDayjs.extend(utc.default)
+  actualDayjs.extend(timezone.default)
 
   // Create mock function
   const mockDayjs = (date?: any) => {
@@ -44,7 +44,10 @@ jest.mock('dayjs', () => {
   mockDayjs.extend = actualDayjs.extend
   mockDayjs.Ls = actualDayjs.Ls
 
-  return mockDayjs
+  return {
+    default: mockDayjs,
+    ...actualDayjs,
+  }
 })
 
 it('should take a snapshot', () => {
@@ -54,8 +57,8 @@ it('should take a snapshot', () => {
         store={setupStore({
           menu: {
             value: {
-              countsStartDate: new Date('2024-04-09'),
-              countsEndDate: new Date('2024-04-10'),
+              countsStartDate: new Date('2024-04-09T00:00:00Z'),
+              countsEndDate: new Date('2024-04-10T00:00:00Z'),
               countsMsgType: 'BSM' as MessageType,
               display: 'displayCounts',
               mapMenuSelection: ['Display Message Counts'],

@@ -83,10 +83,11 @@ jobs:
     if: ${{ always() && !failure() && !cancelled() }}
     runs-on: ubuntu-latest
     container:
-      image: node:19.8.1
+      image: node:22
       options: --user root
       env:
         CI: true
+        TZ: America/Denver
     steps:
       - name: Checkout ${{ github.event.repository.name }}
         uses: actions/checkout@v4
@@ -96,9 +97,7 @@ jobs:
         run: |
           # Navigate to the webapp directory and perform necessary setup
           cd $GITHUB_WORKSPACE/webapp
-          npm install -g nodemon
-          npm init -y
-          npm install --force
+          npm ci
 
           # Run tests with coverage and suppress failures
           npm test -- --coverage

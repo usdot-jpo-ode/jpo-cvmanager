@@ -9,24 +9,26 @@ import { useKeycloak } from '@react-keycloak/web'
 import { replaceChaoticIds } from '../utils/test-utils'
 import ContactSupportMenu from './ContactSupportMenu'
 
-jest.mock('@react-keycloak/web')
+import { vi } from 'vitest'
+
+vi.mock('@react-keycloak/web')
 
 const mockKeycloak = {
   authenticated: true,
-  login: jest.fn(),
-  logout: jest.fn(),
-  register: jest.fn(),
-  accountManagement: jest.fn(),
-  loadUserProfile: jest.fn(),
+  login: vi.fn(),
+  logout: vi.fn(),
+  register: vi.fn(),
+  accountManagement: vi.fn(),
+  loadUserProfile: vi.fn(),
 }
 
 describe('<Header />', () => {
   beforeEach(() => {
-    ;(useKeycloak as any).mockReturnValue([mockKeycloak])
+    ;(useKeycloak as any).mockReturnValue({ keycloak: mockKeycloak })
   })
 
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   it('should take a snapshot', () => {

@@ -84,7 +84,7 @@ def test_middleware_class_call_user_authorized(mock_request, mock_get_user_role)
     # create instance
     app = Mock()
     mock_request.return_value.method = "GET"
-    mock_request.return_value.path = "/rsuinfo"
+    mock_request.return_value.path = "/wzdx-feed"
     mock_request.return_value.headers = {"Authorization": "test"}
     middleware_instance = middleware.Middleware(app)
     # call

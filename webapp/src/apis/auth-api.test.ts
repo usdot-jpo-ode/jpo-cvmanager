@@ -4,17 +4,19 @@ import EnvironmentVars from '../EnvironmentVars'
 import { AuthToken } from '../models/AuthToken'
 
 // Mock jwt-decode
-jest.mock('jwt-decode')
+vi.mock('jwt-decode')
 
 // Mock EnvironmentVars
-jest.mock('../EnvironmentVars', () => ({
-  KEYCLOAK_HOST_URL: 'http://localhost:8084',
-  KEYCLOAK_REALM: 'cvmanager',
+vi.mock('../EnvironmentVars', () => ({
+  default: {
+    KEYCLOAK_HOST_URL: 'http://localhost:8084',
+    KEYCLOAK_REALM: 'cvmanager',
+  },
 }))
 
 describe('AuthApi', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('parseToken', () => {
@@ -48,7 +50,7 @@ describe('AuthApi', () => {
         email: 'test@gmail.com',
       }
 
-      ;(jwtDecode as jest.Mock).mockReturnValue(mockDecodedToken)
+      ;(jwtDecode as any).mockReturnValue(mockDecodedToken)
 
       const result = AuthApi.parseToken(mockToken)
 
@@ -60,7 +62,7 @@ describe('AuthApi', () => {
       const invalidToken = 'invalid.token'
       const mockError = new Error('Invalid token')
 
-      ;(jwtDecode as jest.Mock).mockImplementation(() => {
+      ;(jwtDecode as any).mockImplementation(() => {
         throw mockError
       })
 
@@ -77,7 +79,7 @@ describe('AuthApi', () => {
         status: 200,
       }
 
-      global.fetch = jest.fn().mockResolvedValue(mockResponse)
+      global.fetch = vi.fn().mockResolvedValue(mockResponse)
 
       const result = await AuthApi.verifyToken(mockToken)
 
@@ -100,7 +102,7 @@ describe('AuthApi', () => {
         status: 401,
       }
 
-      global.fetch = jest.fn().mockResolvedValue(mockResponse)
+      global.fetch = vi.fn().mockResolvedValue(mockResponse)
 
       const result = await AuthApi.verifyToken(mockToken)
 
@@ -118,9 +120,9 @@ describe('AuthApi', () => {
 
     it('should return false when fetch throws an error', async () => {
       const mockToken = 'valid.token'
-      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-      global.fetch = jest.fn().mockRejectedValue(new Error('Network error'))
+      global.fetch = vi.fn().mockRejectedValue(new Error('Network error'))
 
       const result = await AuthApi.verifyToken(mockToken)
 
@@ -278,8 +280,8 @@ describe('AuthApi', () => {
     }
 
     it('should successfully log in with valid token', async () => {
-      ;(jwtDecode as jest.Mock).mockReturnValue(mockDecodedToken)
-      global.fetch = jest.fn().mockResolvedValue({ ok: true, status: 200 })
+      ;(jwtDecode as any).mockReturnValue(mockDecodedToken)
+      global.fetch = vi.fn().mockResolvedValue({ ok: true, status: 200 })
 
       const result = await AuthApi.logIn(mockToken)
 
@@ -307,8 +309,8 @@ describe('AuthApi', () => {
     })
 
     it('should throw error when token verification fails', async () => {
-      ;(jwtDecode as jest.Mock).mockReturnValue(mockDecodedToken)
-      global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 401 })
+      ;(jwtDecode as any).mockReturnValue(mockDecodedToken)
+      global.fetch = vi.fn().mockResolvedValue({ ok: false, status: 401 })
 
       await expect(AuthApi.logIn(mockToken)).rejects.toThrow('Token validation failed')
 
@@ -325,8 +327,8 @@ describe('AuthApi', () => {
     })
 
     it('should throw error when token cannot be decoded', async () => {
-      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
-      ;(jwtDecode as jest.Mock).mockImplementation(() => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      ;(jwtDecode as any).mockImplementation(() => {
         throw new Error('Invalid token')
       })
 
@@ -339,9 +341,9 @@ describe('AuthApi', () => {
     })
 
     it('should throw error when Keycloak request fails', async () => {
-      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
-      ;(jwtDecode as jest.Mock).mockReturnValue(mockDecodedToken)
-      global.fetch = jest.fn().mockRejectedValue(new Error('Network error'))
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      ;(jwtDecode as any).mockReturnValue(mockDecodedToken)
+      global.fetch = vi.fn().mockRejectedValue(new Error('Network error'))
 
       await expect(AuthApi.logIn(mockToken)).rejects.toThrow('Token validation failed')
 
@@ -364,8 +366,8 @@ describe('AuthApi', () => {
         },
       }
 
-      ;(jwtDecode as jest.Mock).mockReturnValue(mockTokenMultiOrg)
-      global.fetch = jest.fn().mockResolvedValue({ ok: true, status: 200 })
+      ;(jwtDecode as any).mockReturnValue(mockTokenMultiOrg)
+      global.fetch = vi.fn().mockResolvedValue({ ok: true, status: 200 })
 
       const result = await AuthApi.logIn(mockToken)
 

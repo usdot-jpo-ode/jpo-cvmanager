@@ -62,7 +62,6 @@ class EnvironmentVars {
   static mooveAiDataEndpoint = `${this.getBaseApiUrl()}/moove-ai-data`
   static issScmsStatusEndpoint = `${this.getBaseApiUrl()}/iss-scms-status`
   static ssmSrmEndpoint = `${this.getBaseApiUrl()}/rsu-ssm-srm-data`
-  static authEndpoint = `${this.getBaseApiUrl()}/user-auth`
   static adminAddRsu = `${this.getBaseApiUrl()}/admin-new-rsu`
   static adminRsu = `${this.getBaseApiUrl()}/admin-rsu`
   static adminAddIntersection = `${this.getBaseApiUrl()}/admin-new-intersection`

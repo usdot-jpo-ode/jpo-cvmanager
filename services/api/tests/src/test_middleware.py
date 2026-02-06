@@ -42,7 +42,7 @@ def test_get_user_role(mock_get_user_info, mock_keycloak, mock_jwt):
 def test_middleware_class_call_options(mock_kc, mock_request, mock_get_user_role):
     # mock
     mock_request.return_value.method = "OPTIONS"
-    mock_request.return_value.path = "/user-auth"
+    mock_request.return_value.path = "/rsuinfo"
 
     # create instance
     app = Mock()
@@ -68,7 +68,7 @@ def test_middleware_class_call_user_unauthorized(mock_request, mock_get_user_rol
     middleware_instance = middleware.Middleware(app)
     # call
     mock_get_user_role.return_value = None
-    environ = {"REQUEST_METHOD": "GET", "PATH_INFO": "/user-auth"}
+    environ = {"REQUEST_METHOD": "GET", "PATH_INFO": "/rsuinfo"}
     start_response = Mock()
     # check
     response = middleware_instance(environ, start_response)
@@ -85,7 +85,7 @@ def test_middleware_class_call_user_authorized(mock_request, mock_get_user_role)
     # create instance
     app = Mock()
     mock_request.return_value.method = "GET"
-    mock_request.return_value.path = "/user-auth"
+    mock_request.return_value.path = "/rsuinfo"
     mock_request.return_value.headers = {"Authorization": "test"}
     middleware_instance = middleware.Middleware(app)
     # call
@@ -118,7 +118,7 @@ def test_middleware_class_call_exception(
     # create instance
     app = Mock()
     mock_request.return_value.method = "GET"
-    mock_request.return_value.path = "/user-auth"
+    mock_request.return_value.path = "/rsuinfo"
     mock_request.return_value.headers = {"Authorization": "token"}
 
     # call
@@ -126,7 +126,7 @@ def test_middleware_class_call_exception(
     mock_keycloak_instance.introspect.side_effect = Unauthorized("test")
     mock_get_user_info.return_value = None
 
-    environ = {"REQUEST_METHOD": "GET", "PATH_INFO": "/user-auth"}
+    environ = {"REQUEST_METHOD": "GET", "PATH_INFO": "/rsuinfo"}
     start_response = Mock()
     middleware_instance = middleware.Middleware(app)
 

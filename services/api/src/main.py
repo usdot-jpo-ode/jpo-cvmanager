@@ -60,7 +60,6 @@ def apply_cors_header(response):
 api = Api(app)
 
 api.add_resource(HealthCheck, "/")
-api.add_resource(UserAuth, "/user-auth")
 api.add_resource(AdminNewUser, "/admin-new-user")
 api.add_resource(AdminUser, "/admin-user")
 api.add_resource(AdminNewOrg, "/admin-new-org")

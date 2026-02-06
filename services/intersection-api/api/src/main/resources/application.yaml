@@ -91,7 +91,7 @@ cors: '*'
 maximumResponseSize: ${CM_MAXIMUM_RESPONSE_SIZE:10000}
 
 spring.main.allow-circular-references: true
-
+spring.jpa.properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
 server.servlet.context-path: ${BASE_ROUTE_PREFIX:/}
 
 ### General Email Settings

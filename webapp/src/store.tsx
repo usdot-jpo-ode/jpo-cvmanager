@@ -2,7 +2,6 @@ import { configureStore } from '@reduxjs/toolkit'
 import rsuReducer from './generalSlices/rsuSlice'
 import userReducer from './generalSlices/userSlice'
 import wzdxReducer from './generalSlices/wzdxSlice'
-import mooveAiReducer from './generalSlices/mooveAiSlice'
 import configReducer from './generalSlices/configSlice'
 import intersectionReducer from './generalSlices/intersectionSlice'
 import adminAddOrganizationReducer from './features/adminAddOrganization/adminAddOrganizationSlice'
@@ -29,6 +28,7 @@ import intersectionMapReducer from './features/intersections/map/map-slice'
 import intersectionMapLayerStyleReducer from './features/intersections/map/map-layer-style-slice'
 import dataSelectorReducer from './features/intersections/data-selector/dataSelectorSlice'
 import { intersectionApiSlice } from './features/api/intersectionApiSlice'
+import { rsuCountsApiSlice } from './features/api/rsuCountsApiSlice'
 import mapSliceReducer from './pages/mapSlice'
 import timeSyncReducer from './generalSlices/timeSyncSlice'
 import haasSliceReducer from './generalSlices/haasAlertSlice'
@@ -39,7 +39,6 @@ export const setupStore = (preloadedState?: Partial<any>) => {
       rsu: rsuReducer,
       user: userReducer,
       wzdx: wzdxReducer,
-      mooveai: mooveAiReducer,
       config: configReducer,
       intersection: intersectionReducer,
       adminAddOrganization: adminAddOrganizationReducer,
@@ -69,6 +68,7 @@ export const setupStore = (preloadedState?: Partial<any>) => {
       timeSync: timeSyncReducer,
       haas: haasSliceReducer,
       [intersectionApiSlice.reducerPath]: intersectionApiSlice.reducer,
+      [rsuCountsApiSlice.reducerPath]: rsuCountsApiSlice.reducer,
     },
     preloadedState,
     middleware: (getDefaultMiddleware) =>
@@ -76,7 +76,9 @@ export const setupStore = (preloadedState?: Partial<any>) => {
         thunk: true,
         serializableCheck: false,
         immutableCheck: false,
-      }).concat(intersectionApiSlice.middleware),
+      })
+        .concat(intersectionApiSlice.middleware)
+        .concat(rsuCountsApiSlice.middleware),
     devTools: true,
   })
 }

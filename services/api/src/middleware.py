@@ -4,7 +4,7 @@ from flask import Response
 from werkzeug.wrappers import Request
 from keycloak import KeycloakOpenID
 import logging
-import os
+import api_environment
 import jwt
 from werkzeug.exceptions import HTTPException, Forbidden, Unauthorized, NotImplemented
 
@@ -22,27 +22,15 @@ class FEATURE_KEYS_LITERAL(Enum):
     RSU = "rsu"
     INTERSECTION = "intersection"
     WZDX = "wzdx"
-    MOOVE_AI = "moove_ai"
-
-
-# Feature flag environment variables
-ENABLE_RSU_FEATURES = os.getenv("ENABLE_RSU_FEATURES", "true").lower() != "false"
-ENABLE_INTERSECTION_FEATURES = (
-    os.getenv("ENABLE_INTERSECTION_FEATURES", "true").lower() != "false"
-)
-ENABLE_WZDX_FEATURES = os.getenv("ENABLE_WZDX_FEATURES", "true").lower() != "false"
-ENABLE_MOOVE_AI_FEATURES = (
-    os.getenv("ENABLE_MOOVE_AI_FEATURES", "true").lower() != "false"
-)
 
 
 def get_user_role(token) -> UserInfo | None:
     # TODO: Consider using pythjon-jose or PyJWT to locally validate the token, instead of calling the Keycloak server
     keycloak_openid = KeycloakOpenID(
-        server_url=os.getenv("KEYCLOAK_ENDPOINT"),
-        realm_name=os.getenv("KEYCLOAK_REALM"),
-        client_id=os.getenv("KEYCLOAK_API_CLIENT_ID"),
-        client_secret_key=os.getenv("KEYCLOAK_API_CLIENT_SECRET_KEY"),
+        server_url=api_environment.KEYCLOAK_ENDPOINT,
+        realm_name=api_environment.KEYCLOAK_REALM,
+        client_id=api_environment.KEYCLOAK_API_CLIENT_ID,
+        client_secret_key=api_environment.KEYCLOAK_API_CLIENT_SECRET_KEY,
     )
     introspect = keycloak_openid.introspect(token)
     data = None
@@ -83,7 +71,6 @@ organization_required = {
     "/admin-org": False,
     "/rsu-config-geo-query": True,
     "/rsu-geo-query": True,
-    "/moove-ai-data": False,
     "/admin-new-notification": False,
     "/admin-notification": False,
     "/rsu-error-summary": False,
@@ -115,7 +102,6 @@ feature_tags: dict[str, FEATURE_KEYS_LITERAL | None] = {
     "/admin-org": None,
     "/rsu-config-geo-query": FEATURE_KEYS_LITERAL.RSU,
     "/rsu-geo-query": FEATURE_KEYS_LITERAL.RSU,
-    "/moove-ai-data": FEATURE_KEYS_LITERAL.MOOVE_AI,
     "/admin-new-notification": None,
     "/admin-notification": None,
     "/rsu-error-summary": FEATURE_KEYS_LITERAL.RSU,
@@ -143,13 +129,14 @@ def is_tag_disabled(tag: FEATURE_KEYS_LITERAL | None) -> bool:
     Returns:
         bool: True if the feature should be disabled, False otherwise
     """
-    if not ENABLE_RSU_FEATURES and tag == FEATURE_KEYS_LITERAL.RSU:
+    if not api_environment.ENABLE_RSU_FEATURES and tag == FEATURE_KEYS_LITERAL.RSU:
         return True
-    elif not ENABLE_INTERSECTION_FEATURES and tag == FEATURE_KEYS_LITERAL.INTERSECTION:
+    elif (
+        not api_environment.ENABLE_INTERSECTION_FEATURES
+        and tag == FEATURE_KEYS_LITERAL.INTERSECTION
+    ):
         return True
-    elif not ENABLE_WZDX_FEATURES and tag == FEATURE_KEYS_LITERAL.WZDX:
-        return True
-    elif not ENABLE_MOOVE_AI_FEATURES and tag == FEATURE_KEYS_LITERAL.MOOVE_AI:
+    elif not api_environment.ENABLE_WZDX_FEATURES and tag == FEATURE_KEYS_LITERAL.WZDX:
         return True
     return False
 
@@ -183,7 +170,7 @@ class Middleware:
     def __init__(self, app):
         self.app = app
         self.default_headers = {
-            "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+            "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
             "Content-Type": "application/json",
         }
 
@@ -238,7 +225,7 @@ class Middleware:
                 response_body,
                 status=e.code,
                 content_type="application/json",
-                headers={"Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"]},
+                headers={"Access-Control-Allow-Origin": api_environment.CORS_DOMAIN},
             )
             return response(environ, start_response)
 
@@ -253,6 +240,6 @@ class Middleware:
                 response_body,
                 status=500,
                 content_type="application/json",
-                headers={"Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"]},
+                headers={"Access-Control-Allow-Origin": api_environment.CORS_DOMAIN},
             )
             return response(environ, start_response)

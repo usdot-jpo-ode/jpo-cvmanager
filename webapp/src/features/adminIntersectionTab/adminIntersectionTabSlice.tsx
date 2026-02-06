@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { selectToken } from '../../generalSlices/userSlice'
+import {selectOrganizationName, selectToken} from '../../generalSlices/userSlice'
 import EnvironmentVars from '../../EnvironmentVars'
 import apiHelper from '../../apis/api-helper'
 import { RootState } from '../../store'
@@ -29,12 +29,12 @@ export const updateTableData = createAsyncThunk(
   async (_, { getState }) => {
     const currentState = getState() as RootState
     const token = selectToken(currentState)
-
+    const organization = selectOrganizationName(currentState)
     const data = await apiHelper._getDataWithCodes({
       url: EnvironmentVars.adminIntersection,
       token,
       query_params: { intersection_id: 'all' },
-      additional_headers: { 'Content-Type': 'application/json' },
+      additional_headers: { 'Content-Type': 'application/json', Organization: organization },
       tag: 'intersection',
     })
 

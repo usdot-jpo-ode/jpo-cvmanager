@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -6,22 +6,13 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import EnvironmentVars from '../../EnvironmentVars'
-import BounceLoader from 'react-spinners/BounceLoader'
 import {
-  selectRequestOut,
-  selectMsgType,
-  selectCountList,
-  selectStartDate,
-  selectEndDate,
-  selectWarningMessage,
-  selectMessageLoading,
-  updateMessageType,
-} from '../../generalSlices/rsuSlice'
-import {
-  selectCurrentSort,
-  selectSortedCountList,
-  sortCountList,
-  changeDate,
+  selectCountsEndDate,
+  selectCountsMsgType,
+  selectCountsStartDate,
+  setCountsEndDate,
+  setCountsMsgType,
+  setCountsStartDate,
   toggleMapMenuSelection,
 } from './menuSlice'
 
@@ -32,29 +23,48 @@ import { CountsListElement } from '../../models/Rsu'
 import { MessageType } from '../../models/MessageTypes'
 import { Box, FormControl, InputLabel, MenuItem, Paper, Select, Stack, Typography, useTheme } from '@mui/material'
 import { SideBarHeader } from '../../styles/components/SideBarHeader'
-
-const messageTypeOptions = EnvironmentVars.getMessageTypes().map((type) => {
-  return { value: type, label: type }
-})
+import { useGetRsuCountsQuery } from '../api/rsuCountsApiSlice'
+import { selectOrganizationName } from '../../generalSlices/userSlice'
 
 const DisplayCounts = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const theme = useTheme()
-  const countsMsgType = useSelector(selectMsgType)
-  const startDate = useSelector(selectStartDate)
-  const endDate = useSelector(selectEndDate)
-  const requestOut = useSelector(selectRequestOut)
-  const warning = useSelector(selectWarningMessage)
-  const messageLoading = useSelector(selectMessageLoading)
-  const countList = useSelector(selectCountList)
-  const currentSort = useSelector(selectCurrentSort)
-  const sortedCountList = useSelector(selectSortedCountList)
+  const organization = useSelector(selectOrganizationName)
+  const countsMsgType = useSelector(selectCountsMsgType)
+  const startDate = useSelector(selectCountsStartDate)
+  const endDate = useSelector(selectCountsEndDate)
 
-  const dateChanged = (e: Date, type: 'start' | 'end') => {
-    if (!Number.isNaN(Date.parse(e.toString()))) {
-      dispatch(changeDate(e, type, requestOut))
+  const [currentSort, setCurrentSort] = React.useState<string | null>(null)
+
+  const { data: rsuCounts } = useGetRsuCountsQuery({ organization, startDate, endDate })
+
+  const messageTypeOptions = useMemo(() => {
+    // parse message types from rsuCounts count keys
+    const typesSet = new Set<string>()
+    Object.values(rsuCounts || {}).forEach((rsuCount) => {
+      Object.keys(rsuCount.messageTypeCounts || {}).forEach((msgType) => typesSet.add(msgType))
+    })
+    if (typesSet.size === 0) {
+      return [{ value: 'BSM', label: 'BSM' }]
     }
-  }
+    return Array.from(typesSet).map((type) => ({ value: type, label: type?.toUpperCase() }))
+  }, [rsuCounts])
+
+  const countList = useMemo(() => {
+    return Object.entries(rsuCounts ?? {}).map(([key, value]) => {
+      return {
+        key: key,
+        rsu: key,
+        road: value.road,
+        count: value.messageTypeCounts?.[countsMsgType] || 0,
+      }
+    })
+  }, [rsuCounts, countsMsgType])
+
+  const dateRangeValid = useMemo(() => {
+    const ONE_WEEK_MILLISECONDS = 86400 * 1000 * 7
+    return endDate.getTime() - startDate.getTime() > ONE_WEEK_MILLISECONDS
+  }, [startDate, endDate])
 
   const getWarningMessage = (warning: boolean) =>
     warning ? (
@@ -63,44 +73,52 @@ const DisplayCounts = () => {
         role="alert"
         sx={{ backgroundColor: theme.palette.error.main, display: 'flex', justifyContent: 'center' }}
       >
-        Warning: time ranges greater than 24 hours may have longer load times.
+        Warning: time ranges greater than 7 days may have longer load times.
       </Typography>
     ) : null
 
+  const sortedCountList = useMemo(() => {
+    if (!currentSort) return countList
+
+    const key = currentSort.replace('__desc', '')
+    const isDescending = currentSort.includes('__desc')
+
+    return [...countList].sort((a, b) => {
+      const aVal = a[key]
+      const bVal = b[key]
+
+      if (aVal < bVal) return isDescending ? 1 : -1
+      if (aVal > bVal) return isDescending ? -1 : 1
+      return 0
+    })
+  }, [currentSort, countList])
+
   const sortBy = (key: string) => {
-    dispatch(sortCountList(key, currentSort, countList))
+    // Default to ascending. If re-pressed (already sorting by this key), switch to descending.
+    if (key === currentSort) {
+      setCurrentSort(key + '__desc')
+    } else {
+      setCurrentSort(key)
+    }
   }
 
-  const getTable = (messageLoading: boolean, sortedCountList: CountsListElement[]) =>
-    messageLoading ? (
-      <div>
-        <div className="table">
-          <div className="header">
-            <div>RSU</div>
-            <div>Road</div>
-            <div>Count</div>
-          </div>
+  const getTable = (sortedCountList: CountsListElement[]) => (
+    <div className="table">
+      <div className="header">
+        <div onClick={() => sortBy('rsu')} style={{ borderBottom: `1px solid ${theme.palette.text.primary}` }}>
+          RSU
         </div>
-        <span className="bounceLoader">
-          <BounceLoader loading={true} color={theme.palette.text.primary}></BounceLoader>
-        </span>
-      </div>
-    ) : (
-      <div className="table">
-        <div className="header">
-          <div onClick={() => sortBy('rsu')} style={{ borderBottom: `1px solid ${theme.palette.text.primary}` }}>
-            RSU
-          </div>
-          <div onClick={() => sortBy('road')} style={{ borderBottom: `1px solid ${theme.palette.text.primary}` }}>
-            Road
-          </div>
-          <div onClick={() => sortBy('count')} style={{ borderBottom: `1px solid ${theme.palette.text.primary}` }}>
-            Count
-          </div>
+        <div onClick={() => sortBy('road')} style={{ borderBottom: `1px solid ${theme.palette.text.primary}` }}>
+          Road
         </div>
-        <div className="body">{formatRows(sortedCountList)}</div>
+        <div onClick={() => sortBy('count')} style={{ borderBottom: `1px solid ${theme.palette.text.primary}` }}>
+          Count
+        </div>
       </div>
-    )
+      <div className="body">{formatRows(sortedCountList)}</div>
+    </div>
+  )
+
   const formatRows = (rows: CountsListElement[]) => {
     if (rows.length === 0) {
       return (
@@ -133,8 +151,9 @@ const DisplayCounts = () => {
               value={dayjs(startDate)}
               maxDateTime={dayjs(endDate)}
               onChange={(e) => {
-                if (e === null) return
-                dateChanged(e.toDate(), 'start')
+                if (e && !Number.isNaN(Date.parse(e.toString()))) {
+                  dispatch(setCountsStartDate(e.toDate()))
+                }
               }}
             />
           </LocalizationProvider>
@@ -148,8 +167,9 @@ const DisplayCounts = () => {
               minDateTime={dayjs(startDate)}
               maxDateTime={dayjs(endDate)}
               onChange={(e) => {
-                if (e === null) return
-                dateChanged(e.toDate(), 'end')
+                if (e && !Number.isNaN(Date.parse(e.toString()))) {
+                  dispatch(setCountsEndDate(e.toDate()))
+                }
               }}
             />
           </LocalizationProvider>
@@ -161,7 +181,7 @@ const DisplayCounts = () => {
               label="Message Type"
               id="counts-msg-dropdown"
               value={countsMsgType}
-              onChange={(event) => dispatch(updateMessageType(event.target.value as MessageType))}
+              onChange={(event) => dispatch(setCountsMsgType(event.target.value as MessageType))}
               sx={{
                 textAlign: 'left',
               }}
@@ -176,8 +196,8 @@ const DisplayCounts = () => {
             </Select>
           </FormControl>
         </Box>
-        {getWarningMessage(warning)}
-        {getTable(messageLoading, sortedCountList)}
+        {getWarningMessage(dateRangeValid)}
+        {getTable(sortedCountList)}
       </Stack>
     </Paper>
   )

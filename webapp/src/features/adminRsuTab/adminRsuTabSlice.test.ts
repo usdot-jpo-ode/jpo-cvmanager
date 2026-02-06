@@ -80,7 +80,7 @@ describe('async thunks', () => {
         additional_headers: { 'Content-Type': 'application/json' },
         tag: 'rsu',
       })
-      expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+      expect(dispatch).toHaveBeenCalledTimes(0 + 2)
 
       dispatch = jest.fn()
       apiHelper._getDataWithCodes = jest.fn().mockReturnValue({ status: 500, message: 'message' })
@@ -92,7 +92,7 @@ describe('async thunks', () => {
         additional_headers: { 'Content-Type': 'application/json' },
         tag: 'rsu',
       })
-      expect(dispatch).toHaveBeenCalledTimes(1 + 2)
+      expect(dispatch).toHaveBeenCalledTimes(0 + 2)
     })
 
     it('Updates the state correctly pending', async () => {

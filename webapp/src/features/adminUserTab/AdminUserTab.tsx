@@ -15,6 +15,7 @@ import {
   setActiveDiv,
   setEditUserRowData,
 } from './adminUserTabSlice'
+import { selectOrganizationName } from '../../generalSlices/userSlice'
 import { clear, getUserData } from './../adminEditUser/adminEditUserSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -33,6 +34,10 @@ const AdminUserTab = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const theme = useTheme()
+  const organization = useSelector(selectOrganizationName)
+  useEffect(() =>{
+    dispatch(getAvailableUsers())
+  }, [organization, dispatch])
 
   const activeTab = location.pathname.split('/')[4]
 
@@ -115,7 +120,7 @@ const AdminUserTab = () => {
         itemType: 'outlined',
       },
       onClick: () => {
-        updateTableData()
+        dispatch(getAvailableUsers())
       },
     },
     {
@@ -140,10 +145,6 @@ const AdminUserTab = () => {
         toast.error(data.message.payload)
       }
     })
-  }
-
-  const updateTableData = async () => {
-    dispatch(getAvailableUsers())
   }
 
   useEffect(() => {

@@ -2,7 +2,7 @@ from flask_restful import Resource
 import logging
 import common.pgquery as pgquery
 import common.util as util
-import os
+import api_environment
 
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
@@ -49,14 +49,14 @@ def get_iss_scms_status(organization: str) -> dict:
 
 class IssScmsStatus(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization,Organization",
         "Access-Control-Allow-Methods": "GET",
         "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Content-Type": "application/json",
     }
 

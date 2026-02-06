@@ -1,12 +1,19 @@
 import reducer, { selectViewState } from './mapSlice'
 import { RootState } from '../store'
+import { vi } from 'vitest'
 
-jest.mock('../EnvironmentVars', () => ({
-  getMapboxInitViewState: jest.fn(() => ({
-    latitude: 0,
-    longitude: 0,
-    zoom: 0,
-  })),
+vi.mock('../EnvironmentVars', () => ({
+  default: {
+    getMapboxInitViewState: vi.fn(() => ({
+      latitude: 0,
+      longitude: 0,
+      zoom: 0,
+    })),
+  },
+}))
+
+vi.mock('../feature-flags', () => ({
+  evaluateFeatureFlags: vi.fn(() => false),
 }))
 
 const initialState: RootState['map'] = {

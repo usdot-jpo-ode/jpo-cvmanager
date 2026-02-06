@@ -6,13 +6,9 @@ from threading import Lock
 from waitress import serve
 import requests
 import logging
-import os
+import upgrade_scheduler_environment
 
 app = Flask(__name__)
-
-log_level = os.environ.get("LOGGING_LEVEL", "INFO")
-logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
-
 
 # Tracker for active firmware upgrades
 # Key: IPv4 string of target device
@@ -33,13 +29,12 @@ active_upgrades_lock = Lock()
 # Changed from a constant to a function to help with unit testing
 def get_upgrade_limit() -> int:
     try:
-        upgrade_limit = int(os.environ.get("ACTIVE_UPGRADE_LIMIT", "1"))
+        upgrade_limit = int(upgrade_scheduler_environment.ACTIVE_UPGRADE_LIMIT)
         return upgrade_limit
     except ValueError:
         raise ValueError(
             "The environment variable 'ACTIVE_UPGRADE_LIMIT' must be an integer."
         )
-
 
 
 # Function to query the CV Manager PostgreSQL database for RSUs that have:
@@ -74,26 +69,37 @@ def get_rsu_upgrade_data(rsu_ip="all"):
 
 def start_tasks_from_queue():
     # Start the next process in the queue if there are less than ACTIVE_UPGRADE_LIMIT number of active upgrades occurring
-    while len(active_upgrades) < get_upgrade_limit() and len(upgrade_queue) > 0:
+    while (
+        len(active_upgrades) < upgrade_scheduler_environment.ACTIVE_UPGRADE_LIMIT
+        and len(upgrade_queue) > 0
+    ):
         rsu_to_upgrade = upgrade_queue.popleft()
         try:
             rsu_upgrade_info = upgrade_queue_info[rsu_to_upgrade]
             del upgrade_queue_info[rsu_to_upgrade]
 
             # Begin the firmware upgrade using the Upgrade Runner API
-            upgrade_runner_endpoint = os.environ.get("UPGRADE_RUNNER_ENDPOINT", "UNDEFINED")
+            upgrade_runner_endpoint = (
+                upgrade_scheduler_environment.UPGRADE_RUNNER_ENDPOINT
+            )
 
             if upgrade_runner_endpoint == "UNDEFINED":
-                raise Exception("The UPGRADE_RUNNER_ENDPOINT environment variable is undefined!")
+                raise Exception(
+                    "The UPGRADE_RUNNER_ENDPOINT environment variable is undefined!"
+                )
 
-            response = requests.post(f"{upgrade_runner_endpoint}/run_firmware_upgrade", json=rsu_upgrade_info)
+            response = requests.post(
+                f"{upgrade_runner_endpoint}/run_firmware_upgrade", json=rsu_upgrade_info
+            )
 
             # Remove redundant ipv4_address from rsu since it is the key for active_upgrades
             del rsu_upgrade_info["ipv4_address"]
 
             # If the POST response includes a 201 code, add it to the active upgrades
             if response.status_code == 201:
-                logging.info(f"Firmware upgrade runner successfully requested to begin the upgrade for {rsu_to_upgrade}")
+                logging.info(
+                    f"Firmware upgrade runner successfully requested to begin the upgrade for {rsu_to_upgrade}"
+                )
                 active_upgrades[rsu_to_upgrade] = rsu_upgrade_info
             else:
                 logging.error(
@@ -345,7 +351,7 @@ def reset_consecutive_failure_count_for_rsu(rsu_ip):
 
 
 def is_rsu_at_max_retries_limit(rsu_ip):
-    max_retries = int(os.environ.get("FW_UPGRADE_MAX_RETRY_LIMIT", "3"))
+    max_retries = upgrade_scheduler_environment.FW_UPGRADE_MAX_RETRY_LIMIT
     query_result = pgquery.query_db(
         f"select consecutive_failures from consecutive_firmware_upgrade_failures where rsu_id=(select rsu_id from rsus where ipv4_address='{rsu_ip}')"
     )
@@ -372,7 +378,9 @@ def serve_rest_api():
 
 
 def init_background_task():
-    logging.info("Initiating the Firmware Manager Upgrade Scheduler background checker...")
+    logging.info(
+        "Initiating the Firmware Manager Upgrade Scheduler background checker..."
+    )
     # Run scheduler for async RSU firmware upgrade checks
     scheduler = BackgroundScheduler({"apscheduler.timezone": "UTC"})
     scheduler.add_job(check_for_upgrades, "cron", minute="0")

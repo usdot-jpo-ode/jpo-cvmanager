@@ -1,5 +1,6 @@
 import reducer, {
-  refreshSnmpFwdConfig,
+  getCachedSnmpFwdConfigsFromDatabase,
+  getRsuMsgConfigsFromRsu,
   submitSnmpSet,
   deleteSnmpSet,
   rebootRsu,
@@ -33,6 +34,7 @@ describe('config reducer', () => {
         addConfigPoint: false,
         configCoordinates: [],
         configList: [],
+        msgFwdConfigType: 'database',
       },
     })
   })
@@ -78,14 +80,14 @@ describe('async thunks', () => {
           },
         },
       })
-      RsuApi.getRsuMsgFwdConfigs = jest.fn().mockReturnValue({ RsuFwdSnmpwalk: 'test' })
+      RsuApi.getCachedRsuMsgFwdConfigsFromDatabase = jest.fn().mockReturnValue({ RsuFwdSnmpwalk: 'test' })
 
       const rsu_ip = '1.2.3.4'
 
-      const action = refreshSnmpFwdConfig(rsu_ip)
+      const action = getCachedSnmpFwdConfigsFromDatabase(rsu_ip)
 
       const resp = await action(dispatch, getState, undefined)
-      expect(RsuApi.getRsuMsgFwdConfigs).toHaveBeenCalledWith('token', 'name', '', { rsu_ip })
+      expect(RsuApi.getCachedRsuMsgFwdConfigsFromDatabase).toHaveBeenCalledWith('token', 'name', '', { rsu_ip })
       expect(resp.payload).toEqual({ msgFwdConfig: 'test', errorState: '' })
     })
 
@@ -93,13 +95,24 @@ describe('async thunks', () => {
       const loading = true
       const msgFwdConfig = {}
       const rebootChangeSuccess = false
+      const changeSuccess = false
       const errorState = ''
+      const destIp = ''
+      const snmpMsgType = 'bsm'
       const state = reducer(initialState, {
         type: 'config/refreshSnmpFwdConfig/pending',
       })
       expect(state).toEqual({
         loading,
-        value: { ...initialState.value, msgFwdConfig, errorState, rebootChangeSuccess },
+        value: {
+          ...initialState.value,
+          msgFwdConfig,
+          errorState,
+          rebootChangeSuccess,
+          changeSuccess,
+          destIp,
+          snmpMsgType,
+        },
       })
     })
 
@@ -111,7 +124,10 @@ describe('async thunks', () => {
         type: 'config/refreshSnmpFwdConfig/fulfilled',
         payload: { msgFwdConfig, errorState },
       })
-      expect(state).toEqual({ loading, value: { ...initialState.value, msgFwdConfig, errorState } })
+      expect(state).toEqual({
+        loading,
+        value: { ...initialState.value, msgFwdConfig, errorState, msgFwdConfigType: 'database' },
+      })
     })
 
     it('Updates the state correctly rejected', async () => {
@@ -120,6 +136,166 @@ describe('async thunks', () => {
         type: 'config/refreshSnmpFwdConfig/rejected',
       })
       expect(state).toEqual({ loading, value: { ...initialState.value } })
+    })
+  })
+
+  describe('getRsuMsgFwdFetch', () => {
+    it('returns and calls the api correctly', async () => {
+      const dispatch = jest.fn()
+      const getState = jest.fn().mockReturnValue({
+        user: {
+          value: {
+            authLoginData: { token: 'token' },
+            organization: { name: 'name' },
+          },
+        },
+      })
+      RsuApi.getRsuMsgConfigsFromRsu = jest.fn().mockReturnValue({ RsuFwdSnmpwalk: 'test' })
+
+      const rsu_ip = '1.2.3.4'
+
+      const action = getRsuMsgConfigsFromRsu(rsu_ip)
+
+      const resp = await action(dispatch, getState, undefined)
+      expect(RsuApi.getRsuMsgConfigsFromRsu).toHaveBeenCalledWith('token', 'name', '', { rsu_ip })
+      expect(resp.payload).toEqual({ msgFwdConfig: 'test', errorState: '' })
+    })
+
+    it('returns error when API fails', async () => {
+      const dispatch = jest.fn()
+      const getState = jest.fn().mockReturnValue({
+        user: {
+          value: {
+            authLoginData: { token: 'token' },
+            organization: { name: 'name' },
+          },
+        },
+      })
+      RsuApi.getRsuMsgConfigsFromRsu = jest.fn().mockReturnValue(null)
+
+      const rsu_ip = '1.2.3.4'
+
+      const action = getRsuMsgConfigsFromRsu(rsu_ip)
+
+      const resp = await action(dispatch, getState, undefined)
+      expect(resp.payload).toEqual('Failed to fetch RSU message forwarding configuration')
+    })
+
+    it('returns error when API throws exception', async () => {
+      const dispatch = jest.fn()
+      const getState = jest.fn().mockReturnValue({
+        user: {
+          value: {
+            authLoginData: { token: 'token' },
+            organization: { name: 'name' },
+          },
+        },
+      })
+      RsuApi.getRsuMsgConfigsFromRsu = jest.fn().mockImplementation(() => {
+        throw new Error('Test Exception')
+      })
+
+      const rsu_ip = '1.2.3.4'
+
+      const action = getRsuMsgConfigsFromRsu(rsu_ip)
+
+      const resp = await action(dispatch, getState, undefined)
+      expect(resp.payload).toEqual('Test Exception')
+    })
+
+    it('returns error when API throws a string', async () => {
+      const dispatch = jest.fn()
+      const getState = jest.fn().mockReturnValue({
+        user: {
+          value: {
+            authLoginData: { token: 'token' },
+            organization: { name: 'name' },
+          },
+        },
+      })
+      RsuApi.getRsuMsgConfigsFromRsu = jest.fn().mockImplementation(() => {
+        throw 'String Exception'
+      })
+
+      const rsu_ip = '1.2.3.4'
+
+      const action = getRsuMsgConfigsFromRsu(rsu_ip)
+
+      const resp = await action(dispatch, getState, undefined)
+      expect(resp.payload).toEqual('String Exception')
+    })
+
+    it('returns error when API throws an unknown error', async () => {
+      const dispatch = jest.fn()
+      const getState = jest.fn().mockReturnValue({
+        user: {
+          value: {
+            authLoginData: { token: 'token' },
+            organization: { name: 'name' },
+          },
+        },
+      })
+      RsuApi.getRsuMsgConfigsFromRsu = jest.fn().mockImplementation(() => {
+        throw 123
+      })
+
+      const rsu_ip = '1.2.3.4'
+
+      const action = getRsuMsgConfigsFromRsu(rsu_ip)
+
+      const resp = await action(dispatch, getState, undefined)
+      expect(resp.payload).toEqual('An unknown error occurred while fetching RSU message forwarding configuration')
+    })
+
+    it('Updates the state correctly pending', async () => {
+      const loading = true
+      const msgFwdConfig = {}
+      const rebootChangeSuccess = false
+      const changeSuccess = false
+      const errorState = ''
+      const destIp = ''
+      const snmpMsgType = 'bsm'
+      const state = reducer(initialState, {
+        type: 'config/getRsuMsgFwdFetch/pending',
+      })
+      expect(state).toEqual({
+        loading,
+        value: {
+          ...initialState.value,
+          msgFwdConfig,
+          errorState,
+          rebootChangeSuccess,
+          changeSuccess,
+          destIp,
+          snmpMsgType,
+        },
+      })
+    })
+
+    it('Updates the state correctly fulfilled', async () => {
+      const loading = false
+      const msgFwdConfig = 'test'
+      const errorState = 'error'
+      const state = reducer(initialState, {
+        type: 'config/getRsuMsgFwdFetch/fulfilled',
+        payload: { msgFwdConfig, errorState },
+      })
+      expect(state).toEqual({
+        loading,
+        value: { ...initialState.value, msgFwdConfig, errorState, msgFwdConfigType: 'rsu' },
+      })
+    })
+
+    it('Updates the state correctly rejected', async () => {
+      const loading = false
+      const state = reducer(initialState, {
+        type: 'config/getRsuMsgFwdFetch/rejected',
+        payload: 'error',
+      })
+      expect(state).toEqual({
+        loading,
+        value: { ...initialState.value, errorState: 'error' },
+      })
     })
   })
 

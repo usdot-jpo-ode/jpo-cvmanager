@@ -335,11 +335,10 @@ HTTP URL Arguments:
 - PG_DB_PORT: The database port.
 - PG_PG_DB_USER: The database user that will be used to authenticate the cloud function when it queries the database.
 - PG_PG_DB_PASS: The database user's password that will be used to authenticate the cloud function.
-- COUNTS_MSG_TYPES: Set to a list of message types to include in counts query. Sample format is described in the sample.env.
 - MONGO_PROCESSED_BSM_COLLECTION_NAME: The database name for processed BSM messages output from the [Geojson Converter](https://github.com/usdot-jpo-ode/geojson-converter).
 - MONGO_PROCESSED_PSM_COLLECTION_NAME: The database name for processed PSM messages output from the [Geojson Converter](https://github.com/usdot-jpo-ode/geojson-converter).
-- SSM_DB_NAME: The database name for SSM visualization data.
-- SRM_DB_NAME: The database name for SRM visualization data.
+- MONGO_SSM_COLLECTION_NAME: The database name for SSM visualization data.
+- MONGO_SRM_COLLECTION_NAME: The database name for SRM visualization data.
 - MONGO_DB_URI: URI for the MongoDB connection.
 - MONGO_DB_NAME: Database name for RSU counts.
 - KEYCLOAK_ENDPOINT: Keycloak base URL to send requests to. Reference the sample.env for the URL formatting.
@@ -355,10 +354,6 @@ HTTP URL Arguments:
 - CSM_TARGET_SMTP_SERVER_PORT: Destination SMTP server port.
 - WZDX_ENDPOINT: WZDX datafeed enpoint.
 - WZDX_API_KEY: API key for the WZDX datafeed.
-- GOOGLE_ACCESS_KEY_NAME: The required Google environment variable for authenticating with Google Cloud.
-- GCP_PROJECT_ID: The Google Cloud project ID for which the service account associated with GOOGLE_ACCESS_KEY_NAME is for.
-- MOOVE_AI_SEGMENT_AGG_STATS_TABLE: The BigQuery table name for Moove.Ai's segment aggregate statistics.
-- MOOVE_AI_SEGMENT_EVENT_STATS_TABLE: The BigQuery table name for Moove.Ai's segment event statistics.
 - TIMEZONE: Timezone to be used for the API.
 
 1. Configure the Cloud Run deployment connections settings

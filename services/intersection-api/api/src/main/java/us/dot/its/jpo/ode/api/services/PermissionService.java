@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.api.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -8,18 +7,30 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import us.dot.its.jpo.ode.api.models.postgres.tables.Users;
+import us.dot.its.jpo.ode.api.models.postgres.tables.User;
+import us.dot.its.jpo.ode.api.repositories.IntersectionRepository;
+import us.dot.its.jpo.ode.api.repositories.RoleRepository;
+import us.dot.its.jpo.ode.api.repositories.RsuRepository;
+import us.dot.its.jpo.ode.api.repositories.UserRepository;
+import us.dot.its.jpo.ode.api.repositories.UserRepository.UserOrgRoleProjection;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service("PermissionService")
+@RequiredArgsConstructor
 public class PermissionService {
 
-    private final PostgresService postgresService;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final IntersectionRepository intersectionRepository;
+    private final RsuRepository rsuRepository;
 
     private static final Map<String, Integer> ROLE_HIERARCHY = new HashMap<>();
 
@@ -27,11 +38,6 @@ public class PermissionService {
         ROLE_HIERARCHY.put("ADMIN", 3);
         ROLE_HIERARCHY.put("OPERATOR", 2);
         ROLE_HIERARCHY.put("USER", 1);
-    }
-
-    @Autowired
-    public PermissionService(PostgresService postgresService) {
-        this.postgresService = postgresService;
     }
 
     public static boolean checkRoleAbove(String userRole, String requiredRole) {
@@ -42,6 +48,28 @@ public class PermissionService {
         return roles.indexOf(userRole.toUpperCase()) >= roles.indexOf(requiredRole.toUpperCase());
     }
 
+    private List<String> getQualifiedOrgList(String email, String requiredRole) {
+        List<UserOrgRoleProjection> organizationRoles = userRepository.findUserOrgRoles(email);
+        return getQualifiedOrgList(organizationRoles, requiredRole);
+    }
+
+    private List<String> getQualifiedOrgList(List<UserOrgRoleProjection> organizationRoles, String requiredRole) {
+        return organizationRoles.stream()
+                .filter(entry -> PermissionService.checkRoleAbove(entry.getRoleName(), requiredRole))
+                .map(UserOrgRoleProjection::getOrganizationName)
+                .collect(Collectors.toList());
+    }
+
+    public List<Integer> getAllowedIntersectionIdsByEmail(String email) {
+        return intersectionRepository.findAllowedIntersectionIdsByEmail(email).stream().map(Integer::parseInt)
+                .collect(Collectors.toList());
+    }
+
+    public List<Integer> getAllowedIntersectionIdsByOrganization(String email) {
+        return intersectionRepository.findIntersectionsByOrganization(email).stream().map(Integer::parseInt)
+                .collect(Collectors.toList());
+    }
+
     // Allow Connection if the user is a SuperUser
     public boolean isSuperUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -50,9 +78,9 @@ public class PermissionService {
         }
 
         String username = getUsername(auth);
-        Users user = postgresService.findUser(username);
+        User user = userRepository.findByEmail(username);
 
-        return user != null && user.isSuper_user();
+        return user.getSuperUser();
     }
 
     // Allow Connection if the user is a part of at least one organization with a
@@ -71,11 +99,11 @@ public class PermissionService {
 
         String organization = getOrganizationFromHeader();
         if (organization != null) {
-            String userRole = postgresService.getUserRoleInOrg(username, organization);
-            return checkRoleAbove(userRole, role);
+            Optional<String> userRole = roleRepository.findUserRoleInOrg(username, organization);
+            return userRole.map(roleValue -> checkRoleAbove(roleValue, role)).orElse(false);
         }
 
-        return !postgresService.getQualifiedOrgList(username, role).isEmpty();
+        return !getQualifiedOrgList(username, role).isEmpty();
     }
 
     // Allow Connection if the users organization controls the specified
@@ -99,11 +127,11 @@ public class PermissionService {
 
         String organization = getOrganizationFromHeader();
         if (organization != null) {
-            return postgresService.checkIntersectionWithOrg(intersectionID.toString(), List.of(organization));
+            return intersectionRepository.existsByIdAndOrganizations(intersectionID.toString(), List.of(organization));
         }
 
-        return postgresService.checkIntersectionWithOrg(intersectionID.toString(),
-                postgresService.getQualifiedOrgList(username, role));
+        return intersectionRepository.existsByIdAndOrganizations(intersectionID.toString(),
+                getQualifiedOrgList(username, role));
     }
 
     // Allow Connection if the users organization controls the specified RSU unit
@@ -121,10 +149,10 @@ public class PermissionService {
 
         String organization = getOrganizationFromHeader();
         if (organization != null) {
-            return postgresService.checkRsuWithOrg(rsuIP, List.of(organization));
+            return rsuRepository.existsByIpAndOrganizations(rsuIP, List.of(organization));
         }
 
-        return postgresService.checkRsuWithOrg(rsuIP, postgresService.getQualifiedOrgList(username, role));
+        return rsuRepository.existsByIpAndOrganizations(rsuIP, getQualifiedOrgList(username, role));
     }
 
     // helper method to make sure authentication is valid

@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`should take a snapshot 1`] = `
 <div>
@@ -184,10 +184,10 @@ exports[`should take a snapshot 1`] = `
                             style="background-color: rgb(255, 255, 255); width: 48px;"
                           >
                             <span
-                              class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
+                              class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiSwitchBase-root-MuiCheckbox-root"
                             >
                               <input
-                                class="PrivateSwitchBase-input css-1m9pwf3"
+                                class="PrivateSwitchBase-input css-mocked-MuiSwitchBase-root"
                                 data-indeterminate="false"
                                 type="checkbox"
                               />
@@ -210,7 +210,7 @@ exports[`should take a snapshot 1`] = `
                           <th
                             class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                             scope="col"
-                            style="background-color: rgb(255, 255, 255); box-sizing: border-box;"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(1 * (100% - 0px));"
                           >
                             <div
                               aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -410,7 +410,7 @@ exports[`should take a snapshot 1`] = `
                         </span>
                         <span
                           class="MuiTypography-root MuiTypography-caption css-mocked-MuiTypography-root"
-                          style="flex: 1; text-align: center; align-self: center; flex-basis: inherit;"
+                          style="flex-grow: 1; flex-shrink: 1; text-align: center; align-self: center; flex-basis: inherit;"
                         >
                           0-0 of 0
                         </span>

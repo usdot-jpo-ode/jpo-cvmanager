@@ -15,13 +15,26 @@
       "command": "${command:python.interpreterPath} -m pytest -v --cov-report xml:cov.xml --cov ."
     },
     {
+      "label": "run-keycloak-and-postgres",
+      "type": "docker-compose",
+      "dockerCompose": {
+        "up": {
+          "detached": true,
+          "build": true,
+          "profiles": ["cvmanager_postgres", "cvmanager_keycloak"]
+        },
+        "files": ["${workspaceFolder}/docker-compose.yml"],
+        "envFile": "${workspaceFolder}/.env"
+      }
+    },
+    {
       "label": "run-intersection",
       "type": "docker-compose",
       "dockerCompose": {
         "up": {
           "detached": true,
           "build": true,
-          "profiles": ["cvmanager_postgres", "cvmanager_keycloak", "intersection"]
+          "profiles": ["intersection", "mongo_full"]
         },
         "files": ["${workspaceFolder}/docker-compose.yml"],
         "envFile": "${workspaceFolder}/.env"
@@ -29,30 +42,18 @@
       "dependsOn": ["run-keycloak-and-postgres"]
     },
     {
-      "label": "run-docker-compose-intersection-no-api",
+      "label": "run-intersection-no-api",
       "type": "docker-compose",
       "dockerCompose": {
         "up": {
           "detached": true,
           "build": true,
-          "profiles": ["intersection_no_api", "cvmanager_api", "mongo_full", "kafka_full", "kafka_connect_standalone"]
-        },
-        "files": ["${workspaceFolder}/docker-compose.yml", "${workspaceFolder}/docker-compose-intersection.yml"],
-        "envFile": "${workspaceFolder}/.env"
-      }
-    },
-    {
-      "label": "run-keycloak-postgres-mongodb-kafka",
-      "type": "docker-compose",
-      "dockerCompose": {
-        "up": {
-          "detached": true,
-          "build": true,
-          "services": ["cvmanager_keycloak", "cvmanager_postgres"]
+          "profiles": ["mongo_full"]
         },
         "files": ["${workspaceFolder}/docker-compose.yml"],
         "envFile": "${workspaceFolder}/.env"
-      }
+      },
+      "dependsOn": ["run-keycloak-and-postgres"]
     },
     {
       "label": "run-full-conflictmonitor",
@@ -61,24 +62,12 @@
         "up": {
           "detached": true,
           "build": true,
-          "services": [
-            "cvmanager_postgres",
-            "cvmanager_keycloak",
-            "kafka",
-            "kafka_init",
-            "ode",
-            "geojsonconverter",
-            "conflictmonitor",
-            "deduplicator",
-            "conflictvisualizer_api",
-            "mongodb_container",
-            "connect"
-          ]
+          "services": ["kafka_full", "kafka_connect_standalone", "conflictmonitor"]
         },
-        "files": ["${workspaceFolder}/docker-compose-full-cm.yml"],
+        "files": ["${workspaceFolder}/docker-compose.yml"],
         "envFile": "${workspaceFolder}/.env"
       },
-      "dependsOn": ["run-keycloak-and-postgres"]
+      "dependsOn": ["run-intersection"]
     }
   ]
 }

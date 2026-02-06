@@ -28,7 +28,7 @@ class AuthApi {
       // Call Keycloak's userinfo endpoint to validate the token
       // This endpoint requires a valid access token and returns user info if valid
       const response = await fetch(
-        `${EnvironmentVars.KEYCLOAK_HOST_URL}/auth/realms/${EnvironmentVars.KEYCLOAK_REALM}/protocol/openid-connect/userinfo`,
+        `${EnvironmentVars.KEYCLOAK_HOST_URL}/realms/${EnvironmentVars.KEYCLOAK_REALM}/protocol/openid-connect/userinfo`,
         {
           method: 'GET',
           headers: {
@@ -59,6 +59,7 @@ class AuthApi {
       email: token.email,
       first_name: token.given_name,
       last_name: token.family_name,
+      name: `${token.given_name} ${token.family_name}`,
       super_user: token.cvmanager_data.super_user === '1',
       organizations: token.cvmanager_data.organizations.map((org) => ({
         name: org.org,

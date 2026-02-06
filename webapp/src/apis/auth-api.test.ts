@@ -84,7 +84,7 @@ describe('AuthApi', () => {
       const result = await AuthApi.verifyToken(mockToken)
 
       expect(global.fetch).toHaveBeenCalledWith(
-        `${EnvironmentVars.KEYCLOAK_HOST_URL}/auth/realms/${EnvironmentVars.KEYCLOAK_REALM}/protocol/openid-connect/userinfo`,
+        `${EnvironmentVars.KEYCLOAK_HOST_URL}realms/${EnvironmentVars.KEYCLOAK_REALM}/protocol/openid-connect/userinfo`,
         {
           method: 'GET',
           headers: {
@@ -107,7 +107,7 @@ describe('AuthApi', () => {
       const result = await AuthApi.verifyToken(mockToken)
 
       expect(global.fetch).toHaveBeenCalledWith(
-        `${EnvironmentVars.KEYCLOAK_HOST_URL}/auth/realms/${EnvironmentVars.KEYCLOAK_REALM}/protocol/openid-connect/userinfo`,
+        `${EnvironmentVars.KEYCLOAK_HOST_URL}realms/${EnvironmentVars.KEYCLOAK_REALM}/protocol/openid-connect/userinfo`,
         {
           method: 'GET',
           headers: {
@@ -287,7 +287,7 @@ describe('AuthApi', () => {
 
       expect(jwtDecode).toHaveBeenCalledWith(mockToken)
       expect(global.fetch).toHaveBeenCalledWith(
-        `${EnvironmentVars.KEYCLOAK_HOST_URL}/auth/realms/${EnvironmentVars.KEYCLOAK_REALM}/protocol/openid-connect/userinfo`,
+        `${EnvironmentVars.KEYCLOAK_HOST_URL}realms/${EnvironmentVars.KEYCLOAK_REALM}/protocol/openid-connect/userinfo`,
         {
           method: 'GET',
           headers: {
@@ -316,7 +316,7 @@ describe('AuthApi', () => {
 
       expect(jwtDecode).toHaveBeenCalledWith(mockToken)
       expect(global.fetch).toHaveBeenCalledWith(
-        `${EnvironmentVars.KEYCLOAK_HOST_URL}/auth/realms/${EnvironmentVars.KEYCLOAK_REALM}/protocol/openid-connect/userinfo`,
+        `${EnvironmentVars.KEYCLOAK_HOST_URL}realms/${EnvironmentVars.KEYCLOAK_REALM}/protocol/openid-connect/userinfo`,
         {
           method: 'GET',
           headers: {

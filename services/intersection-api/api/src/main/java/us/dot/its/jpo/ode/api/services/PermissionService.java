@@ -1,11 +1,13 @@
 package us.dot.its.jpo.ode.api.services;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +18,9 @@ import us.dot.its.jpo.ode.api.repositories.RsuRepository;
 import us.dot.its.jpo.ode.api.repositories.UserRepository;
 import us.dot.its.jpo.ode.api.repositories.UserRepository.UserOrgRoleProjection;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +53,7 @@ public class PermissionService {
         return roles.indexOf(userRole.toUpperCase()) >= roles.indexOf(requiredRole.toUpperCase());
     }
 
-    private List<String> getQualifiedOrgList(String email, String requiredRole) {
+    public List<String> getQualifiedOrgList(String email, String requiredRole) {
         List<UserOrgRoleProjection> organizationRoles = userRepository.findUserOrgRoles(email);
         return getQualifiedOrgList(organizationRoles, requiredRole);
     }
@@ -135,7 +140,14 @@ public class PermissionService {
     }
 
     // Allow Connection if the users organization controls the specified RSU unit
-    public boolean hasRSU(String rsuIP, String role) {
+    public boolean hasRsu(String rsuIP, String role) {
+        InetAddress ipv4Address;
+        try {
+            ipv4Address = InetAddress.getByName(rsuIP);
+        } catch (UnknownHostException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid RSU IP address: " + rsuIP, e);
+        }
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (!isAuthValid(auth)) {
             return false;
@@ -149,10 +161,37 @@ public class PermissionService {
 
         String organization = getOrganizationFromHeader();
         if (organization != null) {
-            return rsuRepository.existsByIpAndOrganizations(rsuIP, List.of(organization));
+            return rsuRepository.existsByIpAndOrganizations(ipv4Address, List.of(organization));
         }
 
-        return rsuRepository.existsByIpAndOrganizations(rsuIP, getQualifiedOrgList(username, role));
+        return rsuRepository.existsByIpAndOrganizations(ipv4Address, getQualifiedOrgList(username, role));
+    }
+
+    // Allow Connection if the users organization controls the specified RSU unit
+    public boolean hasRsus(List<String> rsuIP, String role) {
+        List<InetAddress> ipv4Addresses = new ArrayList<>();
+        for (String ip : rsuIP) {
+            try {
+                ipv4Addresses.add(InetAddress.getByName(ip));
+            } catch (UnknownHostException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid RSU IP address: " + ip, e);
+            }
+        }
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!isAuthValid(auth)) {
+            return false;
+        }
+
+        if (isSuperUser()) {
+            return true;
+        }
+
+        String username = getUsername(auth);
+
+        List<String> authorizedOrgs = getQualifiedOrgList(username, role);
+        List<InetAddress> allowedRsuIps = rsuRepository.findAllowedRsuIpsInOrganizations(authorizedOrgs);
+        return allowedRsuIps.containsAll(ipv4Addresses);
     }
 
     // helper method to make sure authentication is valid

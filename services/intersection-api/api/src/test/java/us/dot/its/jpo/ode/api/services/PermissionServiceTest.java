@@ -22,6 +22,8 @@ import us.dot.its.jpo.ode.api.repositories.RsuRepository;
 import us.dot.its.jpo.ode.api.repositories.UserRepository;
 import us.dot.its.jpo.ode.api.repositories.UserRepository.UserOrgRoleProjection;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Optional;
 
@@ -372,7 +374,7 @@ class PermissionServiceTest {
         assertTrue(permissionService.hasIntersection(123, "OPERATOR"));
     }
 
-    // ==================== hasRSU Tests ====================
+    // ==================== hasRsu Tests ====================
 
     @Test
     void testHasRSU_SuperUser() {
@@ -383,12 +385,12 @@ class PermissionServiceTest {
         superUser.setSuperUser(true);
         when(userRepository.findByEmail("test@example.com")).thenReturn(superUser);
 
-        assertTrue(permissionService.hasRSU("192.168.1.1", "USER"));
-        verify(rsuRepository, never()).existsByIpAndOrganizations(anyString(), anyList());
+        assertTrue(permissionService.hasRsu("192.168.1.1", "USER"));
+        verify(rsuRepository, never()).existsByIpAndOrganizations(any(), anyList());
     }
 
     @Test
-    void testHasRSU_WithOrganizationHeader_HasAccess() {
+    void testHasRSU_WithOrganizationHeader_HasAccess() throws UnknownHostException {
         JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
         setupSecurityContext(token);
 
@@ -400,14 +402,14 @@ class PermissionServiceTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
         when(userRepository.findByEmail("test@example.com")).thenReturn(regularUser);
-        when(rsuRepository.existsByIpAndOrganizations("192.168.1.1", List.of("TestOrg")))
+        when(rsuRepository.existsByIpAndOrganizations(InetAddress.getByName("192.168.1.1"), List.of("TestOrg")))
                 .thenReturn(true);
 
-        assertTrue(permissionService.hasRSU("192.168.1.1", "USER"));
+        assertTrue(permissionService.hasRsu("192.168.1.1", "USER"));
     }
 
     @Test
-    void testHasRSU_WithOrganizationHeader_NoAccess() {
+    void testHasRSU_WithOrganizationHeader_NoAccess() throws UnknownHostException {
         JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
         setupSecurityContext(token);
 
@@ -419,16 +421,16 @@ class PermissionServiceTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
         when(userRepository.findByEmail("test@example.com")).thenReturn(regularUser);
-        when(rsuRepository.existsByIpAndOrganizations("192.168.1.1", List.of("TestOrg")))
+        when(rsuRepository.existsByIpAndOrganizations(InetAddress.getByName("192.168.1.1"), List.of("TestOrg")))
                 .thenReturn(false);
 
-        assertFalse(permissionService.hasRSU("192.168.1.1", "USER"));
+        assertFalse(permissionService.hasRsu("192.168.1.1", "USER"));
         verify(userRepository).findByEmail("test@example.com");
-        verify(rsuRepository).existsByIpAndOrganizations("192.168.1.1", List.of("TestOrg"));
+        verify(rsuRepository).existsByIpAndOrganizations(InetAddress.getByName("192.168.1.1"), List.of("TestOrg"));
     }
 
     @Test
-    void testHasRSU_WithoutOrganizationHeader_HasAccessInQualifiedOrg() {
+    void testHasRSU_WithoutOrganizationHeader_HasAccessInQualifiedOrg() throws UnknownHostException {
         JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
         setupSecurityContext(token);
 
@@ -441,10 +443,10 @@ class PermissionServiceTest {
 
         when(userRepository.findByEmail("test@example.com")).thenReturn(regularUser);
         when(userRepository.findUserOrgRoles("test@example.com")).thenReturn(List.of(projection));
-        when(rsuRepository.existsByIpAndOrganizations("192.168.1.1", List.of("Org1")))
+        when(rsuRepository.existsByIpAndOrganizations(InetAddress.getByName("192.168.1.1"), List.of("Org1")))
                 .thenReturn(true);
 
-        assertTrue(permissionService.hasRSU("192.168.1.1", "OPERATOR"));
+        assertTrue(permissionService.hasRsu("192.168.1.1", "OPERATOR"));
     }
 
     // ==================== isAuthValid Tests ====================

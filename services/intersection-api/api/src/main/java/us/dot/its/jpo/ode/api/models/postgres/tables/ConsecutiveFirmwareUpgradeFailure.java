@@ -17,11 +17,10 @@ public class ConsecutiveFirmwareUpgradeFailure {
     @MapsId
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "rsu_id", nullable = false)
-    private Rsu rsus;
+    private Rsu rsu;
 
     @NotNull
     @Column(name = "consecutive_failures", nullable = false)
     private Integer consecutiveFailures;
-
 
 }

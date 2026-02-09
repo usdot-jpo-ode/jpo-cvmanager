@@ -25,6 +25,4 @@ public class RsuOrganization {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
-
-
 }

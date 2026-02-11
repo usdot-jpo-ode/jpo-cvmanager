@@ -4,7 +4,7 @@ import api.src.admin_user as admin_user
 import api.tests.data.admin_user_data as admin_user_data
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from api.tests.data import auth_data
-from werkzeug.exceptions import BadRequest, HTTPException, InternalServerError
+from werkzeug.exceptions import BadRequest, HTTPException, InternalServerError, Forbidden
 from copy import deepcopy
 
 user_valid = auth_data.get_request_environ()
@@ -236,15 +236,18 @@ def test_check_safe_input_bad():
 
 
 # modify_user
+@patch("api.src.admin_user.pgquery.query_db")
 @patch("api.src.admin_user.check_safe_input")
 @patch("api.src.admin_user.admin_new_user.check_email")
 @patch("api.src.admin_user.pgquery.write_db")
-def test_modify_user_success(mock_pgquery, mock_check_email, mock_check_safe_input):
+def test_modify_user_success(mock_write_db, mock_check_email, mock_check_safe_input, mock_query_db):
     mock_check_email.return_value = True
     mock_check_safe_input.return_value = True
+    # Mock the query to get target user's super_user status
+    mock_query_db.return_value = [["1"]]  # User exists and is a super user
     expected_msg = {"message": "User successfully modified"}
     actual_msg = admin_user.modify_user(
-        "test@gmail.com", admin_user_data.request_json_good
+        "test@gmail.com", admin_user_data.request_json_good, user_valid
     )
 
     calls = [
@@ -255,7 +258,7 @@ def test_modify_user_success(mock_pgquery, mock_check_email, mock_check_safe_inp
         call(admin_user_data.modify_org_sql, params=admin_user_data.modify_org_params),
         call(admin_user_data.remove_org_sql, params=admin_user_data.remove_org_params),
     ]
-    mock_pgquery.assert_has_calls(calls)
+    mock_write_db.assert_has_calls(calls)
     assert actual_msg == expected_msg
 
 
@@ -265,7 +268,7 @@ def test_modify_user_email_check_fail(mock_pgquery, mock_check_email):
     mock_check_email.return_value = False
 
     with pytest.raises(BadRequest) as exc_info:
-        admin_user.modify_user("test@gmail.com", admin_user_data.request_json_good)
+        admin_user.modify_user("test@gmail.com", admin_user_data.request_json_good, user_valid)
 
     assert str(exc_info.value) == "400 Bad Request: Email is not valid"
     mock_pgquery.assert_has_calls([])
@@ -282,6 +285,7 @@ def test_modify_user_check_fail(mock_pgquery, mock_check_email, mock_check_safe_
         admin_user.modify_user(
             "test@gmail.com",
             admin_user_data.request_json_good,
+            user_valid,
         )
 
     assert (
@@ -290,18 +294,20 @@ def test_modify_user_check_fail(mock_pgquery, mock_check_email, mock_check_safe_
     )
 
 
+@patch("api.src.admin_user.pgquery.query_db")
 @patch("api.src.admin_user.check_safe_input")
 @patch("api.src.admin_user.admin_new_user.check_email")
 @patch("api.src.admin_user.pgquery.write_db")
 def test_modify_user_generic_exception(
-    mock_pgquery, mock_check_email, mock_check_safe_input
+    mock_pgquery, mock_check_email, mock_check_safe_input, mock_query_db
 ):
     mock_check_email.return_value = True
     mock_check_safe_input.return_value = True
+    mock_query_db.return_value = [["1"]]  # User exists and is a super user
     mock_pgquery.side_effect = SQLAlchemyError("Test")
 
     with pytest.raises(InternalServerError) as exc_info:
-        admin_user.modify_user("test@gmail.com", admin_user_data.request_json_good)
+        admin_user.modify_user("test@gmail.com", admin_user_data.request_json_good, user_valid)
 
     assert (
         str(exc_info.value)
@@ -309,22 +315,83 @@ def test_modify_user_generic_exception(
     )
 
 
+@patch("api.src.admin_user.pgquery.query_db")
 @patch("api.src.admin_user.check_safe_input")
 @patch("api.src.admin_user.admin_new_user.check_email")
 @patch("api.src.admin_user.pgquery.write_db")
 def test_modify_user_sql_exception(
-    mock_pgquery, mock_check_email, mock_check_safe_input
+    mock_pgquery, mock_check_email, mock_check_safe_input, mock_query_db
 ):
     mock_check_email.return_value = True
     mock_check_safe_input.return_value = True
+    mock_query_db.return_value = [["1"]]  # User exists and is a super user
     orig = MagicMock()
     orig.args = ({"D": "SQL issue encountered"},)
     mock_pgquery.side_effect = IntegrityError("", {}, orig)
 
     with pytest.raises(InternalServerError) as exc_info:
-        admin_user.modify_user("test@gmail.com", admin_user_data.request_json_good)
+        admin_user.modify_user("test@gmail.com", admin_user_data.request_json_good, user_valid)
 
     assert str(exc_info.value) == "500 Internal Server Error: SQL issue encountered"
+
+
+@patch("api.src.admin_user.pgquery.query_db")
+@patch("api.src.admin_user.check_safe_input")
+@patch("api.src.admin_user.admin_new_user.check_email")
+def test_modify_user_not_found(mock_check_email, mock_check_safe_input, mock_query_db):
+    """Test that BadRequest is raised when user is not found in database"""
+    mock_check_email.return_value = True
+    mock_check_safe_input.return_value = True
+    mock_query_db.return_value = []  # User not found
+
+    with pytest.raises(BadRequest) as exc_info:
+        admin_user.modify_user("test@gmail.com", admin_user_data.request_json_good, user_valid)
+
+    assert str(exc_info.value) == "400 Bad Request: User not found"
+
+
+@patch("api.src.admin_user.pgquery.query_db")
+@patch("api.src.admin_user.check_safe_input")
+@patch("api.src.admin_user.admin_new_user.check_email")
+def test_modify_user_non_super_user_grant_super_user(mock_check_email, mock_check_safe_input, mock_query_db):
+    """Test that Forbidden is raised when non-super user tries to grant super user privileges"""
+    mock_check_email.return_value = True
+    mock_check_safe_input.return_value = True
+    mock_query_db.return_value = [["0"]]  # Target user is not a super user
+
+    # Create a non-super user as the requesting user
+    non_super_user = auth_data.get_request_environ_user()
+
+    # Request tries to make the target user a super user
+    request_data = deepcopy(admin_user_data.request_json_good)
+    request_data["super_user"] = True
+
+    with pytest.raises(Forbidden) as exc_info:
+        admin_user.modify_user("test@gmail.com", request_data, non_super_user)
+
+    assert str(exc_info.value) == "403 Forbidden: Only super users can grant super user privileges"
+
+
+@patch("api.src.admin_user.pgquery.query_db")
+@patch("api.src.admin_user.check_safe_input")
+@patch("api.src.admin_user.admin_new_user.check_email")
+def test_modify_user_non_super_user_revoke_super_user(mock_check_email, mock_check_safe_input, mock_query_db):
+    """Test that Forbidden is raised when non-super user tries to revoke super user privileges"""
+    mock_check_email.return_value = True
+    mock_check_safe_input.return_value = True
+    mock_query_db.return_value = [["1"]]  # Target user is a super user
+
+    # Create a non-super user as the requesting user
+    non_super_user = auth_data.get_request_environ_user()
+
+    # Request tries to revoke super user status
+    request_data = deepcopy(admin_user_data.request_json_good)
+    request_data["super_user"] = False
+
+    with pytest.raises(Forbidden) as exc_info:
+        admin_user.modify_user("test@gmail.com", request_data, non_super_user)
+
+    assert str(exc_info.value) == "403 Forbidden: Only super users can revoke super user privileges"
 
 
 # delete_user

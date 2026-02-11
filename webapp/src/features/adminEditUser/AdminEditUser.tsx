@@ -16,6 +16,7 @@ import {
   selectLoading,
 } from './adminEditUserSlice'
 import { useSelector, useDispatch } from 'react-redux'
+import { selectSuperUser } from '../../generalSlices/userSlice'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
@@ -48,6 +49,7 @@ const AdminEditUser = () => {
   const submitAttempt = useSelector(selectSubmitAttempt)
   const userTableData = useSelector(selectTableData)
   const loading = useSelector(selectLoading)
+  const isSuperUser = useSelector(selectSuperUser)
   const [open, setOpen] = useState(true)
   const navigate = useNavigate()
   const {
@@ -191,9 +193,11 @@ const AdminEditUser = () => {
                 </FormControl>
               </Form.Group>
 
-              <Form.Group controlId="super_user">
-                <Form.Check label=" Super User" className="trebuchet" type="switch" {...register('super_user')} />
-              </Form.Group>
+              {isSuperUser && (
+                <Form.Group controlId="super_user">
+                  <Form.Check label=" Super User" className="trebuchet" type="switch" {...register('super_user')} />
+                </Form.Group>
+              )}
 
               <Form.Group controlId="organizations">
                 <FormControl fullWidth margin="normal">

@@ -7,7 +7,7 @@ import common.pgquery as pgquery
 import api_environment
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 import time
-from werkzeug.exceptions import InternalServerError, BadRequest
+from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
     EnvironWithOrg,
@@ -86,7 +86,7 @@ def check_safe_input(user_spec):
     return True
 
 
-def add_user(user_spec: dict):
+def add_user(user_spec: dict, requesting_user: EnvironWithOrg):
     # Check for special characters for potential SQL injection
     if not check_email(user_spec["email"]):
         raise BadRequest("Email is not valid")
@@ -96,6 +96,10 @@ def add_user(user_spec: dict):
         )
 
     try:
+        # Prevent non-super users from modifying super_user privileges
+        if not requesting_user.user_info.super_user and user_spec["super_user"]:
+            raise Forbidden("Only super users can grant super user privileges")
+
         current_timestamp = int(time.time() * 1000)
         user_insert_query = (
             "INSERT INTO public.users(email, first_name, last_name, super_user, created_timestamp) "
@@ -126,6 +130,9 @@ def add_user(user_spec: dict):
     except SQLAlchemyError as e:
         logging.error(f"SQL Exception encountered: {e}")
         raise InternalServerError("Encountered unknown issue executing query") from e
+    except Forbidden as e:
+        logging.error(f"Forbidden Exception encountered: {e}")
+        raise e
 
     return {"message": "New user successfully added"}
 
@@ -195,4 +202,4 @@ class AdminNewUser(Resource):
             keys_to_check=["organizations"],
         )
 
-        return (add_user(body), 200, self.headers)
+        return (add_user(body, permission_result.user), 200, self.headers)

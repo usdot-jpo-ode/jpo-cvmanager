@@ -2,42 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import { ErrorMessage } from '@hookform/error-message'
-import {
-  selectApiData,
-  selectPrimaryRoutes,
-  selectSelectedRoute,
-  selectOtherRouteDisabled,
-  selectRsuModels,
-  selectSelectedModel,
-  selectSshCredentialGroups,
-  selectSelectedSshGroup,
-  selectSnmpCredentialGroups,
-  selectSelectedSnmpGroup,
-  selectSnmpVersions,
-  selectSelectedSnmpVersion,
-  selectOrganizations,
-  selectSelectedOrganizations,
-  selectSubmitAttempt,
-
-  // actions
-  submitForm,
-  updateSelectedRoute,
-  setSelectedModel,
-  setSelectedSshGroup,
-  setSelectedSnmpGroup,
-  setSelectedSnmpVersion,
-  setSelectedOrganizations,
-  selectLoading,
-} from './adminEditRsuSlice'
-import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
 import '../../styles/fonts/museo-slab.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
 import { AdminRsu } from '../../models/Rsu'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { selectTableData, updateTableData } from '../adminRsuTab/adminRsuTabSlice'
 import {
   Button,
   Dialog,
@@ -54,6 +23,7 @@ import {
 import toast from 'react-hot-toast'
 import { ErrorMessageText } from '../../styles/components/Messages'
 import { SideBarHeader } from '../../styles/components/SideBarHeader'
+import { useGetRsuAllowedSelectionsQuery, useGetRsuQuery, usePatchRsuMutation } from '../api/rsuApiSlice'
 
 export type AdminEditRsuFormType = {
   orig_ip: string
@@ -64,6 +34,7 @@ export type AdminEditRsuFormType = {
   }
   milepost: string | number
   primary_route: string
+  other_route: string
   serial_number: string
   model: string
   scms_id: string
@@ -71,39 +42,26 @@ export type AdminEditRsuFormType = {
   snmp_credential_group: string
   snmp_version_group: string
   organizations: string[]
-  organizations_to_add: string[]
-  organizations_to_remove: string[]
 }
 
 const AdminEditRsu = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-  const apiData = useSelector(selectApiData)
-  const primaryRoutes = useSelector(selectPrimaryRoutes)
-  const selectedRoute = useSelector(selectSelectedRoute)
-  const otherRouteDisabled = useSelector(selectOtherRouteDisabled)
-  const rsuModels = useSelector(selectRsuModels)
-  const selectedModel = useSelector(selectSelectedModel)
-  const sshCredentialGroups = useSelector(selectSshCredentialGroups)
-  const selectedSshGroup = useSelector(selectSelectedSshGroup)
-  const snmpCredentialGroups = useSelector(selectSnmpCredentialGroups)
-  const selectedSnmpGroup = useSelector(selectSelectedSnmpGroup)
-  const snmpVersions = useSelector(selectSnmpVersions)
-  const selectedSnmpVersion = useSelector(selectSelectedSnmpVersion)
-  const organizations = useSelector(selectOrganizations)
-  const selectedOrganizations = useSelector(selectSelectedOrganizations)
-  const submitAttempt = useSelector(selectSubmitAttempt)
-  const rsuTableData = useSelector(selectTableData)
-  const loading = useSelector(selectLoading)
+  const navigate = useNavigate()
+  const { rsuIp } = useParams<{ rsuIp: string }>()
+
+  const { data: rsuInfo, isLoading: isLoadingRsu } = useGetRsuQuery(rsuIp!)
+  const { data: rsuAllowedSelections, isLoading: isLoadingAllowedSelections } = useGetRsuAllowedSelectionsQuery()
+  const [patchRsu, { isLoading: isPatchingRsu }] = usePatchRsuMutation()
 
   const [open, setOpen] = useState(true)
-
-  const navigate = useNavigate()
+  const [submitAttempt, setSubmitAttempt] = useState(false)
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
+    watch,
+    reset,
   } = useForm<AdminEditRsuFormType>({
     defaultValues: {
       orig_ip: '',
@@ -114,57 +72,124 @@ const AdminEditRsu = () => {
       },
       milepost: '',
       primary_route: '',
+      other_route: '',
       serial_number: '',
       model: '',
       scms_id: '',
       ssh_credential_group: '',
       snmp_credential_group: '',
       snmp_version_group: '',
-      organizations_to_add: [],
-      organizations_to_remove: [],
+      organizations: [],
     },
   })
 
-  const { rsuIp } = useParams<{ rsuIp: string }>()
+  // Watch form values
+  const watchedPrimaryRoute = watch('primary_route')
+  const watchedModel = watch('model')
+  const watchedSshGroup = watch('ssh_credential_group')
+  const watchedSnmpGroup = watch('snmp_credential_group')
+  const watchedSnmpVersion = watch('snmp_version_group')
+  const watchedOrganizations = watch('organizations')
 
+  // Initialize form when RSU data loads
   useEffect(() => {
-    const currRsu = (rsuTableData ?? []).find((rsu: AdminRsu) => rsu.ip === rsuIp)
-    if (currRsu) {
-      setValue('orig_ip', currRsu.ip)
-      setValue('ip', currRsu.ip)
-      setValue('geo_position.latitude', currRsu.geo_position.latitude.toString())
-      setValue('geo_position.longitude', currRsu.geo_position.longitude.toString())
-      setValue('milepost', String(currRsu.milepost))
-      setValue('serial_number', currRsu.serial_number)
-      setValue('scms_id', currRsu.scms_id)
-    } else {
-      console.error('Unknown RSU IP: ', rsuIp)
+    if (rsuInfo) {
+      reset({
+        orig_ip: rsuInfo.ip,
+        ip: rsuInfo.ip,
+        geo_position: {
+          latitude: rsuInfo.geo_position.latitude.toString(),
+          longitude: rsuInfo.geo_position.longitude.toString(),
+        },
+        milepost: String(rsuInfo.milepost),
+        primary_route: rsuInfo.primary_route,
+        other_route: '',
+        serial_number: rsuInfo.serial_number,
+        model: rsuInfo.model,
+        scms_id: rsuInfo.scms_id,
+        ssh_credential_group: rsuInfo.ssh_credential_group,
+        snmp_credential_group: rsuInfo.snmp_credential_group,
+        snmp_version_group: rsuInfo.snmp_version_group,
+        organizations: rsuInfo.organizations,
+      })
     }
-  }, [apiData, rsuIp, rsuTableData, setValue])
+  }, [rsuInfo, reset])
 
-  useEffect(() => {
-    dispatch(updateSelectedRoute(selectedRoute))
-  }, [selectedRoute, dispatch])
+  const onSubmit = async (data: AdminEditRsuFormType) => {
+    setSubmitAttempt(true)
 
-  useEffect(() => {
-    dispatch(updateTableData())
-  }, [dispatch])
+    // Validate dropdowns
+    if (
+      !data.primary_route ||
+      !data.model ||
+      !data.ssh_credential_group ||
+      !data.snmp_credential_group ||
+      !data.snmp_version_group ||
+      data.organizations.length === 0
+    ) {
+      toast.error('Please fill in all required fields')
+      return
+    }
 
-  const onSubmit = (data: AdminEditRsuFormType) => {
-    dispatch(submitForm(data)).then((data: any) => {
-      if (data.payload.success) {
-        toast.success('RSU updated successfully')
-      } else {
-        toast.error('Failed to update RSU: ' + data.payload.message)
+    const loadingToast = toast.loading('Updating RSU...')
+
+    try {
+      // Build patch object with only changed fields
+      const patch: Partial<AdminRsu> = {}
+
+      if (data.ip !== rsuInfo?.ip) patch.ip = data.ip
+      if (
+        data.geo_position.latitude !== rsuInfo?.geo_position.latitude.toString() ||
+        data.geo_position.longitude !== rsuInfo?.geo_position.longitude.toString()
+      ) {
+        patch.geo_position = {
+          latitude: data.geo_position.latitude,
+          longitude: data.geo_position.longitude,
+        }
       }
-    })
-    setOpen(false)
-    navigate('/dashboard/admin/rsus')
+      const formMilepost = Number(data.milepost)
+      if (formMilepost !== rsuInfo?.milepost) patch.milepost = formMilepost
+      if (data.primary_route !== rsuInfo?.primary_route) {
+        patch.primary_route = data.primary_route === 'Other' ? data.other_route : data.primary_route
+      }
+      if (data.serial_number !== rsuInfo?.serial_number) patch.serial_number = data.serial_number
+      if (data.model !== rsuInfo?.model) patch.model = data.model
+      if (data.scms_id !== rsuInfo?.scms_id) patch.scms_id = data.scms_id
+      if (data.ssh_credential_group !== rsuInfo?.ssh_credential_group) {
+        patch.ssh_credential_group = data.ssh_credential_group
+      }
+      if (data.snmp_credential_group !== rsuInfo?.snmp_credential_group) {
+        patch.snmp_credential_group = data.snmp_credential_group
+      }
+      if (data.snmp_version_group !== rsuInfo?.snmp_version_group) {
+        patch.snmp_version_group = data.snmp_version_group
+      }
+
+      // Check if organizations changed
+      const orgsChanged =
+        data.organizations.length !== rsuInfo?.organizations.length ||
+        data.organizations.some((org) => !rsuInfo?.organizations.includes(org))
+
+      if (orgsChanged) {
+        patch.organizations = data.organizations
+      }
+
+      await patchRsu({ rsuIp: data.orig_ip, patch }).unwrap()
+      toast.success('RSU updated successfully', { id: loadingToast })
+      setOpen(false)
+      navigate('/dashboard/admin/rsus')
+    } catch (error: any) {
+      toast.error('Failed to update RSU: ' + (error?.data?.message || error?.message || 'Unknown error'), {
+        id: loadingToast,
+      })
+    }
   }
+
+  const isLoading = isLoadingRsu || isLoadingAllowedSelections
 
   return (
     <Dialog open={open}>
-      {apiData && !loading ? (
+      {!isLoading && rsuInfo && rsuAllowedSelections ? (
         <>
           <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
             <SideBarHeader
@@ -206,8 +231,7 @@ const AdminEditRsu = () => {
                     name="ip"
                     render={({ message }) => (
                       <p className="errorMsg" role="alert">
-                        {' '}
-                        {message}{' '}
+                        {message}
                       </p>
                     )}
                   />
@@ -241,8 +265,7 @@ const AdminEditRsu = () => {
                         name="geo_position.latitude"
                         render={({ message }) => (
                           <p className="errorMsg" role="alert">
-                            {' '}
-                            {message}{' '}
+                            {message}
                           </p>
                         )}
                       />
@@ -277,8 +300,7 @@ const AdminEditRsu = () => {
                         name="geo_position.longitude"
                         render={({ message }) => (
                           <p className="errorMsg" role="alert">
-                            {' '}
-                            {message}{' '}
+                            {message}
                           </p>
                         )}
                       />
@@ -312,8 +334,7 @@ const AdminEditRsu = () => {
                         name="milepost"
                         render={({ message }) => (
                           <p className="errorMsg" role="alert">
-                            {' '}
-                            {message}{' '}
+                            {message}
                           </p>
                         )}
                       />
@@ -327,39 +348,52 @@ const AdminEditRsu = () => {
                       <Select
                         id="primary_route"
                         label="Primary Route"
-                        value={selectedRoute}
-                        defaultValue={selectedRoute}
+                        value={watchedPrimaryRoute || ''}
                         required
+                        {...register('primary_route', { required: true })}
                         onChange={(event) => {
-                          const route = event.target.value as string
-                          dispatch(updateSelectedRoute(route))
+                          setValue('primary_route', event.target.value as string)
                         }}
                       >
-                        {primaryRoutes.map((route) => (
-                          <MenuItem key={route.name} value={route.name}>
-                            {route.name}
+                        {rsuAllowedSelections.primary_routes?.map((route) => (
+                          <MenuItem key={route} value={route}>
+                            {route}
                           </MenuItem>
                         ))}
                       </Select>
-                      {selectedRoute === '' && submitAttempt && (
+                      {!watchedPrimaryRoute && submitAttempt && (
                         <ErrorMessageText role="alert">Must select a primary route</ErrorMessageText>
                       )}
-                      {(() => {
-                        if (selectedRoute === 'Other') {
-                          return (
-                            <Form.Control
-                              type="text"
-                              placeholder="Enter Other Route"
-                              disabled={otherRouteDisabled}
-                              {...register('primary_route', {
-                                required: 'Please enter the other route',
-                              })}
-                            />
-                          )
-                        }
-                      })()}
                     </FormControl>
                   </Form.Group>
+                  {watchedPrimaryRoute === 'Other' && (
+                    <FormControl fullWidth margin="normal">
+                      <TextField
+                        label="Other Route"
+                        placeholder="Enter Other Route"
+                        color="info"
+                        variant="outlined"
+                        required
+                        {...register('other_route', {
+                          required: watchedPrimaryRoute === 'Other' ? 'Please enter the other route' : false,
+                        })}
+                        slotProps={{
+                          inputLabel: {
+                            shrink: true,
+                          },
+                        }}
+                      />
+                      <ErrorMessage
+                        errors={errors}
+                        name="other_route"
+                        render={({ message }) => (
+                          <p className="errorMsg" role="alert">
+                            {message}
+                          </p>
+                        )}
+                      />
+                    </FormControl>
+                  )}
                 </Grid2>
                 <Grid2 size={7}>
                   <Form.Group controlId="serial_number">
@@ -394,22 +428,20 @@ const AdminEditRsu = () => {
                       <Select
                         id="model"
                         label="RSU Model"
-                        value={selectedModel}
-                        defaultValue={selectedModel}
+                        value={watchedModel || ''}
                         required
+                        {...register('model', { required: true })}
                         onChange={(event) => {
-                          const selectedRSUModel = event.target.value as string
-                          dispatch(setSelectedModel(selectedRSUModel))
+                          setValue('model', event.target.value as string)
                         }}
                       >
-                        <MenuItem value="Select RSU Model (Required)">Select RSU Model (Required)</MenuItem>
-                        {rsuModels.map((model) => (
-                          <MenuItem key={model.name} value={model.name}>
-                            {model.name}
+                        {rsuAllowedSelections.rsu_models?.map((model) => (
+                          <MenuItem key={model} value={model}>
+                            {model}
                           </MenuItem>
                         ))}
                       </Select>
-                      {selectedModel === '' && submitAttempt && (
+                      {!watchedModel && submitAttempt && (
                         <ErrorMessageText role="alert">Must select a RSU model</ErrorMessageText>
                       )}
                     </FormControl>
@@ -448,22 +480,20 @@ const AdminEditRsu = () => {
                   <Select
                     id="ssh_credential_group"
                     label="SSH Credential Group"
-                    value={selectedSshGroup}
-                    defaultValue={selectedSshGroup}
+                    value={watchedSshGroup || ''}
                     required
+                    {...register('ssh_credential_group', { required: true })}
                     onChange={(event) => {
-                      const selectedSSHGroup = event.target.value as string
-                      dispatch(setSelectedSshGroup(selectedSSHGroup))
+                      setValue('ssh_credential_group', event.target.value as string)
                     }}
                   >
-                    <MenuItem value="Select SSH Group (Required)">Select SSH Credential Group (Required)</MenuItem>
-                    {sshCredentialGroups.map((group) => (
-                      <MenuItem key={group.name} value={group.name}>
-                        {group.name}
+                    {rsuAllowedSelections.ssh_credential_groups?.map((group) => (
+                      <MenuItem key={group} value={group}>
+                        {group}
                       </MenuItem>
                     ))}
                   </Select>
-                  {selectedSshGroup === '' && submitAttempt && (
+                  {!watchedSshGroup && submitAttempt && (
                     <ErrorMessageText role="alert">Must select a SSH credential group</ErrorMessageText>
                   )}
                 </FormControl>
@@ -477,24 +507,20 @@ const AdminEditRsu = () => {
                       <Select
                         id="snmp_credential_group"
                         label="SNMP Credential Group"
-                        value={selectedSnmpGroup}
-                        defaultValue={selectedSnmpGroup}
+                        value={watchedSnmpGroup || ''}
                         required
+                        {...register('snmp_credential_group', { required: true })}
                         onChange={(event) => {
-                          const selectedGroup = event.target.value as string
-                          dispatch(setSelectedSnmpGroup(selectedGroup))
+                          setValue('snmp_credential_group', event.target.value as string)
                         }}
                       >
-                        <MenuItem value="Select SNMP Group (Required)">
-                          Select SNMP Credential Group (Required)
-                        </MenuItem>
-                        {snmpCredentialGroups.map((group) => (
-                          <MenuItem key={group.name} value={group.name}>
-                            {group.name}
+                        {rsuAllowedSelections.snmp_credential_groups?.map((group) => (
+                          <MenuItem key={group} value={group}>
+                            {group}
                           </MenuItem>
                         ))}
                       </Select>
-                      {selectedSnmpGroup === '' && submitAttempt && (
+                      {!watchedSnmpGroup && submitAttempt && (
                         <ErrorMessageText role="alert">Must select a SNMP credential group</ErrorMessageText>
                       )}
                     </FormControl>
@@ -507,22 +533,20 @@ const AdminEditRsu = () => {
                       <Select
                         id="snmp_version_group"
                         label="SNMP Protocol"
-                        value={selectedSnmpVersion}
-                        defaultValue={selectedSnmpVersion}
+                        value={watchedSnmpVersion || ''}
                         required
+                        {...register('snmp_version_group', { required: true })}
                         onChange={(event) => {
-                          const selectedVersion = event.target.value as string
-                          dispatch(setSelectedSnmpVersion(selectedVersion))
+                          setValue('snmp_version_group', event.target.value as string)
                         }}
                       >
-                        <MenuItem value="Select SNMP Protocol (Required)">Select SNMP Protocol (Required)</MenuItem>
-                        {snmpVersions.map((ver) => (
-                          <MenuItem key={ver.name} value={ver.name}>
-                            {ver.name}
+                        {rsuAllowedSelections.snmp_version_groups?.map((ver) => (
+                          <MenuItem key={ver} value={ver}>
+                            {ver}
                           </MenuItem>
                         ))}
                       </Select>
-                      {selectedSnmpVersion === '' && submitAttempt && (
+                      {!watchedSnmpVersion && submitAttempt && (
                         <ErrorMessageText role="alert">Must select a SNMP protocol</ErrorMessageText>
                       )}
                     </FormControl>
@@ -538,20 +562,20 @@ const AdminEditRsu = () => {
                     label="Organizations"
                     multiple
                     required
-                    value={selectedOrganizations.map((org) => org.name)}
-                    defaultValue={selectedOrganizations.map((org) => org.name)}
+                    value={watchedOrganizations || []}
+                    {...register('organizations', { required: true })}
                     onChange={(event) => {
-                      const selectedOrgs = event.target.value as string[]
-                      dispatch(setSelectedOrganizations(organizations.filter((org) => selectedOrgs.includes(org.name))))
+                      const value = event.target.value as string[]
+                      setValue('organizations', value)
                     }}
                   >
-                    {organizations.map((org) => (
-                      <MenuItem key={org.name} value={org.name}>
-                        {org.name}
+                    {rsuAllowedSelections.organizations?.map((org) => (
+                      <MenuItem key={org} value={org}>
+                        {org}
                       </MenuItem>
                     ))}
                   </Select>
-                  {selectedOrganizations.length === 0 && submitAttempt && (
+                  {watchedOrganizations?.length === 0 && submitAttempt && (
                     <ErrorMessageText role="alert">Must select an organization</ErrorMessageText>
                   )}
                 </FormControl>
@@ -575,22 +599,25 @@ const AdminEditRsu = () => {
               form="edit-rsu-form"
               type="submit"
               variant="contained"
+              disabled={isPatchingRsu}
               style={{ position: 'absolute', bottom: 10, right: 10 }}
               className="museo-slab capital-case"
             >
-              Apply Changes
+              {isPatchingRsu ? 'Saving...' : 'Apply Changes'}
             </Button>
           </DialogActions>
         </>
+      ) : isLoading ? (
+        <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
+          <Typography variant={'h4'}>Loading...</Typography>
+        </DialogContent>
       ) : (
-        !loading && (
-          <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
-            <Typography variant={'h4'}>
-              Unknown RSU IP address. Either this RSU does not exist, or you do not have access to it.{' '}
-              <Link to="../">RSUs</Link>
-            </Typography>
-          </DialogContent>
-        )
+        <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
+          <Typography variant={'h4'}>
+            Unknown RSU IP address. Either this RSU does not exist, or you do not have access to it.{' '}
+            <Link to="../">RSUs</Link>
+          </Typography>
+        </DialogContent>
       )}
     </Dialog>
   )

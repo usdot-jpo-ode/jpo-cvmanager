@@ -1,43 +1,52 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import AdminAddRsu from '../adminAddRsu/AdminAddRsu'
 import AdminEditRsu, { AdminEditRsuFormType } from '../adminEditRsu/AdminEditRsu'
 import AdminTable from '../../components/AdminTable'
 import { confirmAlert } from 'react-confirm-alert'
 import { Options } from '../../components/AdminDeletionOptions'
-import {
-  selectLoading,
-  selectTableData,
-
-  // actions
-  updateTableData,
-  deleteMultipleRsus,
-  deleteRsu,
-  setEditRsuRowData,
-} from './adminRsuTabSlice'
 import { selectOrganizationName } from '../../generalSlices/userSlice'
-import { clear, getRsuInfo } from '../adminEditRsu/adminEditRsuSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
 import './Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
-import { Action } from '@material-table/core'
+import { Action, OrderByCollection } from '@material-table/core'
 import { Route, Routes, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
 import toast from 'react-hot-toast'
 import { useTheme } from '@mui/material'
 import { DeleteOutline, ModeEditOutline } from '@mui/icons-material'
+import { useGetAllRsusQuery } from '../api/rsuApiSlice'
+import { useDeleteRsuMutation, useDeleteMultipleRsusMutation } from '../api/rsuApiSlice'
 
 const AdminRsuTab = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const navigate = useNavigate()
   const theme = useTheme()
   const organization = useSelector(selectOrganizationName)
-  useEffect(() =>{
-    dispatch(updateTableData())
-  }, [organization, dispatch])
 
-  const tableData = useSelector(selectTableData)
+  // Pagination and sorting state
+  const [page, setPage] = useState(0)
+  const [pageSize, setPageSize] = useState(100)
+  const [sortField, setSortField] = useState<string>('milepost')
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
+
+  const {
+    data: paginatedData,
+    refetch,
+    isLoading,
+  } = useGetAllRsusQuery({
+    organization,
+    page,
+    size: pageSize,
+    sort: `${sortField},${sortDirection}`, // Spring Boot sort format
+  })
+  const [deleteRsuApi, { isLoading: isDeleting }] = useDeleteRsuMutation()
+  const [deleteMultipleRsusApi, { isLoading: isDeletingMultiple }] = useDeleteMultipleRsusMutation()
+
+  const tableData = paginatedData?.content ?? []
+  const totalElements = paginatedData?.totalElements ?? 0
+
   const [columns] = useState([
     { title: 'Milepost', field: 'milepost', id: 0 },
     { title: 'IP Address', field: 'ip', id: 1 },
@@ -45,8 +54,6 @@ const AdminRsuTab = () => {
     { title: 'RSU Model', field: 'model', id: 3 },
     { title: 'Serial Number', field: 'serial_number', id: 4 },
   ])
-
-  const loading = useSelector(selectLoading)
 
   const tableActions: Action<AdminEditRsuFormType>[] = [
     {
@@ -104,9 +111,7 @@ const AdminRsuTab = () => {
         itemType: 'outlined',
       },
       position: 'toolbar',
-      onClick: () => {
-        dispatch(updateTableData())
-      },
+      onClick: refetch,
     },
     {
       icon: () => null,
@@ -123,32 +128,45 @@ const AdminRsuTab = () => {
   ]
 
   const onEdit = (row: AdminEditRsuFormType) => {
-    // Fetch RSU info before navigating to ensure updated menu state
-    dispatch(clear())
-    dispatch(getRsuInfo(row.ip))
-
-    dispatch(setEditRsuRowData(row))
     navigate('editRsu/' + row.ip)
   }
 
-  const onDelete = (row: AdminEditRsuFormType) => {
-    dispatch(deleteRsu({ rsu_ip: row.ip, shouldUpdateTableData: true })).then((data: any) => {
-      if (data.payload.success) {
-        toast.success('RSU Deleted Successfully')
-      } else {
-        toast.error('Failed to delete RSU due to error: ' + data.payload)
-      }
-    })
+  const onDelete = async (row: AdminEditRsuFormType) => {
+    const loadingToast = toast.loading(`Deleting RSU ${row.ip}...`)
+    try {
+      await deleteRsuApi(row.ip).unwrap()
+      toast.success('RSU Deleted Successfully', { id: loadingToast })
+    } catch (error) {
+      toast.error('Failed to delete RSU due to error: ' + error, { id: loadingToast })
+    }
   }
 
-  const multiDelete = (rows: AdminEditRsuFormType[]) => {
-    dispatch(deleteMultipleRsus(rows)).then((data: any) => {
-      if (data.payload.success) {
-        toast.success('RSUs Deleted Successfully')
-      } else {
-        toast.error(data.payload.message)
+  const multiDelete = async (rows: AdminEditRsuFormType[]) => {
+    const loadingToast = toast.loading(`Deleting ${rows.length} RSUs...`)
+    try {
+      await deleteMultipleRsusApi(rows.map((row) => row.ip)).unwrap()
+      toast.success('RSUs Deleted Successfully', { id: loadingToast })
+    } catch (error) {
+      toast.error('Failed to delete RSUs due to error: ' + error, { id: loadingToast })
+    }
+  }
+
+  const handlePageChange = (newPage: number, newPageSize: number) => {
+    setPage(newPage)
+    setPageSize(newPageSize)
+  }
+
+  const handleOrderCollectionChange = (orderByCollection: OrderByCollection[]) => {
+    if (orderByCollection.length > 0) {
+      const order = orderByCollection[0] // Get the first sort order
+      const column = columns[order.orderBy]
+
+      if (column?.field) {
+        setSortField(column.field)
+        setSortDirection(order.orderDirection === 'desc' ? 'desc' : 'asc')
+        setPage(0) // Reset to first page when sorting changes
       }
-    })
+    }
   }
 
   return (
@@ -157,9 +175,18 @@ const AdminRsuTab = () => {
         <Route
           path="/"
           element={
-            loading === false && (
+            isLoading === false && (
               <div className="scroll-div-tab">
-                <AdminTable title={''} data={tableData} columns={columns} actions={tableActions} />
+                <AdminTable
+                  title={''}
+                  data={tableData}
+                  columns={columns}
+                  actions={tableActions}
+                  page={page}
+                  totalCount={totalElements}
+                  onPageChange={handlePageChange}
+                  onOrderCollectionChange={handleOrderCollectionChange}
+                />
               </div>
             )
           }

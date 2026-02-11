@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import AdminTable from '../../components/AdminTable'
 import { Typography, useTheme } from '@mui/material'
 import Accordion from '@mui/material/Accordion'
@@ -8,17 +8,15 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { confirmAlert } from 'react-confirm-alert'
 import { Options } from '../../components/AdminDeletionOptions'
 import {
-  selectAvailableRsuList,
   selectSelectedRsuList,
 
   // actions
   setSelectedRsuList,
-  getRsuData,
   rsuDeleteSingle,
   rsuDeleteMultiple,
   rsuAddMultiple,
 } from './adminOrganizationTabRsuSlice'
-import { selectLoadingGlobal } from '../../generalSlices/userSlice'
+import { selectLoadingGlobal, selectOrganizationName } from '../../generalSlices/userSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
@@ -30,6 +28,7 @@ import toast from 'react-hot-toast'
 import { AddCircleOutline, DeleteOutline } from '@mui/icons-material'
 import { Multiselect } from 'react-widgets/cjs'
 import '../css/multiselect.css'
+import { useGetAllRsusQuery } from '../api/rsuApiSlice'
 
 interface AdminOrganizationTabRsuProps {
   selectedOrg: string
@@ -42,8 +41,22 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
   const { selectedOrg, selectedOrgEmail, updateTableData } = props
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const theme = useTheme()
+  const organizationName = useSelector(selectOrganizationName)
 
-  const availableRsuList = useSelector(selectAvailableRsuList)
+  const { data: allRsuData } = useGetAllRsusQuery({ organization: organizationName })
+
+  const availableRsuList = useMemo(() => {
+    // TODO: Pull this from a separate endpoint based on organization not RSUs
+    if (!allRsuData?.content) return []
+
+    return allRsuData.content
+      .filter((rsu) => !rsu.organizations?.includes(organizationName))
+      .map((rsu, index) => ({
+        id: index,
+        ip: rsu.ip,
+      }))
+  }, [allRsuData, organizationName])
+
   const selectedRsuList = useSelector(selectSelectedRsuList)
   const loadingGlobal = useSelector(selectLoadingGlobal)
   const [rsuColumns] = useState<Column<any>[]>([
@@ -128,7 +141,6 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
 
   useEffect(() => {
     dispatch(setSelectedRsuList([]))
-    dispatch(getRsuData(selectedOrg))
   }, [selectedOrg, dispatch])
 
   const rsuOnDelete = async (rsu: AdminOrgRsu) => {

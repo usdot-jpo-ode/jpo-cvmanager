@@ -167,7 +167,7 @@ describe('async thunks', () => {
           token: 'token',
           body: JSON.stringify(json),
         })
-        expect(dispatch).toHaveBeenCalledTimes(2 + 2)
+        expect(dispatch).toHaveBeenCalledTimes(2 + 1)
         expect(reset).toHaveBeenCalledTimes(1)
       } catch (e) {
         ;(global.setTimeout as any).mockClear()

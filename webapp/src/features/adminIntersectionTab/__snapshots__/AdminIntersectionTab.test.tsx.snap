@@ -223,7 +223,7 @@ exports[`should take a snapshot 1`] = `
                     >
                       <tr
                         class="MuiTableRow-root css-mocked-MuiTableRow-root"
-                        style="height: 245px;"
+                        style="height: 1225px;"
                       >
                         <td
                           class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
@@ -282,14 +282,14 @@ exports[`should take a snapshot 1`] = `
                         <div
                           class="MuiBox-root css-c8mw91"
                         >
-                          5 rows 
+                          25 rows 
                         </div>
                       </div>
                       <input
                         aria-hidden="true"
                         class="MuiSelect-nativeInput css-mocked-MuiSelect-nativeInput"
                         tabindex="-1"
-                        value="5"
+                        value="25"
                       />
                       <svg
                         aria-hidden="true"

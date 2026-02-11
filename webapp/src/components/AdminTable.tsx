@@ -1,5 +1,12 @@
 import React from 'react'
-import MaterialTable, { Action, Column, MTableAction, MTableCell, MTableToolbar } from '@material-table/core'
+import MaterialTable, {
+  Action,
+  Column,
+  MTableAction,
+  MTableCell,
+  MTableToolbar,
+  OrderByCollection,
+} from '@material-table/core'
 import { makeStyles } from '@mui/styles'
 
 import '../features/adminRsuTab/Admin.css'
@@ -15,6 +22,10 @@ interface AdminTableProps {
   selection?: boolean
   tableLayout?: 'auto' | 'fixed'
   pageSizeOptions?: any
+  page?: number
+  totalCount?: number
+  onPageChange?: (page: number, pageSize: number) => void
+  onOrderCollectionChange?: (orderByCollection: OrderByCollection[]) => void
 }
 
 const useStyles = makeStyles({
@@ -62,6 +73,7 @@ const getActionIcon = (title: string) => {
 const AdminTable = (props: AdminTableProps) => {
   const theme = useTheme()
   const classes = useStyles()
+
   // Function to check if a row is missing organizations
   const isMissingOrganizations = (rowData: any) => {
     try {
@@ -71,6 +83,9 @@ const AdminTable = (props: AdminTableProps) => {
       return false
     }
   }
+
+  // Determine if server-side pagination is enabled
+  const isServerSidePagination = props.totalCount !== undefined && props.onPageChange !== undefined
 
   return (
     <Box
@@ -103,18 +118,27 @@ const AdminTable = (props: AdminTableProps) => {
           tableLayout: props.tableLayout === undefined ? 'fixed' : props.tableLayout,
           rowStyle: (rowData) => ({
             overflowWrap: 'break-word',
-            border: `1px solid ${alpha(theme.palette.divider, 0.1)}`, // Add cell borders
-            backgroundColor: isMissingOrganizations(rowData) ? theme.palette.custom.tableErrorBackground : 'inherit', // Highlight row if missing organizations
+            border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+            backgroundColor: isMissingOrganizations(rowData) ? theme.palette.custom.tableErrorBackground : 'inherit',
           }),
           headerStyle: {
             backgroundColor: theme.palette.background.paper,
           },
-          pageSize: 5,
-          pageSizeOptions: props.pageSizeOptions === undefined ? [5, 10, 20] : props.pageSizeOptions,
+          pageSize: 25,
+          pageSizeOptions: props.pageSizeOptions === undefined ? [5, 25, 50, 100] : props.pageSizeOptions,
+          paging: true,
+          ...(isServerSidePagination && {
+            // Server-side pagination
+            page: props.page,
+            totalCount: props.totalCount,
+            emptyRowsWhenPaging: false,
+          }),
         }}
+        onPageChange={props.onPageChange}
+        onOrderCollectionChange={props.onOrderCollectionChange}
         components={{
-          Cell: (props) => {
-            const rowData = props.data
+          Cell: (cellProps) => {
+            const rowData = cellProps.data
             return (
               <Tooltip title={isMissingOrganizations(rowData) ? 'Missing organizations' : ''}>
                 <MTableCell
@@ -128,13 +152,13 @@ const AdminTable = (props: AdminTableProps) => {
                       borderRadius: '4px !important',
                     },
                   }}
-                  {...props}
+                  {...cellProps}
                 />
               </Tooltip>
             )
           },
-          Action: (props: any) => {
-            const { action } = props
+          Action: (actionProps: any) => {
+            const { action } = actionProps
             const iconProps = action?.iconProps
 
             if (iconProps?.itemType === 'displayIcon') {
@@ -175,14 +199,14 @@ const AdminTable = (props: AdminTableProps) => {
                   },
                 }}
               >
-                <MTableAction {...props} />
+                <MTableAction {...actionProps} />
               </Box>
             )
           },
-          Toolbar: (props) => {
+          Toolbar: (toolbarProps) => {
             return (
               <div className={classes.toolbarWrapper}>
-                <MTableToolbar {...props} />
+                <MTableToolbar {...toolbarProps} />
               </div>
             )
           },

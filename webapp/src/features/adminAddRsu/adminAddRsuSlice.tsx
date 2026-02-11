@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { selectToken } from '../../generalSlices/userSlice'
 import EnvironmentVars from '../../EnvironmentVars'
 import apiHelper from '../../apis/api-helper'
-import { updateTableData as updateRsuTableData } from '../adminRsuTab/adminRsuTabSlice'
 import { RootState } from '../../store'
 import { AdminAddRsuForm } from './AdminAddRsu'
 
@@ -187,7 +186,6 @@ export const createRsu = createAsyncThunk(
     switch (data.status) {
       case 200:
         dispatch(adminAddRsuSlice.actions.resetForm())
-        dispatch(updateRsuTableData())
         reset()
         return { success: true, message: '' }
       default:

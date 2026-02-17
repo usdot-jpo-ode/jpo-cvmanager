@@ -5,7 +5,8 @@ import MaterialTable, {
   MTableAction,
   MTableCell,
   MTableToolbar,
-  OrderByCollection,
+  Query,
+  QueryResult,
 } from '@material-table/core'
 import { makeStyles } from '@mui/styles'
 
@@ -16,16 +17,16 @@ import { AddCircleOutline, DeleteOutline, ModeEditOutline, Refresh } from '@mui/
 interface AdminTableProps {
   actions: Action<any>[]
   columns: Column<any>[]
-  data: any[]
+  data?: any[] // Optional for client-side pagination
   title: string
   editable?: any
   selection?: boolean
   tableLayout?: 'auto' | 'fixed'
   pageSizeOptions?: any
-  page?: number
-  totalCount?: number
-  onPageChange?: (page: number, pageSize: number) => void
-  onOrderCollectionChange?: (orderByCollection: OrderByCollection[]) => void
+  // Server-side pagination props
+  handleQueryChange?: (query: Query<any>) => Promise<QueryResult<any>>
+  isLoading?: boolean
+  tableRef?: React.MutableRefObject<any>
 }
 
 const useStyles = makeStyles({
@@ -85,7 +86,7 @@ const AdminTable = (props: AdminTableProps) => {
   }
 
   // Determine if server-side pagination is enabled
-  const isServerSidePagination = props.totalCount !== undefined && props.onPageChange !== undefined
+  const isServerSidePagination = props.handleQueryChange !== undefined
 
   return (
     <Box
@@ -108,9 +109,12 @@ const AdminTable = (props: AdminTableProps) => {
         columns={props.columns?.map((column) => ({
           ...column,
         }))}
-        data={props.data}
+        // Use data function for server-side, data array for client-side
+        data={isServerSidePagination ? props.handleQueryChange! : (props.data ?? [])}
         title={props.title}
         editable={props.editable}
+        isLoading={props.isLoading}
+        tableRef={props.tableRef}
         options={{
           selection: props.selection === undefined ? true : props.selection,
           searchFieldAlignment: 'left',
@@ -127,15 +131,9 @@ const AdminTable = (props: AdminTableProps) => {
           pageSize: 25,
           pageSizeOptions: props.pageSizeOptions === undefined ? [5, 25, 50, 100] : props.pageSizeOptions,
           paging: true,
-          ...(isServerSidePagination && {
-            // Server-side pagination
-            page: props.page,
-            totalCount: props.totalCount,
-            emptyRowsWhenPaging: false,
-          }),
+          search: true, // Enable search UI; search term is passed to handleQueryChange for server-side filtering
+          debounceInterval: 500,
         }}
-        onPageChange={props.onPageChange}
-        onOrderCollectionChange={props.onOrderCollectionChange}
         components={{
           Cell: (cellProps) => {
             const rowData = cellProps.data

@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => {
       importPrefixPlugin(),
       htmlPlugin(mode),
     ],
-  };
+  }
 
   return mergeConfig(
     config,

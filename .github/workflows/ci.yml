@@ -145,12 +145,15 @@ jobs:
     needs: test_change_limit
     if: ${{ always() && !failure() && !cancelled() }}
     runs-on: ubuntu-latest
-    container:
-      image: maven:3.9.9-eclipse-temurin-22
-      options: --user root
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Set up JDK 22
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "22"
 
       - name: Cache Maven packages
         uses: actions/cache@v4

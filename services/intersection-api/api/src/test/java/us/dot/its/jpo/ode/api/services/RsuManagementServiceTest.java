@@ -176,6 +176,7 @@ class RsuManagementServiceTest {
     @Test
     void testGetAllRsuInfo_Success() {
         String orgName = "TestOrg";
+        String search = "Search Term";
         Pageable pageable = PageRequest.of(0, 10);
 
         Rsu rsu1 = new Rsu();
@@ -208,35 +209,36 @@ class RsuManagementServiceTest {
                 "v2c",
                 Arrays.asList("TestOrg"));
 
-        when(rsuRepository.findAllByOrganization(orgName, pageable)).thenReturn(rsuPage);
+        when(rsuRepository.findAllByOrganization(orgName, search, pageable)).thenReturn(rsuPage);
         when(rsuMapper.toDto(rsu1)).thenReturn(dto1);
         when(rsuMapper.toDto(rsu2)).thenReturn(dto2);
 
-        Page<RsuInfoDto> result = rsuManagementService.getAllRsuInfo(orgName, pageable);
+        Page<RsuInfoDto> result = rsuManagementService.getAllRsuInfo(orgName, search, pageable);
 
         assertNotNull(result);
         assertEquals(2, result.getTotalElements());
         assertEquals(2, result.getContent().size());
         assertEquals("192.168.1.100", result.getContent().get(0).getIpv4Address());
         assertEquals("192.168.1.101", result.getContent().get(1).getIpv4Address());
-        verify(rsuRepository).findAllByOrganization(orgName, pageable);
+        verify(rsuRepository).findAllByOrganization(orgName, search, pageable);
         verify(rsuMapper, times(2)).toDto(any(Rsu.class));
     }
 
     @Test
     void testGetAllRsuInfo_EmptyResult() {
         String orgName = "EmptyOrg";
+        String search = "Search Term";
         Pageable pageable = PageRequest.of(0, 10);
         Page<Rsu> emptyPage = new PageImpl<>(List.of(), pageable, 0);
 
-        when(rsuRepository.findAllByOrganization(orgName, pageable)).thenReturn(emptyPage);
+        when(rsuRepository.findAllByOrganization(orgName, search, pageable)).thenReturn(emptyPage);
 
-        Page<RsuInfoDto> result = rsuManagementService.getAllRsuInfo(orgName, pageable);
+        Page<RsuInfoDto> result = rsuManagementService.getAllRsuInfo(orgName, search, pageable);
 
         assertNotNull(result);
         assertEquals(0, result.getTotalElements());
         assertTrue(result.getContent().isEmpty());
-        verify(rsuRepository).findAllByOrganization(orgName, pageable);
+        verify(rsuRepository).findAllByOrganization(orgName, search, pageable);
         verify(rsuMapper, never()).toDto(any());
     }
 

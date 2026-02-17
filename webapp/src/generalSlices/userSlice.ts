@@ -9,35 +9,21 @@ const authLoginData = UserManager.isLoginActive(authDataLocalStorage) ? authData
 export const keycloakLogin = createAsyncThunk('user/login', async (token: string, { rejectWithValue }) => {
   try {
     if (token) {
-      const response = await AuthApi.logIn(token)
-      switch (response.status) {
-        case 200:
-          const authLoginData = {
-            data: response.json
-              ? { ...response.json, name: `${response.json.first_name} ${response.json.last_name}` }
-              : null,
-            token: token,
-            expires_at: Date.now() + 590000,
-          }
-          return authLoginData
-        case 400:
-          return rejectWithValue('Login Unsuccessful: Bad Request')
-        case 401:
-          return rejectWithValue('Login Unsuccessful: User Unauthorized Please Contact Support')
-        case 403:
-          return rejectWithValue('Login Unsuccessful: Access Forbidden')
-        case 404:
-          return rejectWithValue('Login Unsuccessful: Authentication API Not Found')
-        default:
-          return rejectWithValue('Login Unsuccessful: Unknown Error Occurred')
+      const authLoginData = await AuthApi.logIn(token)
+      if (authLoginData?.data?.organizations?.length == 0) {
+        console.error('User does not belong to any organizations')
+        return rejectWithValue(
+          'Login Unsuccessful: User does not belong to any organizations. Contact support for assistance.'
+        )
       }
+      return authLoginData
     } else {
       console.error('Invalid token passed to user/login')
       return rejectWithValue('Login Unsuccessful: No KeyCloak Token Please Refresh')
     }
   } catch (exception_var) {
     console.error('Exception logging in user', exception_var)
-    throw exception_var
+    return rejectWithValue(`Login Unsuccessful: ${(exception_var as Error).message}`)
   }
 })
 

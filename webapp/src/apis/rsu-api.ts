@@ -82,19 +82,6 @@ class RsuApi {
       additional_headers: { Organization: org },
       tag: 'rsu',
     })
-  getRsuAuth = async (
-    token: string,
-    org: string,
-    url_ext = '',
-    query_params: Record<string, string> = {}
-  ): Promise<GetRsuUserAuthResp> =>
-    apiHelper._getData({
-      url: EnvironmentVars.authEndpoint + url_ext,
-      token,
-      query_params,
-      additional_headers: { Organization: org },
-      tag: 'rsu',
-    })
   getRsuCommand = async (
     token: string,
     org: string,

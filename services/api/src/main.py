@@ -7,7 +7,6 @@ import logging
 from middleware import Middleware
 from admin_email_notification import AdminNotification
 from admin_new_email_notification import AdminNewNotification
-from userauth import UserAuth
 from healthcheck import HealthCheck
 from rsuinfo import RsuInfo
 from rsu_querycounts import RsuQueryCounts
@@ -54,7 +53,6 @@ def apply_cors_header(response):
 api = Api(app)
 
 api.add_resource(HealthCheck, "/")
-api.add_resource(UserAuth, "/user-auth")
 api.add_resource(AdminNewUser, "/admin-new-user")
 api.add_resource(AdminUser, "/admin-user")
 api.add_resource(AdminNewOrg, "/admin-new-org")

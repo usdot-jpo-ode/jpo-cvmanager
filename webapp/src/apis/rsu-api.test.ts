@@ -12,7 +12,6 @@ beforeEach(() => {
   EnvironmentVars.geoMsgDataEndpoint = 'VITE_ENV/rsu-geo-data'
   EnvironmentVars.issScmsStatusEndpoint = 'VITE_ENV/iss-scms-status'
   EnvironmentVars.ssmSrmEndpoint = 'VITE_ENV/rsu-ssm-srm-data'
-  EnvironmentVars.authEndpoint = 'VITE_ENV/user-auth'
   EnvironmentVars.adminAddRsu = 'VITE_ENV/admin-new-rsu'
   EnvironmentVars.adminAddIntersection = 'VITE_ENV/admin-new-intersection'
   EnvironmentVars.adminIntersection = 'VITE_ENV/admin-intersection'
@@ -107,32 +106,6 @@ it('Test getRsuCounts With Params', async () => {
   expect(actualResponse).toEqual(expectedResponse)
 
   expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.rsuCountsEndpoint + url_ext + '?query_param=test')
-  expect(fetchMock.mock.calls[0][1].method).toBe('GET')
-  expect(fetchMock.mock.calls[0][1].headers).toStrictEqual({ Authorization: 'testToken', Organization: 'testOrg' })
-})
-
-it('Test getRsuAuth', async () => {
-  const expectedResponse = { data: 'Test JSON' }
-  fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
-  const actualResponse = await RsuApi.getRsuAuth('testToken', 'testOrg')
-  expect(actualResponse).toEqual(expectedResponse)
-
-  expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.authEndpoint)
-  expect(fetchMock.mock.calls[0][1].method).toBe('GET')
-  expect(fetchMock.mock.calls[0][1].headers).toStrictEqual({ Authorization: 'testToken', Organization: 'testOrg' })
-})
-
-it('Test getRsuAuth With Params', async () => {
-  // Set url_ext and query_params
-  const url_ext = 'url_ext'
-  const query_params = { query_param: 'test' }
-
-  const expectedResponse = { data: 'Test JSON' }
-  fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
-  const actualResponse = await RsuApi.getRsuAuth('testToken', 'testOrg', url_ext, query_params)
-  expect(actualResponse).toEqual(expectedResponse)
-
-  expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.authEndpoint + url_ext + '?query_param=test')
   expect(fetchMock.mock.calls[0][1].method).toBe('GET')
   expect(fetchMock.mock.calls[0][1].headers).toStrictEqual({ Authorization: 'testToken', Organization: 'testOrg' })
 })

@@ -22,15 +22,7 @@ The middleware makes the following assumptions:
 Expected headers for all endpoints:
 
 - `"Content-Type": "application/json"`
-- `"Authorization": "tokenId"`
-
-### <b>/user-auth</b> <b>(GET)</b>
-
-Returns authorized user information including full name, email, and role.
-
-Example return value:
-
-- {"name": "John Doe", "email": "jdoe@gmail.com", "role": "admin"}
+- `"Authorization": "token"`
 
 ### <b>/contact-support</b> <b>(POST)</b>
 

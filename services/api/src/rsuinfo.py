@@ -18,11 +18,14 @@ def get_rsu_data(user: EnvironWithOrg, qualified_orgs: list[str]):
     query = (
         "SELECT jsonb_build_object('type', 'Feature', 'id', row.rsu_id, 'geometry', ST_AsGeoJSON(row.geography)::jsonb, 'properties', to_jsonb(row)) "
         "FROM ("
-        "SELECT rd.rsu_id, rd.geography, rd.milepost, rd.ipv4_address, rd.serial_number, rd.primary_route, rm.name AS model_name, man.name AS manufacturer_name "
+        "SELECT rd.rsu_id, rd.geography, rd.milepost, rd.ipv4_address, rd.serial_number, rd.primary_route, "
+        "COALESCE(opt.tim_deposit, FALSE) AS tim_deposit, COALESCE(opt.snmp_monitoring, FALSE) AS snmp_monitoring, "
+        "rm.name AS model_name, man.name AS manufacturer_name "
         "FROM public.rsus AS rd "
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
         "JOIN public.rsu_models AS rm ON rm.rsu_model_id = rd.model "
         "JOIN public.manufacturers AS man ON man.manufacturer_id = rm.manufacturer "
+        "LEFT JOIN public.rsu_options AS opt ON opt.rsu_id = rd.rsu_id "
     )
 
     where_clause = None

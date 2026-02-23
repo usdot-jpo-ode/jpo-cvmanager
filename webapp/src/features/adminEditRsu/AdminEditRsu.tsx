@@ -8,11 +8,13 @@ import '../../styles/fonts/museo-slab.css'
 import { AdminRsu } from '../../models/Rsu'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
+  Checkbox,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   FormControl,
+  FormControlLabel,
   Grid2,
   InputLabel,
   MenuItem,
@@ -42,6 +44,8 @@ export type AdminEditRsuFormType = {
   snmp_credential_group: string
   snmp_version_group: string
   organizations: string[]
+  tim_deposit: boolean
+  snmp_monitoring: boolean
 }
 
 const AdminEditRsu = () => {
@@ -80,6 +84,8 @@ const AdminEditRsu = () => {
       snmp_credential_group: '',
       snmp_version_group: '',
       organizations: [],
+      tim_deposit: false,
+      snmp_monitoring: false,
     },
   })
 
@@ -111,6 +117,8 @@ const AdminEditRsu = () => {
         snmp_credential_group: rsuInfo.snmp_credential_group,
         snmp_version_group: rsuInfo.snmp_version_group,
         organizations: rsuInfo.organizations,
+        tim_deposit: rsuInfo.tim_deposit ?? false,
+        snmp_monitoring: rsuInfo.snmp_monitoring ?? false,
       })
     }
   }, [rsuInfo, reset])
@@ -174,8 +182,20 @@ const AdminEditRsu = () => {
         patch.organizations = data.organizations
       }
 
+      // Check if tim_deposit changed
+      if (data.tim_deposit !== (rsuInfo?.tim_deposit ?? false)) {
+        patch.tim_deposit = data.tim_deposit
+      }
+
+      // Check if snmp_monitoring changed
+      if (data.snmp_monitoring !== (rsuInfo?.snmp_monitoring ?? false)) {
+        patch.snmp_monitoring = data.snmp_monitoring
+      }
+
       await patchRsu({ rsuIp: data.orig_ip, patch }).unwrap()
       toast.success('RSU updated successfully', { id: loadingToast })
+      // Add a small delay to allow backend to finalize changes
+      await new Promise((resolve) => setTimeout(resolve, 500))
       setOpen(false)
       navigate('/dashboard/admin/rsus')
     } catch (error: any) {
@@ -473,6 +493,43 @@ const AdminEditRsu = () => {
                   )}
                 </FormControl>
               </Form.Group>
+
+              <Grid2 container spacing={1}>
+                <Grid2 size={6}>
+                  <Form.Group controlId="tim_deposit">
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          {...register('tim_deposit')}
+                          checked={watch('tim_deposit')}
+                          color="primary"
+                          onChange={(event) => {
+                            setValue('tim_deposit', event.target.checked)
+                          }}
+                        />
+                      }
+                      label="TIM Deposit"
+                    />
+                  </Form.Group>
+                </Grid2>
+                <Grid2 size={6}>
+                  <Form.Group controlId="snmp_monitoring">
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          {...register('snmp_monitoring')}
+                          checked={watch('snmp_monitoring')}
+                          color="primary"
+                          onChange={(event) => {
+                            setValue('snmp_monitoring', event.target.checked)
+                          }}
+                        />
+                      }
+                      label="SNMP Monitoring"
+                    />
+                  </Form.Group>
+                </Grid2>
+              </Grid2>
 
               <Form.Group controlId="ssh_credential_group">
                 <FormControl fullWidth margin="normal">

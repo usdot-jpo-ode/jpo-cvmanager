@@ -34,6 +34,7 @@ import us.dot.its.jpo.ode.api.models.devices.management.RsuPatch;
 import us.dot.its.jpo.ode.api.models.postgres.dtos.RsuInfoDto;
 import us.dot.its.jpo.ode.api.services.PermissionService;
 import us.dot.its.jpo.ode.api.services.RsuManagementService;
+import us.dot.its.jpo.ode.api.services.RsuOptionManagementService;
 
 @Slf4j
 @RestController
@@ -46,12 +47,15 @@ import us.dot.its.jpo.ode.api.services.RsuManagementService;
 @RequiredArgsConstructor
 public class RsuController {
     private final RsuManagementService rsuManagementService;
+    private final RsuOptionManagementService rsuOptionManagementService;
 
     private static final Map<String, String> SORT_FIELD_MAPPING = Map.of(
             "ip", "ipv4Address",
             "primary_route", "primaryRoute",
             "serial_number", "serialNumber",
-            "scms_id", "issScmsId");
+            "scms_id", "issScmsId",
+            "tim_deposit", "rsuOption.timDeposit",
+            "snmp_monitoring", "rsuOption.snmpMonitoring");
 
     @Operation(summary = "Get All RSUs for Organization", description = "Get summary data for all RSUs the user has access to in the specified organization.")
     @RequestMapping(method = RequestMethod.GET, produces = "application/json", params = "!rsu_ip")
@@ -116,6 +120,7 @@ public class RsuController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = PermissionService.getUsername(auth);
         rsuManagementService.modifyRsu(rsuIp, body, username);
+        rsuOptionManagementService.modifyRsuOption(rsuIp, body);
 
         return ResponseEntity.noContent().build();
     }

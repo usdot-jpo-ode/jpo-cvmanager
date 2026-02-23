@@ -20,13 +20,12 @@ from rsu_geo_msg_query import RsuGeoData
 from iss_scms_status import IssScmsStatus
 from rsu_ssm_srm import RsuSsmSrmData
 from admin_new_rsu import AdminNewRsu
-from admin_rsu import AdminRsu
 from admin_new_intersection import AdminNewIntersection
 from admin_intersection import AdminIntersection
 from admin_new_user import AdminNewUser
 from admin_user import AdminUser
 from admin_new_org import AdminNewOrg
-from admin_org import AdminOrg
+from admin_org import AdminOrg, AdminOrgTimDeposit, AdminOrgSnmpMonitoring
 from contact_support import ContactSupportResource
 from rsu_error_summary import RSUErrorSummaryResource
 import smtp_error_handler
@@ -57,6 +56,8 @@ api.add_resource(AdminNewUser, "/admin-new-user")
 api.add_resource(AdminUser, "/admin-user")
 api.add_resource(AdminNewOrg, "/admin-new-org")
 api.add_resource(AdminOrg, "/admin-org")
+api.add_resource(AdminOrgTimDeposit, "/admin-org-tim-deposit")
+api.add_resource(AdminOrgSnmpMonitoring, "/admin-org-snmp-monitoring")
 api.add_resource(AdminNotification, "/admin-notification")
 api.add_resource(AdminNewNotification, "/admin-new-notification")
 api.add_resource(ContactSupportResource, "/contact-support")
@@ -73,7 +74,6 @@ if api_environment.ENABLE_RSU_FEATURES:
     api.add_resource(IssScmsStatus, "/iss-scms-status")
     api.add_resource(RsuSsmSrmData, "/rsu-ssm-srm-data")
     api.add_resource(AdminNewRsu, "/admin-new-rsu")
-    api.add_resource(AdminRsu, "/admin-rsu")
     api.add_resource(RSUErrorSummaryResource, "/rsu-error-summary")
 if api_environment.ENABLE_WZDX_FEATURES:
     api.add_resource(WzdxFeed, "/wzdx-feed")

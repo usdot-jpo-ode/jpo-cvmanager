@@ -11,7 +11,7 @@ import { Action } from '@material-table/core'
 import { Route, Routes, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
 import toast from 'react-hot-toast'
-import { useTheme } from '@mui/material'
+import { useTheme, Typography } from '@mui/material'
 import { DeleteOutline, ModeEditOutline } from '@mui/icons-material'
 import { useLazyGetAllRsusQuery, useDeleteRsuMutation, useDeleteMultipleRsusMutation } from '../api/rsuApiSlice'
 
@@ -102,6 +102,38 @@ const AdminRsuTab = () => {
     { title: 'Primary Route', field: 'primary_route', id: 2 },
     { title: 'RSU Model', field: 'model', id: 3 },
     { title: 'Serial Number', field: 'serial_number', id: 4 },
+    {
+      title: 'TIM Deposit',
+      field: 'tim_deposit',
+      id: 5,
+      render: (rowData: any) => (
+        <Typography
+          variant="body2"
+          sx={{
+            color: rowData.tim_deposit ? theme.palette.success.light : theme.palette.error.light,
+            fontWeight: 'bold',
+          }}
+        >
+          {rowData.tim_deposit ? 'Enabled' : 'Disabled'}
+        </Typography>
+      ),
+    },
+    {
+      title: 'SNMP Monitoring',
+      field: 'snmp_monitoring',
+      id: 6,
+      render: (rowData: any) => (
+        <Typography
+          variant="body2"
+          sx={{
+            color: rowData.snmp_monitoring ? theme.palette.success.light : theme.palette.error.light,
+            fontWeight: 'bold',
+          }}
+        >
+          {rowData.snmp_monitoring ? 'Enabled' : 'Disabled'}
+        </Typography>
+      ),
+    },
   ])
 
   const tableActions: Action<AdminEditRsuFormType>[] = [

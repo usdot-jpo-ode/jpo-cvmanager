@@ -57,4 +57,10 @@ public class RsuInfoDto implements Serializable {
 
     @JsonProperty("organizations")
     List<String> organizations;
+
+    @JsonProperty("tim_deposit")
+    Boolean timDeposit;
+
+    @JsonProperty("snmp_monitoring")
+    Boolean snmpMonitoring;
 }

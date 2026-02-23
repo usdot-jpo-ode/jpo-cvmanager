@@ -7,7 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.net.InetAddress;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.locationtech.jts.geom.Point;
 
@@ -76,7 +77,27 @@ public class Rsu {
     @JoinColumn(name = "target_firmware_version")
     private FirmwareImage targetFirmwareVersion;
 
-    @OneToMany(mappedBy = "rsu", fetch = FetchType.LAZY)
-    private List<RsuOrganization> rsuOrganizations;
+    @OneToOne(mappedBy = "rsu")
+    private ConsecutiveFirmwareUpgradeFailure consecutiveFirmwareUpgradeFailure;
 
+    @OneToMany(mappedBy = "rsu", fetch = FetchType.LAZY)
+    private Set<MaxRetryLimitReachedInstance> maxRetryLimitReachedInstances = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "rsu", fetch = FetchType.LAZY)
+    private Set<Ping> pings = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "rsu", fetch = FetchType.LAZY)
+    private Set<RsuIntersection> rsuIntersections = new LinkedHashSet<>();
+
+    @OneToOne(mappedBy = "rsu")
+    private RsuOption rsuOption;
+
+    @OneToMany(mappedBy = "rsu", fetch = FetchType.LAZY)
+    private Set<RsuOrganization> rsuOrganizations = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "rsu", fetch = FetchType.LAZY)
+    private Set<ScmsHealth> scmsHealths = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "rsu", fetch = FetchType.LAZY)
+    private Set<SnmpMsgfwdConfig> snmpMsgfwdConfigs = new LinkedHashSet<>();
 }

@@ -31,6 +31,8 @@ export type AdminOrgRsu = {
   ip: string
   primary_route: string
   milepost: number
+  tim_deposit: boolean
+  snmp_monitoring: boolean
 }
 
 export type AdminOrgIntersection = {
@@ -53,6 +55,8 @@ export type adminOrgPatch = {
   rsus_to_remove?: string[]
   intersections_to_add?: string[]
   intersections_to_remove?: string[]
+  tim_deposit?: boolean
+  snmp_monitoring?: boolean
 }
 
 const initialState = {
@@ -128,12 +132,17 @@ export const deleteOrg = createAsyncThunk(
 
 export const editOrg = createAsyncThunk(
   'adminOrganizationTab/editOrg',
-  async (json: adminOrgPatch, { getState }) => {
+  async (json: adminOrgPatch & { url?: string }, { getState }): Promise<{
+    success: boolean
+    message: string
+    data?: { org_data: AdminOrgSingle }
+  }> => {
     const currentState = getState() as RootState
     const token = selectToken(currentState)
 
+    const { url, ...jsonWithoutUrl } = json
     const jsonComplete: adminOrgPatch = {
-      orig_name: json.orig_name ?? json.name,
+      orig_name: jsonWithoutUrl.orig_name ?? jsonWithoutUrl.name,
       users_to_add: [],
       users_to_modify: [],
       users_to_remove: [],
@@ -141,11 +150,11 @@ export const editOrg = createAsyncThunk(
       rsus_to_remove: [],
       intersections_to_add: [],
       intersections_to_remove: [],
-      ...json,
+      ...jsonWithoutUrl,
     }
 
     const data = await apiHelper._patchData({
-      url: EnvironmentVars.adminOrg,
+      url: url ?? EnvironmentVars.adminOrg,
       token,
       body: JSON.stringify(jsonComplete),
     })
@@ -153,9 +162,73 @@ export const editOrg = createAsyncThunk(
     switch (data.status) {
       case 200:
         console.debug('Successfully edited organization')
-        return { success: true, message: '' }
+        return { success: true, message: '', data: data.body }
       default:
         return { success: false, message: data.message }
+    }
+  },
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
+)
+
+export const updateOrgTimDeposit = createAsyncThunk(
+  'adminOrganizationTab/updateOrgTimDeposit',
+  async (
+    payload: { orgName: string; email: string; timDeposit: boolean },
+    { getState, dispatch }
+  ): Promise<{
+    success: boolean
+    message: string
+    data?: { org_data: AdminOrgSingle }
+  }> => {
+    const { orgName, email, timDeposit } = payload
+
+    const patchJson: adminOrgPatch = {
+      name: orgName,
+      email: email,
+      tim_deposit: timDeposit,
+    }
+
+    const res = await dispatch(editOrg({ ...patchJson, url: EnvironmentVars.adminOrgTimDeposit }))
+    if ((res.payload as any).success) {
+      return {
+        success: true,
+        message: 'Successfully updated TIM deposit for all RSUs in ' + orgName,
+        data: (res.payload as any).data,
+      }
+    } else {
+      return { success: false, message: (res.payload as any).message }
+    }
+  },
+  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
+)
+
+export const updateOrgSnmpMonitoring = createAsyncThunk(
+  'adminOrganizationTab/updateOrgSnmpMonitoring',
+  async (
+    payload: { orgName: string; email: string; snmpMonitoring: boolean },
+    { getState, dispatch }
+  ): Promise<{
+    success: boolean
+    message: string
+    data?: { org_data: AdminOrgSingle }
+  }> => {
+    const { orgName, email, snmpMonitoring } = payload
+
+    const patchJson: adminOrgPatch = {
+      name: orgName,
+      email: email,
+      snmp_monitoring: snmpMonitoring,
+    }
+
+    const res = await dispatch(editOrg({ ...patchJson, url: EnvironmentVars.adminOrgSnmpMonitoring }))
+    if ((res.payload as any).success) {
+      return {
+        success: true,
+        message: 'Successfully updated SNMP monitoring for all RSUs in ' + orgName,
+        data: (res.payload as any).data,
+      }
+    } else {
+      return { success: false, message: (res.payload as any).message }
     }
   },
   { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
@@ -213,6 +286,9 @@ export const adminOrganizationTabSlice = createSlice({
                   break
                 }
               }
+            } else if (state.value.selectedOrg) {
+              const currentOrg = tempData.find((org) => org.name === state.value.selectedOrg.name)
+              state.value.selectedOrg = currentOrg ?? tempData[0]
             } else {
               state.value.selectedOrg = tempData[0]
             }
@@ -231,8 +307,35 @@ export const adminOrganizationTabSlice = createSlice({
       .addCase(editOrg.pending, (state) => {
         state.loading = true
       })
-      .addCase(editOrg.fulfilled, (state) => {
+      .addCase(editOrg.fulfilled, (state, action) => {
         state.loading = false
+        if (action.payload.success && action.payload.data) {
+          const data = action.payload.data
+          const org_data = data?.org_data as AdminOrgSingle
+          state.value.rsuTableData = org_data?.org_rsus
+          state.value.intersectionTableData = org_data?.org_intersections
+          state.value.userTableData = org_data?.org_users
+        }
+      })
+      .addCase(updateOrgTimDeposit.fulfilled, (state, action) => {
+        state.loading = false
+        if (action.payload.success && action.payload.data) {
+          const data = action.payload.data
+          const org_data = data?.org_data as AdminOrgSingle
+          state.value.rsuTableData = org_data?.org_rsus
+          state.value.intersectionTableData = org_data?.org_intersections
+          state.value.userTableData = org_data?.org_users
+        }
+      })
+      .addCase(updateOrgSnmpMonitoring.fulfilled, (state, action) => {
+        state.loading = false
+        if (action.payload.success && action.payload.data) {
+          const data = action.payload.data
+          const org_data = data?.org_data as AdminOrgSingle
+          state.value.rsuTableData = org_data?.org_rsus
+          state.value.intersectionTableData = org_data?.org_intersections
+          state.value.userTableData = org_data?.org_users
+        }
       })
       .addCase(editOrg.rejected, (state) => {
         state.loading = false
@@ -255,5 +358,35 @@ export const selectSelectedOrgEmail = (state: RootState) => state.adminOrganizat
 export const selectRsuTableData = (state: RootState) => state.adminOrganizationTab.value.rsuTableData
 export const selectIntersectionTableData = (state: RootState) => state.adminOrganizationTab.value.intersectionTableData
 export const selectUserTableData = (state: RootState) => state.adminOrganizationTab.value.userTableData
+export const selectTimDeposit = (state: RootState) => {
+  const rsus = state.adminOrganizationTab.value.rsuTableData
+  if (Array.isArray(rsus) && rsus.length > 0) {
+    const allTimEnabled = rsus.every((rsu) => rsu.tim_deposit === true)
+    const allTimDisabled = rsus.every((rsu) => rsu.tim_deposit === false)
+    if (allTimEnabled) {
+      return 'Enabled'
+    } else if (allTimDisabled) {
+      return 'Disabled'
+    } else {
+      return 'Mixed'
+    }
+  }
+  return 'Disabled'
+}
+export const selectSnmpMonitoring = (state: RootState) => {
+  const rsus = state.adminOrganizationTab.value.rsuTableData
+  if (Array.isArray(rsus) && rsus.length > 0) {
+    const allSnmpEnabled = rsus.every((rsu) => rsu.snmp_monitoring === true)
+    const allSnmpDisabled = rsus.every((rsu) => rsu.snmp_monitoring === false)
+    if (allSnmpEnabled) {
+      return 'Enabled'
+    } else if (allSnmpDisabled) {
+      return 'Disabled'
+    } else {
+      return 'Mixed'
+    }
+  }
+  return 'Disabled'
+}
 
 export default adminOrganizationTabSlice.reducer

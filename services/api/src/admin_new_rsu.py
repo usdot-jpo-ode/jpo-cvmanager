@@ -132,6 +132,21 @@ def add_rsu(rsu_spec: dict):
         )
         pgquery.write_db(query)
 
+        options_query = (
+            "INSERT INTO public.rsu_options(rsu_id, tim_deposit, snmp_monitoring) "
+            "VALUES ("
+            "(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip), "
+            ":tim_deposit, "
+            ":snmp_monitoring"
+            ")"
+        )
+        options_params = {
+            "rsu_ip": rsu_spec["ip"],
+            "tim_deposit": rsu_spec["tim_deposit"],
+            "snmp_monitoring": rsu_spec["snmp_monitoring"],
+        }
+        pgquery.write_db(options_query, params=options_params)
+
         org_query = (
             "INSERT INTO public.rsu_organization(rsu_id, organization_id) VALUES"
         )
@@ -174,6 +189,8 @@ class AdminNewRsuSchema(Schema):
     serial_number = fields.Str(required=True)
     model = fields.Str(required=True)
     scms_id = fields.Str(required=True)
+    tim_deposit = fields.Bool(required=False, load_default=True)
+    snmp_monitoring = fields.Bool(required=False, load_default=False)
     ssh_credential_group = fields.Str(required=True)
     snmp_credential_group = fields.Str(required=True)
     snmp_version_group = fields.Str(required=True)
@@ -218,13 +235,14 @@ class AdminNewRsu(Resource):
         # Check for main body values
         if request.json is None:
             raise BadRequest("No JSON body found")
-        body: dict[str, Any] = request.json
 
         schema = AdminNewRsuSchema()
-        errors = schema.validate(body)
-        if errors:
-            logging.error(str(errors))
-            abort(400, str(errors))
+        try:
+            body = schema.load(request.json)
+        except Exception as e:
+            logging.error(str(e.messages) if hasattr(e, "messages") else str(e))
+            abort(400, str(e.messages) if hasattr(e, "messages") else str(e))
+
         enforce_organization_restrictions(
             user=permission_result.user,
             qualified_orgs=permission_result.qualified_orgs,

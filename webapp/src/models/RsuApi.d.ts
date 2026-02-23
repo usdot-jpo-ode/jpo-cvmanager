@@ -7,6 +7,7 @@ export type RsuProperties = {
   primary_route: string
   serial_number: string
   manufacturer_name: string
+  tim_deposit: boolean
 }
 
 export type RsuInfoList = {

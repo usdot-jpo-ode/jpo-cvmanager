@@ -38,6 +38,8 @@ export type AdminRsuCreationBody = {
   snmp_credential_group: string
   snmp_version_group: string
   organizations: string[]
+  tim_deposit: boolean
+  snmp_monitoring: boolean
 }
 
 const initialState = {
@@ -127,29 +129,24 @@ export const checkForm = (state: RootState['adminAddRsu']) => {
 }
 
 export const updateJson = (data: AdminAddRsuForm, state: RootState['adminAddRsu']): AdminRsuCreationBody => {
-  const json: any = data
-  // creating geo_position object from latitudes and longitude
-  json.geo_position = {
-    latitude: Number(data.latitude),
-    longitude: Number(data.longitude),
+  const json: AdminRsuCreationBody = {
+    ip: data.ip,
+    milepost: Number(data.milepost),
+    serial_number: data.serial_number,
+    scms_id: data.scms_id,
+    geo_position: {
+      latitude: Number(data.latitude),
+      longitude: Number(data.longitude),
+    },
+    primary_route: state.value.selectedRoute !== 'Other' ? state.value.selectedRoute : data.primary_route,
+    model: state.value.selectedModel,
+    ssh_credential_group: state.value.selectedSshGroup,
+    snmp_credential_group: state.value.selectedSnmpGroup,
+    snmp_version_group: state.value.selectedSnmpVersion,
+    organizations: state.value.selectedOrganizations.map((org) => org.name),
+    tim_deposit: data.tim_deposit || false,
+    snmp_monitoring: data.snmp_monitoring || false,
   }
-  delete json.latitude
-  delete json.longitude
-  if (state.value.selectedRoute !== 'Other') {
-    json.primary_route = state.value.selectedRoute
-  }
-  json.milepost = Number(data.milepost)
-  json.model = state.value.selectedModel
-  json.ssh_credential_group = state.value.selectedSshGroup
-  json.snmp_credential_group = state.value.selectedSnmpGroup
-  json.snmp_version_group = state.value.selectedSnmpVersion
-
-  const tempOrganizations = []
-  for (let i = 0; i < state.value.selectedOrganizations.length; i++) {
-    tempOrganizations.push(state.value.selectedOrganizations[i].name)
-  }
-
-  json.organizations = tempOrganizations
 
   return json
 }

@@ -29,7 +29,8 @@ def test_request_options():
 def test_entry_get(mock_get_allowed_selections):
     mock_get_allowed_selections.return_value = {}
     status = admin_new_rsu.AdminNewRsu()
-    (body, code, headers) = status.get()
+    mock_permission_result = MagicMock()
+    (body, code, headers) = status.get(permission_result=mock_permission_result)
 
     mock_get_allowed_selections.assert_called_once()
     assert code == 200
@@ -47,7 +48,8 @@ def test_entry_get(mock_get_allowed_selections):
 def test_entry_post(mock_add_rsu):
     mock_add_rsu.return_value = {}
     status = admin_new_rsu.AdminNewRsu()
-    (body, code, headers) = status.post()
+    mock_permission_result = MagicMock()
+    (body, code, headers) = status.post(permission_result=mock_permission_result)
 
     mock_add_rsu.assert_called_once()
     assert code == 200
@@ -63,8 +65,9 @@ def test_entry_post(mock_add_rsu):
 )
 def test_entry_post_schema():
     status = admin_new_rsu.AdminNewRsu()
+    mock_permission_result = MagicMock()
     with pytest.raises(HTTPException):
-        status.post()
+        status.post(permission_result=mock_permission_result)
 
 
 ###################################### Testing Functions ##########################################
@@ -116,8 +119,18 @@ def test_add_rsu_success_commsignia(mock_pgquery, mock_check_safe_input):
     expected_msg = {"message": "New RSU successfully added"}
     actual_msg = admin_new_rsu.add_rsu(admin_new_rsu_data.mock_post_body_commsignia)
 
+    # Check that pgquery.write_db was called 3 times with correct queries
+    assert mock_pgquery.call_count == 3
     calls = [
         call(admin_new_rsu_data.rsu_query_commsignia),
+        call(
+            admin_new_rsu_data.rsu_options_query,
+            params={
+                "rsu_ip": "10.0.0.1",
+                "tim_deposit": True,
+                "snmp_monitoring": True,
+            },
+        ),
         call(admin_new_rsu_data.rsu_org_query),
     ]
     mock_pgquery.assert_has_calls(calls)
@@ -131,8 +144,18 @@ def test_add_rsu_success_yunex(mock_pgquery, mock_check_safe_input):
     expected_msg = {"message": "New RSU successfully added"}
     actual_msg = admin_new_rsu.add_rsu(admin_new_rsu_data.mock_post_body_yunex)
 
+    # Check that pgquery.write_db was called 3 times with correct queries
+    assert mock_pgquery.call_count == 3
     calls = [
         call(admin_new_rsu_data.rsu_query_yunex),
+        call(
+            admin_new_rsu_data.rsu_options_query,
+            params={
+                "rsu_ip": "10.0.0.1",
+                "tim_deposit": True,
+                "snmp_monitoring": True,
+            },
+        ),
         call(admin_new_rsu_data.rsu_org_query),
     ]
     mock_pgquery.assert_has_calls(calls)

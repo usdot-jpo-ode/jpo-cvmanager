@@ -96,7 +96,15 @@ get_org_data_user_return = [
 ]
 
 get_org_data_rsu_return = [
-    ({"ipv4_address": "10.0.0.1", "primary_route": "test", "milepost": "test"},),
+    (
+        {
+            "ipv4_address": "10.0.0.1",
+            "primary_route": "test",
+            "milepost": "test",
+            "tim_deposit": False,
+            "snmp_monitoring": False,
+        },
+    ),
 ]
 
 get_org_data_intersection_return = [
@@ -118,7 +126,15 @@ get_org_data_result = {
             "role": "user",
         }
     ],
-    "org_rsus": [{"ip": "10.0.0.1", "primary_route": "test", "milepost": "test"}],
+    "org_rsus": [
+        {
+            "ip": "10.0.0.1",
+            "primary_route": "test",
+            "milepost": "test",
+            "tim_deposit": False,
+            "snmp_monitoring": False,
+        }
+    ],
     "org_intersections": [
         {
             "intersection_id": 1234,
@@ -146,12 +162,14 @@ get_org_data_user_sql = (
 get_org_data_rsu_sql = (
     "SELECT to_jsonb(row) "
     "FROM ("
-    "SELECT r.ipv4_address, r.primary_route, r.milepost "
+    "SELECT r.ipv4_address, r.primary_route, r.milepost, r.tim_deposit, r.snmp_monitoring "
     "FROM public.organizations AS org "
     "JOIN ("
-    "SELECT ro.organization_id, rsus.ipv4_address, rsus.primary_route, rsus.milepost "
+    "SELECT ro.organization_id, rsus.ipv4_address, rsus.primary_route, rsus.milepost, "
+    "COALESCE(opts.tim_deposit, FALSE) as tim_deposit, COALESCE(opts.snmp_monitoring, FALSE) as snmp_monitoring "
     "FROM public.rsu_organization ro "
-    "JOIN public.rsus ON ro.rsu_id = rsus.rsu_id"
+    "JOIN public.rsus ON ro.rsu_id = rsus.rsu_id "
+    "LEFT JOIN public.rsu_options opts ON rsus.rsu_id = opts.rsu_id"
     ") r ON r.organization_id = org.organization_id "
     "WHERE org.name = :org_name"
     ") as row"

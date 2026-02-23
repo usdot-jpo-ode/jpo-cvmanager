@@ -35,6 +35,10 @@ INSERT INTO public.rsus(
 	VALUES (ST_GeomFromText('POINT(-105.0135030 39.7405654)'), 1, '10.0.0.180', 'E5672', 'E5672', 'I999', 1, 1, 1, 1, 1, 1), 
 	(ST_GeomFromText('POINT(-104.987775 39.981805)'), 2, '10.0.0.78', 'E5321', 'E5321', 'I999', 1, 1, 1, 2, 2, 2);
 
+INSERT INTO public.rsu_options(
+	rsu_id, tim_deposit, snmp_monitoring)
+	VALUES (1, TRUE, TRUE), (2, FALSE, TRUE);
+
 INSERT INTO public.organizations(
 	name)
 	VALUES ('Test Org'), ('Test Org 2');

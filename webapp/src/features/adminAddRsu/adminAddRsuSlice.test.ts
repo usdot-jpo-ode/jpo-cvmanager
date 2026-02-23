@@ -469,9 +469,12 @@ describe('functions', () => {
     } as any
 
     const expected = {
+      ip: undefined,
       primary_route: 'I-25',
       milepost: 0.0,
       model: 'model1',
+      serial_number: undefined,
+      scms_id: undefined,
       geo_position: {
         latitude: 39.7392,
         longitude: -104.9903,
@@ -480,6 +483,8 @@ describe('functions', () => {
       snmp_credential_group: 'group1snmp',
       snmp_version_group: 'version_1',
       organizations: ['org1'],
+      tim_deposit: false,
+      snmp_monitoring: false,
     }
 
     expect(updateJson(data, state)).toEqual(expected)
@@ -504,8 +509,12 @@ describe('functions', () => {
     } as any
 
     const expected = {
+      ip: undefined,
+      primary_route: undefined,
       milepost: 0.0,
       model: 'model1',
+      serial_number: undefined,
+      scms_id: undefined,
       geo_position: {
         latitude: 39.7392,
         longitude: -104.9903,
@@ -514,6 +523,8 @@ describe('functions', () => {
       snmp_credential_group: 'group1snmp',
       snmp_version_group: 'version_1',
       organizations: ['org1'],
+      tim_deposit: false,
+      snmp_monitoring: false,
     }
 
     expect(updateJson(data, state)).toEqual(expected)

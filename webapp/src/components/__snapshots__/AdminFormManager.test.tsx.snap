@@ -206,11 +206,59 @@ exports[`snapshot organization 1`] = `
                 <span
                   class="MuiAccordionSummary-content MuiAccordionSummary-contentGutters css-mocked-MuiAccordionSummary-content"
                 >
-                  <h6
-                    class="MuiTypography-root MuiTypography-h6 css-mocked-MuiTypography-root"
+                  <div
+                    style="display: flex; align-items: center; flex-grow: 1; gap: 16px;"
                   >
-                    RSUs
-                  </h6>
+                    <h6
+                      class="MuiTypography-root MuiTypography-h6 css-mocked-MuiTypography-root"
+                    >
+                      RSUs
+                    </h6>
+                    <h6
+                      class="MuiTypography-root MuiTypography-subtitle1 css-mocked-MuiTypography-root"
+                    >
+                      TIM Deposit: 
+                      Disabled
+                    </h6>
+                    <h6
+                      class="MuiTypography-root MuiTypography-subtitle1 css-mocked-MuiTypography-root"
+                    >
+                      SNMP Monitoring: 
+                      Disabled
+                    </h6>
+                  </div>
+                  <div
+                    style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; max-width: 50%;"
+                  >
+                    <button
+                      class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
+                      tabindex="0"
+                      type="button"
+                    >
+                      Enable TIM Deposit
+                    </button>
+                    <button
+                      class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedError MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorError MuiButton-root MuiButton-contained MuiButton-containedError MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorError css-mocked-MuiButtonBase-root-MuiButton-root"
+                      tabindex="0"
+                      type="button"
+                    >
+                      Disable TIM Deposit
+                    </button>
+                    <button
+                      class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
+                      tabindex="0"
+                      type="button"
+                    >
+                      Enable SNMP Monitoring
+                    </button>
+                    <button
+                      class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedError MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorError MuiButton-root MuiButton-contained MuiButton-containedError MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorError css-mocked-MuiButtonBase-root-MuiButton-root"
+                      tabindex="0"
+                      type="button"
+                    >
+                      Disable SNMP Monitoring
+                    </button>
+                  </div>
                 </span>
                 <span
                   class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
@@ -604,7 +652,7 @@ exports[`snapshot rsu 1`] = `
                           <th
                             class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                             scope="col"
-                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.2 * (100% - 0px));"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.14285714285714285 * (100% - 0px));"
                           >
                             <div
                               aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -646,7 +694,7 @@ exports[`snapshot rsu 1`] = `
                           <th
                             class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                             scope="col"
-                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.2 * (100% - 0px));"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.14285714285714285 * (100% - 0px));"
                           >
                             <div
                               aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -688,7 +736,7 @@ exports[`snapshot rsu 1`] = `
                           <th
                             class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                             scope="col"
-                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.2 * (100% - 0px));"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.14285714285714285 * (100% - 0px));"
                           >
                             <div
                               aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -730,7 +778,7 @@ exports[`snapshot rsu 1`] = `
                           <th
                             class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                             scope="col"
-                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.2 * (100% - 0px));"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.14285714285714285 * (100% - 0px));"
                           >
                             <div
                               aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -772,7 +820,7 @@ exports[`snapshot rsu 1`] = `
                           <th
                             class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                             scope="col"
-                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.2 * (100% - 0px));"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.14285714285714285 * (100% - 0px));"
                           >
                             <div
                               aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -793,6 +841,90 @@ exports[`snapshot rsu 1`] = `
                                 tabindex="0"
                               >
                                 Serial Number
+                                <svg
+                                  aria-hidden="true"
+                                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionAsc css-mocked-MuiSvgIcon-root-MuiTableSortLabel-icon"
+                                  data-testid="arrow_downward"
+                                  focusable="false"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8z"
+                                  />
+                                </svg>
+                              </span>
+                              <span
+                                data-testid="material-table-column-sort-order-indicator"
+                                style="width: 1em;"
+                              />
+                            </div>
+                          </th>
+                          <th
+                            class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
+                            scope="col"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.14285714285714285 * (100% - 0px));"
+                          >
+                            <div
+                              aria-describedby="rfd-hidden-text-0-hidden-text-0"
+                              data-rfd-drag-handle-context-id="0"
+                              data-rfd-drag-handle-draggable-id="5"
+                              data-rfd-draggable-context-id="0"
+                              data-rfd-draggable-id="5"
+                              draggable="false"
+                              role="button"
+                              style="position: relative; min-width: 0; display: flex;"
+                              tabindex="0"
+                            >
+                              <span
+                                aria-sort="none"
+                                class="MuiButtonBase-root MuiTableSortLabel-root css-mocked-MuiButtonBase-root-MuiTableSortLabel-root"
+                                data-testid="mtableheader-sortlabel"
+                                role="columnheader"
+                                tabindex="0"
+                              >
+                                TIM Deposit
+                                <svg
+                                  aria-hidden="true"
+                                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionAsc css-mocked-MuiSvgIcon-root-MuiTableSortLabel-icon"
+                                  data-testid="arrow_downward"
+                                  focusable="false"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8z"
+                                  />
+                                </svg>
+                              </span>
+                              <span
+                                data-testid="material-table-column-sort-order-indicator"
+                                style="width: 1em;"
+                              />
+                            </div>
+                          </th>
+                          <th
+                            class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
+                            scope="col"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.14285714285714285 * (100% - 0px));"
+                          >
+                            <div
+                              aria-describedby="rfd-hidden-text-0-hidden-text-0"
+                              data-rfd-drag-handle-context-id="0"
+                              data-rfd-drag-handle-draggable-id="6"
+                              data-rfd-draggable-context-id="0"
+                              data-rfd-draggable-id="6"
+                              draggable="false"
+                              role="button"
+                              style="position: relative; min-width: 0; display: flex;"
+                              tabindex="0"
+                            >
+                              <span
+                                aria-sort="none"
+                                class="MuiButtonBase-root MuiTableSortLabel-root css-mocked-MuiButtonBase-root-MuiTableSortLabel-root"
+                                data-testid="mtableheader-sortlabel"
+                                role="columnheader"
+                                tabindex="0"
+                              >
+                                SNMP Monitoring
                                 <svg
                                   aria-hidden="true"
                                   class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionAsc css-mocked-MuiSvgIcon-root-MuiTableSortLabel-icon"
@@ -836,7 +968,7 @@ exports[`snapshot rsu 1`] = `
                         >
                           <td
                             class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
-                            colspan="7"
+                            colspan="9"
                             style="padding-top: 0px; padding-bottom: 0px; text-align: center;"
                           >
                             No records to display
@@ -1282,7 +1414,7 @@ exports[`snapshot user 1`] = `
                             style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.25 * (100% - 0px));"
                           >
                             <div
-                              aria-describedby="rfd-hidden-text-1-hidden-text-7"
+                              aria-describedby="rfd-hidden-text-1-hidden-text-9"
                               data-rfd-drag-handle-context-id="1"
                               data-rfd-drag-handle-draggable-id="0"
                               data-rfd-draggable-context-id="1"
@@ -1324,7 +1456,7 @@ exports[`snapshot user 1`] = `
                             style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.25 * (100% - 0px));"
                           >
                             <div
-                              aria-describedby="rfd-hidden-text-1-hidden-text-7"
+                              aria-describedby="rfd-hidden-text-1-hidden-text-9"
                               data-rfd-drag-handle-context-id="1"
                               data-rfd-drag-handle-draggable-id="1"
                               data-rfd-draggable-context-id="1"
@@ -1366,7 +1498,7 @@ exports[`snapshot user 1`] = `
                             style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.25 * (100% - 0px));"
                           >
                             <div
-                              aria-describedby="rfd-hidden-text-1-hidden-text-7"
+                              aria-describedby="rfd-hidden-text-1-hidden-text-9"
                               data-rfd-drag-handle-context-id="1"
                               data-rfd-drag-handle-draggable-id="2"
                               data-rfd-draggable-context-id="1"
@@ -1408,7 +1540,7 @@ exports[`snapshot user 1`] = `
                             style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.25 * (100% - 0px));"
                           >
                             <div
-                              aria-describedby="rfd-hidden-text-1-hidden-text-7"
+                              aria-describedby="rfd-hidden-text-1-hidden-text-9"
                               data-rfd-drag-handle-context-id="1"
                               data-rfd-drag-handle-draggable-id="3"
                               data-rfd-draggable-context-id="1"

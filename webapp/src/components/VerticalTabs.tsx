@@ -82,7 +82,27 @@ function VerticalTabs(props: VerticalTabProps) {
     }
   }
 
-  const getSelectedTab = () => location.pathname.split('/').at(-1) || defaultTabKey
+  /**
+   * Retrieves the currently selected tab key based on the URL pathname.
+   *
+   * The function splits the current `location.pathname` into parts and
+   * iterates through them to find a match in the `filteredTabs` array.
+   * The first matching path in `filteredTabs` is returned as the selected tab key.
+   * If no match is found, the function defaults to returning `defaultTabKey`.
+   *
+   * @function
+   * @returns {string} The key of the selected tab or the default tab key if no match is found.
+   */
+  const getSelectedTab = () => {
+    const pathParts = location.pathname.split('/')
+    for (let i = 0; i < pathParts.length; i++) {
+      const part = pathParts[i]
+      if (filteredTabs.some((tab) => tab.path === part)) {
+        return part
+      }
+    }
+    return defaultTabKey
+  }
 
   const [value, setValue] = useState<string | number>(getSelectedTab())
 

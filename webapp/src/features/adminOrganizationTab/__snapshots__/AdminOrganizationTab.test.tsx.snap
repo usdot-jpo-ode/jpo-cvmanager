@@ -203,11 +203,59 @@ exports[`should take a snapshot 1`] = `
               <span
                 class="MuiAccordionSummary-content MuiAccordionSummary-contentGutters css-mocked-MuiAccordionSummary-content"
               >
-                <h6
-                  class="MuiTypography-root MuiTypography-h6 css-mocked-MuiTypography-root"
+                <div
+                  style="display: flex; align-items: center; flex-grow: 1; gap: 16px;"
                 >
-                  RSUs
-                </h6>
+                  <h6
+                    class="MuiTypography-root MuiTypography-h6 css-mocked-MuiTypography-root"
+                  >
+                    RSUs
+                  </h6>
+                  <h6
+                    class="MuiTypography-root MuiTypography-subtitle1 css-mocked-MuiTypography-root"
+                  >
+                    TIM Deposit: 
+                    Disabled
+                  </h6>
+                  <h6
+                    class="MuiTypography-root MuiTypography-subtitle1 css-mocked-MuiTypography-root"
+                  >
+                    SNMP Monitoring: 
+                    Disabled
+                  </h6>
+                </div>
+                <div
+                  style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; max-width: 50%;"
+                >
+                  <button
+                    class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
+                    tabindex="0"
+                    type="button"
+                  >
+                    Enable TIM Deposit
+                  </button>
+                  <button
+                    class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedError MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorError MuiButton-root MuiButton-contained MuiButton-containedError MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorError css-mocked-MuiButtonBase-root-MuiButton-root"
+                    tabindex="0"
+                    type="button"
+                  >
+                    Disable TIM Deposit
+                  </button>
+                  <button
+                    class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
+                    tabindex="0"
+                    type="button"
+                  >
+                    Enable SNMP Monitoring
+                  </button>
+                  <button
+                    class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedError MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorError MuiButton-root MuiButton-contained MuiButton-containedError MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorError css-mocked-MuiButtonBase-root-MuiButton-root"
+                    tabindex="0"
+                    type="button"
+                  >
+                    Disable SNMP Monitoring
+                  </button>
+                </div>
               </span>
               <span
                 class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"

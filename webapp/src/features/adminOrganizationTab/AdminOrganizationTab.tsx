@@ -56,29 +56,25 @@ const AdminOrganizationTab = () => {
   const notifySuccess = (message: string) => toast.success(message)
   const notifyError = (message: string) => toast.error(message)
   const defaultOrgName = useSelector(selectOrganizationName)
-  let defaultOrgData = orgData.find((org) => org.name === defaultOrgName)
 
   useEffect(() => {
-    dispatch(getOrgData({ orgName: 'all', all: true, specifiedOrg: undefined })).then(() => {
-      // on first render set the default organization in the admin
-      // organization tab to the currently selected organization
-      if (defaultOrgData) {
-        const selectedOrg = (orgData ?? []).find(
-          (organization: AdminOrgSummary) => organization?.name === defaultOrgName
-        )
-        dispatch(setSelectedOrg(selectedOrg))
-        defaultOrgData = null
-      }
-    })
-  }, [dispatch])
-
-  const getAllOrgData = () => {
+    // Only fetch organization list on mount
     dispatch(getOrgData({ orgName: 'all', all: true, specifiedOrg: undefined })).then((data: any | undefined) => {
       if (data !== undefined && !data.payload?.success) {
         notifyError('Failed to obtain organizations due to error: ' + data.payload?.message)
+      } else if (data !== undefined && data.payload?.success) {
+        // on first render set the default organization in the admin
+        // organization tab to the currently selected organization
+        const org_data = data.payload.data.org_data as AdminOrgSummary[]
+        const selectedOrg = (org_data ?? []).find(
+          (organization: AdminOrgSummary) => organization?.name === defaultOrgName
+        )
+        if (selectedOrg) {
+          dispatch(setSelectedOrg(selectedOrg))
+        }
       }
     })
-  }
+  }, [])
 
   const getSelectedOrgData = () => {
     dispatch(getOrgData({ orgName: selectedOrgName })).then((data: any) => {
@@ -87,10 +83,6 @@ const AdminOrganizationTab = () => {
       }
     })
   }
-
-  useEffect(() => {
-    getAllOrgData()
-  }, [dispatch])
 
   const updateTableData = (orgName: string) => {
     dispatch(getOrgData({ orgName })).then((data: any) => {

@@ -55,4 +55,10 @@ public class RsuPatch {
 
     @JsonProperty("organizations_to_remove")
     List<String> organizationsToRemove;
+
+    @JsonProperty("tim_deposit")
+    Boolean timDeposit;
+
+    @JsonProperty("snmp_monitoring")
+    Boolean snmpMonitoring;
 }

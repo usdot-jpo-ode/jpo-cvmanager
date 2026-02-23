@@ -12,6 +12,8 @@ request_json_good = {
     "serial_number": "test",
     "model": "Commsignia",
     "scms_id": "",
+    "tim_deposit": True,
+    "snmp_monitoring": True,
     "ssh_credential_group": "test",
     "snmp_credential_group": "test",
     "snmp_version_group": "test",
@@ -62,6 +64,8 @@ mock_post_body_commsignia = {
     "serial_number": "test",
     "model": "Commsignia RSU",
     "scms_id": "",
+    "tim_deposit": True,
+    "snmp_monitoring": True,
     "ssh_credential_group": "test",
     "snmp_credential_group": "test",
     "snmp_version_group": "test",
@@ -76,6 +80,8 @@ mock_post_body_yunex = {
     "serial_number": "test",
     "model": "Yunex RSU",
     "scms_id": "custom",
+    "tim_deposit": True,
+    "snmp_monitoring": True,
     "ssh_credential_group": "test",
     "snmp_credential_group": "test",
     "snmp_version_group": "test",
@@ -90,6 +96,8 @@ mock_post_body_yunex_no_scms = {
     "serial_number": "test",
     "model": "Yunex RSU",
     "scms_id": "",
+    "tim_deposit": True,
+    "snmp_monitoring": True,
     "ssh_credential_group": "test",
     "snmp_credential_group": "test",
     "snmp_version_group": "test",
@@ -125,6 +133,15 @@ rsu_query_yunex = (
     "(SELECT snmp_credential_id FROM public.snmp_credentials WHERE nickname = 'test'), "
     "(SELECT snmp_protocol_id FROM public.snmp_protocols WHERE nickname = 'test'), "
     "'custom'"
+    ")"
+)
+
+rsu_options_query = (
+    "INSERT INTO public.rsu_options(rsu_id, tim_deposit, snmp_monitoring) "
+    "VALUES ("
+    "(SELECT rsu_id FROM public.rsus WHERE ipv4_address = :rsu_ip), "
+    ":tim_deposit, "
+    ":snmp_monitoring"
     ")"
 )
 

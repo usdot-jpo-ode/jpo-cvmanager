@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: rsu-info-bridge
+server:
+  port: 16543

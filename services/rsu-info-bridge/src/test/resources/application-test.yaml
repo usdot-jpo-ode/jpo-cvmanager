@@ -1,0 +1,3 @@
+spring:
+  application:
+    name: rsu-info-bridge-test

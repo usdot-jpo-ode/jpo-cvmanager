@@ -87,6 +87,22 @@ CREATE TABLE IF NOT EXISTS public.firmware_upgrade_rules
       ON DELETE NO ACTION
 );
 
+CREATE SEQUENCE public.organizations_organization_id_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 2147483647
+    CACHE 1;
+
+CREATE TABLE IF NOT EXISTS public.organizations
+(
+    organization_id integer NOT NULL DEFAULT nextval('organizations_organization_id_seq'::regclass),
+    name character varying(128) COLLATE pg_catalog.default NOT NULL,
+    email character varying(128) COLLATE pg_catalog.default,
+    CONSTRAINT organizations_pkey PRIMARY KEY (organization_id),
+    CONSTRAINT organizations_name UNIQUE (name)
+);
+
 CREATE SEQUENCE public.rsu_credentials_credential_id_seq
    INCREMENT 1
    START 1
@@ -100,8 +116,13 @@ CREATE TABLE IF NOT EXISTS public.rsu_credentials
    username character varying(128) COLLATE pg_catalog.default NOT NULL,
    password character varying(128) COLLATE pg_catalog.default NOT NULL,
    nickname character varying(128) COLLATE pg_catalog.default NOT NULL,
+   owner_organization_id integer NOT NULL,
    CONSTRAINT rsu_credentials_pkey PRIMARY KEY (credential_id),
-   CONSTRAINT rsu_credentials_nickname UNIQUE (nickname)
+   CONSTRAINT rsu_credentials_nickname UNIQUE (nickname),
+   CONSTRAINT fk_rsu_credential_owner_organization_id FOREIGN KEY (owner_organization_id)
+      REFERENCES organizations (organization_id) MATCH SIMPLE
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION
 );
 
 CREATE SEQUENCE public.snmp_credentials_snmp_credential_id_seq
@@ -118,8 +139,13 @@ CREATE TABLE IF NOT EXISTS public.snmp_credentials
    password character varying(128) COLLATE pg_catalog.default NOT NULL,
    encrypt_password character varying(128) COLLATE pg_catalog.default,
    nickname character varying(128) COLLATE pg_catalog.default NOT NULL,
+   owner_organization_id integer NOT NULL,
    CONSTRAINT snmp_credentials_pkey PRIMARY KEY (snmp_credential_id),
-   CONSTRAINT snmp_credentials_nickname UNIQUE (nickname)
+   CONSTRAINT snmp_credentials_nickname UNIQUE (nickname),
+   CONSTRAINT fk_snmp_credential_owner_organization_id FOREIGN KEY (owner_organization_id)
+   REFERENCES organizations (organization_id) MATCH SIMPLE
+   ON UPDATE NO ACTION
+   ON DELETE NO ACTION
 );
 
 CREATE SEQUENCE public.snmp_protocols_snmp_protocol_id_seq
@@ -256,22 +282,6 @@ CREATE TABLE IF NOT EXISTS public.users
    super_user bit(1) DEFAULT 0::bit NOT NULL,
    CONSTRAINT users_pkey PRIMARY KEY (user_id),
    CONSTRAINT users_email UNIQUE (email)
-);
-
-CREATE SEQUENCE public.organizations_organization_id_seq
-   INCREMENT 1
-   START 1
-   MINVALUE 1
-   MAXVALUE 2147483647
-   CACHE 1;
-
-CREATE TABLE IF NOT EXISTS public.organizations
-(
-   organization_id integer NOT NULL DEFAULT nextval('organizations_organization_id_seq'::regclass),
-   name character varying(128) COLLATE pg_catalog.default NOT NULL,
-   email character varying(128) COLLATE pg_catalog.default,
-   CONSTRAINT organizations_pkey PRIMARY KEY (organization_id),
-   CONSTRAINT organizations_name UNIQUE (name)
 );
 
 CREATE SEQUENCE public.user_organization_user_organization_id_seq

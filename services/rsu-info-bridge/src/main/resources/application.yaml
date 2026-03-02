@@ -2,4 +2,4 @@ spring:
   application:
     name: rsu-info-bridge
 server:
-  port: 16543
+  port: ${RSU_INFO_BRIDGE_PORT:16543}

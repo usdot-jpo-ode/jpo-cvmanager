@@ -45,6 +45,19 @@ Finally, start the service using Docker Compose:
 docker compose up -d
 ```
 
+### Accessing the API Documentation
+Once the application is running, you can access the Swagger UI to view and interact with the OpenAPI documentation:
+
+```
+http://localhost:16543/swagger-ui.html
+```
+
+The OpenAPI specification is also available in JSON format at:
+
+```
+http://localhost:16543/v3/api-docs
+```
+
 ## Configuration
 Configuration is managed via `src/main/resources/application.yaml`.
 

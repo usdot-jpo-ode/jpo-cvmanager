@@ -40,9 +40,9 @@ class RsuControllerTest {
         // Assert
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].id").value("myid"))
+                .andExpect(jsonPath("$[0].id").value("1"))
                 .andExpect(jsonPath("$[0].ipv4Address").value("10.10.10.10"))
-                .andExpect(jsonPath("$[1].id").value("myid2"))
+                .andExpect(jsonPath("$[1].id").value("2"))
                 .andExpect(jsonPath("$[1].ipv4Address").value("10.10.10.11"));
     }
 
@@ -54,7 +54,7 @@ class RsuControllerTest {
         mockMvc = initializeMockMvc();
 
         // Act
-        ResultActions resultActions = mockMvc.perform(get("/rsus?timDepositEnabled=true"));
+        ResultActions resultActions = mockMvc.perform(get("/rsus?timDepositEnabledOnly=true"));
 
         // Assert
         resultActions.andExpect(status().isOk())
@@ -70,7 +70,7 @@ class RsuControllerTest {
         List<RsuDto> rsus = new java.util.ArrayList<>();
 
         RsuDto rsu1 = RsuDto.builder()
-                .id("myid")
+                .id("1")
                 .ipv4Address("10.10.10.10")
                 .snmpProtocol("NTCIP1218")
                 .snmpUsername("myusername")
@@ -84,7 +84,7 @@ class RsuControllerTest {
         rsus.add(rsu1);
 
         RsuDto rsu2 = RsuDto.builder()
-                .id("myid2")
+                .id("2")
                 .ipv4Address("10.10.10.11")
                 .snmpProtocol("NTCIP1218")
                 .snmpUsername("myusername2")

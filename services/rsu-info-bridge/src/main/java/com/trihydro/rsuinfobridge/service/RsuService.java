@@ -20,7 +20,7 @@ public class RsuService {
         List<RsuDto> rsus = new java.util.ArrayList<>();
 
         RsuDto rsu1 = RsuDto.builder()
-                .id("myid")
+                .id("1")
                 .ipv4Address("10.10.10.10")
                 .snmpProtocol("NTCIP1218")
                 .snmpUsername("myusername")
@@ -34,7 +34,7 @@ public class RsuService {
         rsus.add(rsu1);
 
         RsuDto rsu2 = RsuDto.builder()
-                .id("myid2")
+                .id("2")
                 .ipv4Address("10.10.10.11")
                 .snmpProtocol("NTCIP1218")
                 .snmpUsername("myusername2")

@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import us.dot.its.jpo.ode.api.mappers.RsuInfoMapper;
 import us.dot.its.jpo.ode.api.mappers.RsuPatchMapper;
 import us.dot.its.jpo.ode.api.models.devices.management.ModifyRsuAllowedSelections;
@@ -36,12 +36,14 @@ import us.dot.its.jpo.ode.api.repositories.UserRepository;
 import us.dot.its.jpo.ode.api.models.postgres.tables.Rsu;
 import us.dot.its.jpo.ode.api.models.postgres.tables.RsuCredential;
 import us.dot.its.jpo.ode.api.models.postgres.tables.RsuModel;
+import us.dot.its.jpo.ode.api.models.postgres.tables.RsuOption;
 import us.dot.its.jpo.ode.api.models.postgres.tables.RsuOrganization;
 import us.dot.its.jpo.ode.api.models.postgres.tables.SnmpCredential;
 import us.dot.its.jpo.ode.api.models.postgres.tables.SnmpProtocol;
 import us.dot.its.jpo.ode.api.models.postgres.tables.Organization;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class RsuManagementService {
 
@@ -96,6 +98,81 @@ public class RsuManagementService {
     }
 
     @Transactional
+    public Rsu createRsu(RsuInfoDto rsuInfoDto, List<String> orgsToAdd) {
+        Rsu rsu = rsuMapper.toEntity(rsuInfoDto);
+        updateRelationships(rsu, rsuInfoDto);
+
+        InetAddress ipv4Address = rsu.getIpv4Address();
+        if (ipv4Address != null && rsuRepository.findByIpv4Address(ipv4Address) != null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "RSU with IP " + ipv4Address.getHostAddress() + " already exists");
+        }
+
+        Rsu createdRsu = rsuRepository.save(rsu);
+
+        RsuOption rsuOption = new RsuOption();
+        rsuOption.setRsu(createdRsu);
+        rsuOption.setTimDeposit(rsuInfoDto.getTimDeposit());
+        rsuOption.setSnmpMonitoring(rsuInfoDto.getSnmpMonitoring());
+        rsuOptionRepository.save(rsuOption);
+
+        var toCreate = new ArrayList<RsuOrganization>();
+        for (String orgName : orgsToAdd) {
+            toCreate.add(createRsuOrgRelationship(orgName, rsu));
+        }
+        rsuOrganizationRepository.saveAll(toCreate);
+
+        return rsu;
+    }
+
+    public RsuOrganization createRsuOrgRelationship(String orgName, Rsu rsu) {
+        Organization organization = organizationRepository.findByName(orgName)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Organization not found: " + orgName));
+
+        RsuOrganization rsuOrg = new RsuOrganization();
+        rsuOrg.setOrganization(organization);
+        rsuOrg.setRsu(rsu);
+        return rsuOrg;
+    }
+
+    private void updateRelationships(Rsu rsu, RsuInfoDto rsuInfoDto) {
+        // Update model if provided
+        if (rsuInfoDto.getModel() != null) {
+            RsuModel model = findRsuModelByName(rsuInfoDto.getModel());
+            rsu.setModel(model);
+        }
+
+        // Update SSH credential if provided
+        if (rsuInfoDto.getSshCredentialGroup() != null) {
+            RsuCredential credential = rsuCredentialRepository
+                    .findByNickname(rsuInfoDto.getSshCredentialGroup())
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "SSH credential not found: " + rsuInfoDto.getSshCredentialGroup()));
+            rsu.setCredential(credential);
+        }
+
+        // Update SNMP credential if provided
+        if (rsuInfoDto.getSnmpCredentialGroup() != null) {
+            SnmpCredential snmpCredential = snmpCredentialRepository
+                    .findByNickname(rsuInfoDto.getSnmpCredentialGroup())
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "SNMP credential not found: " + rsuInfoDto.getSnmpCredentialGroup()));
+            rsu.setSnmpCredential(snmpCredential);
+        }
+
+        // Update SNMP protocol if provided
+        if (rsuInfoDto.getSnmpVersionGroup() != null) {
+            SnmpProtocol snmpProtocol = snmpProtocolRepository
+                    .findByNickname(rsuInfoDto.getSnmpVersionGroup())
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "SNMP protocol not found: " + rsuInfoDto.getSnmpVersionGroup()));
+            rsu.setSnmpProtocol(snmpProtocol);
+        }
+    }
+
+    @Transactional
     public RsuInfoDto modifyRsu(String rsuIp, RsuPatch rsuPatch, String username) {
         try {
             List<String> authorizedOrgs = permissionService.getQualifiedOrgList(username, "ADMIN");
@@ -108,19 +185,29 @@ public class RsuManagementService {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "RSU not found with IP: " + rsuIp);
             }
 
-            // 2. Update only non-null fields using MapStruct
+            // 2. If IP is being changed, check for conflicts
+            if (rsuPatch.getIpv4Address() != null && !rsuPatch.getIpv4Address().equals(rsuIp)) {
+                InetAddress newIp = InetAddress.getByName(rsuPatch.getIpv4Address());
+                Rsu conflictingRsu = rsuRepository.findByIpv4Address(newIp);
+                if (conflictingRsu != null && !conflictingRsu.getIpv4Address().equals(existingRsu.getIpv4Address())) {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT,
+                            "RSU with IP " + rsuPatch.getIpv4Address() + " already exists");
+                }
+            }
+
+            // 3. Update only non-null fields using MapStruct
             rsuPatchMapper.updateRsuFromPatch(rsuPatch, existingRsu);
 
-            // 3. Update relationships that require database lookups
+            // 4. Update relationships that require database lookups
             updateRelationships(existingRsu, rsuPatch);
 
-            // 4. Handle organization additions/removals
+            // 5. Handle organization additions/removals
             handleOrganizationChanges(existingRsu, rsuPatch, authorizedOrgs);
 
-            // 5. Save updated entity (JPA handles UPDATE SQL)
+            // 6. Save updated entity (JPA handles UPDATE SQL)
             Rsu savedRsu = rsuRepository.save(existingRsu);
 
-            // 6. Return DTO
+            // 7. Return DTO
             return rsuMapper.toDto(savedRsu);
 
         } catch (UnknownHostException e) {
@@ -190,7 +277,6 @@ public class RsuManagementService {
                     rsuOrg.setRsu(rsu);
                     rsuOrg.setOrganization(org);
 
-                    // Save to repository
                     rsuOrganizationRepository.save(rsuOrg);
                 }
             }
@@ -296,6 +382,5 @@ public class RsuManagementService {
                 .removeMultipleMaxRetryLimitReachedInstancesByIpv4Address(inetAddresses);
         rsuOptionRepository.removeMultipleRsuOptionsByIpv4Address(inetAddresses);
         rsuRepository.removeByIpv4AddressIn(inetAddresses);
-
     }
 }

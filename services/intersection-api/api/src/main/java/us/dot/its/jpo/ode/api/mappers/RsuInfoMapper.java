@@ -1,31 +1,29 @@
 package us.dot.its.jpo.ode.api.mappers;
 
-import java.net.InetAddress;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.locationtech.jts.geom.Point;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.Named;
 
-import us.dot.its.jpo.ode.api.models.SimplePosition;
 import us.dot.its.jpo.ode.api.models.postgres.dtos.RsuInfoDto;
 import us.dot.its.jpo.ode.api.models.postgres.tables.Rsu;
 import us.dot.its.jpo.ode.api.models.postgres.tables.RsuModel;
 import us.dot.its.jpo.ode.api.models.postgres.tables.RsuOrganization;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = { INetMapper.class,
+        SimplePositionMapper.class })
 public interface RsuInfoMapper {
 
     /**
      * Convert Rsu entity to RsuInfoDto
      * MapStruct will automatically map fields with the same name
      */
-    @Mapping(source = "ipv4Address", target = "ipv4Address", qualifiedByName = "mapInetAddressToString")
-    @Mapping(source = "geography", target = "geoPosition", qualifiedByName = "mapGeoPosition")
+    @Mapping(source = "ipv4Address", target = "ipv4Address")
+    @Mapping(source = "geography", target = "geoPosition")
     @Mapping(source = "model", target = "model", qualifiedByName = "mapModelNames")
     @Mapping(source = "credential.nickname", target = "sshCredentialGroup")
     @Mapping(source = "snmpCredential.nickname", target = "snmpCredentialGroup")
@@ -36,26 +34,30 @@ public interface RsuInfoMapper {
     RsuInfoDto toDto(Rsu rsu);
 
     /**
-     * Convert InetAddress to String representation (IP address)
+     * Convert RsuInfoDto to Rsu entity
+     * Note: Relationships (model, credentials, organizations) should be set in
+     * service layer
      */
-    @Named("mapInetAddressToString")
-    default String mapInetAddressToString(InetAddress inetAddress) {
-        if (inetAddress == null) {
-            return null;
-        }
-        return inetAddress.getHostAddress();
-    }
+    @Mapping(source = "ipv4Address", target = "ipv4Address")
+    @Mapping(source = "geoPosition", target = "geography")
+    @Mapping(target = "id", ignore = true) // Auto-generated
 
-    /**
-     * Convert JTS Point geometry to SimplePosition (latitude/longitude)
-     */
-    @Named("mapGeoPosition")
-    default SimplePosition mapGeoPosition(Point geography) {
-        if (geography == null) {
-            return null;
-        }
-        return new SimplePosition(geography.getY(), geography.getX());
-    }
+    // Joined fields are ignored here and should be handled in the service layer
+    @Mapping(target = "model", ignore = true)
+    @Mapping(target = "credential", ignore = true)
+    @Mapping(target = "snmpCredential", ignore = true)
+    @Mapping(target = "snmpProtocol", ignore = true)
+    @Mapping(target = "rsuOrganizations", ignore = true)
+    @Mapping(target = "firmwareVersion", ignore = true)
+    @Mapping(target = "targetFirmwareVersion", ignore = true)
+    @Mapping(target = "consecutiveFirmwareUpgradeFailure", ignore = true)
+    @Mapping(target = "maxRetryLimitReachedInstances", ignore = true)
+    @Mapping(target = "pings", ignore = true)
+    @Mapping(target = "rsuIntersections", ignore = true)
+    @Mapping(target = "rsuOption", ignore = true)
+    @Mapping(target = "scmsHealths", ignore = true)
+    @Mapping(target = "snmpMsgfwdConfigs", ignore = true)
+    Rsu toEntity(RsuInfoDto dto);
 
     /**
      * Combine manufacturer name and model name into a single string
@@ -70,8 +72,8 @@ public interface RsuInfoMapper {
     }
 
     /**
-     * Extract organization names from RsuOrganization list
-     * Returns a list of organization name strings
+     * Extract organization names from RsuOrganization list.
+     * Returns a list of organization name strings.
      */
     @Named("mapOrganizationNames")
     default List<String> mapOrganizationNames(Set<RsuOrganization> rsuOrganizations) {

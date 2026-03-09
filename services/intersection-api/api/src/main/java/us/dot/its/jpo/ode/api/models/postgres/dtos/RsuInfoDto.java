@@ -2,7 +2,9 @@ package us.dot.its.jpo.ode.api.models.postgres.dtos;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import us.dot.its.jpo.ode.api.models.SimplePosition;
 import us.dot.its.jpo.ode.api.models.postgres.tables.Rsu;
 
@@ -14,7 +16,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * DTO for {@link Rsu}
  */
-@Value
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class RsuInfoDto implements Serializable {
     @JsonProperty("ip")
     @NotNull
@@ -55,12 +59,16 @@ public class RsuInfoDto implements Serializable {
     @JsonProperty("snmp_version_group")
     String snmpVersionGroup;
 
+    @NotNull
+    @Size(min = 1)
     @JsonProperty("organizations")
     List<String> organizations;
 
+    @NotNull
     @JsonProperty("tim_deposit")
     Boolean timDeposit;
 
+    @NotNull
     @JsonProperty("snmp_monitoring")
     Boolean snmpMonitoring;
 }

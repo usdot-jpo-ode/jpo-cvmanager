@@ -12,7 +12,6 @@ beforeEach(() => {
   EnvironmentVars.geoMsgDataEndpoint = 'VITE_ENV/rsu-geo-data'
   EnvironmentVars.issScmsStatusEndpoint = 'VITE_ENV/iss-scms-status'
   EnvironmentVars.ssmSrmEndpoint = 'VITE_ENV/rsu-ssm-srm-data'
-  EnvironmentVars.adminAddRsu = 'VITE_ENV/admin-new-rsu'
   EnvironmentVars.adminAddIntersection = 'VITE_ENV/admin-new-intersection'
   EnvironmentVars.adminIntersection = 'VITE_ENV/admin-intersection'
   EnvironmentVars.adminAddUser = 'VITE_ENV/admin-new-user'

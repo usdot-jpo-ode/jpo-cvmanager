@@ -63,6 +63,9 @@
       "request": "launch",
       "mainClass": "us.dot.its.jpo.ode.api.ConflictApiApplication",
       "projectName": "intersection-api",
+      "env": {
+        "AUTH_SERVER_URL": "http://localhost:8084"
+      },
       "envFile": "${workspaceFolder}/.env",
       "preLaunchTask": "run-intersection-no-api"
     }

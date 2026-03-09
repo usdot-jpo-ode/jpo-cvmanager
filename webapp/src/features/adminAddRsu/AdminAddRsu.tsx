@@ -1,38 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
-import {
-  selectPrimaryRoutes,
-  selectSelectedRoute,
-  selectOtherRouteDisabled,
-  selectRsuModels,
-  selectSelectedModel,
-  selectSshCredentialGroups,
-  selectSelectedSshGroup,
-  selectSnmpCredentialGroups,
-  selectSelectedSnmpGroup,
-  selectSnmpVersions,
-  selectSelectedSnmpVersion,
-  selectOrganizations,
-  selectSelectedOrganizations,
-  selectSubmitAttempt,
-
-  // actions
-  getRsuCreationData,
-  submitForm,
-  updateSelectedRoute,
-  updateSelectedModel,
-  updateSelectedSshGroup,
-  updateSelectedSnmpGroup,
-  updateSelectedSnmpVersion,
-  updateSelectedOrganizations,
-} from './adminAddRsuSlice'
-import { useSelector, useDispatch } from 'react-redux'
-
-import '../adminRsuTab/Admin.css'
-import '../../styles/fonts/museo-slab.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import Dialog from '@mui/material/Dialog'
@@ -48,9 +16,15 @@ import {
   MenuItem,
   Select,
   TextField,
+  CircularProgress,
+  Box,
 } from '@mui/material'
 import { ErrorMessageText } from '../../styles/components/Messages'
 import { SideBarHeader } from '../../styles/components/SideBarHeader'
+import { useGetRsuAllowedSelectionsQuery, useCreateRsuMutation } from '../api/rsuApiSlice'
+
+import '../adminRsuTab/Admin.css'
+import '../../styles/fonts/museo-slab.css'
 
 export type AdminAddRsuForm = {
   ip: string
@@ -69,41 +43,42 @@ export type AdminAddRsuForm = {
   snmp_monitoring: boolean
 }
 
-const AdminAddRsu = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-
-  const primaryRoutes = useSelector(selectPrimaryRoutes)
-  const selectedRoute = useSelector(selectSelectedRoute)
-  const otherRouteDisabled = useSelector(selectOtherRouteDisabled)
-  const rsuModels = useSelector(selectRsuModels)
-  const selectedModel = useSelector(selectSelectedModel)
-  const sshCredentialGroups = useSelector(selectSshCredentialGroups)
-  const selectedSshGroup = useSelector(selectSelectedSshGroup)
-  const snmpCredentialGroups = useSelector(selectSnmpCredentialGroups)
-  const selectedSnmpGroup = useSelector(selectSelectedSnmpGroup)
-  const snmpVersions = useSelector(selectSnmpVersions)
-  const selectedSnmpVersion = useSelector(selectSelectedSnmpVersion)
-  const organizations = useSelector(selectOrganizations)
-  const selectedOrganizations = useSelector(selectSelectedOrganizations)
-  const submitAttempt = useSelector(selectSubmitAttempt)
-
-  const [open, setOpen] = useState(true)
-  const navigate = useNavigate()
-
-  const notifySuccess = (message: string) => toast.success(message)
-  const notifyError = (message: string) => toast.error(message)
-
-  const handleFormSubmit = (data: AdminAddRsuForm) => {
-    dispatch(submitForm({ data, reset })).then((data: any) => {
-      if (data.payload.success) {
-        notifySuccess(data.payload.message)
-      } else {
-        notifyError('Failed to add RSU due to error: ' + data.payload.message)
-      }
-    })
-    setOpen(false)
-    navigate('/dashboard/admin/rsus')
+export type AdminRsuCreationBody = {
+  ip: string
+  milepost: number
+  serial_number: string
+  scms_id: string
+  geo_position: {
+    latitude: number
+    longitude: number
   }
+  primary_route: string
+  model: string
+  ssh_credential_group: string
+  snmp_credential_group: string
+  snmp_version_group: string
+  tim_deposit: boolean
+  snmp_monitoring: boolean
+  organizations: string[]
+}
+
+const AdminAddRsu = () => {
+  const navigate = useNavigate()
+  const [open, setOpen] = useState(true)
+
+  // Local state for form selections
+  const [selectedRoute, setSelectedRoute] = useState('Select Route (Required)')
+  const [otherRouteDisabled, setOtherRouteDisabled] = useState(true)
+  const [selectedModel, setSelectedModel] = useState('Select RSU Model (Required)')
+  const [selectedSshGroup, setSelectedSshGroup] = useState('Select SSH Group (Required)')
+  const [selectedSnmpGroup, setSelectedSnmpGroup] = useState('Select SNMP Group (Required)')
+  const [selectedSnmpVersion, setSelectedSnmpVersion] = useState('Select SNMP Protocol (Required)')
+  const [selectedOrganizations, setSelectedOrganizations] = useState<string[]>([])
+  const [submitAttempt, setSubmitAttempt] = useState(false)
+
+  // RTK Query hooks
+  const { data: allowedSelections, isLoading: isLoadingData } = useGetRsuAllowedSelectionsQuery()
+  const [createRsu, { isLoading: isCreating }] = useCreateRsuMutation()
 
   const {
     register,
@@ -111,30 +86,110 @@ const AdminAddRsu = () => {
     reset,
     formState: { errors },
     watch,
-  } = useForm<AdminAddRsuForm>({
-    defaultValues: {
-      tim_deposit: false,
-      snmp_monitoring: false,
-    },
-  })
+  } = useForm<AdminAddRsuForm>()
 
-  useEffect(() => {
-    dispatch(getRsuCreationData())
-  }, [dispatch])
+  const handleClose = () => {
+    setOpen(false)
+    navigate('/dashboard/admin/rsus')
+  }
+
+  const checkForm = (): boolean => {
+    if (selectedRoute === 'Select Route (Required)') return false
+    if (selectedModel === 'Select RSU Model (Required)') return false
+    if (selectedSshGroup === 'Select SSH Group (Required)') return false
+    if (selectedSnmpGroup === 'Select SNMP Group (Required)') return false
+    if (selectedSnmpVersion === 'Select SNMP Protocol (Required)') return false
+    if (selectedOrganizations.length === 0) return false
+    return true
+  }
+
+  const buildRequestBody = (data: AdminAddRsuForm): AdminRsuCreationBody => {
+    return {
+      ip: data.ip,
+      milepost: Number(data.milepost),
+      serial_number: data.serial_number,
+      scms_id: data.scms_id,
+      geo_position: {
+        latitude: Number(data.latitude),
+        longitude: Number(data.longitude),
+      },
+      primary_route: selectedRoute === 'Other' ? data.primary_route : selectedRoute,
+      model: selectedModel,
+      ssh_credential_group: selectedSshGroup,
+      snmp_credential_group: selectedSnmpGroup,
+      snmp_version_group: selectedSnmpVersion,
+      tim_deposit: data.tim_deposit ?? false,
+      snmp_monitoring: data.snmp_monitoring ?? false,
+      organizations: selectedOrganizations,
+    }
+  }
+
+  const handleFormSubmit = async (data: AdminAddRsuForm) => {
+    setSubmitAttempt(true)
+
+    if (!checkForm()) {
+      toast.error('Please fill out all required fields')
+      return
+    }
+
+    const requestBody = buildRequestBody(data)
+
+    try {
+      await createRsu(requestBody).unwrap()
+      toast.success('RSU Created Successfully')
+
+      // Reset form
+      reset()
+      setSelectedRoute('Select Route (Required)')
+      setOtherRouteDisabled(true)
+      setSelectedModel('Select RSU Model (Required)')
+      setSelectedSshGroup('Select SSH Group (Required)')
+      setSelectedSnmpGroup('Select SNMP Group (Required)')
+      setSelectedSnmpVersion('Select SNMP Protocol (Required)')
+      setSelectedOrganizations([])
+      setSubmitAttempt(false)
+
+      handleClose()
+    } catch (error: any) {
+      console.log('Error creating RSU:', error)
+      toast.error(
+        'Failed to add RSU due to error: ' +
+          (error?.data?.message || error?.data?.detail || error?.message || 'Unknown error')
+      )
+    }
+  }
+
+  const handleRouteChange = (route: string) => {
+    setSelectedRoute(route)
+    setOtherRouteDisabled(route !== 'Other')
+  }
+
+  if (isLoadingData) {
+    return (
+      <Dialog open={open}>
+        <DialogContent sx={{ width: '600px', padding: '40px' }}>
+          <Box display="flex" justifyContent="center" alignItems="center">
+            <CircularProgress />
+          </Box>
+        </DialogContent>
+      </Dialog>
+    )
+  }
+
+  const primaryRoutes = allowedSelections?.primary_routes || []
+  const rsuModels = allowedSelections?.rsu_models || []
+  const sshCredentialGroups = allowedSelections?.ssh_credential_groups || []
+  const snmpCredentialGroups = allowedSelections?.snmp_credential_groups || []
+  const snmpVersions = allowedSelections?.snmp_version_groups || []
+  const organizations = allowedSelections?.organizations || []
 
   return (
     <Dialog open={open}>
       <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
-        <SideBarHeader
-          onClick={() => {
-            setOpen(false)
-            navigate('..')
-          }}
-          title="Add RSU"
-        />
+        <SideBarHeader onClick={handleClose} title="Add RSU" />
         <Form
           id="add-rsu-form"
-          onSubmit={handleSubmit((data) => handleFormSubmit(data))}
+          onSubmit={handleSubmit(handleFormSubmit)}
           style={{ fontFamily: '"museo-slab", Arial, Helvetica, sans-serif' }}
         >
           <Form.Group controlId="ip">
@@ -162,6 +217,7 @@ const AdminAddRsu = () => {
               {errors.ip && <p className="errorMsg">{errors.ip.message}</p>}
             </FormControl>
           </Form.Group>
+
           <Grid2 container spacing={1}>
             <Grid2 size={6}>
               <Form.Group controlId="latitude">
@@ -189,6 +245,7 @@ const AdminAddRsu = () => {
                 </FormControl>
               </Form.Group>
             </Grid2>
+
             <Grid2 size={6}>
               <Form.Group controlId="longitude">
                 <FormControl fullWidth margin="normal">
@@ -216,6 +273,7 @@ const AdminAddRsu = () => {
                 </FormControl>
               </Form.Group>
             </Grid2>
+
             <Grid2 size={6}>
               <Form.Group controlId="milepost">
                 <FormControl fullWidth margin="normal">
@@ -242,6 +300,7 @@ const AdminAddRsu = () => {
                 </FormControl>
               </Form.Group>
             </Grid2>
+
             <Grid2 size={6}>
               <Form.Group controlId="primary_route">
                 <FormControl fullWidth margin="normal">
@@ -250,40 +309,35 @@ const AdminAddRsu = () => {
                     id="primary_route"
                     label="Primary Route"
                     value={selectedRoute}
-                    defaultValue={selectedRoute}
                     required
-                    onChange={(event) => {
-                      const route = event.target.value as string
-                      dispatch(updateSelectedRoute(route))
-                    }}
+                    onChange={(event) => handleRouteChange(event.target.value)}
                   >
                     <MenuItem value="Select Route (Required)">Select Route (Required)</MenuItem>
-                    {primaryRoutes.map((route) => (
-                      <MenuItem key={route.id} value={route.name}>
-                        {route.name}
+                    {primaryRoutes.map((route, index) => (
+                      <MenuItem key={index} value={route}>
+                        {route}
                       </MenuItem>
                     ))}
+                    <MenuItem value="Other">Other</MenuItem>
                   </Select>
                   {selectedRoute === 'Select Route (Required)' && submitAttempt && (
                     <ErrorMessageText role="alert">Must select a primary route</ErrorMessageText>
                   )}
-                  {(() => {
-                    if (selectedRoute === 'Other') {
-                      return (
-                        <Form.Control
-                          type="text"
-                          placeholder="Enter Other Route"
-                          disabled={otherRouteDisabled}
-                          {...register('primary_route', {
-                            required: 'Please enter the other route',
-                          })}
-                        />
-                      )
-                    }
-                  })()}
+                  {selectedRoute === 'Other' && (
+                    <TextField
+                      placeholder="Enter Other Route"
+                      disabled={otherRouteDisabled}
+                      fullWidth
+                      margin="normal"
+                      {...register('primary_route', {
+                        required: 'Please enter the other route',
+                      })}
+                    />
+                  )}
                 </FormControl>
               </Form.Group>
             </Grid2>
+
             <Grid2 size={7}>
               <Form.Group controlId="serial_number">
                 <FormControl fullWidth margin="normal">
@@ -306,6 +360,7 @@ const AdminAddRsu = () => {
                 </FormControl>
               </Form.Group>
             </Grid2>
+
             <Grid2 size={5}>
               <Form.Group controlId="model">
                 <FormControl fullWidth margin="normal">
@@ -314,17 +369,13 @@ const AdminAddRsu = () => {
                     id="model"
                     label="RSU Model"
                     value={selectedModel}
-                    defaultValue={selectedModel}
                     required
-                    onChange={(event) => {
-                      const selectedRSUModel = event.target.value as string
-                      dispatch(updateSelectedModel(selectedRSUModel))
-                    }}
+                    onChange={(event) => setSelectedModel(event.target.value)}
                   >
                     <MenuItem value="Select RSU Model (Required)">Select RSU Model (Required)</MenuItem>
-                    {rsuModels.map((model) => (
-                      <MenuItem key={model.id} value={model.name}>
-                        {model.name}
+                    {rsuModels.map((model, index) => (
+                      <MenuItem key={index} value={model}>
+                        {model}
                       </MenuItem>
                     ))}
                   </Select>
@@ -361,13 +412,7 @@ const AdminAddRsu = () => {
             <Grid2 size={6}>
               <Form.Group controlId="tim_deposit">
                 <FormControlLabel
-                  control={
-                    <Checkbox
-                      {...register('tim_deposit')}
-                      checked={watch('tim_deposit')}
-                      color="primary"
-                    />
-                  }
+                  control={<Checkbox {...register('tim_deposit')} checked={watch('tim_deposit')} color="primary" />}
                   label="TIM Deposit"
                 />
               </Form.Group>
@@ -376,11 +421,7 @@ const AdminAddRsu = () => {
               <Form.Group controlId="snmp_monitoring">
                 <FormControlLabel
                   control={
-                    <Checkbox
-                      {...register('snmp_monitoring')}
-                      checked={watch('snmp_monitoring')}
-                      color="primary"
-                    />
+                    <Checkbox {...register('snmp_monitoring')} checked={watch('snmp_monitoring')} color="primary" />
                   }
                   label="SNMP Monitoring"
                 />
@@ -395,17 +436,13 @@ const AdminAddRsu = () => {
                 id="ssh_credential_group"
                 label="SSH Credential Group"
                 value={selectedSshGroup}
-                defaultValue={selectedSshGroup}
                 required
-                onChange={(event) => {
-                  const selectedSSHGroup = event.target.value as string
-                  dispatch(updateSelectedSshGroup(selectedSSHGroup))
-                }}
+                onChange={(event) => setSelectedSshGroup(event.target.value)}
               >
                 <MenuItem value="Select SSH Group (Required)">Select SSH Group (Required)</MenuItem>
-                {sshCredentialGroups.map((group) => (
-                  <MenuItem key={group.id} value={group.name}>
-                    {group.name}
+                {sshCredentialGroups.map((group, index) => (
+                  <MenuItem key={index} value={group}>
+                    {group}
                   </MenuItem>
                 ))}
               </Select>
@@ -424,16 +461,12 @@ const AdminAddRsu = () => {
                     id="snmp_credential_group"
                     label="SNMP Credential Group"
                     value={selectedSnmpGroup}
-                    defaultValue={selectedSnmpGroup}
-                    onChange={(event) => {
-                      const selectedGroup = event.target.value as string
-                      dispatch(updateSelectedSnmpGroup(selectedGroup))
-                    }}
+                    onChange={(event) => setSelectedSnmpGroup(event.target.value)}
                   >
                     <MenuItem value="Select SNMP Group (Required)">Select SNMP Credential Group (Required)</MenuItem>
-                    {snmpCredentialGroups.map((group) => (
-                      <MenuItem key={group.id} value={group.name}>
-                        {group.name}
+                    {snmpCredentialGroups.map((group, index) => (
+                      <MenuItem key={index} value={group}>
+                        {group}
                       </MenuItem>
                     ))}
                   </Select>
@@ -443,6 +476,7 @@ const AdminAddRsu = () => {
                 </FormControl>
               </Form.Group>
             </Grid2>
+
             <Grid2 size={6}>
               <Form.Group controlId="snmp_version_group">
                 <FormControl fullWidth margin="normal">
@@ -451,17 +485,13 @@ const AdminAddRsu = () => {
                     id="snmp_version_group"
                     label="SNMP Protocol"
                     value={selectedSnmpVersion}
-                    defaultValue={selectedSnmpVersion}
                     required
-                    onChange={(event) => {
-                      const selectedVersion = event.target.value as string
-                      dispatch(updateSelectedSnmpVersion(selectedVersion))
-                    }}
+                    onChange={(event) => setSelectedSnmpVersion(event.target.value)}
                   >
                     <MenuItem value="Select SNMP Protocol (Required)">Select SNMP Protocol (Required)</MenuItem>
-                    {snmpVersions.map((ver) => (
-                      <MenuItem key={ver.id} value={ver.name}>
-                        {ver.name}
+                    {snmpVersions.map((ver, index) => (
+                      <MenuItem key={index} value={ver}>
+                        {ver}
                       </MenuItem>
                     ))}
                   </Select>
@@ -472,6 +502,7 @@ const AdminAddRsu = () => {
               </Form.Group>
             </Grid2>
           </Grid2>
+
           <Form.Group controlId="organizations">
             <FormControl fullWidth margin="normal">
               <InputLabel htmlFor="organizations">Organizations</InputLabel>
@@ -480,15 +511,12 @@ const AdminAddRsu = () => {
                 label="Organizations"
                 multiple
                 required
-                value={selectedOrganizations.map((org) => org.name)}
-                onChange={(event) => {
-                  const selectedOrgs = event.target.value as string[]
-                  dispatch(updateSelectedOrganizations(organizations.filter((org) => selectedOrgs.includes(org.name))))
-                }}
+                value={selectedOrganizations}
+                onChange={(event) => setSelectedOrganizations(event.target.value as string[])}
               >
-                {organizations.map((org) => (
-                  <MenuItem key={org.id} value={org.name}>
-                    {org.name}
+                {organizations.map((org, index) => (
+                  <MenuItem key={index} value={org}>
+                    {org}
                   </MenuItem>
                 ))}
               </Select>
@@ -501,14 +529,12 @@ const AdminAddRsu = () => {
       </DialogContent>
       <DialogActions sx={{ padding: '20px', mt: 1 }}>
         <Button
-          onClick={() => {
-            setOpen(false)
-            navigate('/dashboard/admin/rsus')
-          }}
+          onClick={handleClose}
           variant="outlined"
           color="info"
           style={{ position: 'absolute', bottom: 10, left: 10 }}
           className="museo-slab capital-case"
+          disabled={isCreating}
         >
           Cancel
         </Button>
@@ -518,8 +544,9 @@ const AdminAddRsu = () => {
           variant="contained"
           style={{ position: 'absolute', bottom: 10, right: 10 }}
           className="museo-slab capital-case"
+          disabled={isCreating}
         >
-          Add RSU
+          {isCreating ? 'Adding...' : 'Add RSU'}
         </Button>
       </DialogActions>
     </Dialog>

@@ -47,6 +47,7 @@ import us.dot.its.jpo.ode.api.services.RsuOptionManagementService;
 @RequiredArgsConstructor
 public class RsuController {
     private final RsuManagementService rsuManagementService;
+    private final PermissionService permissionService;
     private final RsuOptionManagementService rsuOptionManagementService;
 
     private static final Map<String, String> SORT_FIELD_MAPPING = Map.of(
@@ -67,7 +68,7 @@ public class RsuController {
     public Page<RsuInfoDto> getAllRsus(
             @RequestHeader(name = "Organization", required = true) String organization,
             @RequestParam(name = "search", required = false) String search,
-                    @PageableDefault(size = 100) Pageable pageable) {
+            @PageableDefault(size = 100) Pageable pageable) {
         Pageable mappedPageable = mapSortFields(pageable);
 
         Page<RsuInfoDto> allRsuInfo = rsuManagementService.getAllRsuInfo(organization, search, mappedPageable);
@@ -106,6 +107,31 @@ public class RsuController {
         ModifyRsuAllowedSelections allowedSelections = rsuManagementService.getAllowedSelections(username);
 
         return allowedSelections;
+    }
+
+    @Operation(summary = "Create RSU", description = "Create a new RSU")
+    @RequestMapping(method = RequestMethod.POST, produces = "application/json")
+    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('OPERATOR')")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Created"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or OPERATOR role"),
+    })
+    public ResponseEntity<Void> createRsu(@Validated @RequestBody RsuInfoDto body) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = PermissionService.getUsername(auth);
+        List<String> qualifiedOrgList = permissionService.getQualifiedOrgList(username, "OPERATOR");
+
+        List<String> unqualifiedOrgs = body.getOrganizations().stream().filter((org) -> !qualifiedOrgList.contains(org))
+                .toList();
+        if (!unqualifiedOrgs.isEmpty()) {
+            // This catches unqualified orgs or nonexistent orgs
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "User not qualified to modify organizations: " + String.join(", ", unqualifiedOrgs));
+        }
+
+        rsuManagementService.createRsu(body, body.getOrganizations());
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @Operation(summary = "Modify RSU", description = "Modify RSU information")

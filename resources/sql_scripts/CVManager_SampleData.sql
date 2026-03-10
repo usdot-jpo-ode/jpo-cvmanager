@@ -43,10 +43,6 @@ INSERT INTO public.rsu_options(
 	rsu_id, tim_deposit, snmp_monitoring)
 	VALUES (1, TRUE, TRUE), (2, FALSE, TRUE);
 
-INSERT INTO public.organizations(
-	name)
-	VALUES ('Test Org'), ('Test Org 2');
-
 INSERT INTO public.roles(
 	name)
 	VALUES ('admin'), ('operator'), ('user');

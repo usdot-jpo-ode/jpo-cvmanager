@@ -281,6 +281,94 @@ class PermissionServiceTest {
         assertFalse(permissionService.hasRole("USER"));
     }
 
+    // ==================== hasRoleInOrg Tests ====================
+
+    @Test
+    void testHasRoleInOrg_NotAuthenticated() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        token.setAuthenticated(false);
+        setupSecurityContext(token);
+
+        assertFalse(permissionService.hasRoleInOrg("TestOrg", "USER"));
+        verify(roleRepository, never()).findUserRoleInOrg(anyString(), anyString());
+    }
+
+    @Test
+    void testHasRoleInOrg_SuperUser() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        setupSecurityContext(token);
+
+        User superUser = new User();
+        superUser.setSuperUser(true);
+        when(userRepository.findByEmail("test@example.com")).thenReturn(superUser);
+
+        assertTrue(permissionService.hasRoleInOrg("TestOrg", "ADMIN"));
+        verify(roleRepository, never()).findUserRoleInOrg(anyString(), anyString());
+    }
+
+    @Test
+    void testHasRoleInOrg_HasExactRole() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        setupSecurityContext(token);
+
+        User regularUser = new User();
+        regularUser.setSuperUser(false);
+        when(userRepository.findByEmail("test@example.com")).thenReturn(regularUser);
+        when(roleRepository.findUserRoleInOrg("test@example.com", "TestOrg"))
+                .thenReturn(Optional.of("OPERATOR"));
+
+        assertTrue(permissionService.hasRoleInOrg("TestOrg", "OPERATOR"));
+        verify(roleRepository).findUserRoleInOrg("test@example.com", "TestOrg");
+    }
+
+    @Test
+    void testHasRoleInOrg_HasSufficientRole() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        setupSecurityContext(token);
+
+        User regularUser = new User();
+        regularUser.setSuperUser(false);
+        when(userRepository.findByEmail("test@example.com")).thenReturn(regularUser);
+        when(roleRepository.findUserRoleInOrg("test@example.com", "TestOrg"))
+                .thenReturn(Optional.of("ADMIN"));
+
+        assertTrue(permissionService.hasRoleInOrg("TestOrg", "OPERATOR"));
+        assertTrue(permissionService.hasRoleInOrg("TestOrg", "USER"));
+        verify(roleRepository, times(2)).findUserRoleInOrg("test@example.com", "TestOrg");
+    }
+
+    @Test
+    void testHasRoleInOrg_InsufficientRole() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        setupSecurityContext(token);
+
+        User regularUser = new User();
+        regularUser.setSuperUser(false);
+        when(userRepository.findByEmail("test@example.com")).thenReturn(regularUser);
+        when(roleRepository.findUserRoleInOrg("test@example.com", "TestOrg"))
+                .thenReturn(Optional.of("USER"));
+
+        assertFalse(permissionService.hasRoleInOrg("TestOrg", "OPERATOR"));
+        assertFalse(permissionService.hasRoleInOrg("TestOrg", "ADMIN"));
+        verify(roleRepository, times(2)).findUserRoleInOrg("test@example.com", "TestOrg");
+    }
+
+    @Test
+    void testHasRoleInOrg_NoRoleInOrganization() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        setupSecurityContext(token);
+
+        User regularUser = new User();
+        regularUser.setSuperUser(false);
+        when(userRepository.findByEmail("test@example.com")).thenReturn(regularUser);
+        when(roleRepository.findUserRoleInOrg("test@example.com", "TestOrg"))
+                .thenReturn(Optional.empty());
+
+        assertFalse(permissionService.hasRoleInOrg("TestOrg", "USER"));
+        verify(userRepository).findByEmail("test@example.com");
+        verify(roleRepository).findUserRoleInOrg("test@example.com", "TestOrg");
+    }
+
     // ==================== hasIntersection Tests ====================
 
     @Test

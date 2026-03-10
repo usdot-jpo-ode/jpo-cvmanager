@@ -15,4 +15,12 @@ public interface RsuCredentialRepository extends JpaRepository<RsuCredential, In
     List<String> findAllNicknames();
 
     Optional<RsuCredential> findByNickname(String nickname);
+
+    boolean existsByNickname(String nickname);
+
+    @Query("SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END " +
+            "FROM RsuCredential r " +
+            "JOIN r.ownerOrganization ro " +
+            "WHERE r.nickname = :nickname AND ro.name IN :organizations")
+    boolean existsByNicknameAndOrganizations(String nickname, List<String> qualifiedOrgList);
 }

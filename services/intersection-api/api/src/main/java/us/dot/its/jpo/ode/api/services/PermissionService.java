@@ -14,7 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 import us.dot.its.jpo.ode.api.models.postgres.tables.User;
 import us.dot.its.jpo.ode.api.repositories.IntersectionRepository;
 import us.dot.its.jpo.ode.api.repositories.RoleRepository;
+import us.dot.its.jpo.ode.api.repositories.RsuCredentialRepository;
 import us.dot.its.jpo.ode.api.repositories.RsuRepository;
+import us.dot.its.jpo.ode.api.repositories.SnmpCredentialRepository;
 import us.dot.its.jpo.ode.api.repositories.UserRepository;
 import us.dot.its.jpo.ode.api.repositories.UserRepository.UserOrgRoleProjection;
 
@@ -36,6 +38,8 @@ public class PermissionService {
     private final RoleRepository roleRepository;
     private final IntersectionRepository intersectionRepository;
     private final RsuRepository rsuRepository;
+    private final RsuCredentialRepository rsuCredentialRepository;
+    private final SnmpCredentialRepository snmpCredentialRepository;
 
     private static final Map<String, Integer> ROLE_HIERARCHY = new HashMap<>();
 
@@ -88,8 +92,15 @@ public class PermissionService {
         return user.getSuperUser();
     }
 
-    // Allow Connection if the user is a part of at least one organization with a
-    // matching roll.
+    /**
+     * Checks if the currently authenticated user has the specified role in at least
+     * one organization. The method verifies the user's roles within the context of
+     * organizations they belong to and determines if the role criteria is satisfied.
+     *
+     * @param role the role to be checked against the user's permissions within organizations
+     * @return true if the user possesses the specified role in at least one organization,
+     *         or is a superuser; otherwise, false
+     */
     public boolean hasRole(String role) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (!isAuthValid(auth)) {
@@ -109,6 +120,29 @@ public class PermissionService {
         }
 
         return !getQualifiedOrgList(username, role).isEmpty();
+    }
+
+    /**
+     * Determines if the authenticated user has a specific role in the given organization.
+     *
+     * @param organization the name of the organization to check the user's role in
+     * @param role the role to be validated within the specified organization
+     * @return true if the user has the specified role or a role above it in the organization,
+     *         or if the user is a superuser; false otherwise
+     */
+    public boolean hasRoleInOrg(String organization, String role) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!isAuthValid(auth)) {
+            return false;
+        }
+
+        if (isSuperUser()) {
+            return true;
+        }
+
+        String username = getUsername(auth);
+        Optional<String> userRole = roleRepository.findUserRoleInOrg(username, organization);
+        return userRole.map(roleValue -> checkRoleAbove(roleValue, role)).orElse(false);
     }
 
     // Allow Connection if the users organization controls the specified
@@ -192,6 +226,62 @@ public class PermissionService {
         List<String> authorizedOrgs = getQualifiedOrgList(username, role);
         List<InetAddress> allowedRsuIps = rsuRepository.findAllowedRsuIpsInOrganizations(authorizedOrgs);
         return allowedRsuIps.containsAll(ipv4Addresses);
+    }
+
+    /**
+     * Checks if an RSU credential exists in any organization where the authenticated user
+     * has the specified role or higher.
+     *
+     * @param nickname The unique identifier or nickname of the RSU credential to check.
+     * @param role     The minimum role level required (e.g., "ADMIN", "OPERATOR", "USER").
+     *                 The user must have this role or higher in an organization that owns the credential.
+     * @return {@code true} if either:
+     * - The user is a superuser
+     * - The RSU credential exists and belongs to at least one organization where
+     * the user has the specified role or higher
+     * {@code false} otherwise, including when authentication is invalid
+     */
+    public boolean hasRsuCredential(String nickname, String role) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!isAuthValid(auth)) {
+            return false;
+        }
+
+        if (isSuperUser()) {
+            return true;
+        }
+
+        String username = getUsername(auth);
+
+        return rsuCredentialRepository.existsByNicknameAndOrganizations(nickname, getQualifiedOrgList(username, role));
+    }
+
+    /**
+     * Checks if an SNMP credential exists in any organization where the authenticated user
+     * has the specified role or higher.
+     *
+     * @param nickname The unique identifier or nickname of the SNMP credential to check.
+     * @param role     The minimum role level required (e.g., "ADMIN", "OPERATOR", "USER").
+     *                 The user must have this role or higher in an organization that owns the credential.
+     * @return {@code true} if either:
+     * - The user is a superuser
+     * - The SNMP credential exists and belongs to at least one organization where
+     * the user has the specified role or higher
+     * {@code false} otherwise, including when authentication is invalid
+     */
+    public boolean hasSnmpCredential(String nickname, String role) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!isAuthValid(auth)) {
+            return false;
+        }
+
+        if (isSuperUser()) {
+            return true;
+        }
+
+        String username = getUsername(auth);
+
+        return snmpCredentialRepository.existsByNicknameAndOrganizations(nickname, getQualifiedOrgList(username, role));
     }
 
     // helper method to make sure authentication is valid

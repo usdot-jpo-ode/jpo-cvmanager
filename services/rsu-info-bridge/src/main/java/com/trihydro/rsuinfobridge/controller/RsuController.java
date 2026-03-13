@@ -1,5 +1,6 @@
 package com.trihydro.rsuinfobridge.controller;
 
+import com.trihydro.rsuinfobridge.mapper.RsuDtoMapper;
 import com.trihydro.rsuinfobridge.models.dtos.RsuDto;
 import com.trihydro.rsuinfobridge.service.RsuService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,6 +22,7 @@ import java.util.List;
 @Tag(name = "RSU", description = "Roadside Unit information endpoints")
 public class RsuController {
     private final RsuService rsuService;
+    private final RsuDtoMapper rsuDtoMapper;
 
     @GetMapping
     @Operation(summary = "Get all RSUs", description = "Retrieves a list of all Roadside Units in the system")
@@ -30,6 +32,6 @@ public class RsuController {
     public List<RsuDto> getAll(
             @Parameter(description = "Filter RSUs by TIM deposit enabled status", example = "false")
             @RequestParam(defaultValue = "false") boolean timDepositEnabledOnly) {
-        return rsuService.getAll(timDepositEnabledOnly);
+        return rsuDtoMapper.toDtoList(rsuService.getAll(timDepositEnabledOnly));
     }
 }

@@ -19,11 +19,13 @@ To build the project and run tests, use the following command:
 ## Running the Application
 
 ### Using Maven
-You can run the application using the Spring Boot Maven plugin:
+Run the application using the Spring Boot Maven plugin:
 
 ```bash
-./mvnw spring-boot:run
+./mvnw spring-boot:run -Dspring-boot.run.profiles=local
 ```
+
+Spring Boot's Docker Compose integration will automatically start the PostgreSQL database container from the root `docker-compose.yml` when the application starts.
 
 The service will be available at `http://localhost:16543` (default port).
 
@@ -41,6 +43,8 @@ Then start the service using Docker Compose:
 ```bash
 docker compose up -d
 ```
+
+This will start both the PostgreSQL database (from the root docker-compose.yml) and the RSU Info Bridge service. The required profiles are configured in the `.env` file via `COMPOSE_PROFILES`.
 
 ### Accessing the API Documentation
 Once the application is running, you can access the Swagger UI to view and interact with the OpenAPI documentation:

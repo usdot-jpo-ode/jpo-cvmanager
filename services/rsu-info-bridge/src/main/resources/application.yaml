@@ -1,5 +1,21 @@
 spring:
   application:
     name: rsu-info-bridge
+  docker:
+    compose:
+      enabled: false
+  datasource:
+    url: ${POSTGRES_SERVER_URL:jdbc:postgresql://localhost:5432}/${POSTGRES_DB:postgres}
+    username: ${PG_DB_USER:postgres}
+    password: ${PG_DB_PASS:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
 server:
   port: ${RSU_INFO_BRIDGE_PORT:16543}

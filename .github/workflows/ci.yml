@@ -141,6 +141,40 @@ jobs:
           name: keycloak-user-provider-test-results
           path: $GITHUB_WORKSPACE/resources/keycloak/custom-user-provider/target/surefire-reports
 
+  build_rsu_info_bridge:
+    needs: test_change_limit
+    if: ${{ always() && !failure() && !cancelled() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "25"
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-rsu-info-bridge-${{ hashFiles('**/services/rsu-info-bridge/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-rsu-info-bridge-
+            ${{ runner.os }}-maven-
+
+      - name: Build and Test with Maven
+        run: |
+          cd $GITHUB_WORKSPACE/services/rsu-info-bridge
+          ./mvnw clean verify
+
+      - name: Archive Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: rsu-info-bridge-test-results
+          path: $GITHUB_WORKSPACE/services/rsu-info-bridge/target/surefire-reports
+
   build_intersection_api:
     needs: test_change_limit
     if: ${{ always() && !failure() && !cancelled() }}

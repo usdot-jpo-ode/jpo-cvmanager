@@ -64,7 +64,10 @@
     "build:all": "npm run build:dev && npm run build:test && npm run build:prod",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
-    "dev": "vite"
+    "typecheck": "tsc --noEmit",
+    "dev": "vite",
+    "lint": "eslint .",
+    "preview": "vite preview"
   },
   "browserslist": {
     "production": [
@@ -84,6 +87,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@testing-library/jest-dom": "^6.6.3",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.15.19",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",

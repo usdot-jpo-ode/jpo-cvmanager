@@ -163,6 +163,14 @@ The conflictvisualizer API is now integrated into the cvmanager as the intersect
 
 These changes were tested running locally in docker. These changes require an intersection-api to be running, and to be connected to the cvmanager keycloak server (and cvmanager keycloak realm). This API also requires the jpo-conflictmonitor and jpo-geojsonconverter to be running, so that there is data available. Once the jpo-conflictmonitor, jpo-geojsonconverter, and jpo-ode, then a jpo-conflictvisualizer api should be deployed, which should be modified to authenticate with the cvmanager keycloak realm (see the conflictvisualizer-map-page branch), and the port should be specified in the environment file (VITE_CVIZ_API_SERVER_URL). Once all of these components are deployed, then the cvmanager webapp can be run!
 
+## Typescript Type Checking
+
+To run typescript type checking, you can use the following command:
+
+```sh
+npm run typecheck
+```
+
 ## Unit Testing
 
 The unit tests for this repository are written using Jest. These tests can be run with the following command:

@@ -15,8 +15,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -102,9 +100,8 @@ public class RsuController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or OPERATOR role with access to the RSU requested"),
     })
     public ModifyRsuAllowedSelections getAllowedSelections() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = PermissionService.getUsername(auth);
-        ModifyRsuAllowedSelections allowedSelections = rsuManagementService.getAllowedSelections(username);
+        ModifyRsuAllowedSelections allowedSelections = rsuManagementService
+                .getAllowedSelections(permissionService.getCvManagerAuthToken());
 
         return allowedSelections;
     }
@@ -117,16 +114,10 @@ public class RsuController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or OPERATOR role"),
     })
     public ResponseEntity<Void> createRsu(@Validated @RequestBody RsuInfoDto body) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = PermissionService.getUsername(auth);
-        List<String> qualifiedOrgList = permissionService.getQualifiedOrgList(username, "OPERATOR");
-
-        List<String> unqualifiedOrgs = body.getOrganizations().stream().filter((org) -> !qualifiedOrgList.contains(org))
-                .toList();
-        if (!unqualifiedOrgs.isEmpty()) {
+        if (!permissionService.hasRoleInOrgs("OPERATOR", body.getOrganizations())) {
             // This catches unqualified orgs or nonexistent orgs
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "User not qualified to modify organizations: " + String.join(", ", unqualifiedOrgs));
+                    "User not qualified to modify all specified organizations");
         }
 
         rsuManagementService.createRsu(body, body.getOrganizations());
@@ -143,9 +134,7 @@ public class RsuController {
     })
     public ResponseEntity<Void> modifyRsu(@RequestParam(name = "rsu_ip", required = true) String rsuIp,
             @Validated @RequestBody RsuPatch body) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = PermissionService.getUsername(auth);
-        rsuManagementService.modifyRsu(rsuIp, body, username);
+        rsuManagementService.modifyRsu(rsuIp, body, permissionService.getCvManagerAuthToken());
         rsuOptionManagementService.modifyRsuOption(rsuIp, body);
 
         return ResponseEntity.noContent().build();

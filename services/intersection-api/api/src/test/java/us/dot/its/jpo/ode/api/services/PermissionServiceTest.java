@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.core.Authentication;
@@ -15,12 +16,9 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import us.dot.its.jpo.ode.api.models.postgres.tables.User;
+import us.dot.its.jpo.ode.api.models.keycloak.CvManagerAuthToken;
 import us.dot.its.jpo.ode.api.repositories.IntersectionRepository;
-import us.dot.its.jpo.ode.api.repositories.RoleRepository;
 import us.dot.its.jpo.ode.api.repositories.RsuRepository;
-import us.dot.its.jpo.ode.api.repositories.UserRepository;
-import us.dot.its.jpo.ode.api.repositories.UserRepository.UserOrgRoleProjection;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -35,12 +33,6 @@ import static org.mockito.Mockito.*;
 class PermissionServiceTest {
 
     @Mock
-    private UserRepository userRepository;
-
-    @Mock
-    private RoleRepository roleRepository;
-
-    @Mock
     private IntersectionRepository intersectionRepository;
 
     @Mock
@@ -49,8 +41,14 @@ class PermissionServiceTest {
     @Mock
     private SecurityContext securityContext;
 
+    @Mock
+    private CvManagerAuthToken authToken;
+
+    @Spy
     @InjectMocks
     private PermissionService permissionService;
+
+    private String tokenString = "mock-token";
 
     @AfterEach
     void tearDown() {
@@ -73,49 +71,16 @@ class PermissionServiceTest {
         when(securityContext.getAuthentication()).thenReturn(token);
     }
 
-    // ==================== checkRoleAbove Tests ====================
-
-    @Test
-    void testCheckRoleAbove_AdminAboveOperator() {
-        assertTrue(PermissionService.checkRoleAbove("ADMIN", "OPERATOR"));
-    }
-
-    @Test
-    void testCheckRoleAbove_AdminAboveUser() {
-        assertTrue(PermissionService.checkRoleAbove("ADMIN", "USER"));
-    }
-
-    @Test
-    void testCheckRoleAbove_OperatorAboveUser() {
-        assertTrue(PermissionService.checkRoleAbove("OPERATOR", "USER"));
-    }
-
-    @Test
-    void testCheckRoleAbove_SameRole() {
-        assertTrue(PermissionService.checkRoleAbove("ADMIN", "ADMIN"));
-        assertTrue(PermissionService.checkRoleAbove("OPERATOR", "OPERATOR"));
-        assertTrue(PermissionService.checkRoleAbove("USER", "USER"));
-    }
-
-    @Test
-    void testCheckRoleAbove_UserNotAboveOperator() {
-        assertFalse(PermissionService.checkRoleAbove("USER", "OPERATOR"));
-    }
-
-    @Test
-    void testCheckRoleAbove_OperatorNotAboveAdmin() {
-        assertFalse(PermissionService.checkRoleAbove("OPERATOR", "ADMIN"));
-    }
-
-    @Test
-    void testCheckRoleAbove_NullRole() {
-        assertFalse(PermissionService.checkRoleAbove(null, "ADMIN"));
-    }
-
-    @Test
-    void testCheckRoleAbove_CaseInsensitive() {
-        assertTrue(PermissionService.checkRoleAbove("admin", "user"));
-        assertTrue(PermissionService.checkRoleAbove("Admin", "User"));
+    /**
+     * Sets up both Authorization and Organization headers
+     */
+    private void setupRequestWithHeaders(String bearerToken, String organization) {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("Authorization", "Bearer " + bearerToken);
+        if (organization != null) {
+            request.addHeader("Organization", organization);
+        }
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
     }
 
     // ==================== getAllowedIntersectionIds Tests ====================
@@ -142,43 +107,6 @@ class PermissionServiceTest {
         verify(intersectionRepository).findIntersectionsByOrganization("TestOrg");
     }
 
-    // ==================== isSuperUser Tests ====================
-
-    @Test
-    void testIsSuperUser_WhenUserIsSuperUser() {
-        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
-        setupSecurityContext(token);
-
-        User superUser = new User();
-        superUser.setSuperUser(true);
-        when(userRepository.findByEmail("test@example.com")).thenReturn(superUser);
-
-        assertTrue(permissionService.isSuperUser());
-    }
-
-    @Test
-    void testIsSuperUser_WhenUserIsNotSuperUser() {
-        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
-        setupSecurityContext(token);
-
-        User regularUser = new User();
-        regularUser.setSuperUser(false);
-        when(userRepository.findByEmail("test@example.com")).thenReturn(regularUser);
-
-        assertFalse(permissionService.isSuperUser());
-        verify(userRepository).findByEmail("test@example.com");
-    }
-
-    @Test
-    void testIsSuperUser_WhenNotAuthenticated() {
-        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
-        token.setAuthenticated(false);
-        setupSecurityContext(token);
-
-        assertFalse(permissionService.isSuperUser());
-        verify(userRepository, never()).findByEmail(anyString());
-    }
-
     // ==================== hasRole Tests ====================
 
     @Test
@@ -186,9 +114,8 @@ class PermissionServiceTest {
         JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
         setupSecurityContext(token);
 
-        User superUser = new User();
-        superUser.setSuperUser(true);
-        when(userRepository.findByEmail("test@example.com")).thenReturn(superUser);
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        when(authToken.isSuperUser()).thenReturn(true);
 
         assertTrue(permissionService.hasRole("ADMIN"));
         assertTrue(permissionService.hasRole("OPERATOR"));
@@ -199,17 +126,11 @@ class PermissionServiceTest {
     void testHasRole_WithOrganizationHeader_HasSufficientRole() {
         JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
         setupSecurityContext(token);
+        setupRequestWithHeaders(tokenString, "TestOrg");
 
-        User regularUser = new User();
-        regularUser.setSuperUser(false);
-
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.addHeader("Organization", "TestOrg");
-        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-
-        when(userRepository.findByEmail("test@example.com")).thenReturn(regularUser);
-        when(roleRepository.findUserRoleInOrg("test@example.com", "TestOrg"))
-                .thenReturn(Optional.of("ADMIN"));
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        when(authToken.isSuperUser()).thenReturn(false);
+        when(authToken.findRoleInOrg("TestOrg")).thenReturn(Optional.of("ADMIN"));
 
         assertTrue(permissionService.hasRole("OPERATOR"));
     }
@@ -218,21 +139,13 @@ class PermissionServiceTest {
     void testHasRole_WithOrganizationHeader_InsufficientRole() {
         JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
         setupSecurityContext(token);
+        setupRequestWithHeaders(tokenString, "TestOrg");
 
-        User regularUser = new User();
-        regularUser.setSuperUser(false);
-
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.addHeader("Organization", "TestOrg");
-        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-
-        when(userRepository.findByEmail("test@example.com")).thenReturn(regularUser);
-        when(roleRepository.findUserRoleInOrg("test@example.com", "TestOrg"))
-                .thenReturn(Optional.of("USER"));
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        when(authToken.isSuperUser()).thenReturn(false);
+        when(authToken.findRoleInOrg("TestOrg")).thenReturn(Optional.of("USER"));
 
         assertFalse(permissionService.hasRole("ADMIN"));
-        verify(userRepository).findByEmail("test@example.com");
-        verify(roleRepository).findUserRoleInOrg("test@example.com", "TestOrg");
     }
 
     @Test
@@ -240,15 +153,9 @@ class PermissionServiceTest {
         JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
         setupSecurityContext(token);
 
-        User regularUser = new User();
-        regularUser.setSuperUser(false);
-
-        UserOrgRoleProjection projection = mock(UserOrgRoleProjection.class);
-        when(projection.getRoleName()).thenReturn("ADMIN");
-        when(projection.getOrganizationName()).thenReturn("Org1");
-
-        when(userRepository.findByEmail("test@example.com")).thenReturn(regularUser);
-        when(userRepository.findUserOrgRoles("test@example.com")).thenReturn(List.of(projection));
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        when(authToken.isSuperUser()).thenReturn(false);
+        when(authToken.getQualifiedOrgList("OPERATOR")).thenReturn(List.of("TestOrg"));
 
         assertTrue(permissionService.hasRole("OPERATOR"));
     }
@@ -258,18 +165,11 @@ class PermissionServiceTest {
         JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
         setupSecurityContext(token);
 
-        User regularUser = new User();
-        regularUser.setSuperUser(false);
-
-        UserOrgRoleProjection projection = mock(UserOrgRoleProjection.class);
-        when(projection.getRoleName()).thenReturn("USER");
-
-        when(userRepository.findByEmail("test@example.com")).thenReturn(regularUser);
-        when(userRepository.findUserOrgRoles("test@example.com")).thenReturn(List.of(projection));
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        when(authToken.isSuperUser()).thenReturn(false);
+        when(authToken.getQualifiedOrgList("ADMIN")).thenReturn(List.of());
 
         assertFalse(permissionService.hasRole("ADMIN"));
-        verify(userRepository).findByEmail("test@example.com");
-        verify(userRepository).findUserOrgRoles("test@example.com");
     }
 
     @Test
@@ -290,7 +190,8 @@ class PermissionServiceTest {
         setupSecurityContext(token);
 
         assertFalse(permissionService.hasRoleInOrg("TestOrg", "USER"));
-        verify(roleRepository, never()).findUserRoleInOrg(anyString(), anyString());
+        verify(permissionService, never()).getCvManagerAuthToken();
+        verify(authToken, never()).isSuperUser();
     }
 
     @Test
@@ -298,12 +199,11 @@ class PermissionServiceTest {
         JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
         setupSecurityContext(token);
 
-        User superUser = new User();
-        superUser.setSuperUser(true);
-        when(userRepository.findByEmail("test@example.com")).thenReturn(superUser);
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        doReturn(true).when(authToken).isSuperUser();
 
         assertTrue(permissionService.hasRoleInOrg("TestOrg", "ADMIN"));
-        verify(roleRepository, never()).findUserRoleInOrg(anyString(), anyString());
+        verify(authToken, never()).findRoleInOrg(anyString());
     }
 
     @Test
@@ -311,14 +211,10 @@ class PermissionServiceTest {
         JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
         setupSecurityContext(token);
 
-        User regularUser = new User();
-        regularUser.setSuperUser(false);
-        when(userRepository.findByEmail("test@example.com")).thenReturn(regularUser);
-        when(roleRepository.findUserRoleInOrg("test@example.com", "TestOrg"))
-                .thenReturn(Optional.of("OPERATOR"));
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        doReturn(Optional.of("OPERATOR")).when(authToken).findRoleInOrg("TestOrg");
 
         assertTrue(permissionService.hasRoleInOrg("TestOrg", "OPERATOR"));
-        verify(roleRepository).findUserRoleInOrg("test@example.com", "TestOrg");
     }
 
     @Test
@@ -326,15 +222,11 @@ class PermissionServiceTest {
         JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
         setupSecurityContext(token);
 
-        User regularUser = new User();
-        regularUser.setSuperUser(false);
-        when(userRepository.findByEmail("test@example.com")).thenReturn(regularUser);
-        when(roleRepository.findUserRoleInOrg("test@example.com", "TestOrg"))
-                .thenReturn(Optional.of("ADMIN"));
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        doReturn(Optional.of("ADMIN")).when(authToken).findRoleInOrg("TestOrg");
 
         assertTrue(permissionService.hasRoleInOrg("TestOrg", "OPERATOR"));
         assertTrue(permissionService.hasRoleInOrg("TestOrg", "USER"));
-        verify(roleRepository, times(2)).findUserRoleInOrg("test@example.com", "TestOrg");
     }
 
     @Test
@@ -342,15 +234,11 @@ class PermissionServiceTest {
         JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
         setupSecurityContext(token);
 
-        User regularUser = new User();
-        regularUser.setSuperUser(false);
-        when(userRepository.findByEmail("test@example.com")).thenReturn(regularUser);
-        when(roleRepository.findUserRoleInOrg("test@example.com", "TestOrg"))
-                .thenReturn(Optional.of("USER"));
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        doReturn(Optional.of("USER")).when(authToken).findRoleInOrg("TestOrg");
 
         assertFalse(permissionService.hasRoleInOrg("TestOrg", "OPERATOR"));
         assertFalse(permissionService.hasRoleInOrg("TestOrg", "ADMIN"));
-        verify(roleRepository, times(2)).findUserRoleInOrg("test@example.com", "TestOrg");
     }
 
     @Test
@@ -358,15 +246,10 @@ class PermissionServiceTest {
         JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
         setupSecurityContext(token);
 
-        User regularUser = new User();
-        regularUser.setSuperUser(false);
-        when(userRepository.findByEmail("test@example.com")).thenReturn(regularUser);
-        when(roleRepository.findUserRoleInOrg("test@example.com", "TestOrg"))
-                .thenReturn(Optional.empty());
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        doReturn(Optional.empty()).when(authToken).findRoleInOrg("TestOrg");
 
         assertFalse(permissionService.hasRoleInOrg("TestOrg", "USER"));
-        verify(userRepository).findByEmail("test@example.com");
-        verify(roleRepository).findUserRoleInOrg("test@example.com", "TestOrg");
     }
 
     // ==================== hasIntersection Tests ====================
@@ -394,9 +277,8 @@ class PermissionServiceTest {
         JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
         setupSecurityContext(token);
 
-        User superUser = new User();
-        superUser.setSuperUser(true);
-        when(userRepository.findByEmail("test@example.com")).thenReturn(superUser);
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        when(authToken.isSuperUser()).thenReturn(true);
 
         assertTrue(permissionService.hasIntersection(123, "USER"));
         verify(intersectionRepository, never()).existsByIdAndOrganizations(anyString(), anyList());
@@ -407,14 +289,14 @@ class PermissionServiceTest {
         JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
         setupSecurityContext(token);
 
-        User regularUser = new User();
-        regularUser.setSuperUser(false);
+        when(authToken.isSuperUser()).thenReturn(false);
 
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("Organization", "TestOrg");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-        when(userRepository.findByEmail("test@example.com")).thenReturn(regularUser);
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        when(authToken.getQualifiedOrgList("USER")).thenReturn(List.of("TestOrg"));
         when(intersectionRepository.existsByIdAndOrganizations("123", List.of("TestOrg")))
                 .thenReturn(true);
 
@@ -426,19 +308,18 @@ class PermissionServiceTest {
         JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
         setupSecurityContext(token);
 
-        User regularUser = new User();
-        regularUser.setSuperUser(false);
+        when(authToken.isSuperUser()).thenReturn(false);
 
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("Organization", "TestOrg");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-        when(userRepository.findByEmail("test@example.com")).thenReturn(regularUser);
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        when(authToken.getQualifiedOrgList("USER")).thenReturn(List.of("TestOrg"));
         when(intersectionRepository.existsByIdAndOrganizations("123", List.of("TestOrg")))
                 .thenReturn(false);
 
         assertFalse(permissionService.hasIntersection(123, "USER"));
-        verify(userRepository).findByEmail("test@example.com");
         verify(intersectionRepository).existsByIdAndOrganizations("123", List.of("TestOrg"));
     }
 
@@ -447,18 +328,12 @@ class PermissionServiceTest {
         JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
         setupSecurityContext(token);
 
-        User regularUser = new User();
-        regularUser.setSuperUser(false);
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        when(authToken.isSuperUser()).thenReturn(false);
 
-        UserOrgRoleProjection projection = mock(UserOrgRoleProjection.class);
-        when(projection.getRoleName()).thenReturn("ADMIN");
-        when(projection.getOrganizationName()).thenReturn("Org1");
-
-        when(userRepository.findByEmail("test@example.com")).thenReturn(regularUser);
-        when(userRepository.findUserOrgRoles("test@example.com")).thenReturn(List.of(projection));
-        when(intersectionRepository.existsByIdAndOrganizations("123", List.of("Org1")))
+        when(authToken.getQualifiedOrgList("OPERATOR")).thenReturn(List.of("TestOrg"));
+        when(intersectionRepository.existsByIdAndOrganizations("123", List.of("TestOrg")))
                 .thenReturn(true);
-
         assertTrue(permissionService.hasIntersection(123, "OPERATOR"));
     }
 
@@ -469,9 +344,8 @@ class PermissionServiceTest {
         JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
         setupSecurityContext(token);
 
-        User superUser = new User();
-        superUser.setSuperUser(true);
-        when(userRepository.findByEmail("test@example.com")).thenReturn(superUser);
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        when(authToken.isSuperUser()).thenReturn(true);
 
         assertTrue(permissionService.hasRsu("192.168.1.1", "USER"));
         verify(rsuRepository, never()).existsByIpAndOrganizations(any(), anyList());
@@ -482,14 +356,14 @@ class PermissionServiceTest {
         JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
         setupSecurityContext(token);
 
-        User regularUser = new User();
-        regularUser.setSuperUser(false);
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        when(authToken.isSuperUser()).thenReturn(false);
 
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("Organization", "TestOrg");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-        when(userRepository.findByEmail("test@example.com")).thenReturn(regularUser);
+        when(authToken.getQualifiedOrgList("USER")).thenReturn(List.of("TestOrg"));
         when(rsuRepository.existsByIpAndOrganizations(InetAddress.getByName("192.168.1.1"), List.of("TestOrg")))
                 .thenReturn(true);
 
@@ -501,20 +375,19 @@ class PermissionServiceTest {
         JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
         setupSecurityContext(token);
 
-        User regularUser = new User();
-        regularUser.setSuperUser(false);
-
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        when(authToken.isSuperUser()).thenReturn(false);
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("Organization", "TestOrg");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-        when(userRepository.findByEmail("test@example.com")).thenReturn(regularUser);
+        when(authToken.getQualifiedOrgList("USER")).thenReturn(List.of("TestOrg"));
         when(rsuRepository.existsByIpAndOrganizations(InetAddress.getByName("192.168.1.1"), List.of("TestOrg")))
                 .thenReturn(false);
 
         assertFalse(permissionService.hasRsu("192.168.1.1", "USER"));
-        verify(userRepository).findByEmail("test@example.com");
-        verify(rsuRepository).existsByIpAndOrganizations(InetAddress.getByName("192.168.1.1"), List.of("TestOrg"));
+        verify(rsuRepository).existsByIpAndOrganizations(InetAddress.getByName("192.168.1.1"),
+                List.of("TestOrg"));
     }
 
     @Test
@@ -522,16 +395,11 @@ class PermissionServiceTest {
         JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
         setupSecurityContext(token);
 
-        User regularUser = new User();
-        regularUser.setSuperUser(false);
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        when(authToken.isSuperUser()).thenReturn(false);
 
-        UserOrgRoleProjection projection = mock(UserOrgRoleProjection.class);
-        when(projection.getRoleName()).thenReturn("ADMIN");
-        when(projection.getOrganizationName()).thenReturn("Org1");
-
-        when(userRepository.findByEmail("test@example.com")).thenReturn(regularUser);
-        when(userRepository.findUserOrgRoles("test@example.com")).thenReturn(List.of(projection));
-        when(rsuRepository.existsByIpAndOrganizations(InetAddress.getByName("192.168.1.1"), List.of("Org1")))
+        when(authToken.getQualifiedOrgList("OPERATOR")).thenReturn(List.of("TestOrg"));
+        when(rsuRepository.existsByIpAndOrganizations(InetAddress.getByName("192.168.1.1"), List.of("TestOrg")))
                 .thenReturn(true);
 
         assertTrue(permissionService.hasRsu("192.168.1.1", "OPERATOR"));

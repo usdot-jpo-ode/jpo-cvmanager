@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.api.controllers.data;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,7 @@ import us.dot.its.jpo.ode.api.accessors.haas.HaasLocationDataRepository;
 import us.dot.its.jpo.ode.api.models.LimitedGeoJsonResponse;
 import us.dot.its.jpo.ode.api.models.haas.HaasLocation;
 import us.dot.its.jpo.ode.api.models.haas.HaasLocationResult;
+import us.dot.its.jpo.ode.api.models.keycloak.CvManagerAuthToken;
 import us.dot.its.jpo.ode.api.services.PermissionService;
 import us.dot.its.jpo.ode.mockdata.MockHaasGenerator;
 
@@ -38,6 +41,9 @@ public class HaasControllerTest {
     @MockitoBean
     PermissionService permissionService;
 
+    @Mock
+    private CvManagerAuthToken authToken;
+
     @Autowired
     public HaasControllerTest(HaasController controller) {
         this.controller = controller;
@@ -50,7 +56,8 @@ public class HaasControllerTest {
         List<HaasLocation> locations = new ArrayList<>();
         locations.add(location);
 
-        when(permissionService.isSuperUser()).thenReturn(true);
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        doReturn(true).when(authToken).isSuperUser();
 
         HaasLocationResult mockResult = new HaasLocationResult(locations, false);
         when(haasLocationDataRepository.findWithLimit(true, null, null, 1000))
@@ -70,7 +77,8 @@ public class HaasControllerTest {
         List<HaasLocation> locations = new ArrayList<>();
         locations.add(location);
 
-        when(permissionService.isSuperUser()).thenReturn(true);
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        doReturn(true).when(authToken).isSuperUser();
 
         HaasLocationResult mockResult = new HaasLocationResult(locations, true);
         when(haasLocationDataRepository.findWithLimit(true, null, null, 1))

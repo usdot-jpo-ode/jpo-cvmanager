@@ -10,7 +10,7 @@ import AdminOrganizationTab from '../features/adminOrganizationTab/AdminOrganiza
 import AdminRsuTab from '../features/adminRsuTab/AdminRsuTab'
 import AdminUserTab from '../features/adminUserTab/AdminUserTab'
 import { NotFound } from './404'
-import { SecureStorageManager } from '../managers'
+import { LocalStorageManager, SecureStorageManager } from '../managers'
 import { getUserNotifications } from '../features/adminNotificationTab/adminNotificationTabSlice'
 import VerticalTabs from '../components/VerticalTabs'
 import { headerTabHeight } from '../styles/index'
@@ -32,7 +32,7 @@ function Admin() {
 
   return (
     <>
-      {SecureStorageManager.getUserRole() !== 'admin' ? (
+      {SecureStorageManager.getUserRole() !== 'admin' && !LocalStorageManager.getIsSuperUser() ? (
         <div id="admin">
           <NotFound description="You do not have permission to view this page. Please return to main dashboard: " />
         </div>

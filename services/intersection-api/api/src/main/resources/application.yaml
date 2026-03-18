@@ -11,15 +11,15 @@ server:
 ### keycloak configuration
 keycloak:
   realm: cvmanager
-  auth-server-url: ${AUTH_SERVER_URL:http://localhost:8084}
+  auth-server-url: ${AUTH_SERVER_URL:http://cvmanager_keycloak:8084}
   client-id: ${KEYCLOAK_CLIENT_API_ID:cvmanager-api}
-  client-secret: ${KEYCLOAK_CLIENT_API_SECRET:w8zpoArUwIVN6TSDY5WQgX9TlVAgH9OF}
+  client-secret: ${KEYCLOAK_CLIENT_API_SECRET:keycloak-secret-key}
 
 spring.security.oauth2.resourceserver.jwt:
-  issuer-uri: ${AUTH_SERVER_URL:http://localhost:8084}/realms/cvmanager
-  jwk-set-uri: ${AUTH_SERVER_URL:http://localhost:8084}/realms/cvmanager/protocol/openid-connect/certs
+  issuer-uri: ${AUTH_SERVER_URL:http://cvmanager_keycloak:8084}/realms/cvmanager
+  jwk-set-uri: ${AUTH_SERVER_URL:http://cvmanager_keycloak:8084}/realms/cvmanager/protocol/openid-connect/certs
 
-spring.kafka.bootstrap-servers: ${KAFKA_BROKER_IP:localhost}:${KAFKA_BROKER_PORT:9092}
+spring.kafka.bootstrap-servers: ${KAFKA_BROKER_IP:kafka}:${KAFKA_BROKER_PORT:9092}
 logging.level.org.apache.kafka: INFO
 logging.level: INFO
 
@@ -54,7 +54,7 @@ spring:
   data:
     mongodb:
       database: ${CM_DATABASE_NAME:CV}
-      host: ${DB_HOST_IP:localhost}
+      host: ${DB_HOST_IP:mongo}
       port: 27017
       username: ${MONGO_READ_WRITE_USER:ode}
       password: ${MONGO_READ_WRITE_PASS:replace_me}
@@ -62,23 +62,28 @@ spring:
       uri: ${CM_MONGO_URI:null}
   # Postgres Configuration
   datasource:
-    url: ${POSTGRES_SERVER_URL:jdbc:postgresql://localhost:5432}/postgres
+    url: ${POSTGRES_SERVER_URL:jdbc:postgresql://cvmanager_postgres:5432}/postgres
     username: ${PG_DB_USER:postgres}
-    password: ${PG_DB_PASS:postgres}
+    password: ${PG_DB_PASS}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       dialect: org.hibernate.dialect.PostgreSQLDialect
   ### Spring Mail Settings (If using emailBroker SMTP)
   mail:
-    host: ${INTERSECTION_SMTP_SERVER_IP:localhost}
-    port: ${INTERSECTION_SMTP_SERVER_PORT:1025}
+    host: ${INTERSECTION_SMTP_SERVER_HOST:localhost}
+    port: ${INTERSECTION_SMTP_SERVER_PORT:25}
+    username: ${INTERSECTION_SMTP_USERNAME:}
+    password: ${INTERSECTION_SMTP_PASSWORD:}
     properties:
       mail:
         smtp:
-          auth: false
+          ssl:
+            trust: ${INTERSECTION_SMTP_SERVER_HOST:localhost}
+          auth: ${INTERSECTION_SMTP_AUTH:false}
           starttls:
-            enable: true
+            enable: ${INTERSECTION_SMTP_STARTTLS:false}
+            required: ${INTERSECTION_SMTP_STARTTLS:false}
 
 enable:
   api: ${INTERSECTION_API_ENABLE_API:true}
@@ -87,7 +92,7 @@ enable:
   haas: ${INTERSECTION_API_ENABLE_HAAS:true}
   asn1-decoder: ${INTERSECTION_API_ENABLE_ASN1_DECODER:true}
 
-cmServerURL: ${CM_SERVER_URL:http://localhost:8082}
+cmServerURL: ${CM_SERVER_URL:http://conflictmonitor:8082}
 mongoTimeoutMs: ${CM_MONGO_TIMEOUT_MS:5000}
 cors: '*'
 maximumResponseSize: ${CM_MAXIMUM_RESPONSE_SIZE:10000}
@@ -97,18 +102,17 @@ spring.jpa.properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
 server.servlet.context-path: ${BASE_ROUTE_PREFIX:/}
 
 ### General Email Settings
+email:
+  # Email Broker Options: sendgrid, postmark, anything else will use generic SMTP mail server.
+  broker: ${INTERSECTION_EMAIL_BROKER:SMTP}
+  sender-address: ${INTERSECTION_SENDER_EMAIL:donotreply@cvmanager.com}
+  unsubscribe-secret-key: ${UNSUBSCRIBE_SECRET_KEY}
+  cvmgr-front-end-uri: ${CV_MANAGER_FRONT_END_URI:http://localhost:3000}
 
-# Email Broker Options: sendgrid, postmark, anything else will use generic SMTP mail server.
-emailBroker: ${INTERSECTION_EMAIL_BROKER:""}
-emailFromAddress: ${INTERSECTION_SENDER_EMAIL:""}
-
-### SendGrid Email Settings
-sendgrid:
-  username: ${SENDGRID_USERNAME:""}
-  password: ${SENDGRID_PASSWORD:""}
-
-### Postmark Email Settings
-postmark.api.secretKey: ${CM_POSTMARK_SECRET_KEY:""}
+  sendgrid:
+    api-key: ${SENDGRID_API_KEY:}
+  postmark:
+    api-key: ${POSTMARK_API_KEY:}
 
 j2735.api:
   text-buffer-size: ${J2735_ASN_TEXT_BUFFER_SIZE:262144}

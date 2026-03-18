@@ -76,8 +76,23 @@ INSERT INTO public.snmp_msgfwd_config(
 	(2, 3, 2, 'SPAT', '10.0.0.80', 44910, '2024/04/01T00:00:00', '2034/04/01T00:00:00', '1', '0');
 
 INSERT INTO public.email_type(
-	email_type)
-	VALUES ('Support Requests'), ('Firmware Upgrade Failures'), ('Daily Message Counts');
+	email_type, supports_immediate, supports_hourly, supports_daily, supports_weekly, supports_monthly)
+	VALUES ('Support Requests', true, false, false, false, false), 
+    ('Firmware Upgrade Failures', true, false, false, false, false), 
+    ('Daily Message Counts', true, false, false, false, false), 
+    ('Access Requests', true, false, false, false, false), 
+    ('Intersection Notification Summary', true, true, true, true, true), 
+    ('Critical Error Messages', true, false, false, false, false);
+
+INSERT INTO public.user_email_notification(
+	user_email_notification_id, user_id, email_type_id, immediate, hourly, daily, weekly, monthly)
+	VALUES (1, 1, 1, true, false, false, false, false),
+    (2, 1, 2, true, false, false, false, false),
+    (3, 1, 3, true, false, false, false, false),
+    (4, 1, 4, true, false, false, false, false),
+    (5, 1, 5, true, true, true, true, true),
+    (6, 1, 6, true, false, false, false, false);
+
 
 INSERT INTO public.intersections(
 	intersection_number, ref_pt, intersection_name)

@@ -63,11 +63,21 @@
       "request": "launch",
       "mainClass": "us.dot.its.jpo.ode.api.ConflictApiApplication",
       "projectName": "intersection-api",
-      "env": {
-        "AUTH_SERVER_URL": "http://172.26.97.25:8084"
-      },
       "envFile": "${workspaceFolder}/.env",
-      "preLaunchTask": "run-intersection-no-api"
+      "preLaunchTask": "run-intersection-no-api",
+      "env": {
+        "AUTH_SERVER_URL": "http://localhost:8084",
+        "KAFKA_BROKER_IP": "localhost",
+        "DB_HOST_IP": "localhost",
+        "PG_DB_PASS": "postgres",
+        "POSTGRES_SERVER_URL": "jdbc:postgresql://localhost:5432",
+        "CM_SERVER_URL": "http://localhost:8082",
+        "UNSUBSCRIBE_SECRET_KEY": "b5f9070ca58d4576ea6a2d8d4c1b97caf8abc2554198f8f9acf86d0d31a52a52",
+        "INTERSECTION_SMTP_USERNAME": "admin",
+        "INTERSECTION_SMTP_PASSWORD": "password",
+        "INTERSECTION_SMTP_AUTH": "true",
+        "INTERSECTION_SMTP_STARTTLS": "false"
+      }
     }
   ],
   "compounds": [

@@ -428,9 +428,16 @@ CREATE SEQUENCE public.email_type_email_type_id_seq
 CREATE TABLE IF NOT EXISTS public.email_type
 (
    email_type_id integer NOT NULL DEFAULT nextval('email_type_email_type_id_seq'::regclass),
-   CONSTRAINT email_type_pkey PRIMARY KEY (email_type_id),
    email_type character varying(128) COLLATE pg_catalog.default NOT NULL,
-   CONSTRAINT email_type_unique UNIQUE (email_type)
+   description character varying(256) COLLATE pg_catalog.default,
+   supports_immediate boolean DEFAULT true NOT NULL,
+   supports_hourly boolean DEFAULT false NOT NULL,
+   supports_daily boolean DEFAULT false NOT NULL,
+   supports_weekly boolean DEFAULT false NOT NULL,
+   supports_monthly boolean DEFAULT false NOT NULL,
+   CONSTRAINT email_type_pkey PRIMARY KEY (email_type_id),
+   CONSTRAINT email_type_unique UNIQUE (email_type),
+   CONSTRAINT at_least_one_frequency CHECK (supports_immediate OR supports_hourly OR supports_daily OR supports_weekly OR supports_monthly)
 );
 
 CREATE SEQUENCE public.user_email_notification_user_email_notification_id_seq
@@ -445,15 +452,22 @@ CREATE TABLE IF NOT EXISTS public.user_email_notification
    user_email_notification_id integer NOT NULL DEFAULT nextval('user_email_notification_user_email_notification_id_seq'::regclass),
    user_id integer NOT NULL,
    email_type_id integer NOT NULL,
+   immediate boolean DEFAULT true NOT NULL,
+   hourly boolean DEFAULT false NOT NULL,
+   daily boolean DEFAULT false NOT NULL,
+   weekly boolean DEFAULT false NOT NULL,
+   monthly boolean DEFAULT false NOT NULL,
    CONSTRAINT user_email_notification_pkey PRIMARY KEY (user_email_notification_id),
+   CONSTRAINT user_email_notification_unique UNIQUE (user_id, email_type_id),
+   CONSTRAINT at_least_one_subscription CHECK (immediate OR hourly OR daily OR weekly OR monthly),
    CONSTRAINT fk_user_id FOREIGN KEY (user_id)
       REFERENCES public.users (user_id) MATCH SIMPLE
       ON UPDATE NO ACTION
-      ON DELETE NO ACTION,
+      ON DELETE CASCADE,
    CONSTRAINT fk_email_type_id FOREIGN KEY (email_type_id)
       REFERENCES public.email_type (email_type_id) MATCH SIMPLE
       ON UPDATE NO ACTION
-      ON DELETE NO ACTION
+      ON DELETE CASCADE
 );
 
 CREATE SEQUENCE public.obu_ota_request_id_seq

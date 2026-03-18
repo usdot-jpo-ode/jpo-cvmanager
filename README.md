@@ -499,6 +499,12 @@ docker compose down -v
 docker compose up -d
 ```
 
+### SMTP Email Testing
+
+For testing Intersection API email generation, a local SMTP server should be used. The recommended server is [smtp4dev](https://github.com/rnwood/smtp4dev).
+
+This can be used by enabling the `smtp4dev` profile in the docker-compose-intersection.yml file. This will start smtp4dev on ports 5000 (web UI), 25 (SMTP), 143 (IMAP), and 110 (POP3).
+
 ## License Information
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this

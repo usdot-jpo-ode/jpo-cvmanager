@@ -1,46 +1,30 @@
 package us.dot.its.jpo.ode.api.services;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import com.postmarkapp.postmark.client.ApiClient;
-import com.postmarkapp.postmark.client.data.model.message.Message;
-import com.postmarkapp.postmark.client.data.model.message.MessageResponse;
-import com.postmarkapp.postmark.client.exception.PostmarkException;
-import com.sendgrid.Method;
-import com.sendgrid.Request;
-import com.sendgrid.Response;
-import com.sendgrid.SendGrid;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.keycloak.representations.idm.UserRepresentation;
 import org.mockito.*;
-import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
-import us.dot.its.jpo.ode.api.models.EmailFrequency;
 
-import java.io.IOException;
-import java.util.ArrayList;
+import us.dot.its.jpo.ode.api.emails.generators.*;
+import us.dot.its.jpo.ode.api.emails.providers.EmailProvider;
+import us.dot.its.jpo.ode.api.models.emails.*;
+import us.dot.its.jpo.ode.api.models.emails.contents.IntersectionNotificationSummaryEmailContents;
+import us.dot.its.jpo.ode.api.repositories.UserEmailNotificationRepository;
+
+import java.net.InetAddress;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 class EmailServiceTest {
 
     @Mock
-    private JavaMailSender mailSender;
-
+    private EmailProvider emailProvider;
     @Mock
-    private SendGrid sendGrid;
-
+    private UserEmailNotificationRepository userEmailNotificationRepository;
     @Mock
-    private ApiClient postmark;
-
-    @Mock
-    private ConflictMonitorApiProperties props;
+    private IntersectionNotificationSummaryEmailGenerator intersectionNotificationSummaryEmailGenerator;
 
     @InjectMocks
     private EmailService emailService;
@@ -48,193 +32,75 @@ class EmailServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        when(props.getEmailFromAddress()).thenReturn("test@example.com");
     }
 
     @Test
-    void testSendEmailViaSendGrid() throws IOException {
-        String to = "recipient@example.com";
-        String subject = "Test Subject";
-        String text = "Test Body";
+    void testSendEmails() {
+        List<EmailRecipient> recipients = List.of(new EmailRecipient("test@example.com", null));
+        EmailContent content = new EmailContent("subject", "body");
+        doReturn(List.of()).when(emailProvider).sendBatchedEmails(recipients, content);
 
-        when(sendGrid.api(any(Request.class))).thenReturn(new Response());
+        emailService.sendEmails(recipients, content);
 
-        emailService.sendEmailViaSendGrid(to, subject, text);
-
-        verify(sendGrid, times(1)).api(any(Request.class));
+        verify(emailProvider, times(1)).sendBatchedEmails(recipients, content);
     }
 
     @Test
-    void testSendEmailViaSendGridThrowsException() throws IOException {
-        // Arrange
-        String to = "recipient@example.com";
-        String subject = "Test Subject";
-        String text = "Test Body";
+    void testGetUsersForNotificationType() {
+        when(userEmailNotificationRepository.findUsersByNotificationType("Support Requests", "IMMEDIATE"))
+                .thenReturn(List.of("user1@example.com", "user2@example.com"));
 
-        // Mock SendGrid to throw an IOException
-        doThrow(new IOException("SendGrid API error")).when(sendGrid).api(any(Request.class));
+        List<EmailRecipient> recipients = emailService.getUsersForNotificationType(
+                EmailCategory.SUPPORT_REQUEST, EmailFrequency.IMMEDIATE);
 
-        // Act
-        emailService.sendEmailViaSendGrid(to, subject, text);
-
-        // Assert
-        ArgumentCaptor<Request> captor = ArgumentCaptor.forClass(Request.class);
-        verify(sendGrid, times(1)).api(captor.capture());
-        Request capturedRequest = captor.getValue();
-
-        assertEquals("mail/send", capturedRequest.getEndpoint());
-        assertEquals(Method.POST, capturedRequest.getMethod());
-        assertNotNull(capturedRequest.getBody());
+        assertEquals(2, recipients.size());
+        assertEquals("user1@example.com", recipients.get(0).getEmail());
+        assertEquals("user2@example.com", recipients.get(1).getEmail());
     }
 
     @Test
-    void testSendEmailViaPostmark() throws IOException, PostmarkException {
-        String to = "recipient@example.com";
-        String subject = "Test Subject";
-        String text = "Test Body";
+    void testGetUsersForNotificationTypeByRsu() throws Throwable {
+        when(userEmailNotificationRepository.findUsersByNotificationTypeAndRsu("Support Requests",
+                "IMMEDIATE", InetAddress.getByName("1.1.1.1")))
+                .thenReturn(List.of("user1@example.com", "user2@example.com"));
 
-        when(postmark.deliverMessage(any(Message.class))).thenReturn(null);
+        List<EmailRecipient> recipients = emailService.getUsersForNotificationTypeByRsu(
+                EmailCategory.SUPPORT_REQUEST, "1.1.1.1", EmailFrequency.IMMEDIATE);
 
-        emailService.sendEmailViaPostmark(to, subject, text);
-
-        ArgumentCaptor<Message> captor = ArgumentCaptor.forClass(Message.class);
-        verify(postmark, times(1)).deliverMessage(captor.capture());
-        Message sentMessage = captor.getValue();
-        assertEquals(to, sentMessage.getTo());
-        assertEquals(subject, sentMessage.getSubject());
+        assertEquals(2, recipients.size());
+        assertEquals("user1@example.com", recipients.get(0).getEmail());
+        assertEquals("user2@example.com", recipients.get(1).getEmail());
     }
 
     @Test
-    void testSendEmailViaPostmarkThrowsException() throws PostmarkException, IOException {
-        // Arrange
-        String to = "recipient@example.com";
-        String subject = "Test Subject";
-        String text = "Test Body";
+    void testGetUsersForNotificationTypeByOrganization() {
+        when(userEmailNotificationRepository.findUsersByNotificationTypeAndOrganization("Support Requests", "IMMEDIATE",
+                "Test Org"))
+                .thenReturn(List.of("user1@example.com", "user2@example.com"));
 
-        // Mock Postmark to throw an exception
-        doThrow(new PostmarkException("Postmark API error", 500))
-                .when(postmark).deliverMessage(any(Message.class));
+        List<EmailRecipient> recipients = emailService.getUsersForNotificationTypeByOrganization(
+                EmailCategory.SUPPORT_REQUEST, "Test Org", EmailFrequency.IMMEDIATE);
 
-        // Act
-        emailService.sendEmailViaPostmark(to, subject, text);
-
-        // Assert
-        ArgumentCaptor<Message> captor = ArgumentCaptor.forClass(Message.class);
-        verify(postmark, times(1)).deliverMessage(captor.capture());
-        Message capturedMessage = captor.getValue();
-
-        assertEquals("test@example.com", capturedMessage.getFrom());
-        assertEquals(to, capturedMessage.getTo());
-        assertEquals(subject, capturedMessage.getSubject());
-        assertTrue(capturedMessage.getHtmlBody().contains("Test Body"));
+        assertEquals(2, recipients.size());
+        assertEquals("user1@example.com", recipients.get(0).getEmail());
+        assertEquals("user2@example.com", recipients.get(1).getEmail());
     }
 
     @Test
-    void testSendEmailViaSpringMail() {
-        String to = "recipient@example.com";
-        String subject = "Test Subject";
-        String text = "Test Body";
+    void testSendIntersectionNotificationSummaryEmailSendResponses() {
+        IntersectionNotificationSummaryEmailContents data = new IntersectionNotificationSummaryEmailContents();
+        EmailContent content = new EmailContent("subject", "body");
+        List<EmailRecipient> recipients = List.of(new EmailRecipient("test@example.com", null));
+        List<EmailSendResponse> responses = List.of(new EmailSendResponse(0, "OK"));
 
-        emailService.sendEmailViaSpringMail(to, subject, text);
+        when(intersectionNotificationSummaryEmailGenerator.generateEmailBody(data)).thenReturn(content);
+        when(userEmailNotificationRepository.findUsersByNotificationType(anyString(), any()))
+                .thenReturn(List.of("test@example.com"));
+        when(emailProvider.sendBatchedEmails(recipients, content)).thenReturn(responses);
 
-        ArgumentCaptor<SimpleMailMessage> captor = ArgumentCaptor.forClass(SimpleMailMessage.class);
-        verify(mailSender, times(1)).send(captor.capture());
-        SimpleMailMessage sentMessage = captor.getValue();
-        assertEquals(to, sentMessage.getTo()[0]);
-        assertEquals(subject, sentMessage.getSubject());
-        assertEquals(text, sentMessage.getText());
+        List<EmailSendResponse> result = emailService.sendIntersectionNotificationSummaryEmailSendResponses(data);
+
+        assertEquals(responses, result);
     }
 
-    @Test
-    void testSendEmailViaSpringMailThrowsException() {
-        // Arrange
-        String to = "recipient@example.com";
-        String subject = "Test Subject";
-        String text = "Test Body";
-
-        // Mock JavaMailSender to throw an exception
-        doThrow(new MailException("Spring Mail error") {
-        }).when(mailSender).send(any(SimpleMailMessage.class));
-
-        // Act
-        emailService.sendEmailViaSpringMail(to, subject, text);
-
-        // Assert
-        ArgumentCaptor<SimpleMailMessage> captor = ArgumentCaptor.forClass(SimpleMailMessage.class);
-        verify(mailSender, times(1)).send(captor.capture());
-        SimpleMailMessage capturedMessage = captor.getValue();
-
-        assertEquals(to, capturedMessage.getTo()[0]);
-        assertEquals(subject, capturedMessage.getSubject());
-        assertEquals(text, capturedMessage.getText());
-    }
-
-    @Test
-    void testSendSimpleMessageWithSendGrid() throws IOException {
-        when(props.getEmailBroker()).thenReturn("sendgrid");
-        String to = "recipient@example.com";
-        String subject = "Test Subject";
-        String text = "Test Body";
-
-        when(sendGrid.api(any(Request.class))).thenReturn(new Response());
-
-        emailService.sendSimpleMessage(to, subject, text);
-
-        verify(sendGrid, times(1)).api(any(Request.class));
-    }
-
-    @Test
-    void testSendSimpleMessageWithPostmark() throws IOException, PostmarkException {
-        when(props.getEmailBroker()).thenReturn("postmark");
-        String to = "recipient@example.com";
-        String subject = "Test Subject";
-        String text = "Test Body";
-
-        when(postmark.deliverMessage(any(Message.class))).thenReturn(new MessageResponse());
-
-        emailService.sendSimpleMessage(to, subject, text);
-
-        verify(postmark, times(1)).deliverMessage(any(Message.class));
-    }
-
-    @Test
-    void testSendSimpleMessageWithSpringMail() {
-        when(props.getEmailBroker()).thenReturn("other");
-        String to = "recipient@example.com";
-        String subject = "Test Subject";
-        String text = "Test Body";
-
-        emailService.sendSimpleMessage(to, subject, text);
-
-        verify(mailSender, times(1)).send(any(SimpleMailMessage.class));
-    }
-
-    @Test
-    void testEmailList() {
-        List<UserRepresentation> users = new ArrayList<>();
-        UserRepresentation user1 = new UserRepresentation();
-        user1.setEmail("user1@example.com");
-        users.add(user1);
-
-        UserRepresentation user2 = new UserRepresentation();
-        user2.setEmail("user2@example.com");
-        users.add(user2);
-
-        String subject = "Test Subject";
-        String text = "Test Body";
-
-        when(props.getEmailBroker()).thenReturn("other");
-
-        emailService.emailList(users, subject, text);
-
-        verify(mailSender, times(2)).send(any(SimpleMailMessage.class));
-    }
-
-    @Test
-    void testGetNotificationEmailList() {
-        List<UserRepresentation> result = emailService.getNotificationEmailList(EmailFrequency.ONCE_PER_DAY);
-
-        // TODO: Test underlying logic when method is further implemented
-        assertTrue(result.isEmpty());
-    }
 }

@@ -2,7 +2,6 @@ package us.dot.its.jpo.ode.api.accessorTests.events;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -40,6 +39,8 @@ import org.bson.Document;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.events.ConnectionOfTravelEvent;
 import us.dot.its.jpo.ode.api.accessors.events.connection_of_travel_event.ConnectionOfTravelEventRepositoryImpl;
+import org.springframework.context.annotation.Import;
+import us.dot.its.jpo.ode.api.TestcontainersConfiguration;
 import us.dot.its.jpo.ode.api.models.AggregationResult;
 import us.dot.its.jpo.ode.api.models.AggregationResultCount;
 import us.dot.its.jpo.ode.api.models.IDCount;
@@ -47,16 +48,12 @@ import us.dot.its.jpo.ode.api.models.IDCount;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
-
 @SpringBootTest
-@RunWith(SpringRunner.class)
-@ActiveProfiles("test")
-@AutoConfigureEmbeddedDatabase
+@ActiveProfiles("integration-test")
+@Import(TestcontainersConfiguration.class)
 public class ConnectionOfTravelEventRepositoryImplTest {
 
     @MockitoSpyBean

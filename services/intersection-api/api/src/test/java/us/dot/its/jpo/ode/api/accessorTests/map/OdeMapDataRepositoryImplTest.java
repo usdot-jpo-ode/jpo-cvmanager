@@ -3,7 +3,6 @@ package us.dot.its.jpo.ode.api.accessorTests.map;
 import org.junit.jupiter.api.Test;
 import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -32,14 +31,13 @@ import us.dot.its.jpo.ode.model.OdeMessageFrameData;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+import org.springframework.context.annotation.Import;
+import us.dot.its.jpo.ode.api.TestcontainersConfiguration;
 
 @SpringBootTest
-@RunWith(SpringRunner.class)
-@ActiveProfiles("test")
-@AutoConfigureEmbeddedDatabase
+@ActiveProfiles("integration-test")
+@Import(TestcontainersConfiguration.class)
 public class OdeMapDataRepositoryImplTest {
 
     @MockitoSpyBean
@@ -107,12 +105,12 @@ public class OdeMapDataRepositoryImplTest {
         OdeMessageFrameData event = new OdeMessageFrameData();
 
         doReturn(event).when(mongoTemplate).findOne(any(Query.class), eq(OdeMessageFrameData.class),
-                        anyString());
+                anyString());
 
         Page<OdeMessageFrameData> page = repository.findLatest(intersectionID, startTime, endTime);
 
         assertThat(page.getContent()).hasSize(1);
         verify(mongoTemplate).findOne(any(Query.class), eq(OdeMessageFrameData.class),
-                        eq("OdeMapJson"));
+                eq("OdeMapJson"));
     }
 }

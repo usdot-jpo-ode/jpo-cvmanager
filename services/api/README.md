@@ -162,48 +162,6 @@ body example:
 }
 ```
 
-### <b>/admin-user</b> <b>(GET)</b>
-
-Depending upon the user_email argument's value, this endpoint returns a list of all users in the CV Manager's PostgreSQL DB or the details of a single user along with the options for specific user fields that do not take free-form responses.
-
-HTTP URL Arguments:
-
-- user_email:
-  - Set to "all" if you want a list of all users regardless of organization affiliation. Will not return the user field options.
-  - Set to a specific user email such as "user@email.com" to return all of the user details of that single user along with the allowed user field options.
-
-### <b>/admin-user</b> <b>(PATCH)</b>
-
-Modifies a user within the CV Manager database, including users that may not have been made through the /admin-new-user endpoint.
-
-body example:
-
-```
-{
-  "email": "jdoe@example.com",
-  "first_name": "John",
-  "last_name": "Doe",
-  "super_user": True,
-  "organizations_to_add": [
-    {"name": "Test Org3", "role": "admin"}
-  ],
-  "organizations_to_modify": [
-    {"name": "Test Org2", "role": "user"}
-  ],
-  "organizations_to_remove": [
-    {"name": "Test Org", "role": "user"}
-  ]
-}
-```
-
-### <b>/admin-user</b> <b>(DELETE)</b>
-
-Deletes the specified user from the CV Manager PostgreSQL database based off the user email specified in the user_email argument.
-
-HTTP URL Arguments:
-
-- user_email: Delete a specific user specified by its email such as "user@email.com" from the CV Manager's PostgreSQL database.
-
 ## Organizations
 
 ### <b>/admin-new-org</b> <b>(POST)</b>

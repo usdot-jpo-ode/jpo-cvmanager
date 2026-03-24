@@ -2,7 +2,6 @@ import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectOrganizationName } from '../generalSlices/userSlice'
 import { updateTableData as updateIntersectionTableData } from '../features/adminIntersectionTab/adminIntersectionTabSlice'
-import { getAvailableUsers } from '../features/adminUserTab/adminUserTabSlice'
 import '../features/adminRsuTab/Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
@@ -26,7 +25,6 @@ function Admin() {
     // Preload it with changes in dispatch and organization since it needs to be updated every time the organization is switched
     // in order to show only RSUs, Intersections, and Users of selected organization
     if (evaluateFeatureFlags('intersection')) dispatch(updateIntersectionTableData())
-    dispatch(getAvailableUsers())
     dispatch(getUserNotifications())
   }, [dispatch, organization])
 

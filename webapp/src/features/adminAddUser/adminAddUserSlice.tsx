@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { selectToken } from '../../generalSlices/userSlice'
 import EnvironmentVars from '../../EnvironmentVars'
 import apiHelper from '../../apis/api-helper'
-import { getAvailableUsers } from '../adminUserTab/adminUserTabSlice'
 import { RootState } from '../../store'
 
 export type AdminUserForm = {
@@ -47,7 +46,7 @@ export const getUserData = createAsyncThunk(
 
 export const createUser = createAsyncThunk(
   'adminAddUser/createUser',
-  async (payload: { json: AdminUser; reset: () => void }, { getState, dispatch }) => {
+  async (payload: { json: AdminUserCreate; reset: () => void }, { getState, dispatch }) => {
     const { json, reset } = payload
     const currentState = getState() as RootState
     const token = selectToken(currentState)
@@ -60,7 +59,6 @@ export const createUser = createAsyncThunk(
 
     switch (data.status) {
       case 200:
-        dispatch(getAvailableUsers())
         dispatch(resetForm(reset))
         return { success: true, message: 'User Creation is successful.' }
       default:
@@ -83,7 +81,7 @@ export const submitForm = createAsyncThunk(
     if (selectedOrganizations.length !== 0) {
       const submitOrgs = [...selectedOrganizations].map((org) => ({ ...org }))
       submitOrgs.forEach((elm) => delete elm.id)
-      const tempData: AdminUser = {
+      const tempData: AdminUserCreate = {
         ...data,
         organizations: submitOrgs,
       }

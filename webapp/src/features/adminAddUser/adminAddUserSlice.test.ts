@@ -164,7 +164,7 @@ describe('async thunks', () => {
         token: 'token',
         body: JSON.stringify(json),
       })
-      expect(dispatch).toHaveBeenCalledTimes(2 + 2)
+      expect(dispatch).toHaveBeenCalledTimes(2 + 1)
 
       // Error Code Other
       dispatch = jest.fn()
@@ -177,7 +177,7 @@ describe('async thunks', () => {
         token: 'token',
         body: JSON.stringify(json),
       })
-      expect(dispatch).toHaveBeenCalledTimes(0 + 2)
+      expect(dispatch).toHaveBeenCalledTimes(2 + 0)
     })
 
     it('Updates the state correctly pending', async () => {
@@ -247,7 +247,7 @@ describe('async thunks', () => {
         expect(reset).toHaveBeenCalledTimes(1)
         expect(dispatch).toHaveBeenCalledTimes(0 + 2)
       } catch (e) {
-        (global.setTimeout as any).mockClear()
+        ;(global.setTimeout as any).mockClear()
         throw e
       }
     })

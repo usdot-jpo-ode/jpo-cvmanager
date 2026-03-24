@@ -5,7 +5,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.ColumnTransformer;
 
 import java.util.List;
 import java.util.UUID;
@@ -46,6 +48,7 @@ public class User {
     @NotNull
     @ColumnDefault("(0)::bit(1)")
     @Column(name = "super_user", nullable = false, columnDefinition = "bit(1)")
+    @ColumnTransformer(read = "super_user::integer::boolean", write = "(?::integer)::bit(1)")
     private Boolean superUser;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)

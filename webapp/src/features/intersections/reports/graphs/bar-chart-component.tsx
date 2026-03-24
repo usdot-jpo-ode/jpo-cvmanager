@@ -1,4 +1,3 @@
-import React from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, TooltipProps } from 'recharts'
 import { Box, Typography } from '@mui/material'
 import { ValueType, NameType } from 'recharts/types/component/DefaultTooltipContent'

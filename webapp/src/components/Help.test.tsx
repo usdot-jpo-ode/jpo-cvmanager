@@ -1,8 +1,7 @@
-import React from 'react'
 import { render } from '@testing-library/react'
 import Help from './Help'
 import { replaceChaoticIds } from '../utils/test-utils'
-import {MemoryRouter} from "react-router-dom";
+import { MemoryRouter } from 'react-router-dom'
 
 it('should take a snapshot', () => {
   jest.mock('../EnvironmentVars', () => ({

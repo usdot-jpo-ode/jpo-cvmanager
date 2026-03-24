@@ -1,4 +1,3 @@
-import React from 'react'
 import { Box, Container, Typography } from '@mui/material'
 import { ConfigParamRemoveForm } from '../../../features/intersections/configuration/configuration-remove-form'
 import { useParams } from 'react-router-dom'

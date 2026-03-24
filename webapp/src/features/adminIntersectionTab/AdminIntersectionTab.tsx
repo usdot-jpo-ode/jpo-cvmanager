@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import { useEffect } from 'react'
 import AdminAddIntersection from '../adminAddIntersection/AdminAddIntersection'
 import AdminEditIntersection, { AdminEditIntersectionFormType } from '../adminEditIntersection/AdminEditIntersection'
 import AdminTable from '../../components/AdminTable'
@@ -34,7 +34,7 @@ const AdminIntersectionTab = () => {
   const theme = useTheme()
 
   const organization = useSelector(selectOrganizationName)
-  useEffect(() =>{
+  useEffect(() => {
     dispatch(updateTableData())
   }, [organization, dispatch])
 

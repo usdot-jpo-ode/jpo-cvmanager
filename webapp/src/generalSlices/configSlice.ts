@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import RsuApi from '../apis/rsu-api'
 import { selectToken, selectOrganizationName } from './userSlice'
 import { RootState } from '../store'
-import { RsuCommandPostBody, RsuDsrcFwdConfigs, RsuRxTxMsgFwdConfigs, SnmpFwdWalkConfig } from '../models/RsuApi'
+import { RsuCommandPostBody, RsuDsrcFwdConfigs, RsuRxTxMsgFwdConfigs } from '../models/RsuApi'
 
 const initialState = {
   msgFwdConfig: {} as any,
@@ -26,59 +26,54 @@ export const getCachedSnmpFwdConfigsFromDatabase = createAsyncThunk<
   { msgFwdConfig: RsuDsrcFwdConfigs | RsuRxTxMsgFwdConfigs; errorState: string },
   string,
   { state: RootState }
->(
-  'config/refreshSnmpFwdConfig',
-  async (rsu_ip: string, { getState }) => {
-    const currentState = getState() as RootState
-    const token = selectToken(currentState)
-    const organization = selectOrganizationName(currentState)
+>('config/refreshSnmpFwdConfig', async (rsu_ip: string, { getState }) => {
+  const currentState = getState() as RootState
+  const token = selectToken(currentState)
+  const organization = selectOrganizationName(currentState)
 
-    const response = await RsuApi.getCachedRsuMsgFwdConfigsFromDatabase(token, organization, '', { rsu_ip })
-    if (!response) {
-      return {
-        msgFwdConfig: {},
-        errorState: 'Failed to retrieve RSU message forwarding configuration from database for RSU IP ${rsu_ip}: received empty or no response',
-      }
-    }
-
+  const response = await RsuApi.getCachedRsuMsgFwdConfigsFromDatabase(token, organization, '', { rsu_ip })
+  if (!response) {
     return {
-      msgFwdConfig: response.RsuFwdSnmpwalk,
-      errorState: '',
+      msgFwdConfig: {},
+      errorState:
+        'Failed to retrieve RSU message forwarding configuration from database for RSU IP ${rsu_ip}: received empty or no response',
     }
   }
-)
+
+  return {
+    msgFwdConfig: response.RsuFwdSnmpwalk,
+    errorState: '',
+  }
+})
 
 export const getRsuMsgConfigsFromRsu = createAsyncThunk<
   { msgFwdConfig: RsuDsrcFwdConfigs | RsuRxTxMsgFwdConfigs; errorState: string },
   string,
   { state: RootState }
->(
-  'config/getRsuMsgFwdFetch',
-  async (rsu_ip: string, { getState, rejectWithValue }) => {
-    const currentState = getState() as RootState
-    const token = selectToken(currentState)
-    const organization = selectOrganizationName(currentState)
+>('config/getRsuMsgFwdFetch', async (rsu_ip: string, { getState, rejectWithValue }) => {
+  const currentState = getState() as RootState
+  const token = selectToken(currentState)
+  const organization = selectOrganizationName(currentState)
 
-    try {
-      const response = await RsuApi.getRsuMsgConfigsFromRsu(token, organization, '', { rsu_ip })
-      if (!response) {
-        return rejectWithValue('Failed to fetch RSU message forwarding configuration')
-      }
-      return {
-        msgFwdConfig: response.RsuFwdSnmpwalk,
-        errorState: '',
-      }
-    } catch (e) {
-      if (e instanceof Error) {
-        return rejectWithValue(e.message)
-      }
-      if (typeof e === 'string') {
-        return rejectWithValue(e)
-      }
-      return rejectWithValue('An unknown error occurred while fetching RSU message forwarding configuration')
+  try {
+    const response = await RsuApi.getRsuMsgConfigsFromRsu(token, organization, '', { rsu_ip })
+    if (!response) {
+      return rejectWithValue('Failed to fetch RSU message forwarding configuration')
     }
+    return {
+      msgFwdConfig: response.RsuFwdSnmpwalk,
+      errorState: '',
+    }
+  } catch (e) {
+    if (e instanceof Error) {
+      return rejectWithValue(e.message)
+    }
+    if (typeof e === 'string') {
+      return rejectWithValue(e)
+    }
+    return rejectWithValue('An unknown error occurred while fetching RSU message forwarding configuration')
   }
-)
+})
 
 export const submitSnmpSet = createAsyncThunk('config/submitSnmpSet', async (ipList: string[], { getState }) => {
   const currentState = getState() as RootState
@@ -321,7 +316,8 @@ export const configSlice = createSlice({
       })
       .addCase(getRsuMsgConfigsFromRsu.rejected, (state, action) => {
         state.loading = false
-        state.value.errorState = (action.payload as string | undefined) || 'Failed to fetch RSU message forwarding configuration'
+        state.value.errorState =
+          (action.payload as string | undefined) || 'Failed to fetch RSU message forwarding configuration'
       })
       .addCase(submitSnmpSet.pending, (state) => {
         state.loading = true

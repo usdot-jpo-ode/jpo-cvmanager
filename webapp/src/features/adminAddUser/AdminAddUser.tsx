@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import {
@@ -41,7 +41,7 @@ import {
 } from '@mui/material'
 import { ErrorMessageText } from '../../styles/components/Messages'
 import { SideBarHeader } from '../../styles/components/SideBarHeader'
-import {selectSuperUser} from "../../generalSlices/userSlice";
+import { selectSuperUser } from '../../generalSlices/userSlice'
 
 const AdminAddUser = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()

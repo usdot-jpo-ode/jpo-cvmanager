@@ -15,7 +15,6 @@ import {
 import { selectSignalStateLayerStyle, setSignalLayerLayout } from './map-layer-style-slice'
 
 import { useEffect, useState } from 'react'
-import React from 'react'
 import { Close, SettingsOutlined } from '@mui/icons-material'
 import { getNumber } from './control-panel'
 

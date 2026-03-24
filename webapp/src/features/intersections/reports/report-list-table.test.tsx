@@ -1,4 +1,3 @@
-import React from 'react'
 import { render } from '@testing-library/react'
 import { ReportListTable } from './report-list-table'
 import { Provider } from 'react-redux'

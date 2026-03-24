@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import toast from 'react-hot-toast'
 import * as Yup from 'yup'
 import { useFormik } from 'formik'

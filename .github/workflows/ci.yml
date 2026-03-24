@@ -39,7 +39,7 @@ jobs:
 
   build_api:
     needs: test_change_limit
-    if: ${{ always() && !failure() && !cancelled() }}
+    if: ${{ always() && !cancelled() }}
     runs-on: ubuntu-latest
     container:
       image: python:3.12.2
@@ -80,7 +80,7 @@ jobs:
 
   webapp:
     needs: test_change_limit
-    if: ${{ always() && !failure() && !cancelled() }}
+    if: ${{ always() && !cancelled() }}
     runs-on: ubuntu-latest
     container:
       image: node:22
@@ -115,7 +115,7 @@ jobs:
 
   build_keycloak_provider:
     needs: test_change_limit
-    if: ${{ always() && !failure() && !cancelled() }}
+    if: ${{ always() && !cancelled() }}
     runs-on: ubuntu-latest
     container:
       image: maven:3.9.9-eclipse-temurin-21
@@ -143,7 +143,7 @@ jobs:
 
   build_rsu_info_bridge:
     needs: test_change_limit
-    if: ${{ always() && !failure() && !cancelled() }}
+    if: ${{ always() && !cancelled() }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -177,7 +177,7 @@ jobs:
 
   build_intersection_api:
     needs: test_change_limit
-    if: ${{ always() && !failure() && !cancelled() }}
+    if: ${{ always() && !cancelled() }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository

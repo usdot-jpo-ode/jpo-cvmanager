@@ -1,4 +1,3 @@
-import React from 'react'
 import { render } from '@testing-library/react'
 import DisplayRsuErrors from './DisplayRsuErrors'
 import { Provider } from 'react-redux'

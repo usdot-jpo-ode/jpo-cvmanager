@@ -1,4 +1,3 @@
-import React from 'react'
 import { render } from '@testing-library/react'
 import AdminUserTab from './AdminUserTab'
 import { Provider } from 'react-redux'

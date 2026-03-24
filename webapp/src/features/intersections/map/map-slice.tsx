@@ -1,7 +1,8 @@
-import { createAsyncThunk, createSlice, PayloadAction, current } from '@reduxjs/toolkit'
+import React from 'react'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '../../../store'
 import { selectToken } from '../../../generalSlices/userSlice'
-import { CompatClient, IMessage, Stomp, Client } from '@stomp/stompjs'
+import { IMessage, Client } from '@stomp/stompjs'
 import MessageMonitorApi from '../../../apis/intersections/mm-api'
 import EventsApi from '../../../apis/intersections/events-api'
 import NotificationApi from '../../../apis/intersections/notification-api'
@@ -20,7 +21,6 @@ import { MapRef, ViewState } from 'react-map-gl'
 import { selectRsuMapData } from '../../../generalSlices/rsuSlice'
 import EnvironmentVars from '../../../EnvironmentVars'
 import { downloadAllData } from './utilities/file-utilities'
-import React from 'react'
 import { SsmSrmData } from '../../../models/RsuApi'
 import { getTimestamp } from './map-component'
 import { getAccurateTimeMillis, selectTimeOffsetMillis } from '../../../generalSlices/timeSyncSlice'
@@ -1220,7 +1220,7 @@ export const updateRenderedMapState = createAsyncThunk(
       Boolean(
         (selectMapSignalGroups(getState() as RootState)?.features.length != 0 &&
           selectSpatSignalGroups(getState() as RootState)) ||
-          selectBsmData(getState() as RootState)?.features.length != 0
+        selectBsmData(getState() as RootState)?.features.length != 0
       ),
   }
 )

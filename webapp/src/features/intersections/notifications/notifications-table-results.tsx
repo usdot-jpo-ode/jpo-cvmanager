@@ -19,7 +19,7 @@ import {
   Chip,
   Tooltip,
 } from '@mui/material'
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import MapRoundedIcon from '@mui/icons-material/MapRounded'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'

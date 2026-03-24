@@ -1,4 +1,3 @@
-import React from 'react'
 import { Box, Container, Typography } from '@mui/material'
 import { ConfigParamEditForm } from '../../../features/intersections/configuration/configuration-edit-form'
 import { useSelector } from 'react-redux'

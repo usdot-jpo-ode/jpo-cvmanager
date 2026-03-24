@@ -1,4 +1,3 @@
-import React from 'react'
 import { Popup } from 'react-map-gl'
 
 import { Box, Typography } from '@mui/material'

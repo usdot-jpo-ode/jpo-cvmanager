@@ -1,5 +1,4 @@
 import { Box, Button, Card, Container, Divider, Grid2, CardHeader } from '@mui/material'
-import React from 'react'
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from 'recharts'
 
 export const DataVisualizer = (props: { data: any[]; onDownload: () => void }) => {

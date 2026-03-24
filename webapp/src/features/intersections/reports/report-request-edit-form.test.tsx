@@ -1,4 +1,3 @@
-import React from 'react'
 import { render } from '@testing-library/react'
 import { ReportRequestEditForm } from './report-request-edit-form'
 import { Provider } from 'react-redux'

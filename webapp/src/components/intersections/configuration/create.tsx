@@ -1,4 +1,3 @@
-import React from 'react'
 import { Box, Container, Typography } from '@mui/material'
 import { ConfigParamCreateForm } from '../../../features/intersections/configuration/configuration-create-form'
 import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'

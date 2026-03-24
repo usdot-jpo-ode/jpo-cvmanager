@@ -1,4 +1,3 @@
-import React from 'react'
 import { render } from '@testing-library/react'
 import RsuMarker from './RsuMarker'
 import { replaceChaoticIds } from '../utils/test-utils'

@@ -4,7 +4,6 @@ import apiHelper from './api-helper'
 import {
   ApiMsgRespWithCodes,
   GetRsuCommandResp,
-  GetRsuUserAuthResp,
   IssScmsStatus,
   RsuCommandPostBody,
   RsuCounts,

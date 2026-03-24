@@ -1,4 +1,3 @@
-import React from 'react'
 import { css } from '@emotion/react'
 import RingLoader from 'react-spinners/RingLoader'
 import Header from './components/Header'

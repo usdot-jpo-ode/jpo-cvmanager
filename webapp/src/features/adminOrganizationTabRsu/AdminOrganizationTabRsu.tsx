@@ -50,7 +50,9 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
   const theme = useTheme()
   const organizationName = useSelector(selectSelectedOrgName)
 
-  const { data: availableRsuList } = useGetAllRsusNotInOrganizationQuery(organizationName)
+  const { data: availableRsuList } = useGetAllRsusNotInOrganizationQuery(organizationName, {
+    skip: !organizationName, // Skip if no organization selected
+  })
 
   const selectedRsuList = useSelector(selectSelectedRsuList)
   const loadingGlobal = useSelector(selectLoadingGlobal)

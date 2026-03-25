@@ -82,7 +82,7 @@ describe('reducers', () => {
   }
 
   it('setCountsMsgType reducer updates state correctly', () => {
-    const newMsgType = 'SPaT'
+    const newMsgType = 'SPAT'
     expect(reducer(initialState, setCountsMsgType(newMsgType))).toEqual({
       ...initialState,
       value: { ...initialState.value, countsMsgType: newMsgType },
@@ -90,7 +90,7 @@ describe('reducers', () => {
   })
 
   it('setCountsMsgType handles different message types', () => {
-    const messageTypes = ['BSM', 'SPaT', 'MAP', 'SSM', 'SRM', 'TIM', 'PSM']
+    const messageTypes = ['BSM', 'SPAT', 'MAP', 'SSM', 'SRM', 'TIM', 'PSM']
 
     messageTypes.forEach((msgType) => {
       const result = reducer(initialState, setCountsMsgType(msgType as any))
@@ -158,7 +158,7 @@ describe('reducers', () => {
 })
 
 describe('thunks', () => {
-  let store: ReturnType<typeof configureStore>
+  let store
 
   beforeEach(() => {
     store = configureStore({
@@ -279,11 +279,11 @@ describe('selectors', () => {
   const mockStartDate = new Date('2024-01-14T12:00:00.000Z')
   const mockEndDate = new Date('2024-01-15T12:00:00.000Z')
 
-  const initialState: RootState = {
+  const initialState = {
     menu: {
       loading: true,
       value: {
-        countsMsgType: 'SPaT',
+        countsMsgType: 'SPAT',
         countsStartDate: mockStartDate,
         countsEndDate: mockEndDate,
         displayCounts: true,
@@ -304,7 +304,7 @@ describe('selectors', () => {
   })
 
   it('selectCountsMsgType returns the correct value', () => {
-    expect(selectCountsMsgType(initialState)).toBe('SPaT')
+    expect(selectCountsMsgType(initialState)).toBe('SPAT')
 
     const bsmState = {
       ...initialState,

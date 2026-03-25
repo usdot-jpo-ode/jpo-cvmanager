@@ -14,6 +14,7 @@ import {
   selectSelectedRsuList,
 } from './adminOrganizationTabRsuSlice'
 import { RootState } from '../../store'
+import { AdminOrgRsuWithId } from './AdminOrganizationTabRsuTypes'
 
 // Mock the organizationApiSlice
 const mockInitiate = jest.fn()
@@ -44,13 +45,6 @@ describe('admin organization tab RSU reducer', () => {
 })
 
 describe('async thunks', () => {
-  const initialState: RootState['adminOrganizationTabRsu'] = {
-    loading: null,
-    value: {
-      selectedRsuList: null,
-    },
-  }
-
   beforeEach(() => {
     jest.clearAllMocks()
   })
@@ -373,7 +367,7 @@ describe('async thunks', () => {
       const stateWithSelectedRsus = {
         loading: false,
         value: {
-          selectedRsuList: [{ id: 1, ip: '1.1.1.1' }],
+          selectedRsuList: [{ id: 1, ip: '1.1.1.1' } as AdminOrgRsuWithId],
         },
       }
 

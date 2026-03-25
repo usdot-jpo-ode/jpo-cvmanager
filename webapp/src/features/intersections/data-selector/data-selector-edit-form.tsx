@@ -103,11 +103,6 @@ export const DataSelectorEditForm = (props: { onQuery: (query: any) => void; onV
     },
   })
 
-  const onTypeChange = () => {
-    formik.setFieldValue('eventTypes', [] as Item[])
-    formik.setFieldValue('assessmentTypes', [] as Item[])
-  }
-
   const getTypeSpecificFilters = (type) => {
     switch (type) {
       case 'bsm':
@@ -164,7 +159,8 @@ export const DataSelectorEditForm = (props: { onQuery: (query: any) => void; onV
                 value={formik.values.type}
                 label="Type"
                 onChange={(e) => {
-                  onTypeChange(e.target.value)
+                  formik.setFieldValue('eventTypes', [] as Item[])
+                  formik.setFieldValue('assessmentTypes', [] as Item[])
                   formik.setFieldValue('type', e.target.value)
                 }}
                 onBlur={formik.handleBlur}

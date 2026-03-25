@@ -54,6 +54,17 @@ class AuthApi {
     }
   }
 
+  parseRole(role: string): UserRole {
+    switch (role.toLowerCase()) {
+      case 'admin':
+        return 'ADMIN'
+      case 'operator':
+        return 'OPERATOR'
+      default:
+        return 'USER'
+    }
+  }
+
   getUserAuthResponse(token: AuthToken): UserAuthResponse {
     return {
       email: token.email,
@@ -62,8 +73,8 @@ class AuthApi {
       name: `${token.given_name} ${token.family_name}`,
       super_user: token.cvmanager_data.super_user === '1',
       organizations: token.cvmanager_data.organizations.map((org) => ({
-        name: org.org,
-        role: org.role,
+        organization: org.org,
+        role: this.parseRole(org.role),
       })),
     }
   }

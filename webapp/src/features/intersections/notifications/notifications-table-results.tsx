@@ -27,6 +27,11 @@ import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
 import { CeaseBroadcastRecommendationTypes } from './notifications-table'
+import { ConnectionOfTravelNotification } from '../../../models/jpo-conflictmonitor/notifications/ConnectionOfTravelNotification'
+import { IntersectionReferenceAlignmentNotification } from '../../../models/jpo-conflictmonitor/notifications/IntersectionReferenceAlignmentNotification'
+import { LaneDirectionOfTravelNotification } from '../../../models/jpo-conflictmonitor/notifications/LaneDirectionOfTravelNotification'
+import { SignalGroupAlignmentNotification } from '../../../models/jpo-conflictmonitor/notifications/SignalGroupAlignmentNotification'
+import { SignalGroupAlignmentEvent } from '../../../models/jpo-conflictmonitor/events/SignalGroupAlignmentEvent'
 
 export const NotificationsTableResults = ({
   customers,
@@ -93,8 +98,10 @@ export const NotificationsTableResults = ({
       case 'IntersectionReferenceAlignmentNotification': {
         const intersectionReferenceAlignmentNotification = notification as IntersectionReferenceAlignmentNotification
         const intersectionReferenceAlignmentEvent = intersectionReferenceAlignmentNotification.event
-        const mapArr = Array.from(intersectionReferenceAlignmentEvent.mapRegulatorIntersectionIds) ?? []
-        const spatArr = Array.from(intersectionReferenceAlignmentEvent.spatRegulatorIntersectionIds) ?? []
+        const mapArr: RegulatorIntersectionId[] =
+          Array.from(intersectionReferenceAlignmentEvent.mapRegulatorIntersectionIds) ?? []
+        const spatArr: RegulatorIntersectionId[] =
+          Array.from(intersectionReferenceAlignmentEvent.spatRegulatorIntersectionIds) ?? []
         return (
           <Typography>
             {`- Intersection IDs, MAP: ${mapArr.map((v) => v.intersectionId)}, SPAT: ${spatArr.map(

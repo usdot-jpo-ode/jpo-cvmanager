@@ -1,28 +1,23 @@
 import React from 'react'
 import EnvironmentVars from './EnvironmentVars'
-import { ReactJSXElement } from '@emotion/react/types/jsx-namespace'
 import { Navigate } from 'react-router-dom'
 
-export const RsuRouteGuard = ({ children }: { children: ReactJSXElement; condition? }) => {
-  // Re-direct to home page if rsu pages are disabled
+export const RsuRouteGuard = ({ children }: { children: React.ReactElement; condition? }) => {
   const isAccessAllowed = evaluateFeatureFlags('rsu')
   return isAccessAllowed ? children : <Navigate to="/" />
 }
 
-export const IntersectionRouteGuard = ({ children }: { children: ReactJSXElement; condition? }) => {
-  // Re-direct to home page if intersection pages are disabled
+export const IntersectionRouteGuard = ({ children }: { children: React.ReactElement; condition? }) => {
   const isAccessAllowed = evaluateFeatureFlags('intersection')
   return isAccessAllowed ? children : <Navigate to="/" />
 }
 
-export const WzdxRouteGuard = ({ children }: { children: ReactJSXElement; condition? }) => {
-  // Re-direct to home page if intersection pages are disabled
+export const WzdxRouteGuard = ({ children }: { children: React.ReactElement; condition? }) => {
   const isAccessAllowed = evaluateFeatureFlags('wzdx')
   return isAccessAllowed ? children : <Navigate to="/" />
 }
 
-export const HaasRouteGuard = ({ children }: { children: ReactJSXElement; condition? }) => {
-  // Re-direct to home page if haas pages are disabled
+export const HaasRouteGuard = ({ children }: { children: React.ReactElement; condition? }) => {
   const isAccessAllowed = evaluateFeatureFlags('haas')
   return isAccessAllowed ? children : <Navigate to="/" />
 }

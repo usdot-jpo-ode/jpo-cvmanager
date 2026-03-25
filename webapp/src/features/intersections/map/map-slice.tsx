@@ -87,12 +87,6 @@ export type BSM_COUNTS_CHART_DATA = MessageMonitor.MinuteCount & {
   timestamp: string
 }
 
-interface MinimalClient {
-  connect: (headers: unknown, connectCallback: () => void, errorCallback?: (error: string) => void) => void
-  subscribe: (destination: string, callback: (message: IMessage) => void) => void
-  disconnect: (disconnectCallback: () => void) => void
-}
-
 const initialState = {
   mapRef: React.createRef() as React.MutableRefObject<MapRef>,
   layersVisible: {
@@ -961,7 +955,7 @@ export const initializeLiveStreaming = createAsyncThunk(
     args: { token: string; intersectionId: number; numRestarts?: number; shouldResetMapView?: boolean },
     { getState, dispatch }
   ) => {
-    const { token, intersectionId, numRestarts = 0, shouldResetMapView = true } = args
+    const { token, intersectionId, shouldResetMapView = true } = args
     // Connect to WebSocket when component mounts
     const currentState = getState() as RootState
     const liveDataActive = selectLiveDataActive(currentState)

@@ -59,11 +59,6 @@ describe('reducers', () => {
 })
 
 describe('async thunks', () => {
-  const initialState = {
-    timeOffsetMillis: 0,
-    lastSync: null,
-  }
-
   beforeAll(() => {
     global.fetch = jest.fn()
   })

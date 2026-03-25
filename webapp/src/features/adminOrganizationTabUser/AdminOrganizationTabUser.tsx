@@ -53,7 +53,9 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
   const theme = useTheme()
   const organizationName = useSelector(selectSelectedOrgName)
 
-  const { data: availableUserList } = useGetAllUsersNotInOrganizationQuery(organizationName)
+  const { data: availableUserList } = useGetAllUsersNotInOrganizationQuery(organizationName, {
+    skip: !organizationName, // Skip if no organization selected
+  })
 
   const selectedUserList = useSelector(selectSelectedUserList)
   const availableRoles = useSelector(selectAvailableRoles)

@@ -41,7 +41,7 @@ describe('config reducer', () => {
 })
 
 describe('async thunks', () => {
-  const initialState: RootState['config'] = {
+  const initialState = {
     loading: false,
     value: {
       msgFwdConfig: null,
@@ -59,7 +59,7 @@ describe('async thunks', () => {
       configCoordinates: null,
       configList: null,
     },
-  }
+  } as RootState['config']
 
   beforeAll(() => {
     jest.mock('../apis/rsu-api')
@@ -76,7 +76,7 @@ describe('async thunks', () => {
         user: {
           value: {
             authLoginData: { token: 'token' },
-            organization: { name: 'name' },
+            organization: { organization: 'name' },
           },
         },
       })
@@ -146,7 +146,7 @@ describe('async thunks', () => {
         user: {
           value: {
             authLoginData: { token: 'token' },
-            organization: { name: 'name' },
+            organization: { organization: 'name' },
           },
         },
       })
@@ -167,7 +167,7 @@ describe('async thunks', () => {
         user: {
           value: {
             authLoginData: { token: 'token' },
-            organization: { name: 'name' },
+            organization: { organization: 'name' },
           },
         },
       })
@@ -187,7 +187,7 @@ describe('async thunks', () => {
         user: {
           value: {
             authLoginData: { token: 'token' },
-            organization: { name: 'name' },
+            organization: { organization: 'name' },
           },
         },
       })
@@ -209,7 +209,7 @@ describe('async thunks', () => {
         user: {
           value: {
             authLoginData: { token: 'token' },
-            organization: { name: 'name' },
+            organization: { organization: 'name' },
           },
         },
       })
@@ -231,7 +231,7 @@ describe('async thunks', () => {
         user: {
           value: {
             authLoginData: { token: 'token' },
-            organization: { name: 'name' },
+            organization: { organization: 'name' },
           },
         },
       })
@@ -306,7 +306,7 @@ describe('async thunks', () => {
         user: {
           value: {
             authLoginData: { token: 'token' },
-            organization: { name: 'name' },
+            organization: { organization: 'name' },
           },
         },
         config: {
@@ -381,7 +381,7 @@ describe('async thunks', () => {
         user: {
           value: {
             authLoginData: { token: 'token' },
-            organization: { name: 'name' },
+            organization: { organization: 'name' },
           },
         },
       })
@@ -451,7 +451,7 @@ describe('async thunks', () => {
         user: {
           value: {
             authLoginData: { token: 'token' },
-            organization: { name: 'name' },
+            organization: { organization: 'name' },
           },
         },
       })
@@ -510,7 +510,7 @@ describe('async thunks', () => {
         user: {
           value: {
             authLoginData: { token: 'token' },
-            organization: { name: 'name' },
+            organization: { organization: 'name' },
           },
         },
       })
@@ -592,7 +592,7 @@ describe('async thunks', () => {
         user: {
           value: {
             authLoginData: { token: 'token' },
-            organization: { name: 'name' },
+            organization: { organization: 'name' },
           },
         },
       })
@@ -675,7 +675,7 @@ describe('async thunks', () => {
 })
 
 describe('reducers', () => {
-  const initialState: RootState['config'] = {
+  const initialState = {
     loading: null,
     value: {
       msgFwdConfig: null,
@@ -693,7 +693,7 @@ describe('reducers', () => {
       configCoordinates: null,
       configList: null,
     },
-  }
+  } as RootState['config']
 
   it('setDestIp reducer updates state correctly', async () => {
     const destIp = 'updated'

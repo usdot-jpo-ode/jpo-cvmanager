@@ -106,7 +106,6 @@ describe('async thunks', () => {
       selectedRsu: null,
       rsuData: null,
       rsuOnlineStatus: null,
-      countsMsgType: null,
       geoMsgType: null,
       rsuMapData: null,
       mapList: null,
@@ -143,7 +142,7 @@ describe('async thunks', () => {
         user: {
           value: {
             authLoginData: { token: 'token' },
-            organization: { name: 'name' },
+            organization: { organization: 'name' },
           },
         },
         rsu: {
@@ -218,7 +217,7 @@ describe('async thunks', () => {
         user: {
           value: {
             authLoginData: { token: 'token' },
-            organization: { name: 'name' },
+            organization: { organization: 'name' },
           },
         },
       })
@@ -282,7 +281,7 @@ describe('async thunks', () => {
         user: {
           value: {
             authLoginData: { token: 'token' },
-            organization: { name: 'name' },
+            organization: { organization: 'name' },
           },
         },
       })
@@ -312,7 +311,7 @@ describe('async thunks', () => {
         user: {
           value: {
             authLoginData: { token: 'token' },
-            organization: { name: 'name' },
+            organization: { organization: 'name' },
           },
         },
       })
@@ -333,7 +332,7 @@ describe('async thunks', () => {
         user: {
           value: {
             authLoginData: { token: 'token' },
-            organization: { name: 'name' },
+            organization: { organization: 'name' },
           },
         },
       })
@@ -395,7 +394,7 @@ describe('async thunks', () => {
         user: {
           value: {
             authLoginData: { token: 'token' },
-            organization: { name: 'name' },
+            organization: { organization: 'name' },
           },
         },
       })

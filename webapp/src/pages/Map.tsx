@@ -232,8 +232,6 @@ function MapPage() {
   const [wzdxMarkers, setWzdxMarkers] = useState([])
   const [pageOpen] = useState(true)
 
-  const [expandedLayers, setExpandedLayers] = useState<string[]>([])
-
   // Vendor filter local state variable
   const [selectedVendor, setSelectedVendor] = useState('Select Vendor')
   const vendorArray: string[] = ['Select Vendor', 'Commsignia', 'Yunex', 'Kapsch']
@@ -718,10 +716,6 @@ function MapPage() {
     if (!activeLayers.includes(MAP_LAYERS.RSU.id)) {
       dispatch(toggleLayerActive(MAP_LAYERS.RSU.id))
     }
-  }
-
-  const toggleExpandLayer = (layerId: string) => {
-    setExpandedLayers((prev) => (prev.includes(layerId) ? prev.filter((id) => id !== layerId) : [...prev, layerId]))
   }
 
   const MAP_LAYERS: Record<string, MapLayer> = {

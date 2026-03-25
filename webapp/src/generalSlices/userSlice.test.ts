@@ -89,7 +89,7 @@ describe('async thunks', () => {
         })
         expect(AuthApi.logIn).toHaveBeenCalledWith('token')
       } catch (e) {
-        (Date.now as any).mockClear()
+        ;(Date.now as any).mockClear()
         throw e
       }
     })
@@ -229,8 +229,8 @@ describe('selectors', () => {
     loading: 'loading',
     value: {
       organization: {
-        role: 'role',
-        name: 'organizationName',
+        role: 'USER',
+        organization: 'organizationName',
       },
       authLoginData: {
         token: 'token',
@@ -249,7 +249,7 @@ describe('selectors', () => {
   it('selectors return the correct value', async () => {
     expect(selectAuthLoginData(state)).toEqual(initialState.value.authLoginData)
     expect(selectToken(state)).toEqual('token')
-    expect(selectRole(state)).toEqual('role')
+    expect(selectRole(state)).toEqual('USER')
     expect(selectOrganizationName(state)).toEqual('organizationName')
     expect(selectName(state)).toEqual('name')
     expect(selectEmail(state)).toEqual('email')

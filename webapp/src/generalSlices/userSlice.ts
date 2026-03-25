@@ -60,7 +60,7 @@ export const userSlice = createSlice({
         ]
       } else if (action.payload.type === 'delete') {
         const index = state.value.authLoginData.data.organizations.findIndex(
-          (org) => org.name === action.payload.value.name
+          (org) => org.organization === action.payload.value.name
         )
         if (index > -1) {
           const updatedOrgList = state.value.authLoginData.data.organizations
@@ -69,7 +69,7 @@ export const userSlice = createSlice({
         }
       } else if (action.payload.type === 'update') {
         const index = state.value.authLoginData.data.organizations.findIndex(
-          (org) => org.name === action.payload.orgName
+          (org) => org.organization === action.payload.orgName
         )
         if (index > -1) {
           const updatedOrgList = state.value.authLoginData.data.organizations
@@ -122,7 +122,7 @@ export const { logout, changeOrganization, setOrganizationList, setLoading, setL
 export const selectAuthLoginData = (state: RootState) => state.user.value.authLoginData
 export const selectToken = (state: RootState) => state.user.value.authLoginData.token
 export const selectRole = (state: RootState) => state.user.value.organization?.role
-export const selectOrganizationName = (state: RootState) => state.user.value.organization?.name
+export const selectOrganizationName = (state: RootState) => state.user.value.organization?.organization
 export const selectName = (state: RootState) => state.user.value.authLoginData?.data?.name
 export const selectEmail = (state: RootState) => state.user.value.authLoginData?.data?.email
 export const selectSuperUser = (state: RootState) => state.user.value.authLoginData?.data?.super_user

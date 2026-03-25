@@ -5,10 +5,7 @@ type AuthLoginData = {
     last_name: string
     email: string
     super_user: boolean
-    organizations: Array<{
-      name: string
-      role: string
-    }>
+    organizations: UserOrganization[]
   }
   token: string
   expires_at: number

@@ -340,7 +340,6 @@ const AdminEditIntersection = () => {
                     defaultValue={selectedRsus.map((rsu) => rsu.name)}
                     onChange={(event) => {
                       const selectedRsus = event.target.value as string[]
-                      const filteredRsus = rsus.filter((rsu) => selectedRsus.includes(rsu.name))
                       dispatch(setSelectedRsus(rsus.filter((rsu) => selectedRsus.includes(rsu.name))))
                     }}
                   >

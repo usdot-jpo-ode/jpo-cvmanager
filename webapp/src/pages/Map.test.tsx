@@ -9,6 +9,7 @@ import { replaceChaoticIds } from '../utils/test-utils'
 it('snapshot bsmCoordinates wzdx', () => {
   const initialState = {
     rsu: {
+      loading: false,
       value: {
         rsuCounts: {},
         mapList: [],
@@ -23,6 +24,7 @@ it('snapshot bsmCoordinates wzdx', () => {
       },
     },
     wzdx: {
+      loading: false,
       value: {
         features: [
           {
@@ -48,7 +50,7 @@ it('snapshot bsmCoordinates wzdx', () => {
         ],
       },
     },
-  } as RootState
+  }
   const { container } = render(
     <ThemeProvider theme={testTheme}>
       <Provider store={setupStore(initialState)}>
@@ -96,7 +98,7 @@ it('snapshot bsmData clicked', () => {
         addConfigPoint: false,
       },
     },
-  } as RootState
+  }
   const { container } = render(
     <ThemeProvider theme={testTheme}>
       <Provider store={setupStore(initialState)}>

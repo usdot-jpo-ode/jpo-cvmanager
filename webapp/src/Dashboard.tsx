@@ -8,7 +8,7 @@ import Tabs, { TabItem } from './components/Tabs'
 import Map from './pages/Map'
 import './App.css'
 import { useSelector } from 'react-redux'
-import { selectAuthLoginData, selectLoadingGlobal } from './generalSlices/userSlice'
+import { selectAuthLoginData, selectLoadingGlobal, selectRole } from './generalSlices/userSlice'
 import { LocalStorageManager, SecureStorageManager } from './managers'
 import keycloak from './keycloak-config'
 import { Routes, Route, Navigate } from 'react-router-dom'
@@ -23,8 +23,9 @@ import { headerTabHeight } from './styles/index'
 const Dashboard = () => {
   const theme = useTheme()
   const authLoginData = useSelector(selectAuthLoginData)
+  const userRole = useSelector(selectRole)
   const loadingGlobal = useSelector(selectLoadingGlobal)
-  console.log(SecureStorageManager.getUserRole() === 'admin' || LocalStorageManager.getIsSuperUser())
+  const isAdmin = (userRole ?? SecureStorageManager.getUserRole()) === 'ADMIN' || LocalStorageManager.getIsSuperUser()
 
   return (
     <Paper id="masterdiv" style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
@@ -36,11 +37,7 @@ const Dashboard = () => {
               <TabItem label={'Map'} path={'map'} />
               <TabItem label={'Intersection Map'} path={'intersectionMap'} tag={'intersection'} />
               <TabItem label={'Intersection Dashboard'} path={'intersectionDashboard'} tag={'intersection'} />
-              {SecureStorageManager.getUserRole() === 'admin' || LocalStorageManager.getIsSuperUser() ? (
-                <TabItem label={'Admin'} path={'admin'} />
-              ) : (
-                <></>
-              )}
+              {isAdmin ? <TabItem label={'Admin'} path={'admin'} /> : <></>}
               <TabItem label={'Help'} path={'help'} />
               <TabItem label={'User Settings'} path={'settings'} />
             </Tabs>

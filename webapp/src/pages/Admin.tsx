@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectOrganizationName } from '../generalSlices/userSlice'
+import { selectOrganizationName, selectRole } from '../generalSlices/userSlice'
 import { updateTableData as updateIntersectionTableData } from '../features/adminIntersectionTab/adminIntersectionTabSlice'
 import '../features/adminRsuTab/Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
@@ -19,6 +19,7 @@ import { evaluateFeatureFlags } from '../feature-flags'
 function Admin() {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const organization = useSelector(selectOrganizationName)
+  const userRole = useSelector(selectRole)
 
   useEffect(() => {
     // This preloads data for the admin pages
@@ -30,7 +31,7 @@ function Admin() {
 
   return (
     <>
-      {SecureStorageManager.getUserRole() !== 'admin' && !LocalStorageManager.getIsSuperUser() ? (
+      {(userRole ?? SecureStorageManager.getUserRole()) !== 'ADMIN' && !LocalStorageManager.getIsSuperUser() ? (
         <div id="admin">
           <NotFound description="You do not have permission to view this page. Please return to main dashboard: " />
         </div>

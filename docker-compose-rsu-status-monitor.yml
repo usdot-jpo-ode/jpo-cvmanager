@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile.rsu_status_monitor
       args:
         MAVEN_GITHUB_TOKEN: ${MAVEN_GITHUB_TOKEN:?error}
-        MAVEN_GITHUB_ORG: ${MAVEN_GITHUB_ORG:?error}
+        MAVEN_GITHUB_ORG: ${MAVEN_GITHUB_ORG:-usdot-jpo-ode}
     ports:
       - '8086:8080'
       - '42300:42300/udp'

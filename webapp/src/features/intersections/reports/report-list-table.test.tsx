@@ -10,11 +10,12 @@ import { sampleReports } from './testing-data/sample-reports'
 import { BrowserRouter } from 'react-router-dom'
 
 // Mock date-fns format to use a specific timezone
-jest.mock('date-fns', () => {
-  const originalDateFns = jest.requireActual('date-fns')
+vi.mock('date-fns', async () => {
+  const originalDateFns: any = await vi.importActual('date-fns')
+  const { formatInTimeZone } = await import('date-fns-tz')
   return {
     ...originalDateFns,
-    format: (date: Date) => date.toISOString(),
+    format: (date: Date, formatStr: string) => formatInTimeZone(date, 'America/Denver', formatStr),
   }
 })
 

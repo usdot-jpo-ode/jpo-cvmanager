@@ -7,6 +7,7 @@ export type RsuProperties = {
   primary_route: string
   serial_number: string
   manufacturer_name: string
+  tim_deposit: boolean
 }
 
 export type RsuInfoList = {
@@ -37,10 +38,14 @@ export type RsuOnlineStatusRespSingle = {
   last_online: string | undefined
 }
 
+export type MessageType = 'SPAT' | 'MAP' | 'BSM' | 'SRM' | 'SSM' | 'TIM' | 'PSM'
+
 export type RsuCounts = {
   [ip: string]: {
     road: string
-    count: number
+    messageTypeCounts: {
+      [messageType: string]: number
+    }
   }
 }
 

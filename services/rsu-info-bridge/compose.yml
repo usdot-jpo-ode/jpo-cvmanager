@@ -1,0 +1,16 @@
+include:
+  - path: ../../docker-compose.yml
+    env_file: ../../.env
+
+services:
+  rsu-info-bridge:
+    image: rsu-info-bridge:0.0.1-SNAPSHOT
+    container_name: rsu-info-bridge
+    ports:
+      - "${RSU_INFO_BRIDGE_PORT:-16543}:${RSU_INFO_BRIDGE_PORT:-16543}"
+    env_file:
+      - .env
+    profiles:
+      - rsu-info-bridge
+    depends_on:
+      - cvmanager_postgres

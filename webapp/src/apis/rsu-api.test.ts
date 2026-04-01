@@ -4,23 +4,20 @@ import EnvironmentVars from '../EnvironmentVars'
 beforeEach(() => {
   fetchMock.mockClear()
   fetchMock.doMock()
-  EnvironmentVars.rsuInfoEndpoint = 'REACT_APP_ENV/rsuinfo'
-  EnvironmentVars.rsuOnlineEndpoint = 'REACT_APP_ENV/rsu-online-status'
-  EnvironmentVars.rsuCountsEndpoint = 'REACT_APP_ENV/rsucounts'
-  EnvironmentVars.rsuCommandEndpoint = 'REACT_APP_ENV/rsu-command'
-  EnvironmentVars.wzdxEndpoint = 'REACT_APP_ENV/wzdx-feed'
-  EnvironmentVars.geoMsgDataEndpoint = 'REACT_APP_ENV/rsu-geo-data'
-  EnvironmentVars.issScmsStatusEndpoint = 'REACT_APP_ENV/iss-scms-status'
-  EnvironmentVars.ssmSrmEndpoint = 'REACT_APP_ENV/rsu-ssm-srm-data'
-  EnvironmentVars.authEndpoint = 'REACT_APP_ENV/user-auth'
-  EnvironmentVars.adminAddRsu = 'REACT_APP_ENV/admin-new-rsu'
-  EnvironmentVars.adminRsu = 'REACT_APP_ENV/admin-rsu'
-  EnvironmentVars.adminAddIntersection = 'REACT_APP_ENV/admin-new-intersection'
-  EnvironmentVars.adminIntersection = 'REACT_APP_ENV/admin-intersection'
-  EnvironmentVars.adminAddUser = 'REACT_APP_ENV/admin-new-user'
-  EnvironmentVars.adminUser = 'REACT_APP_ENV/admin-user'
-  EnvironmentVars.adminAddOrg = 'REACT_APP_ENV/admin-new-org'
-  EnvironmentVars.adminOrg = 'REACT_APP_ENV/admin-org'
+  EnvironmentVars.rsuInfoEndpoint = 'VITE_ENV/rsuinfo'
+  EnvironmentVars.rsuOnlineEndpoint = 'VITE_ENV/rsu-online-status'
+  EnvironmentVars.rsuCountsEndpoint = 'VITE_ENV/rsucounts'
+  EnvironmentVars.rsuCommandEndpoint = 'VITE_ENV/rsu-command'
+  EnvironmentVars.wzdxEndpoint = 'VITE_ENV/wzdx-feed'
+  EnvironmentVars.geoMsgDataEndpoint = 'VITE_ENV/rsu-geo-data'
+  EnvironmentVars.issScmsStatusEndpoint = 'VITE_ENV/iss-scms-status'
+  EnvironmentVars.ssmSrmEndpoint = 'VITE_ENV/rsu-ssm-srm-data'
+  EnvironmentVars.adminAddIntersection = 'VITE_ENV/admin-new-intersection'
+  EnvironmentVars.adminIntersection = 'VITE_ENV/admin-intersection'
+  EnvironmentVars.adminAddUser = 'VITE_ENV/admin-new-user'
+  EnvironmentVars.adminUser = 'VITE_ENV/admin-user'
+  EnvironmentVars.adminAddOrg = 'VITE_ENV/admin-new-org'
+  EnvironmentVars.adminOrg = 'VITE_ENV/admin-org'
 })
 
 it('Test apiHelper mock', async () => {
@@ -108,32 +105,6 @@ it('Test getRsuCounts With Params', async () => {
   expect(actualResponse).toEqual(expectedResponse)
 
   expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.rsuCountsEndpoint + url_ext + '?query_param=test')
-  expect(fetchMock.mock.calls[0][1].method).toBe('GET')
-  expect(fetchMock.mock.calls[0][1].headers).toStrictEqual({ Authorization: 'testToken', Organization: 'testOrg' })
-})
-
-it('Test getRsuAuth', async () => {
-  const expectedResponse = { data: 'Test JSON' }
-  fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
-  const actualResponse = await RsuApi.getRsuAuth('testToken', 'testOrg')
-  expect(actualResponse).toEqual(expectedResponse)
-
-  expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.authEndpoint)
-  expect(fetchMock.mock.calls[0][1].method).toBe('GET')
-  expect(fetchMock.mock.calls[0][1].headers).toStrictEqual({ Authorization: 'testToken', Organization: 'testOrg' })
-})
-
-it('Test getRsuAuth With Params', async () => {
-  // Set url_ext and query_params
-  const url_ext = 'url_ext'
-  const query_params = { query_param: 'test' }
-
-  const expectedResponse = { data: 'Test JSON' }
-  fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
-  const actualResponse = await RsuApi.getRsuAuth('testToken', 'testOrg', url_ext, query_params)
-  expect(actualResponse).toEqual(expectedResponse)
-
-  expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.authEndpoint + url_ext + '?query_param=test')
   expect(fetchMock.mock.calls[0][1].method).toBe('GET')
   expect(fetchMock.mock.calls[0][1].headers).toStrictEqual({ Authorization: 'testToken', Organization: 'testOrg' })
 })

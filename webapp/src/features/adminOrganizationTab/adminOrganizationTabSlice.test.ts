@@ -19,6 +19,8 @@ import {
   selectSelectedOrg,
   selectRsuTableData,
   selectUserTableData,
+  selectTimDeposit,
+  selectSnmpMonitoring,
 } from './adminOrganizationTabSlice'
 import apiHelper from '../../apis/api-helper'
 import EnvironmentVars from '../../EnvironmentVars'
@@ -154,7 +156,10 @@ describe('async thunks', () => {
       const data = {
         org_data: {
           org_users: 'org_users',
-          org_rsus: 'org_rsus',
+          org_rsus: [
+            { tim_deposit: true, snmp_monitoring: true },
+            { tim_deposit: false, snmp_monitoring: false },
+          ],
           org_intersections: 'org_intersections',
         },
       }
@@ -419,7 +424,10 @@ describe('selectors', () => {
       title: 'title',
       orgData: 'orgData',
       selectedOrg: 'selectedOrg',
-      rsuTableData: 'rsuTableData',
+      rsuTableData: [
+        { tim_deposit: true, snmp_monitoring: true },
+        { tim_deposit: false, snmp_monitoring: false },
+      ],
       userTableData: 'userTableData',
     },
   }
@@ -431,7 +439,47 @@ describe('selectors', () => {
     expect(selectTitle(state)).toEqual('title')
     expect(selectOrgData(state)).toEqual('orgData')
     expect(selectSelectedOrg(state)).toEqual('selectedOrg')
-    expect(selectRsuTableData(state)).toEqual('rsuTableData')
+    expect(selectRsuTableData(state)).toEqual(initialState.value.rsuTableData)
     expect(selectUserTableData(state)).toEqual('userTableData')
+    expect(selectTimDeposit(state)).toEqual('Mixed')
+    expect(selectSnmpMonitoring(state)).toEqual('Mixed')
+  })
+
+  it('selectTimDeposit and selectSnmpMonitoring return correct values for different RSU data', async () => {
+    const stateEnabled = {
+      adminOrganizationTab: {
+        value: {
+          rsuTableData: [
+            { tim_deposit: true, snmp_monitoring: true },
+            { tim_deposit: true, snmp_monitoring: true },
+          ],
+        },
+      },
+    } as any
+    expect(selectTimDeposit(stateEnabled)).toEqual('Enabled')
+    expect(selectSnmpMonitoring(stateEnabled)).toEqual('Enabled')
+
+    const stateDisabled = {
+      adminOrganizationTab: {
+        value: {
+          rsuTableData: [
+            { tim_deposit: false, snmp_monitoring: false },
+            { tim_deposit: false, snmp_monitoring: false },
+          ],
+        },
+      },
+    } as any
+    expect(selectTimDeposit(stateDisabled)).toEqual('Disabled')
+    expect(selectSnmpMonitoring(stateDisabled)).toEqual('Disabled')
+
+    const stateEmpty = {
+      adminOrganizationTab: {
+        value: {
+          rsuTableData: [],
+        },
+      },
+    } as any
+    expect(selectTimDeposit(stateEmpty)).toEqual('Disabled')
+    expect(selectSnmpMonitoring(stateEmpty)).toEqual('Disabled')
   })
 })

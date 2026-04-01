@@ -22,15 +22,7 @@ The middleware makes the following assumptions:
 Expected headers for all endpoints:
 
 - `"Content-Type": "application/json"`
-- `"Authorization": "tokenId"`
-
-### <b>/user-auth</b> <b>(GET)</b>
-
-Returns authorized user information including full name, email, and role.
-
-Example return value:
-
-- {"name": "John Doe", "email": "jdoe@gmail.com", "role": "admin"}
+- `"Authorization": "token"`
 
 ### <b>/contact-support</b> <b>(POST)</b>
 
@@ -142,50 +134,6 @@ body example:
   "organizations": ["Organization 1"]
 }
 ```
-
-### <b>/admin-rsu</b> <b>(GET)</b>
-
-Depending upon the rsu_ip argument's value, this endpoint returns a list of all RSUs in the CV Manager's PostgreSQL DB or the details of a single RSU along with the options for specific RSU fields that do not take free-form responses.
-
-HTTP URL Arguments:
-
-- rsu_ip:
-  - Set to "all" if you want a list of all RSUs regardless of organization affiliation. Will not return the RSU field options.
-  - Set to a specific RSU IP such as "10.0.0.1" to return all of the RSU details of that single RSU along with the allowed RSU field options.
-
-### <b>/admin-rsu</b> <b>(PATCH)</b>
-
-Modifies an RSU within the CV Manager database, including RSUs that may not have been made through the /admin-new-rsu endpoint. Currently supports Commsignia, Kapsch and Yunex.
-
-body example:
-
-```
-{
-  "ip": "10.0.0.1",
-  "geo_position": {
-    "latitude": 40.00,
-    "longitude": -100.00
-  },
-  "milepost": 56.8,
-  "primary_route": "I25",
-  "serial_number": "55EE002211",
-  "model": "Commsignia",
-  "scms_id": "",
-  "ssh_credential_group": "ssh profile",
-  "snmp_credential_group": "snmp profile",
-  "snmp_version_group": "snmp version",
-  "organizations_to_add": ["Organization 1"],
-  "organizations_to_remove": []
-}
-```
-
-### <b>/admin-rsu</b> <b>(DELETE)</b>
-
-Deletes the specified RSU from the CV Manager PostgreSQL database based off the IP specified in the rsu_ip argument.
-
-HTTP URL Arguments:
-
-- rsu_ip: Delete a specific RSU specified by its IP such as "10.0.0.1" from the CV Manager's PostgreSQL database.
 
 ## Users
 
@@ -335,11 +283,10 @@ HTTP URL Arguments:
 - PG_DB_PORT: The database port.
 - PG_PG_DB_USER: The database user that will be used to authenticate the cloud function when it queries the database.
 - PG_PG_DB_PASS: The database user's password that will be used to authenticate the cloud function.
-- COUNTS_MSG_TYPES: Set to a list of message types to include in counts query. Sample format is described in the sample.env.
 - MONGO_PROCESSED_BSM_COLLECTION_NAME: The database name for processed BSM messages output from the [Geojson Converter](https://github.com/usdot-jpo-ode/geojson-converter).
 - MONGO_PROCESSED_PSM_COLLECTION_NAME: The database name for processed PSM messages output from the [Geojson Converter](https://github.com/usdot-jpo-ode/geojson-converter).
-- SSM_DB_NAME: The database name for SSM visualization data.
-- SRM_DB_NAME: The database name for SRM visualization data.
+- MONGO_SSM_COLLECTION_NAME: The database name for SSM visualization data.
+- MONGO_SRM_COLLECTION_NAME: The database name for SRM visualization data.
 - MONGO_DB_URI: URI for the MongoDB connection.
 - MONGO_DB_NAME: Database name for RSU counts.
 - KEYCLOAK_ENDPOINT: Keycloak base URL to send requests to. Reference the sample.env for the URL formatting.
@@ -355,10 +302,6 @@ HTTP URL Arguments:
 - CSM_TARGET_SMTP_SERVER_PORT: Destination SMTP server port.
 - WZDX_ENDPOINT: WZDX datafeed enpoint.
 - WZDX_API_KEY: API key for the WZDX datafeed.
-- GOOGLE_ACCESS_KEY_NAME: The required Google environment variable for authenticating with Google Cloud.
-- GCP_PROJECT_ID: The Google Cloud project ID for which the service account associated with GOOGLE_ACCESS_KEY_NAME is for.
-- MOOVE_AI_SEGMENT_AGG_STATS_TABLE: The BigQuery table name for Moove.Ai's segment aggregate statistics.
-- MOOVE_AI_SEGMENT_EVENT_STATS_TABLE: The BigQuery table name for Moove.Ai's segment event statistics.
 - TIMEZONE: Timezone to be used for the API.
 
 1. Configure the Cloud Run deployment connections settings

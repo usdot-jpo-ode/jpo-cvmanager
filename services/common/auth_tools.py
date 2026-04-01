@@ -296,16 +296,21 @@ def enforce_organization_restrictions(
         Forbidden: If the user attempts to modify organizations they are not authorized to modify.
     """
     if not user.user_info.super_user:
-        for key in keys_to_check:
-            # Collect list of organizations the user doesn't have enough permissions to modify
-            unqualified_orgs = [
-                org for org in spec.get(key, []) if org not in qualified_orgs
-            ]
-            # If the user tries to add organizations they are not authorized for, raise Forbidden
-            if unqualified_orgs:
-                raise Forbidden(
-                    f"Unauthorized organization modification through {key}: {','.join(unqualified_orgs)}"
-                )
+        try:
+            for key in keys_to_check:
+                # Collect list of organizations the user doesn't have enough permissions to modify
+                unqualified_orgs = [
+                    org.get("name")
+                    for org in spec.get(key, [])
+                    if org.get("name") not in qualified_orgs
+                ]
+                # If the user tries to add organizations they are not authorized for, raise Forbidden
+                if unqualified_orgs:
+                    raise Forbidden(
+                        f"Unauthorized organization modification through {key}: {','.join(unqualified_orgs)}"
+                    )
+        except Exception as e:
+            logging.error("Failed to verify organization permissions", e)
 
 
 class PermissionResult:

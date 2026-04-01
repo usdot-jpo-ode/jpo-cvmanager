@@ -1,3 +1,7 @@
+import common.util as util
+import logging
+from enum import Enum
+
 # Delta is in years
 def hex_datetime(now, delta=0):
     """
@@ -132,3 +136,65 @@ def startend_ntcip1218(val):
     minute = "0" + minute if len(minute) == 1 else minute
     # Return the processed datetime string
     return f"{year}-{month}-{day} {hour}:{minute}"
+
+
+class MsgFwdType(Enum):
+    DSRC = "rsuDsrcFwd"
+    RECEIVED = "rsuReceivedMsg"
+    XMIT = "rsuXmitMsgFwding"
+
+class TableNames(Enum):
+    RECEIVED = "rsuReceivedMsgTable"
+    XMIT = "rsuXmitMsgFwdingTable"
+
+def format_snmp_msgfwd_configs(config_list, rsu_ip=None):
+    """
+    Formats and organizes SNMP message forwarding configurations into a structured dictionary format.
+
+    This function processes a list of configuration rows, restructures them into a dictionary
+    compatible with the SNMP walk response format, and classifies the configurations based on their
+    message forwarding types. It handles specific message forwarding types such as DSRC, RECEIVED,
+    and XMIT, ensuring that related objects (RX and TX) are available for complete NTCIP 1218
+    configuration support. Unknown message forwarding types are logged with a warning.
+
+    :param config_list: A list of configuration dictionaries where each dictionary represents data
+        for a single configuration row.
+    :type config_list: list[dict]
+    :param rsu_ip: Optional IPv4 address of the RSU, used for logging purposes. Defaults to None.
+    :type rsu_ip: str | None
+    :return: A dictionary containing organized SNMP message forwarding configurations.
+    :rtype: dict
+    """
+    msgfwd_configs_dict = {}
+    for row in config_list:
+        config_row = {
+            "Message Type": row["message_type"].upper(),
+            "IP": row["dest_ipv4"],
+            "Port": row["dest_port"],
+            "Start DateTime": util.format_date_denver_iso(row["start_datetime"]),
+            "End DateTime": util.format_date_denver_iso(row["end_datetime"]),
+            "Config Active": active(row["active"]),
+            "Full WSMP": active(row["security"]),
+        }
+
+        # Based on the value of msgfwd_type, store the configuration data to match the response object of rsufwdsnmpwalk
+        msgfwd_type_value = row["msgfwd_type"]
+        if msgfwd_type_value.upper() == MsgFwdType.DSRC.value.upper():
+            msgfwd_configs_dict[row["snmp_index"]] = config_row
+        elif msgfwd_type_value.upper() == MsgFwdType.RECEIVED.value.upper():
+            msgfwd_configs_dict.setdefault(TableNames.RECEIVED.value, {})[row["snmp_index"]] = config_row
+        elif msgfwd_type_value.upper() == MsgFwdType.XMIT.value.upper():
+            msgfwd_configs_dict.setdefault(TableNames.XMIT.value, {})[row["snmp_index"]] = config_row
+        else:
+            rsu_info = f" for RSU '{rsu_ip}'" if rsu_ip else ""
+            logging.warning(
+                f"Encountered unknown message forwarding configuration type '{msgfwd_type_value}'{rsu_info}"
+            )
+
+    # Make sure both RX and TX objects are available if the RSU ends up having NTCIP 1218 configurations
+    if TableNames.RECEIVED.value in msgfwd_configs_dict and TableNames.XMIT.value not in msgfwd_configs_dict:
+        msgfwd_configs_dict[TableNames.XMIT.value] = {}
+    elif TableNames.XMIT.value in msgfwd_configs_dict and TableNames.RECEIVED.value not in msgfwd_configs_dict:
+        msgfwd_configs_dict[TableNames.RECEIVED.value] = {}
+
+    return {"RsuFwdSnmpwalk": msgfwd_configs_dict}

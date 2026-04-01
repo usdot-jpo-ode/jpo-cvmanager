@@ -1,8 +1,17 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`should take a snapshot 1`] = `
 <div>
   <div>
+    <div
+      style="text-align: center; margin-bottom: 10px;"
+    >
+      <h5
+        class="museo-slab"
+      >
+        No message forwarding configurations were found. This may indicate that none are configured or that there was an error retrieving them. Verify that this RSU is configured and refresh.
+      </h5>
+    </div>
     <div>
       <div />
     </div>
@@ -34,6 +43,13 @@ exports[`should take a snapshot 1`] = `
         Refresh Message Forwarding
       </button>
     </div>
+    <br />
+    <h3
+      class="museo-slab"
+    >
+      Source: 
+      Cached (Database)
+    </h3>
   </div>
 </div>
 `;

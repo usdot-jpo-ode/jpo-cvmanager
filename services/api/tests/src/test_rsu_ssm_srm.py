@@ -49,15 +49,7 @@ def test_get_request(mock_get_rsu_dict, mock_srm, mock_ssm):
     ]
 
 
-@patch.dict(
-    os.environ,
-    {
-        "MONGO_DB_URI": "uri",
-        "MONGO_DB_NAME": "db",
-        "SSM_DB_NAME": "collection",
-        "SRM_DB_NAME": "srm_collection",
-    },
-)
+@patch("api_environment.MONGO_SSM_COLLECTION_NAME", "ssm_collection")
 @patch("api.src.rsu_ssm_srm.query_ssm_data_mongo")
 @patch("api.src.rsu_ssm_srm.query_srm_data_mongo")
 @patch("api.src.rsu_ssm_srm.get_rsu_set_for_org")
@@ -79,10 +71,7 @@ def test_get_request_invalid(mock_get_rsu_dict, mock_srm, mock_ssm):
 
 
 # ################################### Test query_ssm_data ########################################
-@patch.dict(
-    os.environ,
-    {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "db", "SSM_DB_NAME": "collection"},
-)
+@patch("api_environment.MONGO_SSM_COLLECTION_NAME", "ssm_collection")
 @patch("api.src.rsu_ssm_srm.MongoClient")
 @patch("api.src.rsu_ssm_srm.datetime")
 def test_query_ssm_data_query(mock_date, mock_mongo):
@@ -103,10 +92,7 @@ def test_query_ssm_data_query(mock_date, mock_mongo):
     mock_collection.find.assert_called()
 
 
-@patch.dict(
-    os.environ,
-    {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "db", "SSM_DB_NAME": "collection"},
-)
+@patch("api_environment.MONGO_SSM_COLLECTION_NAME", "Fake_table")
 @patch("api.src.rsu_ssm_srm.MongoClient")
 def test_query_ssm_data_no_data(mock_mongo):
     mock_db = MagicMock()
@@ -115,15 +101,11 @@ def test_query_ssm_data_no_data(mock_mongo):
     mock_db.__getitem__.return_value = mock_collection
 
     mock_collection.find.return_value = []
-    with patch.dict("api.src.rsu_ssm_srm.os.environ", {"SSM_DB_NAME": "Fake_table"}):
-        data = rsu_ssm_srm.query_ssm_data_mongo()
-        assert data == []
+    data = rsu_ssm_srm.query_ssm_data_mongo()
+    assert data == []
 
 
-@patch.dict(
-    os.environ,
-    {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "db", "SSM_DB_NAME": "collection"},
-)
+@patch("api_environment.MONGO_SRM_COLLECTION_NAME", "Fake_table")
 @patch("api.src.rsu_ssm_srm.MongoClient")
 def test_query_ssm_data_single_result(mock_mongo):
     mock_db = MagicMock()
@@ -132,9 +114,8 @@ def test_query_ssm_data_single_result(mock_mongo):
     mock_db.__getitem__.return_value = mock_collection
 
     mock_collection.find.return_value = [ssm_srm_data.ssm_record_one]
-    with patch.dict("api.src.rsu_ssm_srm.os.environ", {"SSM_DB_NAME": "Fake_table"}):
-        data = rsu_ssm_srm.query_ssm_data_mongo()
-        assert data == ssm_srm_data.ssm_single_result_expected
+    data = rsu_ssm_srm.query_ssm_data_mongo()
+    assert data == ssm_srm_data.ssm_single_result_expected
 
 
 @patch.dict(
@@ -153,16 +134,12 @@ def test_query_ssm_data_multiple_result(mock_mongo):
         ssm_srm_data.ssm_record_two,
         ssm_srm_data.ssm_record_three,
     ]
-    with patch.dict("api.src.rsu_ssm_srm.os.environ", {"SSM_DB_NAME": "Fake_table"}):
-        data = rsu_ssm_srm.query_ssm_data_mongo()
-        assert data == ssm_srm_data.ssm_multiple_result_expected
+    data = rsu_ssm_srm.query_ssm_data_mongo()
+    assert data == ssm_srm_data.ssm_multiple_result_expected
 
 
 # #################################### Test query_srm_data ###########################################
-@patch.dict(
-    os.environ,
-    {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "db", "SRM_DB_NAME": "collection"},
-)
+@patch("api_environment.MONGO_SRM_COLLECTION_NAME", "Fake_table")
 @patch("api.src.rsu_ssm_srm.MongoClient")
 @patch("api.src.rsu_ssm_srm.datetime")
 def test_query_srm_data_query(mock_date, mock_mongo):
@@ -175,16 +152,12 @@ def test_query_srm_data_query(mock_date, mock_mongo):
     mock_date.now.return_value = datetime.strptime(
         "2022/12/14 00:00:00", "%Y/%m/%d %H:%M:%S"
     ).astimezone(UTC)
-    with patch.dict("api.src.rsu_ssm_srm.os.environ", {"SRM_DB_NAME": "Fake_table"}):
-        rsu_ssm_srm.query_srm_data_mongo()
-        mock_mongo.assert_called()
-        mock_collection.find.assert_called()
+    rsu_ssm_srm.query_srm_data_mongo()
+    mock_mongo.assert_called()
+    mock_collection.find.assert_called()
 
 
-@patch.dict(
-    os.environ,
-    {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "db", "SRM_DB_NAME": "collection"},
-)
+@patch("api_environment.MONGO_SRM_COLLECTION_NAME", "ssm_collection")
 @patch("api.src.rsu_ssm_srm.MongoClient")
 def test_query_srm_data_no_data(mock_mongo):
     mock_db = MagicMock()
@@ -193,15 +166,11 @@ def test_query_srm_data_no_data(mock_mongo):
     mock_db.__getitem__.return_value = mock_collection
 
     mock_collection.find.return_value = []
-    with patch.dict("api.src.rsu_ssm_srm.os.environ", {"SRM_DB_NAME": "Fake_table"}):
-        data = rsu_ssm_srm.query_srm_data_mongo()
-        assert data == []
+    data = rsu_ssm_srm.query_srm_data_mongo()
+    assert data == []
 
 
-@patch.dict(
-    os.environ,
-    {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "db", "SRM_DB_NAME": "collection"},
-)
+@patch("api_environment.MONGO_SRM_COLLECTION_NAME", "Fake_table")
 @patch("api.src.rsu_ssm_srm.MongoClient")
 def test_query_srm_data_single_result(mock_mongo):
     mock_db = MagicMock()
@@ -210,15 +179,11 @@ def test_query_srm_data_single_result(mock_mongo):
     mock_db.__getitem__.return_value = mock_collection
 
     mock_collection.find.return_value = [ssm_srm_data.srm_record_one]
-    with patch.dict("api.src.rsu_ssm_srm.os.environ", {"SRM_DB_NAME": "Fake_table"}):
-        data = rsu_ssm_srm.query_srm_data_mongo()
-        assert data == ssm_srm_data.srm_single_result_expected
+    data = rsu_ssm_srm.query_srm_data_mongo()
+    assert data == ssm_srm_data.srm_single_result_expected
 
 
-@patch.dict(
-    os.environ,
-    {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "db", "SRM_DB_NAME": "collection"},
-)
+@patch("api_environment.MONGO_SRM_COLLECTION_NAME", "Fake_table")
 @patch("api.src.rsu_ssm_srm.MongoClient")
 def test_query_srm_data_multiple_result(mock_mongo):
     mock_db = MagicMock()
@@ -231,6 +196,5 @@ def test_query_srm_data_multiple_result(mock_mongo):
         ssm_srm_data.srm_record_two,
         ssm_srm_data.srm_record_three,
     ]
-    with patch.dict("api.src.rsu_ssm_srm.os.environ", {"SRM_DB_NAME": "Fake_table"}):
-        data = rsu_ssm_srm.query_srm_data_mongo()
-        assert data == ssm_srm_data.srm_multiple_result_expected
+    data = rsu_ssm_srm.query_srm_data_mongo()
+    assert data == ssm_srm_data.srm_multiple_result_expected

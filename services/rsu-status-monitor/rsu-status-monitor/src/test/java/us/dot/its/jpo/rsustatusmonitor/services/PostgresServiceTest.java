@@ -5,6 +5,7 @@ import jakarta.persistence.TypedQuery;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -96,4 +97,41 @@ public class PostgresServiceTest {
         verify(entityManager).createQuery(anyString(), eq(RsuSnmpCredentials.class));
         verify(rsuCredentialsQuery).getResultList();
     }
+
+    // @Test
+    // public void testGetRsuCredentialsByIp_Success() {
+    // RsuSnmpCredentials cred = new RsuSnmpCredentials(1, "192.168.1.100", "user1",
+    // "pass1", "encPass1",
+    // "SNMPv3", "12345");
+
+    // when(entityManager.createQuery(anyString(),
+    // eq(RsuSnmpCredentials.class))).thenReturn(rsuCredentialsQuery);
+    // when(rsuCredentialsQuery.setParameter("ipAddress",
+    // "192.168.1.100")).thenReturn(rsuCredentialsQuery);
+    // when(rsuCredentialsQuery.setMaxResults(1)).thenReturn(rsuCredentialsQuery);
+    // when(rsuCredentialsQuery.getResultList()).thenReturn(Collections.singletonList(cred));
+
+    // Optional<RsuSnmpCredentials> result =
+    // service.getRsuCredentialsByIp("192.168.1.100");
+
+    // assertTrue(result.isPresent());
+    // assertEquals("192.168.1.100", result.get().getIpv4_address());
+    // verify(rsuCredentialsQuery).setParameter("ipAddress", "192.168.1.100");
+    // verify(rsuCredentialsQuery).setMaxResults(1);
+    // }
+
+    // @Test
+    // public void testGetRsuCredentialsByIp_NotFound() {
+    // when(entityManager.createQuery(anyString(),
+    // eq(RsuSnmpCredentials.class))).thenReturn(rsuCredentialsQuery);
+    // when(rsuCredentialsQuery.setParameter("ipAddress",
+    // "192.168.1.250")).thenReturn(rsuCredentialsQuery);
+    // when(rsuCredentialsQuery.setMaxResults(1)).thenReturn(rsuCredentialsQuery);
+    // when(rsuCredentialsQuery.getResultList()).thenReturn(Collections.emptyList());
+
+    // Optional<RsuSnmpCredentials> result =
+    // service.getRsuCredentialsByIp("192.168.1.250");
+
+    // assertTrue(result.isEmpty());
+    // }
 }

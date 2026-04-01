@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`should take a snapshot 1`] = `
 <div>
@@ -42,10 +42,10 @@ exports[`should take a snapshot 1`] = `
                 />
                 <fieldset
                   aria-hidden="true"
-                  class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
+                  class="MuiOutlinedInput-notchedOutline css-mocked-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
                 >
                   <legend
-                    class="css-w1u3ce"
+                    class="css-mocked-MuiNotchedOutlined-root"
                   >
                     <span>
                       Intersection ID
@@ -64,8 +64,8 @@ exports[`should take a snapshot 1`] = `
               <label
                 class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
                 data-shrink="true"
-                for="mui-1"
-                id="mui-1-label"
+                for="mui-4"
+                id="mui-4-label"
               >
                 Start Date
               </label>
@@ -75,7 +75,7 @@ exports[`should take a snapshot 1`] = `
                 <input
                   autocomplete="off"
                   class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
-                  id="mui-1"
+                  id="mui-4"
                   inputmode="text"
                   placeholder="MM/DD/YYYY hh:mm aa"
                   type="text"
@@ -105,10 +105,10 @@ exports[`should take a snapshot 1`] = `
                 </div>
                 <fieldset
                   aria-hidden="true"
-                  class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
+                  class="MuiOutlinedInput-notchedOutline css-mocked-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
                 >
                   <legend
-                    class="css-w1u3ce"
+                    class="css-mocked-MuiNotchedOutlined-root"
                   >
                     <span>
                       Start Date
@@ -127,8 +127,8 @@ exports[`should take a snapshot 1`] = `
               <label
                 class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-outlined css-mocked-MuiFormLabel-root-MuiInputLabel-root"
                 data-shrink="true"
-                for="mui-2"
-                id="mui-2-label"
+                for="mui-7"
+                id="mui-7-label"
               >
                 End Date
               </label>
@@ -138,7 +138,7 @@ exports[`should take a snapshot 1`] = `
                 <input
                   autocomplete="off"
                   class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiOutlinedInput-input"
-                  id="mui-2"
+                  id="mui-7"
                   inputmode="text"
                   placeholder="MM/DD/YYYY hh:mm aa"
                   type="text"
@@ -168,10 +168,10 @@ exports[`should take a snapshot 1`] = `
                 </div>
                 <fieldset
                   aria-hidden="true"
-                  class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
+                  class="MuiOutlinedInput-notchedOutline css-mocked-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
                 >
                   <legend
-                    class="css-w1u3ce"
+                    class="css-mocked-MuiNotchedOutlined-root"
                   >
                     <span>
                       End Date

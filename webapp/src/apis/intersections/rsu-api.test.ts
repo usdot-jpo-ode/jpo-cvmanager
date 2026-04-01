@@ -1,227 +1,176 @@
 import RsuApi from './rsu-api'
-import { authApiHelper } from './api-helper-cviz'
-
-// Mock the api-helper-cviz module
-jest.mock('./api-helper-cviz', () => ({
-  authApiHelper: {
-    invokeApi: jest.fn(),
-  },
-}))
-
-const mockInvokeApi = authApiHelper.invokeApi as jest.MockedFunction<typeof authApiHelper.invokeApi>
 
 beforeEach(() => {
-  mockInvokeApi.mockClear()
+  fetchMock.mockClear()
+  fetchMock.doMock()
 })
 
-describe('RsuApi', () => {
-  describe('getHistoricalRsuStatus', () => {
-    it('should call invokeApi with correct parameters and return response', async () => {
-      const expectedResponse = [
-        {
-          timestamp: 1717622387534,
-          intersectionID: '1234',
-          rsuIP: '10.0.0.1',
-          temperature: 37,
-          uptime: 1294615,
-          mode: 4,
-        },
-        {
-          timestamp: 1717622447534,
-          intersectionID: '1234',
-          rsuIP: '10.0.0.1',
-          temperature: 38,
-          uptime: 1294675,
-          mode: 4,
-        },
-      ]
+it('Test getHistoricalRsuStatus', async () => {
+  const expectedResponse = [
+    {
+      timestamp: 1717622387534,
+      intersectionID: '1234',
+      rsuIP: '10.0.0.1',
+      temperature: 37,
+      uptime: 1294615,
+      mode: 4,
+    },
+  ]
 
-      mockInvokeApi.mockResolvedValue(expectedResponse)
+  fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
 
-      const startTime = new Date('2025-06-05T21:00:00Z')
-      const endTime = new Date('2025-06-05T23:00:00Z')
+  const startTime = new Date('2025-06-05T21:00:00Z')
+  const endTime = new Date('2025-06-05T23:00:00Z')
 
-      const result = await RsuApi.getHistoricalRsuStatus({
-        token: 'testToken',
-        rsuIp: '10.0.0.1',
-        startTime,
-        endTime,
-      })
-
-      expect(result).toEqual(expectedResponse)
-      expect(mockInvokeApi).toHaveBeenCalledTimes(1)
-      expect(mockInvokeApi).toHaveBeenCalledWith({
-        path: '/data/rsu-status/historical',
-        token: 'testToken',
-        queryParams: {
-          rsuIp: '10.0.0.1',
-          startTime: startTime.getTime().toString(),
-          endTime: endTime.getTime().toString(),
-        },
-        abortController: undefined,
-        failureMessage: 'Failed to fetch historical RSU status',
-        tag: 'rsu',
-      })
-    })
-
-    it('should pass abort controller when provided', async () => {
-      const expectedResponse = []
-      mockInvokeApi.mockResolvedValue(expectedResponse)
-
-      const abortController = new AbortController()
-      const startTime = new Date('2025-06-05T21:00:00Z')
-      const endTime = new Date('2025-06-05T23:00:00Z')
-
-      await RsuApi.getHistoricalRsuStatus({
-        token: 'testToken',
-        rsuIp: '10.0.0.1',
-        startTime,
-        endTime,
-        abortController,
-      })
-
-      expect(mockInvokeApi).toHaveBeenCalledWith(
-        expect.objectContaining({
-          abortController,
-        })
-      )
-    })
+  const result = await RsuApi.getHistoricalRsuStatus({
+    token: 'testToken',
+    rsuIp: '10.0.0.1',
+    startTime,
+    endTime,
   })
 
-  describe('getLatestRsuStatus', () => {
-    it('should call invokeApi with correct parameters and return response', async () => {
-      const expectedResponse = {
-        timestamp: 1717622387534,
-        intersectionID: '1234',
-        rsuIP: '10.0.0.1',
-        temperature: 37,
-        uptime: 1294615,
-        mode: 4,
-      }
+  expect(result).toEqual(expectedResponse)
+  expect(fetchMock.mock.calls[0][0]).toContain('rsu-status/historical')
+  expect(fetchMock.mock.calls[0][0]).toContain('rsuIp=10.0.0.1')
+  expect(fetchMock.mock.calls[0][1].method).toBe('GET')
+  expect(fetchMock.mock.calls[0][1].headers).toStrictEqual({ Authorization: 'Bearer testToken' })
+})
 
-      mockInvokeApi.mockResolvedValue(expectedResponse)
+it('Test getHistoricalRsuStatus with abort controller', async () => {
+  const expectedResponse = [
+    {
+      timestamp: 1717622387534,
+      intersectionID: '1234',
+      rsuIP: '10.0.0.1',
+      temperature: 37,
+      uptime: 1294615,
+      mode: 4,
+    },
+  ]
 
-      const result = await RsuApi.getLatestRsuStatus({
-        token: 'testToken',
-        rsuIp: '10.0.0.1',
-      })
+  fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
 
-      expect(result).toEqual(expectedResponse)
-      expect(mockInvokeApi).toHaveBeenCalledTimes(1)
-      expect(mockInvokeApi).toHaveBeenCalledWith({
-        path: '/data/rsu-status/latest',
-        token: 'testToken',
-        queryParams: {
-          rsuIp: '10.0.0.1',
-        },
-        abortController: undefined,
-        failureMessage: 'Failed to fetch latest RSU status',
-        tag: 'rsu',
-      })
-    })
+  const abortController = new AbortController()
+  const startTime = new Date('2025-06-05T21:00:00Z')
+  const endTime = new Date('2025-06-05T23:00:00Z')
 
-    it('should pass abort controller when provided', async () => {
-      const expectedResponse = {
-        timestamp: 1717622387534,
-        intersectionID: '1234',
-        rsuIP: '10.0.0.1',
-        temperature: 37,
-        uptime: 1294615,
-        mode: 4,
-      }
-
-      mockInvokeApi.mockResolvedValue(expectedResponse)
-
-      const abortController = new AbortController()
-
-      await RsuApi.getLatestRsuStatus({
-        token: 'testToken',
-        rsuIp: '10.0.0.1',
-        abortController,
-      })
-
-      expect(mockInvokeApi).toHaveBeenCalledWith(
-        expect.objectContaining({
-          abortController,
-        })
-      )
-    })
+  await RsuApi.getHistoricalRsuStatus({
+    token: 'testToken',
+    rsuIp: '10.0.0.1',
+    startTime,
+    endTime,
+    abortController,
   })
 
-  describe('getAggregatedRsuStatus', () => {
-    it('should call invokeApi with correct parameters and return response', async () => {
-      const expectedResponse = [
-        {
-          timestamp: 1717622387534,
-          intersectionID: '1234',
-          rsuIP: '10.0.0.1',
-          temperature: 37,
-          uptime: 1294615,
-          mode: 4,
-        },
-        {
-          timestamp: 1717626000000,
-          intersectionID: '1234',
-          rsuIP: '10.0.0.1',
-          temperature: 39,
-          uptime: 1298228,
-          mode: 4,
-        },
-      ]
+  expect(fetchMock.mock.calls[0][1].signal).toBe(abortController.signal)
+})
 
-      mockInvokeApi.mockResolvedValue(expectedResponse)
+it('Test getLatestRsuStatus', async () => {
+  const expectedResponse = {
+    timestamp: 1717622387534,
+    intersectionID: '1234',
+    rsuIP: '10.0.0.1',
+    temperature: 37,
+    uptime: 1294615,
+    mode: 4,
+  }
 
-      const startTime = new Date('2025-06-05T21:00:00Z')
-      const endTime = new Date('2025-06-06T21:00:00Z')
-      const intervalMinutes = 60
+  fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
 
-      const result = await RsuApi.getAggregatedRsuStatus({
-        token: 'testToken',
-        rsuIp: '10.0.0.1',
-        startTime,
-        endTime,
-        intervalMinutes,
-      })
-
-      expect(result).toEqual(expectedResponse)
-      expect(mockInvokeApi).toHaveBeenCalledTimes(1)
-      expect(mockInvokeApi).toHaveBeenCalledWith({
-        path: '/data/rsu-status/aggregated',
-        token: 'testToken',
-        queryParams: {
-          rsuIp: '10.0.0.1',
-          startTime: startTime.getTime().toString(),
-          endTime: endTime.getTime().toString(),
-          intervalMinutes: intervalMinutes.toString(),
-        },
-        abortController: undefined,
-        failureMessage: 'Failed to fetch aggregated RSU status',
-        tag: 'rsu',
-      })
-    })
-
-    it('should pass abort controller when provided', async () => {
-      const expectedResponse = []
-      mockInvokeApi.mockResolvedValue(expectedResponse)
-
-      const abortController = new AbortController()
-      const startTime = new Date('2025-06-05T21:00:00Z')
-      const endTime = new Date('2025-06-06T21:00:00Z')
-
-      await RsuApi.getAggregatedRsuStatus({
-        token: 'testToken',
-        rsuIp: '10.0.0.1',
-        startTime,
-        endTime,
-        intervalMinutes: 60,
-        abortController,
-      })
-
-      expect(mockInvokeApi).toHaveBeenCalledWith(
-        expect.objectContaining({
-          abortController,
-        })
-      )
-    })
+  const result = await RsuApi.getLatestRsuStatus({
+    token: 'testToken',
+    rsuIp: '10.0.0.1',
   })
+
+  expect(result).toEqual(expectedResponse)
+  expect(fetchMock.mock.calls[0][0]).toContain('rsu-status/latest')
+  expect(fetchMock.mock.calls[0][0]).toContain('rsuIp=10.0.0.1')
+  expect(fetchMock.mock.calls[0][1].method).toBe('GET')
+  expect(fetchMock.mock.calls[0][1].headers).toStrictEqual({ Authorization: 'Bearer testToken' })
+})
+
+it('Test getLatestRsuStatus with abort controller', async () => {
+  const expectedResponse = {
+    timestamp: 1717622387534,
+    intersectionID: '1234',
+    rsuIP: '10.0.0.1',
+    temperature: 37,
+    uptime: 1294615,
+    mode: 4,
+  }
+
+  fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
+
+  const abortController = new AbortController()
+
+  await RsuApi.getLatestRsuStatus({
+    token: 'testToken',
+    rsuIp: '10.0.0.1',
+    abortController,
+  })
+
+  expect(fetchMock.mock.calls[0][1].signal).toBe(abortController.signal)
+})
+
+it('Test getAggregatedRsuStatus', async () => {
+  const expectedResponse = [
+    {
+      timestamp: 1717622387534,
+      intersectionID: '1234',
+      rsuIP: '10.0.0.1',
+      temperature: 37,
+      uptime: 1294615,
+      mode: 4,
+    },
+  ]
+
+  fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
+
+  const startTime = new Date('2025-06-05T21:00:00Z')
+  const endTime = new Date('2025-06-06T21:00:00Z')
+  const intervalMinutes = 60
+
+  const result = await RsuApi.getAggregatedRsuStatus({
+    token: 'testToken',
+    rsuIp: '10.0.0.1',
+    startTime,
+    endTime,
+    intervalMinutes,
+  })
+
+  expect(result).toEqual(expectedResponse)
+  expect(fetchMock.mock.calls[0][0]).toContain('rsu-status/aggregated')
+  expect(fetchMock.mock.calls[0][0]).toContain('rsuIp=10.0.0.1')
+  expect(fetchMock.mock.calls[0][1].method).toBe('GET')
+  expect(fetchMock.mock.calls[0][1].headers).toStrictEqual({ Authorization: 'Bearer testToken' })
+})
+
+it('Test getAggregatedRsuStatus with abort controller', async () => {
+  const expectedResponse = [
+    {
+      timestamp: 1717622387534,
+      intersectionID: '1234',
+      rsuIP: '10.0.0.1',
+      temperature: 37,
+      uptime: 1294615,
+      mode: 4,
+    },
+  ]
+
+  fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
+
+  const abortController = new AbortController()
+  const startTime = new Date('2025-06-05T21:00:00Z')
+  const endTime = new Date('2025-06-06T21:00:00Z')
+
+  await RsuApi.getAggregatedRsuStatus({
+    token: 'testToken',
+    rsuIp: '10.0.0.1',
+    startTime,
+    endTime,
+    intervalMinutes: 60,
+    abortController,
+  })
+
+  expect(fetchMock.mock.calls[0][1].signal).toBe(abortController.signal)
 })

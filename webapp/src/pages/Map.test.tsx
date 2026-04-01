@@ -73,6 +73,7 @@ it('snapshot bsmData clicked', () => {
         bsmCoordinates: [],
         rsuCounts: {},
         mapList: [],
+        rsuData: [],
         bsmStart: '2023-05-10T03:24:00',
         bsmFilterStep: 60, // 1 hour
         bsmFilterOffset: 24 * 4, // 4 days

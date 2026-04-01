@@ -18,6 +18,7 @@ type UserAuthResponse = {
   email: string
   first_name: string
   last_name: string
+  name: string
   super_user: boolean
   organizations: Array<{
     name: string

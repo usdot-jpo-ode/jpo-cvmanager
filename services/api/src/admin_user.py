@@ -7,8 +7,8 @@ import logging
 import common.pgquery as pgquery
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 import admin_new_user
-import os
-from werkzeug.exceptions import InternalServerError, BadRequest
+import api_environment
+from werkzeug.exceptions import InternalServerError, BadRequest, Forbidden
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
     RESOURCE_TYPE,
@@ -33,7 +33,12 @@ def get_user_data(user_email: str, user: EnvironWithOrg, qualified_orgs: list[st
 
     where_clauses = []
     params: dict[str, Any] = {}
-    if not user.user_info.super_user:
+
+    # Filter by user's organization
+    if user.organization:
+        where_clauses.append("org.name = :user_org_name")
+        params["user_org_name"] = user.organization
+    elif not user.user_info.super_user:
         org_names_placeholder, _ = generate_sql_placeholders_for_list(
             qualified_orgs, params_to_update=params
         )
@@ -117,7 +122,7 @@ def check_safe_input(user_spec):
     return True
 
 
-def modify_user(orig_email: str, user_spec: dict):
+def modify_user(orig_email: str, user_spec: dict, requesting_user: EnvironWithOrg):
     # Check for special characters for potential SQL injection
     if not admin_new_user.check_email(
         user_spec["email"]
@@ -129,6 +134,24 @@ def modify_user(orig_email: str, user_spec: dict):
         )
 
     try:
+        # Get the target user's super_user status from the database
+        target_user_query = "SELECT super_user FROM public.users WHERE email = :orig_email"
+        target_user_data = pgquery.query_db(target_user_query, params={"orig_email": orig_email})
+
+        if len(target_user_data) > 0:
+            target_super_user_status = target_user_data[0][0] == "1"
+        else:
+            raise BadRequest("User not found")
+
+        # Prevent non-super users from modifying super_user privileges
+        if not requesting_user.user_info.super_user:
+            # Prevent granting super_user privileges
+            if user_spec["super_user"] and not target_super_user_status:
+                raise Forbidden("Only super users can grant super user privileges")
+            # Prevent revoking super_user privileges
+            if not user_spec["super_user"] and target_super_user_status:
+                raise Forbidden("Only super users can revoke super user privileges")
+
         # Modify the existing user data
         query = (
             "UPDATE public.users SET "
@@ -217,6 +240,9 @@ def modify_user(orig_email: str, user_spec: dict):
     except SQLAlchemyError as e:
         logging.error(f"SQL Exception encountered: {e}")
         raise InternalServerError("Encountered unknown issue executing query") from e
+    except Forbidden as e:
+        logging.error(f"Forbidden Exception encountered: {e}")
+        raise e
 
     return {"message": "User successfully modified"}
 
@@ -271,14 +297,14 @@ class AdminUserPatchSchema(Schema):
 
 class AdminUser(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
-        "Access-Control-Allow-Headers": "Content-Type,Authorization",
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
+        "Access-Control-Allow-Headers": "Content-Type,Authorization,Organization",
         "Access-Control-Allow-Methods": "GET,PATCH,DELETE",
         "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Content-Type": "application/json",
     }
 
@@ -330,7 +356,7 @@ class AdminUser(Resource):
         )
 
         return (
-            modify_user(body["orig_email"], body),
+            modify_user(body["orig_email"], body, permission_result.user),
             200,
             self.headers,
         )

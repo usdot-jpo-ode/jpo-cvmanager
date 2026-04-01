@@ -2,6 +2,8 @@
 CREATE EXTENSION IF NOT EXISTS postgis;
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+CREATE SCHEMA IF NOT EXISTS keycloak;
+
 CREATE SEQUENCE public.manufacturers_manufacturer_id_seq
    INCREMENT 1
    START 1
@@ -85,6 +87,22 @@ CREATE TABLE IF NOT EXISTS public.firmware_upgrade_rules
       ON DELETE NO ACTION
 );
 
+CREATE SEQUENCE public.organizations_organization_id_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 2147483647
+    CACHE 1;
+
+CREATE TABLE IF NOT EXISTS public.organizations
+(
+    organization_id integer NOT NULL DEFAULT nextval('organizations_organization_id_seq'::regclass),
+    name character varying(128) COLLATE pg_catalog.default NOT NULL,
+    email character varying(128) COLLATE pg_catalog.default,
+    CONSTRAINT organizations_pkey PRIMARY KEY (organization_id),
+    CONSTRAINT organizations_name UNIQUE (name)
+);
+
 CREATE SEQUENCE public.rsu_credentials_credential_id_seq
    INCREMENT 1
    START 1
@@ -98,8 +116,13 @@ CREATE TABLE IF NOT EXISTS public.rsu_credentials
    username character varying(128) COLLATE pg_catalog.default NOT NULL,
    password character varying(128) COLLATE pg_catalog.default NOT NULL,
    nickname character varying(128) COLLATE pg_catalog.default NOT NULL,
+   owner_organization_id integer NOT NULL,
    CONSTRAINT rsu_credentials_pkey PRIMARY KEY (credential_id),
-   CONSTRAINT rsu_credentials_nickname UNIQUE (nickname)
+   CONSTRAINT rsu_credentials_nickname UNIQUE (nickname),
+   CONSTRAINT fk_rsu_credential_owner_organization_id FOREIGN KEY (owner_organization_id)
+      REFERENCES organizations (organization_id) MATCH SIMPLE
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION
 );
 
 CREATE SEQUENCE public.snmp_credentials_snmp_credential_id_seq
@@ -116,8 +139,13 @@ CREATE TABLE IF NOT EXISTS public.snmp_credentials
    password character varying(128) COLLATE pg_catalog.default NOT NULL,
    encrypt_password character varying(128) COLLATE pg_catalog.default,
    nickname character varying(128) COLLATE pg_catalog.default NOT NULL,
+   owner_organization_id integer NOT NULL,
    CONSTRAINT snmp_credentials_pkey PRIMARY KEY (snmp_credential_id),
-   CONSTRAINT snmp_credentials_nickname UNIQUE (nickname)
+   CONSTRAINT snmp_credentials_nickname UNIQUE (nickname),
+   CONSTRAINT fk_snmp_credential_owner_organization_id FOREIGN KEY (owner_organization_id)
+   REFERENCES organizations (organization_id) MATCH SIMPLE
+   ON UPDATE NO ACTION
+   ON DELETE NO ACTION
 );
 
 CREATE SEQUENCE public.snmp_protocols_snmp_protocol_id_seq
@@ -189,6 +217,18 @@ CREATE TABLE IF NOT EXISTS public.rsus
       ON DELETE NO ACTION
 );
 
+CREATE TABLE IF NOT EXISTS public.rsu_options
+(
+   rsu_id integer NOT NULL,
+   tim_deposit boolean NOT NULL DEFAULT FALSE,
+   snmp_monitoring boolean NOT NULL DEFAULT FALSE,
+   CONSTRAINT rsu_options_pkey PRIMARY KEY (rsu_id),
+   CONSTRAINT fk_rsu_id FOREIGN KEY (rsu_id)
+      REFERENCES public.rsus (rsu_id) MATCH SIMPLE
+      ON UPDATE NO ACTION
+      ON DELETE NO ACTION
+);
+
 CREATE SEQUENCE public.ping_ping_id_seq
    INCREMENT 1
    START 1
@@ -242,22 +282,6 @@ CREATE TABLE IF NOT EXISTS public.users
    super_user bit(1) DEFAULT 0::bit NOT NULL,
    CONSTRAINT users_pkey PRIMARY KEY (user_id),
    CONSTRAINT users_email UNIQUE (email)
-);
-
-CREATE SEQUENCE public.organizations_organization_id_seq
-   INCREMENT 1
-   START 1
-   MINVALUE 1
-   MAXVALUE 2147483647
-   CACHE 1;
-
-CREATE TABLE IF NOT EXISTS public.organizations
-(
-   organization_id integer NOT NULL DEFAULT nextval('organizations_organization_id_seq'::regclass),
-   name character varying(128) COLLATE pg_catalog.default NOT NULL,
-   email character varying(128) COLLATE pg_catalog.default,
-   CONSTRAINT organizations_pkey PRIMARY KEY (organization_id),
-   CONSTRAINT organizations_name UNIQUE (name)
 );
 
 CREATE SEQUENCE public.user_organization_user_organization_id_seq
@@ -328,7 +352,8 @@ CREATE TABLE IF NOT EXISTS public.iss_keys
 (
    iss_key_id integer NOT NULL DEFAULT nextval('iss_keys_iss_key_id_seq'::regclass),
    common_name character varying(128) COLLATE pg_catalog.default NOT NULL,
-   token character varying(128) COLLATE pg_catalog.default NOT NULL
+   token character varying(128) COLLATE pg_catalog.default NOT NULL,
+   CONSTRAINT iss_keys_pkey PRIMARY KEY (iss_key_id)
 );
 
 -- Create scms_health table
@@ -403,9 +428,16 @@ CREATE SEQUENCE public.email_type_email_type_id_seq
 CREATE TABLE IF NOT EXISTS public.email_type
 (
    email_type_id integer NOT NULL DEFAULT nextval('email_type_email_type_id_seq'::regclass),
-   CONSTRAINT email_type_pkey PRIMARY KEY (email_type_id),
    email_type character varying(128) COLLATE pg_catalog.default NOT NULL,
-   CONSTRAINT email_type_unique UNIQUE (email_type)
+   description character varying(256) COLLATE pg_catalog.default,
+   supports_immediate boolean DEFAULT true NOT NULL,
+   supports_hourly boolean DEFAULT false NOT NULL,
+   supports_daily boolean DEFAULT false NOT NULL,
+   supports_weekly boolean DEFAULT false NOT NULL,
+   supports_monthly boolean DEFAULT false NOT NULL,
+   CONSTRAINT email_type_pkey PRIMARY KEY (email_type_id),
+   CONSTRAINT email_type_unique UNIQUE (email_type),
+   CONSTRAINT at_least_one_frequency CHECK (supports_immediate OR supports_hourly OR supports_daily OR supports_weekly OR supports_monthly)
 );
 
 CREATE SEQUENCE public.user_email_notification_user_email_notification_id_seq
@@ -420,15 +452,22 @@ CREATE TABLE IF NOT EXISTS public.user_email_notification
    user_email_notification_id integer NOT NULL DEFAULT nextval('user_email_notification_user_email_notification_id_seq'::regclass),
    user_id integer NOT NULL,
    email_type_id integer NOT NULL,
+   immediate boolean DEFAULT true NOT NULL,
+   hourly boolean DEFAULT false NOT NULL,
+   daily boolean DEFAULT false NOT NULL,
+   weekly boolean DEFAULT false NOT NULL,
+   monthly boolean DEFAULT false NOT NULL,
    CONSTRAINT user_email_notification_pkey PRIMARY KEY (user_email_notification_id),
+   CONSTRAINT user_email_notification_unique UNIQUE (user_id, email_type_id),
+   CONSTRAINT at_least_one_subscription CHECK (immediate OR hourly OR daily OR weekly OR monthly),
    CONSTRAINT fk_user_id FOREIGN KEY (user_id)
       REFERENCES public.users (user_id) MATCH SIMPLE
       ON UPDATE NO ACTION
-      ON DELETE NO ACTION,
+      ON DELETE CASCADE,
    CONSTRAINT fk_email_type_id FOREIGN KEY (email_type_id)
       REFERENCES public.email_type (email_type_id) MATCH SIMPLE
       ON UPDATE NO ACTION
-      ON DELETE NO ACTION
+      ON DELETE CASCADE
 );
 
 CREATE SEQUENCE public.obu_ota_request_id_seq
@@ -440,18 +479,17 @@ CREATE SEQUENCE public.obu_ota_request_id_seq
 
 CREATE TABLE IF NOT EXISTS public.obu_ota_requests (
    request_id integer NOT NULL DEFAULT nextval('obu_ota_request_id_seq'::regclass),
-	obu_sn character varying(128) NOT NULL,
-	request_datetime timestamp NOT NULL,
-	origin_ip inet NOT NULL,
+   obu_sn character varying(128) NOT NULL,
+   request_datetime timestamp NOT NULL,
+   origin_ip inet NOT NULL,
    obu_firmware_version varchar(128) NOT NULL,
    requested_firmware_version varchar(128) NOT NULL,
 	error_status bit(1) NOT NULL,
    error_message varchar(128) NOT NULL,
    manufacturer int4 NOT NULL,
-	CONSTRAINT fk_manufacturer FOREIGN KEY (manufacturer) REFERENCES public.manufacturers(manufacturer_id)
+   CONSTRAINT obu_ota_requests_pkey PRIMARY KEY (request_id),
+   CONSTRAINT fk_manufacturer FOREIGN KEY (manufacturer) REFERENCES public.manufacturers(manufacturer_id)
 );
-
-CREATE SCHEMA IF NOT EXISTS keycloak;
 
 -- Intersections
 CREATE SEQUENCE public.intersections_intersection_id_seq

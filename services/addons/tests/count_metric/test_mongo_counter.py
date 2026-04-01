@@ -1,5 +1,4 @@
-import os
-from datetime import datetime, timedelta
+from datetime import datetime
 from mock import MagicMock, patch
 from addons.images.count_metric import mongo_counter
 
@@ -22,7 +21,6 @@ def test_write_counts_empty():
     mock_collection.insert_many.assert_not_called()
 
 
-@patch.dict(os.environ, {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "name"})
 def test_count_query_bsm():
     mock_collection = MagicMock()
     mock_collection.aggregate.return_value = [
@@ -53,7 +51,6 @@ def test_count_query_bsm():
     assert result == expected_result
 
 
-@patch.dict(os.environ, {"MONGO_DB_URI": "uri", "MONGO_DB_NAME": "name"})
 @patch("addons.images.count_metric.mongo_counter.write_counts")
 @patch("addons.images.count_metric.mongo_counter.count_query")
 def test_run_mongo_counter(mock_count_query, mock_write_counts):

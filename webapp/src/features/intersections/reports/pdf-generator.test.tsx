@@ -2,30 +2,34 @@ import { jsPDF } from 'jspdf'
 import { toPng } from 'html-to-image'
 import { generatePdf } from './pdf-generator'
 import { ReportMetadata } from '../../../apis/intersections/reports-api'
+import { vi } from 'vitest'
 
 // Create a helper function to record constructor calls
-const mockJsPDFConstructor = jest.fn()
+const mockJsPDFConstructor = vi.fn()
 
-jest.mock('jspdf', () => {
-  const addPageMock = jest.fn()
-  const setFontSizeMock = jest.fn()
-  const setFontMock = jest.fn()
-  const textMock = jest.fn()
-  const addImageMock = jest.fn()
-  const saveMock = jest.fn()
+const addPageMock = vi.fn()
+const setFontSizeMock = vi.fn()
+const setFontMock = vi.fn()
+const textMock = vi.fn()
+const addImageMock = vi.fn()
+const saveMock = vi.fn()
+const getHeightMock = vi.fn(() => 297)
+const getWidthMock = vi.fn(() => 210)
+const getImagePropertiesMock = vi.fn(() => ({ height: 100, width: 200 }))
+
+vi.mock('jspdf', () => {
   return {
-    __esModule: true,
     jsPDF: class MockJsPDF {
       addPage = addPageMock
       setFontSize = setFontSizeMock
       setFont = setFontMock
       text = textMock
       addImage = addImageMock
-      getImageProperties = jest.fn(() => ({ height: 100, width: 200 }))
+      getImageProperties = getImagePropertiesMock
       internal = {
         pageSize: {
-          getHeight: jest.fn(() => 297), // mock A4 height in mm
-          getWidth: jest.fn(() => 210), // mock A4 width in mm
+          getHeight: getHeightMock,
+          getWidth: getWidthMock,
         },
       }
       save = saveMock
@@ -37,24 +41,24 @@ jest.mock('jspdf', () => {
   }
 })
 
-jest.mock('html-to-image', () => ({
-  toPng: jest.fn(),
+vi.mock('html-to-image', () => ({
+  toPng: vi.fn(),
 }))
 
 describe('generatePdf', () => {
-  let mockSetLoading: jest.Mock
-  let mockSetProgress: jest.Mock
-  let mockIsModalOpen: jest.Mock
+  let mockSetLoading: any
+  let mockSetProgress: any
+  let mockIsModalOpen: any
   let mockSignal: AbortSignal
   let mockReport: ReportMetadata
 
   beforeEach(() => {
     // Initialize mock functions
-    mockSetLoading = jest.fn()
-    mockSetProgress = jest.fn()
-    mockIsModalOpen = jest.fn().mockReturnValue(true)
+    mockSetLoading = vi.fn()
+    mockSetProgress = vi.fn()
+    mockIsModalOpen = vi.fn().mockReturnValue(true)
     mockSignal = { aborted: false } as AbortSignal
-    jest.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'error').mockImplementation(() => {})
 
     mockReport = {
       reportName: 'Test Report',
@@ -150,14 +154,14 @@ describe('generatePdf', () => {
         },
       ],
     }
-    jest.spyOn(document, 'getElementById').mockImplementation((id) => {
+    vi.spyOn(document, 'getElementById').mockImplementation((id) => {
       const mockElement = document.createElement('div')
       mockElement.id = id
       return mockElement
     })
   })
   afterEach(() => {
-    jest.restoreAllMocks()
+    vi.restoreAllMocks()
   })
 
   it('should initialize the PDF and set loading state', async () => {
@@ -165,14 +169,13 @@ describe('generatePdf', () => {
 
     await generatePdf(mockReport, mockSetLoading, false, mockIsModalOpen, mockSetProgress, mockSignal)
 
-    console.log(pdf.setFontSize)
-    expect(pdf.internal.pageSize.getHeight()).toBe(297)
-    expect(pdf.internal.pageSize.getWidth()).toBe(210)
+    expect(getHeightMock()).toBeCloseTo(297)
+    expect(getWidthMock()).toBeCloseTo(210)
 
     expect(mockSetLoading).toHaveBeenCalledWith(true)
     expect(mockJsPDFConstructor).toHaveBeenCalledWith('p', 'mm', 'a4')
-    expect(pdf.setFontSize).toHaveBeenCalledWith(36)
-    expect(pdf.text).toHaveBeenCalledWith(
+    expect(setFontSizeMock).toHaveBeenCalledWith(36)
+    expect(textMock).toHaveBeenCalledWith(
       'Conflict Monitor Report',
       105, // Centered on A4 width (210mm)
       98.5, // Centered vertically
@@ -183,10 +186,9 @@ describe('generatePdf', () => {
 
   it('should calculate unique lane IDs and total graphs', async () => {
     const pdf = new jsPDF()
-    console.log('pdf-generator-test 220', pdf.getImageProperties, pdf.getImageProperties(''))
     await generatePdf(mockReport, mockSetLoading, true, mockIsModalOpen, mockSetProgress, mockSignal)
 
-    expect(pdf.text).toHaveBeenCalledWith('Lane Direction of Travel', 105, 20, { align: 'center' })
+    expect(textMock).toHaveBeenCalledWith('Lane Direction of Travel', 105, 20, { align: 'center' })
     expect(mockSetProgress).toHaveBeenCalledWith(expect.any(Number))
   })
 
@@ -194,16 +196,16 @@ describe('generatePdf', () => {
     const pdf = new jsPDF()
     await generatePdf(mockReport, mockSetLoading, true, mockIsModalOpen, mockSetProgress, mockSignal)
 
-    expect(pdf.text).toHaveBeenCalledWith('Distance From Centerline Over Time', 105, 25, { align: 'center' })
-    expect(pdf.text).toHaveBeenCalledWith('Vehicle Heading Error Delta Over Time', 105, 25, { align: 'center' })
+    expect(textMock).toHaveBeenCalledWith('Distance From Centerline Over Time', 105, 25, { align: 'center' })
+    expect(textMock).toHaveBeenCalledWith('Vehicle Heading Error Delta Over Time', 105, 25, { align: 'center' })
   })
 
   it('should skip lane-specific charts if includeLaneSpecificCharts is false', async () => {
     const pdf = new jsPDF()
     await generatePdf(mockReport, mockSetLoading, false, mockIsModalOpen, mockSetProgress, mockSignal)
 
-    expect(pdf.text).not.toHaveBeenCalledWith('Distance From Centerline Over Time', 105, 25, { align: 'center' })
-    expect(pdf.text).not.toHaveBeenCalledWith('Vehicle Heading Error Delta Over Time', 105, 25, { align: 'center' })
+    expect(textMock).not.toHaveBeenCalledWith('Distance From Centerline Over Time', 105, 25, { align: 'center' })
+    expect(textMock).not.toHaveBeenCalledWith('Vehicle Heading Error Delta Over Time', 105, 25, { align: 'center' })
   })
 
   it('should save the PDF if the modal is still open', async () => {
@@ -211,7 +213,7 @@ describe('generatePdf', () => {
     await generatePdf(mockReport, mockSetLoading, false, mockIsModalOpen, mockSetProgress, mockSignal)
 
     expect(mockIsModalOpen).toHaveBeenCalled()
-    expect(pdf.save).toHaveBeenCalledWith('Test Report.pdf')
+    expect(saveMock).toHaveBeenCalledWith('Test Report.pdf')
   })
 
   it('should not save the PDF if the modal is closed', async () => {
@@ -220,11 +222,11 @@ describe('generatePdf', () => {
     await generatePdf(mockReport, mockSetLoading, false, mockIsModalOpen, mockSetProgress, mockSignal)
 
     expect(mockIsModalOpen).toHaveBeenCalled()
-    expect(pdf.save).not.toHaveBeenCalled()
+    expect(saveMock).not.toHaveBeenCalled()
   })
 
   it('should handle errors during graph capture gracefully', async () => {
-    ;(toPng as jest.Mock).mockRejectedValue(new Error('Graph capture failed'))
+    ;(toPng as any).mockRejectedValue(new Error('Graph capture failed'))
     await generatePdf(mockReport, mockSetLoading, false, mockIsModalOpen, mockSetProgress, mockSignal)
 
     expect(console.error).toHaveBeenCalledWith('Error capturing graph:', expect.any(Error))

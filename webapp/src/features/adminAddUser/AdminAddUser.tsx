@@ -41,6 +41,7 @@ import {
 } from '@mui/material'
 import { ErrorMessageText } from '../../styles/components/Messages'
 import { SideBarHeader } from '../../styles/components/SideBarHeader'
+import {selectSuperUser} from "../../generalSlices/userSlice";
 
 const AdminAddUser = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -50,6 +51,7 @@ const AdminAddUser = () => {
   const availableRoles = useSelector(selectAvailableRoles)
   const apiData = useSelector(selectApiData)
   const submitAttempt = useSelector(selectSubmitAttempt)
+  const isSuperUser = useSelector(selectSuperUser)
   const [open, setOpen] = useState(true)
   const navigate = useNavigate()
   const {
@@ -170,9 +172,11 @@ const AdminAddUser = () => {
             </FormControl>
           </Form.Group>
 
-          <Form.Group controlId="super_user">
-            <Form.Check label=" Super User" type="switch" {...register('super_user')} />
-          </Form.Group>
+          {isSuperUser && (
+            <Form.Group controlId="super_user">
+              <Form.Check label=" Super User" type="switch" {...register('super_user')} />
+            </Form.Group>
+          )}
 
           <Form.Group controlId="organizations">
             <FormControl fullWidth margin="normal">

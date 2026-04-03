@@ -16,4 +16,20 @@ export type AdminRsu = {
   snmp_credential_group: string
   snmp_version_group: string
   organizations: string[]
+  tim_deposit: boolean
+  snmp_monitoring: boolean
+}
+
+export type AdminRsuAllowedSelections = {
+  primary_routes: string[]
+  rsu_models: string[]
+  ssh_credential_groups: string[]
+  snmp_credential_groups: string[]
+  snmp_version_groups: string[]
+  organizations: string[]
+}
+
+export type AdminRsuWithAllowedSelections = {
+  rsu_data: AdminRsu
+  allowed_selections: AdminRsuAllowedSelections
 }

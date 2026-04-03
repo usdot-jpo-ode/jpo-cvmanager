@@ -1,19 +1,10 @@
 class EnvironmentVars {
   static getBaseApiUrl() {
-    return process.env.REACT_APP_GATEWAY_BASE_URL?.replace(/\/$/, '') // remove trailing slash
-  }
-
-  static getMessageTypes() {
-    const COUNT_MESSAGE_TYPES = process.env.REACT_APP_COUNT_MESSAGE_TYPES
-    if (!COUNT_MESSAGE_TYPES) {
-      return []
-    }
-    const messageTypes = COUNT_MESSAGE_TYPES.split(',').map((item) => item.trim())
-    return messageTypes
+    return process.env.VITE_GATEWAY_BASE_URL?.replace(/\/$/, '') // remove trailing slash
   }
 
   static getMessageViewerTypes() {
-    const VIEWER_MESSAGE_TYPES = process.env.REACT_APP_VIEWER_MESSAGE_TYPES
+    const VIEWER_MESSAGE_TYPES = process.env.VITE_VIEWER_MESSAGE_TYPES
     if (!VIEWER_MESSAGE_TYPES) {
       return ['BSM'] // default to BSM if not set
     }
@@ -22,9 +13,9 @@ class EnvironmentVars {
   }
 
   static getMapboxInitViewState() {
-    const MAPBOX_INIT_LATITUDE = Number(process.env.REACT_APP_MAPBOX_INIT_LATITUDE)
-    const MAPBOX_INIT_LONGITUDE = Number(process.env.REACT_APP_MAPBOX_INIT_LONGITUDE)
-    const MAPBOX_INIT_ZOOM = Number(process.env.REACT_APP_MAPBOX_INIT_ZOOM)
+    const MAPBOX_INIT_LATITUDE = Number(process.env.VITE_MAPBOX_INIT_LATITUDE)
+    const MAPBOX_INIT_LONGITUDE = Number(process.env.VITE_MAPBOX_INIT_LONGITUDE)
+    const MAPBOX_INIT_ZOOM = Number(process.env.VITE_MAPBOX_INIT_ZOOM)
 
     const viewState = {
       latitude: MAPBOX_INIT_LATITUDE,
@@ -35,20 +26,19 @@ class EnvironmentVars {
     return viewState
   }
 
-  static MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN
-  static CVIZ_API_SERVER_URL = process.env.REACT_APP_CVIZ_API_SERVER_URL?.replace(/\/$/, '') // remove trailing slash
-  static CVIZ_API_WS_URL = process.env.REACT_APP_CVIZ_API_WS_URL?.replace(/\/$/, '') // remove trailing slash
-  static KEYCLOAK_HOST_URL = process.env.REACT_APP_KEYCLOAK_URL
-  static KEYCLOAK_REALM = process.env.REACT_APP_KEYCLOAK_REALM
-  static KEYCLOAK_CLIENT_ID = process.env.REACT_APP_KEYCLOAK_CLIENT_ID
-  static DOT_NAME = process.env.REACT_APP_DOT_NAME
-  static ENABLE_RSU_FEATURES = process.env.REACT_APP_ENABLE_RSU_FEATURES !== 'false'
-  static ENABLE_INTERSECTION_FEATURES = process.env.REACT_APP_ENABLE_INTERSECTION_FEATURES !== 'false'
-  static ENABLE_WZDX_FEATURES = process.env.REACT_APP_ENABLE_WZDX_FEATURES !== 'false'
-  static ENABLE_MOOVE_AI_FEATURES = process.env.REACT_APP_ENABLE_MOOVE_AI_FEATURES !== 'false'
-  static ENABLE_HAAS_FEATURES = process.env.REACT_APP_ENABLE_HAAS_FEATURES !== 'false'
-  static WEBAPP_THEME_LIGHT = process.env.REACT_APP_WEBAPP_THEME_LIGHT
-  static WEBAPP_THEME_DARK = process.env.REACT_APP_WEBAPP_THEME_DARK
+  static MAPBOX_TOKEN = process.env.VITE_MAPBOX_TOKEN
+  static CVIZ_API_SERVER_URL = process.env.VITE_CVIZ_API_SERVER_URL?.replace(/\/$/, '') // remove trailing slash
+  static CVIZ_API_WS_URL = process.env.VITE_CVIZ_API_WS_URL?.replace(/\/$/, '') // remove trailing slash
+  static KEYCLOAK_HOST_URL = process.env.VITE_KEYCLOAK_URL
+  static KEYCLOAK_REALM = process.env.VITE_KEYCLOAK_REALM
+  static KEYCLOAK_CLIENT_ID = process.env.VITE_KEYCLOAK_CLIENT_ID
+  static DOT_NAME = process.env.VITE_DOT_NAME
+  static ENABLE_RSU_FEATURES = process.env.VITE_ENABLE_RSU_FEATURES !== 'false'
+  static ENABLE_INTERSECTION_FEATURES = process.env.VITE_ENABLE_INTERSECTION_FEATURES !== 'false'
+  static ENABLE_WZDX_FEATURES = process.env.VITE_ENABLE_WZDX_FEATURES !== 'false'
+  static ENABLE_HAAS_FEATURES = process.env.VITE_ENABLE_HAAS_FEATURES !== 'false'
+  static WEBAPP_THEME_LIGHT = process.env.VITE_WEBAPP_THEME_LIGHT
+  static WEBAPP_THEME_DARK = process.env.VITE_WEBAPP_THEME_DARK
 
   static cvmanagerBaseEndpoint = `${this.getBaseApiUrl()}`
   static rsuInfoEndpoint = `${this.getBaseApiUrl()}/rsuinfo`
@@ -58,13 +48,10 @@ class EnvironmentVars {
   static wzdxEndpoint = `${this.getBaseApiUrl()}/wzdx-feed`
   static rsuGeoQueryEndpoint = `${this.getBaseApiUrl()}/rsu-config-geo-query`
   static rsuMsgFwdQueryEndpoint = `${this.getBaseApiUrl()}/rsu-msgfwd-query`
+  static rsuMsgFwdFetchEndpoint = `${this.getBaseApiUrl()}/rsu-msgfwd-fetch`
   static geoMsgDataEndpoint = `${this.getBaseApiUrl()}/rsu-geo-msg-data`
-  static mooveAiDataEndpoint = `${this.getBaseApiUrl()}/moove-ai-data`
   static issScmsStatusEndpoint = `${this.getBaseApiUrl()}/iss-scms-status`
   static ssmSrmEndpoint = `${this.getBaseApiUrl()}/rsu-ssm-srm-data`
-  static authEndpoint = `${this.getBaseApiUrl()}/user-auth`
-  static adminAddRsu = `${this.getBaseApiUrl()}/admin-new-rsu`
-  static adminRsu = `${this.getBaseApiUrl()}/admin-rsu`
   static adminAddIntersection = `${this.getBaseApiUrl()}/admin-new-intersection`
   static adminIntersection = `${this.getBaseApiUrl()}/admin-intersection`
   static adminAddUser = `${this.getBaseApiUrl()}/admin-new-user`
@@ -73,6 +60,8 @@ class EnvironmentVars {
   static adminAddNotification = `${this.getBaseApiUrl()}/admin-new-notification`
   static adminAddOrg = `${this.getBaseApiUrl()}/admin-new-org`
   static adminOrg = `${this.getBaseApiUrl()}/admin-org`
+  static adminOrgTimDeposit = `${this.getBaseApiUrl()}/admin-org-tim-deposit`
+  static adminOrgSnmpMonitoring = `${this.getBaseApiUrl()}/admin-org-snmp-monitoring`
   static contactSupport = `${this.getBaseApiUrl()}/contact-support`
   static rsuErrorSummary = `${this.getBaseApiUrl()}/rsu-error-summary`
 }

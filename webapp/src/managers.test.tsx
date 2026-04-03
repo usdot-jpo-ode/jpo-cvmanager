@@ -80,3 +80,155 @@ test('LocalStorageManager correctly removes auth data', () => {
   LocalStorageManager.removeAuthData()
   expect(LocalStorageManager.getAuthData()).toBe(null)
 })
+
+// Tests for UserManager.isSuperUser
+describe('UserManager.isSuperUser', () => {
+  test('returns true when super_user is true', () => {
+    const authLoginData: AuthLoginData = {
+      data: {
+        name: 'Test User',
+        email: 'test@example.com',
+        super_user: true,
+        organizations: [],
+      },
+      token: 'test-token',
+      expires_at: Date.now() + 1000 * 60 * 5,
+    }
+
+    expect(UserManager.isSuperUser(authLoginData)).toBe(true)
+  })
+
+  test('returns false when super_user is false', () => {
+    const authLoginData: AuthLoginData = {
+      data: {
+        name: 'Test User',
+        email: 'test@example.com',
+        super_user: false,
+        organizations: [],
+      },
+      token: 'test-token',
+      expires_at: Date.now() + 1000 * 60 * 5,
+    }
+
+    expect(UserManager.isSuperUser(authLoginData)).toBe(false)
+  })
+
+  test('returns false when authLoginData is null', () => {
+    expect(UserManager.isSuperUser(null)).toBe(false)
+  })
+
+  test('returns false when authLoginData is undefined', () => {
+    expect(UserManager.isSuperUser(undefined)).toBe(false)
+  })
+
+  test('returns false when data is undefined', () => {
+    const authLoginData: AuthLoginData = {
+      data: undefined,
+      token: 'test-token',
+      expires_at: Date.now() + 1000 * 60 * 5,
+    }
+
+    expect(UserManager.isSuperUser(authLoginData)).toBe(false)
+  })
+
+  test('returns false when super_user is undefined', () => {
+    const authLoginData: AuthLoginData = {
+      data: {
+        name: 'Test User',
+        email: 'test@example.com',
+        super_user: undefined,
+        organizations: [],
+      },
+      token: 'test-token',
+      expires_at: Date.now() + 1000 * 60 * 5,
+    }
+
+    expect(UserManager.isSuperUser(authLoginData)).toBe(false)
+  })
+})
+
+// Tests for LocalStorageManager.getIsSuperUser
+describe('LocalStorageManager.getIsSuperUser', () => {
+  beforeEach(() => {
+    // Clear localStorage before each test
+    localStorage.clear()
+  })
+
+  test('returns true when stored user is super user', () => {
+    const authData: AuthLoginData = {
+      data: {
+        name: 'Super User',
+        email: 'super@example.com',
+        super_user: true,
+        organizations: [],
+      },
+      token: 'test-token',
+      expires_at: Date.now() + 1000 * 60 * 5,
+    }
+
+    LocalStorageManager.setAuthData(authData)
+    expect(LocalStorageManager.getIsSuperUser()).toBe(true)
+  })
+
+  test('returns false when stored user is not super user', () => {
+    const authData: AuthLoginData = {
+      data: {
+        name: 'Regular User',
+        email: 'user@example.com',
+        super_user: false,
+        organizations: [],
+      },
+      token: 'test-token',
+      expires_at: Date.now() + 1000 * 60 * 5,
+    }
+
+    LocalStorageManager.setAuthData(authData)
+    expect(LocalStorageManager.getIsSuperUser()).toBe(false)
+  })
+
+  test('returns false when no auth data is stored', () => {
+    expect(LocalStorageManager.getIsSuperUser()).toBe(false)
+  })
+
+  test('returns false when localStorage contains undefined string', () => {
+    localStorage.setItem('authLoginData', 'undefined')
+    expect(LocalStorageManager.getIsSuperUser()).toBe(false)
+  })
+
+  test('returns false when stored auth data has no super_user field', () => {
+    const authData: AuthLoginData = {
+      data: {
+        name: 'User',
+        email: 'user@example.com',
+        super_user: undefined,
+        organizations: [],
+      },
+      token: 'test-token',
+      expires_at: Date.now() + 1000 * 60 * 5,
+    }
+
+    LocalStorageManager.setAuthData(authData)
+    expect(LocalStorageManager.getIsSuperUser()).toBe(false)
+  })
+
+  test('returns false after auth data is removed', () => {
+    const authData: AuthLoginData = {
+      data: {
+        name: 'Super User',
+        email: 'super@example.com',
+        super_user: true,
+        organizations: [],
+      },
+      token: 'test-token',
+      expires_at: Date.now() + 1000 * 60 * 5,
+    }
+
+    LocalStorageManager.setAuthData(authData)
+    expect(LocalStorageManager.getIsSuperUser()).toBe(true)
+    
+    LocalStorageManager.removeAuthData()
+    expect(LocalStorageManager.getIsSuperUser()).toBe(false)
+  })
+})
+
+

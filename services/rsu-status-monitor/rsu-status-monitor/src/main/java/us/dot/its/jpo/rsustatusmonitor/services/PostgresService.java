@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import us.dot.its.jpo.rsustatusmonitor.models.postgres.derived.RsuSnmpCredentials;
 
@@ -25,9 +26,20 @@ public class PostgresService {
             "LEFT JOIN RsuIntersection ri ON rsu.rsu_id = ri.rsu_id " +
             "LEFT JOIN Intersections i ON ri.intersection_id = i.intersection_id";
 
+    // Finds RSU SNMP credentials for a specific RSU by IPv4 address
+    private final String findRsuSnmpCredentialsByIp = findRsuSnmpCredentials + " WHERE rsu.ipv4_address = :ipAddress";
+
     public List<RsuSnmpCredentials> getRsusWithCredentials() {
         TypedQuery<RsuSnmpCredentials> query = entityManager.createQuery(findRsuSnmpCredentials,
                 RsuSnmpCredentials.class);
         return query.getResultList();
+    }
+
+    public Optional<RsuSnmpCredentials> getRsuCredentialsByIp(String ipAddress) {
+        TypedQuery<RsuSnmpCredentials> query = entityManager.createQuery(findRsuSnmpCredentialsByIp,
+                RsuSnmpCredentials.class);
+        query.setParameter("ipAddress", ipAddress);
+        query.setMaxResults(1);
+        return query.getResultList().stream().findFirst();
     }
 }

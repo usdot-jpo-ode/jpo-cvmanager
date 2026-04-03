@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from werkzeug.exceptions import HTTPException, BadRequest, InternalServerError
 from api.tests.data import auth_data
 from common.auth_tools import ENVIRON_USER_KEY
+from copy import deepcopy
 
 user_valid = auth_data.get_request_environ()
 
@@ -185,6 +186,27 @@ def test_get_intersection_data_none(mock_query_db):
     )
     assert actual_result == expected_intersection_data
 
+@patch("api.src.admin_intersection.pgquery.query_db")
+def test_get_intersection_data_filter_by_org(mock_query_db):
+    mock_query_db.return_value = admin_intersection_data.get_intersection_data_return
+
+    # Clone user_valid and assign org for this test
+    user_with_org = deepcopy(user_valid)
+    user_with_org.organization = "TestOrg"
+
+    admin_intersection.get_intersection_data("1123", user_with_org, [])
+
+    called_query = mock_query_db.call_args[0][0]
+    assert "org.name = :user_org_name" in called_query
+
+@patch("api.src.admin_intersection.pgquery.query_db")
+def test_get_intersection_data_no_org_no_filter(mock_query_db):
+    mock_query_db.return_value = admin_intersection_data.get_intersection_data_return
+
+    admin_intersection.get_intersection_data("1123", user_valid, [])
+
+    called_query = mock_query_db.call_args[0][0]
+    assert "org.name = :user_org_name" not in called_query
 
 # get_modify_intersection_data
 @patch("api.src.admin_intersection.get_intersection_data")

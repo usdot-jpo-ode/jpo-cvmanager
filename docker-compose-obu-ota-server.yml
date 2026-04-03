@@ -12,22 +12,22 @@ services:
     ports:
       - 8085:8085
     environment:
-      SERVER_HOST: ${OBU_OTA_SERVER_HOST}
-      LOGGING_LEVEL: ${OBU_OTA_LOGGING_LEVEL}
-      BLOB_STORAGE_PROVIDER: ${BLOB_STORAGE_PROVIDER}
-      BLOB_STORAGE_BUCKET: ${OBU_OTA_BLOB_STORAGE_BUCKET}
-      BLOB_STORAGE_PATH: ${OBU_OTA_BLOB_STORAGE_PATH}
+      SERVER_HOST: ${OBU_OTA_SERVER_HOST:-}
+      LOGGING_LEVEL: ${OBU_OTA_LOGGING_LEVEL:-}
+      BLOB_STORAGE_PROVIDER: ${BLOB_STORAGE_PROVIDER:-DOCKER}
+      BLOB_STORAGE_BUCKET: ${OBU_OTA_BLOB_STORAGE_BUCKET:-}
+      BLOB_STORAGE_PATH: ${OBU_OTA_BLOB_STORAGE_PATH:-}
 
-      OTA_USERNAME: ${OTA_USERNAME}
-      OTA_PASSWORD: ${OTA_PASSWORD}
+      OTA_USERNAME: ${OTA_USERNAME:-admin}
+      OTA_PASSWORD: ${OTA_PASSWORD:-admin}
 
-      PG_DB_HOST: ${PG_DB_HOST}
-      PG_DB_NAME: ${PG_DB_NAME}
-      PG_DB_USER: ${PG_DB_USER}
-      PG_DB_PASS: ${PG_DB_PASS}
+      PG_DB_HOST: ${PG_DB_HOST:-cvmanager_postgres}
+      PG_DB_USER: ${PG_DB_USER:-postgres}
+      PG_DB_PASS: ${PG_DB_PASS:-postgres}
+      PG_DB_NAME: ${PG_DB_NAME:-postgres}
 
-      MAX_COUNT: ${MAX_COUNT}
-      NGINX_ENCRYPTION: ${NGINX_ENCRYPTION}
+      MAX_COUNT: ${MAX_COUNT:-10}
+      NGINX_ENCRYPTION: ${NGINX_ENCRYPTION:-plain}
     volumes:
       - ./resources/ota/firmwares:/firmwares
     logging:
@@ -48,12 +48,12 @@ services:
       - 443:443
     environment:
       NGINX_ENVSUBST_OUTPUT_DIR: /etc/nginx
-      SERVER_HOST: ${OBU_OTA_SERVER_HOST}
+      SERVER_HOST: ${OBU_OTA_SERVER_HOST:-}
     volumes:
-      - ./resources/ota/nginx/nginx-${NGINX_ENCRYPTION}.conf:/etc/nginx/templates/nginx.conf.template
+      - ./resources/ota/nginx/nginx-${NGINX_ENCRYPTION:-plain}.conf:/etc/nginx/templates/nginx.conf.template
       - ./resources/ota/nginx/gen_dhparam.sh:/docker-entrypoint.d/gen_dhparam.sh
-      - ./resources/ota/nginx/ssl/${SERVER_CERT_FILE}:/etc/ssl/certs/ota_server.crt
-      - ./resources/ota/nginx/ssl/${SERVER_KEY_FILE}:/etc/ssl/private/ota_server.key
+      - ./resources/ota/nginx/ssl/${SERVER_CERT_FILE:-ota_server.crt}:/etc/ssl/certs/ota_server.crt
+      - ./resources/ota/nginx/ssl/${SERVER_KEY_FILE:-ota_server.key}:/etc/ssl/private/ota_server.key
     depends_on:
       - jpo_ota_backend
     logging:

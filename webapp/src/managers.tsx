@@ -17,6 +17,13 @@ const LocalStorageManager = {
   removeAuthData: () => {
     return localStorage.removeItem(AUTH_DATA_LOCAL_STORAGE_KEY)
   },
+  getIsSuperUser: () => {
+    let authData = null
+    if (localStorage.getItem(AUTH_DATA_LOCAL_STORAGE_KEY) !== 'undefined') {
+      authData = JSON.parse(localStorage.getItem(AUTH_DATA_LOCAL_STORAGE_KEY))
+    }
+    return UserManager.isSuperUser(authData)
+  },
 }
 
 const UserManager = {
@@ -32,6 +39,7 @@ const UserManager = {
   isLoginActive: (authLoginData: AuthLoginData): boolean => {
     return authLoginData != undefined && Date.now() < authLoginData.expires_at
   },
+  isSuperUser: (authLoginData: AuthLoginData): boolean => authLoginData?.data?.super_user ?? false,
 }
 
 const SecureStorageManager = {

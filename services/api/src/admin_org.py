@@ -7,7 +7,7 @@ import logging
 import common.pgquery as pgquery
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 import admin_new_user
-import os
+import api_environment
 from werkzeug.exceptions import InternalServerError, BadRequest, Conflict, Forbidden
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
@@ -88,12 +88,14 @@ def get_org_data(org_name: str, is_admin_in_org: bool):
     rsu_query = (
         "SELECT to_jsonb(row) "
         "FROM ("
-        "SELECT r.ipv4_address, r.primary_route, r.milepost "
+        "SELECT r.ipv4_address, r.primary_route, r.milepost, r.tim_deposit, r.snmp_monitoring "
         "FROM public.organizations AS org "
         "JOIN ("
-        "SELECT ro.organization_id, rsus.ipv4_address, rsus.primary_route, rsus.milepost "
+        "SELECT ro.organization_id, rsus.ipv4_address, rsus.primary_route, rsus.milepost, "
+        "COALESCE(opts.tim_deposit, FALSE) as tim_deposit, COALESCE(opts.snmp_monitoring, FALSE) as snmp_monitoring "
         "FROM public.rsu_organization ro "
-        "JOIN public.rsus ON ro.rsu_id = rsus.rsu_id"
+        "JOIN public.rsus ON ro.rsu_id = rsus.rsu_id "
+        "LEFT JOIN public.rsu_options opts ON rsus.rsu_id = opts.rsu_id"
         ") r ON r.organization_id = org.organization_id "
         "WHERE org.name = :org_name"
         ") as row"
@@ -106,6 +108,8 @@ def get_org_data(org_name: str, is_admin_in_org: bool):
         rsu_obj["ip"] = str(row["ipv4_address"])
         rsu_obj["primary_route"] = row["primary_route"]
         rsu_obj["milepost"] = row["milepost"]
+        rsu_obj["tim_deposit"] = row["tim_deposit"]
+        rsu_obj["snmp_monitoring"] = row["snmp_monitoring"]
         org_obj["org_rsus"].append(rsu_obj)
 
     # Get all Intersection members of the organization
@@ -212,7 +216,7 @@ def check_safe_input(org_spec):
     required_role=ORG_ROLE_LITERAL.ADMIN,
     resource_type=RESOURCE_TYPE.ORGANIZATION,
 )
-def modify_org_authorized(orig_name: str, org_spec: dict):
+def modify_org_authorized(orig_name: str, org_spec: dict, is_bulk_update: bool = False):
     # Check for special characters for potential SQL injection
     if not check_safe_input(org_spec):
         raise BadRequest(
@@ -233,6 +237,46 @@ def modify_org_authorized(orig_name: str, org_spec: dict):
             "orig_name": orig_name,
         }
         pgquery.write_db(query, params=params)
+
+        # Handle bulk updates for tim_deposit and snmp_monitoring
+        if is_bulk_update and ("tim_deposit" in org_spec or "snmp_monitoring" in org_spec):
+            logging.info(f"Bulk updating RSU options for all RSUs in organization {org_spec['name']}")
+
+            # Build the update query to handle both columns
+            # Only include columns that are actually being updated to avoid overwriting
+            # other column values with defaults
+            update_columns = []
+            insert_columns = ["rsu_id"]
+            select_columns = ["ro.rsu_id"]
+            params_dict = {"name": org_spec["name"]}
+
+            # Only add tim_deposit to the query if it's being updated
+            if "tim_deposit" in org_spec:
+                insert_columns.append("tim_deposit")
+                select_columns.append(":tim_deposit")
+                update_columns.append("tim_deposit = EXCLUDED.tim_deposit")
+                params_dict["tim_deposit"] = org_spec["tim_deposit"]
+
+            # Only add snmp_monitoring to the query if it's being updated
+            if "snmp_monitoring" in org_spec:
+                insert_columns.append("snmp_monitoring")
+                select_columns.append(":snmp_monitoring")
+                update_columns.append("snmp_monitoring = EXCLUDED.snmp_monitoring")
+                params_dict["snmp_monitoring"] = org_spec["snmp_monitoring"]
+
+            # This upsert will:
+            # - INSERT new rows with only the specified column(s)
+            # - UPDATE existing rows with only the specified column(s), preserving other values
+            bulk_update_query = (
+                f"INSERT INTO public.rsu_options ({', '.join(insert_columns)}) "
+                f"SELECT {', '.join(select_columns)} "
+                "FROM public.rsu_organization ro "
+                "JOIN public.organizations org ON ro.organization_id = org.organization_id "
+                "WHERE org.name = :name "
+                f"ON CONFLICT (rsu_id) DO UPDATE SET {', '.join(update_columns)}"
+            )
+
+            pgquery.write_db(bulk_update_query, params=params_dict)
 
         if len(org_spec["users_to_add"]) > 0:
             query_rows: list[tuple[str, dict]] = []
@@ -384,7 +428,7 @@ def modify_org_authorized(orig_name: str, org_spec: dict):
         logging.error(f"SQL Exception encountered: {e}")
         raise InternalServerError("Encountered unknown issue executing query") from e
 
-    return {"message": "Organization successfully modified"}
+    return get_modify_org_data_authorized(org_spec["name"])
 
 
 @require_permission(
@@ -501,18 +545,20 @@ class AdminOrgPatchSchema(Schema):
     rsus_to_remove = fields.List(fields.IPv4(), required=True)
     intersections_to_add = fields.List(fields.Integer, required=True)
     intersections_to_remove = fields.List(fields.Integer, required=True)
+    tim_deposit = fields.Bool(required=False)
+    snmp_monitoring = fields.Bool(required=False)
 
 
 class AdminOrg(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization",
         "Access-Control-Allow-Methods": "GET,PATCH,DELETE",
         "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Content-Type": "application/json",
     }
 
@@ -544,7 +590,9 @@ class AdminOrg(Resource):
             logging.error(str(errors))
             abort(400, str(errors))
         return (
-            modify_org_authorized(request.json["orig_name"], request.json),
+            modify_org_authorized(
+                request.json["orig_name"], request.json, is_bulk_update=False
+            ),
             200,
             self.headers,
         )
@@ -561,3 +609,75 @@ class AdminOrg(Resource):
 
         org_name = urllib.request.unquote(request.args["org_name"])
         return (delete_org_authorized(org_name), 200, self.headers)
+
+
+class AdminOrgTimDeposit(Resource):
+    options_headers = {
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
+        "Access-Control-Allow-Headers": "Content-Type,Authorization",
+        "Access-Control-Allow-Methods": "PATCH",
+        "Access-Control-Max-Age": "3600",
+    }
+
+    headers = {
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
+        "Content-Type": "application/json",
+    }
+
+    def options(self):
+        # CORS support
+        return ("", 204, self.options_headers)
+
+    @require_permission(required_role=ORG_ROLE_LITERAL.ADMIN)
+    def patch(self):
+        logging.debug("AdminOrgTimDeposit PATCH requested")
+
+        # Check for main body values
+        schema = AdminOrgPatchSchema()
+        errors = schema.validate(request.json)
+        if errors:
+            logging.error(str(errors))
+            abort(400, str(errors))
+        return (
+            modify_org_authorized(
+                request.json["orig_name"], request.json, is_bulk_update=True
+            ),
+            200,
+            self.headers,
+        )
+
+
+class AdminOrgSnmpMonitoring(Resource):
+    options_headers = {
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
+        "Access-Control-Allow-Headers": "Content-Type,Authorization",
+        "Access-Control-Allow-Methods": "PATCH",
+        "Access-Control-Max-Age": "3600",
+    }
+
+    headers = {
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
+        "Content-Type": "application/json",
+    }
+
+    def options(self):
+        # CORS support
+        return ("", 204, self.options_headers)
+
+    @require_permission(required_role=ORG_ROLE_LITERAL.ADMIN)
+    def patch(self):
+        logging.debug("AdminOrgSnmpMonitoring PATCH requested")
+
+        # Check for main body values
+        schema = AdminOrgPatchSchema()
+        errors = schema.validate(request.json)
+        if errors:
+            logging.error(str(errors))
+            abort(400, str(errors))
+        return (
+            modify_org_authorized(
+                request.json["orig_name"], request.json, is_bulk_update=True
+            ),
+            200,
+            self.headers,
+        )

@@ -2,7 +2,7 @@ from typing import Any
 from flask_restful import Resource
 import logging
 import common.pgquery as pgquery
-import os
+import api_environment
 
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
@@ -14,16 +14,18 @@ from common.auth_tools import (
 
 
 def get_rsu_data(user: EnvironWithOrg, qualified_orgs: list[str]):
-
     # Execute the query and fetch all results
     query = (
         "SELECT jsonb_build_object('type', 'Feature', 'id', row.rsu_id, 'geometry', ST_AsGeoJSON(row.geography)::jsonb, 'properties', to_jsonb(row)) "
         "FROM ("
-        "SELECT rd.rsu_id, rd.geography, rd.milepost, rd.ipv4_address, rd.serial_number, rd.primary_route, rm.name AS model_name, man.name AS manufacturer_name "
+        "SELECT rd.rsu_id, rd.geography, rd.milepost, rd.ipv4_address, rd.serial_number, rd.primary_route, "
+        "COALESCE(opt.tim_deposit, FALSE) AS tim_deposit, COALESCE(opt.snmp_monitoring, FALSE) AS snmp_monitoring, "
+        "rm.name AS model_name, man.name AS manufacturer_name "
         "FROM public.rsus AS rd "
         "JOIN public.rsu_organization_name AS ron_v ON ron_v.rsu_id = rd.rsu_id "
         "JOIN public.rsu_models AS rm ON rm.rsu_model_id = rd.model "
         "JOIN public.manufacturers AS man ON man.manufacturer_id = rm.manufacturer "
+        "LEFT JOIN public.rsu_options AS opt ON opt.rsu_id = rd.rsu_id "
     )
 
     where_clause = None
@@ -54,14 +56,14 @@ def get_rsu_data(user: EnvironWithOrg, qualified_orgs: list[str]):
 # REST endpoint resource class
 class RsuInfo(Resource):
     options_headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Access-Control-Allow-Headers": "Content-Type,Authorization,Organization",
         "Access-Control-Allow-Methods": "GET",
         "Access-Control-Max-Age": "3600",
     }
 
     headers = {
-        "Access-Control-Allow-Origin": os.environ["CORS_DOMAIN"],
+        "Access-Control-Allow-Origin": api_environment.CORS_DOMAIN,
         "Content-Type": "application/json",
     }
 

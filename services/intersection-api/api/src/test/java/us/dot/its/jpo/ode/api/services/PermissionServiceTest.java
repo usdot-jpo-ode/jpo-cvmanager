@@ -1,363 +1,472 @@
 package us.dot.its.jpo.ode.api.services;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
-import us.dot.its.jpo.ode.api.models.postgres.tables.Users;
+import us.dot.its.jpo.ode.api.models.keycloak.CvManagerAuthToken;
+import us.dot.its.jpo.ode.api.repositories.IntersectionRepository;
+import us.dot.its.jpo.ode.api.repositories.RsuRepository;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-public class PermissionServiceTest {
+@ExtendWith(MockitoExtension.class)
+class PermissionServiceTest {
 
     @Mock
-    private PostgresService postgresService;
+    private IntersectionRepository intersectionRepository;
 
     @Mock
-    private JwtAuthenticationToken authentication;
+    private RsuRepository rsuRepository;
 
     @Mock
     private SecurityContext securityContext;
 
     @Mock
-    private Jwt jwtToken;
+    private CvManagerAuthToken authToken;
 
+    @Spy
     @InjectMocks
     private PermissionService permissionService;
 
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
+    private String tokenString = "mock-token";
+
+    @AfterEach
+    void tearDown() {
+        SecurityContextHolder.clearContext();
+        RequestContextHolder.resetRequestAttributes();
+    }
+
+    private JwtAuthenticationToken createAuthenticatedToken(String email) {
+        Jwt jwt = Jwt.withTokenValue("token")
+                .header("alg", "none")
+                .claim("preferred_username", email)
+                .build();
+        JwtAuthenticationToken token = new JwtAuthenticationToken(jwt);
+        token.setAuthenticated(true);
+        return token;
+    }
+
+    private void setupSecurityContext(JwtAuthenticationToken token) {
         SecurityContextHolder.setContext(securityContext);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.isAuthenticated()).thenReturn(true);
-        when(authentication.getName()).thenReturn("user@example.com");
-        when(authentication.getToken()).thenReturn(jwtToken);
-        when(jwtToken.getClaimAsString("preferred_username")).thenReturn("user@example.com");
-        permissionService = spy(permissionService);
+        when(securityContext.getAuthentication()).thenReturn(token);
     }
 
-    @Test
-    public void testIsSuperUserWhenAuthIsInvalid() {
-        when(permissionService.isAuthValid(authentication)).thenReturn(false);
-
-        boolean result = permissionService.isSuperUser();
-
-        assertFalse(result);
-    }
-
-    @Test
-    public void testIsSuperUserWhenUserIsNull() {
-        when(permissionService.isAuthValid(authentication)).thenReturn(true);
-        when(postgresService.findUser("testUser")).thenReturn(null);
-
-        boolean result = permissionService.isSuperUser();
-
-        assertFalse(result);
-    }
-
-    @Test
-    public void testIsSuperUserWhenUserIsNotSuperUser() {
-        Users user = new Users();
-        user.setSuper_user(false);
-
-        when(permissionService.isAuthValid(authentication)).thenReturn(true);
-        when(postgresService.findUser("testUser")).thenReturn(user);
-
-        boolean result = permissionService.isSuperUser();
-
-        assertFalse(result);
-    }
-
-    @Test
-    public void testIsSuperUserWhenUserIsSuperUser() {
-
-        try (MockedStatic<PermissionService> mockedStatic = mockStatic(PermissionService.class)) {
-            mockedStatic.when(() -> PermissionService.getUsername(securityContext.getAuthentication()))
-                    .thenReturn("testUser");
-            Users user = new Users();
-            user.setSuper_user(true);
-
-            when(permissionService.isAuthValid(authentication)).thenReturn(true);
-            when(postgresService.findUser("testUser")).thenReturn(user);
-
-            boolean result = permissionService.isSuperUser();
-
-            assertTrue(result);
+    /**
+     * Sets up both Authorization and Organization headers
+     */
+    private void setupRequestWithHeaders(String bearerToken, String organization) {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("Authorization", "Bearer " + bearerToken);
+        if (organization != null) {
+            request.addHeader("Organization", organization);
         }
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+    }
+
+    // ==================== getAllowedIntersectionIds Tests ====================
+
+    @Test
+    void testGetAllowedIntersectionIdsByEmail() {
+        when(intersectionRepository.findAllowedIntersectionIdsByEmail("test@example.com"))
+                .thenReturn(List.of("123", "456", "789"));
+
+        List<Integer> result = permissionService.getAllowedIntersectionIdsByEmail("test@example.com");
+
+        assertEquals(List.of(123, 456, 789), result);
+        verify(intersectionRepository).findAllowedIntersectionIdsByEmail("test@example.com");
     }
 
     @Test
-    public void testHasIntersection_ValidAuth_AllowedIntersection() {
-        List<String> organizations = Arrays.asList("org1");
-        when(postgresService.getQualifiedOrgList("user@example.com", "USER")).thenReturn(organizations);
-        when(postgresService.checkIntersectionWithOrg("2", organizations)).thenReturn(true);
+    void testGetAllowedIntersectionIdsByOrganization() {
+        when(intersectionRepository.findIntersectionsByOrganization("TestOrg"))
+                .thenReturn(List.of("111", "222"));
 
-        boolean result = permissionService.hasIntersection(2, "USER");
+        List<Integer> result = permissionService.getAllowedIntersectionIdsByOrganization("TestOrg");
 
-        assertTrue(result);
+        assertEquals(List.of(111, 222), result);
+        verify(intersectionRepository).findIntersectionsByOrganization("TestOrg");
+    }
+
+    // ==================== hasRole Tests ====================
+
+    @Test
+    void testHasRole_SuperUserAlwaysHasRole() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        setupSecurityContext(token);
+
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        when(authToken.isSuperUser()).thenReturn(true);
+
+        assertTrue(permissionService.hasRole("ADMIN"));
+        assertTrue(permissionService.hasRole("OPERATOR"));
+        assertTrue(permissionService.hasRole("USER"));
     }
 
     @Test
-    public void testHasIntersection_ValidAuth_AllowedIntersectionWithOrg() {
+    void testHasRole_WithOrganizationHeader_HasSufficientRole() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        setupSecurityContext(token);
+        setupRequestWithHeaders(tokenString, "TestOrg");
 
-        try (MockedStatic<PermissionService> mockedStatic = mockStatic(PermissionService.class)) {
-            mockedStatic.when(PermissionService::getOrganizationFromHeader).thenReturn("org1");
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        when(authToken.isSuperUser()).thenReturn(false);
+        when(authToken.findRoleInOrg("TestOrg")).thenReturn(Optional.of("ADMIN"));
 
-            List<String> organizations = Arrays.asList("org1");
-            when(postgresService.getQualifiedOrgList("user@example.com", "USER")).thenReturn(organizations);
-            when(postgresService.checkIntersectionWithOrg(eq("2"), anyList())).thenReturn(true);
-
-            boolean result = permissionService.hasIntersection(2, "USER");
-
-            assertTrue(result);
-        }
+        assertTrue(permissionService.hasRole("OPERATOR"));
     }
 
     @Test
-    public void testHasIntersection_ValidAuth_NotAllowedOrg() {
+    void testHasRole_WithOrganizationHeader_InsufficientRole() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        setupSecurityContext(token);
+        setupRequestWithHeaders(tokenString, "TestOrg");
 
-        try (MockedStatic<PermissionService> mockedStatic = mockStatic(PermissionService.class)) {
-            mockedStatic.when(PermissionService::getOrganizationFromHeader).thenReturn("TestOrg");
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        when(authToken.isSuperUser()).thenReturn(false);
+        when(authToken.findRoleInOrg("TestOrg")).thenReturn(Optional.of("USER"));
 
-            List<String> organizations = Arrays.asList("org1");
-            when(postgresService.getQualifiedOrgList("user@example.com", "USER")).thenReturn(organizations);
-            when(postgresService.checkIntersectionWithOrg(eq("2"), anyList())).thenReturn(false);
-
-            boolean result = permissionService.hasIntersection(2, "USER");
-
-            assertFalse(result);
-        }
+        assertFalse(permissionService.hasRole("ADMIN"));
     }
 
     @Test
-    public void testHasIntersection_ValidAuth_AllowedSuperUser() {
-        when(permissionService.isSuperUser()).thenReturn(true);
+    void testHasRole_WithoutOrganizationHeader_HasRoleInSomeOrg() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        setupSecurityContext(token);
 
-        boolean result = permissionService.hasIntersection(2, "USER");
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        when(authToken.isSuperUser()).thenReturn(false);
+        when(authToken.getQualifiedOrgList("OPERATOR")).thenReturn(List.of("TestOrg"));
 
-        assertTrue(result);
+        assertTrue(permissionService.hasRole("OPERATOR"));
     }
 
     @Test
-    public void testHasIntersection_ValidAuth_NotAllowedIntersection() {
-        List<String> organizations = Arrays.asList("org1");
-        when(postgresService.getQualifiedOrgList("user@example.com", "USER")).thenReturn(organizations);
-        when(postgresService.checkIntersectionWithOrg("2", organizations)).thenReturn(false);
+    void testHasRole_WithoutOrganizationHeader_NoQualifiedOrgs() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        setupSecurityContext(token);
 
-        boolean result = permissionService.hasIntersection(4, "USER");
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        when(authToken.isSuperUser()).thenReturn(false);
+        when(authToken.getQualifiedOrgList("ADMIN")).thenReturn(List.of());
 
-        assertFalse(result);
+        assertFalse(permissionService.hasRole("ADMIN"));
     }
 
     @Test
-    public void testHasIntersection_InvalidAuth() {
-        when(authentication.isAuthenticated()).thenReturn(false);
+    void testHasRole_NotAuthenticated() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        token.setAuthenticated(false);
+        setupSecurityContext(token);
 
-        boolean result = permissionService.hasIntersection(1, "USER");
+        assertFalse(permissionService.hasRole("USER"));
+    }
 
-        assertFalse(result);
+    // ==================== hasRoleInOrg Tests ====================
+
+    @Test
+    void testHasRoleInOrg_NotAuthenticated() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        token.setAuthenticated(false);
+        setupSecurityContext(token);
+
+        assertFalse(permissionService.hasRoleInOrg("TestOrg", "USER"));
+        verify(permissionService, never()).getCvManagerAuthToken();
+        verify(authToken, never()).isSuperUser();
     }
 
     @Test
-    public void testHasIntersection_DefaultIntersectionId() {
-        when(authentication.isAuthenticated()).thenReturn(true);
+    void testHasRoleInOrg_SuperUser() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        setupSecurityContext(token);
+
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        doReturn(true).when(authToken).isSuperUser();
+
+        assertTrue(permissionService.hasRoleInOrg("TestOrg", "ADMIN"));
+        verify(authToken, never()).findRoleInOrg(anyString());
+    }
+
+    @Test
+    void testHasRoleInOrg_HasExactRole() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        setupSecurityContext(token);
+
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        doReturn(Optional.of("OPERATOR")).when(authToken).findRoleInOrg("TestOrg");
+
+        assertTrue(permissionService.hasRoleInOrg("TestOrg", "OPERATOR"));
+    }
+
+    @Test
+    void testHasRoleInOrg_HasSufficientRole() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        setupSecurityContext(token);
+
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        doReturn(Optional.of("ADMIN")).when(authToken).findRoleInOrg("TestOrg");
+
+        assertTrue(permissionService.hasRoleInOrg("TestOrg", "OPERATOR"));
+        assertTrue(permissionService.hasRoleInOrg("TestOrg", "USER"));
+    }
+
+    @Test
+    void testHasRoleInOrg_InsufficientRole() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        setupSecurityContext(token);
+
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        doReturn(Optional.of("USER")).when(authToken).findRoleInOrg("TestOrg");
+
+        assertFalse(permissionService.hasRoleInOrg("TestOrg", "OPERATOR"));
+        assertFalse(permissionService.hasRoleInOrg("TestOrg", "ADMIN"));
+    }
+
+    @Test
+    void testHasRoleInOrg_NoRoleInOrganization() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        setupSecurityContext(token);
+
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        doReturn(Optional.empty()).when(authToken).findRoleInOrg("TestOrg");
+
+        assertFalse(permissionService.hasRoleInOrg("TestOrg", "USER"));
+    }
+
+    // ==================== hasIntersection Tests ====================
+
+    @Test
+    void testHasIntersection_NullIntersectionId() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        setupSecurityContext(token);
+
+        assertTrue(permissionService.hasIntersection(null, "USER"));
+        verify(intersectionRepository, never()).existsByIdAndOrganizations(anyString(), anyList());
+    }
+
+    @Test
+    void testHasIntersection_NegativeIntersectionId() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        setupSecurityContext(token);
 
         assertTrue(permissionService.hasIntersection(-1, "USER"));
-        assertTrue(permissionService.hasIntersection(null, "USER"));
+        verify(intersectionRepository, never()).existsByIdAndOrganizations(anyString(), anyList());
     }
 
     @Test
-    public void testHasRSU_ValidAuth_AllowedRSU() {
-        List<String> organizations = Arrays.asList("org1");
-        when(postgresService.getQualifiedOrgList("user@example.com", "USER")).thenReturn(organizations);
-        when(postgresService.checkRsuWithOrg("192.168.1.1", organizations)).thenReturn(true);
+    void testHasIntersection_SuperUser() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        setupSecurityContext(token);
 
-        boolean result = permissionService.hasRSU("192.168.1.1", "USER");
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        when(authToken.isSuperUser()).thenReturn(true);
 
-        assertTrue(result);
+        assertTrue(permissionService.hasIntersection(123, "USER"));
+        verify(intersectionRepository, never()).existsByIdAndOrganizations(anyString(), anyList());
     }
 
     @Test
-    public void testHasRSU_ValidAuth_AllowedIntersectionWithOrg() {
+    void testHasIntersection_WithOrganizationHeader_HasAccess() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        setupSecurityContext(token);
 
-        try (MockedStatic<PermissionService> mockedStatic = mockStatic(PermissionService.class)) {
-            mockedStatic.when(PermissionService::getOrganizationFromHeader).thenReturn("org1");
+        when(authToken.isSuperUser()).thenReturn(false);
 
-            List<String> organizations = Arrays.asList("org1");
-            when(postgresService.getQualifiedOrgList("user@example.com", "USER")).thenReturn(organizations);
-            when(postgresService.checkRsuWithOrg("192.168.1.1", organizations)).thenReturn(true);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("Organization", "TestOrg");
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-            boolean result = permissionService.hasRSU("192.168.1.1", "USER");
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        when(authToken.getQualifiedOrgList("USER")).thenReturn(List.of("TestOrg"));
+        when(intersectionRepository.existsByIdAndOrganizations("123", List.of("TestOrg")))
+                .thenReturn(true);
 
-            assertTrue(result);
-        }
+        assertTrue(permissionService.hasIntersection(123, "USER"));
     }
 
     @Test
-    public void testHasRSU_ValidAuth_NotAllowedOrg() {
+    void testHasIntersection_WithOrganizationHeader_NoAccess() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        setupSecurityContext(token);
 
-        try (MockedStatic<PermissionService> mockedStatic = mockStatic(PermissionService.class)) {
-            mockedStatic.when(PermissionService::getOrganizationFromHeader).thenReturn("TestOrg");
+        when(authToken.isSuperUser()).thenReturn(false);
 
-            List<String> organizations = Arrays.asList("org1");
-            when(postgresService.getQualifiedOrgList("user@example.com", "USER")).thenReturn(organizations);
-            when(postgresService.checkRsuWithOrg("192.168.1.1", organizations)).thenReturn(false);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("Organization", "TestOrg");
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-            boolean result = permissionService.hasRSU("192.168.1.1", "USER");
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        when(authToken.getQualifiedOrgList("USER")).thenReturn(List.of("TestOrg"));
+        when(intersectionRepository.existsByIdAndOrganizations("123", List.of("TestOrg")))
+                .thenReturn(false);
 
-            assertFalse(result);
-        }
+        assertFalse(permissionService.hasIntersection(123, "USER"));
+        verify(intersectionRepository).existsByIdAndOrganizations("123", List.of("TestOrg"));
     }
 
     @Test
-    public void testHasRSU_ValidAuth_AllowedSuperUser() {
-        when(permissionService.isSuperUser()).thenReturn(true);
+    void testHasIntersection_WithoutOrganizationHeader_HasAccessInQualifiedOrg() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        setupSecurityContext(token);
 
-        boolean result = permissionService.hasRSU("192.168.1.1", "USER");
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        when(authToken.isSuperUser()).thenReturn(false);
 
-        assertTrue(result);
+        when(authToken.getQualifiedOrgList("OPERATOR")).thenReturn(List.of("TestOrg"));
+        when(intersectionRepository.existsByIdAndOrganizations("123", List.of("TestOrg")))
+                .thenReturn(true);
+        assertTrue(permissionService.hasIntersection(123, "OPERATOR"));
+    }
+
+    // ==================== hasRsu Tests ====================
+
+    @Test
+    void testHasRSU_SuperUser() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        setupSecurityContext(token);
+
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        when(authToken.isSuperUser()).thenReturn(true);
+
+        assertTrue(permissionService.hasRsu("192.168.1.1", "USER"));
+        verify(rsuRepository, never()).existsByIpAndOrganizations(any(), anyList());
     }
 
     @Test
-    public void testHasRSU_ValidAuth_NotAllowedRSU() {
-        List<String> organizations = Arrays.asList("org1");
-        when(postgresService.getQualifiedOrgList("user@example.com", "USER")).thenReturn(organizations);
-        when(postgresService.checkRsuWithOrg("192.168.1.1", organizations)).thenReturn(false);
+    void testHasRSU_WithOrganizationHeader_HasAccess() throws UnknownHostException {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        setupSecurityContext(token);
 
-        boolean result = permissionService.hasRSU("192.168.1.1", "USER");
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        when(authToken.isSuperUser()).thenReturn(false);
 
-        assertFalse(result);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("Organization", "TestOrg");
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+
+        when(authToken.getQualifiedOrgList("USER")).thenReturn(List.of("TestOrg"));
+        when(rsuRepository.existsByIpAndOrganizations(InetAddress.getByName("192.168.1.1"), List.of("TestOrg")))
+                .thenReturn(true);
+
+        assertTrue(permissionService.hasRsu("192.168.1.1", "USER"));
     }
 
     @Test
-    public void testHasRSU_InvalidAuth() {
-        when(authentication.isAuthenticated()).thenReturn(false);
+    void testHasRSU_WithOrganizationHeader_NoAccess() throws UnknownHostException {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        setupSecurityContext(token);
 
-        boolean result = permissionService.hasRSU("192.168.1.1", "USER");
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        when(authToken.isSuperUser()).thenReturn(false);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("Organization", "TestOrg");
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-        assertFalse(result);
+        when(authToken.getQualifiedOrgList("USER")).thenReturn(List.of("TestOrg"));
+        when(rsuRepository.existsByIpAndOrganizations(InetAddress.getByName("192.168.1.1"), List.of("TestOrg")))
+                .thenReturn(false);
+
+        assertFalse(permissionService.hasRsu("192.168.1.1", "USER"));
+        verify(rsuRepository).existsByIpAndOrganizations(InetAddress.getByName("192.168.1.1"),
+                List.of("TestOrg"));
     }
 
     @Test
-    void testHasRoleWhenAuthIsInvalid() {
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(permissionService.isAuthValid(authentication)).thenReturn(false);
+    void testHasRSU_WithoutOrganizationHeader_HasAccessInQualifiedOrg() throws UnknownHostException {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        setupSecurityContext(token);
 
-        boolean result = permissionService.hasRole("admin");
+        doReturn(authToken).when(permissionService).getCvManagerAuthToken();
+        when(authToken.isSuperUser()).thenReturn(false);
 
-        assertFalse(result);
+        when(authToken.getQualifiedOrgList("OPERATOR")).thenReturn(List.of("TestOrg"));
+        when(rsuRepository.existsByIpAndOrganizations(InetAddress.getByName("192.168.1.1"), List.of("TestOrg")))
+                .thenReturn(true);
+
+        assertTrue(permissionService.hasRsu("192.168.1.1", "OPERATOR"));
+    }
+
+    // ==================== isAuthValid Tests ====================
+
+    @Test
+    void testIsAuthValid_ValidJwtAuthentication() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+
+        assertTrue(permissionService.isAuthValid(token));
     }
 
     @Test
-    void testHasRoleWhenUserIsSuperUser() {
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(permissionService.isAuthValid(authentication)).thenReturn(true);
-        when(permissionService.isSuperUser()).thenReturn(true);
+    void testIsAuthValid_NotAuthenticated() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        token.setAuthenticated(false);
 
-        boolean result = permissionService.hasRole("admin");
-
-        assertTrue(result);
+        assertFalse(permissionService.isAuthValid(token));
     }
 
     @Test
-    void testHasRoleWhenOrganizationIsProvidedAndRoleMatches() {
-        try (MockedStatic<PermissionService> mockedStatic = mockStatic(PermissionService.class)) {
-            mockedStatic.when(() -> PermissionService.getUsername(authentication)).thenReturn("testUser");
-            mockedStatic.when(PermissionService::getOrganizationFromHeader).thenReturn("TestOrg");
-            mockedStatic.when(() -> PermissionService.checkRoleAbove("admin", "admin")).thenReturn(true);
+    void testIsAuthValid_NotJwtAuthentication() {
+        Authentication nonJwtAuth = mock(Authentication.class);
+        when(nonJwtAuth.isAuthenticated()).thenReturn(true);
 
-            when(securityContext.getAuthentication()).thenReturn(authentication);
-            when(permissionService.isAuthValid(authentication)).thenReturn(true);
-            when(permissionService.isSuperUser()).thenReturn(false);
-            when(postgresService.getUserRoleInOrg("testUser", "TestOrg")).thenReturn("admin");
+        assertFalse(permissionService.isAuthValid(nonJwtAuth));
+    }
 
-            boolean result = permissionService.hasRole("admin");
+    // ==================== Static Utility Tests ====================
 
-            assertTrue(result);
-        }
+    @Test
+    void testGetUsername() {
+        JwtAuthenticationToken token = createAuthenticatedToken("test@example.com");
+        String username = PermissionService.getUsername(token);
+
+        assertEquals("test@example.com", username);
     }
 
     @Test
-    void testHasRoleWhenOrganizationIsProvidedAndRoleDoesNotMatch() {
-        try (MockedStatic<PermissionService> mockedStatic = mockStatic(PermissionService.class)) {
-            mockedStatic.when(() -> PermissionService.getUsername(authentication)).thenReturn("testUser");
-            mockedStatic.when(PermissionService::getOrganizationFromHeader).thenReturn("TestOrg");
-            mockedStatic.when(() -> PermissionService.checkRoleAbove("admin", "admin")).thenReturn(false);
+    void testGetOrganizationFromHeader_WithHeader() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("Organization", "TestOrg");
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-            when(securityContext.getAuthentication()).thenReturn(authentication);
-            when(permissionService.isAuthValid(authentication)).thenReturn(true);
-            when(permissionService.isSuperUser()).thenReturn(false);
-            when(postgresService.getUserRoleInOrg("testUser", "TestOrg")).thenReturn("user");
+        String organization = PermissionService.getOrganizationFromHeader();
 
-            boolean result = permissionService.hasRole("admin");
-
-            assertFalse(result);
-        }
+        assertEquals("TestOrg", organization);
     }
 
     @Test
-    void testHasRoleWhenNoOrganizationAndQualifiedOrgListIsNotEmpty() {
-        try (MockedStatic<PermissionService> mockedStatic = mockStatic(PermissionService.class)) {
-            mockedStatic.when(() -> PermissionService.getUsername(authentication)).thenReturn("testUser");
-            mockedStatic.when(PermissionService::getOrganizationFromHeader).thenReturn(null);
+    void testGetOrganizationFromHeader_WithoutHeader() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-            when(securityContext.getAuthentication()).thenReturn(authentication);
-            when(permissionService.isAuthValid(authentication)).thenReturn(true);
-            when(permissionService.isSuperUser()).thenReturn(false);
-            when(postgresService.getQualifiedOrgList("testUser", "admin"))
-                    .thenReturn(Collections.singletonList("TestOrg"));
+        String organization = PermissionService.getOrganizationFromHeader();
 
-            boolean result = permissionService.hasRole("admin");
-
-            assertTrue(result);
-        }
+        assertNull(organization);
     }
 
     @Test
-    void testHasRoleWhenNoOrganizationAndQualifiedOrgListIsEmpty() {
-        try (MockedStatic<PermissionService> mockedStatic = mockStatic(PermissionService.class)) {
-            mockedStatic.when(() -> PermissionService.getUsername(authentication)).thenReturn("testUser");
-            mockedStatic.when(PermissionService::getOrganizationFromHeader).thenReturn(null);
+    void testGetOrganizationFromHeader_NoRequestContext() {
+        RequestContextHolder.resetRequestAttributes();
 
-            when(securityContext.getAuthentication()).thenReturn(authentication);
-            when(permissionService.isAuthValid(authentication)).thenReturn(true);
-            when(permissionService.isSuperUser()).thenReturn(false);
-            when(postgresService.getQualifiedOrgList("testUser", "admin")).thenReturn(Collections.emptyList());
+        String organization = PermissionService.getOrganizationFromHeader();
 
-            boolean result = permissionService.hasRole("admin");
-
-            assertFalse(result);
-        }
-    }
-
-    @Test
-    void testCheckRoleAboveAdminUser() {
-        // Check all combinations of requires and user roles
-        assertFalse(PermissionService.checkRoleAbove(null, "user"));
-        assertTrue(PermissionService.checkRoleAbove("user", "user"));
-        assertTrue(PermissionService.checkRoleAbove("operator", "user"));
-        assertTrue(PermissionService.checkRoleAbove("admin", "user"));
-        assertFalse(PermissionService.checkRoleAbove("user", "operator"));
-        assertTrue(PermissionService.checkRoleAbove("operator", "operator"));
-        assertTrue(PermissionService.checkRoleAbove("admin", "operator"));
-        assertFalse(PermissionService.checkRoleAbove("user", "admin"));
-        assertFalse(PermissionService.checkRoleAbove("operator", "admin"));
-        assertTrue(PermissionService.checkRoleAbove("admin", "admin"));
+        assertNull(organization);
     }
 }

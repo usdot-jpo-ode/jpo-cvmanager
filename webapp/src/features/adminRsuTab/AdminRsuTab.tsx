@@ -1,41 +1,65 @@
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import AdminAddRsu from '../adminAddRsu/AdminAddRsu'
 import AdminEditRsu, { AdminEditRsuFormType } from '../adminEditRsu/AdminEditRsu'
 import AdminTable from '../../components/AdminTable'
 import { confirmAlert } from 'react-confirm-alert'
 import { Options } from '../../components/AdminDeletionOptions'
-import {
-  selectLoading,
-  selectTableData,
-
-  // actions
-  updateTableData,
-  deleteMultipleRsus,
-  deleteRsu,
-  setEditRsuRowData,
-} from './adminRsuTabSlice'
-import { clear, getRsuInfo } from '../adminEditRsu/adminEditRsuSlice'
 import RsuStatusDialog from './RsuStatusDialog'
 import RsuApi, { RsuState } from '../../apis/intersections/rsu-api'
-import { useSelector, useDispatch } from 'react-redux'
 import { selectToken } from '../../generalSlices/userSlice'
 import { debounce } from 'lodash'
 
+import { selectOrganizationName } from '../../generalSlices/userSlice'
+import { useSelector } from 'react-redux'
 import './Admin.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
 import { Action } from '@material-table/core'
 import { Route, Routes, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
 import toast from 'react-hot-toast'
-import { useTheme } from '@mui/material'
+import { useTheme, Typography } from '@mui/material'
 import { DeleteOutline, ModeEditOutline } from '@mui/icons-material'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import {
+  useLazyGetAllRsusQuery,
+  useDeleteRsuMutation,
+  useDeleteMultipleRsusMutation,
+  useGetAllRsusQuery,
+} from '../api/rsuApiSlice'
 
 const AdminRsuTab = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const navigate = useNavigate()
   const theme = useTheme()
+  const organization = useSelector(selectOrganizationName)
+
+  const tableRef = useRef<any>(null)
+  const [isRefreshing, setIsRefreshing] = useState(false)
+
+  const [currentParams, setCurrentParams] = useState({
+    page: 0,
+    size: 20,
+    sort: 'ip,asc',
+    search: '',
+    organization: organization || '',
+  })
+
+  const [trigger] = useLazyGetAllRsusQuery()
+
+  // Subscribe to query - this will trigger when cache is invalidated
+  const { data: subscribedData } = useGetAllRsusQuery(currentParams, {
+    skip: !organization, // Skip if no organization selected
+  })
+
+  // When subscribed data changes (due to cache invalidation), refresh table
+  useEffect(() => {
+    if (subscribedData || organization) {
+      handleRefresh()
+    }
+  }, [subscribedData, organization])
+
+  const currentQueryRef = useRef(null)
+
+  const [deleteRsuApi] = useDeleteRsuMutation()
+  const [deleteMultipleRsusApi] = useDeleteMultipleRsusMutation()
 
   const [statusDialogOpen, setStatusDialogOpen] = useState(false)
   const [selectedRsuIp, setSelectedRsuIp] = useState<string | null>(null)
@@ -44,13 +68,45 @@ const AdminRsuTab = () => {
 
   const token = useSelector(selectToken)
 
-  const tableData = useSelector(selectTableData)
+  // const tableData = useSelector(selectTableData)
   const [columns] = useState([
     { title: 'Milepost', field: 'milepost', id: 0 },
     { title: 'IP Address', field: 'ip', id: 1 },
     { title: 'Primary Route', field: 'primary_route', id: 2 },
     { title: 'RSU Model', field: 'model', id: 3 },
     { title: 'Serial Number', field: 'serial_number', id: 4 },
+    {
+      title: 'TIM Deposit',
+      field: 'tim_deposit',
+      id: 5,
+      render: (rowData: any) => (
+        <Typography
+          variant="body2"
+          sx={{
+            color: rowData.tim_deposit ? theme.palette.success.light : theme.palette.error.light,
+            fontWeight: 'bold',
+          }}
+        >
+          {rowData.tim_deposit ? 'Enabled' : 'Disabled'}
+        </Typography>
+      ),
+    },
+    {
+      title: 'SNMP Monitoring',
+      field: 'snmp_monitoring',
+      id: 6,
+      render: (rowData: any) => (
+        <Typography
+          variant="body2"
+          sx={{
+            color: rowData.snmp_monitoring ? theme.palette.success.light : theme.palette.error.light,
+            fontWeight: 'bold',
+          }}
+        >
+          {rowData.snmp_monitoring ? 'Enabled' : 'Disabled'}
+        </Typography>
+      ),
+    },
   ])
 
   const handleStatusClick = (rowData: AdminEditRsuFormType) => {
@@ -83,7 +139,12 @@ const AdminRsuTab = () => {
     }
   }, 300) // Debounce with 300ms delay
 
-  const loading = useSelector(selectLoading)
+  // const loading = useSelector(selectLoading)
+  const handleRefresh = () => {
+    if (tableRef.current && tableRef.current.onQueryChange) {
+      tableRef.current.onQueryChange()
+    }
+  }
 
   React.useEffect(() => {
     if (statusDialogOpen && selectedRsuIp) {
@@ -161,18 +222,18 @@ const AdminRsuTab = () => {
     },
     {
       icon: () => null,
+      isFreeAction: true,
       iconProps: {
         title: 'Refresh',
         color: 'info',
         itemType: 'outlined',
       },
       position: 'toolbar',
-      onClick: () => {
-        updateTableData()
-      },
+      onClick: handleRefresh,
     },
     {
       icon: () => null,
+      isFreeAction: true,
       position: 'toolbar',
       iconProps: {
         title: 'New',
@@ -185,33 +246,90 @@ const AdminRsuTab = () => {
     },
   ]
 
-  const onEdit = (row: AdminEditRsuFormType) => {
-    // Fetch RSU info before navigating to ensure updated menu state
-    dispatch(clear())
-    dispatch(getRsuInfo(row.ip))
+  const handleQueryChange = useCallback(
+    async (query) => {
+      setIsRefreshing(true)
 
-    dispatch(setEditRsuRowData(row))
+      try {
+        // Extract order information from orderByCollection
+        let orderBy = 'ip'
+        let orderDirection = 'asc'
+        if (query.orderByCollection && query.orderByCollection.length > 0) {
+          const firstOrder = query.orderByCollection[0]
+          if (firstOrder.orderBy !== undefined) {
+            if (typeof firstOrder.orderBy.field === 'string') {
+              orderBy = firstOrder.orderBy.field
+            } else if (typeof firstOrder.orderBy === 'number') {
+              orderBy = columns[firstOrder.orderBy].field
+            }
+          }
+          orderDirection = firstOrder.orderDirection || 'asc'
+        }
+
+        // Build query params including organization
+        const params = {
+          page: query.page,
+          size: query.pageSize,
+          sort: `${orderBy},${orderDirection}`,
+          search: query.search || '',
+          organization: organization || '', // Add organization parameter
+        }
+
+        // Check if organization changed - if so, reset to page 0
+        if (currentQueryRef.current && currentQueryRef.current.organization !== params.organization) {
+          params.page = 0
+          query.page = 0
+        }
+
+        // Store current query for comparison
+        currentQueryRef.current = params
+        setCurrentParams(params) // Update params for subscription
+
+        // Trigger the query and await the result
+        const result = await trigger(params).unwrap()
+
+        return {
+          data: result.content || [],
+          page: params.page,
+          totalCount: result.totalElements || 0,
+        }
+      } catch (error) {
+        console.error('Failed to fetch rsus:', error)
+        toast.error('Failed to fetch RSUs')
+        return {
+          data: [],
+          page: query.page,
+          totalCount: 0,
+        }
+      } finally {
+        setIsRefreshing(false)
+      }
+    },
+    [trigger, organization]
+  )
+
+  const onEdit = (row: AdminEditRsuFormType) => {
     navigate('editRsu/' + row.ip)
   }
 
-  const onDelete = (row: AdminEditRsuFormType) => {
-    dispatch(deleteRsu({ rsu_ip: row.ip, shouldUpdateTableData: true })).then((data: any) => {
-      if (data.payload.success) {
-        toast.success('RSU Deleted Successfully')
-      } else {
-        toast.error('Failed to delete RSU due to error: ' + data.payload)
-      }
-    })
+  const onDelete = async (row: AdminEditRsuFormType) => {
+    const loadingToast = toast.loading(`Deleting RSU ${row.ip}...`)
+    try {
+      await deleteRsuApi(row.ip).unwrap()
+      toast.success('RSU Deleted Successfully', { id: loadingToast })
+    } catch (error) {
+      toast.error('Failed to delete RSU due to error: ' + error, { id: loadingToast })
+    }
   }
 
-  const multiDelete = (rows: AdminEditRsuFormType[]) => {
-    dispatch(deleteMultipleRsus(rows)).then((data: any) => {
-      if (data.payload.success) {
-        toast.success('RSUs Deleted Successfully')
-      } else {
-        toast.error(data.payload.message)
-      }
-    })
+  const multiDelete = async (rows: AdminEditRsuFormType[]) => {
+    const loadingToast = toast.loading(`Deleting ${rows.length} RSUs...`)
+    try {
+      await deleteMultipleRsusApi(rows.map((row) => row.ip)).unwrap()
+      toast.success('RSUs Deleted Successfully', { id: loadingToast })
+    } catch (error) {
+      toast.error('Failed to delete RSUs due to error: ' + error, { id: loadingToast })
+    }
   }
 
   return (
@@ -220,19 +338,24 @@ const AdminRsuTab = () => {
         <Route
           path="/"
           element={
-            loading === false && (
-              <div className="scroll-div-tab">
-                <AdminTable title={''} data={tableData} columns={columns} actions={tableActions} />
-                {statusDialogOpen && (
-                  <RsuStatusDialog
-                    open={statusDialogOpen}
-                    onClose={handleStatusDialogClose}
-                    rsuIp={selectedRsuIp}
-                    token={token}
-                  />
-                )}
-              </div>
-            )
+            <div className="scroll-div-tab">
+              <AdminTable
+                title={''}
+                columns={columns}
+                actions={tableActions}
+                handleQueryChange={handleQueryChange}
+                isLoading={isRefreshing}
+                tableRef={tableRef}
+              />
+              {statusDialogOpen && (
+                <RsuStatusDialog
+                  open={statusDialogOpen}
+                  onClose={handleStatusDialogClose}
+                  rsuIp={selectedRsuIp}
+                  token={token}
+                />
+              )}
+            </div>
           }
         />
         <Route path="addRsu" element={<AdminAddRsu />} />

@@ -46,6 +46,11 @@ class ApiHelper {
         },
       })
 
+      if (!resp.ok) {
+        console.error(`Error in _getData: ${resp.status} ${resp.statusText}`)
+        return null
+      }
+
       const response = await resp.json()
       return response
     } catch (err) {

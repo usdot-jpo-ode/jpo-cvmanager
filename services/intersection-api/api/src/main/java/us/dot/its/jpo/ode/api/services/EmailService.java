@@ -1,115 +1,74 @@
 package us.dot.its.jpo.ode.api.services;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.*;
 
-import org.keycloak.representations.idm.UserRepresentation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.postmarkapp.postmark.client.ApiClient;
-import com.postmarkapp.postmark.client.data.model.message.Message;
-import com.postmarkapp.postmark.client.exception.PostmarkException;
-import com.sendgrid.Method;
-import com.sendgrid.Request;
-import com.sendgrid.SendGrid;
-import com.sendgrid.helpers.mail.Mail;
-import com.sendgrid.helpers.mail.objects.Content;
-import com.sendgrid.helpers.mail.objects.Email;
-
-import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
-import us.dot.its.jpo.ode.api.models.EmailFrequency;
+import us.dot.its.jpo.ode.api.models.emails.EmailCategory;
+import us.dot.its.jpo.ode.api.models.emails.EmailContent;
+import us.dot.its.jpo.ode.api.models.emails.EmailFrequency;
+import us.dot.its.jpo.ode.api.models.emails.EmailRecipient;
+import us.dot.its.jpo.ode.api.models.emails.EmailSendResponse;
+import us.dot.its.jpo.ode.api.models.emails.contents.IntersectionNotificationSummaryEmailContents;
+import us.dot.its.jpo.ode.api.repositories.UserEmailNotificationRepository;
+import us.dot.its.jpo.ode.api.emails.generators.IntersectionNotificationSummaryEmailGenerator;
+import us.dot.its.jpo.ode.api.emails.providers.EmailProvider;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class EmailService {
 
-    private final JavaMailSender mailSender;
-    private final SendGrid sendGrid;
-    private final ApiClient postmark;
-    private final ConflictMonitorApiProperties props;
+    private final EmailProvider emailProvider;
+    private final UserEmailNotificationRepository userEmailNotificationRepository;
+    private final IntersectionNotificationSummaryEmailGenerator intersectionNotificationSummaryEmailGenerator;
 
-    @Autowired
-    public EmailService(JavaMailSender mailSender, SendGrid sendGrid, ApiClient postmark,
-            ConflictMonitorApiProperties props) {
-        this.mailSender = mailSender;
-        this.sendGrid = sendGrid;
-        this.postmark = postmark;
-        this.props = props;
+    public void sendEmails(List<EmailRecipient> recipients, EmailContent content) {
+        emailProvider.sendBatchedEmails(recipients, content);
     }
 
-    public void sendEmailViaSendGrid(String to, String subject, String text) {
-        Email fromEmail = new Email(props.getEmailFromAddress());
-        Email toEmail = new Email(to);
-        Content content = new Content("text/plain", text);
-        Mail mail = new Mail(fromEmail, subject, toEmail, content);
+    public List<EmailRecipient> getUsersForNotificationType(EmailCategory category, EmailFrequency frequency) {
+        return userEmailNotificationRepository
+                .findUsersByNotificationType(category.getCategoryKey(), frequency.toString()).stream()
+                .map(email -> new EmailRecipient(email, null))
+                .toList();
+    }
 
-        Request request = new Request();
+    public List<EmailRecipient> getUsersForNotificationTypeByRsu(EmailCategory category, String rsuIp,
+            EmailFrequency frequency) {
         try {
-            request.setMethod(Method.POST);
-            request.setEndpoint("mail/send");
-            request.setBody(mail.build());
-            this.sendGrid.api(request);
-        } catch (IOException e) {
-            log.error("Exception sending sendgrid email", e);
+            return userEmailNotificationRepository
+                    .findUsersByNotificationTypeAndRsu(category.getCategoryKey(), frequency.toString(),
+                            InetAddress.getByName(rsuIp))
+                    .stream()
+                    .map(email -> new EmailRecipient(email, null))
+                    .toList();
+        } catch (UnknownHostException e) {
+            log.error("Invalid RSU IP address: {}", rsuIp, e);
+            return Collections.emptyList();
         }
     }
 
-    public void sendEmailViaPostmark(String to, String subject, String text) {
-
-        String htmlText = text.replaceAll("\n", "<br>");
-
-        Message message = new Message(
-                props.getEmailFromAddress(),
-                to,
-                subject,
-                htmlText);
-        try {
-            postmark.deliverMessage(message);
-        } catch (PostmarkException | IOException e) {
-            log.error("Exception sending postmark email", e);
-        }
+    public List<EmailRecipient> getUsersForNotificationTypeByOrganization(EmailCategory category, String orgName,
+            EmailFrequency frequency) {
+        return userEmailNotificationRepository
+                .findUsersByNotificationTypeAndOrganization(category.getCategoryKey(), frequency.toString(), orgName)
+                .stream()
+                .map(email -> new EmailRecipient(email, null))
+                .toList();
     }
 
-    public void sendEmailViaSpringMail(String to, String subject, String text) {
-        try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(to);
-            message.setSubject(subject);
-            message.setText(text);
-            mailSender.send(message);
-        } catch (MailException e) {
-            log.error("Exception sending spring mail email", e);
-        }
-    }
-
-    public void sendSimpleMessage(String to, String subject, String text) {
-        if (props.getEmailBroker().equals("sendgrid")) {
-            sendEmailViaSendGrid(to, subject, text);
-        } else if (props.getEmailBroker().equals("postmark")) {
-            sendEmailViaPostmark(to, subject, text);
-        } else {
-            sendEmailViaSpringMail(to, subject, text);
-        }
-    }
-
-    public void emailList(List<UserRepresentation> users, String subject, String text) {
-        for (UserRepresentation user : users) {
-            if (user.getEmail() != null) {
-                sendSimpleMessage(user.getEmail(), subject, text);
-            }
-
-        }
-    }
-
-    // Gets Users based upon a Notification Frequency Only
-    public List<UserRepresentation> getNotificationEmailList(EmailFrequency frequency) {
-        // TODO: Pull email list from Postgres
-        return new ArrayList<>();
+    public List<EmailSendResponse> sendIntersectionNotificationSummaryEmailSendResponses(
+            IntersectionNotificationSummaryEmailContents data) {
+        EmailContent content = intersectionNotificationSummaryEmailGenerator.generateEmailBody(data);
+        List<EmailRecipient> recipients = getUsersForNotificationType(EmailCategory.INTERSECTION_NOTIFICATION_SUMMARY,
+                EmailFrequency.IMMEDIATE);
+        ArrayList<EmailRecipient> newRecipients = new ArrayList<>(recipients);
+        return emailProvider.sendBatchedEmails(newRecipients, content);
     }
 }

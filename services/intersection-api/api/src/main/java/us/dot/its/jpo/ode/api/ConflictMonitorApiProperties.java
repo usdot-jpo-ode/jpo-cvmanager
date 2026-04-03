@@ -68,8 +68,6 @@ public class ConflictMonitorApiProperties {
     private String kafkaBrokers = null;
     private static final String DEFAULT_KAFKA_PORT = "9092";
     private String cmServerURL = "";
-    private String emailBroker = "";
-    private String emailFromAddress = "noreply@cimms.com";
     private long mongoTimeoutMs = 5000;
     private String hostId;
     private List<Path> uploadLocations = new ArrayList<>();
@@ -144,24 +142,6 @@ public class ConflictMonitorApiProperties {
     @Value("${cmServerURL}")
     public void setCmServerURL(String cmServerUrl) {
         this.cmServerURL = cmServerUrl;
-    }
-
-    public String getEmailBroker() {
-        return emailBroker;
-    }
-
-    @Value("${emailBroker}")
-    public void setEmailBroker(String emailBroker) {
-        this.emailBroker = emailBroker;
-    }
-
-    public String getEmailFromAddress() {
-        return emailFromAddress;
-    }
-
-    @Value("${emailFromAddress}")
-    public void setEmailFromAddress(String emailFromAddress) {
-        this.emailFromAddress = emailFromAddress;
     }
 
     public long getMongoTimeoutMs() {

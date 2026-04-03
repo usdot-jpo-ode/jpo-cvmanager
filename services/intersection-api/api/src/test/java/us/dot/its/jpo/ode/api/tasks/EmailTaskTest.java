@@ -2,7 +2,6 @@ package us.dot.its.jpo.ode.api.tasks;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -10,21 +9,25 @@ import org.springframework.data.domain.PageRequest;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.Notification;
 import us.dot.its.jpo.ode.api.accessors.notifications.active_notification.ActiveNotificationRepository;
-import us.dot.its.jpo.ode.api.models.EmailFrequency;
+import us.dot.its.jpo.ode.api.emails.generators.IntersectionNotificationSummaryEmailGenerator;
+import us.dot.its.jpo.ode.api.models.emails.EmailCategory;
+import us.dot.its.jpo.ode.api.models.emails.EmailContent;
+import us.dot.its.jpo.ode.api.models.emails.EmailFrequency;
+import us.dot.its.jpo.ode.api.models.emails.EmailRecipient;
 import us.dot.its.jpo.ode.api.services.EmailService;
 
 import java.time.Instant;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 class EmailTaskTest {
 
+    private IntersectionNotificationSummaryEmailGenerator emailGenerator;
     private EmailService emailService;
     private ActiveNotificationRepository activeNotificationRepo;
     private EmailTask emailTask;
@@ -35,7 +38,8 @@ class EmailTaskTest {
     void setUp() {
         emailService = mock(EmailService.class);
         activeNotificationRepo = mock(ActiveNotificationRepository.class);
-        emailTask = new EmailTask(emailService, activeNotificationRepo, maximumResponseSize);
+        emailGenerator = mock(IntersectionNotificationSummaryEmailGenerator.class);
+        emailTask = new EmailTask(emailService, activeNotificationRepo, maximumResponseSize, emailGenerator);
     }
 
     Notification createNotification(String key, String heading, String text, int intersectionId, long generatedAt) {
@@ -83,24 +87,6 @@ class EmailTaskTest {
     }
 
     @Test
-    void testGetEmailHeadingFormat() {
-        String heading = emailTask.getEmailHeading();
-        assertThat(heading).startsWith("New Conflict Monitor Notifications: ");
-    }
-
-    @Test
-    void testGetEmailTextFormat() {
-        Notification n1 = createNotification("k1", "heading", "text", 1, 1234567890000L);
-        List<Notification> notifications = Collections.singletonList(n1);
-        String text = emailTask.getEmailText(notifications);
-
-        assertThat(text).contains("Notification : heading");
-        assertThat(text).contains("text");
-        assertThat(text).contains("Intersection ID: 1");
-        assertThat(text).contains("Generated At: ");
-    }
-
-    @Test
     void testSendAlwaysNotificationsFirstRunSetsLastAlwaysList() {
         Notification n1 = createNotification("k1", "h1", "t1", 1, 1000);
         List<Notification> notifications = Collections.singletonList(n1);
@@ -111,7 +97,7 @@ class EmailTaskTest {
         emailTask.sendAlwaysNotifications();
 
         // Should set lastAlwaysList and not send email
-        verify(emailService, never()).emailList(anyList(), anyString(), anyString());
+        verify(emailService, never()).sendEmails(anyList(), any());
     }
 
     @Test
@@ -129,12 +115,17 @@ class EmailTaskTest {
                 .thenReturn(page2); // second call
 
         emailTask.sendAlwaysNotifications(); // sets lastAlwaysList
-        List<UserRepresentation> recipients = Collections.singletonList(new UserRepresentation());
-        when(emailService.getNotificationEmailList(EmailFrequency.ALWAYS)).thenReturn(recipients);
+
+        List<EmailRecipient> recipients = List.of(new EmailRecipient("email", "name"));
+        when(emailService.getUsersForNotificationType(EmailCategory.INTERSECTION_NOTIFICATION_SUMMARY,
+                EmailFrequency.IMMEDIATE)).thenReturn(recipients);
+
+        EmailContent content = new EmailContent("subject", "body");
+        when(emailGenerator.generateEmailBody(any())).thenReturn(content);
 
         emailTask.sendAlwaysNotifications(); // should send email
 
-        verify(emailService).emailList(eq(recipients), anyString(), contains("Notification : h2"));
+        verify(emailService).sendEmails(eq(recipients), eq(content));
     }
 
     @Test
@@ -147,7 +138,8 @@ class EmailTaskTest {
 
         emailTask.sendHourlyNotifications();
 
-        verify(emailService, never()).emailList(anyList(), anyString(), anyString());
+        // Should set lastHourList and not send email
+        verify(emailService, never()).sendEmails(anyList(), any());
     }
 
     @Test
@@ -165,12 +157,17 @@ class EmailTaskTest {
                 .thenReturn(page2);
 
         emailTask.sendHourlyNotifications();
-        List<UserRepresentation> recipients = Collections.singletonList(new UserRepresentation());
-        when(emailService.getNotificationEmailList(EmailFrequency.ALWAYS)).thenReturn(recipients);
+
+        List<EmailRecipient> recipients = List.of(new EmailRecipient("email", "name"));
+        when(emailService.getUsersForNotificationType(EmailCategory.INTERSECTION_NOTIFICATION_SUMMARY,
+                EmailFrequency.ONCE_PER_HOUR)).thenReturn(recipients);
+
+        EmailContent content = new EmailContent("subject", "body");
+        when(emailGenerator.generateEmailBody(any())).thenReturn(content);
 
         emailTask.sendHourlyNotifications();
 
-        verify(emailService).emailList(eq(recipients), anyString(), contains("Notification : h2"));
+        verify(emailService).sendEmails(eq(recipients), eq(content));
     }
 
     @Test
@@ -183,7 +180,7 @@ class EmailTaskTest {
 
         emailTask.sendDailyNotifications();
 
-        verify(emailService, never()).emailList(anyList(), anyString(), anyString());
+        verify(emailService, never()).sendEmails(anyList(), any());
     }
 
     @Test
@@ -201,12 +198,17 @@ class EmailTaskTest {
                 .thenReturn(page2);
 
         emailTask.sendDailyNotifications();
-        List<UserRepresentation> recipients = Collections.singletonList(new UserRepresentation());
-        when(emailService.getNotificationEmailList(EmailFrequency.ALWAYS)).thenReturn(recipients);
+
+        List<EmailRecipient> recipients = List.of(new EmailRecipient("email", "name"));
+        when(emailService.getUsersForNotificationType(EmailCategory.INTERSECTION_NOTIFICATION_SUMMARY,
+                EmailFrequency.ONCE_PER_DAY)).thenReturn(recipients);
+
+        EmailContent content = new EmailContent("subject", "body");
+        when(emailGenerator.generateEmailBody(any())).thenReturn(content);
 
         emailTask.sendDailyNotifications();
 
-        verify(emailService).emailList(eq(recipients), anyString(), contains("Notification : h2"));
+        verify(emailService).sendEmails(eq(recipients), eq(content));
     }
 
     @Test
@@ -219,7 +221,7 @@ class EmailTaskTest {
 
         emailTask.sendWeeklyNotifications();
 
-        verify(emailService, never()).emailList(anyList(), anyString(), anyString());
+        verify(emailService, never()).sendEmails(anyList(), any());
     }
 
     @Test
@@ -237,12 +239,17 @@ class EmailTaskTest {
                 .thenReturn(page2);
 
         emailTask.sendWeeklyNotifications();
-        List<UserRepresentation> recipients = Collections.singletonList(new UserRepresentation());
-        when(emailService.getNotificationEmailList(EmailFrequency.ALWAYS)).thenReturn(recipients);
+
+        List<EmailRecipient> recipients = List.of(new EmailRecipient("email", "name"));
+        when(emailService.getUsersForNotificationType(EmailCategory.INTERSECTION_NOTIFICATION_SUMMARY,
+                EmailFrequency.ONCE_PER_WEEK)).thenReturn(recipients);
+
+        EmailContent content = new EmailContent("subject", "body");
+        when(emailGenerator.generateEmailBody(any())).thenReturn(content);
 
         emailTask.sendWeeklyNotifications();
 
-        verify(emailService).emailList(eq(recipients), anyString(), contains("Notification : h2"));
+        verify(emailService).sendEmails(eq(recipients), eq(content));
     }
 
     @Test
@@ -255,7 +262,7 @@ class EmailTaskTest {
 
         emailTask.sendMonthlyNotifications();
 
-        verify(emailService, never()).emailList(anyList(), anyString(), anyString());
+        verify(emailService, never()).sendEmails(anyList(), any());
     }
 
     @Test
@@ -273,11 +280,16 @@ class EmailTaskTest {
                 .thenReturn(page2);
 
         emailTask.sendMonthlyNotifications();
-        List<UserRepresentation> recipients = Collections.singletonList(new UserRepresentation());
-        when(emailService.getNotificationEmailList(EmailFrequency.ALWAYS)).thenReturn(recipients);
+
+        List<EmailRecipient> recipients = List.of(new EmailRecipient("email", "name"));
+        when(emailService.getUsersForNotificationType(EmailCategory.INTERSECTION_NOTIFICATION_SUMMARY,
+                EmailFrequency.ONCE_PER_MONTH)).thenReturn(recipients);
+
+        EmailContent content = new EmailContent("subject", "body");
+        when(emailGenerator.generateEmailBody(any())).thenReturn(content);
 
         emailTask.sendMonthlyNotifications();
 
-        verify(emailService).emailList(eq(recipients), anyString(), contains("Notification : h2"));
+        verify(emailService).sendEmails(eq(recipients), eq(content));
     }
 }

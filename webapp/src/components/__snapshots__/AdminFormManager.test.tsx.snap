@@ -1257,7 +1257,7 @@ exports[`snapshot user 1`] = `
                     <input
                       aria-label="Search"
                       class="MuiInputBase-input MuiInput-input MuiInputBase-inputAdornedStart MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiInput-input"
-                      id="mui-72"
+                      id="mui-58"
                       placeholder="Search"
                       type="text"
                       value=""
@@ -1636,7 +1636,7 @@ exports[`snapshot user 1`] = `
                       />
                       <p
                         class="MuiTablePagination-selectLabel css-mocked-MuiTablePagination-selectLabel"
-                        id="mui-56"
+                        id="mui-42"
                       >
                         Rows per page:
                       </p>
@@ -1644,12 +1644,12 @@ exports[`snapshot user 1`] = `
                         class="MuiInputBase-root MuiInputBase-colorPrimary MuiTablePagination-input css-mocked-MuiInputBase-root-MuiTablePagination-select"
                       >
                         <div
-                          aria-controls="mui-50"
+                          aria-controls="mui-36"
                           aria-expanded="false"
                           aria-haspopup="listbox"
-                          aria-labelledby="mui-56 mui-55"
+                          aria-labelledby="mui-42 mui-41"
                           class="MuiSelect-select MuiTablePagination-select MuiSelect-standard MuiInputBase-input css-mocked-MuiSelect-select-MuiInputBase-input"
-                          id="mui-55"
+                          id="mui-41"
                           role="combobox"
                           tabindex="0"
                         >

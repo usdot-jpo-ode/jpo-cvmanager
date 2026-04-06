@@ -52,8 +52,7 @@ import {
   selectGeoMsgType,
 } from '../generalSlices/rsuSlice'
 import { selectWzdxData, getWzdxData } from '../generalSlices/wzdxSlice'
-import { selectOrganizationName, selectRole } from '../generalSlices/userSlice'
-import { SecureStorageManager } from '../managers'
+import { selectIsAdminOrAbove, selectOrganizationName } from '../generalSlices/userSlice'
 import {
   selectConfigCoordinates,
   toggleConfigPointSelect,
@@ -231,7 +230,7 @@ function MapPage() {
   const [selectedWZDxMarker, setSelectedWZDxMarker] = useState(null)
   const [wzdxMarkers, setWzdxMarkers] = useState([])
   const [pageOpen] = useState(true)
-  const userRole = useSelector(selectRole)
+  const isAdminOrAbove = useSelector(selectIsAdminOrAbove)
 
   // Vendor filter local state variable
   const [selectedVendor, setSelectedVendor] = useState('Select Vendor')
@@ -960,7 +959,7 @@ function MapPage() {
         </ConditionalRenderRsu>
 
         <ConditionalRenderRsu>
-          {(userRole ?? SecureStorageManager.getUserRole())?.toUpperCase() === 'ADMIN' && (
+          {isAdminOrAbove && (
             <>
               <Divider />
               <Accordion

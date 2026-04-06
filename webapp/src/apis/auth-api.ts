@@ -55,10 +55,10 @@ class AuthApi {
   }
 
   parseRole(role: string): UserRole {
-    switch (role.toLowerCase()) {
-      case 'admin':
+    switch (role.toUpperCase()) {
+      case 'ADMIN':
         return 'ADMIN'
-      case 'operator':
+      case 'OPERATOR':
         return 'OPERATOR'
       default:
         return 'USER'

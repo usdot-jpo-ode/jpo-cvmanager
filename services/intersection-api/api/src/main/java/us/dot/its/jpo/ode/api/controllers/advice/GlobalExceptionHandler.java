@@ -18,8 +18,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
@@ -188,6 +188,20 @@ public class GlobalExceptionHandler {
 
         var errorRes = ErrorResponse.builder(ex, problemDetail);
         return errorRes.build();
+    }
+
+    /**
+     * Handle missing required request header exceptions
+     */
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public ProblemDetail handleMissingRequestHeaderException(MissingRequestHeaderException ex) {
+        log.warn("Missing required request header: {}", ex.getHeaderName());
+
+        String message = String.format("Required request header '%s' is not present", ex.getHeaderName());
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, message);
+        problemDetail.setTitle("Missing Header");
+
+        return problemDetail;
     }
 
     /**

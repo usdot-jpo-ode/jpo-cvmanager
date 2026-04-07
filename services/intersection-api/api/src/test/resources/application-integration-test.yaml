@@ -52,8 +52,16 @@ conflict:
 spring:
   data:
     mongodb:
-      # Placeholder — overridden at runtime by @DynamicPropertySource in each test class
+      # uri overrides host/port/credentials at runtime via MongoConfig.configureClientSettings;
+      # the individual properties below must be present to satisfy @Value injection in MongoConfig
+      # but are not used for the actual connection when uri is set.
       uri: mongodb://localhost:27017/testdb
+      database: testdb
+      host: localhost
+      port: "27017"
+      username: test
+      password: test
+      authenticationDatabase: admin
   # PostgreSQL — Testcontainers starts a postgis/postgis:17-3.5 container automatically
   datasource:
     url: jdbc:tc:postgis:17-3.5:///testdb
@@ -62,7 +70,7 @@ spring:
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create-only
   mail:
     host: localhost
     port: 1025

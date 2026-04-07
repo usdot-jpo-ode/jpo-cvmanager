@@ -8,7 +8,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "rsu_intersection")
+@Table(name = "rsu_intersection", uniqueConstraints = {
+    @UniqueConstraint(name = "rsu_intersection_unique", columnNames = {"rsu_id", "intersection_id"})
+})
 public class RsuIntersection {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "rsu_intersection_id_gen")

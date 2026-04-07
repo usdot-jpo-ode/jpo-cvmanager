@@ -547,6 +547,7 @@ CREATE TABLE IF NOT EXISTS public.rsu_intersection
    rsu_id integer NOT NULL,
    intersection_id integer NOT NULL,
    CONSTRAINT rsu_intersection_pkey PRIMARY KEY (rsu_intersection_id),
+   CONSTRAINT rsu_intersection_unique UNIQUE (rsu_id, intersection_id),
    CONSTRAINT fk_rsu_id FOREIGN KEY (rsu_id)
       REFERENCES public.rsus (rsu_id) MATCH SIMPLE
       ON UPDATE NO ACTION

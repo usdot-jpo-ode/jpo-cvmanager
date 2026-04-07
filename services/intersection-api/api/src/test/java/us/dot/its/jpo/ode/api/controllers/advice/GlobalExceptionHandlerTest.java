@@ -14,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.server.ResponseStatusException;
 
 import us.dot.its.jpo.ode.api.services.RsuCredentialManagementService;
@@ -352,6 +353,35 @@ class GlobalExceptionHandlerTest {
                     .get("fieldErrors");
             assertEquals(2, fieldErrors.size());
             assertEquals("must not be null", fieldErrors.get("email"));
+        }
+    }
+
+    @Nested
+    class HandleMissingRequestHeaderExceptionTests {
+
+        @Test
+        void testReturnsBadRequestWithHeaderName() {
+            MissingRequestHeaderException ex = mock(MissingRequestHeaderException.class);
+            when(ex.getHeaderName()).thenReturn("X-Organization-Name");
+
+            ProblemDetail problemDetail = handler.handleMissingRequestHeaderException(ex);
+
+            assertNotNull(problemDetail);
+            assertEquals(HttpStatus.BAD_REQUEST.value(), problemDetail.getStatus());
+            assertEquals("Required request header 'X-Organization-Name' is not present", problemDetail.getDetail());
+            assertEquals("Missing Header", problemDetail.getTitle());
+        }
+
+        @Test
+        void testWithDifferentHeaderName() {
+            MissingRequestHeaderException ex = mock(MissingRequestHeaderException.class);
+            when(ex.getHeaderName()).thenReturn("Authorization");
+
+            ProblemDetail problemDetail = handler.handleMissingRequestHeaderException(ex);
+
+            assertEquals(HttpStatus.BAD_REQUEST.value(), problemDetail.getStatus());
+            assertEquals("Required request header 'Authorization' is not present", problemDetail.getDetail());
+            assertEquals("Missing Header", problemDetail.getTitle());
         }
     }
 

@@ -44,4 +44,7 @@ public class Intersection {
     @OneToMany(mappedBy = "intersection", fetch = FetchType.LAZY)
     private List<IntersectionOrganization> intersectionOrganizations;
 
+    @OneToMany(mappedBy = "intersection", fetch = FetchType.LAZY)
+    private List<RsuIntersection> rsuIntersections;
+
 }

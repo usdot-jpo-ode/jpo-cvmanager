@@ -65,10 +65,8 @@ spring:
     url: ${POSTGRES_SERVER_URL:jdbc:postgresql://cvmanager_postgres:5432}/postgres
     username: ${PG_DB_USER:postgres}
     password: ${PG_DB_PASS}
-    driver-class-name: org.postgresql.Driver
   jpa:
-    hibernate:
-      dialect: org.hibernate.dialect.PostgreSQLDialect
+    database: postgresql
   ### Spring Mail Settings (If using emailBroker SMTP)
   mail:
     host: ${INTERSECTION_SMTP_SERVER_HOST:localhost}

@@ -11,10 +11,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import us.dot.its.jpo.ode.api.models.UserRole;
 import us.dot.its.jpo.ode.api.models.keycloak.CvManagerAuthToken;
 import us.dot.its.jpo.ode.api.repositories.IntersectionRepository;
 import us.dot.its.jpo.ode.api.repositories.RsuRepository;
-import us.dot.its.jpo.ode.api.utils.AuthUtils;
 import us.dot.its.jpo.ode.api.repositories.RsuCredentialRepository;
 import us.dot.its.jpo.ode.api.repositories.SnmpCredentialRepository;
 
@@ -87,7 +87,7 @@ public class PermissionService {
      *         organization,
      *         or is a superuser; otherwise, false
      */
-    public boolean hasRole(String role) {
+    public boolean hasRole(UserRole role) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (!isAuthValid(auth)) {
             return false;
@@ -101,13 +101,13 @@ public class PermissionService {
         String organization = getOrganizationFromHeader();
 
         if (organization != null) {
-            Optional<String> userRole = CvManagerAuthToken.findRoleInOrg(organization);
-            return userRole.map(roleValue -> AuthUtils.checkRoleAbove(roleValue, role)).orElse(false);
+            Optional<UserRole> userRole = CvManagerAuthToken.findRoleInOrg(organization);
+            return userRole.map(roleValue -> roleValue.hasMinimumRole(role)).orElse(false);
         }
         return !CvManagerAuthToken.getQualifiedOrgList(role).isEmpty();
     }
 
-    public boolean hasRoleInOrgs(String role, List<String> organizations) {
+    public boolean hasRoleInOrgs(UserRole role, List<String> organizations) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (!isAuthValid(auth)) {
             return false;
@@ -144,8 +144,8 @@ public class PermissionService {
             return true;
         }
 
-        Optional<String> userRole = CvManagerAuthToken.findRoleInOrg(organization);
-        return userRole.map(roleValue -> AuthUtils.checkRoleAbove(roleValue, role)).orElse(false);
+        Optional<UserRole> userRole = CvManagerAuthToken.findRoleInOrg(organization);
+        return userRole.map(roleValue -> roleValue.hasMinimumRole(UserRole.fromString(role))).orElse(false);
     }
 
     // Allow Connection if the users organization controls the specified
@@ -166,7 +166,7 @@ public class PermissionService {
             return true;
         }
 
-        List<String> qualifiedOrgs = CvManagerAuthToken.getQualifiedOrgList(role);
+        List<String> qualifiedOrgs = CvManagerAuthToken.getQualifiedOrgList(UserRole.fromString(role));
 
         String organization = getOrganizationFromHeader();
         if (organization != null) {
@@ -203,7 +203,7 @@ public class PermissionService {
             return true;
         }
 
-        List<String> qualifiedOrgs = CvManagerAuthToken.getQualifiedOrgList(role);
+        List<String> qualifiedOrgs = CvManagerAuthToken.getQualifiedOrgList(UserRole.fromString(role));
 
         String organization = getOrganizationFromHeader();
         if (organization != null) {
@@ -238,7 +238,7 @@ public class PermissionService {
             return true;
         }
 
-        List<String> qualifiedOrgs = CvManagerAuthToken.getQualifiedOrgList(role);
+        List<String> qualifiedOrgs = CvManagerAuthToken.getQualifiedOrgList(UserRole.fromString(role));
 
         List<InetAddress> allowedRsuIps = rsuRepository.findAllowedRsuIpsInOrganizations(qualifiedOrgs);
         return allowedRsuIps.containsAll(ipv4Addresses);
@@ -274,7 +274,7 @@ public class PermissionService {
         }
 
         return rsuCredentialRepository.existsByNicknameAndOrganizations(nickname,
-                CvManagerAuthToken.getQualifiedOrgList(role));
+                CvManagerAuthToken.getQualifiedOrgList(UserRole.fromString(role)));
     }
 
     /**
@@ -307,7 +307,7 @@ public class PermissionService {
         }
 
         return snmpCredentialRepository.existsByNicknameAndOrganizations(nickname,
-                CvManagerAuthToken.getQualifiedOrgList(role));
+                CvManagerAuthToken.getQualifiedOrgList(UserRole.fromString(role)));
     }
 
     // helper method to make sure authentication is valid

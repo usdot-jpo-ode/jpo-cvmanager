@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+
+import us.dot.its.jpo.ode.api.models.UserRole;
 import us.dot.its.jpo.ode.api.models.admin.intersection.IntersectionListResponse;
 import us.dot.its.jpo.ode.api.models.admin.intersection.IntersectionPatch;
 import us.dot.its.jpo.ode.api.models.admin.intersection.IntersectionSingleResponse;
@@ -34,13 +36,17 @@ import java.util.Set;
 
 /**
  * REST controller for admin intersection management.
- * Migrated from the Python Flask AdminIntersection resource at /admin-intersection.
+ * Migrated from the Python Flask AdminIntersection resource at
+ * /admin-intersection.
  *
- * All authorization is handled in this layer (controller/auth), not in the service:
- *   - Role checks and intersection resource access are enforced via @PreAuthorize expressions.
- *   - Org restriction enforcement on PATCH (organizations_to_add/remove must be within the
- *     user's qualified orgs) is enforced in the method body via PermissionService.
- *   - AdminIntersectionService is responsible only for database operations.
+ * All authorization is handled in this layer (controller/auth), not in the
+ * service:
+ * - Role checks and intersection resource access are enforced via @PreAuthorize
+ * expressions.
+ * - Org restriction enforcement on PATCH (organizations_to_add/remove must be
+ * within the
+ * user's qualified orgs) is enforced in the method body via PermissionService.
+ * - AdminIntersectionService is responsible only for database operations.
  */
 @Slf4j
 @RestController
@@ -64,13 +70,10 @@ public class AdminIntersectionController {
      * The Organization header is required for all users, including super users.
      * Authorization (outer check) runs before query parameter validation.
      */
-    @Operation(
-            summary = "List all intersections",
-            description = """
-                    Returns all intersections for the specified organization.
-                    The Organization header is required for all users, including super users.
-                    """
-    )
+    @Operation(summary = "List all intersections", description = """
+            Returns all intersections for the specified organization.
+            The Organization header is required for all users, including super users.
+            """)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "400", description = "Missing Organization header"),
@@ -80,26 +83,24 @@ public class AdminIntersectionController {
     @GetMapping(produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
     public IntersectionListResponse getAllIntersections(
-            @Parameter(description = "Organization to scope results to", required = true)
-            @RequestHeader(name = "Organization") String organization) {
+            @Parameter(description = "Organization to scope results to", required = true) @RequestHeader(name = "Organization") String organization) {
 
         log.info("GET /admin/intersections. organization={}", organization);
         return adminIntersectionService.getAllIntersections(organization);
     }
 
     /**
-     * Returns a single intersection and allowed_selections for UI dropdown population.
+     * Returns a single intersection and allowed_selections for UI dropdown
+     * population.
      * Authorization: USER role + intersection access enforced by @PreAuthorize.
-     * allowed_selections is computed by PermissionService for UI dropdown population.
+     * allowed_selections is computed by PermissionService for UI dropdown
+     * population.
      */
-    @Operation(
-            summary = "Get a single intersection",
-            description = """
-                    Returns a single intersection by number, plus allowed_selections for UI dropdown population.
-                    Role check: USER required.
-                    Intersection access check: user must have access to the specified intersection.
-                    """
-    )
+    @Operation(summary = "Get a single intersection", description = """
+            Returns a single intersection by number, plus allowed_selections for UI dropdown population.
+            Role check: USER required.
+            Intersection access check: user must have access to the specified intersection.
+            """)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires USER role or no access to this intersection"),
@@ -108,33 +109,29 @@ public class AdminIntersectionController {
     @GetMapping(value = "/{intersectionId}", produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasRole('USER') && @PermissionService.hasIntersection(#intersectionId, 'USER'))")
     public IntersectionSingleResponse getIntersection(
-            @Parameter(description = "Intersection number to retrieve", example = "12109")
-            @PathVariable Integer intersectionId,
-            @Parameter(description = "Scope results to a specific organization")
-            @RequestHeader(name = "Organization", required = false) String organization) {
+            @Parameter(description = "Intersection number to retrieve", example = "12109") @PathVariable Integer intersectionId,
+            @Parameter(description = "Scope results to a specific organization") @RequestHeader(name = "Organization", required = false) String organization) {
 
         log.info("GET /admin/intersections/{}. organization={}", intersectionId, organization);
         return adminIntersectionService.getIntersection(intersectionId);
     }
 
     /**
-     * Updates an intersection's properties and modifies its organization/RSU relationships.
+     * Updates an intersection's properties and modifies its organization/RSU
+     * relationships.
      * Request body validation runs after the permission checks.
      * Authorization (all enforced in this layer):
      * 1. @PreAuthorize: OPERATOR role AND access to the specific intersection.
      * 2. Method body: each org in organizations_to_add/remove must be in the user's
      * qualified orgs (superusers exempt). Returns 403 if any org is not allowed.
      */
-    @Operation(
-            summary = "Update an intersection",
-            description = """
-                    Updates an existing intersection record and its organization/RSU associations.
-                    Role check: OPERATOR required.
-                    Intersection access check: user must have access to the specified intersection.
-                    Org enforcement: organizations_to_add and organizations_to_remove must each be
-                    within the user's qualified organizations (superusers exempt).
-                    """
-    )
+    @Operation(summary = "Update an intersection", description = """
+            Updates an existing intersection record and its organization/RSU associations.
+            Role check: OPERATOR required.
+            Intersection access check: user must have access to the specified intersection.
+            Org enforcement: organizations_to_add and organizations_to_remove must each be
+            within the user's qualified organizations (superusers exempt).
+            """)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Intersection successfully modified"),
             @ApiResponse(responseCode = "400", description = "Missing or invalid required fields"),
@@ -149,7 +146,7 @@ public class AdminIntersectionController {
         if (!permissionService.isSuperUser()) {
             CvManagerAuthToken token = permissionService.getCvManagerAuthToken();
             List<String> qualifiedOrgs = token != null
-                    ? token.getQualifiedOrgList("OPERATOR")
+                    ? token.getQualifiedOrgList(UserRole.OPERATOR)
                     : Collections.emptyList();
             Set<String> qualifiedOrgSet = new HashSet<>(qualifiedOrgs);
             boolean allOrgsAllowed = qualifiedOrgSet.containsAll(patch.getOrganizationsToAdd())
@@ -181,15 +178,12 @@ public class AdminIntersectionController {
      * Authorization (enforced in this layer):
      * 1. @PreAuthorize: OPERATOR role AND access to the specific intersection.
      */
-    @Operation(
-            summary = "Delete an intersection",
-            description = """
-                    Removes an intersection and its intersection_organization and rsu_intersection records.
-                    Role check: OPERATOR required.
-                    Intersection access check: user must have access to the specified intersection.
-                    Returns 404 if the intersection does not exist.
-                    """
-    )
+    @Operation(summary = "Delete an intersection", description = """
+            Removes an intersection and its intersection_organization and rsu_intersection records.
+            Role check: OPERATOR required.
+            Intersection access check: user must have access to the specified intersection.
+            Returns 404 if the intersection does not exist.
+            """)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Intersection successfully deleted"),
             @ApiResponse(responseCode = "400", description = "Missing or blank intersection_id parameter"),
@@ -199,9 +193,7 @@ public class AdminIntersectionController {
     @DeleteMapping(value = "/{intersectionId}", produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || (@PermissionService.hasRole('OPERATOR') && @PermissionService.hasIntersection(#intersectionId, 'OPERATOR'))")
     public void deleteIntersection(
-            @Parameter(description = "Intersection number to delete", example = "12109")
-            @PathVariable
-            String intersectionId) {
+            @Parameter(description = "Intersection number to delete", example = "12109") @PathVariable String intersectionId) {
 
         log.info("DELETE /admin/intersections/{}. intersectionId={}", intersectionId, intersectionId);
         adminIntersectionService.deleteIntersection(intersectionId);

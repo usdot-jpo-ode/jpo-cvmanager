@@ -24,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.context.annotation.Import;
 import us.dot.its.jpo.ode.api.TestcontainersConfiguration;
 import us.dot.its.jpo.ode.api.accessors.bsm.OdeBsmJsonRepository;
+import us.dot.its.jpo.ode.api.models.UserRole;
 import us.dot.its.jpo.ode.api.services.PermissionService;
 import us.dot.its.jpo.ode.mockdata.MockBsmGenerator;
 import us.dot.its.jpo.ode.model.OdeMessageFrameData;
@@ -49,7 +50,7 @@ public class BsmControllerTest {
     @Test
     public void testBsmJson() {
 
-        when(permissionService.hasRole("USER")).thenReturn(true);
+        when(permissionService.hasRole(UserRole.USER)).thenReturn(true);
 
         List<OdeMessageFrameData> list = new ArrayList<>();
 
@@ -68,7 +69,7 @@ public class BsmControllerTest {
 
     @Test
     void testFindOdeBsmWithTestData() {
-        when(permissionService.hasRole("USER")).thenReturn(true);
+        when(permissionService.hasRole(UserRole.USER)).thenReturn(true);
         boolean testData = true;
 
         ResponseEntity<Page<OdeMessageFrameData>> response = controller
@@ -85,7 +86,7 @@ public class BsmControllerTest {
     void testFindOdeBsmsWithPagination() {
         List<OdeMessageFrameData> events = MockBsmGenerator.getJsonBsms();
 
-        when(permissionService.hasRole("USER")).thenReturn(true);
+        when(permissionService.hasRole(UserRole.USER)).thenReturn(true);
 
         Page<OdeMessageFrameData> mockPage = new PageImpl<>(events, PageRequest.of(0, 10), 1);
         when(odeBsmJsonRepo.find(any(), any(), any(), any(), any(), any(), any(),
@@ -107,7 +108,7 @@ public class BsmControllerTest {
     public void testCountOdeBsmsWithTestData() {
         boolean testData = true;
 
-        when(permissionService.hasRole("USER")).thenReturn(true);
+        when(permissionService.hasRole(UserRole.USER)).thenReturn(true);
 
         ResponseEntity<Long> response = controller.countBSMs(null, null, null, null, null,
                 null, null, testData);
@@ -123,7 +124,7 @@ public class BsmControllerTest {
         Long expectedCount = 5L;
 
         when(permissionService.hasIntersection(null, "USER")).thenReturn(true);
-        when(permissionService.hasRole("USER")).thenReturn(true);
+        when(permissionService.hasRole(UserRole.USER)).thenReturn(true);
         when(odeBsmJsonRepo.count(null, null, startTime, endTime, null, null, null))
                 .thenReturn(expectedCount);
 

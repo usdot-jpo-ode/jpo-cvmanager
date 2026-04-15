@@ -34,6 +34,7 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.SignalStateCo
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.MapBroadcastRateNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.broadcast_rate.SpatBroadcastRateNotification;
 import us.dot.its.jpo.ode.api.accessors.notifications.active_notification.ActiveNotificationRepository;
+import us.dot.its.jpo.ode.api.models.UserRole;
 import us.dot.its.jpo.ode.api.services.PermissionService;
 import us.dot.its.jpo.ode.mockdata.MockNotificationGenerator;
 
@@ -61,7 +62,7 @@ public class ActiveNotificationControllerTest {
         allowedInteresections.add(null);
 
         when(permissionService.hasIntersection(null, "USER")).thenReturn(true);
-        when(permissionService.hasRole("USER")).thenReturn(true);
+        when(permissionService.hasRole(UserRole.USER)).thenReturn(true);
 
         SpatBroadcastRateNotification spatBroadcastRateNotification = MockNotificationGenerator
                 .getSpatBroadcastRateNotification();
@@ -105,7 +106,7 @@ public class ActiveNotificationControllerTest {
         events.add(event);
 
         when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-        when(permissionService.hasRole("USER")).thenReturn(true);
+        when(permissionService.hasRole(UserRole.USER)).thenReturn(true);
         boolean testData = true;
 
         ResponseEntity<Page<Notification>> response = controller
@@ -125,7 +126,7 @@ public class ActiveNotificationControllerTest {
         events.add(event);
 
         when(permissionService.hasIntersection(event.getIntersectionID(), "USER")).thenReturn(true);
-        when(permissionService.hasRole("USER")).thenReturn(true);
+        when(permissionService.hasRole(UserRole.USER)).thenReturn(true);
 
         Page<Notification> mockPage = new PageImpl<>(events, PageRequest.of(0, 10), 1);
         when(activeNotificationRepo.find(eq(event.getIntersectionID()), any(), any(),
@@ -149,7 +150,7 @@ public class ActiveNotificationControllerTest {
         boolean testData = true;
 
         when(permissionService.hasIntersection(intersectionID, "USER")).thenReturn(true);
-        when(permissionService.hasRole("USER")).thenReturn(true);
+        when(permissionService.hasRole(UserRole.USER)).thenReturn(true);
 
         ResponseEntity<Long> response = controller.countActiveNotifications(intersectionID,
                 null, null, testData);
@@ -166,7 +167,7 @@ public class ActiveNotificationControllerTest {
         Long expectedCount = 5L;
 
         when(permissionService.hasIntersection(intersectionID, "USER")).thenReturn(true);
-        when(permissionService.hasRole("USER")).thenReturn(true);
+        when(permissionService.hasRole(UserRole.USER)).thenReturn(true);
         when(activeNotificationRepo.count(intersectionID, notificationType, key))
                 .thenReturn(expectedCount);
 
@@ -182,7 +183,7 @@ public class ActiveNotificationControllerTest {
     public void testDeleteActiveNotifications() {
         String key = "key";
 
-        when(permissionService.hasRole("OPERATOR")).thenReturn(true);
+        when(permissionService.hasRole(UserRole.OPERATOR)).thenReturn(true);
         when(activeNotificationRepo.delete(key))
                 .thenReturn(1L);
 
@@ -196,7 +197,7 @@ public class ActiveNotificationControllerTest {
     public void testDeleteActiveNotificationsNotFound() {
         String key = "key";
 
-        when(permissionService.hasRole("OPERATOR")).thenReturn(true);
+        when(permissionService.hasRole(UserRole.OPERATOR)).thenReturn(true);
         when(activeNotificationRepo.delete(key))
                 .thenReturn(0L);
 
@@ -211,7 +212,7 @@ public class ActiveNotificationControllerTest {
         String key = "key";
         RuntimeException repoException = new RuntimeException("repo error");
 
-        when(permissionService.hasRole("OPERATOR")).thenReturn(true);
+        when(permissionService.hasRole(UserRole.OPERATOR)).thenReturn(true);
         when(activeNotificationRepo.delete(key)).thenThrow(repoException);
 
         ResponseStatusException thrown = assertThrows(

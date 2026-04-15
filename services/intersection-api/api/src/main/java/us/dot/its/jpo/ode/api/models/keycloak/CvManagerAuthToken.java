@@ -11,10 +11,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
-import us.dot.its.jpo.ode.api.utils.AuthUtils;
+import us.dot.its.jpo.ode.api.models.UserRole;
 
 public class CvManagerAuthToken extends JwtAuthenticationToken {
-    private final Map<String, String> orgRoles; // Map<Org, Role>
+    private final Map<String, UserRole> orgRoles; // Map<Org, Role>
     private final boolean isSuperUser;
 
     public CvManagerAuthToken(Jwt jwt, Collection<? extends GrantedAuthority> authorities, String username) {
@@ -32,7 +32,7 @@ public class CvManagerAuthToken extends JwtAuthenticationToken {
         return false;
     }
 
-    protected Map<String, String> getOrgRolesFrom(Map<String, Object> claims) {
+    protected Map<String, UserRole> getOrgRolesFrom(Map<String, Object> claims) {
         @SuppressWarnings("unchecked")
         List<Map<String, String>> orgList = (List<Map<String, String>>) claims.get("organizations");
 
@@ -41,11 +41,11 @@ public class CvManagerAuthToken extends JwtAuthenticationToken {
         }
 
         return orgList.stream()
-                .collect(Collectors.toMap(m -> m.get("org"), m -> m.get("role")));
+                .collect(Collectors.toMap(m -> m.get("org"), m -> UserRole.fromString(m.get("role"))));
     }
 
     public boolean hasRoleInOrg(String orgId, String role) {
-        return role.equalsIgnoreCase(orgRoles.get(orgId));
+        return UserRole.fromString(role).equals(orgRoles.get(orgId));
     }
 
     public Set<String> getAllOrgs() {
@@ -60,9 +60,9 @@ public class CvManagerAuthToken extends JwtAuthenticationToken {
      * @param requiredRole Minimum required role (e.g., "USER", "OPERATOR", "ADMIN")
      * @return List of organization names where user meets the role requirement
      */
-    public List<String> getQualifiedOrgList(String requiredRole) {
+    public List<String> getQualifiedOrgList(UserRole requiredRole) {
         return orgRoles.entrySet().stream()
-                .filter(entry -> entry != null && AuthUtils.checkRoleAbove(entry.getValue(), requiredRole))
+                .filter(entry -> entry != null && entry.getValue().hasMinimumRole(requiredRole))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
     }
@@ -73,11 +73,11 @@ public class CvManagerAuthToken extends JwtAuthenticationToken {
      * @param orgName Name of the organization to search for
      * @return Optional containing the role if found, empty otherwise
      */
-    public Optional<String> findRoleInOrg(String orgName) {
+    public Optional<UserRole> findRoleInOrg(String orgName) {
         if (orgName == null) {
             return Optional.empty();
         }
-        for (Map.Entry<String, String> entry : orgRoles.entrySet()) {
+        for (Map.Entry<String, UserRole> entry : orgRoles.entrySet()) {
             if (entry == null) {
                 continue;
             }

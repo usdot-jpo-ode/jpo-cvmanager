@@ -65,7 +65,7 @@ public class ConfigControllerTest {
                 defaultConfigRepository,
                 intersectionConfigRepository,
                 props,
-                        permissionService);
+                permissionService);
 
         ReflectionTestUtils.setField(controller, "restTemplate", restTemplate);
         when(props.getCmServerURL()).thenReturn("http://localhost");

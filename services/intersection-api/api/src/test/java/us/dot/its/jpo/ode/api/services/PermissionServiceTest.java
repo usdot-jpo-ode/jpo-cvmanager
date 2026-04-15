@@ -16,6 +16,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import us.dot.its.jpo.ode.api.models.UserRole;
 import us.dot.its.jpo.ode.api.models.keycloak.CvManagerAuthToken;
 import us.dot.its.jpo.ode.api.repositories.IntersectionRepository;
 import us.dot.its.jpo.ode.api.repositories.RsuRepository;
@@ -117,9 +118,9 @@ class PermissionServiceTest {
         doReturn(authToken).when(permissionService).getCvManagerAuthToken();
         when(authToken.isSuperUser()).thenReturn(true);
 
-        assertTrue(permissionService.hasRole("ADMIN"));
-        assertTrue(permissionService.hasRole("OPERATOR"));
-        assertTrue(permissionService.hasRole("USER"));
+        assertTrue(permissionService.hasRole(UserRole.ADMIN));
+        assertTrue(permissionService.hasRole(UserRole.OPERATOR));
+        assertTrue(permissionService.hasRole(UserRole.USER));
     }
 
     @Test
@@ -130,9 +131,9 @@ class PermissionServiceTest {
 
         doReturn(authToken).when(permissionService).getCvManagerAuthToken();
         when(authToken.isSuperUser()).thenReturn(false);
-        when(authToken.findRoleInOrg("TestOrg")).thenReturn(Optional.of("ADMIN"));
+        when(authToken.findRoleInOrg("TestOrg")).thenReturn(Optional.of(UserRole.ADMIN));
 
-        assertTrue(permissionService.hasRole("OPERATOR"));
+        assertTrue(permissionService.hasRole(UserRole.OPERATOR));
     }
 
     @Test
@@ -143,9 +144,9 @@ class PermissionServiceTest {
 
         doReturn(authToken).when(permissionService).getCvManagerAuthToken();
         when(authToken.isSuperUser()).thenReturn(false);
-        when(authToken.findRoleInOrg("TestOrg")).thenReturn(Optional.of("USER"));
+        when(authToken.findRoleInOrg("TestOrg")).thenReturn(Optional.of(UserRole.USER));
 
-        assertFalse(permissionService.hasRole("ADMIN"));
+        assertFalse(permissionService.hasRole(UserRole.ADMIN));
     }
 
     @Test
@@ -155,9 +156,9 @@ class PermissionServiceTest {
 
         doReturn(authToken).when(permissionService).getCvManagerAuthToken();
         when(authToken.isSuperUser()).thenReturn(false);
-        when(authToken.getQualifiedOrgList("OPERATOR")).thenReturn(List.of("TestOrg"));
+        when(authToken.getQualifiedOrgList(UserRole.OPERATOR)).thenReturn(List.of("TestOrg"));
 
-        assertTrue(permissionService.hasRole("OPERATOR"));
+        assertTrue(permissionService.hasRole(UserRole.OPERATOR));
     }
 
     @Test
@@ -167,9 +168,9 @@ class PermissionServiceTest {
 
         doReturn(authToken).when(permissionService).getCvManagerAuthToken();
         when(authToken.isSuperUser()).thenReturn(false);
-        when(authToken.getQualifiedOrgList("ADMIN")).thenReturn(List.of());
+        when(authToken.getQualifiedOrgList(UserRole.ADMIN)).thenReturn(List.of());
 
-        assertFalse(permissionService.hasRole("ADMIN"));
+        assertFalse(permissionService.hasRole(UserRole.ADMIN));
     }
 
     @Test
@@ -178,7 +179,7 @@ class PermissionServiceTest {
         token.setAuthenticated(false);
         setupSecurityContext(token);
 
-        assertFalse(permissionService.hasRole("USER"));
+        assertFalse(permissionService.hasRole(UserRole.USER));
     }
 
     // ==================== hasRoleInOrg Tests ====================
@@ -212,7 +213,7 @@ class PermissionServiceTest {
         setupSecurityContext(token);
 
         doReturn(authToken).when(permissionService).getCvManagerAuthToken();
-        doReturn(Optional.of("OPERATOR")).when(authToken).findRoleInOrg("TestOrg");
+        doReturn(Optional.of(UserRole.OPERATOR)).when(authToken).findRoleInOrg("TestOrg");
 
         assertTrue(permissionService.hasRoleInOrg("TestOrg", "OPERATOR"));
     }
@@ -223,7 +224,7 @@ class PermissionServiceTest {
         setupSecurityContext(token);
 
         doReturn(authToken).when(permissionService).getCvManagerAuthToken();
-        doReturn(Optional.of("ADMIN")).when(authToken).findRoleInOrg("TestOrg");
+        doReturn(Optional.of(UserRole.ADMIN)).when(authToken).findRoleInOrg("TestOrg");
 
         assertTrue(permissionService.hasRoleInOrg("TestOrg", "OPERATOR"));
         assertTrue(permissionService.hasRoleInOrg("TestOrg", "USER"));
@@ -235,7 +236,7 @@ class PermissionServiceTest {
         setupSecurityContext(token);
 
         doReturn(authToken).when(permissionService).getCvManagerAuthToken();
-        doReturn(Optional.of("USER")).when(authToken).findRoleInOrg("TestOrg");
+        doReturn(Optional.of(UserRole.USER)).when(authToken).findRoleInOrg("TestOrg");
 
         assertFalse(permissionService.hasRoleInOrg("TestOrg", "OPERATOR"));
         assertFalse(permissionService.hasRoleInOrg("TestOrg", "ADMIN"));
@@ -296,7 +297,7 @@ class PermissionServiceTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
         doReturn(authToken).when(permissionService).getCvManagerAuthToken();
-        when(authToken.getQualifiedOrgList("USER")).thenReturn(List.of("TestOrg"));
+        when(authToken.getQualifiedOrgList(UserRole.USER)).thenReturn(List.of("TestOrg"));
         when(intersectionRepository.existsByIdAndOrganizations("123", List.of("TestOrg")))
                 .thenReturn(true);
 
@@ -315,7 +316,7 @@ class PermissionServiceTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
         doReturn(authToken).when(permissionService).getCvManagerAuthToken();
-        when(authToken.getQualifiedOrgList("USER")).thenReturn(List.of("TestOrg"));
+        when(authToken.getQualifiedOrgList(UserRole.USER)).thenReturn(List.of("TestOrg"));
         when(intersectionRepository.existsByIdAndOrganizations("123", List.of("TestOrg")))
                 .thenReturn(false);
 
@@ -331,7 +332,7 @@ class PermissionServiceTest {
         doReturn(authToken).when(permissionService).getCvManagerAuthToken();
         when(authToken.isSuperUser()).thenReturn(false);
 
-        when(authToken.getQualifiedOrgList("OPERATOR")).thenReturn(List.of("TestOrg"));
+        when(authToken.getQualifiedOrgList(UserRole.OPERATOR)).thenReturn(List.of("TestOrg"));
         when(intersectionRepository.existsByIdAndOrganizations("123", List.of("TestOrg")))
                 .thenReturn(true);
         assertTrue(permissionService.hasIntersection(123, "OPERATOR"));
@@ -363,7 +364,7 @@ class PermissionServiceTest {
         request.addHeader("Organization", "TestOrg");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-        when(authToken.getQualifiedOrgList("USER")).thenReturn(List.of("TestOrg"));
+        when(authToken.getQualifiedOrgList(UserRole.USER)).thenReturn(List.of("TestOrg"));
         when(rsuRepository.existsByIpAndOrganizations(InetAddress.getByName("192.168.1.1"), List.of("TestOrg")))
                 .thenReturn(true);
 
@@ -381,7 +382,7 @@ class PermissionServiceTest {
         request.addHeader("Organization", "TestOrg");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-        when(authToken.getQualifiedOrgList("USER")).thenReturn(List.of("TestOrg"));
+        when(authToken.getQualifiedOrgList(UserRole.USER)).thenReturn(List.of("TestOrg"));
         when(rsuRepository.existsByIpAndOrganizations(InetAddress.getByName("192.168.1.1"), List.of("TestOrg")))
                 .thenReturn(false);
 
@@ -398,7 +399,7 @@ class PermissionServiceTest {
         doReturn(authToken).when(permissionService).getCvManagerAuthToken();
         when(authToken.isSuperUser()).thenReturn(false);
 
-        when(authToken.getQualifiedOrgList("OPERATOR")).thenReturn(List.of("TestOrg"));
+        when(authToken.getQualifiedOrgList(UserRole.OPERATOR)).thenReturn(List.of("TestOrg"));
         when(rsuRepository.existsByIpAndOrganizations(InetAddress.getByName("192.168.1.1"), List.of("TestOrg")))
                 .thenReturn(true);
 

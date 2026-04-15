@@ -24,6 +24,7 @@ import us.dot.its.jpo.ode.api.models.devices.management.RsuPatch;
 import us.dot.its.jpo.ode.api.models.keycloak.CvManagerAuthToken;
 import us.dot.its.jpo.ode.api.models.postgres.tables.Rsu;
 import us.dot.its.jpo.ode.api.models.SimplePosition;
+import us.dot.its.jpo.ode.api.models.UserRole;
 import us.dot.its.jpo.ode.api.services.PermissionService;
 import us.dot.its.jpo.ode.api.services.RsuManagementService;
 import us.dot.its.jpo.ode.api.services.RsuOptionManagementService;
@@ -556,6 +557,7 @@ class RsuControllerTest {
             @Test
             void testCreateRsu_Success() {
                 List<String> orgsToAdd = Arrays.asList("TestOrg");
+                UserRole role = UserRole.OPERATOR;
 
                 RsuInfoDto rsuInfoDto = new RsuInfoDto(
                         "192.168.1.100",
@@ -574,7 +576,7 @@ class RsuControllerTest {
 
                 Rsu mockRsu = new Rsu();
 
-                when(permissionService.hasRoleInOrgs("OPERATOR", orgsToAdd)).thenReturn(true);
+                when(permissionService.hasRoleInOrgs(role, orgsToAdd)).thenReturn(true);
                 when(rsuManagementService.createRsu(rsuInfoDto, orgsToAdd)).thenReturn(mockRsu);
 
                 ResponseEntity<Void> result = rsuController.createRsu(rsuInfoDto);
@@ -583,13 +585,14 @@ class RsuControllerTest {
                 assertEquals(HttpStatus.CREATED, result.getStatusCode());
                 assertNull(result.getBody());
 
-                verify(permissionService).hasRoleInOrgs("OPERATOR", orgsToAdd);
+                verify(permissionService).hasRoleInOrgs(role, orgsToAdd);
                 verify(rsuManagementService).createRsu(rsuInfoDto, orgsToAdd);
             }
 
             @Test
             void testCreateRsu_UnqualifiedOrganization() {
                 List<String> orgsToAdd = Arrays.asList("TestOrg", "UnqualifiedOrg");
+                UserRole role = UserRole.OPERATOR;
 
                 RsuInfoDto rsuInfoDto = new RsuInfoDto(
                         "192.168.1.100",
@@ -606,7 +609,7 @@ class RsuControllerTest {
                         true,
                         true);
 
-                when(permissionService.hasRoleInOrgs("OPERATOR", orgsToAdd)).thenReturn(false);
+                when(permissionService.hasRoleInOrgs(role, orgsToAdd)).thenReturn(false);
 
                 ResponseStatusException exception = assertThrows(
                         ResponseStatusException.class,
@@ -621,6 +624,7 @@ class RsuControllerTest {
             @Test
             void testCreateRsu_DuplicateIpAddress() {
                 List<String> orgsToAdd = Arrays.asList("TestOrg");
+                UserRole role = UserRole.OPERATOR;
 
                 RsuInfoDto rsuInfoDto = new RsuInfoDto(
                         "192.168.1.100",
@@ -637,7 +641,8 @@ class RsuControllerTest {
                         true,
                         true);
 
-                when(permissionService.hasRoleInOrgs("OPERATOR", orgsToAdd)).thenReturn(true);
+                when(permissionService.hasRoleInOrgs(role, orgsToAdd)).thenReturn(true);
+
                 when(rsuManagementService.createRsu(rsuInfoDto, orgsToAdd))
                         .thenThrow(new ResponseStatusException(HttpStatus.CONFLICT,
                                 "RSU with IP 192.168.1.100 already exists"));
@@ -669,8 +674,6 @@ class RsuControllerTest {
                     true,
                     true);
 
-            when(permissionService.hasRoleInOrgs("OPERATOR", orgsToAdd)).thenReturn(false);
-
             assertThrows(
                     RuntimeException.class,
                     () -> rsuController.createRsu(rsuInfoDto));
@@ -695,8 +698,6 @@ class RsuControllerTest {
                     true,
                     true);
 
-            when(permissionService.hasRoleInOrgs("OPERATOR", orgsToAdd)).thenReturn(false);
-
             assertThrows(
                     ResponseStatusException.class,
                     () -> rsuController.createRsu(rsuInfoDto));
@@ -718,8 +719,6 @@ class RsuControllerTest {
                     null,
                     true,
                     true);
-
-            when(permissionService.hasRoleInOrgs("OPERATOR", null)).thenReturn(false);
 
             assertThrows(
                     ResponseStatusException.class,

@@ -27,6 +27,7 @@ import org.springframework.web.server.ResponseStatusException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import us.dot.its.jpo.ode.api.models.UserRole;
 import us.dot.its.jpo.ode.api.models.devices.RsuInfoDto;
 import us.dot.its.jpo.ode.api.models.devices.management.ModifyRsuAllowedSelections;
 import us.dot.its.jpo.ode.api.models.devices.management.RsuPatch;
@@ -114,7 +115,7 @@ public class RsuController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or OPERATOR role"),
     })
     public ResponseEntity<Void> createRsu(@Validated @RequestBody RsuInfoDto body) {
-        if (!permissionService.hasRoleInOrgs("OPERATOR", body.getOrganizations())) {
+        if (!permissionService.hasRoleInOrgs(UserRole.OPERATOR, body.getOrganizations())) {
             // This catches unqualified orgs or nonexistent orgs
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                     "User not qualified to modify all specified organizations");

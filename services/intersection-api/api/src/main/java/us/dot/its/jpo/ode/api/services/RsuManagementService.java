@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import us.dot.its.jpo.ode.api.mappers.RsuInfoMapper;
 import us.dot.its.jpo.ode.api.mappers.RsuPatchMapper;
+import us.dot.its.jpo.ode.api.models.UserRole;
 import us.dot.its.jpo.ode.api.models.devices.RsuInfoDto;
 import us.dot.its.jpo.ode.api.models.devices.management.ModifyRsuAllowedSelections;
 import us.dot.its.jpo.ode.api.models.devices.management.RsuPatch;
@@ -90,7 +91,7 @@ public class RsuManagementService {
         allowed.setSshCredentialGroups(rsuCredentialRepository.findAllNicknames());
         allowed.setSnmpCredentialGroups(snmpCredentialRepository.findAllNicknames());
         allowed.setSnmpVersionGroups(snmpProtocolRepository.findAllNicknames());
-        allowed.setOrganizations(userToken.getQualifiedOrgList("ADMIN"));
+        allowed.setOrganizations(userToken.getQualifiedOrgList(UserRole.ADMIN));
 
         return allowed;
     }
@@ -173,7 +174,7 @@ public class RsuManagementService {
     @Transactional
     public RsuInfoDto modifyRsu(String rsuIp, RsuPatch rsuPatch, CvManagerAuthToken userToken) {
         try {
-            List<String> authorizedOrgs = userToken.getQualifiedOrgList("ADMIN");
+            List<String> authorizedOrgs = userToken.getQualifiedOrgList(UserRole.ADMIN);
 
             // 1. Find existing RSU by original IP
             InetAddress inetAddress = InetAddress.getByName(rsuIp);

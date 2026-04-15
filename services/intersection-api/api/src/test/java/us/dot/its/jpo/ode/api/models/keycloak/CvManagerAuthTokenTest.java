@@ -8,6 +8,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 
+import us.dot.its.jpo.ode.api.models.UserRole;
+
 import java.time.Instant;
 import java.util.*;
 
@@ -205,7 +207,7 @@ class CvManagerAuthTokenTest {
         @Test
         @DisplayName("Should be case-insensitive for role comparison")
         void shouldBeCaseInsensitiveForRole() {
-            assertTrue(token.hasRoleInOrg("CDOT", "ADMIN"));
+            assertTrue(token.hasRoleInOrg("CDOT", "admin"));
             assertTrue(token.hasRoleInOrg("CDOT", "Admin"));
             assertTrue(token.hasRoleInOrg("CDOT", "aDmIn"));
         }
@@ -276,7 +278,7 @@ class CvManagerAuthTokenTest {
         @DisplayName("Should return all orgs when required role is 'user'")
         void shouldReturnAllOrgsForUserRole() {
             // Act
-            List<String> qualifiedOrgs = token.getQualifiedOrgList("user");
+            List<String> qualifiedOrgs = token.getQualifiedOrgList(UserRole.USER);
 
             // Assert
             assertEquals(4, qualifiedOrgs.size());
@@ -287,7 +289,7 @@ class CvManagerAuthTokenTest {
         @DisplayName("Should return orgs with operator or higher when required role is 'operator'")
         void shouldReturnOperatorAndAboveOrgs() {
             // Act
-            List<String> qualifiedOrgs = token.getQualifiedOrgList("operator");
+            List<String> qualifiedOrgs = token.getQualifiedOrgList(UserRole.OPERATOR);
 
             // Assert
             assertEquals(3, qualifiedOrgs.size());
@@ -299,7 +301,7 @@ class CvManagerAuthTokenTest {
         @DisplayName("Should return only admin orgs when required role is 'admin'")
         void shouldReturnOnlyAdminOrgs() {
             // Act
-            List<String> qualifiedOrgs = token.getQualifiedOrgList("admin");
+            List<String> qualifiedOrgs = token.getQualifiedOrgList(UserRole.ADMIN);
 
             // Assert
             assertEquals(2, qualifiedOrgs.size());
@@ -318,7 +320,7 @@ class CvManagerAuthTokenTest {
             CvManagerAuthToken tokenWithOnlyUser = new CvManagerAuthToken(jwt, Collections.emptyList(), "testuser");
 
             // Act
-            List<String> qualifiedOrgs = tokenWithOnlyUser.getQualifiedOrgList("admin");
+            List<String> qualifiedOrgs = tokenWithOnlyUser.getQualifiedOrgList(UserRole.ADMIN);
 
             // Assert
             assertTrue(qualifiedOrgs.isEmpty());
@@ -346,16 +348,16 @@ class CvManagerAuthTokenTest {
         @DisplayName("Should return role when org exists")
         void shouldReturnRoleWhenOrgExists() {
             // Act & Assert
-            assertEquals(Optional.of("admin"), token.findRoleInOrg("CDOT"));
-            assertEquals(Optional.of("operator"), token.findRoleInOrg("WYDOT"));
-            assertEquals(Optional.of("user"), token.findRoleInOrg("VDOT"));
+            assertEquals(Optional.of(UserRole.ADMIN), token.findRoleInOrg("CDOT"));
+            assertEquals(Optional.of(UserRole.OPERATOR), token.findRoleInOrg("WYDOT"));
+            assertEquals(Optional.of(UserRole.USER), token.findRoleInOrg("VDOT"));
         }
 
         @Test
         @DisplayName("Should return empty when org does not exist")
         void shouldReturnEmptyWhenOrgDoesNotExist() {
             // Act
-            Optional<String> role = token.findRoleInOrg("NONEXISTENT");
+            Optional<UserRole> role = token.findRoleInOrg("NONEXISTENT");
 
             // Assert
             assertTrue(role.isEmpty());
@@ -365,19 +367,9 @@ class CvManagerAuthTokenTest {
         @DisplayName("Should be case-insensitive for org name")
         void shouldBeCaseInsensitiveForOrgName() {
             // Act & Assert
-            assertEquals(Optional.of("admin"), token.findRoleInOrg("cdot"));
-            assertEquals(Optional.of("admin"), token.findRoleInOrg("CdOt"));
-            assertEquals(Optional.of("operator"), token.findRoleInOrg("wydot"));
-        }
-
-        @Test
-        @DisplayName("Should return empty when orgName is null")
-        void shouldReturnEmptyWhenOrgNameIsNull() {
-            // Act
-            Optional<String> role = token.findRoleInOrg(null);
-
-            // Assert
-            assertTrue(role.isEmpty());
+            assertEquals(Optional.of(UserRole.ADMIN), token.findRoleInOrg("cdot"));
+            assertEquals(Optional.of(UserRole.ADMIN), token.findRoleInOrg("CdOt"));
+            assertEquals(Optional.of(UserRole.OPERATOR), token.findRoleInOrg("wydot"));
         }
     }
 
@@ -396,7 +388,7 @@ class CvManagerAuthTokenTest {
 
             // Assert
             assertTrue(token.getAllOrgs().isEmpty());
-            assertTrue(token.getQualifiedOrgList("user").isEmpty());
+            assertTrue(token.getQualifiedOrgList(UserRole.USER).isEmpty());
             assertTrue(token.findRoleInOrg("CDOT").isEmpty());
             assertFalse(token.hasRoleInOrg("CDOT", "admin"));
         }
@@ -413,7 +405,7 @@ class CvManagerAuthTokenTest {
             // Assert
             assertEquals(1, token.getAllOrgs().size());
             assertTrue(token.hasRoleInOrg("CDOT", "admin"));
-            assertEquals(List.of("CDOT"), token.getQualifiedOrgList("admin"));
+            assertEquals(List.of("CDOT"), token.getQualifiedOrgList(UserRole.ADMIN));
         }
     }
 }

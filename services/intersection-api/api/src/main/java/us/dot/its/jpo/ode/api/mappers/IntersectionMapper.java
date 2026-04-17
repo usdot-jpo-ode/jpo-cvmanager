@@ -8,6 +8,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 
 import org.mapstruct.NullValuePropertyMappingStrategy;
+import us.dot.its.jpo.ode.api.models.admin.intersection.IntersectionCreate;
 import us.dot.its.jpo.ode.api.models.admin.intersection.IntersectionDto;
 import us.dot.its.jpo.ode.api.models.admin.intersection.IntersectionPatch;
 import us.dot.its.jpo.ode.api.models.postgres.tables.Intersection;
@@ -48,6 +49,12 @@ public interface IntersectionMapper {
       .map(io -> io.getOrganization().getName())
       .collect(Collectors.toList());
   }
+
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "intersectionOrganizations", ignore = true)
+  @Mapping(target = "rsuIntersections", ignore = true)
+  @Mapping(target = "intersectionNumber", source = "intersectionId")
+  Intersection toEntity(IntersectionCreate create);
 
   @Mapping(target = "id", ignore = true) // should never be able to update this
   @Mapping(target = "intersectionOrganizations", ignore = true) // handled directly in the service layer

@@ -23,6 +23,7 @@ import jakarta.persistence.EntityNotFoundException;
 import us.dot.its.jpo.ode.api.TestcontainersConfiguration;
 import us.dot.its.jpo.ode.api.models.UserRole;
 import us.dot.its.jpo.ode.api.models.admin.intersection.AllowedSelections;
+import us.dot.its.jpo.ode.api.models.admin.intersection.IntersectionCreate;
 import us.dot.its.jpo.ode.api.models.admin.intersection.IntersectionDto;
 import us.dot.its.jpo.ode.api.models.admin.intersection.IntersectionListResponse;
 import us.dot.its.jpo.ode.api.models.admin.intersection.IntersectionPatch;
@@ -47,6 +48,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -114,6 +116,8 @@ class AdminIntersectionControllerTest {
     private IntersectionListResponse sampleListResponse;
     private IntersectionSingleResponse sampleSingleResponse;
     private IntersectionPatch validPatch;
+  private IntersectionCreate validCreate;
+  private AllowedSelections sampleAllowedSelections;
 
     @BeforeEach
     void setUp() {
@@ -137,11 +141,20 @@ class AdminIntersectionControllerTest {
         sampleListResponse = new IntersectionListResponse(List.of(sampleDto));
         sampleSingleResponse = new IntersectionSingleResponse(sampleDto, allowedSelections);
 
-        validPatch = new IntersectionPatch(
-                12109, 12109, refPt,
-                null, "Main St & 1st Ave", null,
-                List.of(), List.of(), List.of(), List.of());
-    }
+    validPatch = new IntersectionPatch(
+      12109, 12109, refPt,
+      null, "Main St & 1st Ave", null,
+      List.of(), List.of(), List.of(), List.of());
+
+    validCreate = new IntersectionCreate(
+      12109, refPt,
+      List.of("TestOrg"), List.of(),
+      null, "Main St & 1st Ave", null);
+
+    sampleAllowedSelections = new AllowedSelections(
+      List.of("TestOrg", "OtherOrg"),
+      List.of("10.0.0.1", "10.0.0.2"));
+  }
 
     @Nested
     @DisplayName("GET /admin/intersections — list all intersections")
@@ -630,4 +643,285 @@ class AdminIntersectionControllerTest {
                     .andExpect(status().isNotFound());
         }
     }
+
+  @Nested
+  @DisplayName("GET /admin/intersections/allowed-selections — get allowed selections for creating an intersection")
+  class GetAllowedSelections {
+
+    @Test
+    @DisplayName("returns 403 when no permissions are granted")
+    void noPermissions_returns403() throws Exception {
+      mockMvc.perform(get("/admin/intersections/allowed-selections"))
+        .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("returns 403 when authenticated but neither isSuperUser nor hasRole('USER')")
+    void authenticated_insufficientPermissions_returns403() throws Exception {
+      when(permissionService.isSuperUser()).thenReturn(false);
+      when(permissionService.hasRole(UserRole.USER)).thenReturn(false);
+
+      mockMvc.perform(get("/admin/intersections/allowed-selections"))
+        .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("super user returns 200 with organizations and rsus")
+    void superUser_returns200WithAllowedSelections() throws Exception {
+      when(permissionService.isSuperUser()).thenReturn(true);
+      when(adminIntersectionService.getAllowedSelections()).thenReturn(sampleAllowedSelections);
+
+      mockMvc.perform(get("/admin/intersections/allowed-selections"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.organizations").isArray())
+        .andExpect(jsonPath("$.organizations[0]").value("TestOrg"))
+        .andExpect(jsonPath("$.rsus").isArray())
+        .andExpect(jsonPath("$.rsus[0]").value("10.0.0.1"));
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("non-superuser with USER role returns 200")
+    void userWithRole_returns200() throws Exception {
+      when(permissionService.isSuperUser()).thenReturn(false);
+      when(permissionService.hasRole(UserRole.USER)).thenReturn(true);
+      when(adminIntersectionService.getAllowedSelections()).thenReturn(sampleAllowedSelections);
+
+      mockMvc.perform(get("/admin/intersections/allowed-selections"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.organizations").isArray());
+
+      verify(adminIntersectionService).getAllowedSelections();
+    }
+  }
+
+  @Nested
+  @DisplayName("POST /admin/intersections — create intersection")
+  class PostIntersection {
+
+    @Test
+    @DisplayName("returns 403 when no permissions are granted")
+    void noPermissions_returns403() throws Exception {
+      mockMvc.perform(post("/admin/intersections")
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(validCreate)))
+        .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("returns 403 when authenticated but hasRole('OPERATOR') returns false")
+    void noOperatorRole_returns403() throws Exception {
+      when(permissionService.isSuperUser()).thenReturn(false);
+      when(permissionService.hasRole(UserRole.OPERATOR)).thenReturn(false);
+
+      mockMvc.perform(post("/admin/intersections")
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(validCreate)))
+        .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("super user bypasses org/RSU enforcement and returns 200")
+    void superUser_bypassesEnforcement_returns200() throws Exception {
+      IntersectionCreate createWithAnyOrg = new IntersectionCreate(
+        12109, new RefPt(39.7392, -104.9903),
+        List.of("AnyOrg"), List.of("192.168.1.1"),
+        null, null, null);
+
+      when(permissionService.isSuperUser()).thenReturn(true);
+
+      mockMvc.perform(post("/admin/intersections")
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(createWithAnyOrg)))
+        .andExpect(status().isOk());
+
+      verify(adminIntersectionService).createIntersection(any());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("returns 403 when non-superuser requests org outside qualified list")
+    void unqualifiedOrg_returns403() throws Exception {
+      IntersectionCreate createWithUnqualifiedOrg = new IntersectionCreate(
+        12109, new RefPt(39.7392, -104.9903),
+        List.of("UnqualifiedOrg"), List.of(),
+        null, null, null);
+
+      when(permissionService.isSuperUser()).thenReturn(false);
+      when(permissionService.hasRole(UserRole.OPERATOR)).thenReturn(true);
+      when(permissionService.getCvManagerAuthToken()).thenReturn(authToken);
+      when(authToken.getQualifiedOrgList(UserRole.OPERATOR)).thenReturn(List.of("TestOrg"));
+
+      mockMvc.perform(post("/admin/intersections")
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(createWithUnqualifiedOrg)))
+        .andExpect(status().isForbidden());
+
+      verify(adminIntersectionService, never()).createIntersection(any());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("returns 403 when non-superuser requests RSU outside qualified set")
+    void unqualifiedRsu_returns403() throws Exception {
+      IntersectionCreate createWithUnqualifiedRsu = new IntersectionCreate(
+        12109, new RefPt(39.7392, -104.9903),
+        List.of("TestOrg"), List.of("192.168.1.99"),
+        null, null, null);
+
+      when(permissionService.isSuperUser()).thenReturn(false);
+      when(permissionService.hasRole(UserRole.OPERATOR)).thenReturn(true);
+      when(permissionService.getCvManagerAuthToken()).thenReturn(authToken);
+      when(authToken.getQualifiedOrgList(UserRole.OPERATOR)).thenReturn(List.of("TestOrg"));
+      when(permissionService.hasRsus(eq(List.of("192.168.1.99")), eq("OPERATOR"))).thenReturn(false);
+
+      mockMvc.perform(post("/admin/intersections")
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(createWithUnqualifiedRsu)))
+        .andExpect(status().isForbidden());
+
+      verify(adminIntersectionService, never()).createIntersection(any());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("qualified operator with valid orgs and RSUs returns 200")
+    void qualifiedOperator_returns200() throws Exception {
+      when(permissionService.isSuperUser()).thenReturn(false);
+      when(permissionService.hasRole(UserRole.OPERATOR)).thenReturn(true);
+      when(permissionService.getCvManagerAuthToken()).thenReturn(authToken);
+      when(authToken.getQualifiedOrgList(UserRole.OPERATOR)).thenReturn(List.of("TestOrg"));
+      when(permissionService.hasRsus(anyList(), eq("OPERATOR"))).thenReturn(true);
+
+      mockMvc.perform(post("/admin/intersections")
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(validCreate)))
+        .andExpect(status().isOk());
+
+      verify(adminIntersectionService).createIntersection(any());
+    }
+
+    @Test
+    @DisplayName("returns 400 when intersection_id is missing")
+    void missingIntersectionId_returns400() throws Exception {
+      String body = """
+        {
+          "ref_pt": {"latitude": 39.7392, "longitude": -104.9903},
+          "organizations": ["TestOrg"],
+          "rsus": []
+        }
+        """;
+
+      mockMvc.perform(post("/admin/intersections")
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(body))
+        .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("returns 400 when ref_pt is missing")
+    void missingRefPt_returns400() throws Exception {
+      String body = """
+        {
+          "intersection_id": 12109,
+          "organizations": ["TestOrg"],
+          "rsus": []
+        }
+        """;
+
+      mockMvc.perform(post("/admin/intersections")
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(body))
+        .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("returns 400 when ref_pt.latitude is missing")
+    void missingRefPtLatitude_returns400() throws Exception {
+      String body = """
+        {
+          "intersection_id": 12109,
+          "ref_pt": {"longitude": -104.9903},
+          "organizations": ["TestOrg"],
+          "rsus": []
+        }
+        """;
+
+      mockMvc.perform(post("/admin/intersections")
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(body))
+        .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("returns 400 when organizations list is empty")
+    void emptyOrganizations_returns400() throws Exception {
+      String body = """
+        {
+          "intersection_id": 12109,
+          "ref_pt": {"latitude": 39.7392, "longitude": -104.9903},
+          "organizations": [],
+          "rsus": []
+        }
+        """;
+
+      mockMvc.perform(post("/admin/intersections")
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(body))
+        .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("returns 400 when rsus contains invalid IPv4")
+    void invalidIpv4InRsus_returns400() throws Exception {
+      String body = """
+        {
+          "intersection_id": 12109,
+          "ref_pt": {"latitude": 39.7392, "longitude": -104.9903},
+          "organizations": ["TestOrg"],
+          "rsus": ["not-an-ip"]
+        }
+        """;
+
+      mockMvc.perform(post("/admin/intersections")
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(body))
+        .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("valid request with empty rsus list returns 200")
+    void emptyRsusList_returns200() throws Exception {
+      when(permissionService.isSuperUser()).thenReturn(true);
+
+      IntersectionCreate createNoRsus = new IntersectionCreate(
+        12109, new RefPt(39.7392, -104.9903),
+        List.of("TestOrg"), List.of(),
+        null, null, null);
+
+      mockMvc.perform(post("/admin/intersections")
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(createNoRsus)))
+        .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("returns 404 when service throws EntityNotFoundException")
+    void serviceThrowsNotFound_returns404() throws Exception {
+      when(permissionService.isSuperUser()).thenReturn(true);
+      doThrow(new EntityNotFoundException("Organization(s) not found: [BadOrg]"))
+        .when(adminIntersectionService).createIntersection(any());
+
+      mockMvc.perform(post("/admin/intersections")
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(validCreate)))
+        .andExpect(status().isNotFound());
+    }
+  }
 }

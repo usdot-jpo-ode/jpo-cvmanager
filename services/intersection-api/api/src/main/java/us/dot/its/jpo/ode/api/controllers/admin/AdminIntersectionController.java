@@ -15,11 +15,14 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import us.dot.its.jpo.ode.api.models.admin.intersection.AllowedSelections;
+import us.dot.its.jpo.ode.api.models.admin.intersection.IntersectionCreate;
 
 import us.dot.its.jpo.ode.api.models.UserRole;
 import us.dot.its.jpo.ode.api.models.admin.intersection.IntersectionListResponse;
@@ -43,9 +46,9 @@ import java.util.Set;
  * service:
  * - Role checks and intersection resource access are enforced via @PreAuthorize
  * expressions.
- * - Org restriction enforcement on PATCH (organizations_to_add/remove must be
+ * - Org/RSU restriction enforcement on POST and PATCH (requested orgs/RSUs must be
  * within the
- * user's qualified orgs) is enforced in the method body via PermissionService.
+ * user's qualified set) is enforced in the method body via PermissionService.
  * - AdminIntersectionService is responsible only for database operations.
  */
 @Slf4j
@@ -89,11 +92,88 @@ public class AdminIntersectionController {
     }
 
     /**
+     * Returns the organizations and RSUs the requesting user may assign to a new intersection.
+     * Used to populate UI dropdowns when creating or editing an intersection.
+     *
+     * @return allowed organizations and RSU IP addresses for the current user
+     */
+    @Operation(
+            summary = "Get allowed selections for creating an intersection",
+            description = """
+                    Returns the organizations and RSU IP addresses the requesting user may assign
+                    when creating or editing an intersection. Superusers receive all; non-superusers
+                    receive only those within their OPERATOR-qualified organizations.
+                    """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires USER role"),
+    })
+    @GetMapping(value = "/allowed-selections", produces = "application/json")
+    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
+    public AllowedSelections getAllowedSelections() {
+        log.info("GET /admin/intersections/allowed-selections");
+        return adminIntersectionService.getAllowedSelections();
+    }
+
+    /**
+     * Creates a new intersection with organization and RSU associations.
+     * Authorization:
+     * 1. {@code @PreAuthorize}: OPERATOR role required.
+     * 2. Method body: each org in organizations must be in the user's
+     *    qualified orgs, and each RSU must be accessible (superusers exempt).
+     *
+     * @param create the intersection creation request body
+     */
+    @Operation(
+            summary = "Create a new intersection",
+            description = """
+                    Creates a new intersection record with organization and RSU associations.
+                    Role check: OPERATOR required.
+                    Org enforcement: all organizations must be within the user's qualified organizations (superusers exempt).
+                    RSU enforcement: all RSUs must be accessible to the user (superusers exempt).
+                    """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Intersection successfully created"),
+            @ApiResponse(responseCode = "400", description = "Missing or invalid required fields"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires OPERATOR role or org/RSU restriction violation"),
+            @ApiResponse(responseCode = "404", description = "Referenced organization or RSU not found"),
+    })
+    @PostMapping(produces = "application/json", consumes = "application/json")
+    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('OPERATOR')")
+    public void createIntersection(@RequestBody @Validated IntersectionCreate create) {
+        log.info("POST /admin/intersections. intersectionId={}", create.getIntersectionId());
+
+        if (!permissionService.isSuperUser()) {
+            CvManagerAuthToken token = permissionService.getCvManagerAuthToken();
+            List<String> qualifiedOrgs = token != null
+                    ? token.getQualifiedOrgList(UserRole.OPERATOR)
+                    : Collections.emptyList();
+            Set<String> qualifiedOrgSet = new HashSet<>(qualifiedOrgs);
+
+            if (!qualifiedOrgSet.containsAll(create.getOrganizations())) {
+                log.warn("Org enforcement rejected POST. Requested orgs not in qualified set.");
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                        "Not authorized to modify one or more of the specified organizations");
+            }
+
+            if (!create.getRsus().isEmpty() && !permissionService.hasRsus(create.getRsus(), "OPERATOR")) {
+                log.warn("RSU enforcement rejected POST. Requested RSUs not in qualified set.");
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                        "Not authorized to modify one or more of the specified RSUs");
+            }
+        }
+
+        adminIntersectionService.createIntersection(create);
+    }
+
+    /**
      * Returns a single intersection and allowed_selections for UI dropdown
      * population.
      * Authorization: USER role + intersection access enforced by @PreAuthorize.
-     * allowed_selections is computed by PermissionService for UI dropdown
-     * population.
+     * allowed_selections is the same data returned by GET /allowed-selections, included here
+     * for convenience so the edit form can populate dropdowns in a single request.
      */
     @Operation(summary = "Get a single intersection", description = """
             Returns a single intersection by number, plus allowed_selections for UI dropdown population.

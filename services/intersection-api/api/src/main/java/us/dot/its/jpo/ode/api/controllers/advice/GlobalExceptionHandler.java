@@ -301,7 +301,7 @@ public class GlobalExceptionHandler {
             }
 
             String resourceType = determineResourceType(message);
-            return String.format("A %s with %s already exists.", resourceType, details.toString());
+            return String.format("%s with %s already exists.", resourceType, details.toString());
         }
 
         return "A record with these values already exists. Please use different values.";
@@ -358,11 +358,13 @@ public class GlobalExceptionHandler {
         if (lowerMessage.contains("rsu") || lowerMessage.contains("rsus")) {
             return "RSU";
         } else if (lowerMessage.contains("user")) {
-            return "user";
+            return "User";
         } else if (lowerMessage.contains("organization")) {
-            return "organization";
+            return "Organization";
         } else if (lowerMessage.contains("credential")) {
-            return "credential";
+            return "Credential";
+        } else if (lowerMessage.contains("intersection")) {
+            return "Intersection";
         }
 
         return "record";

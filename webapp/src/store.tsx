@@ -27,6 +27,7 @@ import { organizationApiSlice } from './features/api/organizationApiSlice'
 import { rsuCountsApiSlice } from './features/api/rsuCountsApiSlice'
 import { rsuApiSlice } from './features/api/rsuApiSlice'
 import { userApiSlice } from './features/api/userApiSlice'
+import { adminIntersectionApiSlice } from './features/api/adminIntersectionApiSlice'
 import mapSliceReducer from './pages/mapSlice'
 import timeSyncReducer from './generalSlices/timeSyncSlice'
 import haasSliceReducer from './generalSlices/haasAlertSlice'
@@ -65,6 +66,7 @@ export const setupStore = (preloadedState?: Partial<any>) => {
       [rsuCountsApiSlice.reducerPath]: rsuCountsApiSlice.reducer,
       [rsuApiSlice.reducerPath]: rsuApiSlice.reducer,
       [userApiSlice.reducerPath]: userApiSlice.reducer,
+      [adminIntersectionApiSlice.reducerPath]: adminIntersectionApiSlice.reducer,
     },
     preloadedState,
     middleware: (getDefaultMiddleware) =>
@@ -77,7 +79,8 @@ export const setupStore = (preloadedState?: Partial<any>) => {
         .concat(organizationApiSlice.middleware)
         .concat(rsuCountsApiSlice.middleware)
         .concat(rsuApiSlice.middleware)
-        .concat(userApiSlice.middleware),
+        .concat(userApiSlice.middleware)
+        .concat(adminIntersectionApiSlice.middleware),
     devTools: true,
   })
 }

@@ -75,10 +75,9 @@ public class AdminIntersectionController {
             The Organization header is required for all users, including super users.
             """)
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "200", description = "Success (empty list when no intersections exist for the organization)"),
             @ApiResponse(responseCode = "400", description = "Missing Organization header"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires USER role"),
-            @ApiResponse(responseCode = "404", description = "No intersections found for the specified organization"),
     })
     @GetMapping(produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")

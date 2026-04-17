@@ -425,7 +425,7 @@ class GlobalExceptionHandlerTest {
 
             assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
             ProblemDetail body = response.getBody();
-            assertTrue(body.getDetail().equals("A RSU with milepost '1' and primary route 'I999' already exists."));
+            assertEquals("RSU with milepost '1' and primary route 'I999' already exists.", body.getDetail());
 
             assertEquals("rsu_milepost_primary_route", body.getProperties().get("constraint"));
         }

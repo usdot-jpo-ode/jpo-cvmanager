@@ -226,15 +226,17 @@ class AdminIntersectionControllerTest {
 
         @Test
         @WithMockUser
-        @DisplayName("returns 404 when no intersections are found for the organization")
-        void noAccessibleIntersections_returns404() throws Exception {
+        @DisplayName("returns 200 with empty list when no intersections are found for the organization")
+        void noAccessibleIntersections_returns200WithEmptyList() throws Exception {
             when(permissionService.isSuperUser()).thenReturn(true);
-            doThrow(new EntityNotFoundException("No accessible intersections found for organization 'TestOrg'"))
-                    .when(adminIntersectionService).getAllIntersections(any());
+            when(adminIntersectionService.getAllIntersections(any()))
+        .thenReturn(new IntersectionListResponse(List.of()));
 
             mockMvc.perform(get("/admin/intersections")
                     .header("Organization", "TestOrg"))
-                    .andExpect(status().isNotFound());
+                    .andExpect(status().isOk())
+        .andExpect(jsonPath("$.intersection_data").isArray())
+        .andExpect(jsonPath("$.intersection_data").isEmpty());
         }
     }
 

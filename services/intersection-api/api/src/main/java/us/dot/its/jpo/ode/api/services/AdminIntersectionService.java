@@ -138,9 +138,8 @@ public class AdminIntersectionService {
         List<Intersection> intersections = intersectionRepository.findAllByOrgNameWithOrgs(organization);
 
         if (intersections.isEmpty()) {
-            log.warn("No intersections found for organization '{}'", organization);
-            throw new EntityNotFoundException(
-                    "No accessible intersections found for organization '" + organization + "'");
+            log.info("No intersections found for organization '{}'", organization);
+            return new IntersectionListResponse(Collections.emptyList());
         }
 
         List<IntersectionDto> dtos = intersections.stream()

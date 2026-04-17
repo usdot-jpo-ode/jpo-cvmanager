@@ -2,7 +2,11 @@ import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { selectToken } from '../../generalSlices/userSlice'
 import EnvironmentVars from '../../EnvironmentVars'
 import apiHelper from '../../apis/api-helper'
-import { updateTableData as updateIntersectionTableData } from '../adminIntersectionTab/adminIntersectionTabSlice'
+import {
+  ADMIN_INTERSECTION_LIST_ID,
+  ADMIN_INTERSECTION_TAG,
+  adminIntersectionApiSlice,
+} from '../api/adminIntersectionApiSlice'
 import { RootState } from '../../store'
 import { AdminAddIntersectionForm } from './AdminAddIntersection'
 import { AdminIntersection } from '../../models/Intersection'
@@ -176,7 +180,7 @@ export const createIntersection = createAsyncThunk(
     switch (data.status) {
       case 200:
         dispatch(adminAddIntersectionSlice.actions.resetForm()) // clear state data for form
-        dispatch(updateIntersectionTableData())
+        dispatch(adminIntersectionApiSlice.util.invalidateTags([{ type: ADMIN_INTERSECTION_TAG, id: ADMIN_INTERSECTION_LIST_ID }]))
         reset() // clear persistent form data from react-hook-form
         return { success: true, message: '' }
       default:

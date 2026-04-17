@@ -188,13 +188,14 @@ class AdminIntersectionServiceTest {
     }
 
     @Test
-    void noIntersectionsForOrg_throwsEntityNotFoundException() {
+    void noIntersectionsForOrg_returnsEmptyList() {
       Organization org = organizationRepository.save(fixtures.createRandomOrg());
       intersectionRepository.save(fixtures.createIntersection("1123")); // no org association
 
-      assertThrows(EntityNotFoundException.class,
-        () -> adminIntersectionService.getAllIntersections(org.getName()),
-        "Should throw EntityNotFoundException when org has no intersections");
+      IntersectionListResponse result = adminIntersectionService.getAllIntersections(org.getName());
+
+      assertNotNull(result.getIntersectionData());
+      assertTrue(result.getIntersectionData().isEmpty());
     }
 
     @Test

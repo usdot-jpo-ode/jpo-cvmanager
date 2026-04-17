@@ -178,19 +178,15 @@ describe('adminIntersectionApiSlice', () => {
       expect(body).toEqual(createBody)
     })
 
-    it('returns success response', async () => {
+    it('returns success on 200 response', async () => {
       const store = createStoreWithAuth()
-      const responseBody = { success: true, message: 'Created' }
-      fetchMock.mockResponseOnce(JSON.stringify(responseBody))
+      fetchMock.mockResponseOnce('', { status: 200 })
 
       const result = await store.dispatch(
         adminIntersectionApiSlice.endpoints.createIntersection.initiate(createBody)
       )
 
       expect('data' in result).toBe(true)
-      if ('data' in result) {
-        expect(result.data).toEqual(responseBody)
-      }
     })
   })
 

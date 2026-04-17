@@ -117,6 +117,29 @@ public class AdminIntersectionController {
     }
 
     /**
+     * Returns intersections that are not associated with the specified organization.
+     * Used to populate the "available to add" dropdown when adding intersections to
+     * an organization.
+     */
+    @Operation(summary = "List intersections not in organization", description = """
+            Returns all intersections that are not currently associated with the specified organization.
+            The Organization header is required. Role check: ADMIN required.
+            """)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success (empty list when all intersections are already in the organization)"),
+            @ApiResponse(responseCode = "400", description = "Missing Organization header"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires ADMIN role"),
+    })
+    @GetMapping(value = "/available", produces = "application/json")
+    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('ADMIN')")
+    public IntersectionListResponse getIntersectionsNotInOrganization(
+            @Parameter(description = "Organization to exclude intersections from", required = true) @RequestHeader(name = "Organization") String organization) {
+
+        log.info("GET /admin/intersections/available. organization={}", organization);
+        return adminIntersectionService.getIntersectionsNotInOrganization(organization);
+    }
+
+    /**
      * Creates a new intersection with organization and RSU associations.
      * Authorization:
      * 1. {@code @PreAuthorize}: OPERATOR role required.

@@ -12,7 +12,6 @@ import adminEditIntersectionReducer from './features/adminEditIntersection/admin
 import adminOrganizationTabReducer from './features/adminOrganizationTab/adminOrganizationTabSlice'
 import adminOrganizationTabUserReducer from './features/adminOrganizationTabUser/adminOrganizationTabUserSlice'
 import adminOrganizationTabRsuReducer from './features/adminOrganizationTabRsu/adminOrganizationTabRsuSlice'
-import adminOrganizationTabIntersectionReducer from './features/adminOrganizationTabIntersection/adminOrganizationTabIntersectionSlice'
 import adminIntersectionTabReducer from './features/adminIntersectionTab/adminIntersectionTabSlice'
 import adminNotificationTabReducer from './features/adminNotificationTab/adminNotificationTabSlice'
 import adminAddNotificationReducer from './features/adminAddNotification/adminAddNotificationSlice'
@@ -48,7 +47,6 @@ export const setupStore = (preloadedState?: Partial<any>) => {
       adminOrganizationTab: adminOrganizationTabReducer,
       adminOrganizationTabUser: adminOrganizationTabUserReducer,
       adminOrganizationTabRsu: adminOrganizationTabRsuReducer,
-      adminOrganizationTabIntersection: adminOrganizationTabIntersectionReducer,
       adminIntersectionTab: adminIntersectionTabReducer,
       adminNotificationTab: adminNotificationTabReducer,
       adminAddNotification: adminAddNotificationReducer,

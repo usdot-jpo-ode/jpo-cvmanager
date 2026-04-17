@@ -1,22 +1,20 @@
-import { useEffect, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import {
-  selectOrganizations,
+  convertApiJsonToKeyedFormat,
+  validateFormContents,
+  mapFormToRequestJson,
   selectSelectedOrganizations,
-  selectRsus,
   selectSelectedRsus,
-  selectSubmitAttempt,
 
   // actions
-  getIntersectionCreationData,
-  submitForm,
   updateSelectedOrganizations,
   updateSelectedRsus,
+  resetForm,
 } from './adminAddIntersectionSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
@@ -34,6 +32,10 @@ import {
 import { ErrorMessageText } from '../../styles/components/Messages'
 import '../../styles/fonts/museo-slab.css'
 import { SideBarHeader } from '../../styles/components/SideBarHeader'
+import {
+  useGetIntersectionAllowedSelectionsQuery,
+  useCreateIntersectionMutation,
+} from '../api/adminIntersectionApiSlice'
 
 export type AdminAddIntersectionForm = {
   intersection_id: string
@@ -54,30 +56,47 @@ export type AdminAddIntersectionForm = {
 }
 
 const AdminAddIntersection = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
+  const dispatch = useDispatch()
 
-  const organizations = useSelector(selectOrganizations)
+  const { data: allowedSelections } = useGetIntersectionAllowedSelectionsQuery()
+  const [createIntersection] = useCreateIntersectionMutation()
+
+  const keyedData = useMemo(
+    () => (allowedSelections ? convertApiJsonToKeyedFormat(allowedSelections) : undefined),
+    [allowedSelections]
+  )
+  const organizations = keyedData?.organizations ?? []
+  const rsus = keyedData?.rsus ?? []
+
   const selectedOrganizations = useSelector(selectSelectedOrganizations)
-  const rsus = useSelector(selectRsus)
   const selectedRsus = useSelector(selectSelectedRsus)
-  const submitAttempt = useSelector(selectSubmitAttempt)
 
   const [open, setOpen] = useState(true)
+  const [submitAttempt, setSubmitAttempt] = useState(false)
   const navigate = useNavigate()
 
-  const notifySuccess = (message: string) => toast.success(message)
-  const notifyError = (message: string) => toast.error(message)
-
-  const handleFormSubmit = (data: AdminAddIntersectionForm) => {
-    dispatch(submitForm({ data, reset })).then((data: any) => {
-      if (data.payload.success) {
-        notifySuccess(data.payload.message)
-      } else {
-        notifyError('Failed to add Intersection due to error: ' + data.payload.message)
-      }
-    })
-    setOpen(false)
-    navigate('/dashboard/admin/intersections')
+  const handleFormSubmit = async (data: AdminAddIntersectionForm) => {
+    setSubmitAttempt(true)
+    const state = { value: { selectedOrganizations, selectedRsus } } as RootState['adminAddIntersection']
+    if (!validateFormContents(state)) {
+      toast.error('Please fill out all required fields')
+      return
+    }
+    const json = mapFormToRequestJson(data, state)
+    try {
+      await createIntersection(json).unwrap()
+      dispatch(resetForm())
+      reset()
+      toast.success('Intersection created successfully')
+      setOpen(false)
+      navigate('/dashboard/admin/intersections')
+    } catch (error) {
+      const detail =
+        error && typeof error === 'object' && 'data' in error && error.data && typeof error.data === 'object'
+          ? (error.data as { detail?: string }).detail
+          : undefined
+      toast.error(detail ? `Failed to add Intersection: ${detail}` : 'Failed to add Intersection')
+    }
   }
 
   const {
@@ -86,10 +105,6 @@ const AdminAddIntersection = () => {
     reset,
     formState: { errors },
   } = useForm<AdminAddIntersectionForm>()
-
-  useEffect(() => {
-    dispatch(getIntersectionCreationData())
-  }, [dispatch])
 
   return (
     <Dialog open={open} sx={{ padding: '5px 10px' }}>

@@ -698,6 +698,116 @@ class AdminIntersectionControllerTest {
   }
 
   @Nested
+  @DisplayName("GET /admin/intersections/available — intersections not in organization")
+  class GetIntersectionsNotInOrganization {
+
+    @Test
+    @DisplayName("returns 403 when no permissions are granted (unauthenticated)")
+    void noPermissions_returns403() throws Exception {
+      mockMvc.perform(get("/admin/intersections/available")
+          .header("Organization", "TestOrg"))
+        .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("returns 400 when Organization header is missing")
+    void missingOrganizationHeader_returns400() throws Exception {
+      mockMvc.perform(get("/admin/intersections/available"))
+        .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("returns 403 when authenticated but neither isSuperUser nor hasRole('ADMIN')")
+    void authenticated_insufficientPermissions_returns403() throws Exception {
+      when(permissionService.isSuperUser()).thenReturn(false);
+      when(permissionService.hasRole(UserRole.ADMIN)).thenReturn(false);
+
+      mockMvc.perform(get("/admin/intersections/available")
+          .header("Organization", "TestOrg"))
+        .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("super user returns 200 with intersection list")
+    void superUser_returns200WithIntersectionList() throws Exception {
+      when(permissionService.isSuperUser()).thenReturn(true);
+      when(adminIntersectionService.getIntersectionsNotInOrganization(eq("TestOrg")))
+        .thenReturn(sampleListResponse);
+
+      mockMvc.perform(get("/admin/intersections/available")
+          .header("Organization", "TestOrg"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.intersection_data").isArray())
+        .andExpect(jsonPath("$.intersection_data[0].intersection_id").value(12109))
+        .andExpect(jsonPath("$.intersection_data[0].intersection_name").value("Main St & 1st Ave"))
+        .andExpect(jsonPath("$.intersection_data[0].rsus[0]").value("10.0.0.1"));
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("non-superuser with ADMIN role returns 200")
+    void adminRole_returns200() throws Exception {
+      when(permissionService.isSuperUser()).thenReturn(false);
+      when(permissionService.hasRole(UserRole.ADMIN)).thenReturn(true);
+      when(adminIntersectionService.getIntersectionsNotInOrganization(eq("TestOrg")))
+        .thenReturn(sampleListResponse);
+
+      mockMvc.perform(get("/admin/intersections/available")
+          .header("Organization", "TestOrg"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.intersection_data[0].intersection_id").value(12109));
+
+      verify(adminIntersectionService).getIntersectionsNotInOrganization(eq("TestOrg"));
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("returns 200 with empty list when no intersections are outside the organization")
+    void emptyResult_returns200WithEmptyList() throws Exception {
+      when(permissionService.isSuperUser()).thenReturn(true);
+      when(adminIntersectionService.getIntersectionsNotInOrganization(any()))
+        .thenReturn(new IntersectionListResponse(List.of()));
+
+      mockMvc.perform(get("/admin/intersections/available")
+          .header("Organization", "TestOrg"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.intersection_data").isArray())
+        .andExpect(jsonPath("$.intersection_data").isEmpty());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("passes the Organization header value to the service")
+    void organizationHeader_isForwardedToService() throws Exception {
+      when(permissionService.isSuperUser()).thenReturn(true);
+      when(adminIntersectionService.getIntersectionsNotInOrganization(eq("TestOrg")))
+        .thenReturn(sampleListResponse);
+
+      mockMvc.perform(get("/admin/intersections/available")
+          .header("Organization", "TestOrg"))
+        .andExpect(status().isOk());
+
+      verify(adminIntersectionService).getIntersectionsNotInOrganization(eq("TestOrg"));
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("propagates service exception (500)")
+    void serviceThrows_returns500() throws Exception {
+      when(permissionService.isSuperUser()).thenReturn(true);
+      when(adminIntersectionService.getIntersectionsNotInOrganization(eq("TestOrg")))
+        .thenThrow(new RuntimeException("Database connection failed"));
+
+      mockMvc.perform(get("/admin/intersections/available")
+          .header("Organization", "TestOrg"))
+        .andExpect(status().isInternalServerError());
+    }
+  }
+
+  @Nested
   @DisplayName("POST /admin/intersections — create intersection")
   class PostIntersection {
 

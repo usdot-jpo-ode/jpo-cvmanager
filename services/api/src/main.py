@@ -19,7 +19,6 @@ from wzdx_feed import WzdxFeed
 from rsu_geo_msg_query import RsuGeoData
 from iss_scms_status import IssScmsStatus
 from rsu_ssm_srm import RsuSsmSrmData
-from admin_new_intersection import AdminNewIntersection
 from admin_new_user import AdminNewUser
 from admin_new_org import AdminNewOrg
 from admin_org import AdminOrg, AdminOrgTimDeposit, AdminOrgSnmpMonitoring
@@ -72,8 +71,6 @@ if api_environment.ENABLE_RSU_FEATURES:
     api.add_resource(RSUErrorSummaryResource, "/rsu-error-summary")
 if api_environment.ENABLE_WZDX_FEATURES:
     api.add_resource(WzdxFeed, "/wzdx-feed")
-if api_environment.ENABLE_INTERSECTION_FEATURES:
-    api.add_resource(AdminNewIntersection, "/admin-new-intersection")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=api_environment.APPLICATION_PORT)

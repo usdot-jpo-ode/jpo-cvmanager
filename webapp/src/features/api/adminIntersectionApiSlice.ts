@@ -9,6 +9,7 @@ import { AdminEditIntersectionBody, adminEditIntersectionData } from '../adminEd
 // Tag type constants
 export const ADMIN_INTERSECTION_TAG = 'AdminIntersection' as const
 export const ADMIN_INTERSECTION_LIST_ID = 'LIST' as const
+export const ADMIN_INTERSECTION_AVAILABLE_LIST_ID = 'AVAILABLE_LIST' as const
 
 export const adminIntersectionApiSlice = createApi({
   reducerPath: 'adminIntersectionApi',
@@ -49,6 +50,17 @@ export const adminIntersectionApiSlice = createApi({
             ]
           : [{ type: ADMIN_INTERSECTION_TAG, id: ADMIN_INTERSECTION_LIST_ID }],
     }),
+    getIntersectionsNotInOrganization: builder.query<{ intersection_data: AdminIntersection[] }, string>({
+      query: (organization) => {
+        return {
+          url: 'available',
+          headers: {
+            Organization: organization,
+          },
+        }
+      },
+      providesTags: [{ type: ADMIN_INTERSECTION_TAG, id: ADMIN_INTERSECTION_AVAILABLE_LIST_ID }],
+    }),
     getIntersection: builder.query<adminEditIntersectionData, string>({
       query: (intersectionId) => {
         return {
@@ -64,13 +76,16 @@ export const adminIntersectionApiSlice = createApi({
         }
       },
     }),
-    createIntersection: builder.mutation<{ success: boolean; message: string }, AdminIntersectionCreationBody>({
+    createIntersection: builder.mutation<void, AdminIntersectionCreationBody>({
       query: (body) => ({
         url: '',
         method: 'POST',
         body,
       }),
-      invalidatesTags: [{ type: ADMIN_INTERSECTION_TAG, id: ADMIN_INTERSECTION_LIST_ID }],
+      invalidatesTags: [
+        { type: ADMIN_INTERSECTION_TAG, id: ADMIN_INTERSECTION_LIST_ID },
+        { type: ADMIN_INTERSECTION_TAG, id: ADMIN_INTERSECTION_AVAILABLE_LIST_ID },
+      ],
     }),
     patchIntersection: builder.mutation<{ success: boolean; message: string }, AdminEditIntersectionBody>({
       query: (body) => ({
@@ -81,6 +96,7 @@ export const adminIntersectionApiSlice = createApi({
       invalidatesTags: (result, error, { intersection_id }) => [
         { type: ADMIN_INTERSECTION_TAG, id: intersection_id },
         { type: ADMIN_INTERSECTION_TAG, id: ADMIN_INTERSECTION_LIST_ID },
+        { type: ADMIN_INTERSECTION_TAG, id: ADMIN_INTERSECTION_AVAILABLE_LIST_ID },
       ],
     }),
     deleteIntersection: builder.mutation<{ success: boolean; message: string }, string>({
@@ -91,6 +107,7 @@ export const adminIntersectionApiSlice = createApi({
       invalidatesTags: (result, error, intersectionId) => [
         { type: ADMIN_INTERSECTION_TAG, id: intersectionId },
         { type: ADMIN_INTERSECTION_TAG, id: ADMIN_INTERSECTION_LIST_ID },
+        { type: ADMIN_INTERSECTION_TAG, id: ADMIN_INTERSECTION_AVAILABLE_LIST_ID },
       ],
     }),
   }),
@@ -101,6 +118,8 @@ export const {
   useLazyGetIntersectionsQuery,
   useGetIntersectionQuery,
   useLazyGetIntersectionQuery,
+  useGetIntersectionsNotInOrganizationQuery,
+  useLazyGetIntersectionsNotInOrganizationQuery,
   useGetIntersectionAllowedSelectionsQuery,
   useLazyGetIntersectionAllowedSelectionsQuery,
   useCreateIntersectionMutation,

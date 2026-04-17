@@ -219,6 +219,95 @@ class AdminIntersectionServiceTest {
   }
 
   @Nested
+  class GetIntersectionsNotInOrganization {
+
+    @Test
+    void excludesIntersectionsInThatOrg() {
+      Organization orgA = organizationRepository.save(fixtures.createRandomOrg());
+      Organization orgB = organizationRepository.save(fixtures.createRandomOrg());
+      Intersection inA = intersectionRepository.save(fixtures.createIntersection("2001"));
+      intersectionOrganizationRepository.save(fixtures.createIntersectionOrganization(inA, orgA));
+      Intersection inB = intersectionRepository.save(fixtures.createIntersection("2002"));
+      intersectionOrganizationRepository.save(fixtures.createIntersectionOrganization(inB, orgB));
+
+      IntersectionListResponse result =
+          adminIntersectionService.getIntersectionsNotInOrganization(orgA.getName());
+
+      assertEquals(1, result.getIntersectionData().size());
+      assertEquals(2002, result.getIntersectionData().getFirst().getIntersectionId());
+    }
+
+    @Test
+    void includesIntersectionsWithNoOrg() {
+      Organization org = organizationRepository.save(fixtures.createRandomOrg());
+      Intersection orphan = intersectionRepository.save(fixtures.createIntersection("2003"));
+
+      IntersectionListResponse result =
+          adminIntersectionService.getIntersectionsNotInOrganization(org.getName());
+
+      assertEquals(1, result.getIntersectionData().size());
+      assertEquals(2003, result.getIntersectionData().getFirst().getIntersectionId());
+    }
+
+    @Test
+    void intersectionInMultipleOrgs_excludedFromAllOrgsItBelongsTo() {
+      Organization orgA = organizationRepository.save(fixtures.createRandomOrg());
+      Organization orgB = organizationRepository.save(fixtures.createRandomOrg());
+      Intersection both = intersectionRepository.save(fixtures.createIntersection("2004"));
+      intersectionOrganizationRepository.save(fixtures.createIntersectionOrganization(both, orgA));
+      intersectionOrganizationRepository.save(fixtures.createIntersectionOrganization(both, orgB));
+
+      IntersectionListResponse resultA =
+          adminIntersectionService.getIntersectionsNotInOrganization(orgA.getName());
+      IntersectionListResponse resultB =
+          adminIntersectionService.getIntersectionsNotInOrganization(orgB.getName());
+
+      assertTrue(resultA.getIntersectionData().isEmpty());
+      assertTrue(resultB.getIntersectionData().isEmpty());
+    }
+
+    @Test
+    void allIntersectionsInOrg_returnsEmptyList() {
+      Organization org = organizationRepository.save(fixtures.createRandomOrg());
+      Intersection i = intersectionRepository.save(fixtures.createIntersection("2005"));
+      intersectionOrganizationRepository.save(fixtures.createIntersectionOrganization(i, org));
+
+      IntersectionListResponse result =
+          adminIntersectionService.getIntersectionsNotInOrganization(org.getName());
+
+      assertNotNull(result.getIntersectionData());
+      assertTrue(result.getIntersectionData().isEmpty());
+    }
+
+    @Test
+    void noIntersectionsExist_returnsEmptyList() {
+      Organization org = organizationRepository.save(fixtures.createRandomOrg());
+
+      IntersectionListResponse result =
+          adminIntersectionService.getIntersectionsNotInOrganization(org.getName());
+
+      assertNotNull(result.getIntersectionData());
+      assertTrue(result.getIntersectionData().isEmpty());
+    }
+
+    @Test
+    void populatesRsuIpsOnReturnedIntersections() throws UnknownHostException {
+      Organization targetOrg = organizationRepository.save(fixtures.createRandomOrg());
+      Organization otherOrg = organizationRepository.save(fixtures.createRandomOrg());
+      Intersection available = intersectionRepository.save(fixtures.createIntersection("2006"));
+      intersectionOrganizationRepository.save(fixtures.createIntersectionOrganization(available, otherOrg));
+      Rsu rsu = saveRsu("10.0.0.42", otherOrg);
+      rsuIntersectionRepository.save(fixtures.createRsuIntersection(rsu, available));
+
+      IntersectionListResponse result =
+          adminIntersectionService.getIntersectionsNotInOrganization(targetOrg.getName());
+
+      assertEquals(1, result.getIntersectionData().size());
+      assertEquals(List.of("10.0.0.42"), result.getIntersectionData().getFirst().getRsus());
+    }
+  }
+
+  @Nested
   class GetIntersection {
 
     @Test

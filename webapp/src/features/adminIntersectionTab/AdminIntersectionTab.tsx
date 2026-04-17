@@ -122,11 +122,21 @@ const AdminIntersectionTab = () => {
     navigate('editIntersection/' + row.intersection_id)
   }
 
+  const extractErrorDetail = (error: unknown): string | undefined =>
+    error && typeof error === 'object' && 'data' in error && error.data && typeof error.data === 'object'
+      ? (error.data as { detail?: string }).detail
+      : undefined
+
   const onDelete = (row: AdminEditIntersectionFormType) => {
     toast.promise(deleteIntersectionMutation(row.intersection_id).unwrap(), {
       loading: `Deleting intersection ${row.intersection_id}`,
       success: `Successfully deleted intersection ${row.intersection_id}`,
-      error: `Failed to delete intersection ${row.intersection_id}`,
+      error: (error) => {
+        const detail = extractErrorDetail(error)
+        return detail
+          ? `Failed to delete intersection ${row.intersection_id}: ${detail}`
+          : `Failed to delete intersection ${row.intersection_id}`
+      },
     })
   }
 
@@ -134,7 +144,12 @@ const AdminIntersectionTab = () => {
     toast.promise(Promise.all(rows.map((row) => deleteIntersectionMutation(row.intersection_id).unwrap())), {
       loading: 'Deleting selected intersections',
       success: 'Intersections Deleted Successfully',
-      error: 'Failed to delete one or more Intersection(s)',
+      error: (error) => {
+        const detail = extractErrorDetail(error)
+        return detail
+          ? `Failed to delete one or more Intersection(s): ${detail}`
+          : 'Failed to delete one or more Intersection(s)'
+      },
     })
   }
 

@@ -58,7 +58,7 @@ spring:
       uri: mongodb://localhost:27017/testdb
       database: testdb
       host: localhost
-      port: "27017"
+      port: '27017'
       username: test
       password: test
       authenticationDatabase: admin
@@ -68,6 +68,10 @@ spring:
     username: postgres
     password: postgres
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    hikari:
+      maximum-pool-size: 2
+      minimum-idle: 0
+      idle-timeout: 10000
   jpa:
     hibernate:
       ddl-auto: create-only

@@ -18,6 +18,7 @@ import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.server.ResponseStatusException;
 
 import us.dot.its.jpo.ode.api.services.RsuCredentialManagementService;
+import us.dot.its.jpo.ode.api.services.RsuUpgradeService;
 import us.dot.its.jpo.ode.api.services.SnmpCredentialManagementService;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -95,6 +96,21 @@ class GlobalExceptionHandlerTest {
     }
 
     @Nested
+    class HandleFirmwareUpgradeUnavailableExceptionTests {
+        @Test
+        void testHandleFirmwareUpgradeUnavailableException() {
+            RsuUpgradeService.FirmwareUpgradeUnavailableException exception = new RsuUpgradeService.FirmwareUpgradeUnavailableException(
+                    "Requested RSU is already up to date");
+
+            ProblemDetail problemDetail = handler.handleFirmwareUpgradeUnavailableException(exception);
+
+            assertNotNull(problemDetail);
+            assertEquals("Requested RSU is already up to date", problemDetail.getDetail());
+            assertEquals(HttpStatus.CONFLICT.value(), problemDetail.getStatus());
+        }
+    }
+
+    @Nested
     class HandleAccessDeniedExceptionTests {
 
         @Test
@@ -102,8 +118,8 @@ class GlobalExceptionHandlerTest {
             // Arrange
             AccessDeniedException exception = new AccessDeniedException("Access denied");
 
-                // Act
-                ProblemDetail problemDetail = handler.handleAccessDeniedException(exception);
+            // Act
+            ProblemDetail problemDetail = handler.handleAccessDeniedException(exception);
 
             // Assert
             assertNotNull(problemDetail);

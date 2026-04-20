@@ -116,3 +116,5 @@ j2735.api:
   text-buffer-size: ${J2735_ASN_TEXT_BUFFER_SIZE:262144}
   uper-buffer-size: ${J2735_UPER_BUFFER_SIZE:8192}
   error-buffer-size: ${J2735_ERROR_BUFFER_SIZE:256}
+
+firmwareManagerEndpoint: ${FIRMWARE_MANAGER_ENDPOINT:}

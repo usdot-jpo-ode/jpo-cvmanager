@@ -13,6 +13,7 @@ import reducer, {
   toggleConfigPointSelect,
 } from './configSlice'
 import RsuApi from '../apis/rsu-api'
+import RsuFirmwareApi from '../apis/intersections/rsu-firmware-api'
 import { RootState } from '../store'
 
 describe('config reducer', () => {
@@ -514,24 +515,50 @@ describe('async thunks', () => {
           },
         },
       })
-      RsuApi.postRsuData = jest.fn().mockReturnValue({ status: 200 })
+      RsuFirmwareApi.postRsuUpgradeData = jest.fn().mockReturnValue({
+        status: 200,
+        body: {
+          upgrade_available: true,
+          upgrade_id: 42,
+          upgrade_name: 'RSU Firmware v2.0',
+          upgrade_version: '2.0',
+        },
+      })
 
       const arg = ['1.2.3.4']
 
       const action = checkFirmwareUpgrade(arg)
 
       const resp = await action(dispatch, getState, undefined)
-      expect(RsuApi.postRsuData).toHaveBeenCalledWith(
+      expect(RsuFirmwareApi.postRsuUpgradeData).toHaveBeenCalledWith(
         'token',
-        'name',
         {
-          command: 'upgrade-check',
-          rsu_ip: arg,
+          rsu_ip: arg[0],
           args: {},
         },
-        ''
+        '/check'
       )
-      expect(resp.payload).toEqual({ firmwareUpgradeAvailable: undefined, firmwareUpgradeName: undefined })
+      expect(resp.payload).toEqual({ firmwareUpgradeAvailable: true, firmwareUpgradeName: 'RSU Firmware v2.0' })
+    })
+
+    it('rejects when multiple RSUs are provided', async () => {
+      const dispatch = jest.fn()
+      const getState = jest.fn().mockReturnValue({
+        user: {
+          value: {
+            authLoginData: { token: 'token' },
+            organization: { name: 'name' },
+          },
+        },
+      })
+      RsuFirmwareApi.postRsuUpgradeData = jest.fn()
+
+      const action = checkFirmwareUpgrade(['1.2.3.4', '5.6.7.8'])
+      const resp = await action(dispatch, getState, undefined)
+
+      expect(resp.type).toBe('config/checkFirmwareUpgrade/rejected')
+      expect(resp.payload).toBe('Firmware upgrade availability check requires exactly one RSU')
+      expect(RsuFirmwareApi.postRsuUpgradeData).not.toHaveBeenCalled()
     })
 
     it('Updates the state correctly pending', async () => {
@@ -583,6 +610,60 @@ describe('async thunks', () => {
         },
       })
     })
+
+    it('handles 404 EntityNotFoundException from backend (RSU not found)', async () => {
+      const dispatch = jest.fn()
+      const getState = jest.fn().mockReturnValue({
+        user: {
+          value: {
+            authLoginData: { token: 'token' },
+            organization: { name: 'name' },
+          },
+        },
+      })
+      RsuFirmwareApi.postRsuUpgradeData = jest.fn().mockReturnValue({
+        __isErrorResponse: true,
+        status: 404,
+        body: {
+          detail: 'Provided RSU IP does not have complete RSU data: 1.2.3.4',
+        },
+        message: 'Provided RSU IP does not have complete RSU data: 1.2.3.4',
+      })
+
+      const arg = ['1.2.3.4']
+      const action = checkFirmwareUpgrade(arg)
+      const resp = await action(dispatch, getState, undefined)
+
+      expect(resp.type).toBe('config/checkFirmwareUpgrade/rejected')
+      expect(resp.payload).toBe('Provided RSU IP does not have complete RSU data: 1.2.3.4')
+    })
+
+    it('handles 409 FirmwareUpgradeUnavailableException from backend (already up to date)', async () => {
+      const dispatch = jest.fn()
+      const getState = jest.fn().mockReturnValue({
+        user: {
+          value: {
+            authLoginData: { token: 'token' },
+            organization: { name: 'name' },
+          },
+        },
+      })
+      RsuFirmwareApi.postRsuUpgradeData = jest.fn().mockReturnValue({
+        __isErrorResponse: true,
+        status: 409,
+        body: {
+          detail: "Requested RSU '1.2.3.4' is already up to date with the latest firmware",
+        },
+        message: "Requested RSU '1.2.3.4' is already up to date with the latest firmware",
+      })
+
+      const arg = ['1.2.3.4']
+      const action = checkFirmwareUpgrade(arg)
+      const resp = await action(dispatch, getState, undefined)
+
+      expect(resp.type).toBe('config/checkFirmwareUpgrade/rejected')
+      expect(resp.payload).toBe("Requested RSU '1.2.3.4' is already up to date with the latest firmware")
+    })
   })
 
   describe('startFirmwareUpgrade', () => {
@@ -596,24 +677,125 @@ describe('async thunks', () => {
           },
         },
       })
-      RsuApi.postRsuData = jest.fn().mockReturnValue({ status: 200 })
+      RsuFirmwareApi.postRsuUpgradeData = jest.fn().mockReturnValue({
+        status: 200,
+        body: {
+          '1.2.3.4': {
+            code: 200,
+            data: {
+              message: 'started',
+            },
+          },
+        },
+      })
 
       const arg = ['1.2.3.4']
 
       const action = startFirmwareUpgrade(arg)
 
       const resp = await action(dispatch, getState, undefined)
-      expect(RsuApi.postRsuData).toHaveBeenCalledWith(
+      expect(RsuFirmwareApi.postRsuUpgradeData).toHaveBeenCalledWith(
         'token',
-        'name',
         {
-          command: 'upgrade-rsu',
-          rsu_ip: arg,
+          rsu_ips: arg,
           args: {},
         },
         ''
       )
-      expect(resp.payload).toEqual({ firmwareUpgradeAvailable: undefined, firmwareUpgradeName: undefined })
+      expect(resp.payload).toEqual({ message: 'Firmware upgrade started successfully.', statusCode: 200 })
+    })
+
+    it('returns a concise single-rsu failure message', async () => {
+      const dispatch = jest.fn()
+      const getState = jest.fn().mockReturnValue({
+        user: {
+          value: {
+            authLoginData: { token: 'token' },
+            organization: { name: 'name' },
+          },
+        },
+      })
+      RsuFirmwareApi.postRsuUpgradeData = jest.fn().mockReturnValue({
+        status: 200,
+        body: {
+          '1.2.3.4': {
+            code: 500,
+            data: 'device is unreachable',
+          },
+        },
+      })
+
+      const arg = ['1.2.3.4']
+      const action = startFirmwareUpgrade(arg)
+      const resp = await action(dispatch, getState, undefined)
+
+      expect(resp.payload).toEqual({ message: 'Firmware upgrade failed to start.', statusCode: 500 })
+    })
+
+    it('returns an informational message when a single RSU is already up to date', async () => {
+      const dispatch = jest.fn()
+      const getState = jest.fn().mockReturnValue({
+        user: {
+          value: {
+            authLoginData: { token: 'token' },
+            organization: { name: 'name' },
+          },
+        },
+      })
+      RsuFirmwareApi.postRsuUpgradeData = jest.fn().mockReturnValue({
+        status: 200,
+        body: {
+          '1.2.3.4': {
+            code: 409,
+            data: "Requested RSU '1.2.3.4' is already up to date with the latest firmware",
+          },
+        },
+      })
+
+      const arg = ['1.2.3.4']
+      const action = startFirmwareUpgrade(arg)
+      const resp = await action(dispatch, getState, undefined)
+
+      expect(resp.payload).toEqual({ message: 'Selected RSU is already up to date.', statusCode: 200 })
+    })
+
+    it('excludes up-to-date RSUs from multi-rsu failed list', async () => {
+      const dispatch = jest.fn()
+      const getState = jest.fn().mockReturnValue({
+        user: {
+          value: {
+            authLoginData: { token: 'token' },
+            organization: { name: 'name' },
+          },
+        },
+      })
+
+      const arg = ['10.0.0.78', '10.0.0.79', '10.0.0.80']
+      RsuFirmwareApi.postRsuUpgradeData = jest.fn().mockReturnValue({
+        status: 200,
+        body: {
+          '10.0.0.78': {
+            code: 409,
+            data: "Requested RSU '10.0.0.78' is already up to date with the latest firmware",
+          },
+          '10.0.0.79': {
+            code: 200,
+            data: { message: 'started' },
+          },
+          '10.0.0.80': {
+            code: 500,
+            data: 'device unreachable',
+          },
+        },
+      })
+
+      const action = startFirmwareUpgrade(arg)
+      const resp = await action(dispatch, getState, undefined)
+
+      expect(resp.payload).toEqual({
+        message: 'Firmware upgrade started for 1 RSUs. 1 RSUs already up to date. Failed: 10.0.0.80',
+        statusCode: 500,
+      })
     })
 
     it('Updates the state correctly pending', async () => {
@@ -671,6 +853,102 @@ describe('async thunks', () => {
         },
       })
     })
+
+    it('handles 404 per-RSU result from backend (RSU not found)', async () => {
+      const dispatch = jest.fn()
+      const getState = jest.fn().mockReturnValue({
+        user: {
+          value: {
+            authLoginData: { token: 'token' },
+            organization: { name: 'name' },
+          },
+        },
+      })
+      RsuFirmwareApi.postRsuUpgradeData = jest.fn().mockReturnValue({
+        status: 200,
+        body: {
+          '1.2.3.4': {
+            code: 404,
+            data: 'Provided RSU IP does not have complete RSU data: 1.2.3.4',
+          },
+        },
+      })
+
+      const arg = ['1.2.3.4']
+      const action = startFirmwareUpgrade(arg)
+      const resp = await action(dispatch, getState, undefined)
+
+      expect(resp.type).toBe('config/startFirmwareUpgrade/fulfilled')
+      expect(resp.payload).toEqual({ message: 'Firmware upgrade failed to start.', statusCode: 404 })
+    })
+
+    it('handles 501 per-RSU result when firmware manager is not supported', async () => {
+      const dispatch = jest.fn()
+      const getState = jest.fn().mockReturnValue({
+        user: {
+          value: {
+            authLoginData: { token: 'token' },
+            organization: { name: 'name' },
+          },
+        },
+      })
+      RsuFirmwareApi.postRsuUpgradeData = jest.fn().mockReturnValue({
+        status: 200,
+        body: {
+          '1.2.3.4': {
+            code: 501,
+            data: 'The firmware manager is not supported for this CV Manager deployment',
+          },
+        },
+      })
+
+      const arg = ['1.2.3.4']
+      const action = startFirmwareUpgrade(arg)
+      const resp = await action(dispatch, getState, undefined)
+
+      expect(resp.type).toBe('config/startFirmwareUpgrade/fulfilled')
+      expect(resp.payload).toEqual({ message: 'Firmware upgrade failed to start.', statusCode: 501 })
+    })
+
+    it('handles multi-rsu response with mixed success and error codes', async () => {
+      const dispatch = jest.fn()
+      const getState = jest.fn().mockReturnValue({
+        user: {
+          value: {
+            authLoginData: { token: 'token' },
+            organization: { name: 'name' },
+          },
+        },
+      })
+      RsuFirmwareApi.postRsuUpgradeData = jest.fn().mockReturnValue({
+        status: 200,
+        body: {
+          '1.2.3.4': {
+            code: 404,
+            data: 'Provided RSU IP does not have complete RSU data',
+          },
+          '2.3.4.5': {
+            code: 200,
+            data: { message: 'started' },
+          },
+          '3.4.5.6': {
+            code: 409,
+            data: "Requested RSU '3.4.5.6' is already up to date with the latest firmware",
+          },
+        },
+      })
+
+      const arg = ['1.2.3.4', '2.3.4.5', '3.4.5.6']
+      const action = startFirmwareUpgrade(arg)
+      const resp = await action(dispatch, getState, undefined)
+
+      expect(resp.type).toBe('config/startFirmwareUpgrade/fulfilled')
+      const payload = resp.payload as { statusCode: number; message: string }
+      expect(payload.statusCode).toBe(404)
+      expect(payload.message).toContain('Firmware upgrade started for 1 RSUs')
+      expect(payload.message).toContain('1 RSUs already up to date')
+      expect(payload.message).toContain('Failed: 1.2.3.4')
+    })
   })
 })
 
@@ -694,6 +972,46 @@ describe('reducers', () => {
       configList: null,
     },
   } as RootState['config']
+
+  it('reducer displays 404 EntityNotFoundException error from check thunk', async () => {
+    const errorMsg = 'Provided RSU IP does not have complete RSU data: 1.2.3.4'
+    const state = reducer(initialState, {
+      type: 'config/checkFirmwareUpgrade/rejected',
+      payload: errorMsg,
+    })
+    expect(state.value.firmwareUpgradeErr).toBe(true)
+    expect(state.value.firmwareUpgradeMsg).toBe(errorMsg)
+  })
+
+  it('reducer displays 409 FirmwareUpgradeUnavailableException error from check thunk', async () => {
+    const errorMsg = "Requested RSU '1.2.3.4' is already up to date with the latest firmware"
+    const state = reducer(initialState, {
+      type: 'config/checkFirmwareUpgrade/rejected',
+      payload: errorMsg,
+    })
+    expect(state.value.firmwareUpgradeErr).toBe(true)
+    expect(state.value.firmwareUpgradeMsg).toBe(errorMsg)
+  })
+
+  it('reducer displays 404 per-RSU error from a fulfilled start thunk', async () => {
+    const errorMsg = 'Firmware upgrade failed to start.'
+    const state = reducer(initialState, {
+      type: 'config/startFirmwareUpgrade/fulfilled',
+      payload: { message: errorMsg, statusCode: 404 },
+    })
+    expect(state.value.firmwareUpgradeErr).toBe(true)
+    expect(state.value.firmwareUpgradeMsg).toBe(errorMsg)
+  })
+
+  it('reducer displays 501 per-RSU error from a fulfilled start thunk', async () => {
+    const errorMsg = 'Firmware upgrade failed to start.'
+    const state = reducer(initialState, {
+      type: 'config/startFirmwareUpgrade/fulfilled',
+      payload: { message: errorMsg, statusCode: 501 },
+    })
+    expect(state.value.firmwareUpgradeErr).toBe(true)
+    expect(state.value.firmwareUpgradeMsg).toBe(errorMsg)
+  })
 
   it('setDestIp reducer updates state correctly', async () => {
     const destIp = 'updated'

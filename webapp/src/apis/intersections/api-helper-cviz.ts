@@ -26,6 +26,7 @@ class CvizApiHelper {
     abortController,
     responseType = 'json',
     booleanResponse = false,
+    returnErrorBody = false,
     toastOnFailure = true,
     toastOnSuccess = false,
     successMessage = 'Successfully completed request!',
@@ -43,6 +44,7 @@ class CvizApiHelper {
     abortController?: AbortController
     responseType?: string
     booleanResponse?: boolean
+    returnErrorBody?: boolean
     toastOnFailure?: boolean
     toastOnSuccess?: boolean
     successMessage?: string
@@ -97,6 +99,13 @@ class CvizApiHelper {
           } else if (toastOnFailure) toast.error(failureMessage + ', with status code ' + response.status)
 
           if (booleanResponse) return false
+          if (returnErrorBody) {
+            const errorStatus = response.status
+            return response
+              .json()
+              .catch(() => null)
+              .then((body: any) => ({ __isErrorResponse: true, status: errorStatus, body }))
+          }
           return undefined
         }
         if (responseType === 'blob') {

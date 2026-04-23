@@ -6,7 +6,6 @@ import {
   _getRsuInfo,
   _getRsuOnlineStatus,
   getSsmSrmData,
-  getIssScmsStatus,
   updateGeoMsgData,
 
   // reducers
@@ -45,7 +44,6 @@ import {
   selectGeoMsgFilter,
   selectGeoMsgFilterStep,
   selectGeoMsgFilterOffset,
-  selectIssScmsStatusData,
   selectSsmDisplay,
   selectSrmSsmList,
   selectSelectedSrm,
@@ -90,7 +88,6 @@ describe('rsu reducer', () => {
         geoMsgFilter: false,
         geoMsgFilterStep: 60,
         geoMsgFilterOffset: 0,
-        issScmsStatusData: {},
         ssmDisplay: false,
         srmSsmList: [],
         selectedSrm: [],
@@ -120,7 +117,6 @@ describe('async thunks', () => {
       geoMsgFilter: null,
       geoMsgFilterStep: null,
       geoMsgFilterOffset: null,
-      issScmsStatusData: null,
       ssmDisplay: null,
       srmSsmList: null,
       selectedSrm: null,
@@ -387,54 +383,6 @@ describe('async thunks', () => {
     })
   })
 
-  describe('getIssScmsStatus', () => {
-    it('returns and calls the api correctly', async () => {
-      const dispatch = jest.fn()
-      const getState = jest.fn().mockReturnValue({
-        user: {
-          value: {
-            authLoginData: { token: 'token' },
-            organization: { organization: 'name' },
-          },
-        },
-      })
-      const action = getIssScmsStatus()
-
-      RsuApi.getIssScmsStatus = jest.fn().mockReturnValue('issScmsStatus')
-      const resp = await action(dispatch, getState, undefined)
-      expect(resp.payload).toEqual('issScmsStatus')
-      expect(RsuApi.getIssScmsStatus).toHaveBeenCalledWith('token', 'name')
-    })
-
-    it('Updates the state correctly fulfilled', async () => {
-      const issScmsStatusData = 'issScmsStatus'
-      const state = reducer(initialState, {
-        type: 'rsu/getIssScmsStatus/fulfilled',
-        payload: issScmsStatusData,
-      })
-
-      expect(state).toEqual({
-        ...initialState,
-        value: { ...initialState.value, issScmsStatusData },
-      })
-    })
-
-    it('Updates the state correctly fulfilled default value', async () => {
-      const issScmsStatusData = 'issScmsStatus' as any
-      const state = reducer(
-        { ...initialState, value: { ...initialState.value, issScmsStatusData } },
-        {
-          type: 'rsu/getIssScmsStatus/fulfilled',
-          payload: null,
-        }
-      )
-
-      expect(state).toEqual({
-        ...initialState,
-        value: { ...initialState.value, issScmsStatusData },
-      })
-    })
-  })
 
   describe('updateGeoMsgData', () => {
     it('returns and calls the api correctly', async () => {
@@ -599,7 +547,6 @@ describe('reducers', () => {
       geoMsgFilter: null,
       geoMsgFilterStep: null,
       geoMsgFilterOffset: null,
-      issScmsStatusData: null,
       ssmDisplay: null,
       srmSsmList: null,
       selectedSrm: null,
@@ -774,7 +721,6 @@ describe('selectors', () => {
       geoMsgFilter: 'geoMsgFilter',
       geoMsgFilterStep: 'geoMsgFilterStep',
       geoMsgFilterOffset: 'geoMsgFilterOffset',
-      issScmsStatusData: 'issScmsStatusData',
       ssmDisplay: 'ssmDisplay',
       srmSsmList: 'srmSsmList',
       selectedSrm: 'selectedSrm',
@@ -804,7 +750,6 @@ describe('selectors', () => {
     expect(selectGeoMsgFilter(rsuState)).toEqual('geoMsgFilter')
     expect(selectGeoMsgFilterStep(rsuState)).toEqual('geoMsgFilterStep')
     expect(selectGeoMsgFilterOffset(rsuState)).toEqual('geoMsgFilterOffset')
-    expect(selectIssScmsStatusData(rsuState)).toEqual('issScmsStatusData')
     expect(selectSsmDisplay(rsuState)).toEqual('ssmDisplay')
     expect(selectSrmSsmList(rsuState)).toEqual('srmSsmList')
     expect(selectSelectedSrm(rsuState)).toEqual('selectedSrm')

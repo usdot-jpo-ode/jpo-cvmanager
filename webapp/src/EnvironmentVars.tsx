@@ -51,7 +51,6 @@ class EnvironmentVars {
   static rsuMsgFwdQueryEndpoint = `${this.getBaseApiUrl()}/rsu-msgfwd-query`
   static rsuMsgFwdFetchEndpoint = `${this.getBaseApiUrl()}/rsu-msgfwd-fetch`
   static geoMsgDataEndpoint = `${this.getBaseApiUrl()}/rsu-geo-msg-data`
-  static issScmsStatusEndpoint = `${this.getBaseApiUrl()}/iss-scms-status`
   static ssmSrmEndpoint = `${this.getBaseApiUrl()}/rsu-ssm-srm-data`
 
   static adminAddUser = `${this.getBaseApiUrl()}/admin-new-user`

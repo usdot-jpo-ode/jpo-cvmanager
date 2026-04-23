@@ -4,7 +4,6 @@ import apiHelper from './api-helper'
 import {
   ApiMsgRespWithCodes,
   GetRsuCommandResp,
-  IssScmsStatus,
   RsuCommandPostBody,
   RsuCounts,
   RsuInfoList,
@@ -99,19 +98,6 @@ class RsuApi {
       url: EnvironmentVars.ssmSrmEndpoint + url_ext,
       token,
       query_params,
-      tag: 'rsu',
-    })
-  getIssScmsStatus = async (
-    token: string,
-    org: string,
-    url_ext = '',
-    query_params: Record<string, string> = {}
-  ): Promise<IssScmsStatus> =>
-    apiHelper._getData({
-      url: EnvironmentVars.issScmsStatusEndpoint + url_ext,
-      token,
-      query_params,
-      additional_headers: { Organization: org },
       tag: 'rsu',
     })
 

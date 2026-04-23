@@ -10,7 +10,6 @@ beforeEach(() => {
   EnvironmentVars.rsuCommandEndpoint = 'VITE_ENV/rsu-command'
   EnvironmentVars.wzdxEndpoint = 'VITE_ENV/wzdx-feed'
   EnvironmentVars.geoMsgDataEndpoint = 'VITE_ENV/rsu-geo-data'
-  EnvironmentVars.issScmsStatusEndpoint = 'VITE_ENV/iss-scms-status'
   EnvironmentVars.ssmSrmEndpoint = 'VITE_ENV/rsu-ssm-srm-data'
 
   EnvironmentVars.adminAddUser = 'VITE_ENV/admin-new-user'
@@ -159,31 +158,6 @@ it('Test getSsmSrmData With Params', async () => {
   expect(fetchMock.mock.calls[0][1].headers).toStrictEqual({ Authorization: 'testToken' })
 })
 
-it('Test getIssScmsStatus', async () => {
-  const expectedResponse = { data: 'Test JSON' }
-  fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
-  const actualResponse = await RsuApi.getIssScmsStatus('testToken', 'testOrg')
-  expect(actualResponse).toEqual(expectedResponse)
-
-  expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.issScmsStatusEndpoint)
-  expect(fetchMock.mock.calls[0][1].method).toBe('GET')
-  expect(fetchMock.mock.calls[0][1].headers).toStrictEqual({ Authorization: 'testToken', Organization: 'testOrg' })
-})
-
-it('Test getIssScmsStatus With Params', async () => {
-  // Set url_ext and query_params
-  const url_ext = 'url_ext'
-  const query_params = { query_param: 'test' }
-
-  const expectedResponse = { data: 'Test JSON' }
-  fetchMock.mockResponseOnce(JSON.stringify(expectedResponse))
-  const actualResponse = await RsuApi.getIssScmsStatus('testToken', 'testOrg', url_ext, query_params)
-  expect(actualResponse).toEqual(expectedResponse)
-
-  expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.issScmsStatusEndpoint + url_ext + '?query_param=test')
-  expect(fetchMock.mock.calls[0][1].method).toBe('GET')
-  expect(fetchMock.mock.calls[0][1].headers).toStrictEqual({ Authorization: 'testToken', Organization: 'testOrg' })
-})
 
 it('Test getWzdxData', async () => {
   const expectedResponse = { data: 'Test JSON' }

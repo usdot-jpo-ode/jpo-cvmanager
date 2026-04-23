@@ -109,7 +109,22 @@ class AdminIntersectionServiceTest {
    * Note: manufacturer rows are left as orphans (no unique constraint in test data).
    */
   @BeforeEach
-  void clearDatabase() {
+  void clearDatabaseBeforeTest() {
+    clearDatabase();
+  }
+
+  /**
+   * Run cleanup after each test as well. Without @Transactional on this class,
+   * data committed by the last test method would otherwise linger in the shared
+   * Testcontainers DB and contaminate subsequent test classes (e.g. ScmsHealthServiceTest).
+   */
+  @AfterEach
+  void clearDatabaseAfterTest() {
+    clearDatabase();
+    SecurityContextHolder.clearContext();
+  }
+
+  private void clearDatabase() {
     rsuIntersectionRepository.deleteAll();
     intersectionOrganizationRepository.deleteAll();
     rsuOrganizationRepository.deleteAll();
@@ -120,11 +135,6 @@ class AdminIntersectionServiceTest {
     rsuModelRepository.deleteAll();
     intersectionRepository.deleteAll();
     organizationRepository.deleteAll();
-  }
-
-  @AfterEach
-  void clearSecurityContext() {
-    SecurityContextHolder.clearContext();
   }
 
   private void setUpSuperuserContext() {

@@ -69,9 +69,13 @@ spring:
     password: postgres
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
     hikari:
+      # Limit pool size to prevent "too many clients" errors when multiple test contexts
+      # share the same PostgreSQL container. Each @SpringBootTest with different mock
+      # configurations creates a separate context (and connection pool). With ~20 test
+      # classes and the default pool size of 10, we'd exceed PostgreSQL's max_connections (100).
       maximum-pool-size: 2
-      minimum-idle: 0
-      idle-timeout: 10000
+      minimum-idle: 1
+      connection-timeout: 30000
   jpa:
     hibernate:
       ddl-auto: create-only

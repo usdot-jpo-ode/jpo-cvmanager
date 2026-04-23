@@ -23,7 +23,6 @@ import Slider from '@mui/material/Slider'
 import {
   selectRsuOnlineStatus,
   selectRsuData,
-  selectIssScmsStatusData,
   selectSelectedRsu,
   selectRsuIpv4,
   selectAddGeoMsgPoint,
@@ -38,7 +37,6 @@ import {
   // actions
   selectRsu,
   getRsuData,
-  getIssScmsStatus,
   getRsuLastOnline,
   toggleGeoMsgPointSelect,
   clearGeoMsg,
@@ -131,6 +129,7 @@ import { ConditionalRenderRsu, evaluateFeatureFlags } from '../feature-flags'
 import { DateTime } from 'luxon'
 import { MessageType } from '../models/MessageTypes'
 import { useGetRsuCountsQuery } from '../features/api/rsuCountsApiSlice'
+import { formatScmsExpiration, useGetScmsStatusQuery } from '../features/api/scmsApiSlice'
 
 const MILLISECONDS_PER_MINUTE = 60000
 
@@ -149,7 +148,7 @@ function MapPage() {
   const organization = useSelector(selectOrganizationName)
   const rsuData = useSelector(selectRsuData)
   const selectedRsu = useSelector(selectSelectedRsu)
-  const issScmsStatusData = useSelector(selectIssScmsStatusData)
+  const { data: issScmsStatusData = {} } = useGetScmsStatusQuery(organization, { skip: !organization })
   const rsuOnlineStatus = useSelector(selectRsuOnlineStatus)
   const rsuIpv4 = useSelector(selectRsuIpv4)
   const addConfigPoint = useSelector(selectAddConfigPoint)
@@ -701,7 +700,6 @@ function MapPage() {
   }
 
   const handleScmsStatus = () => {
-    dispatch(getIssScmsStatus())
     setDisplayType('scms')
   }
 
@@ -1159,7 +1157,6 @@ function MapPage() {
                     setSelectedWZDxMarker(null)
                     dispatch(clearFirmware()) // TODO: Should remove??
                     dispatch(getRsuLastOnline(rsu.properties.ipv4_address))
-                    dispatch(getIssScmsStatus())
                   }}
                 >
                   <button
@@ -1173,7 +1170,6 @@ function MapPage() {
                       setSelectedWZDxMarkerIndex(null)
                       setSelectedWZDxMarker(null)
                       dispatch(getRsuLastOnline(rsu.properties.ipv4_address))
-                      dispatch(getIssScmsStatus())
                     }}
                   >
                     <RsuMarker
@@ -1187,7 +1183,7 @@ function MapPage() {
                         Object.prototype.hasOwnProperty.call(issScmsStatusData, rsu.properties.ipv4_address) &&
                         issScmsStatusData[rsu.properties.ipv4_address]
                           ? issScmsStatusData[rsu.properties.ipv4_address].health
-                          : '0'
+                          : null
                       }
                     />
                   </button>
@@ -1454,18 +1450,18 @@ function MapPage() {
                           <Typography
                             sx={{
                               color:
-                                issScmsStatusData[rsuIpv4].health === '1'
+                                issScmsStatusData[rsuIpv4].health
                                   ? theme.palette.success.light
                                   : theme.palette.error.light,
                             }}
                           >
-                            {issScmsStatusData[rsuIpv4].health === '1' ? 'Healthy' : 'Unhealthy'}
+                            {issScmsStatusData[rsuIpv4].health ? 'Healthy' : 'Unhealthy'}
                           </Typography>
                         </Grid2>
                         <Grid2 size={12}>
                           <Typography fontSize="small">
                             {issScmsStatusData[rsuIpv4].expiration
-                              ? issScmsStatusData[rsuIpv4].expiration
+                              ? formatScmsExpiration(issScmsStatusData[rsuIpv4].expiration)
                               : 'Never downloaded certificates'}
                           </Typography>
                         </Grid2>

@@ -17,11 +17,13 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import AdminTable from '../../components/AdminTable'
 import { setMapViewState } from '../../pages/mapSlice'
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Stack, Typography, useTheme } from '@mui/material'
-import RsuErrorSummary from '../../components/RsuErrorSummary'
-import { RsuInfo } from '../../models/RsuApi'
+import { RsuInfo, RsuOnlineStatus } from '../../models/RsuApi'
 import { useReactToPrint } from 'react-to-print'
 import { SideBarHeader } from '../../styles/components/SideBarHeader'
 import { toggleMapMenuSelection } from './menuSlice'
+import toast from 'react-hot-toast'
+import { useSendRsuErrorSummaryEmailMutation } from '../api/emailApiSlice'
+import { selectEmail } from '../../generalSlices/userSlice'
 
 const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo }) => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
@@ -30,11 +32,12 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
   const organization = useSelector(selectOrganizationName)
   const { data: issScmsStatusData = {} } = useGetScmsStatusQuery(organization, { skip: !organization })
   const [selectedRSU, setSelectedRSU] = useState<RsuInfo | undefined>(initialSelectedRsu)
-  const [emailHidden, setEmailHidden] = useState(true)
   const contentRef = useRef(null)
   const errorRef = useRef(null)
+  const userEmail = useSelector(selectEmail)
   const handlePrint = useReactToPrint({ contentRef })
   const handleErrorPrint = useReactToPrint({ contentRef: errorRef })
+  const [submitRsuErrorSummary] = useSendRsuErrorSummaryEmailMutation()
 
   const theme = useTheme()
 
@@ -118,6 +121,41 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
     return rsu_scms_status
   }
 
+  const sendRsuErrorSummaryEmail = async (
+    rsu: string,
+    online_status: RsuOnlineStatus | string,
+    scms_status: string
+  ) => {
+    const messageTable = `
+        <table>
+            <tr>
+                <th>Online Status</th>
+                <th>SCMS Status</th>
+            </tr>
+            <tr>
+                <td>${'RSU ' + online_status}</td>
+                <td>${scms_status}</td>
+            </tr>
+        </table>
+    `
+
+    const message = `
+        <p>Below is the error summary for RSU ${rsu} at ${new Date().toISOString()} UTC:</p>
+        ${messageTable}
+    `
+
+    const data: RsuErrorSummaryEmailContents = {
+      subject: `RSU Error Summary for ${rsu}`,
+      message: message,
+    }
+
+    toast.promise(submitRsuErrorSummary(data).unwrap(), {
+      loading: `Sending RSU error summary email to ${userEmail}...`,
+      success: `RSU error summary email sent successfully to ${userEmail}!`,
+      error: `Failed to send RSU error summary email to ${userEmail}`,
+    })
+  }
+
   // Create RSU Errors Table Data
   const rsuTableData = rsuData.map((rsu) => {
     return {
@@ -159,10 +197,6 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
       },
     },
   ]
-
-  const setHidden = () => {
-    setEmailHidden(!emailHidden)
-  }
 
   const containerStyle = {
     display: 'flex',
@@ -227,25 +261,23 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
               variant="contained"
               style={{ margin: '1rem' }}
               onClick={() => {
-                setEmailHidden(false)
+                const lastOnlineStatus =
+                  getRSUOnlineStatus(selectedRSU.properties.ipv4_address) +
+                  (getRSULastOnline(selectedRSU.properties.ipv4_address) === 'No Data'
+                    ? ' (Never Online)'
+                    : ' (Last Online ' + getRSULastOnline(selectedRSU.properties.ipv4_address) + ')')
+
+                return sendRsuErrorSummaryEmail(
+                  selectedRSU.properties.ipv4_address,
+                  lastOnlineStatus,
+                  getRSUSCMSDisplay(selectedRSU.properties.ipv4_address)
+                )
               }}
               className="museo-slab"
             >
-              Generate Error Summary Email
+              Send Error Summary Email
             </Button>
           </div>
-          <RsuErrorSummary
-            rsu={selectedRSU.properties.ipv4_address}
-            online_status={
-              getRSUOnlineStatus(selectedRSU.properties.ipv4_address) +
-              (getRSULastOnline(selectedRSU.properties.ipv4_address) === 'No Data'
-                ? ' (Never Online)'
-                : ' (Last Online ' + getRSULastOnline(selectedRSU.properties.ipv4_address) + ')')
-            }
-            scms_status={getRSUSCMSDisplay(selectedRSU.properties.ipv4_address)}
-            hidden={emailHidden}
-            setHidden={setHidden}
-          />
         </Stack>
       ) : (
         <Stack direction="column" spacing={2} sx={{ pl: 1, pr: 1 }}>

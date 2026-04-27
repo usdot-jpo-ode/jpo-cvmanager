@@ -60,8 +60,6 @@ class EnvironmentVars {
   static adminOrg = `${this.getBaseApiUrl()}/admin-org`
   static adminOrgTimDeposit = `${this.getBaseApiUrl()}/admin-org-tim-deposit`
   static adminOrgSnmpMonitoring = `${this.getBaseApiUrl()}/admin-org-snmp-monitoring`
-  static contactSupport = `${this.getBaseApiUrl()}/contact-support`
-  static rsuErrorSummary = `${this.getBaseApiUrl()}/rsu-error-summary`
 }
 
 export default EnvironmentVars

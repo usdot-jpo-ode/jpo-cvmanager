@@ -1421,7 +1421,7 @@ exports[`should take a snapshot 1`] = `
           tabindex="0"
           type="button"
         >
-          Generate Error Summary Email
+          Send Error Summary Email
         </button>
       </div>
     </div>

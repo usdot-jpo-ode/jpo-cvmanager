@@ -407,15 +407,10 @@ Note that it is recommended to work with the Python API from a [virtual environm
 - MONGO_SSM_COLLECTION_NAME: The database name for SSM visualization data.
 - MONGO_SRM_COLLECTION_NAME: The database name for SRM visualization data.
 - FIRMWARE_MANAGER_ENDPOINT: Endpoint for the firmware manager deployment's API.
-- CSM_EMAIL_TO_SEND_FROM: Origin email address for the API error developer emails.
-- CSM_EMAILS_TO_SEND_TO: Destination email addresses for the API error developer emails.
-- CSM_EMAIL_APP_USERNAME: Username for the SMTP server.
-- CSM_EMAIL_APP_PASSWORD: Password for the SMTP server.
-- CSM_TARGET_SMTP_SERVER_ADDRESS: Destination SMTP server address.
-- CSM_TARGET_SMTP_SERVER_PORT: Destination SMTP server port.
+- IAPI_ENDPOINT: Intersection API endpoint for making REST requests to send emails
+- KC_SA_CLIENT_ID: Keycloak service account client ID for generating authenticating to the Intersection API
+- KC_SA_CLIENT_SECRET: Keycloak service account client secret for generating authenticating to the Intersection API
 - API_LOGGING_LEVEL: The level of which the CV Manager API will log. (DEBUG, INFO, WARNING, ERROR)
-- CSM_TLS_ENABLED: Set to "true" if the SMTP server requires TLS.
-- CSM_AUTH_ENABLED: Set to "true" if the SMTP server requires authentication.
 - WZDX_ENDPOINT: WZDX datafeed endpoint.
 - WZDX_API_KEY: API key for the WZDX datafeed.
 - TIMEZONE: Timezone to be used for the API.

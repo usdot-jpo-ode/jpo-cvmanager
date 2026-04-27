@@ -24,11 +24,6 @@ Expected headers for all endpoints:
 - `"Content-Type": "application/json"`
 - `"Authorization": "token"`
 
-### <b>/contact-support</b> <b>(POST)</b>
-
-Sends a support request email to all users subscribed to 'Support Requests' in the cv-manager. Please note that this functionality
-relies on the user_email_notification table in PostgreSQL to pull in all users subscribed to receive these notifications.
-
 ### <b>/rsuinfo</b> <b>(GET)</b>
 
 Returns all basic data for RSUs in the GCP Cloud SQL database. It performs a basic select all query from a table named "RsuData" that is located in a database specified by the environments variables. Returns single JSON object.

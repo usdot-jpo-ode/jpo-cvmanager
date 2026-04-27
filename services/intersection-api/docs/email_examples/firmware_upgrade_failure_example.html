@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -255,39 +255,19 @@
           <td class="container">
             <div class="content">
               <!-- START CENTERED WHITE CONTAINER -->
-              <span class="preheader">New Notifications in CV Manager</span>
+              <span class="preheader">Firmware Upgrade Failure in CV Manager</span>
               <table role="presentation" class="main">
                 <tbody>
                   <!-- START MAIN CONTENT AREA -->
                   <tr>
                     <td class="wrapper">
                       <p>Hello CV-Manager User,</p>
-                      <div>
-                        <p>
-                          There are new Notifications to review in the conflict monitor application. Please review the
-                          Notifications below, or log into the CV-Manager to Analyze these notifications<br /><br /><strong
-                            >Heading:</strong
-                          >
-                          Connection of Travel Issue Detected<br /><strong>Description:</strong> Connection of travel
-                          assessment detected an issue with lane connectivity between ingress lane 5 and egress lane
-                          12.<br /><strong>Intersection ID:</strong> 12345<br /><strong>Generated At:</strong>
-                          2023-12-22 16:00:00<br /><br /><strong>Heading:</strong> Critical: Signal State Conflict<br /><strong
-                            >Description:</strong
-                          >
-                          Signal state conflict detected: Signal groups 2 and 5 both showing green simultaneously,
-                          creating a potential safety hazard.<br /><strong>Intersection ID:</strong> 67890<br /><strong
-                            >Generated At:</strong
-                          >
-                          2023-12-22 16:10:00<br /><br /><strong>Heading:</strong> Signal Group Alignment Issue<br /><strong
-                            >Description:</strong
-                          >
-                          Signal group alignment mismatch detected. MAP message defines 8 signal groups but SPaT message
-                          only contains 6 signal groups.<br /><strong>Intersection ID:</strong> 11111<br /><strong
-                            >Generated At:</strong
-                          >
-                          2023-12-22 16:20:00<br />
-                        </p>
-                      </div>
+                      <div><p>A firmware upgrade command failed on RSU 10.0.0.78.<br><br><strong>Update type:</strong> Firmware Upgrader<br><strong>Error message:</strong> ConnectionError: SNMP timeout: No response from 10.0.0.78 during firmware transfer. Device may have rebooted unexpectedly or network connection was interrupted.<br><strong>Stack Trace:</strong> Traceback (most recent call last):
+  File "/usr/local/bin/rsu_firmware_upgrade.py", line 23, in <module>
+    upgrade_firmware("10.0.0.78", "/opt/firmware/commsignia_v4.2.1.bin")
+  File "/usr/local/bin/rsu_firmware_upgrade.py", line 15, in upgrade_firmware
+    raise ConnectionError(f"SNMP timeout: No response from {rsu_ip} during firmware transfer. Device may have rebooted unexpectedly or network connection was interrupted.")
+ConnectionError: SNMP timeout: No response from 10.0.0.78 during firmware transfer. Device may have rebooted unexpectedly or network connection was interrupted.</p></div>
                       <p>
                         <a href="http://localhost:3000" target="_blank">Navigate to the CV-Manager</a>
                       </p>
@@ -305,7 +285,7 @@
                   <tbody>
                     <tr>
                       <td class="content-block">
-                        <span class="apple-link">CV-Manager Automated Notifications</span>
+                        <span class="apple-link">CV-Manager Firmware Upgrade Failure</span>
                         <br />
                         <p>
                           <span>If you no longer wish to receive these emails, please </span>

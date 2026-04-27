@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -255,7 +255,7 @@
           <td class="container">
             <div class="content">
               <!-- START CENTERED WHITE CONTAINER -->
-              <span class="preheader">New Notifications in CV Manager</span>
+              <span class="preheader">RSU Error Summary from CV Manager</span>
               <table role="presentation" class="main">
                 <tbody>
                   <!-- START MAIN CONTENT AREA -->
@@ -263,30 +263,18 @@
                     <td class="wrapper">
                       <p>Hello CV-Manager User,</p>
                       <div>
-                        <p>
-                          There are new Notifications to review in the conflict monitor application. Please review the
-                          Notifications below, or log into the CV-Manager to Analyze these notifications<br /><br /><strong
-                            >Heading:</strong
-                          >
-                          Connection of Travel Issue Detected<br /><strong>Description:</strong> Connection of travel
-                          assessment detected an issue with lane connectivity between ingress lane 5 and egress lane
-                          12.<br /><strong>Intersection ID:</strong> 12345<br /><strong>Generated At:</strong>
-                          2023-12-22 16:00:00<br /><br /><strong>Heading:</strong> Critical: Signal State Conflict<br /><strong
-                            >Description:</strong
-                          >
-                          Signal state conflict detected: Signal groups 2 and 5 both showing green simultaneously,
-                          creating a potential safety hazard.<br /><strong>Intersection ID:</strong> 67890<br /><strong
-                            >Generated At:</strong
-                          >
-                          2023-12-22 16:10:00<br /><br /><strong>Heading:</strong> Signal Group Alignment Issue<br /><strong
-                            >Description:</strong
-                          >
-                          Signal group alignment mismatch detected. MAP message defines 8 signal groups but SPaT message
-                          only contains 6 signal groups.<br /><strong>Intersection ID:</strong> 11111<br /><strong
-                            >Generated At:</strong
-                          >
-                          2023-12-22 16:20:00<br />
-                        </p>
+                        <p>Below is the error summary for RSU 10.0.0.180 at 2026-01-02T16:00:25.872Z UTC:</p>
+
+                        <table>
+                          <tr>
+                            <th>Online Status</th>
+                            <th>SCMS Status</th>
+                          </tr>
+                          <tr>
+                            <td>RSU Offline (Never Online)</td>
+                            <td>SCMS Unhealthy (RSU Never downloaded certificates)</td>
+                          </tr>
+                        </table>
                       </div>
                       <p>
                         <a href="http://localhost:3000" target="_blank">Navigate to the CV-Manager</a>
@@ -305,11 +293,11 @@
                   <tbody>
                     <tr>
                       <td class="content-block">
-                        <span class="apple-link">CV-Manager Automated Notifications</span>
+                        <span class="apple-link">RSU Error Summary</span>
                         <br />
                         <p>
-                          <span>If you no longer wish to receive these emails, please </span>
-                          <a href="http://localhost:3000/unsubscribe?token=fake_token">Unsubscribe</a>
+                          <span>This email was sent to you on request of a CV-Manager user. </span>
+                          <a href=""></a>
                         </p>
                       </td>
                     </tr>

@@ -255,7 +255,7 @@
           <td class="container">
             <div class="content">
               <!-- START CENTERED WHITE CONTAINER -->
-              <span class="preheader">New Notifications in CV Manager</span>
+              <span class="preheader">CV-Manager API Error</span>
               <table role="presentation" class="main">
                 <tbody>
                   <!-- START MAIN CONTENT AREA -->
@@ -264,28 +264,28 @@
                       <p>Hello CV-Manager User,</p>
                       <div>
                         <p>
-                          There are new Notifications to review in the conflict monitor application. Please review the
-                          Notifications below, or log into the CV-Manager to Analyze these notifications<br /><br /><strong
-                            >Heading:</strong
-                          >
-                          Connection of Travel Issue Detected<br /><strong>Description:</strong> Connection of travel
-                          assessment detected an issue with lane connectivity between ingress lane 5 and egress lane
-                          12.<br /><strong>Intersection ID:</strong> 12345<br /><strong>Generated At:</strong>
-                          2023-12-22 16:00:00<br /><br /><strong>Heading:</strong> Critical: Signal State Conflict<br /><strong
-                            >Description:</strong
-                          >
-                          Signal state conflict detected: Signal groups 2 and 5 both showing green simultaneously,
-                          creating a potential safety hazard.<br /><strong>Intersection ID:</strong> 67890<br /><strong
-                            >Generated At:</strong
-                          >
-                          2023-12-22 16:10:00<br /><br /><strong>Heading:</strong> Signal Group Alignment Issue<br /><strong
-                            >Description:</strong
-                          >
-                          Signal group alignment mismatch detected. MAP message defines 8 signal groups but SPaT message
-                          only contains 6 signal groups.<br /><strong>Intersection ID:</strong> 11111<br /><strong
-                            >Generated At:</strong
-                          >
-                          2023-12-22 16:20:00<br />
+                          A critical API Error has occurred at 2025-12-29T14:32:18.456Z. To View API error logs,
+                          navigate to
+                          <a href="https://cvmanager.com/logs?date=2025-12-29&service=message-processor&level=error"
+                            >API Error Logs</a
+                          ><br /><strong>Error message:</strong> Failed to process BSM message batch: ValueError:
+                          Invalid latitude value 91.5 for RSU 192.168.1.45. Latitude must be between -90 and 90
+                          degrees.<br /><strong>Stack Trace:</strong> Traceback (most recent call last): File
+                          "/app/message_processor/worker.py", line 156, in process_batch validated_messages =
+                          validator.validate_bsm_batch(messages) File
+                          "/app/message_processor/validators/bsm_validator.py", line 89, in validate_bsm_batch
+                          self._validate_coordinates(msg['position']['latitude'], msg['position']['longitude']) File
+                          "/app/message_processor/validators/bsm_validator.py", line 134, in _validate_coordinates raise
+                          ValueError(f"Invalid latitude value {lat} for RSU {rsu_ip}. Latitude must be between -90 and
+                          90 degrees.") ValueError: Invalid latitude value 91.5 for RSU 192.168.1.45. Latitude must be
+                          between -90 and 90 degrees. During handling of the above exception, another exception
+                          occurred: Traceback (most recent call last): File "/app/message_processor/main.py", line 45,
+                          in main worker.run() File "/app/message_processor/worker.py", line 67, in run
+                          self.process_batch(batch) File "/app/message_processor/worker.py", line 163, in process_batch
+                          logger.error(f"Failed to process batch: {str(e)}") File
+                          "/usr/local/lib/python3.11/logging/__init__.py", line 1547, in error self._log(ERROR, msg,
+                          args, **kwargs) RuntimeError: Failed to process BSM message batch from Kafka topic
+                          'topic.OdeBsmJson' at offset 12847563
                         </p>
                       </div>
                       <p>
@@ -305,7 +305,7 @@
                   <tbody>
                     <tr>
                       <td class="content-block">
-                        <span class="apple-link">CV-Manager Automated Notifications</span>
+                        <span class="apple-link">API Error Notification</span>
                         <br />
                         <p>
                           <span>If you no longer wish to receive these emails, please </span>

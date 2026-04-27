@@ -74,3 +74,70 @@ This section describes the steps required to add this custom user provider to an
 9. Complete
    - Now, users can login through the google IDP, and their newly-created keycloak identities will be automatically linked to their existing postgres information!
    - In the future, consider reverting the changes to the first broker login authentication flow
+
+## Service Account Creation
+
+Several CV-Manager services utilize the Intersection API to generate emails. This includes the message-counts addon, the firmware upgrade runner addon, and the cvmanager (python) api. Each of these services must authenticate to Keycloak to make requests to the Intersection API. This authentication is facilitated through creating service accounts for each service. Use the following steps to create and configure the required service accounts:
+
+1. Navigate to the keycloak admin console, and select the "cvmanager" realm
+2. Create realm roles
+   - Under "Manage", select the "Realm roles" tab
+   - Select "Create Role"
+   - Create the following 3 roles (these are case sensitive):
+     1. ROLE_SEND_MESSAGE_COUNTS_EMAILS
+        - description: "Role enabling services to send CV message count summary emails through the intersection API"
+     2. ROLE_SEND_FIRMWARE_UPGRADE_EMAILS
+        - description: "Role enabling services to send firmware upgrade failure emails through the intersection API"
+     3. ROLE_SEND_CRITICAL_ERROR_MESSAGE_EMAILS
+        - description: "Role enabling services to send critical API error message/summary emails through the intersection API"
+3. Create the message count service account
+   - Under "Manage", select "Clients"
+   - select "Create Client"
+   - Enter the following information for General settings:
+     - Client ID: sa_count_metric
+   - Hit "Next" to continue capability config
+     - Client Authentication: On
+     - Under Authentication flow, make sure the "Service accounts roles" is checked
+   - Hit "Next" and then "Save"
+   - Under the "Credentials" tab, save the Client Secret
+     - Under "Client Secret", press the eye icon to view the secret value
+     - select and copy the client secret
+     - save the client secret as the ENV variable "KEYCLOAK_SA_COUNT_METRIC_CLIENT_SECRET_KEY" in your .env
+   - Under the "Service accounts roles" tab, select "Assign Role"
+   - Ensure the filter is set to "Filter by realm roles"
+   - Select the role "ROLE_SEND_MESSAGE_COUNTS_EMAILS" and hit "Assign"
+     - You should see "ROLE_SEND_MESSAGE_COUNTS_EMAILS" in the list of roles
+4. Create the firmware upgrade runner service account
+   - Under "Manage", select "Clients"
+   - select "Create Client"
+   - Enter the following information for General settings:
+     - Client ID: sa_firmware_upgrade_runner
+   - Hit "Next" to continue capability config
+     - Client Authentication: On
+     - Under Authentication flow, make sure the "Service accounts roles" is checked
+   - Hit "Next" and then "Save"
+   - Under the "Credentials" tab, save the Client Secret
+     - Under "Client Secret", press the eye icon to view the secret value
+     - select and copy the client secret
+     - save the client secret as the ENV variable "KEYCLOAK_SA_FIRMWARE_UPGRADE_RUNNER_CLIENT_SECRET_KEY" in your .env
+   - Under the "Service accounts roles" tab, select "Assign Role"
+   - Ensure the filter is set to "Filter by realm roles"
+   - Select the role "ROLE_SEND_FIRMWARE_UPGRADE_EMAILS" and hit "Assign"
+     - You should see "ROLE_SEND_FIRMWARE_UPGRADE_EMAILS" in the list of roles
+5. Create the cvmanager python API service account
+   - Under "Manage", select "Clients"
+   - select "Create Client"
+   - Enter the following information for General settings:
+     - Client ID: sa_cvmanager_python_api
+   - Hit "Next" to continue capability config
+     - Client Authentication: On
+     - Under Authentication flow, make sure the "Service accounts roles" is checked
+   - Hit "Next" and then "Save"
+   - Under the "Credentials" tab, save the Client Secret
+     - Under "Client Secret", press the eye icon to view the secret value
+     - select and copy the client secret
+     - save the client secret as the ENV variable "KEYCLOAK_SA_PYTHON_API_CLIENT_SECRET_KEY" in your .env
+   - Under the "Service accounts roles" tab, select "Assign Role"
+   - Ensure the filter is set to "Filter by realm roles"
+   - Select the role "ROLE_SEND_CRITICAL_ERROR_MESSAGE_EMAILS" and hit "Assign"
+     - You should see "ROLE_SEND_CRITICAL_ERROR_MESSAGE_EMAILS" in the list of roles

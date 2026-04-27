@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.ErrorResponse;
@@ -25,6 +26,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
+import us.dot.its.jpo.ode.api.models.emails.EmailApiResponse;
+import us.dot.its.jpo.ode.api.models.emails.EmailResponseException;
 import us.dot.its.jpo.ode.api.services.RsuCredentialManagementService;
 import us.dot.its.jpo.ode.api.services.RsuUpgradeService;
 import us.dot.its.jpo.ode.api.services.SnmpCredentialManagementService;
@@ -97,6 +100,13 @@ public class GlobalExceptionHandler {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
         var errorRes = ErrorResponse.builder(ex, problemDetail);
         return errorRes.build();
+    }
+
+    @ExceptionHandler(EmailResponseException.class)
+    public ResponseEntity<EmailApiResponse> handleEmailResponse(EmailResponseException ex) {
+        return ResponseEntity
+                .status(ex.getStatus())
+                .body(ex.getResponse());
     }
 
     /**

@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -255,39 +255,59 @@
           <td class="container">
             <div class="content">
               <!-- START CENTERED WHITE CONTAINER -->
-              <span class="preheader">New Notifications in CV Manager</span>
+              <span class="preheader">Message Counts from CV Manager</span>
               <table role="presentation" class="main">
                 <tbody>
                   <!-- START MAIN CONTENT AREA -->
                   <tr>
                     <td class="wrapper">
                       <p>Hello CV-Manager User,</p>
-                      <div>
-                        <p>
-                          There are new Notifications to review in the conflict monitor application. Please review the
-                          Notifications below, or log into the CV-Manager to Analyze these notifications<br /><br /><strong
-                            >Heading:</strong
-                          >
-                          Connection of Travel Issue Detected<br /><strong>Description:</strong> Connection of travel
-                          assessment detected an issue with lane connectivity between ingress lane 5 and egress lane
-                          12.<br /><strong>Intersection ID:</strong> 12345<br /><strong>Generated At:</strong>
-                          2023-12-22 16:00:00<br /><br /><strong>Heading:</strong> Critical: Signal State Conflict<br /><strong
-                            >Description:</strong
-                          >
-                          Signal state conflict detected: Signal groups 2 and 5 both showing green simultaneously,
-                          creating a potential safety hazard.<br /><strong>Intersection ID:</strong> 67890<br /><strong
-                            >Generated At:</strong
-                          >
-                          2023-12-22 16:10:00<br /><br /><strong>Heading:</strong> Signal Group Alignment Issue<br /><strong
-                            >Description:</strong
-                          >
-                          Signal group alignment mismatch detected. MAP message defines 8 signal groups but SPaT message
-                          only contains 6 signal groups.<br /><strong>Intersection ID:</strong> 11111<br /><strong
-                            >Generated At:</strong
-                          >
-                          2023-12-22 16:20:00<br />
-                        </p>
-                      </div>
+                      <div><p>This is an automated email to report yesterday's ODE message counts for J2735 messages going in and out of the ODE. </p><p>Organization: Test Org<br>Deployment: Dev<br>Start Date: 2025-12-01T00:00:00Z UTC<br>End Date: 2025-12-02T00:00:00Z UTC</p><p>`In counts` are the number of encoded messages received by the ODE from the load balancer. `Out counts` are the number of decoded messages that have come out of the ODE in JSON form and are available for querying in mongoDB. Ideally these two counts should be identical, although some deviation is expected due to count recording timings.<br>Map and TIM Out counts are deduplicated so these are going to be lower at 1 per hour. The deviation is normalized with this in mind.<h3>RSU Message Counts</h3><div style="margin: 16px 0; padding: 12px; background-color: #f5f5f5; border-radius: 4px; display: inline-block;"><strong>Out Counts:</strong>&nbsp;&nbsp;<span style="background-color: #a4ffa1; padding: 4px 12px; margin: 0 4px; border-radius: 3px;">Green: ≤5% deviation</span><span style="background-color: #ff7373; padding: 4px 12px; margin: 0 4px; border-radius: 3px;">Red: >5% deviation</span></div> <table class="dataframe">
+<thead>
+<tr style="text-align: center;background-color: #b0dfff;">
+<th style="padding: 12px;">RSU</th>
+<th style="padding: 12px;">Road</th>
+<th style="padding: 12px;">BSM In</th>
+<th style="padding: 12px;">BSM Out</th>
+<th style="padding: 12px;">MAP In</th>
+<th style="padding: 12px;">MAP Out</th>
+<th style="padding: 12px;">SPAT In</th>
+<th style="padding: 12px;">SPAT Out</th>
+</tr>
+</thead>
+<tbody>
+<tr style="text-align: center;">
+<td>0.0.0.0</td>
+<td>I-25 N</td>
+<td>12329</td>
+<td style="background-color: #a4ffa1;">1329</td>
+<td>8640</td>
+<td style="background-color: #ff7373;">8640</td>
+<td>86400</td>
+<td style="background-color: #a4ffa1;">86400</td>
+</tr>
+<tr style="text-align: center;background-color: #f2f2f2;">
+<td>0.0.0.1</td>
+<td>I-25 N</td>
+<td>332</td>
+<td style="background-color: #a4ffa1;">124</td>
+<td>8640</td>
+<td style="background-color: #ff7373;">7843</td>
+<td>86400</td>
+<td style="background-color: #ff7373;">79021</td>
+</tr>
+<tr style="text-align: center;">
+<td>0.0.0.2</td>
+<td>I-25 N</td>
+<td>66644</td>
+<td style="background-color: #a4ffa1;">66601</td>
+<td>8640</td>
+<td style="background-color: #ff7373;">8640</td>
+<td>86400</td>
+<td style="background-color: #a4ffa1;">86400</td>
+</tr>
+</tbody>
+</table></p></div>
                       <p>
                         <a href="http://localhost:3000" target="_blank">Navigate to the CV-Manager</a>
                       </p>
@@ -305,7 +325,7 @@
                   <tbody>
                     <tr>
                       <td class="content-block">
-                        <span class="apple-link">CV-Manager Automated Notifications</span>
+                        <span class="apple-link">CV-Manager Message Counts</span>
                         <br />
                         <p>
                           <span>If you no longer wish to receive these emails, please </span>

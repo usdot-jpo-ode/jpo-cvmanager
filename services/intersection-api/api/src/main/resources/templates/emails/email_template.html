@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -68,6 +68,7 @@
       .wrapper {
         box-sizing: border-box;
         padding: 24px;
+        overflow-x: auto;
       }
 
       p span {
@@ -84,6 +85,8 @@
         border-collapse: collapse;
         width: 100%;
         margin: 16px 0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
       }
 
       .content-table th,
@@ -282,7 +285,8 @@
                       <td class="content-block">
                         <span class="apple-link" th:text="${footer_address}"></span>
                         <br />
-                        <p>
+                        <!-- Conditional unsubscribe link -->
+                        <p th:if="${showUnsubscribeLink}">
                           <span th:text="${unsubscribe_pre_text}"></span>
                           <a th:href="${unsubscribe_href}" th:text="${unsubscribe_link_text}"></a>
                         </p>

@@ -11,17 +11,21 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
+import lombok.Getter;
 import us.dot.its.jpo.ode.api.models.UserRole;
 
+@Getter
 public class CvManagerAuthToken extends JwtAuthenticationToken {
     private final Map<String, UserRole> orgRoles; // Map<Org, Role>
     private final boolean isSuperUser;
+    private final String email;
 
     public CvManagerAuthToken(Jwt jwt, Collection<? extends GrantedAuthority> authorities, String username) {
         super(jwt, authorities, username);
         Map<String, Object> cvmanagerClaims = Optional.ofNullable(jwt.getClaimAsMap("cvmanager_data")).orElse(Map.of());
         this.orgRoles = getOrgRolesFrom(cvmanagerClaims);
         this.isSuperUser = getIsSuperUserFrom(cvmanagerClaims);
+        this.email = getEmailFrom(jwt);
     }
 
     protected Boolean getIsSuperUserFrom(Map<String, Object> claims) {
@@ -42,6 +46,31 @@ public class CvManagerAuthToken extends JwtAuthenticationToken {
 
         return orgList.stream()
                 .collect(Collectors.toMap(m -> m.get("org"), m -> UserRole.fromString(m.get("role"))));
+    }
+
+    /**
+     * Extracts email address from JWT token.
+     * Tries multiple standard claim names in order of preference:
+     * 1. "email" (standard OIDC claim)
+     * 2. "preferred_username" (Keycloak often uses this for email)
+     * 
+     * @param jwt The JWT token
+     * @return Email address if found, null otherwise
+     */
+    protected String getEmailFrom(Jwt jwt) {
+        // Try standard "email" claim first
+        String email = jwt.getClaimAsString("email");
+        if (email != null && !email.isEmpty()) {
+            return email;
+        }
+
+        // Try "preferred_username" (often contains email in Keycloak)
+        String preferredUsername = jwt.getClaimAsString("preferred_username");
+        if (preferredUsername != null && !preferredUsername.isEmpty()) {
+            return preferredUsername;
+        }
+
+        return null;
     }
 
     public boolean hasRoleInOrg(String orgId, String role) {
@@ -87,14 +116,5 @@ public class CvManagerAuthToken extends JwtAuthenticationToken {
             }
         }
         return Optional.empty();
-    }
-
-    /**
-     * Checks if the user is a super user (has global admin privileges).
-     * 
-     * @return true if super_user is "1", false otherwise
-     */
-    public boolean isSuperUser() {
-        return isSuperUser;
     }
 }

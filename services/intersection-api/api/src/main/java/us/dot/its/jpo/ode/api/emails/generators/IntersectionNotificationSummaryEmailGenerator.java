@@ -30,7 +30,7 @@ public class IntersectionNotificationSummaryEmailGenerator
 
         Context context = this.generateEmailContextBasic();
         context.setVariable("preview_text", "New Notifications in CV Manager");
-        context.setVariable("content_1", "<p>" + getEmailText(data.getNotifications()) + "</p>");
+        context.setVariable("content_1", String.format("<p>%s</p>", getEmailText(data.getNotifications())));
         context.setVariable("footer_address", "CV-Manager Automated Notifications");
 
         String htmlContent = templateEngine.process(EMAIL_TEMPLATE, context);
@@ -42,14 +42,18 @@ public class IntersectionNotificationSummaryEmailGenerator
 
     public String getEmailText(List<Notification> notifications) {
 
-        StringBuilder messageBody = new StringBuilder("There are new Notifications to review in the conflict monitor application. Please review the Notifications below, or log into the CV-Manager to Analyze these notifications<br>");
+        StringBuilder messageBody = new StringBuilder(
+                "There are new Intersection Conflict-Monitor generated Notifications to review. Please review the Notifications below, or log into the CV-Manager to Analyze these notifications<br>");
 
         for (Notification notification : notifications) {
-            messageBody.append("<br><strong>Heading:</strong> ").append(notification.getNotificationHeading()).append("<br>");
-            messageBody.append("<strong>Description:</strong> ").append(notification.getNotificationText()).append("<br>");
-            messageBody.append("<strong>Intersection ID:</strong> ").append(notification.getIntersectionID()).append("<br>");
-            messageBody.append("<strong>Generated At:</strong> ").append(dateTimeFormatter.format(
-              Instant.ofEpochMilli(notification.getNotificationGeneratedAt()))).append("<br>");
+            messageBody.append("<br><strong>Heading:</strong> ")
+                    .append(escapeHtml(notification.getNotificationHeading())).append("<br>");
+            messageBody.append("<strong>Description:</strong> ").append(escapeHtml(notification.getNotificationText()))
+                    .append("<br>");
+            messageBody.append("<strong>Intersection ID:</strong> ")
+                    .append(escapeHtml(String.valueOf(notification.getIntersectionID()))).append("<br>");
+            messageBody.append("<strong>Generated At:</strong> ").append(escapeHtml(dateTimeFormatter.format(
+                    Instant.ofEpochMilli(notification.getNotificationGeneratedAt())))).append("<br>");
         }
 
         return messageBody.toString();

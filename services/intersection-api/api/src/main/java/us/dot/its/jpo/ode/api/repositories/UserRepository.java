@@ -26,6 +26,21 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     boolean existsByEmailAndOrganizations(@Param("email") String email,
             @Param("organizations") List<String> organizations);
 
+    /**
+     * Check if all users in the list exist in at least one of the given
+     * organizations.
+     * Returns true only if ALL emails are found in at least one of the
+     * organizations.
+     */
+    @Query("SELECT CASE WHEN COUNT(DISTINCT u.email) = :emailCount THEN true ELSE false END " +
+            "FROM User u " +
+            "JOIN u.userOrganizations uo " +
+            "JOIN uo.organization o " +
+            "WHERE u.email IN :emails AND o.name IN :organizations")
+    boolean allUsersExistInOrganizations(@Param("emails") List<String> emails,
+            @Param("organizations") List<String> organizations,
+            @Param("emailCount") long emailCount);
+
     Optional<User> findByEmail(String email);
 
     List<User> findByEmailIn(List<String> emails);

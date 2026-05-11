@@ -39,15 +39,12 @@ type AdminUser = {
   organizations: UserOrganization[]
 }
 
-type AdminUserCreate = {
+type AdminUserCreationBody = {
   email: string
   first_name: string
   last_name: string
   super_user: boolean
-  organizations: Array<{
-    name: string
-    role: string
-  }>
+  organizations: UserOrganization[]
 }
 
 type AdminUserWithId = AdminUser & {

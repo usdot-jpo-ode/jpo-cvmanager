@@ -510,6 +510,24 @@
         "groups": []
       },
       {
+        "id": "47606489-6d04-45c3-9c8e-3bca32f53092",
+        "username": "service-account-cvmanager-api",
+        "emailVerified": false,
+        "createdTimestamp": 1777915879213,
+        "enabled": true,
+        "totp": false,
+        "serviceAccountClientId": "cvmanager-api",
+        "credentials": [],
+        "disableableCredentialTypes": [],
+        "requiredActions": [],
+        "realmRoles": ["default-roles-cvmanager"],
+        "clientRoles": {
+          "realm-management": ["manage-users", "view-users"]
+        },
+        "notBefore": 0,
+        "groups": []
+      },
+      {
         "id": "fc3d8729-8526-4aaa-805b-d64bf3b93860",
         "username": "test@gmail.com",
         "firstName": "Test",
@@ -738,7 +756,7 @@
         "standardFlowEnabled": true,
         "implicitFlowEnabled": false,
         "directAccessGrantsEnabled": true,
-        "serviceAccountsEnabled": false,
+        "serviceAccountsEnabled": true,
         "publicClient": false,
         "frontchannelLogout": true,
         "protocol": "openid-connect",

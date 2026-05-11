@@ -302,7 +302,7 @@ public class CustomUserStorageProvider implements UserStorageProvider,
             st.setString(3, user.getLastName());
             st.setLong(4, user.getCreatedTimestamp());
             st.setInt(5, user.getSuperUser());
-            st.setString(6, user.getId());
+            st.setString(6, getUuidFromKeycloakId(user.getId()));
             log.debug("updateUser: st={}", st);
             st.executeUpdate();
             ResultSet rs = st.getGeneratedKeys();
@@ -324,12 +324,23 @@ public class CustomUserStorageProvider implements UserStorageProvider,
             // remove user with ID from db
             PreparedStatement st = c.prepareStatement(
                     "delete from public.users where keycloak_id = ?::UUID");
-            st.setString(1, user.getId());
+            st.setString(1, getUuidFromKeycloakId(user.getId()));
             log.debug("removeUser: st={}", st);
             int rowsAffected = st.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException ex) {
             throw new RuntimeStorageException(ex);
+        }
+    }
+
+    private String getUuidFromKeycloakId(String keycloakId) {
+        // Support keycloakId formats such as:
+        // - 9df45cb2-8582-4550-8140-dfb4712cd6c3
+        // - f:60b8a4e7-d427-4316-9ec0-cb8a6eeb34bd:9df45cb2-8582-4550-8140-dfb4712cd6c3
+        if (keycloakId.contains(":")) {
+            return keycloakId.substring(keycloakId.lastIndexOf(':') + 1);
+        } else {
+            return keycloakId;
         }
     }
 }

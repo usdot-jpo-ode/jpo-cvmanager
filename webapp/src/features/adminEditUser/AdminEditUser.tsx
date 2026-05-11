@@ -101,7 +101,7 @@ const AdminEditUser = () => {
         organizations_to_remove: userInfo?.organizations
           .filter((org) => !data.organizations.some((o) => o.organization === org.organization))
           .map((org) => org.organization),
-        organizations_to_update: data.organizations
+        organizations_to_modify: data.organizations
           .filter((org) => {
             const originalOrg = userInfo?.organizations.find((o) => o.organization === org.organization)
             return originalOrg && originalOrg.role !== org.role
@@ -122,7 +122,9 @@ const AdminEditUser = () => {
       setOpen(false)
       navigate('/dashboard/admin/users')
     } catch (error: any) {
-      toast.error('Failed to update user: ' + (error?.data?.message || error?.message || 'Unknown error'))
+      toast.error(
+        'Failed to update user: ' + (error?.data?.message || error?.message || error?.data?.detail || 'Unknown error')
+      )
     }
   }
 

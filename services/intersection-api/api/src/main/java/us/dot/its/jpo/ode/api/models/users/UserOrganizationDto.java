@@ -13,10 +13,6 @@ import jakarta.validation.constraints.Size;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserOrganizationDto {
-
-    @NotNull
-    private Integer id;
-
     @Size(max = 128)
     @NotNull
     private String organization;

@@ -1,7 +1,6 @@
 import reducer from './adminOrganizationTabUserSlice'
 import {
   // async thunks
-  getAvailableRoles,
   userDeleteSingle,
   userDeleteMultiple,
   userAddMultiple,
@@ -15,10 +14,7 @@ import {
   // selectors
   selectLoading,
   selectSelectedUserList,
-  selectAvailableRoles,
 } from './adminOrganizationTabUserSlice'
-import apiHelper from '../../apis/api-helper'
-import EnvironmentVars from '../../EnvironmentVars'
 import { RootState } from '../../store'
 
 // Mock the organizationApiSlice
@@ -44,106 +40,18 @@ describe('admin organization tab User reducer', () => {
       loading: false,
       value: {
         selectedUserList: [],
-        availableRoles: [],
       },
     })
   })
 })
 
 describe('async thunks', () => {
-  const initialState: RootState['adminOrganizationTabUser'] = {
-    loading: null,
-    value: {
-      selectedUserList: null,
-      availableRoles: null,
-    },
-  }
-
   beforeAll(() => {
     jest.mock('../../apis/api-helper')
   })
 
   afterAll(() => {
     jest.unmock('../../apis/api-helper')
-  })
-
-  describe('getAvailableRoles', () => {
-    it('returns and calls the api correctly', async () => {
-      const dispatch = jest.fn()
-      const getState = jest.fn().mockReturnValue({
-        user: {
-          value: {
-            authLoginData: { token: 'token' },
-          },
-        },
-      })
-      const action = getAvailableRoles()
-
-      apiHelper._getDataWithCodes = jest.fn().mockReturnValue({ status: 200, message: 'message', body: 'data' })
-      let resp = await action(dispatch, getState, undefined)
-      expect(resp.payload).toEqual({ success: true, message: '', data: 'data' })
-      expect(apiHelper._getDataWithCodes).toHaveBeenCalledWith({
-        url: EnvironmentVars.adminAddUser,
-        token: 'token',
-        additional_headers: { 'Content-Type': 'application/json' },
-      })
-
-      apiHelper._getDataWithCodes = jest.fn().mockReturnValue({ status: 500, message: 'message' })
-      resp = await action(dispatch, getState, undefined)
-      expect(resp.payload).toEqual({ success: false, message: 'message' })
-      expect(apiHelper._getDataWithCodes).toHaveBeenCalledWith({
-        url: EnvironmentVars.adminAddUser,
-        token: 'token',
-        additional_headers: { 'Content-Type': 'application/json' },
-      })
-    })
-
-    it('Updates the state correctly pending', async () => {
-      const loading = true
-      const state = reducer(initialState, {
-        type: 'adminOrganizationTabUser/getAvailableRoles/pending',
-      })
-      expect(state).toEqual({
-        ...initialState,
-        loading,
-        value: { ...initialState.value },
-      })
-    })
-
-    it('Updates the state correctly fulfilled', async () => {
-      const loading = false
-      const orgName = 'org2'
-      const data = {
-        roles: ['role1', 'role2'],
-      }
-      let state = reducer(initialState, {
-        type: 'adminOrganizationTabUser/getAvailableRoles/fulfilled',
-        payload: { data, success: true },
-      })
-      expect(state).toEqual({
-        ...initialState,
-        loading,
-        value: { ...initialState.value, availableRoles: [{ role: 'role1' }, { role: 'role2' }] },
-      })
-
-      state = reducer(initialState, {
-        type: 'adminOrganizationTabUser/getAvailableRoles/fulfilled',
-        payload: { data, orgName, success: false },
-      })
-      expect(state).toEqual({
-        ...initialState,
-        loading,
-        value: { ...initialState.value },
-      })
-    })
-
-    it('Updates the state correctly rejected', async () => {
-      const loading = false
-      const state = reducer(initialState, {
-        type: 'adminOrganizationTabUser/getAvailableRoles/rejected',
-      })
-      expect(state).toEqual({ ...initialState, loading, value: { ...initialState.value } })
-    })
   })
 
   describe('userDeleteSingle', () => {
@@ -402,7 +310,6 @@ describe('reducers', () => {
     loading: null,
     value: {
       selectedUserList: null,
-      availableRoles: null,
     },
   }
 
@@ -438,7 +345,6 @@ describe('selectors', () => {
     loading: 'loading',
     value: {
       selectedUserList: 'selectedUserList',
-      availableRoles: 'availableRoles',
     },
   }
   const state = { adminOrganizationTabUser: initialState } as any
@@ -446,6 +352,5 @@ describe('selectors', () => {
   it('selectors return the correct value', async () => {
     expect(selectLoading(state)).toEqual('loading')
     expect(selectSelectedUserList(state)).toEqual('selectedUserList')
-    expect(selectAvailableRoles(state)).toEqual('availableRoles')
   })
 })

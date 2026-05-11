@@ -5,9 +5,48 @@ import logging
 import common.pgquery as pgquery
 import api_environment
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-import admin_new_user
 from werkzeug.exceptions import InternalServerError, BadRequest
 from common.auth_tools import require_permission
+
+
+def check_email(email):
+    email_special_characters = [
+        "!!",
+        "##",
+        "$$",
+        "%%",
+        "&&",
+        "''",
+        "\\\\",
+        "**",
+        "++",
+        "--",
+        "//",
+        "==",
+        "??",
+        "^^",
+        "__",
+        "``",
+        "{{",
+        "||",
+        '"',
+        "(",
+        ")",
+        "}",
+        ",",
+        ":",
+        ";",
+        "<",
+        ">",
+        "[",
+        "]",
+    ]
+    if (
+        any(check in email for check in email_special_characters)
+        or email.count("@") != 1
+    ):
+        return False
+    return True
 
 
 def check_safe_input(org_spec):
@@ -26,9 +65,7 @@ def add_organization(org_spec):
         )
 
     if org_spec["email"]:
-        if org_spec["email"] != "" and not admin_new_user.check_email(
-            org_spec["email"]
-        ):
+        if org_spec["email"] != "" and not check_email(org_spec["email"]):
             raise BadRequest("Organization email is not valid")
 
     try:

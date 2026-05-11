@@ -141,3 +141,8 @@ Several CV-Manager services utilize the Intersection API to generate emails. Thi
    - Ensure the filter is set to "Filter by realm roles"
    - Select the role "ROLE_SEND_CRITICAL_ERROR_MESSAGE_EMAILS" and hit "Assign"
      - You should see "ROLE_SEND_CRITICAL_ERROR_MESSAGE_EMAILS" in the list of roles
+6. Create the cvmanager Intersection API service account
+   - Under "Clients", select the `cvmanager-api` client
+   - Under the "Settings" tab, scroll down to the "Capability Config" section and ensure that "Service accounts roles" is checked
+   - Under the new "Service accounts roles" tab, select "Assign role"
+     - Assign the following roles: `manage-users`, `view-users`

@@ -10,10 +10,8 @@ import { confirmAlert } from 'react-confirm-alert'
 import { Options } from '../../components/AdminDeletionOptions'
 import {
   selectSelectedUserList,
-  selectAvailableRoles,
 
   // actions
-  getAvailableRoles,
   userDeleteSingle,
   userDeleteMultiple,
   userAddMultiple,
@@ -39,6 +37,7 @@ import toast from 'react-hot-toast'
 import { useTheme } from '@mui/material'
 import { AddCircleOutline, DeleteOutline } from '@mui/icons-material'
 import { useGetAllUsersNotInOrganizationQuery } from '../api/organizationApiSlice'
+import { useGetUserAllowedSelectionsQuery } from '../api/userApiSlice'
 
 interface AdminOrganizationTabUserProps {
   selectedOrg: string
@@ -56,9 +55,9 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
   const { data: availableUserList } = useGetAllUsersNotInOrganizationQuery(organizationName, {
     skip: !organizationName, // Skip if no organization selected
   })
+  const { data: allowedSelections } = useGetUserAllowedSelectionsQuery()
 
   const selectedUserList = useSelector(selectSelectedUserList)
-  const availableRoles = useSelector(selectAvailableRoles)
   const loadingGlobal = useSelector(selectLoadingGlobal)
   const authLoginData = useSelector(selectAuthLoginData)
   const userEmail = useSelector(selectEmail)
@@ -188,10 +187,6 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
   }
 
   useEffect(() => {
-    dispatch(getAvailableRoles())
-  }, [dispatch])
-
-  useEffect(() => {
     dispatch(setSelectedUserList([]))
   }, [selectedOrg, dispatch])
 
@@ -309,10 +304,10 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
                       className="org-form-dropdown"
                       dataKey="role"
                       textField="role"
-                      data={availableRoles}
+                      data={allowedSelections?.roles || []}
                       value={user}
                       onChange={(value) => {
-                        dispatch(setSelectedUserRole({ email: user.email, role: value.role }))
+                        dispatch(setSelectedUserRole({ email: user.email, role: value }))
                       }}
                     />
                   </div>

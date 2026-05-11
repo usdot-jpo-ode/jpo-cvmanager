@@ -47,6 +47,18 @@ def test_entry_post_schema():
 
 
 ###################################### Testing Functions ##########################################
+def test_check_email():
+    expected_result = True
+    actual_result = admin_new_org.check_email("jdoe@example.com")
+    assert actual_result == expected_result
+
+
+def test_check_email_bad():
+    expected_result = False
+    actual_result = admin_new_org.check_email("j--doe@exa@mple.com")
+    assert actual_result == expected_result
+
+
 def test_check_safe_input():
     expected_result = True
     actual_result = admin_new_org.check_safe_input(admin_new_org_data.good_input)

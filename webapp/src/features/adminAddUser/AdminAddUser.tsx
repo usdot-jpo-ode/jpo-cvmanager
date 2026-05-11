@@ -1,30 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
-import {
-  selectSelectedOrganizationNames,
-  selectSelectedOrganizations,
-  selectOrganizationNames,
-  selectAvailableRoles,
-  selectApiData,
-  selectSubmitAttempt,
-
-  // actions
-  getUserData,
-  setSelectedRole,
-  updateOrganizationNamesApiData,
-  updateAvailableRolesApiData,
-  updateOrganizations,
-  submitForm,
-  AdminUserForm,
-} from './adminAddUserSlice'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
 import 'react-widgets/styles.css'
 import '../../styles/fonts/museo-slab.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import Dialog from '@mui/material/Dialog'
@@ -38,48 +19,155 @@ import {
   TextField,
   Select,
   Typography,
+  Box,
+  IconButton,
+  Card,
+  CircularProgress,
 } from '@mui/material'
 import { ErrorMessageText } from '../../styles/components/Messages'
 import { SideBarHeader } from '../../styles/components/SideBarHeader'
 import { selectSuperUser } from '../../generalSlices/userSlice'
+import DeleteIcon from '@mui/icons-material/Delete'
+import AddIcon from '@mui/icons-material/Add'
+import { useCreateUserMutation, useGetUserAllowedSelectionsQuery } from '../api/userApiSlice'
 
 const AdminAddUser = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
-  const selectedOrganizationNames = useSelector(selectSelectedOrganizationNames)
-  const selectedOrganizations = useSelector(selectSelectedOrganizations)
-  const organizationNames = useSelector(selectOrganizationNames)
-  const availableRoles = useSelector(selectAvailableRoles)
-  const apiData = useSelector(selectApiData)
-  const submitAttempt = useSelector(selectSubmitAttempt)
-  const isSuperUser = useSelector(selectSuperUser)
-  const [open, setOpen] = useState(true)
   const navigate = useNavigate()
+  const isSuperUser = useSelector(selectSuperUser)
+  const [selectedOrganizations, setSelectedOrganizations] = useState<UserOrganization[]>([])
+  const [submitAttempt, setSubmitAttempt] = useState(false)
+  const [open, setOpen] = useState(true)
+
+  // RTK Query hooks
+  const { data: allowedSelections, isLoading: isLoadingData } = useGetUserAllowedSelectionsQuery()
+  const [createUser, { isLoading: isCreating }] = useCreateUserMutation()
+
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<AdminUserForm>()
+  } = useForm<AdminUserCreationBody>({
+    defaultValues: {
+      super_user: false,
+    },
+  })
 
+  // Initialize with one empty organization on mount
   useEffect(() => {
-    dispatch(getUserData())
-  }, [dispatch])
+    if (selectedOrganizations.length === 0 && !isLoadingData) {
+      setSelectedOrganizations([{ organization: '', role: 'USER' }])
+    }
+  }, [isLoadingData])
 
-  useEffect(() => {
-    dispatch(updateOrganizationNamesApiData())
-    dispatch(updateAvailableRolesApiData())
-  }, [apiData, dispatch])
-
-  const onSubmit = (data: AdminUserForm) => {
-    dispatch(submitForm({ data, reset })).then((data: any) => {
-      if (data.payload.success) {
-        toast.success('User added successfully')
-      } else {
-        toast.error('Failed to add user: ' + data.payload.message)
-      }
-    })
+  const handleClose = () => {
     setOpen(false)
     navigate('/dashboard/admin/users')
+  }
+
+  const handleAddOrganization = () => {
+    setSelectedOrganizations([...selectedOrganizations, { organization: '', role: 'USER' }])
+  }
+
+  const handleRemoveOrganization = (index: number) => {
+    // Prevent removing if it's the last one
+    if (selectedOrganizations.length === 1) {
+      toast.error('At least one organization is required')
+      return
+    }
+    setSelectedOrganizations(selectedOrganizations.filter((_, i) => i !== index))
+  }
+
+  const handleOrganizationChange = (index: number, field: keyof UserOrganization, value: string) => {
+    const updated = [...selectedOrganizations]
+
+    // If changing organization, check for duplicates
+    if (field === 'organization') {
+      const isDuplicate = updated.some((org, i) => i !== index && org.organization === value)
+      if (isDuplicate) {
+        toast.error('This organization has already been added')
+        return
+      }
+      updated[index] = { ...updated[index], organization: value }
+    } else {
+      updated[index] = { ...updated[index], role: value as UserOrganization['role'] }
+    }
+
+    setSelectedOrganizations(updated)
+  }
+
+  // Get available organizations excluding already selected ones
+  const getAvailableOrganizations = (currentIndex: number) => {
+    const selectedOrgNames = selectedOrganizations
+      .map((org, index) => (index !== currentIndex ? org.organization : null))
+      .filter((org) => org !== null && org !== '')
+
+    return allowedSelections?.organizations?.filter((org) => !selectedOrgNames.includes(org)) || []
+  }
+
+  const checkForm = (): boolean => {
+    if (selectedOrganizations.length === 0) return false
+
+    // Check that all organizations have both org and role selected
+    const allFieldsFilled = selectedOrganizations.every((org) => org.organization !== '' && org.role)
+
+    // Check for duplicate organizations
+    const orgNames = selectedOrganizations.map((org) => org.organization).filter((name) => name !== '')
+    const hasDuplicates = new Set(orgNames).size !== orgNames.length
+
+    return allFieldsFilled && !hasDuplicates
+  }
+
+  const handleFormSubmit = async (data: AdminUserCreationBody) => {
+    setSubmitAttempt(true)
+
+    if (!checkForm()) {
+      const orgNames = selectedOrganizations.map((org) => org.organization).filter((name) => name !== '')
+      const hasDuplicates = new Set(orgNames).size !== orgNames.length
+
+      if (hasDuplicates) {
+        toast.error('Cannot add the same organization multiple times')
+      } else {
+        toast.error('Please fill out all required fields')
+      }
+      return
+    }
+
+    try {
+      const requestBody = {
+        ...data,
+        super_user: isSuperUser ? Boolean(data.super_user) : false,
+        organizations: selectedOrganizations,
+      }
+
+      await createUser(requestBody).unwrap()
+      toast.success('User Created Successfully')
+
+      // Reset form
+      reset()
+      setSelectedOrganizations([{ organization: '', role: 'USER' }])
+      setSubmitAttempt(false)
+
+      handleClose()
+    } catch (error: any) {
+      console.log('Error creating User:', error)
+      toast.error(
+        'Failed to add User due to error: ' +
+          (error?.data?.message || error?.data?.detail || error?.message || 'Unknown error')
+      )
+    }
+  }
+
+  if (isLoadingData) {
+    return (
+      <Dialog open={open}>
+        <DialogContent sx={{ width: '600px', padding: '40px' }}>
+          <Box display="flex" justifyContent="center" alignItems="center">
+            <CircularProgress />
+          </Box>
+        </DialogContent>
+      </Dialog>
+    )
   }
 
   return (
@@ -92,7 +180,7 @@ const AdminAddUser = () => {
           }}
           title="Add User"
         />
-        <Form id="add-user-form" onSubmit={handleSubmit(onSubmit)}>
+        <Form id="add-user-form" onSubmit={handleSubmit(handleFormSubmit)}>
           <Form.Group controlId="email">
             <FormControl fullWidth margin="normal">
               <TextField
@@ -178,75 +266,107 @@ const AdminAddUser = () => {
             </Form.Group>
           )}
 
-          <Form.Group controlId="organizations">
-            <FormControl fullWidth margin="normal">
-              <InputLabel>Organizations</InputLabel>
-              <Select
-                id="organizations"
-                label="Organizations"
-                multiple
-                value={selectedOrganizationNames.map((name) => name.name)}
-                onChange={(event) => {
-                  const selectedOrgs = event.target.value as string[]
-                  dispatch(updateOrganizations(organizationNames.filter((org) => selectedOrgs.includes(org.name))))
-                }}
+          <Box sx={{ mt: 3, mb: 2 }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+              <Typography variant="subtitle1" fontWeight="bold">
+                Organizations & Roles
+              </Typography>
+              <Button
+                variant="outlined"
+                size="small"
+                startIcon={<AddIcon />}
+                onClick={handleAddOrganization}
+                className="museo-slab capital-case"
+                disabled={
+                  allowedSelections?.organizations &&
+                  selectedOrganizations.filter((org) => org.organization !== '').length >=
+                    allowedSelections.organizations.length
+                }
               >
-                {organizationNames.map((org) => (
-                  <MenuItem key={org.id} value={org.name}>
-                    {org.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Form.Group>
+                Add Organization
+              </Button>
+            </Box>
 
-          {selectedOrganizations.length > 0 && (
-            <Form.Group controlId="roles">
-              <Typography fontSize="small">Roles</Typography>
-              {selectedOrganizations.map((organization) => {
-                const role = { role: organization.role }
+            {selectedOrganizations.map((orgRole, index) => (
+              <Card key={index} sx={{ mb: 2, p: 2, position: 'relative' }}>
+                <Box display="flex" gap={2} flexDirection={{ xs: 'column', sm: 'row' }} sx={{ pr: 5 }}>
+                  <FormControl fullWidth>
+                    <InputLabel>Organization</InputLabel>
+                    <Select
+                      value={orgRole.organization}
+                      label="Organization"
+                      onChange={(e) => handleOrganizationChange(index, 'organization', e.target.value)}
+                      required
+                    >
+                      {getAvailableOrganizations(index).map((org) => (
+                        <MenuItem key={org} value={org}>
+                          {org}
+                        </MenuItem>
+                      ))}
+                      {/* Show currently selected org even if it would be filtered out */}
+                      {orgRole.organization && !getAvailableOrganizations(index).includes(orgRole.organization) && (
+                        <MenuItem key={orgRole.organization} value={orgRole.organization}>
+                          {orgRole.organization}
+                        </MenuItem>
+                      )}
+                    </Select>
+                  </FormControl>
 
-                return (
-                  <Form.Group controlId={organization.id.toString()}>
-                    <FormControl fullWidth margin="normal">
-                      <InputLabel>{organization.name}</InputLabel>
-                      <Select
-                        id={organization.id.toString()}
-                        label="Select Role"
-                        value={role.role}
-                        onChange={(event) => {
-                          const selectedRole = event.target.value as string
-                          dispatch(setSelectedRole({ ...organization, role: selectedRole }))
-                        }}
-                      >
-                        {availableRoles.map((role) => (
-                          <MenuItem key={role.role} value={role.role}>
-                            {role.role}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Form.Group>
-                )
-              })}
-            </Form.Group>
-          )}
+                  <FormControl fullWidth>
+                    <InputLabel>Role</InputLabel>
+                    <Select
+                      value={orgRole.role}
+                      label="Role"
+                      onChange={(e) => handleOrganizationChange(index, 'role', e.target.value)}
+                      required
+                      disabled={!orgRole.organization}
+                    >
+                      {allowedSelections?.roles?.map((role) => (
+                        <MenuItem key={role.toUpperCase()} value={role.toUpperCase()}>
+                          {role}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Box>
 
-          {selectedOrganizations.length === 0 && submitAttempt && (
-            <ErrorMessageText role="alert">Must select at least one organization</ErrorMessageText>
-          )}
+                {selectedOrganizations.length > 1 && (
+                  <IconButton
+                    aria-label="delete"
+                    size="small"
+                    onClick={() => handleRemoveOrganization(index)}
+                    sx={{
+                      position: 'absolute',
+                      top: 8,
+                      right: 8,
+                      color: 'error.main',
+                      '&:hover': {
+                        backgroundColor: 'error.lighter',
+                      },
+                    }}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                )}
+              </Card>
+            ))}
+
+            {selectedOrganizations.length > 0 && submitAttempt && !checkForm() && (
+              <ErrorMessageText role="alert">
+                Please complete all organization and role selections. Each organization can only be added once.
+              </ErrorMessageText>
+            )}
+          </Box>
         </Form>
       </DialogContent>
-      <DialogActions sx={{ padding: '20px' }}>
+      <DialogActions sx={{ padding: '20px', mt: 1 }}>
         <Button
-          onClick={() => {
-            setOpen(false)
-            navigate('/dashboard/admin/users')
-          }}
+          onClick={handleClose}
           variant="outlined"
           color="info"
           style={{ position: 'absolute', bottom: 10, left: 10 }}
           className="museo-slab capital-case"
+          disabled={isCreating}
         >
           Cancel
         </Button>
@@ -256,8 +376,9 @@ const AdminAddUser = () => {
           variant="contained"
           style={{ position: 'absolute', bottom: 10, right: 10 }}
           className="museo-slab capital-case"
+          disabled={isCreating}
         >
-          Add User
+          {isCreating ? 'Adding...' : 'Add User'}
         </Button>
       </DialogActions>
     </Dialog>

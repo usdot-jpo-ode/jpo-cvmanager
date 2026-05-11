@@ -6,7 +6,6 @@ import configReducer from './generalSlices/configSlice'
 import intersectionReducer from './generalSlices/intersectionSlice'
 import adminAddOrganizationReducer from './features/adminAddOrganization/adminAddOrganizationSlice'
 import adminAddIntersectionReducer from './features/adminAddIntersection/adminAddIntersectionSlice'
-import adminAddUserReducer from './features/adminAddUser/adminAddUserSlice'
 import adminEditOrganizationReducer from './features/adminEditOrganization/adminEditOrganizationSlice'
 import adminEditIntersectionReducer from './features/adminEditIntersection/adminEditIntersectionSlice'
 import adminOrganizationTabReducer from './features/adminOrganizationTab/adminOrganizationTabSlice'
@@ -43,7 +42,6 @@ export const setupStore = (preloadedState?: Partial<any>) => {
       intersection: intersectionReducer,
       adminAddOrganization: adminAddOrganizationReducer,
       adminAddIntersection: adminAddIntersectionReducer,
-      adminAddUser: adminAddUserReducer,
       adminEditOrganization: adminEditOrganizationReducer,
       adminEditIntersection: adminEditIntersectionReducer,
       adminOrganizationTab: adminOrganizationTabReducer,

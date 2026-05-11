@@ -11,8 +11,6 @@ beforeEach(() => {
   EnvironmentVars.wzdxEndpoint = 'VITE_ENV/wzdx-feed'
   EnvironmentVars.geoMsgDataEndpoint = 'VITE_ENV/rsu-geo-data'
   EnvironmentVars.ssmSrmEndpoint = 'VITE_ENV/rsu-ssm-srm-data'
-
-  EnvironmentVars.adminAddUser = 'VITE_ENV/admin-new-user'
   EnvironmentVars.adminAddOrg = 'VITE_ENV/admin-new-org'
   EnvironmentVars.adminOrg = 'VITE_ENV/admin-org'
 })

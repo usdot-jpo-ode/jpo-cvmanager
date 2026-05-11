@@ -22,6 +22,8 @@ export const userApiSlice = createApi({
       const currentState = getState() as RootState
       const token = selectToken(currentState)
 
+      headers.set('Accept', 'application/json')
+
       // Endpoint names must match the keys in the endpoints objects below
       const endpointsWithoutToken = []
       if (token && !endpointsWithoutToken.includes(endpoint)) {
@@ -58,7 +60,7 @@ export const userApiSlice = createApi({
     getUser: builder.query<AdminUser, string>({
       query: (email) => {
         return {
-          url: `${email}`,
+          url: `/${email}`,
         }
       },
       providesTags: (result, error, email) => [{ type: USER_API_USER_TAG, id: email }],
@@ -66,14 +68,29 @@ export const userApiSlice = createApi({
     getUserAllowedSelections: builder.query<AdminUserAllowedSelections, void>({
       query: () => {
         return {
-          url: 'allowed-selections',
+          url: '/allowed-selections',
         }
       },
       providesTags: (result, error) => [USER_API_ALLOWED_SELECTIONS_TAG],
     }),
+    getRoles: builder.query<string[], void>({
+      query: () => {
+        return {
+          url: '/roles',
+        }
+      },
+    }),
+    createUser: builder.mutation<void, AdminUserCreationBody>({
+      query: (user) => ({
+        url: '',
+        method: 'POST',
+        body: user,
+      }),
+      invalidatesTags: (result, error, vars) => [{ type: USER_API_USER_TAG, id: USER_API_USER_LIST_ID }],
+    }),
     patchUser: builder.mutation<void, { email: string; patch: Partial<AdminUser> }>({
       query: ({ email, patch }) => ({
-        url: `${email}`,
+        url: `/${email}`,
         method: 'PATCH',
         body: { origin_ip: email, ...patch },
       }),
@@ -84,7 +101,7 @@ export const userApiSlice = createApi({
     }),
     deleteUser: builder.mutation<void, string>({
       query: (email) => ({
-        url: `${email}`,
+        url: `/${email}`,
         method: 'DELETE',
       }),
       invalidatesTags: (result, error, email) => [
@@ -113,6 +130,9 @@ export const {
   useLazyGetUserQuery,
   useGetUserAllowedSelectionsQuery,
   useLazyGetUserAllowedSelectionsQuery,
+  useGetRolesQuery,
+  useLazyGetRolesQuery,
+  useCreateUserMutation,
   usePatchUserMutation,
   useDeleteUserMutation,
   useDeleteMultipleUsersMutation,

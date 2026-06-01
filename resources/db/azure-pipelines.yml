@@ -1,0 +1,25 @@
+# Pipeline for creating and pushing artifacts for Flyway migrations
+
+trigger:
+  branches:
+    include:
+      - develop
+  paths:
+    include:
+      - 'resources/db/*'
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: 'resources/db'
+      Contents: '**'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'jpo-cvmanager-flyway'
+      publishLocation: 'Container'

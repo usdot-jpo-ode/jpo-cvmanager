@@ -67,6 +67,9 @@ services:
 
       TIMEZONE: ${TIMEZONE:-}
       LOGGING_LEVEL: ${API_LOGGING_LEVEL:-}
+    depends_on:
+      flyway:
+        condition: service_completed_successfully
     logging:
       options:
         max-size: '10m'
@@ -126,7 +129,11 @@ services:
       POSTGRES_PASSWORD: ${PG_DB_PASS:-postgres}
     volumes:
       - pgdb:/var/lib/postgresql/data
-      - ./resources/sql_scripts:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     logging:
       options:
         max-size: '10m'
@@ -184,6 +191,24 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+
+  flyway:
+    profiles:
+      - basic
+      - cvmanager_postgres
+    image: flyway/flyway:10-alpine
+    command: migrate
+    volumes:
+      - ./resources/db/migration:/flyway/sql
+      - ./resources/db/flyway.toml:/flyway/conf/flyway.toml
+    environment:
+      FLYWAY_URL: jdbc:postgresql://cvmanager_postgres:5432/${PG_DB_NAME:-postgres}
+      FLYWAY_USER: ${PG_DB_USER:-postgres}
+      FLYWAY_PASSWORD: ${PG_DB_PASS:-postgres}
+    depends_on:
+      cvmanager_postgres:
+        condition: service_healthy
+    restart: no
 
 volumes:
   pgdb:

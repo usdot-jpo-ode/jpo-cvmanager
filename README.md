@@ -78,6 +78,16 @@ For more details on running the CV-Manager through Docker, see the [Getting Star
 
 The current version and release history of the JPO CV Manager: [Release Notes](docs/Release_notes.md)
 
+## Architecture Decision Records
+
+Significant technical decisions are recorded as [Architecture Decision Records (ADRs)](https://adr.github.io/) in [`docs/adr/`](docs/adr/). Each ADR captures the context, the decision made, the alternatives considered, and the consequences, providing a durable record of *why* the system is built the way it is.
+
+| ADR | Title | Status |
+|-----|-------|--------|
+| [ADR-0001](docs/adr/0001-flyway-database-migrations.md) | Flyway for Automated Database Migrations | Accepted |
+
+When introducing a significant architectural change (a new tool, a change in deployment strategy, a cross-cutting convention), add an ADR to `docs/adr/` following the existing format and update the table above.
+
 ## Requirements and Limitations
 
 The JPO CV Manager was originally developed for the Google Cloud Platform and a few of its GCP dependencies still remain. The GCP dependencies will eventually be streamlined to support other options. However, there are a handful of technologies to understand before attempting to utilize the CV Manager.

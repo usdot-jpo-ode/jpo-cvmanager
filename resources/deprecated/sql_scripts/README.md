@@ -1,3 +1,7 @@
+> **DEPRECATED** — Manual SQL migration scripts in this directory have been replaced by
+> [Flyway-managed migrations](../../db/README.md) in `resources/db/migration/`.
+> This directory is kept as historical reference only. Do not add new migration scripts here.
+
 # PostgreSQL SQL Scripts
 
 The CV Manager expects most of the data it utilizes to be stored in a PostgreSQL database. This PostgreSQL database can be hosted anywhere as long as proper networking rules have been configured. The tables of the database must be created using the provided SQL script to ensure the CV Manager will function properly.

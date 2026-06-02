@@ -128,7 +128,7 @@ public abstract class AbstractEmailGenerator<T> {
      *         to <br>
      *         tags
      */
-    public String escapeHtml(String input) {
+    public static String escapeHtml(String input) {
         if (input == null) {
             return "";
         }

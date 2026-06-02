@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -59,7 +59,7 @@
 
       table.main {
         border-collapse: separate;
-        background: #ffffff;
+        background: #fff;
         border: 1px solid #eaebed;
         border-radius: 16px;
         width: 100%;
@@ -68,6 +68,7 @@
       .wrapper {
         box-sizing: border-box;
         padding: 24px;
+        overflow-x: auto;
       }
 
       p span {
@@ -84,6 +85,8 @@
         border-collapse: collapse;
         width: 100%;
         margin: 16px 0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
       }
 
       .content-table th,
@@ -255,7 +258,7 @@
           <td class="container">
             <div class="content">
               <!-- START CENTERED WHITE CONTAINER -->
-              <span class="preheader">RSU Error Summary from CV Manager</span>
+              <span class="preheader">Firmware Upgrade Failure in CV Manager</span>
               <table role="presentation" class="main">
                 <tbody>
                   <!-- START MAIN CONTENT AREA -->
@@ -263,21 +266,42 @@
                     <td class="wrapper">
                       <p>Hello CV-Manager User,</p>
                       <div>
-                        <p>Below is the error summary for RSU 10.0.0.180 at 2026-01-02T16:00:25.872Z UTC:</p>
-
-                        <table>
+                        <h2 style="color: #d32f2f">Firmware Upgrade Failure Detected</h2>
+                        <p>A firmware upgrade command failed on RSU <strong>10.0.0.78</strong>.</p>
+                        <table style="border-collapse: collapse; margin-bottom: 16px">
                           <tr>
-                            <th>Online Status</th>
-                            <th>SCMS Status</th>
-                          </tr>
-                          <tr>
-                            <td>RSU Offline (Never Online)</td>
-                            <td>SCMS Unhealthy (RSU Never downloaded certificates)</td>
+                            <td style="font-weight: bold; padding: 4px 8px">Update type:</td>
+                            <td style="padding: 4px 8px">Firmware Upgrader</td>
                           </tr>
                         </table>
+                        <div style="margin-bottom: 16px">
+                          <div style="font-weight: bold; margin-bottom: 4px">Error Message</div>
+                          <div
+                            style="
+                              padding: 8px 12px;
+                              background: #fff3e0;
+                              border-left: 4px solid #d32f2f;
+                              border-radius: 3px;
+                              margin-bottom: 8px;
+                            "
+                          >ConnectionError: SNMP timeout</div>
+                        </div>
+                        <div style="margin-bottom: 16px">
+                          <span style="font-weight: bold">Stack Trace:</span><br />
+                          <pre
+                            style="
+                              background: #f8f8f8;
+                              border: 1px solid #eee;
+                              padding: 12px;
+                              font-size: 13px;
+                              line-height: 1.4;
+                              overflow-x: auto;
+                            "
+                          >Traceback (most recent call last):<br>  File &quot;/usr/local/bin/rsu_firmware_upgrade.py&quot;, line 23, in &lt;module&gt;</pre>
+                        </div>
                       </div>
                       <p>
-                        <a href="http://localhost:3000" target="_blank">Navigate to the CV-Manager</a>
+                        <a href="https://cvmanager.com" target="_blank">Navigate to the CV-Manager</a>
                       </p>
                       <p>If not actionable, please forward this request on to the relevant party.</p>
                       <p>This was an automated email from the CV Manager. Please do not reply to this email.</p>
@@ -286,6 +310,26 @@
                   <!-- END MAIN CONTENT AREA -->
                 </tbody>
               </table>
+
+              <!-- START FOOTER -->
+              <div class="footer">
+                <table role="presentation">
+                  <tbody>
+                    <tr>
+                      <td class="content-block">
+                        <span class="apple-link">CV-Manager Firmware Upgrade Failure</span>
+                        <br />
+                        <!-- Conditional unsubscribe link -->
+                        <p>
+                          <span>If you no longer wish to receive these emails, please </span>
+                          <a href="{{unsubscribe_url}}">Unsubscribe</a>
+                        </p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <!-- END FOOTER -->
 
               <!-- END CENTERED WHITE CONTAINER -->
             </div>

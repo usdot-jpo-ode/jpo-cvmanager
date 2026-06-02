@@ -194,7 +194,7 @@ class TestSendFirmwareUpgradeFailure:
         )
         assert call_args[1]["headers"]["Authorization"] == "Bearer mock_access_token"
         assert call_args[1]["json"]["rsu_ip"] == "192.168.1.100"
-        assert call_args[1]["json"]["error_message"] == "SNMP timeout"
+        assert call_args[1]["json"]["message"] == "SNMP timeout"
 
     @patch("common.email_api.requests.post")
     def test_send_firmware_upgrade_failure_no_token(

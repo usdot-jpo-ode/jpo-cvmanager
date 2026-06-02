@@ -105,7 +105,7 @@ class EmailApi:
                 headers={"Authorization": f"Bearer {token['access_token']}"},
                 json={
                     "rsu_ip": rsu_ip,
-                    "error_message": error_message,
+                    "message": error_message,
                     "failure_type": failure_type,
                     "stack_trace": stack_trace,
                 },

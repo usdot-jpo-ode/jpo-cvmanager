@@ -26,9 +26,9 @@ public interface UserEmailNotificationRepository extends JpaRepository<UserEmail
 
     @Query("SELECT DISTINCT uen.user.email " +
             "FROM UserEmailNotification uen " +
-            "JOIN UserOrganization uo " +
-            "JOIN RsuOrganization ro " +
-            "JOIN Rsu r " +
+            "JOIN UserOrganization uo ON uen.user.id = uo.user.id " +
+            "JOIN RsuOrganization ro ON uo.organization.id = ro.organization.id " +
+            "JOIN Rsu r ON ro.rsu.id = r.id " +
             "WHERE uen.emailType.emailType = :notificationType " +
             "AND r.ipv4Address = :rsuIp " +
             "AND ((:frequency = 'IMMEDIATE' AND uen.immediate = true) " +
@@ -41,9 +41,9 @@ public interface UserEmailNotificationRepository extends JpaRepository<UserEmail
 
     @Query("SELECT DISTINCT uen.user.email " +
             "FROM UserEmailNotification uen " +
-            "JOIN UserOrganization uo " +
-            "JOIN Organization o " +
-            "WHERE uen.emailType.emailType = :notification_type " +
+            "JOIN UserOrganization uo ON uen.user.id = uo.user.id " +
+            "JOIN Organization o ON uo.organization.id = o.id " +
+            "WHERE uen.emailType.emailType = :notificationType " +
             "AND o.name = :organizationName " +
             "AND ((:frequency = 'IMMEDIATE' AND uen.immediate = true) " +
             "OR (:frequency = 'HOURLY' AND uen.hourly = true) " +

@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title></title>
+    <title th:text="${head_title}">head_title</title>
     <style media="all" type="text/css">
       body {
         font-family: Helvetica, sans-serif;
@@ -12,14 +12,14 @@
         line-height: 1.3;
         -ms-text-size-adjust: 100%;
         -webkit-text-size-adjust: 100%;
-        background-color: #f4f5f6;
+        background-color: [[${backgroundColor}]];
         margin: 0;
         padding: 0;
       }
 
       table.body {
         border-collapse: separate;
-        background-color: #f4f5f6;
+        background-color: [[${contentBackgroundColor}]];
         width: 100%;
       }
 
@@ -59,8 +59,8 @@
 
       table.main {
         border-collapse: separate;
-        background: #ffffff;
-        border: 1px solid #eaebed;
+        background: [[${tableMainBackgroundColor}]];
+        border: 1px solid [[${tableMainBorderColor}]];
         border-radius: 16px;
         width: 100%;
       }
@@ -68,6 +68,7 @@
       .wrapper {
         box-sizing: border-box;
         padding: 24px;
+        overflow-x: auto;
       }
 
       p span {
@@ -76,7 +77,7 @@
         font-weight: normal;
         margin: 0;
         margin-bottom: 16px;
-        color: #9a9ea6;
+        color: [[${footerFontColor}]];
       }
 
       /* Styles for embedded content tables */
@@ -84,17 +85,19 @@
         border-collapse: collapse;
         width: 100%;
         margin: 16px 0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
       }
 
       .content-table th,
       .content-table td {
-        border: 1px solid #eaebed;
+        border: 1px solid [[${tableMainBorderColor}]];
         padding: 8px;
         text-align: left;
       }
 
       .content-table th {
-        background-color: #eaebed;
+        background-color: [[${tableMainBorderColor}]];
         font-weight: bold;
       }
 
@@ -147,20 +150,20 @@
       .content-block {
         font-family: Helvetica, sans-serif;
         vertical-align: top;
-        color: #f4f5f6;
+        color: [[${backgroundColor}]];
         font-size: 16px;
         text-align: center;
       }
 
       .apple-link {
-        color: #9a9ea6;
+        color: [[${footerFontColor}]];
         font-size: 16px;
         text-align: center;
       }
 
       .footer a {
         text-decoration: underline;
-        color: #9a9ea6;
+        color: [[${footerFontColor}]];
         font-size: 16px;
         text-align: center;
       }
@@ -255,37 +258,80 @@
           <td class="container">
             <div class="content">
               <!-- START CENTERED WHITE CONTAINER -->
-              <span class="preheader">RSU Error Summary from CV Manager</span>
+              <span class="preheader" th:text="${preview_text}">preview_text</span>
               <table role="presentation" class="main">
                 <tbody>
                   <!-- START MAIN CONTENT AREA -->
                   <tr>
                     <td class="wrapper">
-                      <p>Hello CV-Manager User,</p>
+                      <p th:text="${greeting}"></p>
                       <div>
-                        <p>Below is the error summary for RSU 10.0.0.180 at 2026-01-02T16:00:25.872Z UTC:</p>
-
-                        <table>
+                        <h2 style="color: #d32f2f">Firmware Upgrade Failure Detected</h2>
+                        <p>A firmware upgrade command failed on RSU <strong th:text="${rsu_ip}">RSU_IP</strong>.</p>
+                        <table style="border-collapse: collapse; margin-bottom: 16px">
                           <tr>
-                            <th>Online Status</th>
-                            <th>SCMS Status</th>
-                          </tr>
-                          <tr>
-                            <td>RSU Offline (Never Online)</td>
-                            <td>SCMS Unhealthy (RSU Never downloaded certificates)</td>
+                            <td style="font-weight: bold; padding: 4px 8px">Update type:</td>
+                            <td style="padding: 4px 8px" th:text="${failure_type}">Failure Type</td>
                           </tr>
                         </table>
+                        <div style="margin-bottom: 16px">
+                          <div style="font-weight: bold; margin-bottom: 4px">Error Message</div>
+                          <div
+                            style="
+                              padding: 8px 12px;
+                              background: #fff3e0;
+                              border-left: 4px solid #d32f2f;
+                              border-radius: 3px;
+                              margin-bottom: 8px;
+                            "
+                            th:text="${error_message}"
+                          ></div>
+                        </div>
+                        <div style="margin-bottom: 16px">
+                          <span style="font-weight: bold">Stack Trace:</span><br />
+                          <pre
+                            style="
+                              background: #f8f8f8;
+                              border: 1px solid #eee;
+                              padding: 12px;
+                              font-size: 13px;
+                              line-height: 1.4;
+                              overflow-x: auto;
+                            "
+                            th:utext="${stack_trace}"
+                          ></pre>
+                        </div>
                       </div>
                       <p>
-                        <a href="http://localhost:3000" target="_blank">Navigate to the CV-Manager</a>
+                        <a th:href="${action_button_href}" target="_blank" th:text="${action_button_text}"></a>
                       </p>
-                      <p>If not actionable, please forward this request on to the relevant party.</p>
-                      <p>This was an automated email from the CV Manager. Please do not reply to this email.</p>
+                      <p th:text="${content_2}">content_2</p>
+                      <p th:text="${signature}">signature</p>
                     </td>
                   </tr>
                   <!-- END MAIN CONTENT AREA -->
                 </tbody>
               </table>
+
+              <!-- START FOOTER -->
+              <div class="footer">
+                <table role="presentation">
+                  <tbody>
+                    <tr>
+                      <td class="content-block">
+                        <span class="apple-link" th:text="${footer_address}"></span>
+                        <br />
+                        <!-- Conditional unsubscribe link -->
+                        <p th:if="${showUnsubscribeLink}">
+                          <span th:text="${unsubscribe_pre_text}"></span>
+                          <a th:href="${unsubscribe_href}" th:text="${unsubscribe_link_text}"></a>
+                        </p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <!-- END FOOTER -->
 
               <!-- END CENTERED WHITE CONTAINER -->
             </div>

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -59,7 +59,7 @@
 
       table.main {
         border-collapse: separate;
-        background: #ffffff;
+        background: #fff;
         border: 1px solid #eaebed;
         border-radius: 16px;
         width: 100%;
@@ -68,6 +68,7 @@
       .wrapper {
         box-sizing: border-box;
         padding: 24px;
+        overflow-x: auto;
       }
 
       p span {
@@ -84,6 +85,8 @@
         border-collapse: collapse;
         width: 100%;
         margin: 16px 0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
       }
 
       .content-table th,
@@ -255,7 +258,7 @@
           <td class="container">
             <div class="content">
               <!-- START CENTERED WHITE CONTAINER -->
-              <span class="preheader">RSU Error Summary from CV Manager</span>
+              <span class="preheader">Message Counts from CV Manager</span>
               <table role="presentation" class="main">
                 <tbody>
                   <!-- START MAIN CONTENT AREA -->
@@ -263,21 +266,100 @@
                     <td class="wrapper">
                       <p>Hello CV-Manager User,</p>
                       <div>
-                        <p>Below is the error summary for RSU 10.0.0.180 at 2026-01-02T16:00:25.872Z UTC:</p>
-
-                        <table>
-                          <tr>
-                            <th>Online Status</th>
-                            <th>SCMS Status</th>
-                          </tr>
-                          <tr>
-                            <td>RSU Offline (Never Online)</td>
-                            <td>SCMS Unhealthy (RSU Never downloaded certificates)</td>
-                          </tr>
+                        <p>
+                          This is an automated email reporting yesterday's J2735 message counts for messages processed
+                          by the ODE.
+                        </p>
+                        <p>
+                          <strong>Organization:</strong> <span style="color: #000;">Test Org</span
+                          ><br />
+                          <strong>Deployment:</strong> <span style="color: #000;">Dev</span><br />
+                          <strong>Start Date:</strong> <span style="color: #000;">2026-04-22T23:54:19Z</span><br />
+                          <strong>End Date:</strong> <span style="color: #000;">2026-04-23T00:54:19Z</span>
+                        </p>
+                        <p>
+                          Each cell in the table below shows:
+                          <strong>[Inbound Message Count] / [Outbound Message Count]</strong>.<br />
+                          Cells are
+                          <span style="background-color: #a4ffa1; color: #000; padding: 2px 8px; border-radius: 3px"
+                            >green</span
+                          >
+                          if inbound and outbound counts are within 5% of each other, and
+                          <span style="background-color: #ff7373; color: #000; padding: 2px 8px; border-radius: 3px"
+                            >red</span
+                          >
+                          if the difference is greater than 5%.
+                        </p>
+                        <p>
+                          <strong>Inbound Message Count</strong>: Number of encoded messages received by the ODE from
+                          the load balancer.<br />
+                          <strong>Outbound Message Count</strong>: Number of decoded messages output by the ODE in JSON
+                          format, available for querying in MongoDB.<br />
+                          Ideally, these counts should match, but small differences can occur due to timing.<br />
+                          Note: Map and TIM outbound counts are deduplicated (one per hour), so these may be lower. The
+                          deviation calculation accounts for this.
+                        </p>
+                        <h3>RSU Message Counts</h3>
+                        <div
+                          style="
+                            margin: 16px 0;
+                            padding: 12px;
+                            background-color: #f5f5f5;
+                            border-radius: 4px;
+                            display: inline-block;
+                          "
+                        >
+                          <strong>Legend:</strong>&nbsp;&nbsp;
+                          <span
+                            style="
+                              background-color: #a4ffa1;
+                              color: #000;
+                              padding: 4px 12px;
+                              margin: 0 4px;
+                              border-radius: 3px;
+                            "
+                            >Green: ≤5% deviation</span
+                          >
+                          <span
+                            style="
+                              background-color: #ff7373;
+                              color: #000;
+                              padding: 4px 12px;
+                              margin: 0 4px;
+                              border-radius: 3px;
+                            "
+                            >Red: >5% deviation</span
+                          >
+                        </div>
+                        <table class="dataframe">
+                          <thead>
+                            <tr style="text-align: center; background-color: #b0dfff">
+                              <th style="padding: 12px">RSU</th>
+                              <th style="padding: 12px">Road</th>
+                              <th style="padding: 12px">BSM</th>
+                              <th style="padding: 12px">MAP</th>
+                              <th style="padding: 12px">TIM</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr style="text-align: center">
+                              <td>0.0.0.1</td>
+                              <td>route</td>
+                              <td
+                                style="background-color: #a4ffa1"
+                              >1000 / 1000</td>
+                              <td
+                                style="background-color: #ff7373"
+                              >2000 / 1000</td>
+                              <td
+                                style="background-color: #a4ffa1"
+                              >2000 / 1000</td>
+                            </tr>
+                          </tbody>
                         </table>
                       </div>
                       <p>
-                        <a href="http://localhost:3000" target="_blank">Navigate to the CV-Manager</a>
+                        <a href="https://cvmanager.com" target="_blank">Navigate to the CV-Manager</a>
                       </p>
                       <p>If not actionable, please forward this request on to the relevant party.</p>
                       <p>This was an automated email from the CV Manager. Please do not reply to this email.</p>
@@ -286,6 +368,26 @@
                   <!-- END MAIN CONTENT AREA -->
                 </tbody>
               </table>
+
+              <!-- START FOOTER -->
+              <div class="footer">
+                <table role="presentation">
+                  <tbody>
+                    <tr>
+                      <td class="content-block">
+                        <span class="apple-link">CV-Manager Message Counts</span>
+                        <br />
+                        <!-- Conditional unsubscribe link -->
+                        <p>
+                          <span>If you no longer wish to receive these emails, please </span>
+                          <a href="{{unsubscribe_url}}">Unsubscribe</a>
+                        </p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <!-- END FOOTER -->
 
               <!-- END CENTERED WHITE CONTAINER -->
             </div>

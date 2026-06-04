@@ -28,6 +28,11 @@ public class EmailType {
     private String description;
 
     @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "required_role", nullable = false)
+    private Role requiredRole;
+
+    @NotNull
     @ColumnDefault("true")
     @Column(name = "supports_immediate", nullable = false)
     private Boolean supportsImmediate;
@@ -51,6 +56,5 @@ public class EmailType {
     @ColumnDefault("false")
     @Column(name = "supports_monthly", nullable = false)
     private Boolean supportsMonthly;
-
 
 }

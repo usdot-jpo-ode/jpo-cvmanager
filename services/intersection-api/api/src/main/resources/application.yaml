@@ -82,6 +82,12 @@ spring:
           starttls:
             enable: ${INTERSECTION_SMTP_STARTTLS:false}
             required: ${INTERSECTION_SMTP_STARTTLS:false}
+  cache:
+    jcache:
+      provider: com.github.benmanes.caffeine.jcache.spi.CaffeineCachingProvider
+    cache-names: email-rate-limit
+    caffeine:
+      spec: maximumSize=100000,expireAfterWrite=1h
 
 enable:
   api: ${INTERSECTION_API_ENABLE_API:true}
@@ -118,3 +124,21 @@ j2735.api:
   error-buffer-size: ${J2735_ERROR_BUFFER_SIZE:256}
 
 firmwareManagerEndpoint: ${FIRMWARE_MANAGER_ENDPOINT:}
+
+bucket4j:
+  enabled: true
+  filters:
+    - cache-name: email-rate-limit
+      url: /emails/.*
+      strategy: all
+      rate-limits:
+        - cache-key: "@jwtSubjectExtractor.extractSubject(getHeader('Authorization')) != null ? @jwtSubjectExtractor.extractSubject(getHeader('Authorization')) : getRemoteAddr()"
+          bandwidths:
+            - capacity: ${EMAIL_RATE_LIMIT_PER_USER:12}
+              time: 1
+              unit: hours
+        - cache-key: "'email_global'"
+          bandwidths:
+            - capacity: ${EMAIL_RATE_LIMIT_PER_INSTANCE:120}
+              time: 1
+              unit: hours

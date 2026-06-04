@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import us.dot.its.jpo.ode.api.models.emails.EmailApiResponse;
 import us.dot.its.jpo.ode.api.models.emails.EmailSendResponse;
@@ -28,8 +29,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Slf4j
 @RestController
 @ConditionalOnProperty(name = { "enable.api", "enable.email" }, havingValue = "true", matchIfMissing = false)
+@Tag(name = "Email", description = """
+        Endpoints for triggering outbound notification emails. \
+        All endpoints under /emails/* are rate-limited using configurable per-user and global limits \
+        (defaults: 12 requests/hour per user, keyed on Authorization token or remote IP for unauthenticated requests, \
+        and 120 requests/hour globally across all callers). \
+        Exceeding either configured limit returns HTTP 429.""")
 @ApiResponses(value = {
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
+        @ApiResponse(responseCode = "429", description = "Rate limit exceeded — per-user and global limits are configurable (defaults: 12 req/hr per user, 120 req/hr global)"),
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
 @RequestMapping("/emails")

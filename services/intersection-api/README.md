@@ -15,6 +15,48 @@ All of the data flowing into and out of the intersection api is shown in the fol
 
 To view the endpoint configuration of the api, open the following HTML page in a browser: [docs/swagger-docs/docs.html](./docs/swagger-docs/docs.html)
 
+## Emails
+
+The intersection API exposes a set of `/emails/*` endpoints for triggering outbound notification emails. The following email types are supported:
+
+| Endpoint | Role Required | Description | Example |
+|---|---|---|---|
+| `POST /emails/support-requests` | Any authenticated user | User-submitted support request forwarded to the support team | [support_request_email_multiline_snapshot.html](api/src/test/resources/snapshots/emails/support_request_email_multiline_snapshot.html) |
+| `POST /emails/intersection-notifications` | `USER` or super user | Summary of active intersection notifications for configured recipients | [intersection_notification_summary_email_snapshot.html](api/src/test/resources/snapshots/emails/intersection_notification_summary_email_snapshot.html) |
+| `POST /emails/rsu-errors` | `USER` or super user | Summary of RSU errors detected by the conflict monitor | [rsu_error_summary_email_snapshot.html](api/src/test/resources/snapshots/emails/rsu_error_summary_email_snapshot.html) |
+| `POST /emails/api-errors` | `ROLE_SEND_CRITICAL_ERROR_MESSAGE_EMAILS` or super user | Critical API error notification with stack trace | [api_error_email_snapshot.html](api/src/test/resources/snapshots/emails/api_error_email_snapshot.html) |
+| `POST /emails/message-counts` | `ROLE_SEND_MESSAGE_COUNTS_EMAILS` or super user | Per-intersection message count summary | [message_count_snapshot.html](api/src/test/resources/snapshots/emails/message_count_snapshot.html) |
+| `POST /emails/firmware-upgrade-failures` | `ROLE_SEND_FIRMWARE_UPGRADE_EMAILS` or super user | Firmware upgrade failure notification for a specific RSU | [firmware_upgrade_failure_snapshot.html](api/src/test/resources/snapshots/emails/firmware_upgrade_failure_snapshot.html) |
+
+All email endpoints require `enable.api=true` and `enable.email=true`.
+
+### Rate Limiting
+
+The intersection API uses [Bucket4j](https://github.com/bucket4j/bucket4j) to enforce token-bucket rate limits on all `/emails/*` endpoints. Two independent limits are applied per request — both must have capacity remaining for the request to proceed, otherwise HTTP 429 is returned.
+
+#### Per-User Limit
+
+Each caller gets their own bucket, keyed by their JWT subject (`sub` claim). If no valid JWT is present the client's remote IP address is used as the fallback key.
+
+| Environment Variable | Default | Description |
+|---|---|---|
+| `EMAIL_RATE_LIMIT_PER_USER` | `12` | Maximum email requests per user per hour |
+
+#### Global Limit
+
+A single shared bucket caps the total number of emails the instance will send per hour, regardless of how many individual users are making requests.
+
+| Environment Variable | Default | Description |
+|---|---|---|
+| `EMAIL_RATE_LIMIT_PER_INSTANCE` | `120` | Maximum email requests across all users per hour |
+
+#### How It Works
+
+- Rate limiting is backed by a [Caffeine](https://github.com/ben-manes/caffeine) in-memory cache (`email-rate-limit`) with a 1-hour expiry window.
+- The JWT subject is extracted by the `JwtSubjectExtractor` Spring bean. When a `JwtDecoder` bean is available (always in production), it decodes the token using the configured Keycloak JWKS endpoint to obtain the `sub` claim. If decoding fails the IP-based fallback is used.
+- Both limits use `strategy: all`, meaning a request is blocked (HTTP 429) if **either** bucket is exhausted.
+- The rate limits can be disabled entirely by setting `bucket4j.enabled=false`.
+
 ## Framework
 
 This is a Java SpringBoot application, utilizing REST and STOMP protocols. This application is fully dockerized and is designed to run alongside an instance of the [jpo-ode](https://github.com/usdot-jpo-ode/jpo-ode), [jpo-geojsonconverter](https://github.com/usdot-jpo-ode/jpo-geojsonconverter), [jpo-conflictmonitor](https://github.com/usdot-jpo-ode/jpo-conflictmonitor). This project imports pre-built images for these services from (DockerHub)[https://hub.docker.com/u/usdotjpoode]. If you would like to build them locally, information is available in their respective repositories.

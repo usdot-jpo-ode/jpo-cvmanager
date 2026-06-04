@@ -88,6 +88,10 @@ spring:
           auth: false
           starttls:
             enable: false
+  cache:
+    cache-names: []
+    caffeine:
+      spec: maximumSize=100000,expireAfterWrite=1h
 
 enable:
   api: true
@@ -99,3 +103,21 @@ cmServerURL: http://localhost:8082
 mongoTimeoutMs: 5000
 cors: '*'
 maximumResponseSize: 10000
+
+bucket4j:
+  enabled: false
+  filters:
+    - cache-name: email-rate-limit
+      url: /emails/.*
+      strategy: all
+      rate-limits:
+        - cache-key: "@jwtSubjectExtractor.extractSubject(getHeader('Authorization')) != null ? @jwtSubjectExtractor.extractSubject(getHeader('Authorization')) : getRemoteAddr()"
+          bandwidths:
+            - capacity: 3
+              time: 1
+              unit: hours
+        - cache-key: "'email_global'"
+          bandwidths:
+            - capacity: 6
+              time: 1
+              unit: hours

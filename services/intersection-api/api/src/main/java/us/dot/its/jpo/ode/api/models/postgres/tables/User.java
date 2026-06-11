@@ -25,12 +25,12 @@ public class User {
 
     @NotNull
     @ColumnDefault("uuid_generate_v4()")
-    @Column(name = "keycloak_id", nullable = false)
+    @Column(name = "keycloak_id", nullable = false, unique = true)
     private UUID keycloakId;
 
     @Size(max = 128)
     @NotNull
-    @Column(name = "email", nullable = false, length = 128)
+    @Column(name = "email", nullable = false, unique = true, length = 128)
     private String email;
 
     @Size(max = 128)

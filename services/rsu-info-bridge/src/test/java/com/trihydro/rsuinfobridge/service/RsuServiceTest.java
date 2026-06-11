@@ -6,11 +6,14 @@ import com.trihydro.rsuinfobridge.models.tables.RsuModel;
 import com.trihydro.rsuinfobridge.models.tables.RsuOption;
 import com.trihydro.rsuinfobridge.models.tables.SnmpCredential;
 import com.trihydro.rsuinfobridge.models.tables.SnmpProtocol;
+import com.trihydro.rsuinfobridge.testutil.repository.PingRepository;
 import com.trihydro.rsuinfobridge.testutil.repository.RsuCredentialRepository;
+import com.trihydro.rsuinfobridge.testutil.repository.RsuHealthRepository;
 import com.trihydro.rsuinfobridge.testutil.repository.RsuIntersectionRepository;
 import com.trihydro.rsuinfobridge.testutil.repository.RsuModelRepository;
 import com.trihydro.rsuinfobridge.testutil.repository.RsuOptionRepository;
 import com.trihydro.rsuinfobridge.testutil.repository.RsuOrganizationRepository;
+import com.trihydro.rsuinfobridge.testutil.repository.ScmsHealthRepository;
 import com.trihydro.rsuinfobridge.repository.RsuRepository;
 import com.trihydro.rsuinfobridge.testutil.repository.SnmpCredentialRepository;
 import com.trihydro.rsuinfobridge.testutil.repository.SnmpMsgfwdConfigRepository;
@@ -78,6 +81,15 @@ class RsuServiceTest {
 
     @Autowired
     SnmpProtocolRepository snmpProtocolRepository;
+
+    @Autowired
+    PingRepository pingRepository;
+
+    @Autowired
+    RsuHealthRepository rsuHealthRepository;
+
+    @Autowired
+    ScmsHealthRepository scmsHealthRepository;
 
     @Autowired
     private RsuService rsuService;
@@ -173,8 +185,13 @@ class RsuServiceTest {
 
     /**
      * Clears RSU data while preserving prerequisites from sample data.
+     * Telemetry tables (ping, rsu_health, scms_health) keep RESTRICT FKs to
+     * rsus by design, so their seeded rows must be deleted before the RSUs.
      */
     void clearRsuData() {
+        pingRepository.deleteAllInBatch();
+        rsuHealthRepository.deleteAllInBatch();
+        scmsHealthRepository.deleteAllInBatch();
         rsuIntersectionRepository.deleteAll();
         snmpMsgfwdConfigRepository.deleteAll();
         rsuOrganizationRepository.deleteAll();

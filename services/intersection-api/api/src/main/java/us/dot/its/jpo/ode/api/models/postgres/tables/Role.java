@@ -19,6 +19,6 @@ public class Role {
 
     @Size(max = 128)
     @NotNull
-    @Column(name = "name", nullable = false, length = 128)
+    @Column(name = "name", nullable = false, unique = true, length = 128)
     private String name;
 }

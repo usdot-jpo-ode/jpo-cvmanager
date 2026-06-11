@@ -23,14 +23,15 @@ resources/db/
 V{N}__{snake_case_description}.sql
 ```
 
-| Part          | Meaning                        | Example                   |
-|---------------|--------------------------------|---------------------------|
-| `N`           | Next integer in sequence       | `3`                       |
-| `description` | Snake-case summary of change   | `add_rsu_telemetry_table` |
+| Part          | Meaning                      | Example                   |
+|---------------|------------------------------|---------------------------|
+| `N`           | Next integer in sequence     | `3`                       |
+| `description` | Snake-case summary of change | `add_rsu_telemetry_table` |
 
 Full example: `V3__add_rsu_telemetry_table.sql`
 
-**Why sequential integers?** Sequential integers enforce a known, unambiguous application order and keep migration history easy to scan. When two branches both add a migration, the version number conflict surfaces as a merge conflict that must be resolved explicitly. This forces team coordination on the correct ordering rather than silently allowing migrations to run out of order.
+**Why sequential integers?** Sequential integers enforce a known, unambiguous application order and keep migration history easy to scan. When two branches both add a migration, the version number
+conflict surfaces as a merge conflict that must be resolved explicitly. This forces team coordination on the correct ordering rather than silently allowing migrations to run out of order.
 
 ## Creating a new migration
 
@@ -63,11 +64,13 @@ environments are adopted without a rebuild.
 
 ## outOfOrder
 
-`outOfOrder` is disabled. Migrations must be applied in strict version order. If two branches both introduce a migration with the same version number, the conflict surfaces as a merge conflict that must be resolved before either branch merges.
+`outOfOrder` is disabled. Migrations must be applied in strict version order. If two branches both introduce a migration with the same version number, the conflict surfaces as a merge conflict that
+must be resolved before either branch merges.
 
 ## Deprecated scripts
 
-`resources/deprecated/sql_scripts/update_scripts/` contains the manually executed scripts that this Flyway setup replaces. That directory is kept as historical reference only. Do not add new scripts there.
+`resources/deprecated/sql_scripts/update_scripts/` contains the manually executed scripts that this Flyway setup replaces. That directory is kept as historical reference only. Do not add new scripts
+there.
 
 ## Schema Reference
 
@@ -122,3 +125,21 @@ identify the correct image tag and apply the migration Job.
 - **`roles`** must always contain exactly three rows with names `'admin'`, `'operator'`, and `'user'`. The application depends on these exact strings for permission checks.
 - **`ping`** and **`rsu_health`** should be pruned regularly. Retaining more than 24 hours of data per RSU causes noticeable slowdowns when loading the map.
 - **`scms_health`** data is only populated if you have an active ISS SCMS API service agreement.
+
+## Application-derived constraints
+
+The admin UI enforces several data rules that the original schema did not encode at the database level. Migration `V4__schema_constraints.sql` closes the gaps identified below so integrity holds
+regardless of which client writes the data.
+
+| Table           | Constraint                                  | Type     | Rationale                                                                                                                                 |
+|-----------------|---------------------------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| `rsus`          | `milepost >= 0`                             | CHECK    | UI regex `/^\d*\.?\d*$/` only allows non-negative values; a negative milepost has no physical meaning.                                    |
+| `users`         | `first_name NOT NULL`, `last_name NOT NULL` | NOT NULL | Both fields are required on every create and edit form. NULLs are backfilled to `''` during migration.                                    |
+| `roles`         | `name IN ('admin', 'operator', 'user')`     | CHECK    | The application recognises exactly these three lowercase role names. An unrecognised role would silently succeed without this constraint. |
+| `intersections` | `intersection_number ~ '^[0-9]+$'`          | CHECK    | UI regex `/^[0-9]+$/` enforces numeric-only NTCIP intersection IDs.                                                                       |
+
+### Intentionally app-layer-only
+
+**Minimum-one-organization** (users, RSUs, intersections must each belong to at least one organization) cannot be expressed as a declarative column or table constraint because it is a cross-row
+cardinality rule on a separate join table. It would require a statement-level or row-level trigger. The rule is enforced exclusively in the application layer (`AdminAddUser`, `AdminAddRsu`,
+`AdminAddIntersection` form validation).

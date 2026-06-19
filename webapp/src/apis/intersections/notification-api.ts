@@ -63,7 +63,7 @@ class NotificationApi {
           method: 'DELETE',
           abortController,
           token: token,
-          body: id.toString(),
+          queryParams: { key: id.toString() },
           booleanResponse: true,
           tag: 'intersection',
         }))
@@ -73,7 +73,7 @@ class NotificationApi {
     } else {
       toast.error(`Failed to Dismiss some Notifications`)
     }
-    return true
+    return success
   }
 
   async getAllNotifications({

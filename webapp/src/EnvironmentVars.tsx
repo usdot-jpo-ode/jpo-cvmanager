@@ -41,7 +41,7 @@ class EnvironmentVars {
   static WEBAPP_THEME_DARK = process.env.VITE_WEBAPP_THEME_DARK
 
   static cvmanagerBaseEndpoint = `${this.getBaseApiUrl()}`
-  static rsuInfoEndpoint = `${this.getBaseApiUrl()}/rsuinfo`
+  static rsuInfoPath = '/devices/rsus/info'
   static rsuOnlineEndpoint = `${this.getBaseApiUrl()}/rsu-online-status`
   static rsuCountsEndpoint = `${this.getBaseApiUrl()}/rsucounts`
   static rsuCommandEndpoint = `${this.getBaseApiUrl()}/rsu-command`

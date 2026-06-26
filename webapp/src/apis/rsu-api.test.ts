@@ -1,10 +1,10 @@
 import RsuApi from './rsu-api'
 import EnvironmentVars from '../EnvironmentVars'
+import { combineUrlPaths } from './intersections/api-helper-cviz'
 
 beforeEach(() => {
   fetchMock.mockClear()
   fetchMock.doMock()
-  EnvironmentVars.rsuInfoEndpoint = 'VITE_ENV/rsuinfo'
   EnvironmentVars.rsuOnlineEndpoint = 'VITE_ENV/rsu-online-status'
   EnvironmentVars.rsuCountsEndpoint = 'VITE_ENV/rsucounts'
   EnvironmentVars.rsuCommandEndpoint = 'VITE_ENV/rsu-command'
@@ -21,9 +21,14 @@ it('Test apiHelper mock', async () => {
   const actualResponse = await RsuApi.getRsuInfo('testToken', 'testOrg')
   expect(actualResponse).toEqual(expectedResponse)
 
-  expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.rsuInfoEndpoint)
+  expect(fetchMock.mock.calls[0][0]).toBe(
+    combineUrlPaths(EnvironmentVars.CVIZ_API_SERVER_URL!, EnvironmentVars.rsuInfoPath)
+  )
   expect(fetchMock.mock.calls[0][1].method).toBe('GET')
-  expect(fetchMock.mock.calls[0][1].headers).toStrictEqual({ Authorization: 'testToken', Organization: 'testOrg' })
+  expect(fetchMock.mock.calls[0][1].headers).toStrictEqual({
+    Authorization: 'Bearer testToken',
+    Organization: 'testOrg',
+  })
 })
 
 it('Test getRsuInfo', async () => {
@@ -32,9 +37,14 @@ it('Test getRsuInfo', async () => {
   const actualResponse = await RsuApi.getRsuInfo('testToken', 'testOrg')
   expect(actualResponse).toEqual(expectedResponse)
 
-  expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.rsuInfoEndpoint)
+  expect(fetchMock.mock.calls[0][0]).toBe(
+    combineUrlPaths(EnvironmentVars.CVIZ_API_SERVER_URL!, EnvironmentVars.rsuInfoPath)
+  )
   expect(fetchMock.mock.calls[0][1].method).toBe('GET')
-  expect(fetchMock.mock.calls[0][1].headers).toStrictEqual({ Authorization: 'testToken', Organization: 'testOrg' })
+  expect(fetchMock.mock.calls[0][1].headers).toStrictEqual({
+    Authorization: 'Bearer testToken',
+    Organization: 'testOrg',
+  })
 })
 
 it('Test getRsuInfo With Params', async () => {
@@ -47,9 +57,14 @@ it('Test getRsuInfo With Params', async () => {
   const actualResponse = await RsuApi.getRsuInfo('testToken', 'testOrg', url_ext, query_params)
   expect(actualResponse).toEqual(expectedResponse)
 
-  expect(fetchMock.mock.calls[0][0]).toBe(EnvironmentVars.rsuInfoEndpoint + url_ext + '?query_param=test')
+  expect(fetchMock.mock.calls[0][0]).toBe(
+    `${combineUrlPaths(EnvironmentVars.CVIZ_API_SERVER_URL!, EnvironmentVars.rsuInfoPath + url_ext)}?query_param=test`
+  )
   expect(fetchMock.mock.calls[0][1].method).toBe('GET')
-  expect(fetchMock.mock.calls[0][1].headers).toStrictEqual({ Authorization: 'testToken', Organization: 'testOrg' })
+  expect(fetchMock.mock.calls[0][1].headers).toStrictEqual({
+    Authorization: 'Bearer testToken',
+    Organization: 'testOrg',
+  })
 })
 
 it('Test getRsuOnline', async () => {
@@ -155,7 +170,6 @@ it('Test getSsmSrmData With Params', async () => {
   expect(fetchMock.mock.calls[0][1].method).toBe('GET')
   expect(fetchMock.mock.calls[0][1].headers).toStrictEqual({ Authorization: 'testToken' })
 })
-
 
 it('Test getWzdxData', async () => {
   const expectedResponse = { data: 'Test JSON' }

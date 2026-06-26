@@ -53,7 +53,6 @@ api.add_resource(AdminNotification, "/admin-notification")
 api.add_resource(AdminNewNotification, "/admin-new-notification")
 
 if api_environment.ENABLE_RSU_FEATURES:
-    api.add_resource(RsuInfo, "/rsuinfo")
     api.add_resource(RsuOnlineStatus, "/rsu-online-status")
     api.add_resource(RsuQueryCounts, "/rsucounts")
     api.add_resource(RsuQueryMsgFwd, "/rsu-msgfwd-query")

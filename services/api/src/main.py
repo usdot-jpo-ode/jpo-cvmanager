@@ -8,7 +8,6 @@ from middleware import Middleware
 from admin_email_notification import AdminNotification
 from admin_new_email_notification import AdminNewNotification
 from healthcheck import HealthCheck
-from rsuinfo import RsuInfo
 from rsu_querycounts import RsuQueryCounts
 from rsu_querymsgfwd import RsuQueryMsgFwd
 from rsu_online_status import RsuOnlineStatus

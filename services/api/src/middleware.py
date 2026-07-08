@@ -52,7 +52,6 @@ def get_user_role(token) -> UserInfo | None:
 
 
 organization_required = {
-    "/rsuinfo": True,
     "/rsu-online-status": True,
     "/rsucounts": True,
     "/rsu-msgfwd-query": True,
@@ -77,7 +76,6 @@ organization_required = {
 # Dictionary: Method specific feature required (e.g. {"GET": "rsu", "POST": "intersection"})
 feature_tags: dict[str, FEATURE_KEYS_LITERAL | None] = {
     "/": None,
-    "/rsuinfo": FEATURE_KEYS_LITERAL.RSU,
     "/rsu-online-status": FEATURE_KEYS_LITERAL.RSU,
     "/rsucounts": FEATURE_KEYS_LITERAL.RSU,
     "/rsu-msgfwd-query": FEATURE_KEYS_LITERAL.RSU,

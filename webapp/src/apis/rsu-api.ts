@@ -1,11 +1,13 @@
 import EnvironmentVars from '../EnvironmentVars'
 import { WZDxWorkZoneFeed } from '../models/wzdx/WzdxWorkZoneFeed42'
 import apiHelper from './api-helper'
+import { authApiHelper } from './intersections/api-helper-cviz'
 import {
   ApiMsgRespWithCodes,
   GetRsuCommandResp,
   RsuCommandPostBody,
   RsuCounts,
+  RsuInfo,
   RsuInfoList,
   RsuMsgFwdConfigs,
   RsuOnlineStatusRespMultiple,
@@ -20,14 +22,19 @@ class RsuApi {
     org: string,
     url_ext = '',
     query_params: Record<string, string> = {}
-  ): Promise<RsuInfoList> =>
-    apiHelper._getData({
-      url: EnvironmentVars.rsuInfoEndpoint + url_ext,
+  ): Promise<RsuInfoList> => {
+    const response = await authApiHelper.invokeApi({
+      path: `${EnvironmentVars.rsuInfoPath}${url_ext}`,
+      queryParams: query_params,
       token,
-      query_params,
-      additional_headers: { Organization: org },
+      headers: { Organization: org },
+      toastOnFailure: false,
       tag: 'rsu',
     })
+
+    const rsuArray = Array.isArray(response) ? (response as RsuInfo[]) : []
+    return { rsuList: rsuArray }
+  }
   getRsuOnline = async (
     token: string,
     org: string,

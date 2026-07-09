@@ -7,7 +7,7 @@ services:
     profiles:
       - conflictmonitor
       - conflictmonitor_only
-    image: ${DOCKERHUB_HOST:-usdotjpoode}/jpo-conflictmonitor:${DOCKERHUB_RELEASE:-2025-q2}
+    image: ${DOCKERHUB_HOST:-usdotjpoode}/jpo-conflictmonitor:${DOCKERHUB_RELEASE:-2025-q3}
     restart: ${RESTART_POLICY:-on-failure:3}
     ports:
       - '8082:8082'
@@ -46,7 +46,7 @@ services:
     profiles:
       - conflictmonitor
       - ode
-    image: ${DOCKERHUB_HOST:-usdotjpoode}/jpo-ode:${DOCKERHUB_RELEASE:-2025-q2}
+    image: ${DOCKERHUB_HOST:-usdotjpoode}/jpo-ode:${DOCKERHUB_RELEASE:-2025-q3}
     restart: ${RESTART_POLICY:-on-failure:3}
     ports:
       - '8080:8080'
@@ -104,7 +104,7 @@ services:
     profiles:
       - conflictmonitor
       - adm
-    image: ${DOCKERHUB_HOST:-usdotjpoode}/asn1_codec:${DOCKERHUB_RELEASE:-2025-q2}
+    image: ${DOCKERHUB_HOST:-usdotjpoode}/asn1_codec:${DOCKERHUB_RELEASE:-2025-q3}
     restart: ${RESTART_POLICY:-on-failure:3}
     deploy:
       resources:
@@ -130,7 +130,7 @@ services:
     profiles:
       - conflictmonitor
       - aem
-    image: ${DOCKERHUB_HOST:-usdotjpoode}/asn1_codec:${DOCKERHUB_RELEASE:-2025-q2}
+    image: ${DOCKERHUB_HOST:-usdotjpoode}/asn1_codec:${DOCKERHUB_RELEASE:-2025-q3}
     restart: ${RESTART_POLICY:-on-failure:3}
     deploy:
       resources:
@@ -156,7 +156,7 @@ services:
     profiles:
       - conflictmonitor
       - geojsonconverter
-    image: ${DOCKERHUB_HOST:-usdotjpoode}/geojsonconverter:${DOCKERHUB_RELEASE:-2025-q2}
+    image: ${DOCKERHUB_HOST:-usdotjpoode}/geojsonconverter:${DOCKERHUB_RELEASE:-2025-q3}
     restart: ${RESTART_POLICY:-on-failure:3}
     deploy:
       resources:
@@ -180,7 +180,7 @@ services:
     profiles:
       - conflictmonitor
       - deduplicator
-    image: ${DOCKERHUB_HOST:-usdotjpoode}/jpo-deduplicator:${DOCKERHUB_RELEASE:-2025-q2}
+    image: ${DOCKERHUB_HOST:-usdotjpoode}/jpo-deduplicator:${DOCKERHUB_RELEASE:-2025-q3}
     privileged: false # Set true to allow writing to /proc/sys/vm/drop_caches
     restart: ${RESTART_POLICY:-on-failure:3}
     ports:

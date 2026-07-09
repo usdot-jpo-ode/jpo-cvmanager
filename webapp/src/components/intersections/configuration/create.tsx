@@ -4,7 +4,7 @@ import { ConfigParamCreateForm } from '../../../features/intersections/configura
 import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
 import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { selectParameter } from '../../../features/api/intersectionApiSlice'
+import { selectParameter } from '../../../features/api/intersectionConfigSlice'
 
 const ConfigParamCreate = () => {
   const intersectionId = useSelector(selectSelectedIntersectionId)

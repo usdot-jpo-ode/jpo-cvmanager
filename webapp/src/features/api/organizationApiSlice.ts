@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import EnvironmentVars from '../../EnvironmentVars'
 import { RootState } from '../../store'
 import { selectToken } from '../../generalSlices/userSlice'
-import { getQueryString } from './intersectionApiSlice'
+import { getQueryString } from './intersectionConfigSlice'
 
 export const organizationApiSlice = createApi({
   reducerPath: 'organizationApi',
@@ -12,9 +12,7 @@ export const organizationApiSlice = createApi({
       const currentState = getState() as RootState
       const token = selectToken(currentState)
 
-      // Endpoint names must match the keys in the endpoints objects below
-      const endpointsWithoutToken = []
-      if (token && !endpointsWithoutToken.includes(endpoint)) {
+      if (token) {
         headers.set('Authorization', `Bearer ${token}`)
       }
 

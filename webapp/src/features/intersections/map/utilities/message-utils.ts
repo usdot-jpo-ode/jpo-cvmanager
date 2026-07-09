@@ -174,20 +174,68 @@ export const parseSpatSignalGroups = (spats: ProcessedSpat[]): SpatSignalGroups 
   return timedSignalGroups
 }
 
-export const addBsmTimestamps = (bsmFeatureCollection: BsmFeatureCollection): BsmFeatureCollection => {
+// Additionally sort ascending, earliest first
+export const addMapTimestampsAndSortAscending = (maps: ProcessedMap[]): ProcessedMap[] =>
+  maps
+    .map((map) => ({
+      ...map,
+      properties: {
+        ...map.properties,
+        timeStamp: getTimestamp(map.properties.timeStamp),
+        odeReceivedAt: getTimestamp(map.properties.odeReceivedAt),
+      },
+    }))
+    .sort((a, b) => a.properties.timeStamp - b.properties.timeStamp)
+
+// Additionally sort ascending, earliest first
+export const addSpatTimestampsAndSortAscending = (spats: ProcessedSpat[]): ProcessedSpat[] =>
+  spats
+    .map((spat) => ({
+      ...spat,
+      utcTimeStamp: getTimestamp(spat.utcTimeStamp),
+    }))
+    .sort((a, b) => a.utcTimeStamp - b.utcTimeStamp)
+
+// Additionally sort ascending, earliest first
+export const addBsmTimestampsAndSortAscending = (bsmFeatureCollection: BsmFeatureCollection): BsmFeatureCollection => {
   return {
     type: 'FeatureCollection' as const,
-    features: bsmFeatureCollection.features.map((bsm) => {
-      return {
-        ...bsm,
-        properties: {
-          ...bsm.properties,
-          odeReceivedAtEpochSeconds: new Date(bsm.properties.odeReceivedAt).getTime() / 1000,
-        },
-      }
-    }),
+    features: bsmFeatureCollection.features
+      .map((bsm) => {
+        return {
+          ...bsm,
+          properties: {
+            ...bsm.properties,
+            odeReceivedAtEpochSeconds: new Date(bsm.properties.odeReceivedAt).getTime() / 1000,
+          },
+        }
+      })
+      .sort((a, b) => a.properties.odeReceivedAtEpochSeconds - b.properties.odeReceivedAtEpochSeconds),
   }
 }
+
+// Additionally sort ascending, earliest first
+export const addSsmTimestampsAndSortAscending = (ssms: ProcessedSsm[]): ProcessedSsm[] =>
+  ssms
+    .map((ssm) => ({
+      ...ssm,
+      odeReceivedAtEpochMillis: getTimestamp(ssm.odeReceivedAt),
+      timeStampEpochMillis: getTimestamp(ssm.timeStamp),
+    }))
+    .sort((a, b) => a.timeStampEpochMillis - b.timeStampEpochMillis)
+
+// Additionally sort ascending, earliest first
+export const addSrmTimestampsAndSortAscending = (srms: ProcessedSrmFeature[]): ProcessedSrmFeature[] =>
+  srms
+    .map((srm) => ({
+      ...srm,
+      properties: {
+        ...srm.properties,
+        odeReceivedAtEpochMillis: getTimestamp(srm.properties.odeReceivedAt),
+        timeStampEpochMillis: getTimestamp(srm.properties.timeStamp),
+      },
+    }))
+    .sort((a, b) => a.properties.timeStampEpochMillis - b.properties.timeStampEpochMillis)
 
 export const isValidDate = (d: Date) => {
   if (d == null) return false
@@ -290,3 +338,174 @@ export const addConnections = (
     })),
   }
 }
+
+export const addSsmSrmToConnections = (
+  connectingLanes: ConnectingLanesFeatureCollectionWithSignalState,
+  ssms: ProcessedSsm[],
+  srms: ProcessedSrmFeature[]
+): ConnectingLanesFeatureCollectionWithSsmSrm => {
+  return {
+    ...connectingLanes,
+    features: connectingLanes.features.map((feature) => {
+      const ssmInfo: SsmInfo[] = ssms.map(getSsmInfoList).flat()
+      const srmInfo: SrmInfo[] = srms.map(getSrmInfoList).flat()
+      const signalStatuses = ssmInfo.filter(
+        (status) =>
+          status.inboundLaneID &&
+          status.inboundLaneID === feature.properties.ingressLaneId &&
+          (!status.outboundLaneID || status.outboundLaneID == feature.properties.egressLaneId)
+        // TODO: Support linking by connection ID  || (status.inboundLaneConnectionID && status.inboundLaneConnectionID === feature.properties.)
+      )
+      const signalRequests = srmInfo.filter(
+        (request) =>
+          request.inboundLaneID &&
+          request.inboundLaneID === feature.properties.ingressLaneId &&
+          (!request.outboundLaneID || request.outboundLaneID == feature.properties.egressLaneId)
+        // TODO: Support linking by connection ID  || (request.inboundLaneConnectionID && request.inboundLaneConnectionID === feature.properties.)
+      )
+      return {
+        ...feature,
+        properties: {
+          ...feature.properties,
+          signalRequests: sortSrmInfo(signalRequests),
+          signalStatuses: sortSsmInfo(signalStatuses),
+        },
+      } as ConnectingLanesFeatureWithSsmSrm
+    }),
+  }
+}
+
+export const addSsmSrmToMapFeatures = (
+  mapFeatures: MapFeatureCollection,
+  ssms: ProcessedSsm[],
+  srms: ProcessedSrmFeature[]
+): MapFeatureCollectionWithSsmSrm => {
+  return {
+    ...mapFeatures,
+    features: mapFeatures.features.map((feature) => {
+      const ssmInfo: SsmInfo[] = ssms.map(getSsmInfoList).flat()
+      const srmInfo: SrmInfo[] = srms.map(getSrmInfoList).flat()
+      const signalStatuses = ssmInfo.filter(
+        (status) =>
+          (status.inboundLaneID && status.inboundLaneID == feature.properties.laneId) ||
+          (status.outboundLaneID && status.outboundLaneID == feature.properties.laneId)
+      )
+      const signalRequests = srmInfo.filter(
+        (request) =>
+          (request.inboundLaneID && request.inboundLaneID == feature.properties.laneId) ||
+          (request.outboundLaneID && request.outboundLaneID == feature.properties.laneId)
+      )
+      return {
+        ...feature,
+        properties: {
+          ...feature.properties,
+          signalRequests: sortSrmInfo(signalRequests),
+          signalStatuses: sortSsmInfo(signalStatuses),
+        },
+      } as MapFeatureWithSsmSrm
+    }),
+  }
+}
+
+export const sortSsmInfo = (ssms: SsmInfo[]): SsmInfo[] => {
+  // Sort descending by timestamp for separate request IDs
+  // if same request ID, place higher sequence number before
+  return [...ssms].sort((a, b) => {
+    if (a.requestID === b.requestID) {
+      return (b.sequenceNumber ?? 0) - (a.sequenceNumber ?? 0)
+    }
+    return (b.timeStampEpochMillis ?? 0) - (a.timeStampEpochMillis ?? 0)
+  })
+}
+
+export const sortSrmInfo = (srms: SrmInfo[]): SrmInfo[] => {
+  // Sort by timestamp for separate request IDs
+  // if same request ID, place after by sequence number
+  return [...srms].sort((a, b) => {
+    if (a.requestID === b.requestID) {
+      return (b.sequenceNumber ?? 0) - (a.sequenceNumber ?? 0)
+    }
+    return (b.timeStampEpochMillis ?? 0) - (a.timeStampEpochMillis ?? 0)
+  })
+}
+
+const extractMatchingSsmStatuses = (statuses: ProcessedSignalStatus[], requests: ProcessedSignalRequest[]) => {
+  const matchingStatuses: ProcessedSignalStatus[] = []
+  statuses?.forEach((status) => {
+    requests?.forEach((request) => {
+      if (request.requestID == status.requestID) {
+        matchingStatuses.push(status)
+      }
+    })
+  })
+  return matchingStatuses
+}
+
+export const addSsmStatus = (
+  srmData: ProcessedSrmFeature[],
+  ssmData: ProcessedSsm[]
+): ProcessedSrmFeatureWithStatus[] =>
+  srmData.map((srm) => {
+    // Find matching SSM by vehicle ID
+    let matchingSsms: ProcessedSsm[] = []
+    ssmData.forEach((ssm) => {
+      const matchingStatuses = extractMatchingSsmStatuses(ssm.statusList ?? [], srm.properties.requests ?? [])
+      if (matchingStatuses.length > 0) {
+        matchingSsms.push({ ...ssm, statusList: matchingStatuses } as ProcessedSsm)
+      }
+    })
+
+    return {
+      ...srm,
+      properties: {
+        ...srm.properties,
+        ssms: matchingSsms,
+      },
+    } as ProcessedSrmFeatureWithStatus
+  })
+
+export const getSsmInfoList = (ssm: ProcessedSsm): SsmInfo[] =>
+  ssm.statusList?.map((status) => ({
+    requestInfo: {
+      vehicleID: status.vehicleID,
+      requesterSequenceNumber: status.requesterSequenceNumber,
+      role: status.requesterRole,
+      subrole: status.requesterSubrole,
+      importanceLevel: status.requestImportanceLevel,
+      iso3833VehicleType: status.requesterIso3833VehicleType,
+      hpmsType: status.requesterHpmsType,
+    },
+    timeStampEpochMillis: ssm.timeStampEpochMillis,
+    status: status.status,
+    sequenceNumber: ssm.sequenceNumber,
+    statusSequenceNumber: ssm.statusSequenceNumber,
+    requestID: status.requestID,
+    inboundLaneID: status.inboundOnLaneID,
+    inboundLaneConnectionID: status.inboundOnLaneConnectionID,
+    outboundLaneID: status.outboundOnLaneID,
+    outboundLaneConnectionID: status.outboundOnLaneConnectionID,
+    estimatedTimeOfArrival: status.estimatedTimeOfArrival,
+    estimatedTimeOfArrivalDurationSeconds: status.estimatedTimeOfArrivalDurationSeconds,
+  })) || []
+
+export const getSrmInfoList = (srm: ProcessedSrmFeature): SrmInfo[] =>
+  srm.properties.requests?.map((request) => ({
+    vehicleInfo: {
+      vehicleID: srm.properties.vehicleID,
+      role: srm.properties.role,
+      subrole: srm.properties.subrole,
+      importanceLevel: srm.properties.importanceLevel,
+      iso3833VehicleType: srm.properties.iso3833VehicleType,
+      hpmsType: srm.properties.hpmsType,
+    },
+    timeStampEpochMillis: srm.properties.timeStampEpochMillis,
+    sequenceNumber: srm.properties.sequenceNumber,
+    requestID: request.requestID,
+    priorityRequestType: request.priorityRequestType,
+    inboundLaneID: request.inboundLaneID,
+    inboundLaneConnectionID: request.inboundLaneConnectionID,
+    outboundLaneID: request.outboundLaneID,
+    outboundLaneConnectionID: request.outboundLaneConnectionID,
+    estimatedTimeOfArrival: request.estimatedTimeOfArrival,
+    estimatedTimeOfArrivalDurationSeconds: request.estimatedTimeOfArrivalDurationSeconds,
+  })) || []

@@ -24,7 +24,9 @@ import asn1DecoderSlice from './features/intersections/decoder/asn1-decoder-slic
 import intersectionMapReducer from './features/intersections/map/map-slice'
 import intersectionMapLayerStyleReducer from './features/intersections/map/map-layer-style-slice'
 import dataSelectorReducer from './features/intersections/data-selector/dataSelectorSlice'
-import { intersectionApiSlice } from './features/api/intersectionApiSlice'
+import { intersectionConfigSlice } from './features/api/intersectionConfigSlice'
+import { intersectionMapApiSlice } from './features/api/intersectionMapApiSlice'
+import { intersectionMapApiMiddleware } from './features/api/intersection-map-api-middleware'
 import { organizationApiSlice } from './features/api/organizationApiSlice'
 import { rsuCountsApiSlice } from './features/api/rsuCountsApiSlice'
 import { rsuApiSlice } from './features/api/rsuApiSlice'
@@ -63,7 +65,8 @@ export const setupStore = (preloadedState?: Partial<any>) => {
       asn1Decoder: asn1DecoderSlice,
       timeSync: timeSyncReducer,
       haas: haasSliceReducer,
-      [intersectionApiSlice.reducerPath]: intersectionApiSlice.reducer,
+      [intersectionConfigSlice.reducerPath]: intersectionConfigSlice.reducer,
+      [intersectionMapApiSlice.reducerPath]: intersectionMapApiSlice.reducer,
       [organizationApiSlice.reducerPath]: organizationApiSlice.reducer,
       [rsuCountsApiSlice.reducerPath]: rsuCountsApiSlice.reducer,
       [rsuApiSlice.reducerPath]: rsuApiSlice.reducer,
@@ -75,7 +78,9 @@ export const setupStore = (preloadedState?: Partial<any>) => {
         serializableCheck: false,
         immutableCheck: false,
       })
-        .concat(intersectionApiSlice.middleware)
+        .concat(intersectionConfigSlice.middleware)
+        .concat(intersectionMapApiSlice.middleware)
+        .concat(intersectionMapApiMiddleware.middleware)
         .concat(organizationApiSlice.middleware)
         .concat(rsuCountsApiSlice.middleware)
         .concat(rsuApiSlice.middleware),

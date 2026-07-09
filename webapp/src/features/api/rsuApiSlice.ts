@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import EnvironmentVars from '../../EnvironmentVars'
 import { RootState } from '../../store'
 import { selectToken } from '../../generalSlices/userSlice'
-import { getQueryString } from './intersectionApiSlice'
+import { getQueryString } from './intersectionConfigSlice'
 import { AdminRsu, AdminRsuAllowedSelections } from '../../models/Rsu'
 import { AdminRsuCreationBody } from '../adminAddRsu/AdminAddRsu'
 
@@ -35,9 +35,7 @@ export const rsuApiSlice = createApi({
 
       headers.set('Accept', 'application/json')
 
-      // Endpoint names must match the keys in the endpoints objects below
-      const endpointsWithoutToken = []
-      if (token && !endpointsWithoutToken.includes(endpoint)) {
+      if (token) {
         headers.set('Authorization', `Bearer ${token}`)
       }
 

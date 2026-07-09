@@ -62,7 +62,7 @@ const App = () => {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <ReactKeycloakProvider
-          initOptions={{ onLoad: 'login-required' }}
+          initOptions={{ onLoad: 'login-required', checkLoginIframe: false }}
           authClient={keycloak}
           onTokens={({ token }: { token: string }) => {
             // Logic to prevent multiple login triggers

@@ -21,7 +21,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   useUpdateDefaultParameterMutation,
   useUpdateIntersectionParameterMutation,
-} from '../../api/intersectionApiSlice'
+} from '../../api/intersectionConfigSlice'
 
 export const ConfigParamEditForm = (props) => {
   const { parameter }: { parameter: DefaultConfig | IntersectionConfig } = props

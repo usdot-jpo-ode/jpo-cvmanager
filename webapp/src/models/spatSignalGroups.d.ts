@@ -28,7 +28,7 @@ type SignalStateFeatureCollection = {
 type SignalStateFeature = {
   type: 'Feature'
   properties: SignalStateProperties
-  geometry: PointGemetry
+  geometry: PointGeometry
 }
 
 type SignalStateProperties = {

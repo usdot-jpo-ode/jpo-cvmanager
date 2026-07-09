@@ -476,7 +476,7 @@ function MapPage() {
 
   const heatMapData = useMemo(() => {
     return {
-      type: 'FeatureCollection' as 'FeatureCollection',
+      type: 'FeatureCollection' as const,
       features:
         rsuData
           ?.map(

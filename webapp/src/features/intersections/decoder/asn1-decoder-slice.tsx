@@ -218,6 +218,8 @@ export const decoderModeToggled = createAsyncThunk(
             map: [],
             spat: [],
             bsm: { type: 'FeatureCollection', features: [] },
+            ssm: [],
+            srm: [],
           },
           sourceDataType: initialSourceDataType,
           intersectionId,

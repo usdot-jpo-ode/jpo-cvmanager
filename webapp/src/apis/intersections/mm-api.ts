@@ -156,7 +156,7 @@ class MessageMonitorApi {
     abortController?: AbortController
   }): Promise<ProcessedBsmFeature[]> {
     const queryParams: Record<string, string> = {}
-    if (vehicleId) queryParams['origin_ip'] = vehicleId
+    if (vehicleId) queryParams['vehicle_id'] = vehicleId
     if (startTime) queryParams['start_time_utc_millis'] = startTime.getTime().toString()
     if (endTime) queryParams['end_time_utc_millis'] = endTime.getTime().toString()
     if (long) queryParams['longitude'] = long.toString()

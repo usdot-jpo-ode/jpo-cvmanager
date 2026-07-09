@@ -404,8 +404,6 @@ Note that it is recommended to work with the Python API from a [virtual environm
 
 - MONGO_PROCESSED_BSM_COLLECTION_NAME: The collection name in MongoDB for processed BSM messages.
 - MONGO_PROCESSED_PSM_COLLECTION_NAME: The collection name in MongoDB for processed PSM messages.
-- MONGO_SSM_COLLECTION_NAME: The database name for SSM visualization data.
-- MONGO_SRM_COLLECTION_NAME: The database name for SRM visualization data.
 - FIRMWARE_MANAGER_ENDPOINT: Endpoint for the firmware manager deployment's API.
 - CSM_EMAIL_TO_SEND_FROM: Origin email address for the API error developer emails.
 - CSM_EMAILS_TO_SEND_TO: Destination email addresses for the API error developer emails.

@@ -3,7 +3,7 @@ import { Box, Container, Typography } from '@mui/material'
 import { ConfigParamRemoveForm } from '../../../features/intersections/configuration/configuration-remove-form'
 import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { selectParameter } from '../../../features/api/intersectionApiSlice'
+import { selectParameter } from '../../../features/api/intersectionConfigSlice'
 import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
 
 const ConfigParamRemove = () => {

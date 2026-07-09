@@ -95,13 +95,6 @@ class RsuApi {
       additional_headers: { Organization: org },
       tag: 'rsu',
     })
-  getSsmSrmData = async (token: string, url_ext = '', query_params: Record<string, string> = {}): Promise<SsmSrmData> =>
-    apiHelper._getData({
-      url: EnvironmentVars.ssmSrmEndpoint + url_ext,
-      token,
-      query_params,
-      tag: 'rsu',
-    })
   getIssScmsStatus = async (
     token: string,
     org: string,

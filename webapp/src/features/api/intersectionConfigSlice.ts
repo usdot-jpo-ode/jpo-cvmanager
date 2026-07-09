@@ -12,21 +12,18 @@ export const getQueryString = (query_params: Record<string, string>) => {
   const filteredQueryParams: Record<string, string> = { ...query_params }
   Object.keys(filteredQueryParams).forEach((key) => query_params[key] === undefined && delete query_params[key])
   const queryString = new URLSearchParams(query_params).toString()
-  return `${queryString ? `?${queryString}` : ''}`
+  return queryString ? `?${queryString}` : ''
 }
 
 // Define a service using a base URL and expected endpoints
-export const intersectionApiSlice = createApi({
-  reducerPath: 'intersectionApi',
+export const intersectionConfigSlice = createApi({
+  reducerPath: 'intersectionConfig',
   baseQuery: fetchBaseQuery({
     baseUrl: combineUrlPaths(EnvironmentVars.CVIZ_API_SERVER_URL, '/intersections/configuration'),
     prepareHeaders: (headers, { getState, endpoint }) => {
       const token = selectToken(getState() as RootState)
 
-      // Specify endpoints that do not require a token or organization. These names must match the keys in the endpoints object below.
-      const endpointsWithoutToken = []
-
-      if (token && !endpointsWithoutToken.includes(endpoint)) {
+      if (token) {
         headers.set('Authorization', `Bearer ${token}`)
       }
 
@@ -61,7 +58,7 @@ export const intersectionApiSlice = createApi({
         // Special code to invalidate tags after a pre-set delay
         setTimeout(
           () => {
-            dispatch(intersectionApiSlice.util.invalidateTags(['defaultConfigs', 'intersectionConfigs']))
+            dispatch(intersectionConfigSlice.util.invalidateTags(['defaultConfigs', 'intersectionConfigs']))
           },
           500 //milliseconds
         )
@@ -103,7 +100,7 @@ export const {
 
   useLazyGetGeneralParametersQuery,
   useLazyGetIntersectionParametersQuery,
-} = intersectionApiSlice
+} = intersectionConfigSlice
 
 const filterParameter = (
   key: string,
@@ -113,8 +110,8 @@ const filterParameter = (
   intersectionParameters?.find((p) => p.key === key) ?? generalParameters?.find((p) => p.key === key)
 
 const intersectionParameters = (intersectionId: number) =>
-  intersectionApiSlice.endpoints.getIntersectionParameters.select(intersectionId)
-const generalParameters = intersectionApiSlice.endpoints.getGeneralParameters.select(undefined)
+  intersectionConfigSlice.endpoints.getIntersectionParameters.select(intersectionId)
+const generalParameters = intersectionConfigSlice.endpoints.getGeneralParameters.select(undefined)
 
 const selectIntersectionParametersById = (intersectionId: number) =>
   createSelector(intersectionParameters(intersectionId), (result) => result.data ?? [])

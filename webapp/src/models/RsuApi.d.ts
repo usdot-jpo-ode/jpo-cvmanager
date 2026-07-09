@@ -61,18 +61,6 @@ export type RsuMapInfo = {
 }
 export type RsuMapInfoIpList = string[]
 
-// No response used, this method does not appear to be used
-export type SsmSrmData = Array<{
-  time: string
-  ip: string
-  requestId: string
-  role: string
-  lat: number
-  long: number
-  type: string
-  status: string
-}>
-
 export type IssScmsStatus = {
   [ip: string]: {
     health: '0' | '1'

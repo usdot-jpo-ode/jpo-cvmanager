@@ -39,4 +39,7 @@ public class RsuDto {
 
     @Schema(description = "Indicates whether TIM (Traveler Information Message) deposit is enabled", example = "true")
     private boolean timDepositEnabled;
+
+    @Schema(description = "Manufacturer name", example = "Commsignia")
+    private String manufacturerName;
 }

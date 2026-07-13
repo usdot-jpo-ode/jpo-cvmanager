@@ -24,7 +24,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +35,6 @@ import us.dot.its.jpo.ode.api.models.IDCount;
 
 @ExtendWith(MockitoExtension.class)
 public class BsmEventRepositoryImplTest {
-
 
     @Mock
     private MongoTemplate mongoTemplate;
@@ -171,8 +169,8 @@ public class BsmEventRepositoryImplTest {
         // Verify time window condition
         Document timeCondition = (Document) queryObject.get("startingBsmTimestamp");
         assertThat(timeCondition).isNotNull();
-        assertThat(timeCondition.get("$gte")).isEqualTo(Date.from(Instant.ofEpochMilli(startTime)));
-        assertThat(timeCondition.get("$lte")).isEqualTo(Date.from(Instant.ofEpochMilli(endTime)));
+        assertThat(timeCondition.get("$gte")).isEqualTo(startTime);
+        assertThat(timeCondition.get("$lte")).isEqualTo(endTime);
     }
 
     @Test
@@ -204,8 +202,8 @@ public class BsmEventRepositoryImplTest {
         // Verify time window condition
         Document timeCondition = (Document) queryObject.get("startingBsmTimestamp");
         assertThat(timeCondition).isNotNull();
-        assertThat(timeCondition.get("$gte")).isEqualTo(Date.from(Instant.ofEpochMilli(startTime)));
-        assertThat(timeCondition.get("$lte")).isEqualTo(Date.from(Instant.ofEpochMilli(endTime)));
+        assertThat(timeCondition.get("$gte")).isEqualTo(startTime);
+        assertThat(timeCondition.get("$lte")).isEqualTo(endTime);
     }
 
     @Test
@@ -237,8 +235,8 @@ public class BsmEventRepositoryImplTest {
         // Verify time window condition
         Document timeCondition = (Document) queryObject.get("startingBsmTimestamp");
         assertThat(timeCondition).isNotNull();
-        assertThat(timeCondition.get("$gte")).isEqualTo(Date.from(Instant.ofEpochMilli(startTime)));
-        assertThat(timeCondition.get("$lte")).isEqualTo(Date.from(Instant.ofEpochMilli(endTime)));
+        assertThat(timeCondition.get("$gte")).isEqualTo(startTime);
+        assertThat(timeCondition.get("$lte")).isEqualTo(endTime);
     }
 
     @Test
@@ -305,17 +303,17 @@ public class BsmEventRepositoryImplTest {
 
     @Test
     void testFindLatest() {
-        BsmEvent event = new BsmEvent();
-        event.setIntersectionID(intersectionID);
+        Document document = new Document();
+        document.put("intersectionID", intersectionID);
 
-        doReturn(event).when(mongoTemplate).findOne(any(Query.class), eq(BsmEvent.class),
-                anyString());
+        doReturn(document).when(mongoTemplate).findOne(any(Query.class), eq(Document.class),
+                eq(collectionName));
 
         Page<BsmEvent> page = repository.findLatest(intersectionID, startTime, endTime);
 
         assertThat(page.getContent()).hasSize(1);
         assertThat(page.getContent().get(0).getIntersectionID()).isEqualTo(intersectionID);
-        verify(mongoTemplate).findOne(any(Query.class), eq(BsmEvent.class),
-                eq("CmBsmEvents"));
+        verify(mongoTemplate).findOne(any(Query.class), eq(Document.class),
+                eq(collectionName));
     }
 }

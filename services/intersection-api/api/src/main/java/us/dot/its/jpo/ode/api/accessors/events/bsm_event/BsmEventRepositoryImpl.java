@@ -3,7 +3,9 @@ package us.dot.its.jpo.ode.api.accessors.events.bsm_event;
 import java.time.Instant;
 import java.util.List;
 
+import org.bson.Document;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
@@ -17,11 +19,16 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.bsm.BsmEvent;
+import us.dot.its.jpo.geojsonconverter.DateJsonMapper;
 
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import us.dot.its.jpo.ode.api.models.IDCount;
 
@@ -34,6 +41,11 @@ public class BsmEventRepositoryImpl
 	private final String collectionName = "CmBsmEvents";
 	private final String DATE_FIELD = "startingBsmTimestamp";
 	private final String INTERSECTION_ID_FIELD = "intersectionID";
+
+	private final TypeReference<BsmEvent> bsmEventTypeReference = new TypeReference<>() {
+	};
+	private final ObjectMapper mapper = DateJsonMapper.getInstance()
+			.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
 	@Autowired
 	public BsmEventRepositoryImpl(MongoTemplate mongoTemplate) {
@@ -56,7 +68,7 @@ public class BsmEventRepositoryImpl
 			Long endTime) {
 		Criteria criteria = new IntersectionCriteria()
 				.whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-				.withinTimeWindow(DATE_FIELD, startTime, endTime, false);
+				.withinTimeWindow(DATE_FIELD, startTime, endTime, IntersectionCriteria.TimeStampFormat.LONG);
 		Query query = Query.query(criteria);
 		return mongoTemplate.count(query, collectionName);
 	}
@@ -77,14 +89,15 @@ public class BsmEventRepositoryImpl
 			Long endTime) {
 		Criteria criteria = new IntersectionCriteria()
 				.whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-				.withinTimeWindow(DATE_FIELD, startTime, endTime, false);
+				.withinTimeWindow(DATE_FIELD, startTime, endTime, IntersectionCriteria.TimeStampFormat.LONG);
 		Query query = Query.query(criteria);
 		Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
-		return wrapSingleResultWithPage(
-				mongoTemplate.findOne(
-						query.with(sort),
-						BsmEvent.class,
-						collectionName));
+		Document document = mongoTemplate.findOne(
+				query.with(sort),
+				Document.class,
+				collectionName);
+		BsmEvent event = mapper.convertValue(document, bsmEventTypeReference);
+		return wrapSingleResultWithPage(event);
 	}
 
 	/**
@@ -104,12 +117,23 @@ public class BsmEventRepositoryImpl
 			Pageable pageable) {
 		Criteria criteria = new IntersectionCriteria()
 				.whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-				.withinTimeWindow(DATE_FIELD, startTime, endTime, false);
+				.withinTimeWindow(DATE_FIELD, startTime, endTime, IntersectionCriteria.TimeStampFormat.LONG);
 		Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
 
 		List<String> excludedFields = List.of("recordGeneratedAt");
-		return findPage(mongoTemplate, collectionName, pageable, criteria, sort, excludedFields,
-				BsmEvent.class);
+		Page<Document> documentPage = findDocumentsWithPagination(
+				mongoTemplate,
+				collectionName,
+				pageable,
+				criteria,
+				sort,
+				excludedFields);
+
+		List<BsmEvent> events = documentPage.getContent().stream()
+				.map(document -> mapper.convertValue(document, bsmEventTypeReference))
+				.toList();
+
+		return new PageImpl<>(events, pageable, documentPage.getTotalElements());
 	}
 
 	@Override

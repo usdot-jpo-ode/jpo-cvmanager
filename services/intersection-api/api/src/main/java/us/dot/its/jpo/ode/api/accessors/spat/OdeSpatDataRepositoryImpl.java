@@ -44,7 +44,7 @@ public class OdeSpatDataRepositoryImpl
 			Long endTime) {
 		Criteria criteria = new IntersectionCriteria()
 				.whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-				.withinTimeWindow(DATE_FIELD, startTime, endTime, true);
+				.withinTimeWindow(DATE_FIELD, startTime, endTime, IntersectionCriteria.TimeStampFormat.STRING);
 		Query query = Query.query(criteria);
 		return mongoTemplate.count(query, collectionName);
 	}
@@ -65,7 +65,7 @@ public class OdeSpatDataRepositoryImpl
 			Long endTime) {
 		Criteria criteria = new IntersectionCriteria()
 				.whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-				.withinTimeWindow(DATE_FIELD, startTime, endTime, true);
+				.withinTimeWindow(DATE_FIELD, startTime, endTime, IntersectionCriteria.TimeStampFormat.STRING);
 		Query query = Query.query(criteria);
 		Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
 		return wrapSingleResultWithPage(

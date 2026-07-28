@@ -1,4 +1,3 @@
-import React from 'react'
 import PropTypes from 'prop-types'
 import toast from 'react-hot-toast'
 import * as Yup from 'yup'

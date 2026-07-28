@@ -65,10 +65,8 @@ spring:
     url: ${POSTGRES_SERVER_URL:jdbc:postgresql://cvmanager_postgres:5432}/postgres
     username: ${PG_DB_USER:postgres}
     password: ${PG_DB_PASS}
-    driver-class-name: org.postgresql.Driver
   jpa:
-    hibernate:
-      dialect: org.hibernate.dialect.PostgreSQLDialect
+    database: postgresql
   ### Spring Mail Settings (If using emailBroker SMTP)
   mail:
     host: ${INTERSECTION_SMTP_SERVER_HOST:localhost}
@@ -84,6 +82,12 @@ spring:
           starttls:
             enable: ${INTERSECTION_SMTP_STARTTLS:false}
             required: ${INTERSECTION_SMTP_STARTTLS:false}
+  cache:
+    jcache:
+      provider: com.github.benmanes.caffeine.jcache.spi.CaffeineCachingProvider
+    cache-names: email-rate-limit
+    caffeine:
+      spec: maximumSize=100000,expireAfterWrite=1h
 
 enable:
   api: ${INTERSECTION_API_ENABLE_API:true}
@@ -118,3 +122,23 @@ j2735.api:
   text-buffer-size: ${J2735_ASN_TEXT_BUFFER_SIZE:262144}
   uper-buffer-size: ${J2735_UPER_BUFFER_SIZE:8192}
   error-buffer-size: ${J2735_ERROR_BUFFER_SIZE:256}
+
+firmwareManagerEndpoint: ${FIRMWARE_MANAGER_ENDPOINT:}
+
+bucket4j:
+  enabled: true
+  filters:
+    - cache-name: email-rate-limit
+      url: /emails/.*
+      strategy: all
+      rate-limits:
+        - cache-key: "@jwtSubjectExtractor.extractSubject(getHeader('Authorization')) != null ? @jwtSubjectExtractor.extractSubject(getHeader('Authorization')) : getRemoteAddr()"
+          bandwidths:
+            - capacity: ${EMAIL_RATE_LIMIT_PER_USER:12}
+              time: 1
+              unit: hours
+        - cache-key: "'email_global'"
+          bandwidths:
+            - capacity: ${EMAIL_RATE_LIMIT_PER_INSTANCE:120}
+              time: 1
+              unit: hours

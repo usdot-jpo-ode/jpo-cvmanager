@@ -1,4 +1,3 @@
-import React from 'react'
 import { Box, Container } from '@mui/material'
 import EventsApi from '../../apis/intersections/events-api'
 import AssessmentsApi from '../../apis/intersections/assessments-api'

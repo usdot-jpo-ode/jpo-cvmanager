@@ -8,9 +8,52 @@ import org.springframework.stereotype.Repository;
 import us.dot.its.jpo.ode.api.models.postgres.tables.Intersection;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface IntersectionRepository extends JpaRepository<Intersection, Integer> {
+
+    /**
+     * Finds a single intersection by its intersection_number.
+     */
+    Optional<Intersection> findByIntersectionNumber(String intersectionNumber);
+
+    /**
+     * Fetches a single intersection with its organization associations eagerly loaded.
+     * Avoids N+1 queries when reading org names.
+     */
+    @Query("SELECT DISTINCT i FROM Intersection i " +
+            "LEFT JOIN FETCH i.intersectionOrganizations io " +
+            "LEFT JOIN FETCH io.organization " +
+            "WHERE i.intersectionNumber = :intersectionNumber")
+    Optional<Intersection> findByIntersectionNumberWithOrgs(
+            @Param("intersectionNumber") Integer intersectionNumber);
+
+    /**
+     * Fetches all intersections with their organization associations eagerly loaded.
+     */
+    @Query("SELECT DISTINCT i FROM Intersection i " +
+            "LEFT JOIN FETCH i.intersectionOrganizations io " +
+            "LEFT JOIN FETCH io.organization")
+    List<Intersection> findAllWithOrgs();
+
+    /**
+     * Fetches intersections belonging to a single organization, with org associations loaded.
+     */
+    @Query("SELECT DISTINCT i FROM Intersection i " +
+            "LEFT JOIN FETCH i.intersectionOrganizations io " +
+            "LEFT JOIN FETCH io.organization o " +
+            "WHERE o.name = :orgName")
+    List<Intersection> findAllByOrgNameWithOrgs(@Param("orgName") String orgName);
+
+    /**
+     * Fetches intersections belonging to any of the given organizations, with org associations loaded.
+     */
+    @Query("SELECT DISTINCT i FROM Intersection i " +
+            "LEFT JOIN FETCH i.intersectionOrganizations io " +
+            "LEFT JOIN FETCH io.organization o " +
+            "WHERE o.name IN :orgNames")
+    List<Intersection> findAllByOrgNamesWithOrgs(@Param("orgNames") List<String> orgNames);
 
     @Query("SELECT i.intersectionNumber " +
             "FROM Intersection i " +

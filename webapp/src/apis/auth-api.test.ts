@@ -2,6 +2,7 @@ import { jwtDecode } from 'jwt-decode'
 import AuthApi from './auth-api'
 import EnvironmentVars from '../EnvironmentVars'
 import { AuthToken } from '../models/AuthToken'
+import { vi } from 'vitest'
 
 // Mock jwt-decode
 vi.mock('jwt-decode')
@@ -175,8 +176,8 @@ describe('AuthApi', () => {
         name: 'Test User',
         super_user: true,
         organizations: [
-          { name: 'Test Org', role: 'admin' },
-          { name: 'Test Org 2', role: 'user' },
+          { organization: 'Test Org', role: 'ADMIN' },
+          { organization: 'Test Org 2', role: 'USER' },
         ],
       })
     })
@@ -304,7 +305,7 @@ describe('AuthApi', () => {
           last_name: 'User',
           name: 'Test User',
           super_user: true,
-          organizations: [{ name: 'Test Org', role: 'admin' }],
+          organizations: [{ organization: 'Test Org', role: 'ADMIN' }],
         },
         expires_at: 1770396901000,
       })
@@ -374,9 +375,9 @@ describe('AuthApi', () => {
       const result = await AuthApi.logIn(mockToken)
 
       expect(result.data.organizations).toEqual([
-        { name: 'Org 1', role: 'admin' },
-        { name: 'Org 2', role: 'user' },
-        { name: 'Org 3', role: 'operator' },
+        { organization: 'Org 1', role: 'ADMIN' },
+        { organization: 'Org 2', role: 'USER' },
+        { organization: 'Org 3', role: 'OPERATOR' },
       ])
       expect(result.data.super_user).toBe(false)
     })

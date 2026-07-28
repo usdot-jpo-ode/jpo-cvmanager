@@ -2,7 +2,6 @@ package us.dot.its.jpo.ode.api.accessorTests.map;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.runner.RunWith;
 import org.locationtech.jts.geom.CoordinateXY;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
@@ -54,19 +53,18 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.DistinctIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 
-import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+import org.springframework.context.annotation.Import;
+import us.dot.its.jpo.ode.api.TestcontainersConfiguration;
 
 @SpringBootTest
-@RunWith(SpringRunner.class)
-@ActiveProfiles("test")
-@AutoConfigureEmbeddedDatabase
+@ActiveProfiles("integration-test")
+@Import(TestcontainersConfiguration.class)
 public class ProcessedMapRepositoryImplTest {
 
     @MockitoSpyBean

@@ -1,6 +1,5 @@
 import { useTheme, Stack, IconButton, Typography } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
-import React from 'react'
 
 type SideBarHeaderProps = {
   onClick: () => void

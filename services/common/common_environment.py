@@ -10,7 +10,9 @@ def configure_logging() -> str:
     return LOGGING_LEVEL
 
 
-def get_env_var(key: str, default: str | None = None, error=False, warn=True):
+def get_env_var(
+    key: str, default: str | None = None, error=False, warn=True, secret=False
+):
     value = os.environ.get(key)
     if value is None or value == "":
         if error:
@@ -24,7 +26,10 @@ def get_env_var(key: str, default: str | None = None, error=False, warn=True):
                 f"Environment variable {key} was not specified, using default: {default}"
             )
         return default
-    logging.info(f"Environment variable {key} is set to {value}")
+    if secret:
+        logging.info(f"Environment variable {key} is set")
+    else:
+        logging.info(f"Environment variable {key} is set to {value}")
     return value
 
 

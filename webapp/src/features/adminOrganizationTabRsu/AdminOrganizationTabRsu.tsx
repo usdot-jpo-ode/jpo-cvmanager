@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import AdminTable from '../../components/AdminTable'
 import { Button, Typography, useTheme } from '@mui/material'
 import Accordion from '@mui/material/Accordion'
@@ -21,8 +21,9 @@ import {
   updateOrgSnmpMonitoring,
   selectTimDeposit,
   selectSnmpMonitoring,
+  selectSelectedOrgName,
 } from '../adminOrganizationTab/adminOrganizationTabSlice'
-import { selectLoadingGlobal, selectOrganizationName } from '../../generalSlices/userSlice'
+import { selectLoadingGlobal } from '../../generalSlices/userSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
@@ -34,7 +35,7 @@ import toast from 'react-hot-toast'
 import { AddCircleOutline, DeleteOutline } from '@mui/icons-material'
 import { Multiselect } from 'react-widgets/cjs'
 import '../css/multiselect.css'
-import { useGetAllRsusQuery } from '../api/rsuApiSlice'
+import { useGetAllRsusNotInOrganizationQuery } from '../api/organizationApiSlice'
 
 interface AdminOrganizationTabRsuProps {
   selectedOrg: string
@@ -47,21 +48,11 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
   const { selectedOrg, selectedOrgEmail, updateTableData } = props
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const theme = useTheme()
-  const organizationName = useSelector(selectOrganizationName)
+  const organizationName = useSelector(selectSelectedOrgName)
 
-  const { data: allRsuData } = useGetAllRsusQuery({ organization: organizationName })
-
-  const availableRsuList = useMemo(() => {
-    // TODO: Pull this from a separate endpoint based on organization not RSUs
-    if (!allRsuData?.content) return []
-
-    return allRsuData.content
-      .filter((rsu) => !rsu.organizations?.includes(organizationName))
-      .map((rsu, index) => ({
-        id: index,
-        ip: rsu.ip,
-      }))
-  }, [allRsuData, organizationName])
+  const { data: availableRsuList } = useGetAllRsusNotInOrganizationQuery(organizationName, {
+    skip: !organizationName, // Skip if no organization selected
+  })
 
   const selectedRsuList = useSelector(selectSelectedRsuList)
   const loadingGlobal = useSelector(selectLoadingGlobal)
@@ -291,15 +282,15 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
                   timDepositStatus === 'Enabled'
                     ? theme.palette.success.main
                     : timDepositStatus === 'Disabled'
-                    ? theme.palette.error.main
-                    : theme.palette.warning.main,
+                      ? theme.palette.error.main
+                      : theme.palette.warning.main,
                 fontWeight: 'bold',
                 bgcolor:
                   timDepositStatus === 'Enabled'
                     ? 'rgba(46, 125, 50, 0.1)'
                     : timDepositStatus === 'Disabled'
-                    ? 'rgba(211, 47, 47, 0.1)'
-                    : 'rgba(237, 108, 2, 0.1)',
+                      ? 'rgba(211, 47, 47, 0.1)'
+                      : 'rgba(237, 108, 2, 0.1)',
                 px: 1,
                 borderRadius: 1,
               }}
@@ -313,19 +304,19 @@ const AdminOrganizationTabRsu = (props: AdminOrganizationTabRsuProps) => {
                   snmpMonitoringStatus === 'Enabled'
                     ? theme.palette.success.main
                     : snmpMonitoringStatus === 'Disabled'
-                    ? theme.palette.error.main
-                    : snmpMonitoringStatus === 'Mixed'
-                    ? theme.palette.warning.main
-                    : theme.palette.text.secondary,
+                      ? theme.palette.error.main
+                      : snmpMonitoringStatus === 'Mixed'
+                        ? theme.palette.warning.main
+                        : theme.palette.text.secondary,
                 fontWeight: 'bold',
                 bgcolor:
                   snmpMonitoringStatus === 'Enabled'
                     ? 'rgba(46, 125, 50, 0.1)'
                     : snmpMonitoringStatus === 'Disabled'
-                    ? 'rgba(211, 47, 47, 0.1)'
-                    : snmpMonitoringStatus === 'Mixed'
-                    ? 'rgba(237, 108, 2, 0.1)'
-                    : 'transparent',
+                      ? 'rgba(211, 47, 47, 0.1)'
+                      : snmpMonitoringStatus === 'Mixed'
+                        ? 'rgba(237, 108, 2, 0.1)'
+                        : 'transparent',
                 px: 1,
                 borderRadius: 1,
               }}

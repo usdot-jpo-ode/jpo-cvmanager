@@ -12,10 +12,11 @@ services:
       ENABLE_EMAILER: ${ENABLE_EMAILER:-}
       DEPLOYMENT_TITLE: ${DEPLOYMENT_TITLE:-}
 
-      SMTP_SERVER_IP: ${SMTP_SERVER_IP}
-      SMTP_USERNAME: ${SMTP_USERNAME}
-      SMTP_PASSWORD: ${SMTP_PASSWORD}
-      SMTP_EMAIL: ${SMTP_EMAIL}
+      IAPI_ENDPOINT: ${IAPI_ENDPOINT:-http://${DOCKER_HOST_IP}:8089}
+      KC_ENDPOINT: ${KEYCLOAK_ENDPOINT:-http://${DOCKER_HOST_IP:?error}:8084}
+      KC_REALM: ${KEYCLOAK_REALM:-cvmanager}
+      KC_SA_CLIENT_ID: ${KEYCLOAK_SA_COUNT_METRIC_CLIENT_ID:-sa_count_metric}
+      KC_SA_CLIENT_SECRET: ${KEYCLOAK_SA_COUNT_METRIC_CLIENT_SECRET_KEY:-sa-count-metric-secret-key}
 
       PROJECT_ID: ${GCP_PROJECT_ID:-}
 
@@ -122,14 +123,14 @@ services:
     restart: on-failure:3
 
     ports:
-      - '8089:8080'
+      - '8091:8080'
     environment:
       PG_DB_HOST: ${PG_DB_HOST:-cvmanager_postgres:5432}
       PG_DB_NAME: ${PG_DB_NAME:-postgres}
       PG_DB_USER: ${PG_DB_USER:-postgres}
       PG_DB_PASS: ${PG_DB_PASS:-postgres}
 
-      UPGRADE_RUNNER_ENDPOINT: ${FIRMWARE_MANAGER_UPGRADE_RUNNER_ENDPOINT:-http://firmware_manager_upgrade_runner:8090}
+      UPGRADE_RUNNER_ENDPOINT: ${FIRMWARE_MANAGER_UPGRADE_RUNNER_ENDPOINT:-http://firmware_manager_upgrade_runner:8080}
 
       LOGGING_LEVEL: ${FIRMWARE_MANAGER_LOGGING_LEVEL:-}
     volumes:
@@ -160,10 +161,11 @@ services:
       GCP_PROJECT: ${GCP_PROJECT_ID:-}
       GOOGLE_APPLICATION_CREDENTIALS: /home/gcp_key.json
 
-      SMTP_SERVER_IP: ${SMTP_SERVER_IP}
-      SMTP_EMAIL: ${SMTP_EMAIL}
-      SMTP_USERNAME: ${SMTP_USERNAME}
-      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      IAPI_ENDPOINT: ${IAPI_ENDPOINT:-http://${DOCKER_HOST_IP}:8089}
+      KC_ENDPOINT: ${KEYCLOAK_ENDPOINT:-http://${DOCKER_HOST_IP:?error}:8084}
+      KC_REALM: ${KEYCLOAK_REALM:-cvmanager}
+      KC_SA_CLIENT_ID: ${KEYCLOAK_SA_FIRMWARE_UPGRADE_RUNNER_CLIENT_ID:-sa_firmware_upgrade_runner}
+      KC_SA_CLIENT_SECRET: ${KEYCLOAK_SA_FIRMWARE_UPGRADE_RUNNER_CLIENT_SECRET_KEY:-sa-firmware-upgrade-runner-secret-key}
 
       UPGRADE_SCHEDULER_ENDPOINT: ${FIRMWARE_MANAGER_UPGRADE_SCHEDULER_ENDPOINT:-http://firmware_manager_upgrade_scheduler:8090}
 

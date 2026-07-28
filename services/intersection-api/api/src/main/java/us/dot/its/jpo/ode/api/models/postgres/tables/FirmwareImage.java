@@ -19,7 +19,7 @@ public class FirmwareImage {
 
     @Size(max = 128)
     @NotNull
-    @Column(name = "name", nullable = false, length = 128)
+    @Column(name = "name", nullable = false, unique = true, length = 128)
     private String name;
 
     @NotNull
@@ -29,12 +29,12 @@ public class FirmwareImage {
 
     @Size(max = 128)
     @NotNull
-    @Column(name = "install_package", nullable = false, length = 128)
+    @Column(name = "install_package", nullable = false, unique = true, length = 128)
     private String installPackage;
 
     @Size(max = 128)
     @NotNull
-    @Column(name = "version", nullable = false, length = 128)
+    @Column(name = "version", nullable = false, unique = true, length = 128)
     private String version;
 
 

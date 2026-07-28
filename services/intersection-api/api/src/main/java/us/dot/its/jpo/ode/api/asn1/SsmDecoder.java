@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.time.ZonedDateTime;
 import java.util.HexFormat;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -39,6 +40,7 @@ import us.dot.its.jpo.geojsonconverter.validator.SrmJsonValidator;
  * Converts ASN.1 encoded SSM messages to processed SSM objects.
  */
 @Slf4j
+@ConditionalOnBean(MessageFrameCodec.class)
 @Component
 public class SsmDecoder implements Decoder {
 

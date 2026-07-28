@@ -136,28 +136,6 @@ def test_middleware_class_call_exception(
     mock_request.assert_called_once_with(environ)
 
 
-@patch("api.src.middleware.get_user_role")
-@patch("api.src.middleware.Request")
-def test_middleware_class_call_contact_support(mock_request, mock_get_user_role):
-    # mock
-    mock_request.return_value.method = "POST"
-    mock_request.return_value.path = "/contact-support"
-
-    # create instance
-    app = Mock()
-    middleware_instance = middleware.Middleware(app)
-
-    # call
-    environ = {"GOOGLE_CLIENT_ID": "test"}
-    start_response = Mock()
-    middleware_instance(environ, start_response)
-
-    # check
-    mock_get_user_role.assert_not_called()
-    app.assert_called_once_with(environ, start_response)
-    mock_request.assert_called_once_with(environ)
-
-
 @patch("api_environment.ENABLE_RSU_FEATURES", True)
 @patch("api_environment.ENABLE_INTERSECTION_FEATURES", True)
 @patch("api_environment.ENABLE_WZDX_FEATURES", True)

@@ -25,7 +25,7 @@ public class Intersection {
 
     @Size(max = 128)
     @NotNull
-    @Column(name = "intersection_number", nullable = false, length = 128)
+    @Column(name = "intersection_number", nullable = false, unique = true, length = 128)
     private String intersectionNumber;
 
     @Column(name = "ref_pt", columnDefinition = "geography not null")
@@ -43,5 +43,8 @@ public class Intersection {
 
     @OneToMany(mappedBy = "intersection", fetch = FetchType.LAZY)
     private List<IntersectionOrganization> intersectionOrganizations;
+
+    @OneToMany(mappedBy = "intersection", fetch = FetchType.LAZY)
+    private List<RsuIntersection> rsuIntersections;
 
 }

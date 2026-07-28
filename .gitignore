@@ -9,3 +9,5 @@ htmlcov
 .pytest_cache
 local_blob_storage
 services/coverage.xml
+.idea/**
+**/*.iml

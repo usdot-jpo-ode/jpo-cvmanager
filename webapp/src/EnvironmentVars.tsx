@@ -41,28 +41,22 @@ class EnvironmentVars {
   static WEBAPP_THEME_DARK = process.env.VITE_WEBAPP_THEME_DARK
 
   static cvmanagerBaseEndpoint = `${this.getBaseApiUrl()}`
-  static rsuInfoEndpoint = `${this.getBaseApiUrl()}/rsuinfo`
+  static rsuInfoPath = '/devices/rsus/info'
   static rsuOnlineEndpoint = `${this.getBaseApiUrl()}/rsu-online-status`
   static rsuCountsEndpoint = `${this.getBaseApiUrl()}/rsucounts`
   static rsuCommandEndpoint = `${this.getBaseApiUrl()}/rsu-command`
+  static rsuUpgradeEndpoint = `${this.CVIZ_API_SERVER_URL}/devices/rsus/upgrade`
   static wzdxEndpoint = `${this.getBaseApiUrl()}/wzdx-feed`
   static rsuGeoQueryEndpoint = `${this.getBaseApiUrl()}/rsu-config-geo-query`
   static rsuMsgFwdQueryEndpoint = `${this.getBaseApiUrl()}/rsu-msgfwd-query`
   static rsuMsgFwdFetchEndpoint = `${this.getBaseApiUrl()}/rsu-msgfwd-fetch`
   static geoMsgDataEndpoint = `${this.getBaseApiUrl()}/rsu-geo-msg-data`
-  static issScmsStatusEndpoint = `${this.getBaseApiUrl()}/iss-scms-status`
-  static adminAddIntersection = `${this.getBaseApiUrl()}/admin-new-intersection`
-  static adminIntersection = `${this.getBaseApiUrl()}/admin-intersection`
-  static adminAddUser = `${this.getBaseApiUrl()}/admin-new-user`
-  static adminUser = `${this.getBaseApiUrl()}/admin-user`
   static adminNotification = `${this.getBaseApiUrl()}/admin-notification`
   static adminAddNotification = `${this.getBaseApiUrl()}/admin-new-notification`
   static adminAddOrg = `${this.getBaseApiUrl()}/admin-new-org`
   static adminOrg = `${this.getBaseApiUrl()}/admin-org`
   static adminOrgTimDeposit = `${this.getBaseApiUrl()}/admin-org-tim-deposit`
   static adminOrgSnmpMonitoring = `${this.getBaseApiUrl()}/admin-org-snmp-monitoring`
-  static contactSupport = `${this.getBaseApiUrl()}/contact-support`
-  static rsuErrorSummary = `${this.getBaseApiUrl()}/rsu-error-summary`
 }
 
 export default EnvironmentVars

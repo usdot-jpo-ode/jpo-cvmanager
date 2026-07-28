@@ -132,7 +132,10 @@ export const deleteOrg = createAsyncThunk(
 
 export const editOrg = createAsyncThunk(
   'adminOrganizationTab/editOrg',
-  async (json: adminOrgPatch & { url?: string }, { getState }): Promise<{
+  async (
+    json: adminOrgPatch & { url?: string },
+    { getState }
+  ): Promise<{
     success: boolean
     message: string
     data?: { org_data: AdminOrgSingle }

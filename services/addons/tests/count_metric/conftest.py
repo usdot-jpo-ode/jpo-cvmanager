@@ -1,6 +1,7 @@
 import os
 
-os.environ['SMTP_SERVER_IP'] = 'smtp-server-ip'
-os.environ['SMTP_EMAIL'] = 'smtp-email'
-os.environ['SMTP_USERNAME'] = 'smtp-username'
-os.environ['SMTP_PASSWORD'] = 'smtp-password'
+os.environ["IAPI_ENDPOINT"] = "localhost:8089"
+os.environ["KC_ENDPOINT"] = "http://localhost:8084"
+os.environ["KC_REALM"] = "cvmanager"
+os.environ["KC_SA_CLIENT_ID"] = "sa_count_metric"
+os.environ["KC_SA_CLIENT_SECRET"] = "sa_count_metric_secret"

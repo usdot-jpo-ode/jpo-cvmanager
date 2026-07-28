@@ -1,6 +1,5 @@
 import { Dialog, DialogTitle, Container, DialogActions, Button } from '@mui/material'
 import IntersectionMap from './intersection-selection-map'
-import React from 'react'
 
 type Props = {
   onClose: () => void

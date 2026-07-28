@@ -1,33 +1,5 @@
 import { UserManager, LocalStorageManager } from './managers'
 
-class LocalStorageMock {
-  store: { [key: string]: any } = {}
-  length = 0
-  constructor() {
-    this.store = undefined
-  }
-
-  clear() {
-    this.store = undefined
-  }
-
-  getItem(key: string) {
-    return this.store[key] || null
-  }
-
-  setItem(key: string, value: any) {
-    this.store[key] = String(value)
-  }
-
-  removeItem(key: string) {
-    delete this.store[key]
-  }
-
-  key(index: number) {
-    return Object.keys(this.store)[index]
-  }
-}
-
 test('UserManager correctly checks if login is active', () => {
   let authLoginData: AuthLoginData = undefined
   expect(UserManager.isLoginActive(authLoginData)).toBe(false)
@@ -48,14 +20,16 @@ test('UserManager correctly gets the organization', () => {
       name: undefined,
       email: undefined,
       super_user: undefined,
+      first_name: undefined,
+      last_name: undefined,
       organizations: [
         {
-          name: 'test1',
-          role: 'role',
+          organization: 'test1',
+          role: 'USER',
         },
         {
-          name: 'test2',
-          role: 'role',
+          organization: 'test2',
+          role: 'OPERATOR',
         },
       ],
     },
@@ -86,6 +60,8 @@ describe('UserManager.isSuperUser', () => {
   test('returns true when super_user is true', () => {
     const authLoginData: AuthLoginData = {
       data: {
+        first_name: 'Test',
+        last_name: 'User',
         name: 'Test User',
         email: 'test@example.com',
         super_user: true,
@@ -101,6 +77,8 @@ describe('UserManager.isSuperUser', () => {
   test('returns false when super_user is false', () => {
     const authLoginData: AuthLoginData = {
       data: {
+        first_name: 'Test',
+        last_name: 'User',
         name: 'Test User',
         email: 'test@example.com',
         super_user: false,
@@ -134,6 +112,8 @@ describe('UserManager.isSuperUser', () => {
   test('returns false when super_user is undefined', () => {
     const authLoginData: AuthLoginData = {
       data: {
+        first_name: 'Test',
+        last_name: 'User',
         name: 'Test User',
         email: 'test@example.com',
         super_user: undefined,
@@ -157,6 +137,8 @@ describe('LocalStorageManager.getIsSuperUser', () => {
   test('returns true when stored user is super user', () => {
     const authData: AuthLoginData = {
       data: {
+        first_name: 'Test',
+        last_name: 'User',
         name: 'Super User',
         email: 'super@example.com',
         super_user: true,
@@ -173,6 +155,8 @@ describe('LocalStorageManager.getIsSuperUser', () => {
   test('returns false when stored user is not super user', () => {
     const authData: AuthLoginData = {
       data: {
+        first_name: 'Regular',
+        last_name: 'User',
         name: 'Regular User',
         email: 'user@example.com',
         super_user: false,
@@ -198,6 +182,8 @@ describe('LocalStorageManager.getIsSuperUser', () => {
   test('returns false when stored auth data has no super_user field', () => {
     const authData: AuthLoginData = {
       data: {
+        first_name: 'User',
+        last_name: '',
         name: 'User',
         email: 'user@example.com',
         super_user: undefined,
@@ -214,6 +200,8 @@ describe('LocalStorageManager.getIsSuperUser', () => {
   test('returns false after auth data is removed', () => {
     const authData: AuthLoginData = {
       data: {
+        first_name: 'Super',
+        last_name: 'User',
         name: 'Super User',
         email: 'super@example.com',
         super_user: true,
@@ -225,10 +213,8 @@ describe('LocalStorageManager.getIsSuperUser', () => {
 
     LocalStorageManager.setAuthData(authData)
     expect(LocalStorageManager.getIsSuperUser()).toBe(true)
-    
+
     LocalStorageManager.removeAuthData()
     expect(LocalStorageManager.getIsSuperUser()).toBe(false)
   })
 })
-
-

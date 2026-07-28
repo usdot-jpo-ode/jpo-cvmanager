@@ -1,4 +1,3 @@
-import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import Map from './Map'
 import { Provider } from 'react-redux'
@@ -10,6 +9,7 @@ import { replaceChaoticIds } from '../utils/test-utils'
 it('snapshot bsmCoordinates wzdx', () => {
   const initialState = {
     rsu: {
+      loading: false,
       value: {
         rsuCounts: {},
         mapList: [],
@@ -24,6 +24,7 @@ it('snapshot bsmCoordinates wzdx', () => {
       },
     },
     wzdx: {
+      loading: false,
       value: {
         features: [
           {

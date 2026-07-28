@@ -24,11 +24,6 @@ Expected headers for all endpoints:
 - `"Content-Type": "application/json"`
 - `"Authorization": "token"`
 
-### <b>/contact-support</b> <b>(POST)</b>
-
-Sends a support request email to all users subscribed to 'Support Requests' in the cv-manager. Please note that this functionality
-relies on the user_email_notification table in PostgreSQL to pull in all users subscribed to receive these notifications.
-
 ### <b>/rsuinfo</b> <b>(GET)</b>
 
 Returns all basic data for RSUs in the GCP Cloud SQL database. It performs a basic select all query from a table named "RsuData" that is located in a database specified by the environments variables. Returns single JSON object.
@@ -134,75 +129,6 @@ body example:
   "organizations": ["Organization 1"]
 }
 ```
-
-## Users
-
-### <b>/admin-new-user</b> <b>(GET)</b>
-
-Returns the field options for specific user fields that do not take free-form responses.
-
-- organizations
-- roles
-
-### <b>/admin-new-user</b> <b>(POST)</b>
-
-Adds a new user to the CV Manager database. Associates the user with every organization specified. The specified user will be able to login to the CV Manager as soon as this is complete. The email associated with the user MUST be a Gmail account or an email address that is an alias of a Gmail.
-
-body example:
-
-```
-{
-  "email": "jdoe@example.com",
-  "first_name": "John",
-  "last_name": "Doe",
-  "super_user": True,
-  "organizations": [
-    {"name": "Test Org", "role": "operator"}
-  ]
-}
-```
-
-### <b>/admin-user</b> <b>(GET)</b>
-
-Depending upon the user_email argument's value, this endpoint returns a list of all users in the CV Manager's PostgreSQL DB or the details of a single user along with the options for specific user fields that do not take free-form responses.
-
-HTTP URL Arguments:
-
-- user_email:
-  - Set to "all" if you want a list of all users regardless of organization affiliation. Will not return the user field options.
-  - Set to a specific user email such as "user@email.com" to return all of the user details of that single user along with the allowed user field options.
-
-### <b>/admin-user</b> <b>(PATCH)</b>
-
-Modifies a user within the CV Manager database, including users that may not have been made through the /admin-new-user endpoint.
-
-body example:
-
-```
-{
-  "email": "jdoe@example.com",
-  "first_name": "John",
-  "last_name": "Doe",
-  "super_user": True,
-  "organizations_to_add": [
-    {"name": "Test Org3", "role": "admin"}
-  ],
-  "organizations_to_modify": [
-    {"name": "Test Org2", "role": "user"}
-  ],
-  "organizations_to_remove": [
-    {"name": "Test Org", "role": "user"}
-  ]
-}
-```
-
-### <b>/admin-user</b> <b>(DELETE)</b>
-
-Deletes the specified user from the CV Manager PostgreSQL database based off the user email specified in the user_email argument.
-
-HTTP URL Arguments:
-
-- user_email: Delete a specific user specified by its email such as "user@email.com" from the CV Manager's PostgreSQL database.
 
 ## Organizations
 

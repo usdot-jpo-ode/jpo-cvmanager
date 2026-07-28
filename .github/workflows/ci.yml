@@ -39,7 +39,7 @@ jobs:
 
   build_api:
     needs: test_change_limit
-    if: ${{ always() && !failure() && !cancelled() }}
+    if: ${{ always() && !cancelled() }}
     runs-on: ubuntu-latest
     container:
       image: python:3.12.2
@@ -80,7 +80,7 @@ jobs:
 
   webapp:
     needs: test_change_limit
-    if: ${{ always() && !failure() && !cancelled() }}
+    if: ${{ always() && !cancelled() }}
     runs-on: ubuntu-latest
     container:
       image: node:22
@@ -115,7 +115,7 @@ jobs:
 
   build_keycloak_provider:
     needs: test_change_limit
-    if: ${{ always() && !failure() && !cancelled() }}
+    if: ${{ always() && !cancelled() }}
     runs-on: ubuntu-latest
     container:
       image: maven:3.9.9-eclipse-temurin-21
@@ -143,7 +143,7 @@ jobs:
 
   build_rsu_info_bridge:
     needs: test_change_limit
-    if: ${{ always() && !failure() && !cancelled() }}
+    if: ${{ always() && !cancelled() }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -177,7 +177,7 @@ jobs:
 
   build_intersection_api:
     needs: test_change_limit
-    if: ${{ always() && !failure() && !cancelled() }}
+    if: ${{ always() && !cancelled() }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -234,9 +234,6 @@ jobs:
       image: maven:3.9.9-eclipse-temurin-22
       options: --user root
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
       - name: Cache Maven packages
         uses: actions/cache@v4
         with:
@@ -273,6 +270,92 @@ jobs:
       - name: Clean up
         run: |
           rm -rf $GITHUB_WORKSPACE/services/rsu-status-monitor/rsu-status-monitor/target
+
+  build_flyway_image:
+    needs: [test_change_limit, validate_migrations]
+    if: ${{ !cancelled() && needs.validate_migrations.result == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/cvmanager-flyway
+          tags: |
+            type=sha
+            type=ref,event=branch
+
+      - name: Build and push Flyway image
+        uses: docker/build-push-action@v6
+        with:
+          context: resources/db/
+          file: resources/db/Dockerfile
+          push: ${{ github.event_name == 'push' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  validate_migrations:
+    needs: test_change_limit
+    if: ${{ always() && !cancelled() }}
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:15-3.4
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - name: Checkout ${{ github.event.repository.name }}
+        uses: actions/checkout@v4
+
+      - name: Run Flyway migrations
+        run: |
+          docker run --rm \
+            --network host \
+            -v "$GITHUB_WORKSPACE/resources/db/migration:/flyway/sql" \
+            -v "$GITHUB_WORKSPACE/resources/db/flyway.toml:/flyway/conf/flyway.toml" \
+            flyway/flyway:10-alpine \
+            -url=jdbc:postgresql://localhost:5432/postgres \
+            -user=postgres \
+            -password=postgres \
+            migrate
+
+      - name: Verify migration state
+        run: |
+          docker run --rm \
+            --network host \
+            -v "$GITHUB_WORKSPACE/resources/db/migration:/flyway/sql" \
+            -v "$GITHUB_WORKSPACE/resources/db/flyway.toml:/flyway/conf/flyway.toml" \
+            flyway/flyway:10-alpine \
+            -url=jdbc:postgresql://localhost:5432/postgres \
+            -user=postgres \
+            -password=postgres \
+            info
 
   sonar:
     if: github.event.pull_request.base.repo.owner.login == 'usdot-jpo-ode'

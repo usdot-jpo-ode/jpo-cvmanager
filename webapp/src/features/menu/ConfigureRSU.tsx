@@ -20,7 +20,6 @@ import { RoomOutlined } from '@mui/icons-material'
 import { headerTabHeight } from '../../styles'
 import { SideBarHeader } from '../../styles/components/SideBarHeader'
 import { CustomTable } from '../intersections/map/custom-table'
-import EnvironmentVars from '../../EnvironmentVars'
 
 const ConfigMenu = ({ children }) => {
   return <Box>{children}</Box>

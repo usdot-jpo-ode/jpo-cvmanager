@@ -1,4 +1,3 @@
-import React from 'react'
 import { render } from '@testing-library/react'
 import AdminEditUser from './AdminEditUser'
 import { Provider } from 'react-redux'

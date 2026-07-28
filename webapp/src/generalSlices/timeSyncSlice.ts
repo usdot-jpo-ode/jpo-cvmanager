@@ -4,7 +4,6 @@ import { RootState } from '../store'
 import { fromZonedTime } from 'date-fns-tz'
 
 const TIME_SERVER_URL_UTC = 'https://timeapi.io/api/Time/current/zone?timeZone=Etc/UTC'
-const MAX_ACCEPTABLE_RTT_MS = 1000 // Maximum acceptable round-trip time
 
 interface TimeSyncState {
   timeOffsetMillis: number // Offset in milliseconds

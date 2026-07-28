@@ -5,7 +5,6 @@ import {
   getRsuLastOnline,
   _getRsuInfo,
   _getRsuOnlineStatus,
-  getIssScmsStatus,
   updateGeoMsgData,
 
   // reducers
@@ -42,7 +41,6 @@ import {
   selectGeoMsgFilter,
   selectGeoMsgFilterStep,
   selectGeoMsgFilterOffset,
-  selectIssScmsStatusData,
 } from './rsuSlice'
 import RsuApi from '../apis/rsu-api'
 import { RootState } from '../store'
@@ -84,7 +82,6 @@ describe('rsu reducer', () => {
         geoMsgFilter: false,
         geoMsgFilterStep: 60,
         geoMsgFilterOffset: 0,
-        issScmsStatusData: {},
       },
     })
   })
@@ -97,7 +94,6 @@ describe('async thunks', () => {
       selectedRsu: null,
       rsuData: null,
       rsuOnlineStatus: null,
-      countsMsgType: null,
       geoMsgType: null,
       rsuMapData: null,
       mapList: null,
@@ -112,7 +108,6 @@ describe('async thunks', () => {
       geoMsgFilter: null,
       geoMsgFilterStep: null,
       geoMsgFilterOffset: null,
-      issScmsStatusData: null,
     },
   }
 
@@ -131,7 +126,7 @@ describe('async thunks', () => {
         user: {
           value: {
             authLoginData: { token: 'token' },
-            organization: { name: 'name' },
+            organization: { organization: 'name' },
           },
         },
         rsu: {
@@ -206,7 +201,7 @@ describe('async thunks', () => {
         user: {
           value: {
             authLoginData: { token: 'token' },
-            organization: { name: 'name' },
+            organization: { organization: 'name' },
           },
         },
       })
@@ -270,7 +265,7 @@ describe('async thunks', () => {
         user: {
           value: {
             authLoginData: { token: 'token' },
-            organization: { name: 'name' },
+            organization: { organization: 'name' },
           },
         },
       })
@@ -300,7 +295,7 @@ describe('async thunks', () => {
         user: {
           value: {
             authLoginData: { token: 'token' },
-            organization: { name: 'name' },
+            organization: { organization: 'name' },
           },
         },
       })
@@ -321,7 +316,7 @@ describe('async thunks', () => {
         user: {
           value: {
             authLoginData: { token: 'token' },
-            organization: { name: 'name' },
+            organization: { organization: 'name' },
           },
         },
       })
@@ -341,55 +336,6 @@ describe('async thunks', () => {
         payload: rsuOnlineStatus,
       })
       expect(state).toEqual({ ...initialState, value: { ...initialState.value, rsuOnlineStatus } })
-    })
-  })
-
-  describe('getIssScmsStatus', () => {
-    it('returns and calls the api correctly', async () => {
-      const dispatch = jest.fn()
-      const getState = jest.fn().mockReturnValue({
-        user: {
-          value: {
-            authLoginData: { token: 'token' },
-            organization: { name: 'name' },
-          },
-        },
-      })
-      const action = getIssScmsStatus()
-
-      RsuApi.getIssScmsStatus = jest.fn().mockReturnValue('issScmsStatus')
-      const resp = await action(dispatch, getState, undefined)
-      expect(resp.payload).toEqual('issScmsStatus')
-      expect(RsuApi.getIssScmsStatus).toHaveBeenCalledWith('token', 'name')
-    })
-
-    it('Updates the state correctly fulfilled', async () => {
-      const issScmsStatusData = 'issScmsStatus'
-      const state = reducer(initialState, {
-        type: 'rsu/getIssScmsStatus/fulfilled',
-        payload: issScmsStatusData,
-      })
-
-      expect(state).toEqual({
-        ...initialState,
-        value: { ...initialState.value, issScmsStatusData },
-      })
-    })
-
-    it('Updates the state correctly fulfilled default value', async () => {
-      const issScmsStatusData = 'issScmsStatus' as any
-      const state = reducer(
-        { ...initialState, value: { ...initialState.value, issScmsStatusData } },
-        {
-          type: 'rsu/getIssScmsStatus/fulfilled',
-          payload: null,
-        }
-      )
-
-      expect(state).toEqual({
-        ...initialState,
-        value: { ...initialState.value, issScmsStatusData },
-      })
     })
   })
 
@@ -556,7 +502,6 @@ describe('reducers', () => {
       geoMsgFilter: null,
       geoMsgFilterStep: null,
       geoMsgFilterOffset: null,
-      issScmsStatusData: null,
     },
   }
 
@@ -697,7 +642,6 @@ describe('selectors', () => {
       geoMsgFilter: 'geoMsgFilter',
       geoMsgFilterStep: 'geoMsgFilterStep',
       geoMsgFilterOffset: 'geoMsgFilterOffset',
-      issScmsStatusData: 'issScmsStatusData',
     },
   }
   const rsuState = { rsu: initialState } as any
@@ -724,6 +668,5 @@ describe('selectors', () => {
     expect(selectGeoMsgFilter(rsuState)).toEqual('geoMsgFilter')
     expect(selectGeoMsgFilterStep(rsuState)).toEqual('geoMsgFilterStep')
     expect(selectGeoMsgFilterOffset(rsuState)).toEqual('geoMsgFilterOffset')
-    expect(selectIssScmsStatusData(rsuState)).toEqual('issScmsStatusData')
   })
 })

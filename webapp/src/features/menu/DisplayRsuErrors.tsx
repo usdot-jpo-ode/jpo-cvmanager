@@ -1,13 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
-import { getIssScmsStatus, getRsuLastOnline, selectRsuData } from '../../generalSlices/rsuSlice'
+import { getRsuLastOnline, selectRsuData } from '../../generalSlices/rsuSlice'
 
 import '../../components/css/SnmpwalkMenu.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import MaterialTable, { Action } from '@material-table/core'
 import { RootState } from '../../store'
-import { selectRsuOnlineStatus, selectIssScmsStatusData } from '../../generalSlices/rsuSlice'
+import { selectRsuOnlineStatus } from '../../generalSlices/rsuSlice'
+import { formatScmsExpiration, useGetScmsStatusQuery } from '../api/scmsApiSlice'
+import { selectOrganizationName } from '../../generalSlices/userSlice'
 
 import { GpsFixedSharp } from '@mui/icons-material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
@@ -15,23 +17,27 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import AdminTable from '../../components/AdminTable'
 import { setMapViewState } from '../../pages/mapSlice'
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Stack, Typography, useTheme } from '@mui/material'
-import RsuErrorSummary from '../../components/RsuErrorSummary'
-import { RsuInfo } from '../../models/RsuApi'
+import { RsuInfo, RsuOnlineStatus } from '../../models/RsuApi'
 import { useReactToPrint } from 'react-to-print'
 import { SideBarHeader } from '../../styles/components/SideBarHeader'
 import { toggleMapMenuSelection } from './menuSlice'
+import toast from 'react-hot-toast'
+import { useSendRsuErrorSummaryEmailMutation } from '../api/emailApiSlice'
+import { selectEmail } from '../../generalSlices/userSlice'
 
 const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo }) => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const rsuData = useSelector(selectRsuData)
   const rsuOnlineStatus = useSelector(selectRsuOnlineStatus)
-  const issScmsStatusData = useSelector(selectIssScmsStatusData)
+  const organization = useSelector(selectOrganizationName)
+  const { data: issScmsStatusData = {} } = useGetScmsStatusQuery(organization, { skip: !organization })
   const [selectedRSU, setSelectedRSU] = useState<RsuInfo | undefined>(initialSelectedRsu)
-  const [emailHidden, setEmailHidden] = useState(true)
   const contentRef = useRef(null)
   const errorRef = useRef(null)
+  const userEmail = useSelector(selectEmail)
   const handlePrint = useReactToPrint({ contentRef })
   const handleErrorPrint = useReactToPrint({ contentRef: errorRef })
+  const [submitRsuErrorSummary] = useSendRsuErrorSummaryEmailMutation()
 
   const theme = useTheme()
 
@@ -40,13 +46,9 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
     online_status: string
     lat: number
     lon: number
-    scms_status: string
+    scms_status: boolean | null
   }
 
-  // UseEffect to pull SCMS status data on first load
-  useEffect(() => {
-    dispatch(getIssScmsStatus())
-  }, [dispatch])
 
   // Fetch RSU online status data when an RSU is selected to ensure 'last online' is populated
   useEffect(() => {
@@ -68,27 +70,36 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
       : 'No Data'
   }
 
-  const getRSUSCMSStatus = (rsuIpv4: string) => {
+  const getRSUSCMSStatus = (rsuIpv4: string): boolean | null => {
     return Object.prototype.hasOwnProperty.call(issScmsStatusData, rsuIpv4) && issScmsStatusData[rsuIpv4]
       ? issScmsStatusData[rsuIpv4].health
-      : '0'
+      : null
   }
 
-  const getRSUSCMSExpiration = (rsuIpv4: string) => {
+  const NEVER_DOWNLOADED = 'Never downloaded certificates'
+
+  // Raw ISO-8601 expiration string from the API, or NEVER_DOWNLOADED sentinel if unavailable.
+  const getRSUSCMSExpirationRaw = (rsuIpv4: string) => {
     return Object.prototype.hasOwnProperty.call(issScmsStatusData, rsuIpv4) &&
       issScmsStatusData[rsuIpv4] !== null &&
       Object.prototype.hasOwnProperty.call(issScmsStatusData[rsuIpv4], 'expiration')
       ? issScmsStatusData[rsuIpv4].expiration
-      : 'Never downloaded certificates'
+      : NEVER_DOWNLOADED
+  }
+
+  // Human-friendly expiration rendered in the viewer's local timezone, or the NEVER_DOWNLOADED sentinel.
+  const getRSUSCMSExpirationDisplay = (rsuIpv4: string) => {
+    const raw = getRSUSCMSExpirationRaw(rsuIpv4)
+    return raw === NEVER_DOWNLOADED ? raw : formatScmsExpiration(raw)
   }
 
   const getRSUSCMSDisplay = (rsuIpv4: string) => {
-    if (getRSUSCMSStatus(rsuIpv4) === '0') {
+    if (getRSUSCMSStatus(rsuIpv4) !== true) {
       // eslint-disable-next-line no-var
       var rsu_scms_status = 'SCMS Unhealthy'
-      const rsu_scms_expiration = getRSUSCMSExpiration(rsuIpv4)
+      const rsu_scms_expiration = getRSUSCMSExpirationRaw(rsuIpv4)
       switch (rsu_scms_expiration) {
-        case 'Never downloaded certificates':
+        case NEVER_DOWNLOADED:
           rsu_scms_status += ' (RSU Never downloaded certificates)'
           break
         default:
@@ -105,9 +116,44 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
           break
       }
     } else {
-      rsu_scms_status = 'SCMS Healthy (Expires ' + getRSUSCMSExpiration(rsuIpv4) + ')'
+      rsu_scms_status = 'SCMS Healthy (Expires ' + getRSUSCMSExpirationDisplay(rsuIpv4) + ')'
     }
     return rsu_scms_status
+  }
+
+  const sendRsuErrorSummaryEmail = async (
+    rsu: string,
+    online_status: RsuOnlineStatus | string,
+    scms_status: string
+  ) => {
+    const messageTable = `
+        <table>
+            <tr>
+                <th>Online Status</th>
+                <th>SCMS Status</th>
+            </tr>
+            <tr>
+                <td>${'RSU ' + online_status}</td>
+                <td>${scms_status}</td>
+            </tr>
+        </table>
+    `
+
+    const message = `
+        <p>Below is the error summary for RSU ${rsu} at ${new Date().toISOString()} UTC:</p>
+        ${messageTable}
+    `
+
+    const data: RsuErrorSummaryEmailContents = {
+      subject: `RSU Error Summary for ${rsu}`,
+      message: message,
+    }
+
+    toast.promise(submitRsuErrorSummary(data).unwrap(), {
+      loading: `Sending RSU error summary email to ${userEmail}...`,
+      success: `RSU error summary email sent successfully to ${userEmail}!`,
+      error: `Failed to send RSU error summary email to ${userEmail}`,
+    })
   }
 
   // Create RSU Errors Table Data
@@ -119,7 +165,7 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
       lon: rsu.geometry.coordinates[0],
       online_status: getRSUOnlineStatus(rsu.properties.ipv4_address),
       scms_status: getRSUSCMSStatus(rsu.properties.ipv4_address),
-      cert_expiration: getRSUSCMSExpiration(rsu.properties.ipv4_address),
+      cert_expiration: getRSUSCMSExpirationDisplay(rsu.properties.ipv4_address),
       milepost: rsu.properties.milepost,
       primary_route: rsu.properties.primary_route,
     }
@@ -152,10 +198,6 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
     },
   ]
 
-  const setHidden = () => {
-    setEmailHidden(!emailHidden)
-  }
-
   const containerStyle = {
     display: 'flex',
     justifyContent: 'center',
@@ -166,15 +208,6 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
     height: '100%',
     backgroundColor: theme.palette.custom.mapLegendBackground,
     borderRadius: '4px',
-  }
-
-  const errorPageStyle = {
-    backgroundColor: theme.palette.custom.mapLegendBackground,
-    borderTop: '1px solid white',
-    borderBottom: '1px solid white',
-    fontFamily: '"museo-slab" Arial Helvetica Sans-Serif',
-    width: '90%',
-    padding: '0.5rem 1rem',
   }
 
   return (
@@ -213,11 +246,11 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
                 <div>
                   <Typography fontSize="small" sx={{ color: theme.palette.text.secondary }}>
                     <b>SCMS Status: </b>
-                    {getRSUSCMSStatus(selectedRSU.properties.ipv4_address) === '1' ? 'Healthy' : 'Unhealthy'}
+                    {getRSUSCMSStatus(selectedRSU.properties.ipv4_address) === true ? 'Healthy' : 'Unhealthy'}
                   </Typography>
                   <Typography fontSize="small" sx={{ color: theme.palette.text.secondary }}>
                     <b>SCMS Expiration: </b>
-                    {getRSUSCMSExpiration(selectedRSU.properties.ipv4_address)}
+                    {getRSUSCMSExpirationDisplay(selectedRSU.properties.ipv4_address)}
                   </Typography>
                 </div>
               </AccordionDetails>
@@ -228,25 +261,23 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
               variant="contained"
               style={{ margin: '1rem' }}
               onClick={() => {
-                setEmailHidden(false)
+                const lastOnlineStatus =
+                  getRSUOnlineStatus(selectedRSU.properties.ipv4_address) +
+                  (getRSULastOnline(selectedRSU.properties.ipv4_address) === 'No Data'
+                    ? ' (Never Online)'
+                    : ' (Last Online ' + getRSULastOnline(selectedRSU.properties.ipv4_address) + ')')
+
+                return sendRsuErrorSummaryEmail(
+                  selectedRSU.properties.ipv4_address,
+                  lastOnlineStatus,
+                  getRSUSCMSDisplay(selectedRSU.properties.ipv4_address)
+                )
               }}
               className="museo-slab"
             >
-              Generate Error Summary Email
+              Send Error Summary Email
             </Button>
           </div>
-          <RsuErrorSummary
-            rsu={selectedRSU.properties.ipv4_address}
-            online_status={
-              getRSUOnlineStatus(selectedRSU.properties.ipv4_address) +
-              (getRSULastOnline(selectedRSU.properties.ipv4_address) === 'No Data'
-                ? ' (Never Online)'
-                : ' (Last Online ' + getRSULastOnline(selectedRSU.properties.ipv4_address) + ')')
-            }
-            scms_status={getRSUSCMSDisplay(selectedRSU.properties.ipv4_address)}
-            hidden={emailHidden}
-            setHidden={setHidden}
-          />
         </Stack>
       ) : (
         <Stack direction="column" spacing={2} sx={{ pl: 1, pr: 1 }}>
@@ -296,8 +327,8 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
                       backgroundColor: rowData.online_status.toLowerCase().includes('online')
                         ? theme.palette.success.dark
                         : rowData.online_status.toLowerCase().includes('unstable')
-                        ? theme.palette.warning.main
-                        : theme.palette.error.dark,
+                          ? theme.palette.warning.main
+                          : theme.palette.error.dark,
                       width: '4rem',
                       height: '1.5rem',
                       display: 'flex',
@@ -318,10 +349,10 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
                     <Typography
                       fontSize="medium"
                       sx={{
-                        color: rowData.scms_status == '1' ? theme.palette.success.light : theme.palette.error.light,
+                        color: rowData.scms_status === true ? theme.palette.success.light : theme.palette.error.light,
                       }}
                     >
-                      {rowData.scms_status == '1' ? 'Healthy' : 'Unhealthy'}
+                      {rowData.scms_status === true ? 'Healthy' : 'Unhealthy'}
                     </Typography>
                     <Typography fontSize="small" sx={{ color: theme.palette.text.primary }}>
                       {rowData.cert_expiration}
@@ -396,11 +427,11 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
                       <Typography
                         fontSize="medium"
                         sx={{
-                          color: rowData.scms_status == '1' ? theme.palette.success.dark : theme.palette.error.dark,
+                          color: rowData.scms_status === true ? theme.palette.success.dark : theme.palette.error.dark,
                           fontWeight: 'bold',
                         }}
                       >
-                        {rowData.scms_status == '1' ? 'Healthy' : 'Unhealthy'}
+                        {rowData.scms_status === true ? 'Healthy' : 'Unhealthy'}
                       </Typography>
                       <Typography fontSize="small" sx={{ color: 'black' }}>
                         {rowData.cert_expiration}
@@ -491,11 +522,11 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
                       <Typography
                         fontSize="medium"
                         sx={{
-                          color: rowData.scms_status == '1' ? theme.palette.success.dark : theme.palette.error.dark,
+                          color: rowData.scms_status === true ? theme.palette.success.dark : theme.palette.error.dark,
                           fontWeight: 'bold',
                         }}
                       >
-                        {rowData.scms_status == '1' ? 'Healthy' : 'Unhealthy'}
+                        {rowData.scms_status === true ? 'Healthy' : 'Unhealthy'}
                       </Typography>
                       <Typography fontSize="small" sx={{ color: 'black' }}>
                         {rowData.cert_expiration}
@@ -512,7 +543,7 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
               actions={[]}
               data={
                 rsuTableData !== undefined
-                  ? rsuTableData.filter((row) => row.online_status.includes('Offline') || row.scms_status.includes('0'))
+                  ? rsuTableData.filter((row) => row.online_status.includes('Offline') || row.scms_status !== true)
                   : []
               }
               title=""

@@ -1,4 +1,3 @@
-import React from 'react'
 import { render, screen } from '@testing-library/react'
 import VerticalTabs from './VerticalTabs'
 import { Provider } from 'react-redux'
@@ -39,13 +38,7 @@ const renderVerticalTabs = (initialEntries: string[]) => {
           <Routes>
             <Route
               path="/admin/*"
-              element={
-                <VerticalTabs
-                  notFoundRoute={<div>Not Found</div>}
-                  defaultTabIndex={0}
-                  tabs={mockTabs}
-                />
-              }
+              element={<VerticalTabs notFoundRoute={<div>Not Found</div>} defaultTabIndex={0} tabs={mockTabs} />}
             />
           </Routes>
         </MemoryRouter>
@@ -57,7 +50,7 @@ const renderVerticalTabs = (initialEntries: string[]) => {
 describe('VerticalTabs getSelectedTab functionality', () => {
   it('should select the correct tab when the path matches exactly', () => {
     renderVerticalTabs(['/admin/rsus'])
-    
+
     const rsuTab = screen.getByRole('tab', { name: /RSUs/i })
     expect(rsuTab).toHaveAttribute('aria-selected', 'true')
     expect(screen.getByText('RSU Page Content')).toBeInTheDocument()
@@ -65,7 +58,7 @@ describe('VerticalTabs getSelectedTab functionality', () => {
 
   it('should select the correct tab when navigating to a sub-route (e.g., edit page)', () => {
     renderVerticalTabs(['/admin/rsus/editRsu/10.0.0.180'])
-    
+
     const rsuTab = screen.getByRole('tab', { name: /RSUs/i })
     expect(rsuTab).toHaveAttribute('aria-selected', 'true')
     expect(screen.getByText('RSU Page Content')).toBeInTheDocument()
@@ -73,7 +66,7 @@ describe('VerticalTabs getSelectedTab functionality', () => {
 
   it('should select the intersections tab when on an intersections sub-route', () => {
     renderVerticalTabs(['/admin/intersections/some-sub-route'])
-    
+
     const intersectionsTab = screen.getByRole('tab', { name: /Intersections/i })
     expect(intersectionsTab).toHaveAttribute('aria-selected', 'true')
     expect(screen.getByText('Intersections Page Content')).toBeInTheDocument()
@@ -81,7 +74,7 @@ describe('VerticalTabs getSelectedTab functionality', () => {
 
   it('should fallback to the default tab if no matches are found in the path', () => {
     renderVerticalTabs(['/admin/unknown-tab'])
-    
+
     // With defaultTabIndex={0}, it should default to the first tab (RSUs)
     const rsuTab = screen.getByRole('tab', { name: /RSUs/i })
     expect(rsuTab).toHaveAttribute('aria-selected', 'true')
@@ -91,36 +84,30 @@ describe('VerticalTabs getSelectedTab functionality', () => {
 
   it('should handle deep sub-routes correctly', () => {
     renderVerticalTabs(['/admin/organizations/edit/123/users/456'])
-    
+
     const orgTab = screen.getByRole('tab', { name: /Organizations/i })
     expect(orgTab).toHaveAttribute('aria-selected', 'true')
     expect(screen.getByText('Organizations Page Content')).toBeInTheDocument()
   })
 
   it('should correctly switch tabs when path changes', () => {
-    const { rerender } = render(
-        <ThemeProvider theme={testTheme}>
-          <Provider store={setupStore({})}>
-            <MemoryRouter initialEntries={['/admin/rsus']}>
-              <Routes>
-                <Route
-                  path="/admin/*"
-                  element={
-                    <VerticalTabs
-                      notFoundRoute={<div>Not Found</div>}
-                      defaultTabIndex={0}
-                      tabs={mockTabs}
-                    />
-                  }
-                />
-              </Routes>
-            </MemoryRouter>
-          </Provider>
-        </ThemeProvider>
-      )
+    render(
+      <ThemeProvider theme={testTheme}>
+        <Provider store={setupStore({})}>
+          <MemoryRouter initialEntries={['/admin/rsus']}>
+            <Routes>
+              <Route
+                path="/admin/*"
+                element={<VerticalTabs notFoundRoute={<div>Not Found</div>} defaultTabIndex={0} tabs={mockTabs} />}
+              />
+            </Routes>
+          </MemoryRouter>
+        </Provider>
+      </ThemeProvider>
+    )
 
     expect(screen.getByRole('tab', { name: /RSUs/i })).toHaveAttribute('aria-selected', 'true')
-    
+
     // Note: To test actual navigation/rerender with MemoryRouter is tricky without wrapping everything.
     // In our case, VerticalTabs uses useEffect on location.pathname, so it should update.
     // But since MemoryRouter's initialEntries is immutable for a given render, we'd need to simulate navigation.

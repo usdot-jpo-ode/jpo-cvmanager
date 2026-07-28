@@ -36,6 +36,11 @@ services:
       WZDX_API_KEY: ${WZDX_API_KEY}
       WZDX_ENDPOINT: ${WZDX_ENDPOINT}
 
+      ENABLE_ERROR_EMAILS: ${ENABLE_ERROR_EMAILS:-false}
+      IAPI_ENDPOINT: ${IAPI_ENDPOINT:-http://localhost:8089}
+      KC_SA_CLIENT_ID: ${KEYCLOAK_SA_PYTHON_API_CLIENT_ID:-sa_cvmanager_python_api}
+      KC_SA_CLIENT_SECRET: ${KEYCLOAK_SA_PYTHON_API_CLIENT_SECRET_KEY:-sa-python-api-secret-key}
+
       ENABLE_RSU_FEATURES: ${ENABLE_RSU_FEATURES:-true}
       ENABLE_INTERSECTION_FEATURES: ${ENABLE_INTERSECTION_FEATURES:-true}
       ENABLE_WZDX_FEATURES: ${ENABLE_WZDX_FEATURES:-false}
@@ -60,6 +65,9 @@ services:
 
       TIMEZONE: ${TIMEZONE:-}
       LOGGING_LEVEL: ${API_LOGGING_LEVEL:-}
+    depends_on:
+      flyway:
+        condition: service_completed_successfully
     logging:
       options:
         max-size: '10m'
@@ -119,7 +127,11 @@ services:
       POSTGRES_PASSWORD: ${PG_DB_PASS:-postgres}
     volumes:
       - pgdb:/var/lib/postgresql/data
-      - ./resources/sql_scripts:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     logging:
       options:
         max-size: '10m'
@@ -160,6 +172,9 @@ services:
       KC_DB_PASSWORD: ${PG_DB_PASS:-postgres}
       KC_HOSTNAME: ${KEYCLOAK_ENDPOINT:-http://${DOCKER_HOST_IP:?error}:8084}
       KEYCLOAK_API_CLIENT_SECRET_KEY: ${KEYCLOAK_API_CLIENT_SECRET_KEY:-keycloak-secret-key}
+      KEYCLOAK_SA_COUNT_METRIC_CLIENT_SECRET_KEY: ${KEYCLOAK_SA_COUNT_METRIC_CLIENT_SECRET_KEY:-sa-count-metric-secret-key}
+      KEYCLOAK_SA_PYTHON_API_CLIENT_SECRET_KEY: ${KEYCLOAK_SA_PYTHON_API_CLIENT_SECRET_KEY:-sa-python-api-secret-key}
+      KEYCLOAK_SA_FIRMWARE_UPGRADE_RUNNER_CLIENT_SECRET_KEY: ${KEYCLOAK_SA_FIRMWARE_UPGRADE_RUNNER_CLIENT_SECRET_KEY:-sa-firmware-upgrade-runner-secret-key}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
     command:
@@ -174,6 +189,24 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+
+  flyway:
+    profiles:
+      - basic
+      - cvmanager_postgres
+    image: flyway/flyway:10-alpine
+    command: migrate
+    volumes:
+      - ./resources/db/migration:/flyway/sql
+      - ./resources/db/flyway.toml:/flyway/conf/flyway.toml
+    environment:
+      FLYWAY_URL: jdbc:postgresql://cvmanager_postgres:5432/${PG_DB_NAME:-postgres}
+      FLYWAY_USER: ${PG_DB_USER:-postgres}
+      FLYWAY_PASSWORD: ${PG_DB_PASS:-postgres}
+    depends_on:
+      cvmanager_postgres:
+        condition: service_healthy
+    restart: no
 
 volumes:
   pgdb:

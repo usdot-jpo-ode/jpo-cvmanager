@@ -1,47 +1,130 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import AdminAddUser from '../adminAddUser/AdminAddUser'
 import AdminEditUser from '../adminEditUser/AdminEditUser'
 import AdminTable from '../../components/AdminTable'
 import { confirmAlert } from 'react-confirm-alert'
 import { Options } from '../../components/AdminDeletionOptions'
-import { selectLoading } from '../../generalSlices/rsuSlice'
-import {
-  selectTableData,
-
-  // actions
-  getAvailableUsers,
-  deleteUsers,
-  updateTitle,
-  setActiveDiv,
-  setEditUserRowData,
-} from './adminUserTabSlice'
 import { selectOrganizationName } from '../../generalSlices/userSlice'
-import { clear, getUserData } from './../adminEditUser/adminEditUserSlice'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 import '../adminRsuTab/Admin.css'
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
 import { Action } from '@material-table/core'
-import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { Route, Routes, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
 import toast from 'react-hot-toast'
 import { DeleteOutline, ModeEditOutline } from '@mui/icons-material'
 import { useTheme } from '@mui/material'
+import {
+  useDeleteMultipleUsersMutation,
+  useDeleteUserMutation,
+  useGetUsersQuery,
+  useLazyGetUsersQuery,
+} from '../api/userApiSlice'
 
 const AdminUserTab = () => {
-  const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const navigate = useNavigate()
-  const location = useLocation()
   const theme = useTheme()
   const organization = useSelector(selectOrganizationName)
-  useEffect(() =>{
-    dispatch(getAvailableUsers())
-  }, [organization, dispatch])
 
-  const activeTab = location.pathname.split('/')[4]
+  const tableRef = useRef<any>(null)
+  const [isRefreshing, setIsRefreshing] = useState(false)
+  const [currentParams, setCurrentParams] = useState({
+    page: 0,
+    size: 20,
+    sort: 'first_name,asc',
+    search: '',
+    organization: organization || '',
+  })
 
-  const tableData = useSelector(selectTableData)
+  const [trigger] = useLazyGetUsersQuery()
+
+  // Subscribe to query - this will trigger when cache is invalidated
+  const { data: subscribedData } = useGetUsersQuery(currentParams, {
+    skip: !organization, // Skip if no organization selected
+  })
+
+  // When subscribed data changes (due to cache invalidation), refresh table
+  useEffect(() => {
+    if (subscribedData) {
+      handleRefresh()
+    }
+  }, [subscribedData])
+
+  const currentQueryRef = useRef(null)
+  const handleQueryChange = useCallback(
+    async (query) => {
+      setIsRefreshing(true)
+
+      try {
+        // Extract order information from orderByCollection
+        let orderBy = 'first_name'
+        let orderDirection = 'asc'
+        if (query.orderByCollection && query.orderByCollection.length > 0) {
+          const firstOrder = query.orderByCollection[0]
+          if (firstOrder.orderBy !== undefined) {
+            if (typeof firstOrder.orderBy.field === 'string') {
+              orderBy = firstOrder.orderBy.field
+            } else if (typeof firstOrder.orderBy === 'number') {
+              orderBy = columns[firstOrder.orderBy].field
+            }
+          }
+          orderDirection = firstOrder.orderDirection || 'asc'
+        }
+
+        // Build query params including organization
+        const params = {
+          page: query.page,
+          size: query.pageSize,
+          sort: `${orderBy},${orderDirection}`,
+          search: query.search || '',
+          organization: organization || '', // Add organization parameter
+        }
+
+        // Check if organization changed - if so, reset to page 0
+        if (currentQueryRef.current && currentQueryRef.current.organization !== params.organization) {
+          params.page = 0
+          query.page = 0
+        }
+
+        // Store current query for comparison
+        currentQueryRef.current = params
+        setCurrentParams(params) // Update params for subscription
+
+        // Trigger the query and await the result
+        const result = await trigger(params).unwrap()
+
+        console.log(result.content[0])
+
+        return {
+          data: result.content || [],
+          page: params.page,
+          totalCount: result.totalElements || 0,
+        }
+      } catch (error) {
+        console.error('Failed to fetch users:', error)
+        toast.error('Failed to fetch Users')
+        return {
+          data: [],
+          page: query.page,
+          totalCount: 0,
+        }
+      } finally {
+        setIsRefreshing(false)
+      }
+    },
+    [trigger, organization]
+  )
+
+  const handleRefresh = () => {
+    console.log('Refreshing table data...')
+    if (tableRef.current && tableRef.current.onQueryChange) {
+      tableRef.current.onQueryChange()
+    }
+  }
+
+  const [deleteUserApi] = useDeleteUserMutation()
+  const [deleteMultipleUsersApi] = useDeleteMultipleUsersMutation()
+
   const [columns] = useState([
     { title: 'First Name', field: 'first_name', id: 0 },
     { title: 'Last Name', field: 'last_name', id: 1 },
@@ -53,7 +136,6 @@ const AdminUserTab = () => {
       render: (rowData: AdminUserWithId) => (rowData.super_user ? 'Yes' : 'No'),
     },
   ])
-  const loading = useSelector(selectLoading)
 
   const tableActions: Action<AdminUserWithId>[] = [
     {
@@ -74,7 +156,7 @@ const AdminUserTab = () => {
         const buttons = [
           {
             label: 'Yes',
-            onClick: () => handleDelete([rowData]),
+            onClick: () => onDelete(rowData),
           },
           {
             label: 'No',
@@ -96,7 +178,7 @@ const AdminUserTab = () => {
         const buttons = [
           {
             label: 'Yes',
-            onClick: () => handleDelete(rowData),
+            onClick: () => multiDelete(rowData),
           },
           {
             label: 'No',
@@ -119,9 +201,7 @@ const AdminUserTab = () => {
         color: 'info',
         itemType: 'outlined',
       },
-      onClick: () => {
-        dispatch(getAvailableUsers())
-      },
+      onClick: handleRefresh,
     },
     {
       icon: () => null,
@@ -137,30 +217,29 @@ const AdminUserTab = () => {
     },
   ]
 
-  const handleDelete = (rowData: AdminUserWithId[]) => {
-    dispatch(deleteUsers(rowData)).then((data: any) => {
-      if (data.payload.success) {
-        toast.success('User(s) Deleted Successfully')
-      } else {
-        toast.error(data.message.payload)
-      }
-    })
+  const onDelete = async (row: AdminUserWithId) => {
+    const loadingToast = toast.loading(`Deleting User ${row.email}...`)
+    try {
+      await deleteUserApi(row.email).unwrap()
+      handleRefresh()
+      toast.success('User Deleted Successfully', { id: loadingToast })
+    } catch (error) {
+      toast.error('Failed to delete User due to error: ' + error, { id: loadingToast })
+    }
   }
 
-  useEffect(() => {
-    dispatch(setActiveDiv('user_table'))
-  }, [dispatch])
-
-  useEffect(() => {
-    dispatch(updateTitle())
-  }, [activeTab, dispatch])
+  const multiDelete = async (rows: AdminUserWithId[]) => {
+    const loadingToast = toast.loading(`Deleting ${rows.length} Users...`)
+    try {
+      await deleteMultipleUsersApi(rows.map((row) => row.email)).unwrap()
+      handleRefresh()
+      toast.success('Users Deleted Successfully', { id: loadingToast })
+    } catch (error) {
+      toast.error('Failed to delete Users due to error: ' + error, { id: loadingToast })
+    }
+  }
 
   const onEdit = (row: AdminUserWithId) => {
-    // Fetch user info before navigating to ensure updated menu state
-    dispatch(clear())
-    dispatch(getUserData(row.email))
-
-    dispatch(setEditUserRowData(row))
     navigate('editUser/' + row.email)
   }
 
@@ -170,11 +249,16 @@ const AdminUserTab = () => {
         <Route
           path="/"
           element={
-            loading === false && (
-              <div className="scroll-div-tab">
-                <AdminTable title={''} data={tableData} columns={columns} actions={tableActions} />
-              </div>
-            )
+            <div className="scroll-div-tab">
+              <AdminTable
+                title={''}
+                columns={columns}
+                actions={tableActions}
+                handleQueryChange={handleQueryChange}
+                isLoading={isRefreshing}
+                tableRef={tableRef}
+              />
+            </div>
           }
         />
         <Route

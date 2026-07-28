@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 
 import { Paper, Box, IconButton, Typography, Fab, AccordionSummary } from '@mui/material'
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion'

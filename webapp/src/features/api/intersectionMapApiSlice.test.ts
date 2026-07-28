@@ -4,7 +4,6 @@ import {
   getTimeWindowFromQueryParams,
   getTimeWindowFromRenderInterval,
 } from './intersectionMapApiSlice'
-import { ProcessedSsm, ProcessedSrmFeature } from '../../models/intersections/processed_data'
 
 describe('intersectionMapApiSlice utility functions', () => {
   describe('getTimeWindowFromQueryParams', () => {

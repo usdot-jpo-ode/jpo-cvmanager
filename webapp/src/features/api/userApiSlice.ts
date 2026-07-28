@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import EnvironmentVars from '../../EnvironmentVars'
 import { RootState } from '../../store'
 import { selectToken } from '../../generalSlices/userSlice'
-import { getQueryString } from './intersectionApiSlice'
+import { getQueryString } from './intersectionConfigSlice'
 import { PaginatedQueryParams, PaginatedResponse } from '../../models/pagination'
 
 export interface GetUsersParams extends PaginatedQueryParams {

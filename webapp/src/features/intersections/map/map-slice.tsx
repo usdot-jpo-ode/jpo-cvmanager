@@ -11,8 +11,6 @@ import {
   addBsmTimestampsAndSortAscending,
   addMapTimestampsAndSortAscending,
   addSpatTimestampsAndSortAscending,
-  addSrmTimestampsAndSortAscending,
-  addSsmTimestampsAndSortAscending,
   generateSignalStateFeatureCollection,
   isValidDate,
   parseMapSignalGroups,

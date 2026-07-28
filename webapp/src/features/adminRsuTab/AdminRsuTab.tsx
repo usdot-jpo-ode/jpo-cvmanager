@@ -5,9 +5,7 @@ import AdminTable from '../../components/AdminTable'
 import { confirmAlert } from 'react-confirm-alert'
 import { Options } from '../../components/AdminDeletionOptions'
 import RsuStatusDialog from './RsuStatusDialog'
-import RsuApi, { RsuState } from '../../apis/intersections/rsu-api'
 import { selectToken } from '../../generalSlices/userSlice'
-import { debounce } from 'lodash'
 
 import { selectOrganizationName } from '../../generalSlices/userSlice'
 import { useSelector } from 'react-redux'
@@ -29,6 +27,8 @@ import {
 const AdminRsuTab = () => {
   const navigate = useNavigate()
   const theme = useTheme()
+
+  const token = useSelector(selectToken)
   const organization = useSelector(selectOrganizationName)
 
   const tableRef = useRef<any>(null)
@@ -63,10 +63,6 @@ const AdminRsuTab = () => {
 
   const [statusDialogOpen, setStatusDialogOpen] = useState(false)
   const [selectedRsuIp, setSelectedRsuIp] = useState<string | null>(null)
-  const [latestRsuState, setLatestRsuState] = useState<RsuState | null>(null)
-  const [historicalRsuData, setHistoricalRsuData] = useState<RsuState[] | null>(null)
-
-  const token = useSelector(selectToken)
 
   // const tableData = useSelector(selectTableData)
   const [columns] = useState([
@@ -119,47 +115,12 @@ const AdminRsuTab = () => {
     setSelectedRsuIp(null)
   }
 
-  const debouncedQueryHistoricalData = debounce((selectedDate: string) => {
-    if (selectedRsuIp && selectedDate) {
-      const startTime = new Date(selectedDate).setHours(0, 0, 0, 0)
-      const endTime = new Date(selectedDate).setHours(23, 59, 59, 999)
-
-      RsuApi.getHistoricalRsuStatus({
-        token,
-        rsuIp: selectedRsuIp,
-        startTime: new Date(startTime),
-        endTime: new Date(endTime),
-      })
-        .then((data) => {
-          setHistoricalRsuData(data ?? null)
-        })
-        .catch((err) => {
-          setHistoricalRsuData(null)
-        })
-    }
-  }, 300) // Debounce with 300ms delay
-
   // const loading = useSelector(selectLoading)
   const handleRefresh = () => {
     if (tableRef.current && tableRef.current.onQueryChange) {
       tableRef.current.onQueryChange()
     }
   }
-
-  React.useEffect(() => {
-    if (statusDialogOpen && selectedRsuIp) {
-      RsuApi.getLatestRsuStatus({ token, rsuIp: selectedRsuIp })
-        .then((data) => {
-          setLatestRsuState(data ?? null)
-        })
-        .catch((err) => {
-          setLatestRsuState(null)
-          console.error('Failed to fetch RSU state:', err)
-        })
-    } else {
-      setLatestRsuState(null)
-    }
-  }, [statusDialogOpen, selectedRsuIp, token])
 
   const tableActions: Action<AdminEditRsuFormType>[] = [
     {

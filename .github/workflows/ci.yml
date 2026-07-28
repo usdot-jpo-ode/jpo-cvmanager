@@ -97,7 +97,7 @@ jobs:
         run: |
           # Navigate to the webapp directory and perform necessary setup
           cd $GITHUB_WORKSPACE/webapp
-          npm ci
+          npm ci --ignore-scripts
 
           # Run tests with coverage and suppress failures
           npm test -- --coverage

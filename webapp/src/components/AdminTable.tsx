@@ -71,6 +71,39 @@ const getActionIcon = (title: string) => {
   }
 }
 
+export const buildAdminTableQueryParams = (
+  query,
+  columns,
+  organization: string | undefined,
+  orderByDefault: string,
+  orderDirectionDefault: 'asc' | 'desc' = 'asc'
+) => {
+  // Extract order information from orderByCollection
+  let orderBy = orderByDefault
+  let orderDirection = orderDirectionDefault
+  if (query.orderByCollection && query.orderByCollection.length > 0) {
+    const firstOrder = query.orderByCollection[0]
+    if (firstOrder.orderBy !== undefined) {
+      if (typeof firstOrder.orderBy.field === 'string') {
+        orderBy = firstOrder.orderBy.field
+      } else if (typeof firstOrder.orderBy === 'number') {
+        orderBy = columns[firstOrder.orderBy].field
+      }
+    }
+    orderDirection = firstOrder.orderDirection || 'asc'
+  }
+
+  // Build query params including organization
+  const params = {
+    page: query.page,
+    size: query.pageSize,
+    sort: `${orderBy},${orderDirection}`,
+    search: query.search || '',
+    organization: organization || '', // Add organization parameter
+  }
+  return params
+}
+
 const AdminTable = (props: AdminTableProps) => {
   const theme = useTheme()
   const classes = useStyles()

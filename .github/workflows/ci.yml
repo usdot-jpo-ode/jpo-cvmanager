@@ -405,7 +405,7 @@ jobs:
           cat <<EOF > /tmp/sonar-scanner.properties
           sonar.host.url=https://sonarcloud.io
           sonar.exclusions=**/__init__.py,**/*test*.py,**/test/**
-          sonar.cpd.exclusions=**/*.sql,**/*.html
+          sonar.cpd.exclusions=**/services/intersection-api/api/src/test/resources/snapshots/**,**/services/intersection-api/api/src/main/resources/templates/**,**/resources/deprecated/**
           sonar.coverage.exclusions=**/__init__.py,**/*test*.py,**/test/**
           sonar.javascript.lcov.reportPaths=/home/runner/work/jpo-cvmanager/jpo-cvmanager/webapp/lcov.info
           sonar.modules=api,webapp

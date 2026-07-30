@@ -1,4 +1,5 @@
 import 'vitest-canvas-mock'
+import '@testing-library/jest-dom/vitest'
 import { TextEncoder, TextDecoder } from 'util'
 import { vi } from 'vitest'
 

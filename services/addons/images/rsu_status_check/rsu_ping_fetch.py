@@ -145,7 +145,7 @@ class RsuStatusFetch:
 
 if __name__ == "__main__":
     run_service = (
-        rsu_status_check_environment.RSU_PING and rsu_status_check_environment.ZABBIX
+        rsu_status_check_environment.ZABBIX and not rsu_status_check_environment.RSU_PING
     )
     if not run_service:
         logging.info("The rsu-ping-fetch service is disabled and will not run")

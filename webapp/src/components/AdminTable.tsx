@@ -76,7 +76,7 @@ export const buildAdminTableQueryParams = (
   columns,
   organization: string | undefined,
   orderByDefault: string,
-  orderDirectionDefault: 'asc' | 'desc' = 'asc'
+  orderDirectionDefault: string = 'asc'
 ) => {
   // Extract order information from orderByCollection
   let orderBy = orderByDefault

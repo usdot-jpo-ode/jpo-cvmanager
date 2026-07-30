@@ -5,8 +5,6 @@ import logging
 
 # Custom script imports
 from middleware import Middleware
-from admin_email_notification import AdminNotification
-from admin_new_email_notification import AdminNewNotification
 from healthcheck import HealthCheck
 from rsu_querycounts import RsuQueryCounts
 from rsu_querymsgfwd import RsuQueryMsgFwd
@@ -48,8 +46,6 @@ api.add_resource(AdminNewOrg, "/admin-new-org")
 api.add_resource(AdminOrg, "/admin-org")
 api.add_resource(AdminOrgTimDeposit, "/admin-org-tim-deposit")
 api.add_resource(AdminOrgSnmpMonitoring, "/admin-org-snmp-monitoring")
-api.add_resource(AdminNotification, "/admin-notification")
-api.add_resource(AdminNewNotification, "/admin-new-notification")
 
 if api_environment.ENABLE_RSU_FEATURES:
     api.add_resource(RsuOnlineStatus, "/rsu-online-status")

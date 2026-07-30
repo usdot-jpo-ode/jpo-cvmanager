@@ -52,8 +52,6 @@ class EnvironmentVars {
   static rsuMsgFwdFetchEndpoint = `${this.getBaseApiUrl()}/rsu-msgfwd-fetch`
   static geoMsgDataEndpoint = `${this.getBaseApiUrl()}/rsu-geo-msg-data`
   static ssmSrmEndpoint = `${this.getBaseApiUrl()}/rsu-ssm-srm-data`
-  static adminNotification = `${this.getBaseApiUrl()}/admin-notification`
-  static adminAddNotification = `${this.getBaseApiUrl()}/admin-new-notification`
   static adminAddOrg = `${this.getBaseApiUrl()}/admin-new-org`
   static adminOrg = `${this.getBaseApiUrl()}/admin-org`
   static adminOrgTimDeposit = `${this.getBaseApiUrl()}/admin-org-tim-deposit`

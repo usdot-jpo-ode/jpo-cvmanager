@@ -1,10 +1,10 @@
 import { render } from '@testing-library/react'
-import AdminEditNotification from './AdminEditNotification'
 import { Provider } from 'react-redux'
 import { ThemeProvider } from '@mui/material'
-import { testTheme } from '../../styles'
-import { setupStore } from '../../store'
-import { replaceChaoticIds } from '../../utils/test-utils'
+import { testTheme } from '../styles'
+import { setupStore } from '../store'
+import { replaceChaoticIds } from '../utils/test-utils'
+import SubscriptionManagement from './SubscriptionManagement'
 import { BrowserRouter } from 'react-router-dom'
 
 it('should take a snapshot', () => {
@@ -12,7 +12,7 @@ it('should take a snapshot', () => {
     <ThemeProvider theme={testTheme}>
       <Provider store={setupStore({})}>
         <BrowserRouter>
-          <AdminEditNotification />
+          <SubscriptionManagement />
         </BrowserRouter>
       </Provider>
     </ThemeProvider>

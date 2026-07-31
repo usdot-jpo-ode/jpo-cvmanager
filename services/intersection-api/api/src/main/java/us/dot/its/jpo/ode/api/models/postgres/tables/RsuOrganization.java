@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "rsu_organization")
+@Table(name = "rsu_organization", uniqueConstraints = @UniqueConstraint(columnNames = {"rsu_id", "organization_id"}))
 public class RsuOrganization {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "rsu_organization_id_gen")

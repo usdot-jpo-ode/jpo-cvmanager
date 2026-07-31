@@ -18,13 +18,11 @@ import EnvironmentVars from '../EnvironmentVars'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import TuneIcon from '@mui/icons-material/Tune'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import Slider from '@mui/material/Slider'
 import {
   selectRsuOnlineStatus,
   selectRsuData,
-  selectIssScmsStatusData,
   selectSelectedRsu,
   selectRsuIpv4,
   selectAddGeoMsgPoint,
@@ -39,7 +37,6 @@ import {
   // actions
   selectRsu,
   getRsuData,
-  getIssScmsStatus,
   getRsuLastOnline,
   toggleGeoMsgPointSelect,
   clearGeoMsg,
@@ -53,8 +50,7 @@ import {
   selectGeoMsgType,
 } from '../generalSlices/rsuSlice'
 import { selectWzdxData, getWzdxData } from '../generalSlices/wzdxSlice'
-import { selectOrganizationName } from '../generalSlices/userSlice'
-import { SecureStorageManager } from '../managers'
+import { selectIsAdminOrAbove, selectOrganizationName } from '../generalSlices/userSlice'
 import {
   selectConfigCoordinates,
   toggleConfigPointSelect,
@@ -86,14 +82,11 @@ import {
   FormControl,
   RadioGroup,
   Radio,
-  Collapse,
   InputLabel,
   Box,
   Divider,
   Grid2,
-  Stack,
 } from '@mui/material'
-import * as turf from '@turf/turf'
 import './css/MsgMap.css'
 import './css/Map.css'
 import { WZDxFeature, WZDxWorkZoneFeed } from '../models/wzdx/WzdxWorkZoneFeed42'
@@ -139,8 +132,7 @@ import { selectToken } from '../generalSlices/userSlice'
 
 import { MessageType } from '../models/MessageTypes'
 import { useGetRsuCountsQuery } from '../features/api/rsuCountsApiSlice'
-import { CustomTable } from '../features/intersections/map/custom-table'
-import { getStackGroupsByAxisId } from 'recharts/types/util/ChartUtils'
+import { formatScmsExpiration, useGetScmsStatusQuery } from '../features/api/scmsApiSlice'
 
 const MILLISECONDS_PER_MINUTE = 60000
 
@@ -159,7 +151,7 @@ function MapPage() {
   const organization = useSelector(selectOrganizationName)
   const rsuData = useSelector(selectRsuData)
   const selectedRsu = useSelector(selectSelectedRsu)
-  const issScmsStatusData = useSelector(selectIssScmsStatusData)
+  const { data: issScmsStatusData = {} } = useGetScmsStatusQuery(organization, { skip: !organization })
   const rsuOnlineStatus = useSelector(selectRsuOnlineStatus)
   const rsuIpv4 = useSelector(selectRsuIpv4)
   const addConfigPoint = useSelector(selectAddConfigPoint)
@@ -240,8 +232,7 @@ function MapPage() {
   const [selectedWZDxMarker, setSelectedWZDxMarker] = useState(null)
   const [wzdxMarkers, setWzdxMarkers] = useState([])
   const [pageOpen] = useState(true)
-
-  const [expandedLayers, setExpandedLayers] = useState<string[]>([])
+  const isAdminOrAbove = useSelector(selectIsAdminOrAbove)
 
   // Vendor filter local state variable
   const [selectedVendor, setSelectedVendor] = useState('Select Vendor')
@@ -712,7 +703,6 @@ function MapPage() {
   }
 
   const handleScmsStatus = () => {
-    dispatch(getIssScmsStatus())
     setDisplayType('scms')
   }
 
@@ -727,10 +717,6 @@ function MapPage() {
     if (!activeLayers.includes(MAP_LAYERS.RSU.id)) {
       dispatch(toggleLayerActive(MAP_LAYERS.RSU.id))
     }
-  }
-
-  const toggleExpandLayer = (layerId: string) => {
-    setExpandedLayers((prev) => (prev.includes(layerId) ? prev.filter((id) => id !== layerId) : [...prev, layerId]))
   }
 
   const MAP_LAYERS: Record<string, MapLayer> = {
@@ -985,7 +971,7 @@ function MapPage() {
         </ConditionalRenderRsu>
 
         <ConditionalRenderRsu>
-          {SecureStorageManager.getUserRole() === 'admin' && (
+          {isAdminOrAbove && (
             <>
               <Divider />
               <Accordion
@@ -1185,7 +1171,6 @@ function MapPage() {
                     setSelectedWZDxMarker(null)
                     dispatch(clearFirmware()) // TODO: Should remove??
                     dispatch(getRsuLastOnline(rsu.properties.ipv4_address))
-                    dispatch(getIssScmsStatus())
                   }}
                 >
                   <button
@@ -1199,7 +1184,6 @@ function MapPage() {
                       setSelectedWZDxMarkerIndex(null)
                       setSelectedWZDxMarker(null)
                       dispatch(getRsuLastOnline(rsu.properties.ipv4_address))
-                      dispatch(getIssScmsStatus())
                     }}
                   >
                     <RsuMarker
@@ -1213,7 +1197,7 @@ function MapPage() {
                         Object.prototype.hasOwnProperty.call(issScmsStatusData, rsu.properties.ipv4_address) &&
                         issScmsStatusData[rsu.properties.ipv4_address]
                           ? issScmsStatusData[rsu.properties.ipv4_address].health
-                          : '0'
+                          : null
                       }
                     />
                   </button>
@@ -1480,18 +1464,18 @@ function MapPage() {
                           <Typography
                             sx={{
                               color:
-                                issScmsStatusData[rsuIpv4].health === '1'
+                                issScmsStatusData[rsuIpv4].health
                                   ? theme.palette.success.light
                                   : theme.palette.error.light,
                             }}
                           >
-                            {issScmsStatusData[rsuIpv4].health === '1' ? 'Healthy' : 'Unhealthy'}
+                            {issScmsStatusData[rsuIpv4].health ? 'Healthy' : 'Unhealthy'}
                           </Typography>
                         </Grid2>
                         <Grid2 size={12}>
                           <Typography fontSize="small">
                             {issScmsStatusData[rsuIpv4].expiration
-                              ? issScmsStatusData[rsuIpv4].expiration
+                              ? formatScmsExpiration(issScmsStatusData[rsuIpv4].expiration)
                               : 'Never downloaded certificates'}
                           </Typography>
                         </Grid2>

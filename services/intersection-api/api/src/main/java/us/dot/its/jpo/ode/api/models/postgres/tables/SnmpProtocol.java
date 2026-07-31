@@ -24,7 +24,7 @@ public class SnmpProtocol {
 
     @Size(max = 128)
     @NotNull
-    @Column(name = "nickname", nullable = false, length = 128)
+    @Column(name = "nickname", nullable = false, unique = true, length = 128)
     private String nickname;
 
 

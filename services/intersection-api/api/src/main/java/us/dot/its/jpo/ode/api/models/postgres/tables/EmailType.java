@@ -20,12 +20,17 @@ public class EmailType {
 
     @Size(max = 128)
     @NotNull
-    @Column(name = "email_type", nullable = false, length = 128)
+    @Column(name = "email_type", nullable = false, unique = true, length = 128)
     private String emailType;
 
     @Size(max = 256)
     @Column(name = "description", length = 256)
     private String description;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "required_role", nullable = false)
+    private Role requiredRole;
 
     @NotNull
     @ColumnDefault("true")
@@ -51,6 +56,5 @@ public class EmailType {
     @ColumnDefault("false")
     @Column(name = "supports_monthly", nullable = false)
     private Boolean supportsMonthly;
-
 
 }

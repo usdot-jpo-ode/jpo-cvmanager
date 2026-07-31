@@ -1,32 +1,32 @@
 package us.dot.its.jpo.ode.api.emails.generators;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
-import lombok.extern.slf4j.Slf4j;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.Notification;
+import us.dot.its.jpo.ode.api.SnapshotTestUtils;
 import us.dot.its.jpo.ode.api.emails.EmailProperties;
 import us.dot.its.jpo.ode.api.emails.UnsubscribeTokenGenerator;
 import us.dot.its.jpo.ode.api.models.emails.EmailContent;
 import us.dot.its.jpo.ode.api.models.emails.contents.IntersectionNotificationSummaryEmailContents;
 
-import java.util.Collections;
+import java.io.IOException;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-@Slf4j
+@ExtendWith(MockitoExtension.class)
 class IntersectionNotificationSummaryEmailGeneratorTest {
-    private TemplateEngine templateEngine;
 
     @Mock
     private UnsubscribeTokenGenerator unsubscribeTokenGenerator;
@@ -34,13 +34,14 @@ class IntersectionNotificationSummaryEmailGeneratorTest {
     @Mock
     private EmailProperties emailProperties;
 
-    private IntersectionNotificationSummaryEmailGenerator generator;
+    @Mock
+    private TemplateEngine templateEngine;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+    private IntersectionNotificationSummaryEmailGenerator intersectionNotificationSummaryEmailGenerator;
 
-        when(emailProperties.getCvmgrFrontEndUri()).thenReturn("https://cvmanager.example.com");
+    @Test
+    void testGenerateEmailBody_SnapshotTest() throws IOException {
+        when(emailProperties.getCvmgrFrontEndUri()).thenReturn("https://cvmanager.com");
 
         // Configure the template resolver
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
@@ -55,22 +56,67 @@ class IntersectionNotificationSummaryEmailGeneratorTest {
 
         this.templateEngine = springTemplateEngine;
 
-        generator = new IntersectionNotificationSummaryEmailGenerator(templateEngine, unsubscribeTokenGenerator,
+        IntersectionNotificationSummaryEmailGenerator snapshotGenerator = new IntersectionNotificationSummaryEmailGenerator(
+                templateEngine, unsubscribeTokenGenerator,
                 emailProperties);
+
+        Notification notification = new ConnectionOfTravelNotification();
+        notification.setIntersectionID(0);
+        notification.setKey("connection-of-travel-notification");
+        notification.setNotificationText("Test notification text with special characters: ' \" < > &");
+        notification.setNotificationHeading("Test Notification Heading");
+        notification.setNotificationGeneratedAt(1770830034000L); // 2025-02-11T10:30:34Z
+
+        List<Notification> notifications = List.of(notification);
+
+        IntersectionNotificationSummaryEmailContents contents = new IntersectionNotificationSummaryEmailContents(
+                notifications);
+
+        EmailContent result = snapshotGenerator.generateEmailBody(contents);
+
+        String snapshotPath = "emails/intersection_notification_summary_email_snapshot.html";
+        SnapshotTestUtils.assertMatchesSnapshot(result.getBody(), snapshotPath);
     }
 
     @Test
-    void testGenerateEmailBody() {
-        Notification notification = new ConnectionOfTravelNotification();
-        List<Notification> notifications = Collections.singletonList(notification);
+    void generateEmailBody_mockedTest() {
+        intersectionNotificationSummaryEmailGenerator = new IntersectionNotificationSummaryEmailGenerator(
+                templateEngine,
+                unsubscribeTokenGenerator,
+                emailProperties);
+        intersectionNotificationSummaryEmailGenerator = spy(intersectionNotificationSummaryEmailGenerator);
 
+        Context thymeLeafContext = mock(Context.class);
+
+        Notification notification = new ConnectionOfTravelNotification();
+        notification.setIntersectionID(0);
+        notification.setKey("connection-of-travel-notification");
+        notification.setNotificationText("Test notification text with special characters: ' \" < > &");
+        notification.setNotificationHeading("Test Notification Heading");
+        notification.setNotificationGeneratedAt(1770830034000L); // 2025-02-11T10:30:34Z
+
+        List<Notification> notifications = List.of(notification);
         IntersectionNotificationSummaryEmailContents data = new IntersectionNotificationSummaryEmailContents(
                 notifications);
 
-        EmailContent emailContent = generator.generateEmailBody(data);
+        doCallRealMethod().when(intersectionNotificationSummaryEmailGenerator).generateEmailBody(any());
 
-        assertEquals("New CV-Manager Intersection Notifications",
-                emailContent.getSubject());
-        assertFalse(emailContent.getBody().isEmpty());
+        when(intersectionNotificationSummaryEmailGenerator.generateEmailContextBasic()).thenReturn(thymeLeafContext);
+        when(intersectionNotificationSummaryEmailGenerator.getEmailText(notifications))
+                .thenReturn("notification content");
+        doNothing().when(thymeLeafContext).setVariable(anyString(), any());
+
+        when(templateEngine.process("emails/email_template", thymeLeafContext)).thenReturn("HTML CONTENT");
+
+        EmailContent result = intersectionNotificationSummaryEmailGenerator.generateEmailBody(data);
+
+        EmailContent expectedResult = new EmailContent("New CV-Manager Intersection Notifications", "HTML CONTENT");
+        assertEquals(expectedResult, result);
+
+        verify(thymeLeafContext, times(3)).setVariable(anyString(), any());
+        verify(thymeLeafContext).setVariable("preview_text", "New Notifications in CV Manager");
+        verify(thymeLeafContext).setVariable("content_1", "<p>notification content</p>");
+        verify(thymeLeafContext).setVariable("footer_address", "CV-Manager Automated Notifications");
+        verify(templateEngine).process("emails/email_template", thymeLeafContext);
     }
 }

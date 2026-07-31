@@ -1,4 +1,3 @@
-import React from 'react'
 import '../components/css/Help.css'
 import popup from '../icons/help/rsu_popup_and_config_menu.png'
 import organizationSelection from '../icons/help/organization_selection.png'

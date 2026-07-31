@@ -1,23 +1,14 @@
-import React, {useEffect} from 'react'
+import { useMemo } from 'react'
 import AdminAddIntersection from '../adminAddIntersection/AdminAddIntersection'
 import AdminEditIntersection, { AdminEditIntersectionFormType } from '../adminEditIntersection/AdminEditIntersection'
 import AdminTable from '../../components/AdminTable'
 import { confirmAlert } from 'react-confirm-alert'
 import { Options } from '../../components/AdminDeletionOptions'
-import {
-  selectLoading,
-  selectTableData,
-
-  // actions
-  updateTableData,
-  deleteMultipleIntersections,
-  deleteIntersection,
-  setEditIntersectionRowData,
-  selectColumns,
-} from './adminIntersectionTabSlice'
+import { setEditIntersectionRowData, selectColumns } from './adminIntersectionTabSlice'
 import { selectOrganizationName } from '../../generalSlices/userSlice'
-import { clear, getIntersectionInfo } from '../adminEditIntersection/adminEditIntersectionSlice'
+import { clear } from '../adminEditIntersection/adminEditIntersectionSlice'
 import { useSelector, useDispatch } from 'react-redux'
+import { useGetIntersectionsQuery, useDeleteIntersectionMutation } from '../api/adminIntersectionApiSlice'
 
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
@@ -34,14 +25,22 @@ const AdminIntersectionTab = () => {
   const theme = useTheme()
 
   const organization = useSelector(selectOrganizationName)
-  useEffect(() =>{
-    dispatch(updateTableData())
-  }, [organization, dispatch])
+  const { data, isFetching, refetch } = useGetIntersectionsQuery(organization ?? '', {
+    skip: !organization,
+  })
+  const [deleteIntersectionMutation] = useDeleteIntersectionMutation()
 
-  const tableData = useSelector(selectTableData)
   const columns = useSelector(selectColumns)
 
-  const loading = useSelector(selectLoading)
+  const tableData = useMemo(
+    () =>
+      (data?.intersection_data ?? []).map((element) => ({
+        ...element,
+        intersection_id: element.intersection_id?.toString(),
+        rsus: Array.isArray(element.rsus) ? (element.rsus as string[]).join(', ') : element.rsus,
+      })),
+    [data]
+  )
 
   const tableActions: Action<AdminEditIntersectionFormType>[] = [
     {
@@ -100,7 +99,7 @@ const AdminIntersectionTab = () => {
         itemType: 'outlined',
       },
       onClick: () => {
-        dispatch(updateTableData())
+        refetch()
       },
     },
     {
@@ -118,33 +117,39 @@ const AdminIntersectionTab = () => {
   ]
 
   const onEdit = (row: AdminEditIntersectionFormType) => {
-    // Fetch the intersection info before navigating to ensure updated menu state
     dispatch(clear())
-    dispatch(getIntersectionInfo(row.intersection_id))
-
     dispatch(setEditIntersectionRowData(row))
     navigate('editIntersection/' + row.intersection_id)
   }
 
+  const extractErrorDetail = (error: unknown): string | undefined =>
+    error && typeof error === 'object' && 'data' in error && error.data && typeof error.data === 'object'
+      ? (error.data as { detail?: string }).detail
+      : undefined
+
   const onDelete = (row: AdminEditIntersectionFormType) => {
-    dispatch(deleteIntersection({ intersection_id: row.intersection_id, shouldUpdateTableData: true })).then(
-      (data: any) => {
-        if (data.payload.success) {
-          toast.success('Intersection Deleted Successfully')
-        } else {
-          toast.error('Failed to delete Intersection due to error: ' + data.payload)
-        }
-      }
-    )
+    toast.promise(deleteIntersectionMutation(row.intersection_id).unwrap(), {
+      loading: `Deleting intersection ${row.intersection_id}`,
+      success: `Successfully deleted intersection ${row.intersection_id}`,
+      error: (error) => {
+        const detail = extractErrorDetail(error)
+        return detail
+          ? `Failed to delete intersection ${row.intersection_id}: ${detail}`
+          : `Failed to delete intersection ${row.intersection_id}`
+      },
+    })
   }
 
-  const multiDelete = (rows: AdminEditIntersectionFormType[]) => {
-    dispatch(deleteMultipleIntersections(rows)).then((data: any) => {
-      if (data.payload.success) {
-        toast.success('Intersections Deleted Successfully')
-      } else {
-        toast.error(data.payload.message)
-      }
+  const multiDelete = async (rows: AdminEditIntersectionFormType[]) => {
+    toast.promise(Promise.all(rows.map((row) => deleteIntersectionMutation(row.intersection_id).unwrap())), {
+      loading: 'Deleting selected intersections',
+      success: 'Intersections Deleted Successfully',
+      error: (error) => {
+        const detail = extractErrorDetail(error)
+        return detail
+          ? `Failed to delete one or more Intersection(s): ${detail}`
+          : 'Failed to delete one or more Intersection(s)'
+      },
     })
   }
 
@@ -154,7 +159,7 @@ const AdminIntersectionTab = () => {
         <Route
           path="/"
           element={
-            loading === false && (
+            !isFetching && (
               <div className="scroll-div-tab">
                 <AdminTable
                   title={''}

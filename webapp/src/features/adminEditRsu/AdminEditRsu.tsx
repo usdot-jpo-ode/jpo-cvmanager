@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import { ErrorMessage } from '@hookform/error-message'
@@ -199,9 +199,12 @@ const AdminEditRsu = () => {
       setOpen(false)
       navigate('/dashboard/admin/rsus')
     } catch (error: any) {
-      toast.error('Failed to update RSU: ' + (error?.data?.message || error?.message || 'Unknown error'), {
-        id: loadingToast,
-      })
+      toast.error(
+        'Failed to update RSU: ' + (error?.data?.message || error?.message || error?.data?.detail || 'Unknown error'),
+        {
+          id: loadingToast,
+        }
+      )
     }
   }
 

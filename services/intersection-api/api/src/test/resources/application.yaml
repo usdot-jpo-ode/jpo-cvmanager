@@ -1,0 +1,27 @@
+# Use the Docker Compose PostgreSQL container for tests
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: password
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  # Disable test containers embedded database
+  test:
+    database:
+      replace: none
+
+# Change this if you need more information from logs during a test run. This prevents log spam during routine test
+# execution by limiting the logs to error level logs
+logging:
+  level:
+    root: ERROR
+

@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "intersection_organization")
+@Table(name = "intersection_organization", uniqueConstraints = @UniqueConstraint(columnNames = {"intersection_id", "organization_id"}))
 public class IntersectionOrganization {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "intersection_organization_id_gen")

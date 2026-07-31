@@ -24,6 +24,9 @@ FROM eclipse-temurin:22-jre-noble
 
 WORKDIR /home
 
+ENV EMAIL_RATE_LIMIT_PER_USER=12
+ENV EMAIL_RATE_LIMIT_PER_INSTANCE=120
+
 COPY --from=builder /home/intersection-api/src/main/resources/application.yaml /home
 COPY --from=builder /home/intersection-api/target/intersection-api.jar /home
 

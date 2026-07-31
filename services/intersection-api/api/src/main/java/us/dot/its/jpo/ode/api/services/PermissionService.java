@@ -1,6 +1,7 @@
 package us.dot.its.jpo.ode.api.services;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -11,18 +12,20 @@ import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import us.dot.its.jpo.ode.api.models.UserRole;
 import us.dot.its.jpo.ode.api.models.keycloak.CvManagerAuthToken;
 import us.dot.its.jpo.ode.api.repositories.IntersectionRepository;
 import us.dot.its.jpo.ode.api.repositories.RsuRepository;
-import us.dot.its.jpo.ode.api.utils.AuthUtils;
 import us.dot.its.jpo.ode.api.repositories.RsuCredentialRepository;
 import us.dot.its.jpo.ode.api.repositories.SnmpCredentialRepository;
+import us.dot.its.jpo.ode.api.repositories.UserRepository;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -34,6 +37,7 @@ public class PermissionService {
     private final RsuRepository rsuRepository;
     private final RsuCredentialRepository rsuCredentialRepository;
     private final SnmpCredentialRepository snmpCredentialRepository;
+    private final UserRepository userRepository;
 
     public List<Integer> getAllowedIntersectionIdsByEmail(String email) {
         return intersectionRepository.findAllowedIntersectionIdsByEmail(email).stream().map(Integer::parseInt)
@@ -47,6 +51,8 @@ public class PermissionService {
 
     /**
      * Gets the decoded token from the current security context.
+     * Throws an IllegalStateException if the authentication context is invalid or
+     * if the authentication token is not of type CvManagerAuthToken
      * 
      * @return CvManagerAuthToken containing user claims
      * @throws IllegalStateException if authentication is not valid
@@ -54,25 +60,60 @@ public class PermissionService {
     public CvManagerAuthToken getCvManagerAuthToken() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (!isAuthValid(auth)) {
-            throw new IllegalStateException("Invalid authentication context");
+            throw new AccessDeniedException("Authentication token not provided");
         }
 
-        if (auth instanceof CvManagerAuthToken cvManagerAuthToken) {
-            return cvManagerAuthToken;
+        if (auth instanceof CvManagerAuthToken authToken) {
+            return authToken;
         }
 
-        throw new IllegalStateException("Authentication is not a CvManagerAuthToken");
+        throw new AccessDeniedException("Invalid authentication token");
     }
 
     // Allow Connection if the user is a SuperUser
     public boolean isSuperUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (!isAuthValid(auth)) {
+        CvManagerAuthToken authToken = getCvManagerAuthToken();
+        return authToken.isSuperUser();
+    }
+
+    /**
+     * Runs an organization-based permission check for the current user.
+     * Invalid authentication returns false. Super users are always allowed.
+     * If an Organization header was specified, then it will be verified to match
+     * the qualified orgs.
+     *
+     * @param role              required minimum role
+     * @param qualifiedOrgCheck check to perform against the user's qualified
+     *                          organizations
+     * @return true if the current user is authorized
+     */
+    private boolean checkQualifiedOrgs(String role, Predicate<List<String>> qualifiedOrgCheck) {
+        CvManagerAuthToken authToken = getCvManagerAuthToken();
+
+        if (authToken.isSuperUser()) {
+            return true;
+        }
+
+        List<String> qualifiedOrgs = authToken.getQualifiedOrgList(UserRole.fromString(role));
+
+        if (qualifiedOrgs == null || qualifiedOrgs.isEmpty()) {
+            // No qualified organizations: deny access without hitting the repository
             return false;
         }
 
-        CvManagerAuthToken CvManagerAuthToken = getCvManagerAuthToken();
-        return CvManagerAuthToken.isSuperUser();
+        // Verify that organization header matches qualified orgs, if specified
+        String organization = getOrganizationFromHeader();
+        if (organization != null) {
+            if (!qualifiedOrgs.contains(organization)) {
+                // If an organization is specified in the header, ensure it's in the qualified
+                // orgs list
+                return false;
+            } else {
+                return qualifiedOrgCheck.test(List.of(organization));
+            }
+        } else {
+            return qualifiedOrgCheck.test(qualifiedOrgs);
+        }
     }
 
     /**
@@ -87,38 +128,32 @@ public class PermissionService {
      *         organization,
      *         or is a superuser; otherwise, false
      */
-    public boolean hasRole(String role) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (!isAuthValid(auth)) {
-            return false;
-        }
-
-        CvManagerAuthToken CvManagerAuthToken = getCvManagerAuthToken();
-        if (CvManagerAuthToken.isSuperUser()) {
+    public boolean hasRole(UserRole role) {
+        CvManagerAuthToken authToken = getCvManagerAuthToken();
+        if (authToken.isSuperUser()) {
             return true;
         }
 
         String organization = getOrganizationFromHeader();
 
         if (organization != null) {
-            Optional<String> userRole = CvManagerAuthToken.findRoleInOrg(organization);
-            return userRole.map(roleValue -> AuthUtils.checkRoleAbove(roleValue, role)).orElse(false);
+            Optional<UserRole> userRole = authToken.findRoleInOrg(organization);
+            return userRole.map(roleValue -> roleValue.hasMinimumRole(role)).orElse(false);
         }
-        return !CvManagerAuthToken.getQualifiedOrgList(role).isEmpty();
+        return !authToken.getQualifiedOrgList(role).isEmpty();
     }
 
-    public boolean hasRoleInOrgs(String role, List<String> organizations) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (!isAuthValid(auth)) {
-            return false;
-        }
-
-        CvManagerAuthToken CvManagerAuthToken = getCvManagerAuthToken();
-        if (CvManagerAuthToken.isSuperUser()) {
+    public boolean hasRoleInOrgs(UserRole role, List<String> organizations) {
+        CvManagerAuthToken authToken = getCvManagerAuthToken();
+        if (authToken.isSuperUser()) {
             return true;
         }
 
-        List<String> qualifiedOrgs = CvManagerAuthToken.getQualifiedOrgList(role);
+        List<String> qualifiedOrgs = authToken.getQualifiedOrgList(role);
+        if (qualifiedOrgs == null || qualifiedOrgs.isEmpty()) {
+            // No qualified organizations: deny access without hitting the repository
+            return false;
+        }
         return qualifiedOrgs.containsAll(organizations);
     }
 
@@ -134,54 +169,32 @@ public class PermissionService {
      *         or if the user is a superuser; false otherwise
      */
     public boolean hasRoleInOrg(String organization, String role) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (!isAuthValid(auth)) {
-            return false;
-        }
-
-        CvManagerAuthToken CvManagerAuthToken = getCvManagerAuthToken();
-        if (CvManagerAuthToken.isSuperUser()) {
+        CvManagerAuthToken authToken = getCvManagerAuthToken();
+        if (authToken.isSuperUser()) {
             return true;
         }
 
-        Optional<String> userRole = CvManagerAuthToken.findRoleInOrg(organization);
-        return userRole.map(roleValue -> AuthUtils.checkRoleAbove(roleValue, role)).orElse(false);
+        Optional<UserRole> userRole = authToken.findRoleInOrg(organization);
+        return userRole.map(roleValue -> roleValue.hasMinimumRole(UserRole.fromString(role))).orElse(false);
     }
 
     // Allow Connection if the users organization controls the specified
     // intersection
     public boolean hasIntersection(Integer intersectionID, String role) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (!isAuthValid(auth)) {
-            return false;
-        }
-
         // Must be null check first, otherwise throws null pointer exception (if null)
         if (intersectionID == null || intersectionID == -1) {
             return true;
         }
 
-        CvManagerAuthToken CvManagerAuthToken = getCvManagerAuthToken();
-        if (CvManagerAuthToken.isSuperUser()) {
+        CvManagerAuthToken authToken = getCvManagerAuthToken();
+        if (authToken.isSuperUser()) {
             return true;
         }
 
-        List<String> qualifiedOrgs = CvManagerAuthToken.getQualifiedOrgList(role);
-
-        String organization = getOrganizationFromHeader();
-        if (organization != null) {
-            if (qualifiedOrgs.contains(organization)) {
-                return intersectionRepository.existsByIdAndOrganizations(
+        return checkQualifiedOrgs(role,
+                qualifiedOrgs -> intersectionRepository.existsByIdAndOrganizations(
                         intersectionID.toString(),
-                        List.of(organization));
-            } else {
-                return false;
-            }
-        }
-
-        return intersectionRepository.existsByIdAndOrganizations(
-                intersectionID.toString(),
-                qualifiedOrgs);
+                        qualifiedOrgs));
     }
 
     // Allow Connection if the users organization controls the specified RSU unit
@@ -193,28 +206,10 @@ public class PermissionService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid RSU IP address: " + rsuIP, e);
         }
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (!isAuthValid(auth)) {
-            return false;
-        }
-
-        CvManagerAuthToken CvManagerAuthToken = getCvManagerAuthToken();
-        if (CvManagerAuthToken.isSuperUser()) {
-            return true;
-        }
-
-        List<String> qualifiedOrgs = CvManagerAuthToken.getQualifiedOrgList(role);
-
-        String organization = getOrganizationFromHeader();
-        if (organization != null) {
-            if (qualifiedOrgs.contains(organization)) {
-                return rsuRepository.existsByIpAndOrganizations(ipv4Address, List.of(organization));
-            } else {
-                return false;
-            }
-        }
-
-        return rsuRepository.existsByIpAndOrganizations(ipv4Address, qualifiedOrgs);
+        return checkQualifiedOrgs(role,
+                qualifiedOrgs -> rsuRepository.existsByIpAndOrganizations(
+                        ipv4Address,
+                        qualifiedOrgs));
     }
 
     // Allow Connection if the users organization controls the specified RSU unit
@@ -228,20 +223,38 @@ public class PermissionService {
             }
         }
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (!isAuthValid(auth)) {
+        return checkQualifiedOrgs(role, qualifiedOrgs -> rsuRepository.findAllowedRsuIpsInOrganizations(qualifiedOrgs)
+                .containsAll(ipv4Addresses));
+    }
+
+    // Allow Connection if the users organization(s) control the specified User
+    public boolean hasUser(String email, String role) {
+        if (email == null || email.isBlank()) {
             return false;
         }
 
-        CvManagerAuthToken CvManagerAuthToken = getCvManagerAuthToken();
-        if (CvManagerAuthToken.isSuperUser()) {
+        CvManagerAuthToken authToken = getCvManagerAuthToken();
+        if (authToken.isSuperUser()) {
             return true;
         }
 
-        List<String> qualifiedOrgs = CvManagerAuthToken.getQualifiedOrgList(role);
+        return checkQualifiedOrgs(role,
+                qualifiedOrgs -> userRepository.existsByEmailAndOrganizations(email, qualifiedOrgs));
+    }
 
-        List<InetAddress> allowedRsuIps = rsuRepository.findAllowedRsuIpsInOrganizations(qualifiedOrgs);
-        return allowedRsuIps.containsAll(ipv4Addresses);
+    // Allow Connection if the users organization(s) control the specified Users
+    public boolean hasUsers(List<String> emails, String role) {
+        if (emails == null || emails.isEmpty()) {
+            return true; // No emails to check, so allow connection
+        }
+        List<String> distinctEmails = emails.stream().distinct().toList();
+        if (distinctEmails.isEmpty()) {
+            return true; // No emails to check, so allow connection
+        }
+
+        return checkQualifiedOrgs(role,
+                qualifiedOrgs -> userRepository.allUsersExistInOrganizations(distinctEmails, qualifiedOrgs,
+                        distinctEmails.size()));
     }
 
     /**
@@ -263,18 +276,13 @@ public class PermissionService {
      *         {@code false} otherwise, including when authentication is invalid
      */
     public boolean hasRsuCredential(String nickname, String role) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (!isAuthValid(auth)) {
-            return false;
-        }
-
-        CvManagerAuthToken CvManagerAuthToken = getCvManagerAuthToken();
-        if (CvManagerAuthToken.isSuperUser()) {
+        CvManagerAuthToken authToken = getCvManagerAuthToken();
+        if (authToken.isSuperUser()) {
             return true;
         }
 
         return rsuCredentialRepository.existsByNicknameAndOrganizations(nickname,
-                CvManagerAuthToken.getQualifiedOrgList(role));
+                authToken.getQualifiedOrgList(UserRole.fromString(role)));
     }
 
     /**
@@ -296,18 +304,13 @@ public class PermissionService {
      *         {@code false} otherwise, including when authentication is invalid
      */
     public boolean hasSnmpCredential(String nickname, String role) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (!isAuthValid(auth)) {
-            return false;
-        }
-
-        CvManagerAuthToken CvManagerAuthToken = getCvManagerAuthToken();
-        if (CvManagerAuthToken.isSuperUser()) {
+        CvManagerAuthToken authToken = getCvManagerAuthToken();
+        if (authToken.isSuperUser()) {
             return true;
         }
 
         return snmpCredentialRepository.existsByNicknameAndOrganizations(nickname,
-                CvManagerAuthToken.getQualifiedOrgList(role));
+                authToken.getQualifiedOrgList(UserRole.fromString(role)));
     }
 
     // helper method to make sure authentication is valid

@@ -1,13 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import AdminAddRsu from '../adminAddRsu/AdminAddRsu'
 import AdminEditRsu, { AdminEditRsuFormType } from '../adminEditRsu/AdminEditRsu'
-import AdminTable from '../../components/AdminTable'
+import AdminTable, { buildAdminTableQueryParams } from '../../components/AdminTable'
 import { confirmAlert } from 'react-confirm-alert'
 import { Options } from '../../components/AdminDeletionOptions'
 import RsuStatusDialog from './RsuStatusDialog'
-import RsuApi, { RsuState } from '../../apis/intersections/rsu-api'
 import { selectToken } from '../../generalSlices/userSlice'
-import { debounce } from 'lodash'
 
 import { selectOrganizationName } from '../../generalSlices/userSlice'
 import { useSelector } from 'react-redux'
@@ -29,6 +27,8 @@ import {
 const AdminRsuTab = () => {
   const navigate = useNavigate()
   const theme = useTheme()
+
+  const token = useSelector(selectToken)
   const organization = useSelector(selectOrganizationName)
 
   const tableRef = useRef<any>(null)
@@ -63,10 +63,6 @@ const AdminRsuTab = () => {
 
   const [statusDialogOpen, setStatusDialogOpen] = useState(false)
   const [selectedRsuIp, setSelectedRsuIp] = useState<string | null>(null)
-  const [latestRsuState, setLatestRsuState] = useState<RsuState | null>(null)
-  const [historicalRsuData, setHistoricalRsuData] = useState<RsuState[] | null>(null)
-
-  const token = useSelector(selectToken)
 
   // const tableData = useSelector(selectTableData)
   const [columns] = useState([
@@ -119,47 +115,12 @@ const AdminRsuTab = () => {
     setSelectedRsuIp(null)
   }
 
-  const debouncedQueryHistoricalData = debounce((selectedDate: string) => {
-    if (selectedRsuIp && selectedDate) {
-      const startTime = new Date(selectedDate).setHours(0, 0, 0, 0)
-      const endTime = new Date(selectedDate).setHours(23, 59, 59, 999)
-
-      RsuApi.getHistoricalRsuStatus({
-        token,
-        rsuIp: selectedRsuIp,
-        startTime: new Date(startTime),
-        endTime: new Date(endTime),
-      })
-        .then((data) => {
-          setHistoricalRsuData(data ?? null)
-        })
-        .catch((err) => {
-          setHistoricalRsuData(null)
-        })
-    }
-  }, 300) // Debounce with 300ms delay
-
   // const loading = useSelector(selectLoading)
   const handleRefresh = () => {
     if (tableRef.current && tableRef.current.onQueryChange) {
       tableRef.current.onQueryChange()
     }
   }
-
-  React.useEffect(() => {
-    if (statusDialogOpen && selectedRsuIp) {
-      RsuApi.getLatestRsuStatus({ token, rsuIp: selectedRsuIp })
-        .then((data) => {
-          setLatestRsuState(data ?? null)
-        })
-        .catch((err) => {
-          setLatestRsuState(null)
-          console.error('Failed to fetch RSU state:', err)
-        })
-    } else {
-      setLatestRsuState(null)
-    }
-  }, [statusDialogOpen, selectedRsuIp, token])
 
   const tableActions: Action<AdminEditRsuFormType>[] = [
     {
@@ -246,34 +207,13 @@ const AdminRsuTab = () => {
     },
   ]
 
+
   const handleQueryChange = useCallback(
     async (query) => {
       setIsRefreshing(true)
 
       try {
-        // Extract order information from orderByCollection
-        let orderBy = 'ip'
-        let orderDirection = 'asc'
-        if (query.orderByCollection && query.orderByCollection.length > 0) {
-          const firstOrder = query.orderByCollection[0]
-          if (firstOrder.orderBy !== undefined) {
-            if (typeof firstOrder.orderBy.field === 'string') {
-              orderBy = firstOrder.orderBy.field
-            } else if (typeof firstOrder.orderBy === 'number') {
-              orderBy = columns[firstOrder.orderBy].field
-            }
-          }
-          orderDirection = firstOrder.orderDirection || 'asc'
-        }
-
-        // Build query params including organization
-        const params = {
-          page: query.page,
-          size: query.pageSize,
-          sort: `${orderBy},${orderDirection}`,
-          search: query.search || '',
-          organization: organization || '', // Add organization parameter
-        }
+        const params = buildAdminTableQueryParams(query, columns, organization, 'ip', 'asc')
 
         // Check if organization changed - if so, reset to page 0
         if (currentQueryRef.current && currentQueryRef.current.organization !== params.organization) {

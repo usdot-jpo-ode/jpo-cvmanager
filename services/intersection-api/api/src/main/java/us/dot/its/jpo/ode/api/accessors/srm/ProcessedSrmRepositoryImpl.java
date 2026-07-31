@@ -61,7 +61,7 @@ public class ProcessedSrmRepositoryImpl implements ProcessedSrmRepository, Pagea
 
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(VEHICLE_ID_FIELD, vehicleId)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, IntersectionCriteria.TimeStampFormat.STRING);
 
         if (centerLng != null && centerLat != null && distance != null) {
             Envelope boundingBox = GeographyCalculator.calculateBoundingBox(centerLng, centerLat, distance);
@@ -99,7 +99,7 @@ public class ProcessedSrmRepositoryImpl implements ProcessedSrmRepository, Pagea
 
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(VEHICLE_ID_FIELD, vehicleId)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, IntersectionCriteria.TimeStampFormat.STRING);
         if (intersectionID != null) {
             criteria = criteria.and("properties.requests")
                     .elemMatch(Criteria.where("intersectionId").is(intersectionID));
@@ -134,7 +134,7 @@ public class ProcessedSrmRepositoryImpl implements ProcessedSrmRepository, Pagea
 
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(VEHICLE_ID_FIELD, vehicleId)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, IntersectionCriteria.TimeStampFormat.STRING);
         if (intersectionID != null) {
             criteria = criteria.and(REQUEST_INTERSECTION_ID_FIELD).is(intersectionID);
         }

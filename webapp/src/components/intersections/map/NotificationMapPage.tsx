@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Box, Container } from '@mui/material'
 import IntersectionMap from '../../../features/intersections/map/map-component'
 import { setSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'

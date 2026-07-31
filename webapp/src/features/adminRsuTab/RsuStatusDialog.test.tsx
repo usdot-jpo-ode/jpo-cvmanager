@@ -1,4 +1,3 @@
-import React from 'react'
 import { render } from '@testing-library/react'
 import RsuStatusDialog from './RsuStatusDialog'
 import { Provider } from 'react-redux'
@@ -9,7 +8,7 @@ import { replaceChaoticIds } from '../../utils/test-utils'
 
 beforeAll(() => {
   // Mock the Date object to always return a fixed date
-  jest.useFakeTimers('modern')
+  jest.useFakeTimers()
   jest.setSystemTime(new Date('2025-12-05T00:00:00Z'))
 })
 

@@ -13,7 +13,6 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-import React from 'react'
 import { PencilAlt as PencilAltIcon } from '../../../icons/pencil-alt'
 import CancelIcon from '@mui/icons-material/Cancel'
 import AddIcon from '@mui/icons-material/Add'

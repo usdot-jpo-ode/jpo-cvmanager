@@ -1,5 +1,8 @@
 package us.dot.its.jpo.ode.api.repositories;
 
+import java.net.InetAddress;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,9 +13,6 @@ import org.springframework.stereotype.Repository;
 
 import jakarta.transaction.Transactional;
 import us.dot.its.jpo.ode.api.models.postgres.tables.Rsu;
-
-import java.net.InetAddress;
-import java.util.List;
 
 @Repository
 public interface RsuRepository extends JpaRepository<Rsu, Integer> {
@@ -70,6 +70,20 @@ public interface RsuRepository extends JpaRepository<Rsu, Integer> {
             "JOIN ro.organization o " +
             "WHERE o.name in :organizationNames")
     List<InetAddress> findAllowedRsuIpsInOrganizations(@Param("organizationNames") List<String> organizationNames);
+
+    /**
+     * Returns all RSUs belonging to the given organisation, fetching
+     * model, manufacturer, and rsuOption.
+     */
+    @Query("SELECT DISTINCT rsu " +
+            "FROM Rsu rsu " +
+            "JOIN FETCH rsu.model m " +
+            "JOIN FETCH m.manufacturer " +
+            "LEFT JOIN FETCH rsu.rsuOption " +
+            "JOIN rsu.rsuOrganizations ro " +
+            "JOIN ro.organization o " +
+            "WHERE o.name = :orgName")
+    List<Rsu> findAllRsusByOrganizationName(@Param("orgName") String orgName);
 
     @Transactional
     void removeRsuByIpv4Address(InetAddress ipv4Address);

@@ -1,4 +1,3 @@
-import React from 'react'
 import { render } from '@testing-library/react'
 import AdminAddNotification from '../adminAddNotification/AdminAddNotification'
 import { Provider } from 'react-redux'

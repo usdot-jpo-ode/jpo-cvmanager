@@ -14,7 +14,6 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-import React from 'react'
 import MapRoundedIcon from '@mui/icons-material/MapRounded'
 import { useNavigate } from 'react-router-dom'
 

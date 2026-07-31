@@ -1,4 +1,3 @@
-import React from 'react'
 import { Box, Typography } from '@mui/material'
 import DistanceFromCenterlineOverTimeGraph from './distance-from-centerline-over-time-graph'
 import { LaneDirectionOfTravelReportDataByLaneId } from '../../../../models/ReportData'

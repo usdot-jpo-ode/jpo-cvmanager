@@ -1,5 +1,3 @@
-import React from 'react'
-
 export const Options = (
   deleteTitle: string,
   deleteMessage: string,

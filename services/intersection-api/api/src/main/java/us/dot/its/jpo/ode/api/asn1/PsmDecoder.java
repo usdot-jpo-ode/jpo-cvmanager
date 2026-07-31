@@ -3,6 +3,7 @@ package us.dot.its.jpo.ode.api.asn1;
 import lombok.extern.slf4j.Slf4j;
 import java.util.HexFormat;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -31,6 +32,7 @@ import us.dot.its.jpo.asn.j2735.r2024.PersonalSafetyMessage.PersonalSafetyMessag
  * Converts ASN.1 encoded PSM messages to processed PSM objects.
  */
 @Slf4j
+@ConditionalOnBean(MessageFrameCodec.class)
 @Component
 public class PsmDecoder implements Decoder {
 

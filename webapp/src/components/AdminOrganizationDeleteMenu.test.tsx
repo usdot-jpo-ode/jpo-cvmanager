@@ -1,4 +1,3 @@
-import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import AdminOrganizationDeleteMenu from './AdminOrganizationDeleteMenu'
 import { replaceChaoticIds } from '../utils/test-utils'

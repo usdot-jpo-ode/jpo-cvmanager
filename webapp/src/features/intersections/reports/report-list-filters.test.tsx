@@ -1,4 +1,3 @@
-import React from 'react'
 import { render } from '@testing-library/react'
 import { ReportListFilters } from './report-list-filters'
 import { Provider } from 'react-redux'
@@ -6,6 +5,8 @@ import { ThemeProvider } from '@mui/material'
 import { testTheme } from '../../../styles'
 import { setupStore } from '../../../store'
 import { MockLocalizationProvider, replaceChaoticIds } from '../../../utils/test-utils'
+import { vi } from 'vitest'
+import { createRef } from 'react'
 
 // // Mock the @mui/x-date-pickers module
 vi.mock('@mui/x-date-pickers', async () => {
@@ -62,7 +63,7 @@ it('should take a snapshot', () => {
           }}
           onChange={() => {}}
           loading={false}
-          containerRef={() => {}}
+          containerRef={createRef<Element>()}
           setOpenReportGenerationDialog={() => {}}
         />
       </Provider>

@@ -1,18 +1,17 @@
 import EnvironmentVars from '../EnvironmentVars'
 import { WZDxWorkZoneFeed } from '../models/wzdx/WzdxWorkZoneFeed42'
 import apiHelper from './api-helper'
+import { authApiHelper } from './intersections/api-helper-cviz'
 import {
   ApiMsgRespWithCodes,
   GetRsuCommandResp,
-  GetRsuUserAuthResp,
-  IssScmsStatus,
   RsuCommandPostBody,
   RsuCounts,
+  RsuInfo,
   RsuInfoList,
   RsuMsgFwdConfigs,
   RsuOnlineStatusRespMultiple,
   RsuOnlineStatusRespSingle,
-  SsmSrmData,
 } from '../models/RsuApi'
 
 class RsuApi {
@@ -22,14 +21,19 @@ class RsuApi {
     org: string,
     url_ext = '',
     query_params: Record<string, string> = {}
-  ): Promise<RsuInfoList> =>
-    apiHelper._getData({
-      url: EnvironmentVars.rsuInfoEndpoint + url_ext,
+  ): Promise<RsuInfoList> => {
+    const response = await authApiHelper.invokeApi({
+      path: `${EnvironmentVars.rsuInfoPath}${url_ext}`,
+      queryParams: query_params,
       token,
-      query_params,
-      additional_headers: { Organization: org },
+      headers: { Organization: org },
+      toastOnFailure: false,
       tag: 'rsu',
     })
+
+    const rsuArray = Array.isArray(response) ? (response as RsuInfo[]) : []
+    return { rsuList: rsuArray }
+  }
   getRsuOnline = async (
     token: string,
     org: string,
@@ -95,19 +99,6 @@ class RsuApi {
       additional_headers: { Organization: org },
       tag: 'rsu',
     })
-  getIssScmsStatus = async (
-    token: string,
-    org: string,
-    url_ext = '',
-    query_params: Record<string, string> = {}
-  ): Promise<IssScmsStatus> =>
-    apiHelper._getData({
-      url: EnvironmentVars.issScmsStatusEndpoint + url_ext,
-      token,
-      query_params,
-      additional_headers: { Organization: org },
-      tag: 'rsu',
-    })
 
   // WZDx
   getWzdxData = async (token: string, url_ext = '', query_params = {}): Promise<WZDxWorkZoneFeed> =>
@@ -146,23 +137,6 @@ class RsuApi {
       token,
       additional_headers: { Organization: org },
       tag: 'rsu',
-    })
-  }
-
-  // POST
-  postContactSupport = async (json: object): Promise<ApiMsgRespWithCodes<any>> => {
-    return await apiHelper._postData({
-      url: EnvironmentVars.contactSupport,
-      body: JSON.stringify(json),
-      tag: 'rsu',
-    })
-  }
-
-  // POST
-  postRsuErrorSummary = async (json: object): Promise<ApiMsgRespWithCodes<any>> => {
-    return await apiHelper._postData({
-      url: EnvironmentVars.rsuErrorSummary,
-      body: JSON.stringify(json),
     })
   }
 }

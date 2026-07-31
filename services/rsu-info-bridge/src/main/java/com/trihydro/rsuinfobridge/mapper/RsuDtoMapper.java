@@ -27,6 +27,7 @@ public interface RsuDtoMapper {
     @Mapping(source = "geography.y", target = "latitude")
     @Mapping(source = "geography.x", target = "longitude")
     @Mapping(source = "rsuOption.timDeposit", target = "timDepositEnabled")
+    @Mapping(source = "model.manufacturer.name", target = "manufacturerName")
     RsuDto toDto(Rsu rsu);
 
     List<RsuDto> toDtoList(List<Rsu> rsus);

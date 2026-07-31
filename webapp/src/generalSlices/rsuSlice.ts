@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import RsuApi from '../apis/rsu-api'
 import {
-  IssScmsStatus,
   RsuInfo,
   RsuMapInfo,
   RsuMapInfoIpList,
@@ -36,7 +35,6 @@ const initialState = {
   geoMsgFilter: false,
   geoMsgFilterStep: 60,
   geoMsgFilterOffset: 0,
-  issScmsStatusData: {} as IssScmsStatus,
 }
 
 export const getRsuData = createAsyncThunk(
@@ -78,20 +76,6 @@ export const _getRsuOnlineStatus = createAsyncThunk(
     const rsuOnlineStatus = (await RsuApi.getRsuOnline(token, organization)) ?? rsuOnlineStatusState
 
     return rsuOnlineStatus
-  }
-)
-
-export const getIssScmsStatus = createAsyncThunk(
-  'rsu/getIssScmsStatus',
-  async (_, { getState }) => {
-    const currentState = getState() as RootState
-    const token = selectToken(currentState)
-    const organization = selectOrganizationName(currentState)
-
-    return await RsuApi.getIssScmsStatus(token, organization)
-  },
-  {
-    condition: (_, { getState }) => selectToken(getState() as RootState) != undefined,
   }
 )
 
@@ -241,9 +225,6 @@ export const rsuSlice = createSlice({
       .addCase(_getRsuOnlineStatus.fulfilled, (state, action) => {
         state.value.rsuOnlineStatus = action.payload as RsuOnlineStatusRespMultiple
       })
-      .addCase(getIssScmsStatus.fulfilled, (state, action) => {
-        state.value.issScmsStatusData = action.payload ?? state.value.issScmsStatusData
-      })
       .addCase(updateGeoMsgData.pending, (state) => {
         state.loading = true
         state.value.addGeoMsgPoint = false
@@ -283,7 +264,6 @@ export const selectGeoMsgDateError = (state: RootState) => state.rsu.value.geoMs
 export const selectGeoMsgFilter = (state: RootState) => state.rsu.value.geoMsgFilter
 export const selectGeoMsgFilterStep = (state: RootState) => state.rsu.value.geoMsgFilterStep
 export const selectGeoMsgFilterOffset = (state: RootState) => state.rsu.value.geoMsgFilterOffset
-export const selectIssScmsStatusData = (state: RootState) => state.rsu.value.issScmsStatusData
 
 export const {
   selectRsu,

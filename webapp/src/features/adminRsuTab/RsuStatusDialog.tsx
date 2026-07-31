@@ -11,7 +11,6 @@ import {
   Select,
   SelectChangeEvent,
   FormControl,
-  InputLabel,
 } from '@mui/material'
 import {
   ScatterChart,

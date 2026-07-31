@@ -14,18 +14,28 @@ import java.util.stream.Collectors;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+
+import us.dot.its.jpo.ode.api.models.emails.EmailApiResponse;
+import us.dot.its.jpo.ode.api.models.emails.EmailResponseException;
 import us.dot.its.jpo.ode.api.services.RsuCredentialManagementService;
+import us.dot.its.jpo.ode.api.services.RsuUpgradeService;
 import us.dot.its.jpo.ode.api.services.SnmpCredentialManagementService;
+import us.dot.its.jpo.ode.api.services.UserManagementService;
 
 /**
  * Global exception handler for REST API endpoints.
@@ -71,6 +81,24 @@ public class GlobalExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, message);
     }
 
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler()
+    public ProblemDetail handleUserEmailAlreadyExistsException(
+            UserManagementService.UserEmailAlreadyExistsException e) {
+        String message = e.getMessage();
+        log.error(message);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, message);
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler()
+    public ProblemDetail handleFirmwareUpgradeUnavailableException(
+            RsuUpgradeService.FirmwareUpgradeUnavailableException e) {
+        String message = e.getMessage();
+        log.warn(message);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, message);
+    }
+
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler()
     public ProblemDetail handleAccessDeniedException(AccessDeniedException e) {
@@ -86,6 +114,13 @@ public class GlobalExceptionHandler {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
         var errorRes = ErrorResponse.builder(ex, problemDetail);
         return errorRes.build();
+    }
+
+    @ExceptionHandler(EmailResponseException.class)
+    public ResponseEntity<EmailApiResponse> handleEmailResponse(EmailResponseException ex) {
+        return ResponseEntity
+                .status(ex.getStatus())
+                .body(ex.getResponse());
     }
 
     /**
@@ -191,6 +226,20 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Handle missing required request header exceptions
+     */
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public ProblemDetail handleMissingRequestHeaderException(MissingRequestHeaderException ex) {
+        log.warn("Missing required request header: {}", ex.getHeaderName());
+
+        String message = String.format("Required request header '%s' is not present", ex.getHeaderName());
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, message);
+        problemDetail.setTitle("Missing Header");
+
+        return problemDetail;
+    }
+
+    /**
      * Handles database constraint violations with user-friendly messages.
      * Extracts constraint details and provides human-readable error messages
      * without exposing SQL implementation details.
@@ -226,14 +275,52 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler()
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleServletRequestBinding(ServletRequestBindingException ex) {
+        log.warn("Request binding error: {}", ex.getMessage());
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+        return ErrorResponse.builder(ex, problemDetail).build();
+    }
+
+    /**
+     * Handles malformed/invalid JSON request bodies.
+     * Covers Jackson errors such as:
+     * - MismatchedInputException
+     * - InvalidFormatException
+     * - UnrecognizedPropertyException
+     * - JsonParseException
+     */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        Throwable root = ex;
+        while (root.getCause() != null && root.getCause() != root) {
+            root = root.getCause();
+        }
+
+        String message = "Request body is invalid or malformed JSON.";
+
+        if (root instanceof MismatchedInputException) {
+            // ex. "asdf", or {"asdf": "asdf"} for json body
+            message = "JSON structure does not match the expected request format.";
+        } else if (root instanceof JsonParseException) {
+            // ex. {asdf} for json body
+            message = "Malformed JSON syntax in request body.";
+        }
+
+        log.warn("Request body parse error: {}", root != null ? root.getMessage() : ex.getMessage());
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, message);
+        return ErrorResponse.builder(ex, problemDetail).build();
+    }
+
+    @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleException(Exception ex) {
         log.error("Unexpected server error:", ex);
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "An unexpected error occurred. Please try again later.");
-        var errorRes = ErrorResponse.builder(ex, problemDetail);
-        return errorRes.build();
+        return ErrorResponse.builder(ex, problemDetail).build();
     }
 
     private String buildUserFriendlyMessage(String message, DataIntegrityViolationException ex) {
@@ -287,7 +374,7 @@ public class GlobalExceptionHandler {
             }
 
             String resourceType = determineResourceType(message);
-            return String.format("A %s with %s already exists.", resourceType, details.toString());
+            return String.format("%s with %s already exists.", resourceType, details.toString());
         }
 
         return "A record with these values already exists. Please use different values.";
@@ -344,11 +431,13 @@ public class GlobalExceptionHandler {
         if (lowerMessage.contains("rsu") || lowerMessage.contains("rsus")) {
             return "RSU";
         } else if (lowerMessage.contains("user")) {
-            return "user";
+            return "User";
         } else if (lowerMessage.contains("organization")) {
-            return "organization";
+            return "Organization";
         } else if (lowerMessage.contains("credential")) {
-            return "credential";
+            return "Credential";
+        } else if (lowerMessage.contains("intersection")) {
+            return "Intersection";
         }
 
         return "record";

@@ -1,8 +1,6 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectOrganizationName } from '../generalSlices/userSlice'
-import { updateTableData as updateIntersectionTableData } from '../features/adminIntersectionTab/adminIntersectionTabSlice'
-import { getAvailableUsers } from '../features/adminUserTab/adminUserTabSlice'
+import { selectIsAdminOrAbove, selectOrganizationName } from '../generalSlices/userSlice'
 import '../features/adminRsuTab/Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
@@ -10,29 +8,23 @@ import AdminOrganizationTab from '../features/adminOrganizationTab/AdminOrganiza
 import AdminRsuTab from '../features/adminRsuTab/AdminRsuTab'
 import AdminUserTab from '../features/adminUserTab/AdminUserTab'
 import { NotFound } from './404'
-import { LocalStorageManager, SecureStorageManager } from '../managers'
 import { getUserNotifications } from '../features/adminNotificationTab/adminNotificationTabSlice'
 import VerticalTabs from '../components/VerticalTabs'
 import { headerTabHeight } from '../styles/index'
 import AdminIntersectionTab from '../features/adminIntersectionTab/AdminIntersectionTab'
-import { evaluateFeatureFlags } from '../feature-flags'
 
 function Admin() {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const organization = useSelector(selectOrganizationName)
+  const isAdmin = useSelector(selectIsAdminOrAbove)
 
   useEffect(() => {
-    // This preloads data for the admin pages
-    // Preload it with changes in dispatch and organization since it needs to be updated every time the organization is switched
-    // in order to show only RSUs, Intersections, and Users of selected organization
-    if (evaluateFeatureFlags('intersection')) dispatch(updateIntersectionTableData())
-    dispatch(getAvailableUsers())
     dispatch(getUserNotifications())
   }, [dispatch, organization])
 
   return (
     <>
-      {SecureStorageManager.getUserRole() !== 'admin' && !LocalStorageManager.getIsSuperUser() ? (
+      {!isAdmin ? (
         <div id="admin">
           <NotFound description="You do not have permission to view this page. Please return to main dashboard: " />
         </div>

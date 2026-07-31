@@ -8,17 +8,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+import org.springframework.context.annotation.Import;
+import us.dot.its.jpo.ode.api.TestcontainersConfiguration;
 import us.dot.its.jpo.ode.api.accessors.haas.HaasLocationDataRepository;
 import us.dot.its.jpo.ode.api.models.LimitedGeoJsonResponse;
 import us.dot.its.jpo.ode.api.models.haas.HaasLocation;
@@ -28,12 +28,13 @@ import us.dot.its.jpo.ode.api.services.PermissionService;
 import us.dot.its.jpo.ode.mockdata.MockHaasGenerator;
 
 @SpringBootTest
-@RunWith(SpringRunner.class)
-@AutoConfigureEmbeddedDatabase
-@ActiveProfiles("test")
+@ActiveProfiles("integration-test")
+@AutoConfigureMockMvc
+@Import(TestcontainersConfiguration.class)
 public class HaasControllerTest {
 
-    private final HaasController controller;
+    @MockitoBean
+    private HaasController controller;
 
     @MockitoBean
     HaasLocationDataRepository haasLocationDataRepository;
@@ -43,11 +44,6 @@ public class HaasControllerTest {
 
     @Mock
     private CvManagerAuthToken authToken;
-
-    @Autowired
-    public HaasControllerTest(HaasController controller) {
-        this.controller = controller;
-    }
 
     @Test
     public void testGetLocations() {

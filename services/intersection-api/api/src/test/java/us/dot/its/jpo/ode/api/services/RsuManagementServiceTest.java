@@ -14,11 +14,12 @@ import org.springframework.web.server.ResponseStatusException;
 
 import us.dot.its.jpo.ode.api.mappers.RsuInfoMapper;
 import us.dot.its.jpo.ode.api.mappers.RsuPatchMapper;
+import us.dot.its.jpo.ode.api.models.devices.RsuInfoDto;
 import us.dot.its.jpo.ode.api.models.devices.management.ModifyRsuAllowedSelections;
 import us.dot.its.jpo.ode.api.models.devices.management.RsuPatch;
 import us.dot.its.jpo.ode.api.models.keycloak.CvManagerAuthToken;
-import us.dot.its.jpo.ode.api.models.postgres.dtos.RsuInfoDto;
 import us.dot.its.jpo.ode.api.models.SimplePosition;
+import us.dot.its.jpo.ode.api.models.UserRole;
 import us.dot.its.jpo.ode.api.models.postgres.tables.Organization;
 import us.dot.its.jpo.ode.api.models.postgres.tables.Rsu;
 import us.dot.its.jpo.ode.api.models.postgres.tables.RsuCredential;
@@ -271,7 +272,7 @@ class RsuManagementServiceTest {
         when(rsuCredentialRepository.findAllNicknames()).thenReturn(sshCredentials);
         when(snmpCredentialRepository.findAllNicknames()).thenReturn(snmpCredentials);
         when(snmpProtocolRepository.findAllNicknames()).thenReturn(snmpVersions);
-        when(authToken.getQualifiedOrgList("ADMIN")).thenReturn(Arrays.asList("Org1", "Org2"));
+        when(authToken.getQualifiedOrgList(UserRole.ADMIN)).thenReturn(Arrays.asList("Org1", "Org2"));
 
         ModifyRsuAllowedSelections result = rsuManagementService.getAllowedSelections(authToken);
 
@@ -312,7 +313,7 @@ class RsuManagementServiceTest {
         when(rsuCredentialRepository.findAllNicknames()).thenReturn(List.of());
         when(snmpCredentialRepository.findAllNicknames()).thenReturn(List.of());
         when(snmpProtocolRepository.findAllNicknames()).thenReturn(List.of());
-        when(authToken.getQualifiedOrgList("ADMIN")).thenReturn(List.of());
+        when(authToken.getQualifiedOrgList(UserRole.ADMIN)).thenReturn(List.of());
 
         ModifyRsuAllowedSelections result = rsuManagementService.getAllowedSelections(authToken);
 
@@ -361,7 +362,7 @@ class RsuManagementServiceTest {
         doNothing().when(rsuPatchMapper).updateRsuFromPatch(patch, existingRsu);
         when(rsuRepository.save(existingRsu)).thenReturn(existingRsu);
         when(rsuMapper.toDto(existingRsu)).thenReturn(expectedDto);
-        when(authToken.getQualifiedOrgList("ADMIN")).thenReturn(List.of("Org1"));
+        when(authToken.getQualifiedOrgList(UserRole.ADMIN)).thenReturn(List.of("Org1"));
 
         RsuInfoDto result = rsuManagementService.modifyRsu(rsuIp, patch, authToken);
 
@@ -394,7 +395,7 @@ class RsuManagementServiceTest {
                 .thenReturn(Optional.of(newModel));
         when(rsuRepository.save(existingRsu)).thenReturn(existingRsu);
         when(rsuMapper.toDto(existingRsu)).thenReturn(null);
-        when(authToken.getQualifiedOrgList("ADMIN")).thenReturn(List.of("Org1"));
+        when(authToken.getQualifiedOrgList(UserRole.ADMIN)).thenReturn(List.of("Org1"));
 
         rsuManagementService.modifyRsu(rsuIp, patch, authToken);
 
@@ -426,7 +427,7 @@ class RsuManagementServiceTest {
         when(snmpProtocolRepository.findByNickname("v3")).thenReturn(Optional.of(snmpProtocol));
         when(rsuRepository.save(existingRsu)).thenReturn(existingRsu);
         when(rsuMapper.toDto(existingRsu)).thenReturn(null);
-        when(authToken.getQualifiedOrgList("ADMIN")).thenReturn(List.of("Org1"));
+        when(authToken.getQualifiedOrgList(UserRole.ADMIN)).thenReturn(List.of("Org1"));
 
         rsuManagementService.modifyRsu(rsuIp, patch, authToken);
 
@@ -536,7 +537,7 @@ class RsuManagementServiceTest {
         when(organizationRepository.findByName("Org2")).thenReturn(Optional.of(org2));
         when(rsuRepository.save(existingRsu)).thenReturn(existingRsu);
         when(rsuMapper.toDto(existingRsu)).thenReturn(null);
-        when(authToken.getQualifiedOrgList("ADMIN")).thenReturn(authorizedOrgs);
+        when(authToken.getQualifiedOrgList(UserRole.ADMIN)).thenReturn(authorizedOrgs);
 
         rsuManagementService.modifyRsu(rsuIp, patch, authToken);
 
@@ -564,7 +565,7 @@ class RsuManagementServiceTest {
                 .thenReturn(true);
         when(rsuRepository.save(existingRsu)).thenReturn(existingRsu);
         when(rsuMapper.toDto(existingRsu)).thenReturn(null);
-        when(authToken.getQualifiedOrgList("ADMIN")).thenReturn(authorizedOrgs);
+        when(authToken.getQualifiedOrgList(UserRole.ADMIN)).thenReturn(authorizedOrgs);
 
         rsuManagementService.modifyRsu(rsuIp, patch, authToken);
 
@@ -587,7 +588,7 @@ class RsuManagementServiceTest {
         List<String> authorizedOrgs = Arrays.asList("Org1", "Org2");
 
         when(rsuRepository.findByIpv4Address(inetAddress)).thenReturn(existingRsu);
-        when(authToken.getQualifiedOrgList("ADMIN")).thenReturn(authorizedOrgs);
+        when(authToken.getQualifiedOrgList(UserRole.ADMIN)).thenReturn(authorizedOrgs);
 
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
@@ -617,7 +618,7 @@ class RsuManagementServiceTest {
         when(rsuRepository.existsByIpAndOrganizations(inetAddress, List.of("NonExistentOrg")))
                 .thenReturn(false);
         when(organizationRepository.findByName("NonExistentOrg")).thenReturn(Optional.empty());
-        when(authToken.getQualifiedOrgList("ADMIN")).thenReturn(authorizedOrgs);
+        when(authToken.getQualifiedOrgList(UserRole.ADMIN)).thenReturn(authorizedOrgs);
 
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
@@ -662,7 +663,7 @@ class RsuManagementServiceTest {
                 .thenReturn(Optional.of(rsuOrg2));
         when(rsuRepository.save(existingRsu)).thenReturn(existingRsu);
         when(rsuMapper.toDto(existingRsu)).thenReturn(null);
-        when(authToken.getQualifiedOrgList("ADMIN")).thenReturn(authorizedOrgs);
+        when(authToken.getQualifiedOrgList(UserRole.ADMIN)).thenReturn(authorizedOrgs);
 
         rsuManagementService.modifyRsu(rsuIp, patch, authToken);
 
@@ -689,7 +690,7 @@ class RsuManagementServiceTest {
                 .thenReturn(Optional.empty());
         when(rsuRepository.save(existingRsu)).thenReturn(existingRsu);
         when(rsuMapper.toDto(existingRsu)).thenReturn(null);
-        when(authToken.getQualifiedOrgList("ADMIN")).thenReturn(authorizedOrgs);
+        when(authToken.getQualifiedOrgList(UserRole.ADMIN)).thenReturn(authorizedOrgs);
 
         rsuManagementService.modifyRsu(rsuIp, patch, authToken);
 
@@ -711,7 +712,7 @@ class RsuManagementServiceTest {
         List<String> authorizedOrgs = Arrays.asList("Org1", "Org2");
 
         when(rsuRepository.findByIpv4Address(inetAddress)).thenReturn(existingRsu);
-        when(authToken.getQualifiedOrgList("ADMIN")).thenReturn(authorizedOrgs);
+        when(authToken.getQualifiedOrgList(UserRole.ADMIN)).thenReturn(authorizedOrgs);
 
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
@@ -755,7 +756,7 @@ class RsuManagementServiceTest {
                 .thenReturn(Optional.of(rsuOrgToRemove));
         when(rsuRepository.save(existingRsu)).thenReturn(existingRsu);
         when(rsuMapper.toDto(existingRsu)).thenReturn(null);
-        when(authToken.getQualifiedOrgList("ADMIN")).thenReturn(authorizedOrgs);
+        when(authToken.getQualifiedOrgList(UserRole.ADMIN)).thenReturn(authorizedOrgs);
 
         rsuManagementService.modifyRsu(rsuIp, patch, authToken);
 
@@ -778,7 +779,7 @@ class RsuManagementServiceTest {
         List<String> authorizedOrgs = Arrays.asList("Org1");
 
         when(rsuRepository.findByIpv4Address(inetAddress)).thenReturn(existingRsu);
-        when(authToken.getQualifiedOrgList("ADMIN")).thenReturn(authorizedOrgs);
+        when(authToken.getQualifiedOrgList(UserRole.ADMIN)).thenReturn(authorizedOrgs);
 
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
@@ -805,7 +806,7 @@ class RsuManagementServiceTest {
         List<String> authorizedOrgs = Arrays.asList("Org1");
 
         when(rsuRepository.findByIpv4Address(inetAddress)).thenReturn(existingRsu);
-        when(authToken.getQualifiedOrgList("ADMIN")).thenReturn(authorizedOrgs);
+        when(authToken.getQualifiedOrgList(UserRole.ADMIN)).thenReturn(authorizedOrgs);
 
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
@@ -832,7 +833,7 @@ class RsuManagementServiceTest {
         when(rsuRepository.findByIpv4Address(inetAddress)).thenReturn(existingRsu);
         when(rsuRepository.save(existingRsu)).thenReturn(existingRsu);
         when(rsuMapper.toDto(existingRsu)).thenReturn(null);
-        when(authToken.getQualifiedOrgList("ADMIN")).thenReturn(List.of());
+        when(authToken.getQualifiedOrgList(UserRole.ADMIN)).thenReturn(List.of());
 
         rsuManagementService.modifyRsu(rsuIp, patch, authToken);
 
@@ -855,7 +856,7 @@ class RsuManagementServiceTest {
         when(rsuRepository.findByIpv4Address(inetAddress)).thenReturn(existingRsu);
         when(rsuRepository.save(existingRsu)).thenReturn(existingRsu);
         when(rsuMapper.toDto(existingRsu)).thenReturn(null);
-        when(authToken.getQualifiedOrgList("ADMIN")).thenReturn(List.of());
+        when(authToken.getQualifiedOrgList(UserRole.ADMIN)).thenReturn(List.of());
 
         rsuManagementService.modifyRsu(rsuIp, patch, authToken);
 
@@ -877,7 +878,7 @@ class RsuManagementServiceTest {
         when(rsuRepository.findByIpv4Address(inetAddress)).thenReturn(existingRsu);
         when(rsuRepository.save(existingRsu)).thenReturn(existingRsu);
         when(rsuMapper.toDto(existingRsu)).thenReturn(null);
-        when(authToken.getQualifiedOrgList("ADMIN")).thenReturn(List.of());
+        when(authToken.getQualifiedOrgList(UserRole.ADMIN)).thenReturn(List.of());
 
         rsuManagementService.modifyRsu(rsuIp, patch, authToken);
 

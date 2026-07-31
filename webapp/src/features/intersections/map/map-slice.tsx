@@ -1,3 +1,4 @@
+import React from 'react'
 import { createAction, createAsyncThunk, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '../../../store'
 import { selectToken } from '../../../generalSlices/userSlice'
@@ -10,8 +11,6 @@ import {
   addBsmTimestampsAndSortAscending,
   addMapTimestampsAndSortAscending,
   addSpatTimestampsAndSortAscending,
-  addSrmTimestampsAndSortAscending,
-  addSsmTimestampsAndSortAscending,
   generateSignalStateFeatureCollection,
   isValidDate,
   parseMapSignalGroups,
@@ -24,7 +23,6 @@ import { MapRef } from 'react-map-gl'
 import { selectRsuMapData } from '../../../generalSlices/rsuSlice'
 import EnvironmentVars from '../../../EnvironmentVars'
 import { downloadAllData } from './utilities/file-utilities'
-import React from 'react'
 import { getTimestamp } from './map-component'
 import { getAccurateTimeMillis, selectTimeOffsetMillis } from '../../../generalSlices/timeSyncSlice'
 import { combineUrlPaths } from '../../../apis/intersections/api-helper-cviz'
@@ -999,7 +997,7 @@ export const initializeLiveStreaming = createAsyncThunk(
     args: { token: string; intersectionId: number; numRestarts?: number; shouldResetMapView?: boolean },
     { getState, dispatch }
   ) => {
-    const { token, intersectionId, numRestarts = 0, shouldResetMapView = true } = args
+    const { token, intersectionId, shouldResetMapView = true } = args
     // Connect to WebSocket when component mounts
     const currentState = getState() as RootState
     const liveDataActive = selectLiveDataActive(currentState)
@@ -1258,7 +1256,7 @@ export const updateRenderedMapState = createAsyncThunk(
       Boolean(
         (selectMapSignalGroups(getState() as RootState)?.features.length != 0 &&
           selectSpatSignalGroups(getState() as RootState)) ||
-          selectBsmData(getState() as RootState)?.features.length != 0
+        selectBsmData(getState() as RootState)?.features.length != 0
       ),
   }
 )

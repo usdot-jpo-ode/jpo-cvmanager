@@ -9,14 +9,21 @@ import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.mock.http.MockHttpInputMessage;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+
 import us.dot.its.jpo.ode.api.services.RsuCredentialManagementService;
+import us.dot.its.jpo.ode.api.services.RsuUpgradeService;
 import us.dot.its.jpo.ode.api.services.SnmpCredentialManagementService;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -94,6 +101,21 @@ class GlobalExceptionHandlerTest {
     }
 
     @Nested
+    class HandleFirmwareUpgradeUnavailableExceptionTests {
+        @Test
+        void testHandleFirmwareUpgradeUnavailableException() {
+            RsuUpgradeService.FirmwareUpgradeUnavailableException exception = new RsuUpgradeService.FirmwareUpgradeUnavailableException(
+                    "Requested RSU is already up to date");
+
+            ProblemDetail problemDetail = handler.handleFirmwareUpgradeUnavailableException(exception);
+
+            assertNotNull(problemDetail);
+            assertEquals("Requested RSU is already up to date", problemDetail.getDetail());
+            assertEquals(HttpStatus.CONFLICT.value(), problemDetail.getStatus());
+        }
+    }
+
+    @Nested
     class HandleAccessDeniedExceptionTests {
 
         @Test
@@ -101,8 +123,8 @@ class GlobalExceptionHandlerTest {
             // Arrange
             AccessDeniedException exception = new AccessDeniedException("Access denied");
 
-                // Act
-                ProblemDetail problemDetail = handler.handleAccessDeniedException(exception);
+            // Act
+            ProblemDetail problemDetail = handler.handleAccessDeniedException(exception);
 
             // Assert
             assertNotNull(problemDetail);
@@ -356,6 +378,35 @@ class GlobalExceptionHandlerTest {
     }
 
     @Nested
+    class HandleMissingRequestHeaderExceptionTests {
+
+        @Test
+        void testReturnsBadRequestWithHeaderName() {
+            MissingRequestHeaderException ex = mock(MissingRequestHeaderException.class);
+            when(ex.getHeaderName()).thenReturn("X-Organization-Name");
+
+            ProblemDetail problemDetail = handler.handleMissingRequestHeaderException(ex);
+
+            assertNotNull(problemDetail);
+            assertEquals(HttpStatus.BAD_REQUEST.value(), problemDetail.getStatus());
+            assertEquals("Required request header 'X-Organization-Name' is not present", problemDetail.getDetail());
+            assertEquals("Missing Header", problemDetail.getTitle());
+        }
+
+        @Test
+        void testWithDifferentHeaderName() {
+            MissingRequestHeaderException ex = mock(MissingRequestHeaderException.class);
+            when(ex.getHeaderName()).thenReturn("Authorization");
+
+            ProblemDetail problemDetail = handler.handleMissingRequestHeaderException(ex);
+
+            assertEquals(HttpStatus.BAD_REQUEST.value(), problemDetail.getStatus());
+            assertEquals("Required request header 'Authorization' is not present", problemDetail.getDetail());
+            assertEquals("Missing Header", problemDetail.getTitle());
+        }
+    }
+
+    @Nested
     class HandleDataIntegrityViolationTests {
 
         @Test
@@ -395,7 +446,7 @@ class GlobalExceptionHandlerTest {
 
             assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
             ProblemDetail body = response.getBody();
-            assertTrue(body.getDetail().equals("A RSU with milepost '1' and primary route 'I999' already exists."));
+            assertEquals("RSU with milepost '1' and primary route 'I999' already exists.", body.getDetail());
 
             assertEquals("rsu_milepost_primary_route", body.getProperties().get("constraint"));
         }
@@ -442,11 +493,73 @@ class GlobalExceptionHandlerTest {
     }
 
     @Nested
+    class HandleHttpMessageNotReadableTests {
+
+        private HttpMessageNotReadableException withCause(Throwable cause) {
+            return new HttpMessageNotReadableException(
+                    "Request body parse failed",
+                    cause,
+                    new MockHttpInputMessage(new byte[0]));
+        }
+
+        @Test
+        void testGenericMalformedJsonMessageWhenCauseUnknown() {
+            HttpMessageNotReadableException ex = withCause(new RuntimeException("unknown parse issue"));
+
+            ErrorResponse response = handler.handleHttpMessageNotReadable(ex);
+
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+            assertEquals("Request body is invalid or malformed JSON.", response.getBody().getDetail());
+        }
+
+        @Test
+        void testJsonParseExceptionReturnsMalformedSyntaxMessage() {
+            JsonParseException parseException = new JsonParseException((com.fasterxml.jackson.core.JsonParser) null,
+                    "Unexpected character");
+            HttpMessageNotReadableException ex = withCause(parseException);
+
+            ErrorResponse response = handler.handleHttpMessageNotReadable(ex);
+
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+            assertEquals("Malformed JSON syntax in request body.", response.getBody().getDetail());
+        }
+
+        @Test
+        void testDeepestCauseIsUsedWhenNested() {
+            JsonParseException root = new JsonParseException((com.fasterxml.jackson.core.JsonParser) null,
+                    "Unexpected end-of-input");
+            RuntimeException wrapped = new RuntimeException("wrapper", root);
+            HttpMessageNotReadableException ex = withCause(wrapped);
+
+            ErrorResponse response = handler.handleHttpMessageNotReadable(ex);
+
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+            assertEquals("Malformed JSON syntax in request body.", response.getBody().getDetail());
+        }
+
+        @Test
+        void testInvalidFormatExceptionHandledAsMismatchedInput() {
+            InvalidFormatException invalidFormat = InvalidFormatException.from(
+                    null,
+                    "Invalid value",
+                    "not-a-boolean",
+                    Boolean.class);
+            HttpMessageNotReadableException ex = withCause(invalidFormat);
+
+            ErrorResponse response = handler.handleHttpMessageNotReadable(ex);
+
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+            // Current handler checks MismatchedInputException before InvalidFormatException
+            assertEquals("JSON structure does not match the expected request format.", response.getBody().getDetail());
+        }
+    }
+
+    @Nested
     class HandleExceptionTests {
 
         @Test
         void testGenericException() {
-            Exception ex = new RuntimeException("Unexpected error");
+            RuntimeException ex = new RuntimeException("Unexpected error");
 
             ErrorResponse response = handler.handleException(ex);
 
@@ -457,7 +570,7 @@ class GlobalExceptionHandlerTest {
 
         @Test
         void testNullPointerException() {
-            Exception ex = new NullPointerException("Something was null");
+            RuntimeException ex = new NullPointerException("Something was null");
 
             ErrorResponse response = handler.handleException(ex);
 

@@ -20,11 +20,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.util.StringUtils;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.Notification;
 import us.dot.its.jpo.ode.api.accessors.notifications.active_notification.ActiveNotificationRepository;
@@ -102,16 +102,23 @@ public class ActiveNotificationController {
     @DeleteMapping(produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('OPERATOR')")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "204", description = "Success"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER or OPERATOR role"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    public @ResponseBody ResponseEntity<String> deleteActiveNotification(@RequestBody String key) {
+    public @ResponseBody ResponseEntity<String> deleteActiveNotification(
+            @RequestParam(name = "key") String key) {
         try {
-            long count = activeNotificationRepo.delete(key.replace("\"", ""));
+            if (!StringUtils.hasText(key)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Missing required notification key");
+            }
+
+            String normalizedKey = key.replace("\"", "").trim();
+            long count = activeNotificationRepo.delete(normalizedKey);
             if (count == 0) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("Active Notification with key " + key + " not found");
+                        .body("Active Notification with key " + normalizedKey + " not found");
             }
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (Exception e) {

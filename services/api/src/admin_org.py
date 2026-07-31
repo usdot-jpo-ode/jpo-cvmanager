@@ -6,8 +6,8 @@ import urllib.request
 import logging
 import common.pgquery as pgquery
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-import admin_new_user
 import api_environment
+import admin_new_org
 from werkzeug.exceptions import InternalServerError, BadRequest, Conflict, Forbidden
 from common.auth_tools import (
     ORG_ROLE_LITERAL,
@@ -190,22 +190,20 @@ def check_safe_input(org_spec):
     if any(c in special_characters for c in org_spec["name"]):
         return False
     if org_spec["email"]:
-        if org_spec["email"] != "" and not admin_new_user.check_email(
-            org_spec["email"]
-        ):
+        if org_spec["email"] != "" and not admin_new_org.check_email(org_spec["email"]):
             return False
     for user in org_spec["users_to_add"]:
-        if not admin_new_user.check_email(user["email"]):
+        if not admin_new_org.check_email(user["email"]):
             return False
         if any(c in special_characters for c in user["role"]):
             return False
     for user in org_spec["users_to_modify"]:
-        if not admin_new_user.check_email(user["email"]):
+        if not admin_new_org.check_email(user["email"]):
             return False
         if any(c in special_characters for c in user["role"]):
             return False
     for user in org_spec["users_to_remove"]:
-        if not admin_new_user.check_email(user["email"]):
+        if not admin_new_org.check_email(user["email"]):
             return False
         if any(c in special_characters for c in user["role"]):
             return False
@@ -239,8 +237,12 @@ def modify_org_authorized(orig_name: str, org_spec: dict, is_bulk_update: bool =
         pgquery.write_db(query, params=params)
 
         # Handle bulk updates for tim_deposit and snmp_monitoring
-        if is_bulk_update and ("tim_deposit" in org_spec or "snmp_monitoring" in org_spec):
-            logging.info(f"Bulk updating RSU options for all RSUs in organization {org_spec['name']}")
+        if is_bulk_update and (
+            "tim_deposit" in org_spec or "snmp_monitoring" in org_spec
+        ):
+            logging.info(
+                f"Bulk updating RSU options for all RSUs in organization {org_spec['name']}"
+            )
 
             # Build the update query to handle both columns
             # Only include columns that are actually being updated to avoid overwriting

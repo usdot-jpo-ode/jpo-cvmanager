@@ -3,7 +3,7 @@ import Map, { Source, Layer, MapRef } from 'react-map-gl'
 
 import { Container, Col } from 'reactstrap'
 
-import { Paper, Box, Fab, useTheme, FormControl, InputLabel, Select, MenuItem } from '@mui/material'
+import { Paper, Box, Fab, useTheme } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 
 import ControlPanel from './control-panel'
@@ -22,7 +22,6 @@ import {
   selectMarkerLayerStyle,
   selectSignalStateLayerStyle,
   selectSrmLayerStyle,
-  setBsmLegendColors,
   setSrmCircleColor,
   setSrmLegendColors,
 } from './map-layer-style-slice'
@@ -45,7 +44,6 @@ import {
   selectDecoderModeEnabled,
   selectFilteredSurroundingEvents,
   selectFilteredSurroundingNotifications,
-  selectLaneLabelsVisible,
   selectLiveDataActive,
   selectLiveDataRestart,
   selectLoadInitialDataTimeoutId,
@@ -55,7 +53,6 @@ import {
   selectQueryParams,
   selectRenderTimeInterval,
   selectShowPopupOnHover,
-  selectSigGroupLabelsVisible,
   selectSignalStateData,
   selectSliderValueDeciseconds,
   selectSpatSignalGroups,

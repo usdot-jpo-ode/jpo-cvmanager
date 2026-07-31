@@ -1,4 +1,3 @@
-import React from 'react'
 import { render } from '@testing-library/react'
 import { ReportListTable } from './report-list-table'
 import { Provider } from 'react-redux'
@@ -8,6 +7,7 @@ import { setupStore } from '../../../store'
 import { replaceChaoticIds } from '../../../utils/test-utils'
 import { sampleReports } from './testing-data/sample-reports'
 import { BrowserRouter } from 'react-router-dom'
+import { vi } from 'vitest'
 
 // Mock date-fns format to use a specific timezone
 vi.mock('date-fns', async () => {

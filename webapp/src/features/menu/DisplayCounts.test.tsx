@@ -1,4 +1,3 @@
-import React from 'react'
 import { render } from '@testing-library/react'
 import DisplayCounts from './DisplayCounts'
 import { Provider } from 'react-redux'
@@ -7,6 +6,7 @@ import { testTheme } from '../../styles'
 import { setupStore } from '../../store'
 import { MockLocalizationProvider, replaceChaoticIds } from '../../utils/test-utils'
 import { MessageType } from '../../models/MessageTypes'
+import { vi } from 'vitest'
 
 // // Mock the @mui/x-date-pickers module
 vi.mock('@mui/x-date-pickers', async () => {

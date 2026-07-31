@@ -1,5 +1,5 @@
-import { Box, Typography, AccordionSummary, AccordionDetails } from '@mui/material'
 import React from 'react'
+import { Box, Typography, AccordionSummary, AccordionDetails } from '@mui/material'
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion'
 import { styled, useTheme } from '@mui/material/styles'
 import { selectMapLegendColors } from './map-layer-style-slice'

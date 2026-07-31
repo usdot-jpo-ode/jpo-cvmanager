@@ -1,4 +1,3 @@
-import { jsPDF } from 'jspdf'
 import { toPng } from 'html-to-image'
 import { generatePdf } from './pdf-generator'
 import { ReportMetadata } from '../../../apis/intersections/reports-api'
@@ -165,8 +164,6 @@ describe('generatePdf', () => {
   })
 
   it('should initialize the PDF and set loading state', async () => {
-    const pdf = new jsPDF()
-
     await generatePdf(mockReport, mockSetLoading, false, mockIsModalOpen, mockSetProgress, mockSignal)
 
     expect(getHeightMock()).toBeCloseTo(297)
@@ -185,7 +182,6 @@ describe('generatePdf', () => {
   })
 
   it('should calculate unique lane IDs and total graphs', async () => {
-    const pdf = new jsPDF()
     await generatePdf(mockReport, mockSetLoading, true, mockIsModalOpen, mockSetProgress, mockSignal)
 
     expect(textMock).toHaveBeenCalledWith('Lane Direction of Travel', 105, 20, { align: 'center' })
@@ -193,7 +189,6 @@ describe('generatePdf', () => {
   })
 
   it('should add lane-specific charts if includeLaneSpecificCharts is true', async () => {
-    const pdf = new jsPDF()
     await generatePdf(mockReport, mockSetLoading, true, mockIsModalOpen, mockSetProgress, mockSignal)
 
     expect(textMock).toHaveBeenCalledWith('Distance From Centerline Over Time', 105, 25, { align: 'center' })
@@ -201,7 +196,6 @@ describe('generatePdf', () => {
   })
 
   it('should skip lane-specific charts if includeLaneSpecificCharts is false', async () => {
-    const pdf = new jsPDF()
     await generatePdf(mockReport, mockSetLoading, false, mockIsModalOpen, mockSetProgress, mockSignal)
 
     expect(textMock).not.toHaveBeenCalledWith('Distance From Centerline Over Time', 105, 25, { align: 'center' })
@@ -209,7 +203,6 @@ describe('generatePdf', () => {
   })
 
   it('should save the PDF if the modal is still open', async () => {
-    const pdf = new jsPDF()
     await generatePdf(mockReport, mockSetLoading, false, mockIsModalOpen, mockSetProgress, mockSignal)
 
     expect(mockIsModalOpen).toHaveBeenCalled()
@@ -218,7 +211,6 @@ describe('generatePdf', () => {
 
   it('should not save the PDF if the modal is closed', async () => {
     mockIsModalOpen.mockReturnValue(false)
-    const pdf = new jsPDF()
     await generatePdf(mockReport, mockSetLoading, false, mockIsModalOpen, mockSetProgress, mockSignal)
 
     expect(mockIsModalOpen).toHaveBeenCalled()

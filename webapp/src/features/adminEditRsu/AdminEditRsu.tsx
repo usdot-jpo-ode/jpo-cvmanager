@@ -5,7 +5,7 @@ import { ErrorMessage } from '@hookform/error-message'
 
 import '../adminRsuTab/Admin.css'
 import '../../styles/fonts/museo-slab.css'
-import { AdminRsu } from '../../models/Rsu'
+import { AdminRsuPatch } from '../../models/Rsu'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
   Checkbox,
@@ -143,7 +143,7 @@ const AdminEditRsu = () => {
 
     try {
       // Build patch object with only changed fields
-      const patch: Partial<AdminRsu> = {}
+      const patch: AdminRsuPatch = {}
 
       if (data.ip !== rsuInfo?.ip) patch.ip = data.ip
       if (
@@ -179,7 +179,8 @@ const AdminEditRsu = () => {
         data.organizations.some((org) => !rsuInfo?.organizations.includes(org))
 
       if (orgsChanged) {
-        patch.organizations = data.organizations
+        patch.organizations_to_add = data.organizations.filter((org) => !rsuInfo?.organizations.includes(org))
+        patch.organizations_to_remove = rsuInfo?.organizations.filter((org) => !data.organizations.includes(org))
       }
 
       // Check if tim_deposit changed

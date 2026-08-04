@@ -360,10 +360,7 @@ class UserManagementServiceTest {
     @Test
     void testModifyUser_RemoveOrganization_Success() {
         UserPatch patch = new UserPatch();
-        UserOrganizationDto orgToRemove = new UserOrganizationDto();
-        orgToRemove.setOrganization("TestOrg");
-        orgToRemove.setRole("admin");
-        patch.setOrganizationsToRemove(List.of(orgToRemove));
+        patch.setOrganizationsToRemove(List.of("TestOrg"));
 
         UserOrganization userOrg = new UserOrganization();
         userOrg.setUser(testUser);
@@ -386,10 +383,7 @@ class UserManagementServiceTest {
     @Test
     void testModifyUser_RemoveOrganization_Unauthorized() {
         UserPatch patch = new UserPatch();
-        UserOrganizationDto orgToRemove = new UserOrganizationDto();
-        orgToRemove.setOrganization("UnauthorizedOrg");
-        orgToRemove.setRole("admin");
-        patch.setOrganizationsToRemove(List.of(orgToRemove));
+        patch.setOrganizationsToRemove(List.of("UnauthorizedOrg"));
 
         when(userRepository.findByEmail("test@example.com")).thenReturn(testUser);
         when(authToken.getQualifiedOrgList(UserRole.ADMIN)).thenReturn(List.of("TestOrg"));
@@ -405,10 +399,7 @@ class UserManagementServiceTest {
     @Test
     void testModifyUser_RemoveOrganization_NotFound() {
         UserPatch patch = new UserPatch();
-        UserOrganizationDto orgToRemove = new UserOrganizationDto();
-        orgToRemove.setOrganization("TestOrg");
-        orgToRemove.setRole("admin");
-        patch.setOrganizationsToRemove(List.of(orgToRemove));
+        patch.setOrganizationsToRemove(List.of("TestOrg"));
 
         when(userRepository.findByEmail("test@example.com")).thenReturn(testUser);
         when(authToken.getQualifiedOrgList(UserRole.ADMIN)).thenReturn(List.of("TestOrg"));

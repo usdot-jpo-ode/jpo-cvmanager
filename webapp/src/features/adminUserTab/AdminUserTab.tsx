@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import AdminAddUser from '../adminAddUser/AdminAddUser'
 import AdminEditUser from '../adminEditUser/AdminEditUser'
 import AdminTable, { buildAdminTableQueryParams } from '../../components/AdminTable'
@@ -20,6 +20,7 @@ import {
   useGetUsersQuery,
   useLazyGetUsersQuery,
 } from '../api/userApiSlice'
+import { useAdminTableQuerySync } from '../../hooks/useAdminTableQuerySync'
 
 const AdminUserTab = () => {
   const navigate = useNavigate()
@@ -37,20 +38,17 @@ const AdminUserTab = () => {
   })
 
   const [trigger] = useLazyGetUsersQuery()
-
-  // Subscribe to query - this will trigger when cache is invalidated
   const { data: subscribedData } = useGetUsersQuery(currentParams, {
-    skip: !organization, // Skip if no organization selected
+    skip: !organization,
+  })
+  const { currentQueryRef, markTableRenderedData, handleRefresh } = useAdminTableQuerySync({
+    organization,
+    tableRef,
+    isRefreshing,
+    currentPage: currentParams.page,
+    subscribedData,
   })
 
-  // When subscribed data changes (due to cache invalidation), refresh table
-  useEffect(() => {
-    if (subscribedData) {
-      handleRefresh()
-    }
-  }, [subscribedData])
-
-  const currentQueryRef = useRef(null)
   const handleQueryChange = useCallback(
     async (query) => {
       setIsRefreshing(true)
@@ -66,12 +64,12 @@ const AdminUserTab = () => {
 
         // Store current query for comparison
         currentQueryRef.current = params
-        setCurrentParams(params) // Update params for subscription
+        setCurrentParams(params)
 
         // Trigger the query and await the result
         const result = await trigger(params).unwrap()
 
-        console.log(result.content[0])
+        markTableRenderedData(params, result)
 
         return {
           data: result.content || [],
@@ -90,15 +88,8 @@ const AdminUserTab = () => {
         setIsRefreshing(false)
       }
     },
-    [trigger, organization]
+    [trigger, organization, markTableRenderedData]
   )
-
-  const handleRefresh = () => {
-    console.log('Refreshing table data...')
-    if (tableRef.current && tableRef.current.onQueryChange) {
-      tableRef.current.onQueryChange()
-    }
-  }
 
   const [deleteUserApi] = useDeleteUserMutation()
   const [deleteMultipleUsersApi] = useDeleteMultipleUsersMutation()

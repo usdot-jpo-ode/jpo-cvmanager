@@ -89,7 +89,7 @@ export const userApiSlice = createApi({
       query: ({ email, patch }) => ({
         url: `/${email}`,
         method: 'PATCH',
-        body: { origin_ip: email, ...patch },
+        body: { email: email, ...patch },
       }),
       invalidatesTags: (result, error, { email }) => [
         { type: USER_API_USER_TAG, id: email },

@@ -30,7 +30,7 @@ public class UserPatch {
     List<UserOrganizationDto> organizationsToAdd;
 
     @JsonProperty("organizations_to_remove")
-    List<UserOrganizationDto> organizationsToRemove;
+    List<String> organizationsToRemove;
 
     @JsonProperty("organizations_to_modify")
     List<UserOrganizationDto> organizationsToModify;

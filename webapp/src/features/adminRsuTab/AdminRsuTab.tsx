@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import AdminAddRsu from '../adminAddRsu/AdminAddRsu'
 import AdminEditRsu, { AdminEditRsuFormType } from '../adminEditRsu/AdminEditRsu'
 import AdminTable, { buildAdminTableQueryParams } from '../../components/AdminTable'
@@ -23,6 +23,7 @@ import {
   useDeleteMultipleRsusMutation,
   useGetAllRsusQuery,
 } from '../api/rsuApiSlice'
+import { useAdminTableQuerySync } from '../../hooks/useAdminTableQuerySync'
 
 const AdminRsuTab = () => {
   const navigate = useNavigate()
@@ -33,7 +34,6 @@ const AdminRsuTab = () => {
 
   const tableRef = useRef<any>(null)
   const [isRefreshing, setIsRefreshing] = useState(false)
-
   const [currentParams, setCurrentParams] = useState({
     page: 0,
     size: 20,
@@ -43,20 +43,16 @@ const AdminRsuTab = () => {
   })
 
   const [trigger] = useLazyGetAllRsusQuery()
-
-  // Subscribe to query - this will trigger when cache is invalidated
   const { data: subscribedData } = useGetAllRsusQuery(currentParams, {
-    skip: !organization, // Skip if no organization selected
+    skip: !organization,
   })
-
-  // When subscribed data changes (due to cache invalidation), refresh table
-  useEffect(() => {
-    if (subscribedData || organization) {
-      handleRefresh()
-    }
-  }, [subscribedData, organization])
-
-  const currentQueryRef = useRef(null)
+  const { currentQueryRef, markTableRenderedData, handleRefresh } = useAdminTableQuerySync({
+    organization,
+    tableRef,
+    isRefreshing,
+    currentPage: currentParams.page,
+    subscribedData,
+  })
 
   const [deleteRsuApi] = useDeleteRsuMutation()
   const [deleteMultipleRsusApi] = useDeleteMultipleRsusMutation()
@@ -113,13 +109,6 @@ const AdminRsuTab = () => {
   const handleStatusDialogClose = () => {
     setStatusDialogOpen(false)
     setSelectedRsuIp(null)
-  }
-
-  // const loading = useSelector(selectLoading)
-  const handleRefresh = () => {
-    if (tableRef.current && tableRef.current.onQueryChange) {
-      tableRef.current.onQueryChange()
-    }
   }
 
   const tableActions: Action<AdminEditRsuFormType>[] = [
@@ -207,7 +196,6 @@ const AdminRsuTab = () => {
     },
   ]
 
-
   const handleQueryChange = useCallback(
     async (query) => {
       setIsRefreshing(true)
@@ -223,10 +211,11 @@ const AdminRsuTab = () => {
 
         // Store current query for comparison
         currentQueryRef.current = params
-        setCurrentParams(params) // Update params for subscription
+        setCurrentParams(params)
 
         // Trigger the query and await the result
         const result = await trigger(params).unwrap()
+        markTableRenderedData(params, result)
 
         return {
           data: result.content || [],
@@ -245,7 +234,7 @@ const AdminRsuTab = () => {
         setIsRefreshing(false)
       }
     },
-    [trigger, organization]
+    [trigger, organization, markTableRenderedData]
   )
 
   const onEdit = (row: AdminEditRsuFormType) => {

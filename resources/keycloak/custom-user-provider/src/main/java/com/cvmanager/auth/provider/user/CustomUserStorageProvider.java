@@ -270,19 +270,27 @@ public class CustomUserStorageProvider implements UserStorageProvider,
         String id = UUID.randomUUID().toString();
         Long now = System.currentTimeMillis();
         try (Connection c = getConnection(this.model)) {
-            // insert new user with username into db
+            // Keycloak may call addUser before first/last name attributes are set.
+            // Insert non-null placeholders and rely on follow-up attribute updates.
             PreparedStatement st = c.prepareStatement(
-                    "insert into public.users (email, keycloak_id, created_timestamp) values (?, ?::UUID, ?)",
-                    Statement.RETURN_GENERATED_KEYS);
+                    "insert into public.users (email, first_name, last_name, keycloak_id, created_timestamp) "
+                            + "values (?, ?, ?, ?::UUID, ?) "
+                            + "returning keycloak_id, user_id, email, first_name, last_name, created_timestamp, super_user");
             st.setString(1, username);
-            st.setString(2, id);
-            st.setLong(3, now);
+            // Adding empty strings for first_name and last_name to avoid null constraint
+            // violation
+            st.setString(2, "");
+            st.setString(3, "");
+            st.setString(4, id);
+            st.setLong(5, now);
             log.debug("addUser: st={}", st);
-            st.executeUpdate();
-            ResultSet rs = st.getGeneratedKeys();
+            ResultSet rs = st.executeQuery();
             UserAdapter user = null;
             if (rs.next()) {
                 user = new UserAdapter(ksession, realm, model, UserObject.fromResultSet(rs));
+            }
+            else {
+                throw new RuntimeStorageException("Failed to insert user " + username + " into database");
             }
             return user;
         } catch (SQLException ex) {

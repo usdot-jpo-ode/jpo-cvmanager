@@ -14,10 +14,10 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import IntersectionMapView from './pages/IntersectionMapView'
 import IntersectionDashboard from './pages/IntersectionDashboard'
 import { NotFound } from './pages/404'
-import AdminNotificationTab from './features/adminNotificationTab/AdminNotificationTab'
 import { ConditionalRenderRsu, IntersectionRouteGuard } from './feature-flags'
 import { Paper, useTheme } from '@mui/material'
 import { headerTabHeight } from './styles/index'
+import SubscriptionManagement from './components/SubscriptionManagement'
 
 const Dashboard = () => {
   const theme = useTheme()
@@ -77,7 +77,7 @@ const Dashboard = () => {
                     }
                   />
                   <Route path="admin/*" element={<Admin />} />
-                  <Route path="settings/*" element={<AdminNotificationTab />} />
+                  <Route path="settings/*" element={<SubscriptionManagement />} />
                   <Route path="help" element={<Help />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>

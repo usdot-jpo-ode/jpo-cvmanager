@@ -250,7 +250,11 @@ function ControlPanel() {
           messageData.mapData = JSON.parse(data)
         } else if (relativePath.endsWith('_BSM_data.json')) {
           const data = await zipEntry.async('string')
-          messageData.bsmData = JSON.parse(data)
+          try {
+            messageData.bsmData = JSON.parse(data)
+          } catch (error) {
+            console.error(`Error parsing BSM data from ZIP file: ${error.message}`)
+          }
           // TODO: Add notification data to ZIP download
         } else if (relativePath.endsWith('_SPAT_data.json')) {
           const data = await zipEntry.async('string')
@@ -262,6 +266,12 @@ function ControlPanel() {
           const data = await zipEntry.async('string')
           messageData.ssmData = JSON.parse(data)
         }
+      }
+      const mapLen = messageData.mapData?.length ?? 0
+      const spatLen = messageData.spatData?.length ?? 0
+      if (mapLen === 0 || spatLen === 0) {
+        toast.error(`No valid message data found in ZIP file. Make sure to upload a previously generated ZIP archive`)
+        return
       }
       dispatch(handleImportedMapMessageData(messageData))
     })

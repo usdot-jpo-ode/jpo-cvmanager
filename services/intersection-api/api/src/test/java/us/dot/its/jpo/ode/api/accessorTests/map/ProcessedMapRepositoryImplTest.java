@@ -168,6 +168,29 @@ public class ProcessedMapRepositoryImplTest {
                 new Customization("properties.odeReceivedAt", (_, _) -> true)));
     }
 
+        @Test
+        public void testFindLatestReturnsSerializablePage() throws IOException {
+                String json = new String(
+                                Files.readAllBytes(Paths
+                                                .get("src/test/resources/json/ConflictMonitor.ProcessedMap.json")));
+
+                doReturn(Document.parse(json)).when(mongoTemplate).findOne(Mockito.any(Query.class), eq(Document.class),
+                                eq("ProcessedMap"));
+
+                Page<ProcessedMap<LineString>> response = repository.findLatest(intersectionID, startTime, endTime, true);
+
+                assertThat(response.getPageable().isPaged()).isTrue();
+                assertThat(response.getPageable().getPageSize()).isEqualTo(1);
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+
+                String serialized = objectMapper.writeValueAsString(response);
+
+                assertThat(serialized).contains("pageable");
+                assertThat(serialized).doesNotContain("Unpaged");
+        }
+
     @Test
     void testGetIntersectionsContainingPoint() {
         MongoTemplate mongoTemplate = mock(MongoTemplate.class);

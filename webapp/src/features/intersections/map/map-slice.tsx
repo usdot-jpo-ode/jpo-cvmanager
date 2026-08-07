@@ -464,6 +464,7 @@ export const pullInitialData = createAsyncThunk(
     // ######################### SPAT Signal Groups #########################
     const spatSignalGroupsLocal = parseSpatSignalGroups(rawSpat)
     dispatch(setSpatSignalGroups(spatSignalGroupsLocal))
+    dispatch(setRawData({ map: rawMap, spat: rawSpat }))
 
     // ######################### BSMs #########################
     if (selectAbortAllFutureRequests(getState() as RootState)) {

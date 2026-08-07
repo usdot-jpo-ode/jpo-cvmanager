@@ -1,10 +1,11 @@
 import { authApiHelper } from './api-helper-cviz'
 
 class MessageMonitorApi {
-  async getIntersections({ token }): Promise<IntersectionReferenceData[]> {
+  async getIntersections({ token, organization }): Promise<IntersectionReferenceData[]> {
     const response = await authApiHelper.invokeApi({
       path: '/intersections',
       token: token,
+      headers: { Organization: organization },
       failureMessage: 'Failed to retrieve intersection list',
       tag: 'intersection',
     })

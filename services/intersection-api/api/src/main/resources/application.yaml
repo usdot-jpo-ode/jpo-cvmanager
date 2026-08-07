@@ -60,6 +60,8 @@ spring:
       password: ${MONGO_READ_WRITE_PASS:replace_me}
       authenticationDatabase: ${CM_MONGO_AUTH_DB:admin}
       uri: ${CM_MONGO_URI:null}
+    rest:
+      detection-strategy: annotated
   # Postgres Configuration
   datasource:
     url: ${POSTGRES_SERVER_URL:jdbc:postgresql://cvmanager_postgres:5432}/postgres

@@ -84,9 +84,9 @@ public class ConfigControllerTest {
         String resourceURL = "http://localhost/config/default/testKey";
         when(props.getCmServerURL()).thenReturn("http://localhost");
         when(restTemplate.getForEntity(resourceURL, DefaultConfig.class))
-                .thenReturn(new ResponseEntity(previousConfig, HttpStatus.OK));
+                .thenReturn(new ResponseEntity<>(previousConfig, HttpStatus.OK));
         when(restTemplate.postForEntity(eq(resourceURL), any(HttpEntity.class), eq(DefaultConfig.class)))
-                .thenReturn(new ResponseEntity(previousConfig, HttpStatus.OK));
+                .thenReturn(new ResponseEntity<>(previousConfig, HttpStatus.OK));
         doNothing().when(defaultConfigRepository).save(any(DefaultConfig.class));
 
         ResponseEntity<DefaultConfig<?>> response = controller.default_config(inputConfig);
@@ -106,7 +106,7 @@ public class ConfigControllerTest {
         String resourceURL = "http://localhost/config/default/testKey";
         when(props.getCmServerURL()).thenReturn("http://localhost");
         when(restTemplate.getForEntity(eq(resourceURL), eq(DefaultConfig.class)))
-                .thenReturn(new ResponseEntity(null, HttpStatus.NOT_FOUND));
+                .thenReturn(new ResponseEntity<>((DefaultConfig<?>) null, HttpStatus.NOT_FOUND));
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> {
             controller.default_config(inputConfig);
@@ -148,9 +148,9 @@ public class ConfigControllerTest {
         String resourceURL = "http://localhost/config/intersection/1/testKey";
         when(permissionService.hasIntersection(1, "OPERATOR")).thenReturn(true);
         when(restTemplate.getForEntity(resourceURL, IntersectionConfig.class))
-                .thenReturn(new ResponseEntity(previousConfig, HttpStatus.OK));
+                .thenReturn(new ResponseEntity<>(previousConfig, HttpStatus.OK));
         when(restTemplate.postForEntity(eq(resourceURL), any(HttpEntity.class), eq(IntersectionConfig.class)))
-                .thenReturn(new ResponseEntity(previousConfig, HttpStatus.OK));
+                .thenReturn(new ResponseEntity<>(previousConfig, HttpStatus.OK));
         doNothing().when(intersectionConfigRepository).save(any(IntersectionConfig.class));
 
         ResponseEntity<IntersectionConfig<String>> response = controller.intersection_config(inputConfig);

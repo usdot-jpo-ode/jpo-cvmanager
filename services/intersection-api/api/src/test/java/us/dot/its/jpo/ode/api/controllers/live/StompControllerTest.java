@@ -76,6 +76,8 @@ public class StompControllerTest {
 
     @Test
     void testBroadcastMap() throws JsonProcessingException {
+
+        @SuppressWarnings("unchecked")
         ProcessedMap<LineString> map = mock(ProcessedMap.class);
         MapSharedProperties props = mock(MapSharedProperties.class);
         when(map.getProperties()).thenReturn(props);
@@ -88,6 +90,8 @@ public class StompControllerTest {
 
     @Test
     void testBroadcastMapNullIntersectionId() {
+
+        @SuppressWarnings("unchecked")
         ProcessedMap<LineString> map = mock(ProcessedMap.class);
         MapSharedProperties props = mock(MapSharedProperties.class);
         when(map.getProperties()).thenReturn(props);
@@ -100,6 +104,8 @@ public class StompControllerTest {
 
     @Test
     void testBroadcastBSM() throws JsonProcessingException {
+
+        @SuppressWarnings("unchecked")
         ProcessedBsm<Point> bsm = mock(ProcessedBsm.class);
 
         controller.broadcastBSM(77, bsm);
@@ -109,6 +115,8 @@ public class StompControllerTest {
 
     @Test
     void testBroadcastBSMIntersectionIdMinusOne() {
+
+        @SuppressWarnings("unchecked")
         ProcessedBsm<Point> bsm = mock(ProcessedBsm.class);
 
         controller.broadcastBSM(-1, bsm);

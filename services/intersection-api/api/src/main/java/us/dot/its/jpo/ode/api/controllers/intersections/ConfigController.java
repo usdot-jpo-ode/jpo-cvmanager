@@ -77,13 +77,14 @@ public class ConfigController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER"),
             @ApiResponse(responseCode = "404", description = "Configuration setting not found"),
     })
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public @ResponseBody <T> ResponseEntity<DefaultConfig<?>> default_config(@RequestBody DefaultConfig<T> config) {
         try {
             String resourceURL = String.format(defaultConfigTemplate, props.getCmServerURL(), config.getKey());
 
             // Request does not require authentication, ConflictMonitor API is only
             // accessible internally
-            @SuppressWarnings("rawtypes")
             ResponseEntity<DefaultConfig> response = restTemplate.getForEntity(resourceURL, DefaultConfig.class);
 
             if (response.getStatusCode().is2xxSuccessful()) {
@@ -120,6 +121,8 @@ public class ConfigController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires SUPER_USER, or OPERATOR role with access to the intersection requested"),
             @ApiResponse(responseCode = "404", description = "Configuration setting not found to modify/override"),
     })
+    
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public @ResponseBody <T> ResponseEntity<IntersectionConfig<T>> intersection_config(
             @RequestBody IntersectionConfig<T> config) {
         if (!permissionService.hasIntersection(config.getIntersectionID(), "OPERATOR")) {
@@ -129,7 +132,6 @@ public class ConfigController {
         try {
             String resourceURL = String.format(intersectionConfigTemplate, props.getCmServerURL(),
                     config.getIntersectionID(), config.getKey());
-            @SuppressWarnings("rawtypes")
             ResponseEntity<IntersectionConfig> response = restTemplate.getForEntity(resourceURL,
                     IntersectionConfig.class);
 

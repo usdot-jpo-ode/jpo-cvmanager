@@ -457,6 +457,10 @@
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
+					<showWarnings>true</showWarnings>
+					<compilerArgs>
+						<arg>-Xlint:unchecked,rawtypes</arg>
+					</compilerArgs>
 					<annotationProcessorPaths>
 						<!-- Lombok -->
 						<path>

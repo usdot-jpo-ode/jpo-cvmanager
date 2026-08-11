@@ -66,6 +66,8 @@ class BsmMessageCountProgressionRepositoryImplTest {
     void testFind() {
         PageRequest pageRequest = PageRequest.of(0, 1);
         BsmMessageCountProgressionRepositoryImpl spyRepo = Mockito.spy(repository);
+
+        @SuppressWarnings("unchecked")
         Page<BsmMessageCountProgressionEvent> mockPage = mock(Page.class);
 
         doReturn(mockPage).when(spyRepo).findPage(

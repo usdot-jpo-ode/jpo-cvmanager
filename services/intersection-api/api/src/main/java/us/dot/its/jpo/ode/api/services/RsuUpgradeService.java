@@ -130,7 +130,8 @@ public class RsuUpgradeService {
             Map<String, String> postBody = Map.of("rsu_ip", rsuIp);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            ResponseEntity<Map> response = restTemplate.postForEntity(
+
+            ResponseEntity<?> response = restTemplate.postForEntity(
                     firmwareManagerEndpoint + "/init_firmware_upgrade",
                     new HttpEntity<>(postBody, headers),
                     Map.class);

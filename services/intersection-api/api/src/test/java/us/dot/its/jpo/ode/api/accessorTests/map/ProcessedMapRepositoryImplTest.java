@@ -169,6 +169,7 @@ public class ProcessedMapRepositoryImplTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void testGetIntersectionsContainingPoint() {
         MongoTemplate mongoTemplate = mock(MongoTemplate.class);
         ProcessedMapRepositoryImpl repo = new ProcessedMapRepositoryImpl(mongoTemplate);

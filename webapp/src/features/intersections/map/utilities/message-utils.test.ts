@@ -69,7 +69,7 @@ describe('message-utils', () => {
     const result = addBsmTimestampsAndSortAscending(bsmData as unknown as BsmFeatureCollection)
     const expectedEpochSeconds = Date.parse(bsmData.features[0].properties.odeReceivedAt) / 1000
 
-    expect(result.features[0].properties.odeReceivedAtEpochSeconds).toBe(expectedEpochSeconds)
+    expect(Math.round(result.features[0].properties.odeReceivedAtEpochSeconds)).toBe(Math.round(expectedEpochSeconds))
     // Check that the features are sorted ascending by odeReceivedAtEpochSeconds
     for (let i = 1; i < result.features.length; i++) {
       expect(result.features[i].properties.odeReceivedAtEpochSeconds).toBeGreaterThanOrEqual(

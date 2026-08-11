@@ -157,7 +157,9 @@ public class SrmDecoder implements Decoder {
         SignalRequestMessageMessageFrame srmMessageFrame = (SignalRequestMessageMessageFrame) rawValue.getPayload()
                 .getData();
 
-        ProcessedSrm processedSrm = converter.processSrm(srmMessageFrame);
+        ZonedDateTime zdt = ZonedDateTime.parse(rawValue.getMetadata().getOdeReceivedAt());
+
+        ProcessedSrm processedSrm = converter.processSrm(srmMessageFrame, zdt);
 
         // Set the schema version
         processedSrm.getProperties().setSchemaVersion(ProcessedSchemaVersions.PROCESSED_SRM_SCHEMA_VERSION);

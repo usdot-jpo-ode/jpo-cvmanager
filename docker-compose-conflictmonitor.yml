@@ -7,14 +7,14 @@ services:
     profiles:
       - conflictmonitor
       - conflictmonitor_only
-    image: ${DOCKERHUB_HOST:-usdotjpoode}/jpo-conflictmonitor:${DOCKERHUB_RELEASE:-2025-q3}
+    image: ${DOCKERHUB_HOST:-usdotjpoode}/jpo-conflictmonitor:${DOCKERHUB_RELEASE:-2026-q2}
     restart: ${RESTART_POLICY:-on-failure:3}
     ports:
       - '8082:8082'
+      - "10090:10090" # JMX
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP:-host.docker.internal}
       KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS:-kafka:9092}
-      CONNECT_URL: ${CONNECT_URL:-http://kafka-connect:8083}
       spring.kafka.bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:-kafka:9092}
       ROCKSDB_TOTAL_OFF_HEAP_MEMORY: ${ROCKSDB_TOTAL_OFF_HEAP_MEMORY:-134217728}
       ROCKSDB_INDEX_FILTER_BLOCK_RATIO: ${ROCKSDB_INDEX_FILTER_BLOCK_RATIO:-0.1}
@@ -22,6 +22,25 @@ services:
       ROCKSDB_BLOCK_SIZE: ${ROCKSDB_BLOCK_SIZE:-4096}
       ROCKSDB_N_MEMTABLES: ${ROCKSDB_N_MEMTABLES:-2}
       ROCKSDB_MEMTABLE_SIZE: ${ROCKSDB_MEMTABLE_SIZE:-16777216}
+      ENABLE_AGGREGATE_INTERSECTION_REFERENCE_ALIGNMENT_EVENTS: ${ENABLE_AGGREGATE_INTERSECTION_REFERENCE_ALIGNMENT_EVENTS:-false}
+      ENABLE_AGGREGATE_SIGNAL_GROUP_ALIGNMENT_EVENTS: ${ENABLE_AGGREGATE_SIGNAL_GROUP_ALIGNMENT_EVENTS:-false}
+      ENABLE_AGGREGATE_SIGNAL_STATE_CONFLICT_EVENTS: ${ENABLE_AGGREGATE_SIGNAL_STATE_CONFLICT_EVENTS:-false}
+      ENABLE_AGGREGATE_MAP_MINIMUM_DATA_EVENTS: ${ENABLE_AGGREGATE_MAP_MINIMUM_DATA_EVENTS:-false}
+      ENABLE_AGGREGATE_SPAT_TIME_CHANGE_DETAILS_EVENTS: ${ENABLE_AGGREGATE_SPAT_TIME_CHANGE_DETAILS_EVENTS:-false}
+      ENABLE_AGGREGATE_SPAT_MINIMUM_DATA_EVENTS: ${ENABLE_AGGREGATE_SPAT_MINIMUM_DATA_EVENTS:-false}
+      ENABLE_AGGREGATE_MAP_MESSAGE_COUNT_PROGRESSION: ${ENABLE_AGGREGATE_MAP_MESSAGE_COUNT_PROGRESSION:-false}
+      ENABLE_AGGREGATE_SPAT_MESSAGE_COUNT_PROGRESSION: ${ENABLE_AGGREGATE_SPAT_MESSAGE_COUNT_PROGRESSION:-false}
+      ENABLE_AGGREGATE_BSM_MESSAGE_COUNT_PROGRESSION: ${ENABLE_AGGREGATE_BSM_MESSAGE_COUNT_PROGRESSION:-false}
+      ENABLE_AGGREGATE_EVENT_STATE_PROGRESSION: ${ENABLE_AGGREGATE_EVENT_STATE_PROGRESSION:-false}
+      streams-config-replication-factor: ${CM_STREAMS_CONFIG_REPLICATION_FACTOR:-1}
+      streams-config-acks: ${CM_STREAMS_CONFIG_ACKS:-1}
+      streams-config-num-stream-threads: ${CM_STREAMS_CONFIG_NUM_STREAM_THREADS:-10}
+      streams-config-cache-max-bytes-buffering: ${CM_STREAMS_CONFIG_CACHE_MAX_BYTES_BUFFERING:-1048576}
+      streams-config-commit-interval-ms: ${CM_STREAMS_CONFIG_COMMIT_INTERVAL_MS:-100}
+      streams-config-compression-type: ${CM_STREAMS_CONFIG_COMPRESSION_TYPE:-zstd}
+      streams-config-linger-ms: ${CM_STREAMS_CONFIG_LINGER_MS:-10}
+      streams-config-batch-size: ${CM_STREAMS_CONFIG_BATCH_SIZE:-16384}
+      streams-config-topology-optimization: ${CM_STREAMS_CONFIG_TOPOLOGY_OPTIMIZATION:-all}
     healthcheck:
       test: ['CMD', 'java', '-version']
       interval: 10s
@@ -34,37 +53,49 @@ services:
     deploy:
       resources:
         limits:
-          memory: 3G
+          memory: 4G
     depends_on:
       kafka:
         condition: service_healthy
         required: false
-      kafka-setup:
-        condition: service_started
 
   ode:
     profiles:
       - conflictmonitor
       - ode
-    image: ${DOCKERHUB_HOST:-usdotjpoode}/jpo-ode:${DOCKERHUB_RELEASE:-2025-q3}
+    image: ${DOCKERHUB_HOST:-usdotjpoode}/jpo-ode:${DOCKERHUB_RELEASE:-2026-q2}
     restart: ${RESTART_POLICY:-on-failure:3}
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 4G
     ports:
-      - '8080:8080'
-      - '9090:9090'
-      - '46753:46753/udp'
-      - '46800:46800/udp'
-      - '47900:47900/udp'
-      - '44900:44900/udp'
-      - '44910:44910/udp'
-      - '44920:44920/udp'
-      - '44930:44930/udp'
-      - '44940:44940/udp'
-      - '44990:44990/udp'
-      - '5555:5555/udp'
-      - '6666:6666/udp'
+      - "8080:8080"
+      - "9091:9090"
+      - "46753:46753/udp"
+      - "46800:46800/udp"
+      - "47900:47900/udp"
+      - "44900:44900/udp"
+      - "44910:44910/udp"
+      - "44920:44920/udp"
+      - "44930:44930/udp"
+      - "44940:44940/udp"
+      - "44990:44990/udp"
+      - "44950:44950/udp"
+      - "44960:44960/udp"
+      - "44970:44970/udp"
+      - "5555:5555/udp"
+      - "6666:6666/udp"
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP:-host.docker.internal}
       ODE_KAFKA_BROKERS: ${DOCKER_HOST_IP:-kafka}:9092
+      ODE_SECURITY_SVCS_SIGNATURE_URI: ${ODE_SECURITY_SVCS_SIGNATURE_URI}
+      ODE_RSU_USERNAME: ${ODE_RSU_USERNAME}
+      ODE_RSU_PASSWORD: ${ODE_RSU_PASSWORD}
+      DATA_SIGNING_ENABLED_RSU: false
+      DATA_SIGNING_ENABLED_SDW: false
+      DEFAULT_SNMP_PROTOCOL: ${DEFAULT_SNMP_PROTOCOL}
       KAFKA_LINGER_MS: 1
       KAFKA_ACKS: all
       KAFKA_RETRIES: 0
@@ -77,18 +108,20 @@ services:
       ODE_TIM_INGEST_MONITORING_ENABLED: true
       ODE_TIM_INGEST_MONITORING_INTERVAL: 60
       ODE_STOMP_EXPORTER_ENABLED: true
-      DATA_SIGNING_ENABLED_RSU: false
-      DATA_SIGNING_ENABLED_SDW: false
-      ROCKSDB_TOTAL_OFF_HEAP_MEMORY: ${ROCKSDB_TOTAL_OFF_HEAP_MEMORY:-134217728}
-      ROCKSDB_INDEX_FILTER_BLOCK_RATIO: ${ROCKSDB_INDEX_FILTER_BLOCK_RATIO:-0.1}
-      ROCKSDB_TOTAL_MEMTABLE_MEMORY: ${ROCKSDB_TOTAL_MEMTABLE_MEMORY:-67108864}
-      ROCKSDB_BLOCK_SIZE: ${ROCKSDB_BLOCK_SIZE:-4096}
-      ROCKSDB_N_MEMTABLES: ${ROCKSDB_N_MEMTABLES:-2}
-      ROCKSDB_MEMTABLE_SIZE: ${ROCKSDB_MEMTABLE_SIZE:-16777216}
+      ODE_ROCKSDB_TOTAL_OFF_HEAP_MEMORY: ${ROCKSDB_TOTAL_OFF_HEAP_MEMORY:-134217728}
+      ODE_ROCKSDB_INDEX_FILTER_BLOCK_RATIO: ${ROCKSDB_INDEX_FILTER_BLOCK_RATIO:-0.1}
+      ODE_ROCKSDB_TOTAL_MEMTABLE_MEMORY: ${ROCKSDB_TOTAL_MEMTABLE_MEMORY:-67108864}
+      ODE_ROCKSDB_BLOCK_SIZE: ${ROCKSDB_BLOCK_SIZE:-4096}
+      ODE_ROCKSDB_N_MEMTABLES: ${ROCKSDB_N_MEMTABLES:-2}
+      ODE_ROCKSDB_MEMTABLE_SIZE: ${ROCKSDB_MEMTABLE_SIZE:-16777216}
+      ODE_KAFKA_LISTENER_CONCURRENCY: ${ODE_KAFKA_LISTENER_CONCURRENCY:-1}
     depends_on:
       kafka:
         condition: service_healthy
         required: false
+    volumes:
+      - ${DOCKER_SHARED_VOLUME:-./resources/ode}:/jpo-ode
+      - ${DOCKER_SHARED_VOLUME:-./resources/ode}/uploads:/home/uploads
     healthcheck:
       test: ['CMD', 'wget', '--spider', 'http://localhost:8080']
       interval: 5s
@@ -104,7 +137,7 @@ services:
     profiles:
       - conflictmonitor
       - adm
-    image: ${DOCKERHUB_HOST:-usdotjpoode}/asn1_codec:${DOCKERHUB_RELEASE:-2025-q3}
+    image: ${DOCKERHUB_HOST:-usdotjpoode}/asn1_codec:${DOCKERHUB_RELEASE:-2026-q2}
     restart: ${RESTART_POLICY:-on-failure:3}
     deploy:
       resources:
@@ -117,10 +150,13 @@ services:
       ACM_LOG_TO_CONSOLE: false
       ACM_LOG_TO_FILE: true
       ACM_LOG_LEVEL: WARNING
+      ACM_NUMBER_OF_PROCESSES: ${ADM_NUMBER_OF_PROCESSES:-1}
     depends_on:
       kafka:
         condition: service_healthy
         required: false
+    volumes:
+      - ${DOCKER_SHARED_VOLUME:-./resources/ode}:/asn1_codec_share
     logging:
       options:
         max-size: '10m'
@@ -130,7 +166,7 @@ services:
     profiles:
       - conflictmonitor
       - aem
-    image: ${DOCKERHUB_HOST:-usdotjpoode}/asn1_codec:${DOCKERHUB_RELEASE:-2025-q3}
+    image: ${DOCKERHUB_HOST:-usdotjpoode}/asn1_codec:${DOCKERHUB_RELEASE:-2026-q2}
     restart: ${RESTART_POLICY:-on-failure:3}
     deploy:
       resources:
@@ -143,10 +179,13 @@ services:
       ACM_LOG_TO_CONSOLE: false
       ACM_LOG_TO_FILE: true
       ACM_LOG_LEVEL: WARNING
+      ACM_NUMBER_OF_PROCESSES: ${AEM_NUMBER_OF_PROCESSES:-1}
     depends_on:
       kafka:
         condition: service_healthy
         required: false
+    volumes:
+      - ${DOCKER_SHARED_VOLUME:-./resources/ode}:/asn1_codec_share
     logging:
       options:
         max-size: '10m'
@@ -156,7 +195,7 @@ services:
     profiles:
       - conflictmonitor
       - geojsonconverter
-    image: ${DOCKERHUB_HOST:-usdotjpoode}/geojsonconverter:${DOCKERHUB_RELEASE:-2025-q3}
+    image: ${DOCKERHUB_HOST:-usdotjpoode}/geojsonconverter:${DOCKERHUB_RELEASE:-2026-q2}
     restart: ${RESTART_POLICY:-on-failure:3}
     deploy:
       resources:
@@ -167,10 +206,21 @@ services:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP:-host.docker.internal}
       geometry.output.mode: GEOJSON_ONLY
       spring.kafka.bootstrap-servers: ${DOCKER_HOST_IP:-kafka}:9092
+      streams-config-replication-factor: ${GJC_STREAMS_CONFIG_REPLICATION_FACTOR:-1}
+      streams-config-acks: ${GJC_STREAMS_CONFIG_ACKS:-1}
+      streams-config-num-stream-threads: ${GJC_STREAMS_CONFIG_NUM_STREAM_THREADS:-10}
+      streams-config-cache-max-bytes-buffering: ${GJC_STREAMS_CONFIG_CACHE_MAX_BYTES_BUFFERING:-1048576}
+      streams-config-commit-interval-ms: ${GJC_STREAMS_CONFIG_COMMIT_INTERVAL_MS:-100}
     logging:
       options:
         max-size: '10m'
         max-file: '5'
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:8080"]
+      interval: 5s
+      timeout: 30s
+      retries: 5
+      start_period: 10s
     depends_on:
       kafka:
         condition: service_healthy
@@ -180,30 +230,35 @@ services:
     profiles:
       - conflictmonitor
       - deduplicator
-    image: ${DOCKERHUB_HOST:-usdotjpoode}/jpo-deduplicator:${DOCKERHUB_RELEASE:-2025-q3}
+    image: ${DOCKERHUB_HOST:-usdotjpoode}/jpo-deduplicator:${DOCKERHUB_RELEASE:-2026-q2}
     privileged: false # Set true to allow writing to /proc/sys/vm/drop_caches
     restart: ${RESTART_POLICY:-on-failure:3}
     ports:
       - '10091:10090' # JMX
+      - "8085:8085" # Health controller
     environment:
       DOCKER_HOST_IP: ${DOCKER_HOST_IP:-host.docker.internal}
       KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS:-kafka:9092}
       SPRING_KAFKA_BOOTSTRAPSERVERS: ${KAFKA_BOOTSTRAP_SERVERS:-kafka:9092}
-      ENABLE_PROCESSED_MAP_DEDUPLICATION: true
-      ENABLE_PROCESSED_MAP_WKT_DEDUPLICATION: true
-      ENABLE_ODE_MAP_DEDUPLICATION: true
-      ENABLE_ODE_TIM_DEDUPLICATION: true
-      ENABLE_ODE_RAW_ENCODED_TIM_DEDUPLICATION: true
-      ENABLE_PROCESSED_SPAT_DEDUPLICATION: true
-      ENABLE_ODE_BSM_DEDUPLICATION: true
-      ENABLE_PROCESSED_BSM_DEDUPLICATION: true
+      ENABLE_PROCESSED_MAP_DEDUPLICATION: ${ENABLE_PROCESSED_MAP_DEDUPLICATION:-true}
+      ENABLE_PROCESSED_MAP_WKT_DEDUPLICATION: ${ENABLE_PROCESSED_MAP_WKT_DEDUPLICATION:-true}
+      ENABLE_ODE_MAP_DEDUPLICATION: ${ENABLE_ODE_MAP_DEDUPLICATION:-true}
+      ENABLE_ODE_TIM_DEDUPLICATION: ${ENABLE_ODE_TIM_DEDUPLICATION:-true}
+      ENABLE_PROCESSED_SPAT_DEDUPLICATION: ${ENABLE_PROCESSED_SPAT_DEDUPLICATION:-true}
+      ENABLE_ODE_BSM_DEDUPLICATION: ${ENABLE_ODE_BSM_DEDUPLICATION:-true}
+      ENABLE_PROCESSED_BSM_DEDUPLICATION: ${ENABLE_PROCESSED_BSM_DEDUPLICATION:-true}
+      ENABLE_BSM_WHITELIST: ${ENABLE_BSM_WHITELIST:-false}
+      ENABLE_BSM_WHITELIST_DLQ: ${ENABLE_BSM_WHITELIST_DLQ:-false}
+      BSM_WHITELIST_INPUT_TOPIC: ${BSM_WHITELIST_INPUT_TOPIC:-topic.OdeBsmJson}
+      BSM_WHITELIST_OUTPUT_TOPIC: ${BSM_WHITELIST_OUTPUT_TOPIC:-topic.WhitelistedOdeBsmJson}
+      BSM_WHITELIST_OUTPUT_DLQ_TOPIC: ${BSM_WHITELIST_OUTPUT_DLQ_TOPIC:-topic.BlacklistedOdeBsmJson}
 
-      ROCKSDB_TOTAL_OFF_HEAP_MEMORY: ${ROCKSDB_TOTAL_OFF_HEAP_MEMORY:-134217728}
-      ROCKSDB_INDEX_FILTER_BLOCK_RATIO: ${ROCKSDB_INDEX_FILTER_BLOCK_RATIO:-0.1}
-      ROCKSDB_TOTAL_MEMTABLE_MEMORY: ${ROCKSDB_TOTAL_MEMTABLE_MEMORY:-67108864}
-      ROCKSDB_BLOCK_SIZE: ${ROCKSDB_BLOCK_SIZE:-4096}
-      ROCKSDB_N_MEMTABLES: ${ROCKSDB_N_MEMTABLES:-2}
-      ROCKSDB_MEMTABLE_SIZE: ${ROCKSDB_MEMTABLE_SIZE:-16777216}
+      DEDUPLICATOR_ROCKSDB_TOTAL_OFF_HEAP_MEMORY: ${ROCKSDB_TOTAL_OFF_HEAP_MEMORY:-134217728}
+      DEDUPLICATOR_ROCKSDB_INDEX_FILTER_BLOCK_RATIO: ${ROCKSDB_INDEX_FILTER_BLOCK_RATIO:-0.1}
+      DEDUPLICATOR_ROCKSDB_TOTAL_MEMTABLE_MEMORY: ${ROCKSDB_TOTAL_MEMTABLE_MEMORY:-67108864}
+      DEDUPLICATOR_ROCKSDB_BLOCK_SIZE: ${ROCKSDB_BLOCK_SIZE:-4096}
+      DEDUPLICATOR_ROCKSDB_N_MEMTABLES: ${ROCKSDB_N_MEMTABLES:-2}
+      DEDUPLICATOR_ROCKSDB_MEMTABLE_SIZE: ${ROCKSDB_MEMTABLE_SIZE:-16777216}
     healthcheck:
       test: ['CMD', 'java', '-version']
       interval: 10s
@@ -221,6 +276,3 @@ services:
       kafka:
         condition: service_healthy
         required: false
-
-volumes:
-  ode_vol:

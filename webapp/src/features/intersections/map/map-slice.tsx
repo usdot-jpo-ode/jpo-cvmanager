@@ -11,6 +11,8 @@ import {
   addBsmTimestampsAndSortAscending,
   addMapTimestampsAndSortAscending,
   addSpatTimestampsAndSortAscending,
+  addSrmTimestampsAndSortAscending,
+  addSsmTimestampsAndSortAscending,
   generateSignalStateFeatureCollection,
   isValidDate,
   parseMapSignalGroups,
@@ -362,6 +364,8 @@ export const pullInitialData = createAsyncThunk(
       rawMap = addMapTimestampsAndSortAscending(localSourceData.map)
       rawSpat = addSpatTimestampsAndSortAscending(localSourceData.spat)
       rawBsmGeojson = addBsmTimestampsAndSortAscending(localSourceData.bsm)
+      dispatch(setCurrentSsmData(addSsmTimestampsAndSortAscending(localSourceData.ssm)))
+      dispatch(setCurrentSrmData(addSrmTimestampsAndSortAscending(localSourceData.srm)))
       if (rawSpat && rawSpat.length != 0 && rawMap && rawMap.length != 0) {
         const sortedSpatData = rawSpat.sort((x, y) => x.utcTimeStamp - y.utcTimeStamp)
         const startTime = new Date(sortedSpatData[0].utcTimeStamp)
@@ -440,6 +444,8 @@ export const pullInitialData = createAsyncThunk(
       rawMap = [...importedMessageData.mapData]
       rawSpat = [...importedMessageData.spatData].sort((a, b) => a.utcTimeStamp - b.utcTimeStamp)
       rawBsmGeojson = importedMessageData.bsmData
+      dispatch(setCurrentSsmData(importedMessageData.ssmData))
+      dispatch(setCurrentSrmData(importedMessageData.srmData))
     }
 
     if (decoderModeEnabled) {
@@ -1678,10 +1684,10 @@ export const intersectionMapSlice = createSlice({
       state.value.liveSpatLatestLatencyMs = action.payload
     },
     setCurrentSsmData: (state, action: PayloadAction<ProcessedSsm[]>) => {
-      state.value.currentSsmData = action.payload
+      state.value.currentSsmData = action.payload ?? []
     },
     setCurrentSrmData: (state, action: PayloadAction<ProcessedSrmFeature[]>) => {
-      state.value.currentSrmData = action.payload
+      state.value.currentSrmData = action.payload ?? []
     },
   },
   extraReducers: (builder) => {

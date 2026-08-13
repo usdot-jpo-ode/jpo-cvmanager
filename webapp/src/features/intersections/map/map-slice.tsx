@@ -175,8 +175,6 @@ const initialState = {
   lastSliderUpdate: undefined as number | undefined,
   renderTimeInterval: [0, 0],
   mapSpatTimes: { mapTime: 0, spatTime: 0 },
-  sigGroupLabelsVisible: false,
-  laneLabelsVisible: false,
   showPopupOnHover: false,
   importedMessageData: undefined as IMPORTED_MAP_MESSAGE_DATA | undefined,
   loadInitialDataTimeoutId: undefined as NodeJS.Timeout | undefined,
@@ -1530,12 +1528,6 @@ export const intersectionMapSlice = createSlice({
     setLoadInitialDataTimeoutId: (state, action: PayloadAction<NodeJS.Timeout>) => {
       state.value.loadInitialDataTimeoutId = action.payload
     },
-    setLaneLabelsVisible: (state, action: PayloadAction<boolean>) => {
-      state.value.laneLabelsVisible = action.payload
-    },
-    setSigGroupLabelsVisible: (state, action: PayloadAction<boolean>) => {
-      state.value.sigGroupLabelsVisible = action.payload
-    },
     setShowPopupOnHover: (state, action: PayloadAction<boolean>) => {
       state.value.showPopupOnHover = action.payload
     },
@@ -1854,8 +1846,6 @@ export const selectTimeWindowSeconds = (state: RootState) => state.intersectionM
 export const selectSliderValueDeciseconds = (state: RootState) => state.intersectionMap.value.sliderValueDeciseconds
 export const selectRenderTimeInterval = (state: RootState) => state.intersectionMap.value.renderTimeInterval
 export const selectMapSpatTimes = (state: RootState) => state.intersectionMap.value.mapSpatTimes
-export const selectSigGroupLabelsVisible = (state: RootState) => state.intersectionMap.value.sigGroupLabelsVisible
-export const selectLaneLabelsVisible = (state: RootState) => state.intersectionMap.value.laneLabelsVisible
 export const selectShowPopupOnHover = (state: RootState) => state.intersectionMap.value.showPopupOnHover
 export const selectImportedMessageData = (state: RootState) => state.intersectionMap.value.importedMessageData
 export const selectLoadInitialDataTimeoutId = (state: RootState) => state.intersectionMap.value.loadInitialDataTimeoutId
@@ -1908,8 +1898,6 @@ export const {
   updateRenderTimeInterval,
   cleanUpLiveStreaming,
   setLoadInitialDataTimeoutId,
-  setLaneLabelsVisible,
-  setSigGroupLabelsVisible,
   setShowPopupOnHover,
   setLiveDataActive,
   setBsmTrailLength,

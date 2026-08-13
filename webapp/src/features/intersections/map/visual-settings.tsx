@@ -2,16 +2,7 @@ import { Checkbox, Grid2, TextField, Typography, useTheme } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../../store'
-import {
-  selectLaneLabelsVisible,
-  selectShowPopupOnHover,
-  selectSigGroupLabelsVisible,
-  setLaneLabelsVisible,
-  setSigGroupLabelsVisible,
-  setShowPopupOnHover,
-  selectBsmTrailLength,
-  setBsmTrailLength,
-} from './map-slice'
+import { selectShowPopupOnHover, setShowPopupOnHover, selectBsmTrailLength, setBsmTrailLength } from './map-slice'
 import { selectSignalStateLayerStyle, setSignalLayerLayout } from './map-layer-style-slice'
 
 import MapFabTab from './map-fab-tab'
@@ -29,9 +20,7 @@ function VisualSettings(props: VisualSettingsProps) {
   const theme = useTheme()
 
   const signalStateLayerStyle = useSelector(selectSignalStateLayerStyle)
-  const laneLabelsVisible = useSelector(selectLaneLabelsVisible)
   const showPopupOnHover = useSelector(selectShowPopupOnHover)
-  const sigGroupLabelsVisible = useSelector(selectSigGroupLabelsVisible)
   const bsmTrailLength = useSelector(selectBsmTrailLength)
 
   const [bsmTrailLengthLocal, setBsmTrailLengthLocal] = useState<string | undefined>(bsmTrailLength.toString())
@@ -63,20 +52,6 @@ function VisualSettings(props: VisualSettingsProps) {
             }
           />
           <Typography fontSize="16px">Rotate Signal Head Icons With Map </Typography>
-        </Grid2>
-        <Grid2 size={6} display="flex" flexDirection="row" alignItems="center">
-          <Checkbox
-            checked={laneLabelsVisible}
-            onChange={(event) => dispatch(setLaneLabelsVisible(event.target.checked))}
-          />
-          <Typography fontSize="16px">Show Lane IDs </Typography>
-        </Grid2>
-        <Grid2 size={6} display="flex" flexDirection="row" alignItems="center">
-          <Checkbox
-            checked={sigGroupLabelsVisible}
-            onChange={(event) => dispatch(setSigGroupLabelsVisible(event.target.checked))}
-          />
-          <Typography fontSize="16px">Show Signal Group IDs </Typography>
         </Grid2>
         <Grid2 size={6} display="flex" flexDirection="row" alignItems="center">
           <Checkbox

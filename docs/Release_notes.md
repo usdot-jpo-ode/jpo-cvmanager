@@ -95,6 +95,8 @@ Enhancements in this release:
 [NEAERA CONSULTING PR 14](https://github.com/neaeraconsulting/jpo-cvmanager/pull/14): Merging CDOT-CV and NeaeraConsulting RSU Pinger Changes
 [NEAERA CONSULTING PR 15](https://github.com/neaeraconsulting/jpo-cvmanager/pull/15): Admin RSU/User Bugfixes
 [NEAERA CONSULTING PR 16](https://github.com/neaeraconsulting/jpo-cvmanager/pull/16): Merging CDOT-CV and NeaeraConsulting IAPI Email Subscription Changes
+[NEAERA CONSULTING PR 19](https://github.com/neaeraconsulting/jpo-cvmanager/pull/19): Adding USDOT 2026 Q2 Release Notes
+[NEAERA CONSULTING PR 21](https://github.com/neaeraconsulting/jpo-cvmanager/pull/21): Adding Intersection API TimeSync Endpoint
 
 ## Version 2.0.1
 

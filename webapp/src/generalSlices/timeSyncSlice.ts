@@ -1,9 +1,8 @@
 // store/timeSyncSlice.ts
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-import { fromZonedTime } from 'date-fns-tz'
 
-const TIME_SERVER_URL_UTC = 'https://timeapi.io/api/Time/current/zone?timeZone=Etc/UTC'
+import EnvironmentVars from '../EnvironmentVars'
 
 interface TimeSyncState {
   timeOffsetMillis: number // Offset in milliseconds
@@ -22,18 +21,14 @@ export const getAccurateTimeMillis = (timeOffsetMillis: number): number => Date.
 
 export const syncTimeOffset = createAsyncThunk('timeSync/syncTimeOffset', async (_) => {
   const start = Date.now() // Record the start time
-  const response = await fetch(TIME_SERVER_URL_UTC)
+  const response = await fetch(EnvironmentVars.timeSyncEndpoint)
   const end = Date.now() // Record the end time
 
-  let rtt = end - start // Calculate round-trip time
-  console.debug('Time sync round trip time (unused):', rtt, 'ms')
-  const data = await response.json()
-
-  // Convert server time (in the specified time zone) to UTC milliseconds
-  const serverTime = fromZonedTime(data.dateTime, data.timeZone).getTime()
+  const rtt = end - start // Calculate round-trip time
+  const serverTime: number = await response.json()
 
   const currentTime = Date.now()
-  return serverTime - currentTime
+  return serverTime - currentTime - Math.floor(rtt / 2) // Adjust for half of the round-trip time
 })
 
 const timeSyncSlice = createSlice({

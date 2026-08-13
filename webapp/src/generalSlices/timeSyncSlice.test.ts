@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import reducer, {
   // async thunks
   syncTimeOffset,
@@ -14,7 +15,12 @@ import reducer, {
   setTimeOffset,
 } from './timeSyncSlice'
 
-const TIME_SERVER_URL_UTC = 'https://timeapi.io/api/Time/current/zone?timeZone=Etc/UTC'
+// Mock EnvironmentVars
+vi.mock('../EnvironmentVars', () => ({
+  default: {
+    timeSyncEndpoint: 'http://localhost:8089/timesync/utc-millis',
+  },
+}))
 
 describe('timeSync reducer', () => {
   it('should handle initial state', () => {
@@ -59,53 +65,58 @@ describe('reducers', () => {
 })
 
 describe('async thunks', () => {
-  beforeAll(() => {
-    global.fetch = jest.fn()
+  beforeEach(() => {
+    vi.restoreAllMocks()
+    global.fetch = vi.fn()
   })
 
-  afterAll(() => {
-    jest.restoreAllMocks()
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   it('syncTimeOffset should synchronize time offset (mocked fetch)', async () => {
-    const mockServerTime = '2025-10-20T21:28:30.0960336Z'
-    const mockServerTimeMillis = new Date(mockServerTime).getTime()
-    const mockResponse = {
-      year: 2025,
-      month: 10,
-      day: 20,
-      hour: 21,
-      minute: 28,
-      seconds: 30,
-      milliSeconds: 96,
-      dateTime: '2025-10-20T21:28:30.0960336',
-      date: '10/20/2025',
-      time: '21:28',
-      timeZone: 'Etc/UTC',
-      dayOfWeek: 'Monday',
-      dstActive: false,
-    } // Mock fetch response
-    ;(global.fetch as jest.Mock).mockResolvedValueOnce({
-      json: jest.fn().mockResolvedValueOnce(mockResponse),
+    const startTime = 1_000
+    const endTime = 1_040
+    const currentTime = 1_040
+    const serverTime = 2_000
+
+    ;(global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      json: vi.fn().mockResolvedValueOnce(serverTime),
     })
+    vi.spyOn(Date, 'now')
+      .mockReturnValueOnce(startTime)
+      .mockReturnValueOnce(endTime)
+      .mockReturnValueOnce(currentTime)
 
-    // Mock Date.now() to return the server time
-    const originalDateNow = Date.now
-    Date.now = jest.fn(() => mockServerTimeMillis)
-
-    const dispatch = jest.fn()
-    const getState = jest.fn()
+    const dispatch = vi.fn()
+    const getState = vi.fn()
     const action = syncTimeOffset()
 
     const result = await action(dispatch, getState, undefined)
 
-    const expectedOffset = 0
+    const expectedOffset = serverTime - currentTime - Math.floor((endTime - startTime) / 2)
 
-    expect(result.payload).toBeCloseTo(expectedOffset, -2) // Allow slight timing differences
-    expect(global.fetch).toHaveBeenCalledWith(TIME_SERVER_URL_UTC)
+    expect(result.payload).toBe(expectedOffset)
+    expect(global.fetch).toHaveBeenCalledWith('http://localhost:8089/timesync/utc-millis')
+  })
 
-    // Restore original Date.now
-    Date.now = originalDateNow
+  it('syncTimeOffset fulfilled should update timeOffsetMillis and lastSync via extraReducers', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-08-13T12:00:00.000Z'))
+
+    const fulfilledAction = syncTimeOffset.fulfilled(940, 'request-id', undefined)
+    const state = reducer(
+      {
+        timeOffsetMillis: 0,
+        lastSync: null,
+      },
+      fulfilledAction
+    )
+
+    expect(state.timeOffsetMillis).toBe(940)
+    expect(state.lastSync).toBe('2026-08-13T12:00:00.000Z')
+
+    vi.useRealTimers()
   })
 })
 

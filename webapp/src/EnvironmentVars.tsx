@@ -55,6 +55,7 @@ class EnvironmentVars {
   static adminOrg = `${this.getBaseApiUrl()}/admin-org`
   static adminOrgTimDeposit = `${this.getBaseApiUrl()}/admin-org-tim-deposit`
   static adminOrgSnmpMonitoring = `${this.getBaseApiUrl()}/admin-org-snmp-monitoring`
+  static readonly timeSyncEndpoint = `${this.CVIZ_API_SERVER_URL}/timesync/utc-millis`
 }
 
 export default EnvironmentVars

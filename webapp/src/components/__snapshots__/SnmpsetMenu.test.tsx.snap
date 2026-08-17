@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`should take a snapshot 1`] = `
 <div>
@@ -38,10 +38,10 @@ exports[`should take a snapshot 1`] = `
                 />
                 <fieldset
                   aria-hidden="true"
-                  class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
+                  class="MuiOutlinedInput-notchedOutline css-mocked-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
                 >
                   <legend
-                    class="css-w1u3ce"
+                    class="css-mocked-MuiNotchedOutlined-root"
                   >
                     <span>
                       Destination IP
@@ -66,14 +66,13 @@ exports[`should take a snapshot 1`] = `
               Message Type
             </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl css-mocked-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MuiSelect-root css-mocked-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
             >
               <div
-                aria-controls="mui-1"
                 aria-expanded="false"
                 aria-haspopup="listbox"
                 aria-labelledby="msg-type-select"
-                class="MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input css-mocked-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input"
+                class="MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input css-mocked-MuiNativeSelect-root-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input"
                 id="msg-type-select"
                 role="combobox"
                 tabindex="0"
@@ -88,7 +87,7 @@ exports[`should take a snapshot 1`] = `
               />
               <svg
                 aria-hidden="true"
-                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-mocked-MuiSvgIcon-root-MuiSelect-icon"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-mocked-MuiSvgIcon-root-MuiNativeSelect-root-MuiSelect-icon"
                 data-testid="ArrowDropDownIcon"
                 focusable="false"
                 viewBox="0 0 24 24"
@@ -99,10 +98,10 @@ exports[`should take a snapshot 1`] = `
               </svg>
               <fieldset
                 aria-hidden="true"
-                class="MuiOutlinedInput-notchedOutline css-mocked-MuiOutlinedInput-notchedOutline"
+                class="MuiOutlinedInput-notchedOutline css-mocked-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="css-w1u3ce"
+                  class="css-mocked-MuiNotchedOutlined-root"
                 >
                   <span>
                     Message Type
@@ -117,10 +116,10 @@ exports[`should take a snapshot 1`] = `
         class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd css-mocked-MuiFormControlLabel-root"
       >
         <span
-          class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
+          class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiSwitchBase-root-MuiCheckbox-root"
         >
           <input
-            class="PrivateSwitchBase-input css-j8yymo"
+            class="PrivateSwitchBase-input css-mocked-MuiSwitchBase-root"
             data-indeterminate="false"
             type="checkbox"
           />

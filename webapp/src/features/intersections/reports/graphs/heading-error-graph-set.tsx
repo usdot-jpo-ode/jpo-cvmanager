@@ -1,4 +1,3 @@
-import React from 'react'
 import { Box, Typography } from '@mui/material'
 import HeadingErrorOverTimeGraph from './heading-error-over-time-graph'
 import { LaneDirectionOfTravelReportDataByLaneId } from '../../../../models/ReportData'

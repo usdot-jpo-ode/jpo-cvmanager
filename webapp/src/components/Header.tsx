@@ -140,14 +140,14 @@ const Header = () => {
                     >
                       {(authLoginData?.data?.organizations ?? []).map((permission) => (
                         <FormControlLabel
-                          key={permission.name}
-                          label={permission.name}
+                          key={permission.organization}
+                          label={permission.organization}
                           control={<Radio size="small" />}
-                          value={permission.name}
+                          value={permission.organization}
                           sx={{
                             '& .MuiTypography-root': {
                               color:
-                                permission.name === organizationName
+                                permission.organization === organizationName
                                   ? theme.palette.text.primary
                                   : theme.palette.text.secondary,
                               fontFamily: 'Trebuchet MS, Arial, Helvetica, sans-serif',

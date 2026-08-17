@@ -9,35 +9,21 @@ const authLoginData = UserManager.isLoginActive(authDataLocalStorage) ? authData
 export const keycloakLogin = createAsyncThunk('user/login', async (token: string, { rejectWithValue }) => {
   try {
     if (token) {
-      const response = await AuthApi.logIn(token)
-      switch (response.status) {
-        case 200:
-          const authLoginData = {
-            data: response.json
-              ? { ...response.json, name: `${response.json.first_name} ${response.json.last_name}` }
-              : null,
-            token: token,
-            expires_at: Date.now() + 590000,
-          }
-          return authLoginData
-        case 400:
-          return rejectWithValue('Login Unsuccessful: Bad Request')
-        case 401:
-          return rejectWithValue('Login Unsuccessful: User Unauthorized Please Contact Support')
-        case 403:
-          return rejectWithValue('Login Unsuccessful: Access Forbidden')
-        case 404:
-          return rejectWithValue('Login Unsuccessful: Authentication API Not Found')
-        default:
-          return rejectWithValue('Login Unsuccessful: Unknown Error Occurred')
+      const authLoginData = await AuthApi.logIn(token)
+      if (authLoginData?.data?.organizations?.length == 0) {
+        console.error('User does not belong to any organizations')
+        return rejectWithValue(
+          'Login Unsuccessful: User does not belong to any organizations. Contact support for assistance.'
+        )
       }
+      return authLoginData
     } else {
       console.error('Invalid token passed to user/login')
       return rejectWithValue('Login Unsuccessful: No KeyCloak Token Please Refresh')
     }
   } catch (exception_var) {
     console.error('Exception logging in user', exception_var)
-    throw exception_var
+    return rejectWithValue(`Login Unsuccessful: ${(exception_var as Error).message}`)
   }
 })
 
@@ -74,7 +60,7 @@ export const userSlice = createSlice({
         ]
       } else if (action.payload.type === 'delete') {
         const index = state.value.authLoginData.data.organizations.findIndex(
-          (org) => org.name === action.payload.value.name
+          (org) => org.organization === action.payload.value.name
         )
         if (index > -1) {
           const updatedOrgList = state.value.authLoginData.data.organizations
@@ -83,7 +69,7 @@ export const userSlice = createSlice({
         }
       } else if (action.payload.type === 'update') {
         const index = state.value.authLoginData.data.organizations.findIndex(
-          (org) => org.name === action.payload.orgName
+          (org) => org.organization === action.payload.orgName
         )
         if (index > -1) {
           const updatedOrgList = state.value.authLoginData.data.organizations
@@ -134,9 +120,10 @@ export const { logout, changeOrganization, setOrganizationList, setLoading, setL
   userSlice.actions
 
 export const selectAuthLoginData = (state: RootState) => state.user.value.authLoginData
-export const selectToken = (state: RootState) => state.user.value.authLoginData.token
+export const selectToken = (state: RootState) => state.user.value.authLoginData?.token
 export const selectRole = (state: RootState) => state.user.value.organization?.role
-export const selectOrganizationName = (state: RootState) => state.user.value.organization?.name
+export const selectIsSuperUser = (state: RootState) => state.user.value.authLoginData?.data?.super_user
+export const selectOrganizationName = (state: RootState) => state.user.value.organization?.organization
 export const selectName = (state: RootState) => state.user.value.authLoginData?.data?.name
 export const selectEmail = (state: RootState) => state.user.value.authLoginData?.data?.email
 export const selectSuperUser = (state: RootState) => state.user.value.authLoginData?.data?.super_user
@@ -158,6 +145,28 @@ export const selectLoadingGlobal = (state: RootState) => {
     }
   }
   return loading
+}
+
+export const selectIsUserOrAbove = (state: RootState) => {
+  if (selectIsSuperUser(state)) {
+    return true
+  }
+  const role = selectRole(state)?.toUpperCase()
+  return role === 'USER' || role === 'OPERATOR' || role === 'ADMIN'
+}
+export const selectIsOperatorOrAbove = (state: RootState) => {
+  if (selectIsSuperUser(state)) {
+    return true
+  }
+  const role = selectRole(state)?.toUpperCase()
+  return role === 'OPERATOR' || role === 'ADMIN'
+}
+export const selectIsAdminOrAbove = (state: RootState) => {
+  if (selectIsSuperUser(state)) {
+    return true
+  }
+  const role = selectRole(state)?.toUpperCase()
+  return role === 'ADMIN'
 }
 
 export default userSlice.reducer

@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`should take a snapshot 1`] = `
 <div>
@@ -10,60 +10,617 @@ exports[`should take a snapshot 1`] = `
       class="MuiStack-root css-mocked-MuiStack-root"
     >
       <h2>
-        Welcome to the 
-         CV Manager Website
+        Welcome to the undefined CV Manager
       </h2>
       <p>
-        This application shows the physical location and message counts for each RSU installed by the Colorado Department of Transportation at various road sites throughout Colorado.
+        This application helps organizations manage and monitor deployed RSUs, monitor and detect issues with connected intersections, and view numerous data types all in one application.
       </p>
+      <h2>
+        Organizations and Profiles
+      </h2>
       <p>
-        The map on this website will represent the location of each RSU with a red, green, or yellow dot (shown below). A green dot represents an RSU that is online. A yellow dot represents an RSU that is offline but was recently active. A red dot represents an RSU that is not currently online.
-      </p>
-      <img
-        alt="RSU Statuses Shown on Map"
-        class="css-2ttpiu"
-        src="rsu_status.PNG"
-      />
-      <p>
-        Clicking on the RSU will give the following information: IP address, online status, time last online, milepost number, serial number, and number of message counts (shown below).
+        This application uses organizations to manage permissions. All devices and users within the CV Manager are associated with one or more organizations. When using the CV Manager, you can only view one organization at a time. At the top right corner, you will see the User Profile menu. This menu allows the user to change organizations, if they are a member of multiple, as well as logging out of the application.
       </p>
       <img
-        alt="RSU Popup with Data"
+        alt="Profile Dropdown"
         class="css-2ttpiu"
-        src="rsu_popup.PNG"
+        src="/src/icons/help/organization_selection.png"
+        width="200"
       />
+      <h2>
+        Permissions
+      </h2>
       <p>
-        The menu on the right side of the webpage will allow users to select the time range and message type to be displayed for the RSUs. The menu will toggle between being hidden and visible each time the red X is clicked. The time frame can be changed by adjusting the date and time values in the date-time pickers. The top date-time picker represents the start time while the bottom represents the end time. Below the date-time pickers is a dropdown menu where the RSU message type can be selected. Each time a value is updated in either the date-time pickers or message selection dropdown the webpage will update accordingly. These elements are shown in the image below:
+        There are 3 roles within the CV Manager: User, Operator, and Admin. Some users can also be granted Super User permissions, which enables access to all resources within an organization and increases their ability to move resources between organizations.
+      </p>
+      <div
+        class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiTableContainer-root css-mocked-MuiPaper-root-MuiTableContainer-root"
+        style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
+      >
+        <table
+          class="MuiTable-root css-mocked-MuiTable-root"
+        >
+          <thead
+            class="MuiTableHead-root css-mocked-MuiTableHead-root"
+          >
+            <tr
+              class="MuiTableRow-root MuiTableRow-head css-mocked-MuiTableRow-root"
+            >
+              <th
+                class="MuiTableCell-root MuiTableCell-head MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
+                colspan="4"
+                scope="col"
+              >
+                User Roles and Permissions (By Organization)
+              </th>
+            </tr>
+            <tr
+              class="MuiTableRow-root MuiTableRow-head css-mocked-MuiTableRow-root"
+            >
+              <th
+                class="MuiTableCell-root MuiTableCell-head MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
+                scope="col"
+              />
+              <th
+                class="MuiTableCell-root MuiTableCell-head MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
+                scope="col"
+              >
+                User
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
+                scope="col"
+              >
+                Operator
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
+                scope="col"
+              >
+                Admin
+              </th>
+            </tr>
+          </thead>
+          <tbody
+            class="MuiTableBody-root css-mocked-MuiTableBody-root"
+          >
+            <tr
+              class="MuiTableRow-root css-mocked-MuiTableRow-root"
+            >
+              <td
+                class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
+              >
+                View Map Data (including RSUs)
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                  data-testid="CheckCircleIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"
+                  />
+                </svg>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                  data-testid="CheckCircleIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"
+                  />
+                </svg>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                  data-testid="CheckCircleIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"
+                  />
+                </svg>
+              </td>
+            </tr>
+            <tr
+              class="MuiTableRow-root css-mocked-MuiTableRow-root"
+            >
+              <td
+                class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
+              >
+                Register, Manage, and Configure RSUs
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                  data-testid="CancelIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2m5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12z"
+                  />
+                </svg>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                  data-testid="CheckCircleIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"
+                  />
+                </svg>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                  data-testid="CheckCircleIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"
+                  />
+                </svg>
+              </td>
+            </tr>
+            <tr
+              class="MuiTableRow-root css-mocked-MuiTableRow-root"
+            >
+              <td
+                class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
+              >
+                Manage Intersection Settings and Notifications
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                  data-testid="CancelIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2m5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12z"
+                  />
+                </svg>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                  data-testid="CheckCircleIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"
+                  />
+                </svg>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                  data-testid="CheckCircleIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"
+                  />
+                </svg>
+              </td>
+            </tr>
+            <tr
+              class="MuiTableRow-root css-mocked-MuiTableRow-root"
+            >
+              <td
+                class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
+              >
+                Manage Users
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                  data-testid="CancelIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2m5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12z"
+                  />
+                </svg>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                  data-testid="CancelIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2m5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12z"
+                  />
+                </svg>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                  data-testid="CheckCircleIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"
+                  />
+                </svg>
+              </td>
+            </tr>
+            <tr
+              class="MuiTableRow-root css-mocked-MuiTableRow-root"
+            >
+              <td
+                class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
+              >
+                Add and Remove Resources Within Organizations
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                  data-testid="CancelIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2m5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12z"
+                  />
+                </svg>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                  data-testid="CancelIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2m5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12z"
+                  />
+                </svg>
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+                  data-testid="CheckCircleIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"
+                  />
+                </svg>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>
+        Enabled Features
+      </h3>
+      <p>
+        The CV Manager can have different feature sets enabled or disabled. In this application, the following features are currently enabled or disabled as shown below:
+      </p>
+      <ul>
+        <li>
+          RSU Monitoring and Configuration: ENABLED
+        </li>
+        <li>
+          Intersection Map/Dashboard: ENABLED
+        </li>
+        <li>
+          WZDx Viewer: ENABLED
+        </li>
+        <li>
+          HAAS Alert Viewer: ENABLED
+        </li>
+      </ul>
+      <h2>
+        <a
+          href="/dashboard/map"
+        >
+          Map Dashboard
+        </a>
+      </h2>
+      <p>
+        The map dashboard is composed of a Mapbox map (background), the
+        <a
+          href="#map-layers"
+        >
+           Map Layer Menu
+        </a>
+         (red), and
+        <a
+          href="#rsu-status-and-message-counts"
+        >
+           RSU Status and Message Counts Menu
+        </a>
+         (green).
       </p>
       <img
-        alt="RSU Menu"
+        alt="Map Layer Selection Options"
         class="css-2ttpiu"
-        src="rsu_menu.PNG"
+        src="/src/icons/help/map_overview.png"
+      />
+      <h3
+        id="map-layers"
+      >
+        Map Layers
+      </h3>
+      <p>
+        The menu on the left contains three sections:
+        <strong>
+           Map Layers
+        </strong>
+        ,
+        <strong>
+           RSU Filters
+        </strong>
+        , and
+        <strong>
+           RSU Configuration
+        </strong>
+        . The Map Layers section allows users to visualize various data types. Available layers include:
+      </p>
+      <ul>
+        <li>
+          <strong>
+            RSU Viewer:
+          </strong>
+           Displays RSU locations and status. Selecting one opens a popup and side panel for configuration. Colors:
+          <ul>
+            <li>
+              Green = online and reporting
+            </li>
+            <li>
+              Yellow = recently offline
+            </li>
+            <li>
+              Red = offline for extended time
+            </li>
+          </ul>
+        </li>
+        <li>
+          <strong>
+            Heatmap:
+          </strong>
+           Displays a message-count heatmap
+        </li>
+        <li>
+          <strong>
+            V2X Message Viewer:
+          </strong>
+           Query messages for a map region
+        </li>
+        <li>
+          <strong>
+            WZDx Viewer:
+          </strong>
+           Displays work zone events
+        </li>
+        <li>
+          <strong>
+            Intersections:
+          </strong>
+           Shows connected intersections and IDs
+        </li>
+        <li>
+          <strong>
+            HAAS Alert Viewer:
+          </strong>
+           Query alert incidents by time
+        </li>
+      </ul>
+      <p>
+        The RSU Filters section allows filtering RSUs by vendor and status. The RSU Configuration section allows Operators/Admins to select RSUs on the map and configure them in bulk.
+      </p>
+      <h4
+        id="configuring-rsus"
+      >
+        Configuring RSUs (Requires Operator or Admin)
+      </h4>
+      <p>
+        Selecting an RSU opens a popup and configuration menu. It displays IP address, online status, last report time, milepost, serial number, and message count. Depending on access, users can retrieve configurations, modify them, check/apply firmware updates, or reboot the RSU.
+      </p>
+      <img
+        alt="RSU Popup and Configuration Panel"
+        class="css-2ttpiu"
+        src="/src/icons/help/rsu_popup_and_config_menu.png"
+      />
+      <h5>
+        Message Forwarding Current Configuration
+      </h5>
+      <p>
+        Message forwarding rules come in three types:
+      </p>
+      <ul>
+        <li>
+          TX (transmitted messages: TIM, MAP, SPAT, SSM)
+        </li>
+        <li>
+          RX (received messages: BSM, SRM, SDSM)
+        </li>
+        <li>
+          Generic (SNMP 4.1: applies to all messages)
+        </li>
+      </ul>
+      <p>
+        Each rule includes:
+      </p>
+      <ul>
+        <li>
+          Message Type
+        </li>
+        <li>
+          Destination IP
+        </li>
+        <li>
+          Port
+        </li>
+        <li>
+          Start / End date
+        </li>
+        <li>
+          Security header enabled
+        </li>
+        <li>
+          Active state
+        </li>
+        <li>
+          Delete button
+        </li>
+      </ul>
+      <h5>
+        Message Forwarding Management
+      </h5>
+      <p>
+        Create forwarding rules by entering:
+      </p>
+      <ul>
+        <li>
+          Destination IP
+        </li>
+        <li>
+          Message type
+        </li>
+        <li>
+          Security header
+        </li>
+      </ul>
+      <h5>
+        Firmware Management
+      </h5>
+      <p>
+        Check for firmware updates and apply if available.
+      </p>
+      <h5>
+        Reboot
+      </h5>
+      <p>
+        Reboot the selected RSU.
+      </p>
+      <h3
+        id="rsu-status-and-message-counts"
+      >
+        RSU Status and Message Counts
+      </h3>
+      <p>
+        On the right side are two menus:
+        <strong>
+           RSU Status Menu
+        </strong>
+         and
+        <strong>
+           Message Count Menu
+        </strong>
+        .
+      </p>
+      <p>
+        The RSU Status Menu lists all RSUs and their status. Users can print a full or error-only report. For each device you will find:
+      </p>
+      <ul>
+        <li>
+          Location
+        </li>
+        <li>
+          Online status (green / red / yellow)
+        </li>
+        <li>
+          SCMS certificate status
+        </li>
+        <li>
+          RSU IP address
+        </li>
+      </ul>
+      <img
+        alt="RSU Status Menu Display"
+        class="css-2ttpiu"
+        src="/src/icons/help/rsu_status_menu.png"
+        width="400"
       />
       <p>
-        The table included in the menu will show the number of message counts for each RSU in the given time frame regardless of online status (shown below). The table can be sorted by RSU, road, or count by clicking on the desired column header. Each time a column header is clicked, it will toggle between sorting the data in an ascending/descending fashion.
+        The Message Count Menu filters RSU message counts by time range and message type. Changing any filter updates the map and table automatically.
+      </p>
+      <img
+        alt="RSU Count Menu"
+        class="css-2ttpiu"
+        src="/src/icons/help/rsu_count_menu.png"
+        width="300"
+      />
+      <p>
+        A table below shows the number of messages from each RSU, sortable by RSU name, road, or message count.
       </p>
       <img
         alt="RSU Message Count Table"
         class="css-2ttpiu"
-        src="rsu_count.PNG"
+        src="/src/icons/help/rsu_count.png"
+        width="300"
       />
       <p>
-        Selecting 'Heat Map' on the navigation bar will show a heat map representing RSU message counts for the time range and message type selected in the menu (shown below). Any update to time range or message type in the menu will carry over between the heat map and RSU map.
+        The RSU Configuration section allows applying configuration changes to multiple RSUs based on a selected geographic region.
       </p>
-      <img
-        alt="CV Manager Heat Map"
-        class="css-2ttpiu"
-        src="rsu_heatmap.PNG"
-      />
-      <p>
-        Selecting 'Configure' on the navigation bar will allow users to perform certain actions to the RSU based on their role. An RSU must first be selected on the RSU Map before any options become available. Users will be able to perform one or more of the following: pull current message forwarding configuration, add/delete message forwarding configurations, and perform an RSU reboot.
-      </p>
-      <img
-        alt="CV Manager Configuration Page"
-        class="css-2ttpiu"
-        src="rsu_configure.PNG"
-      />
     </div>
     <div
       class="contactWrapper"

@@ -1,0 +1,126 @@
+[
+  {
+    "schemaVersion": 2,
+    "messageType": "SPAT",
+    "odeReceivedAt": "2025-10-15T23:49:47.976Z",
+    "originIp": "10.11.81.12",
+    "asn1": "00130000",
+    "validationMessages": [
+      { "message": "CTI-4501 conformance issue: The intersections 'id.region' DE_RoadRegulatorID is missing" },
+      { "message": "CTI-4501 conformance issue: The state-time-speed 'timing.nextTime' DE_TimeMark is missing" },
+      { "message": "CTI-4501 conformance issue: The state-time-speed 'timing.startTime' DE_TimeMark is missing" }
+    ],
+    "intersectionId": 12109,
+    "cti4501Conformant": false,
+    "revision": 0,
+    "status": {
+      "manualControlIsEnabled": false,
+      "stopTimeIsActivated": false,
+      "failureFlash": false,
+      "preemptIsActive": false,
+      "signalPriorityIsActive": false,
+      "fixedTimeOperation": false,
+      "trafficDependentOperation": false,
+      "standbyOperation": false,
+      "failureMode": false,
+      "off": false,
+      "recentMAPmessageUpdate": false,
+      "recentChangeInMAPassignedLanesIDsUsed": false,
+      "noValidMAPisAvailableAtThisTime": false,
+      "noValidSPATisAvailableAtThisTime": false
+    },
+    "utcTimeStamp": 1760572187976,
+    "enabledLanes": [],
+    "states": [
+      {
+        "signalGroup": 2,
+        "stateTimeSpeed": [
+          {
+            "eventState": "PROTECTED_CLEARANCE",
+            "timing": { "minEndTime": "2025-10-15T23:03:18Z", "maxEndTime": "2025-10-15T23:03:18Z" }
+          }
+        ]
+      },
+      {
+        "signalGroup": 4,
+        "stateTimeSpeed": [
+          {
+            "eventState": "STOP_AND_REMAIN",
+            "timing": { "minEndTime": "2025-10-15T23:03:21.1Z", "maxEndTime": "2025-10-15T23:03:21.1Z" }
+          }
+        ]
+      },
+      {
+        "signalGroup": 6,
+        "stateTimeSpeed": [
+          {
+            "eventState": "PROTECTED_CLEARANCE",
+            "timing": { "minEndTime": "2025-10-15T23:03:18Z", "maxEndTime": "2025-10-15T23:03:18Z" }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "schemaVersion": 2,
+    "messageType": "SPAT",
+    "odeReceivedAt": "2025-10-15T23:49:47.867Z",
+    "originIp": "10.11.81.12",
+    "asn1": "00130000",
+    "validationMessages": [
+      { "message": "CTI-4501 conformance issue: The intersections 'id.region' DE_RoadRegulatorID is missing" },
+      { "message": "CTI-4501 conformance issue: The state-time-speed 'timing.nextTime' DE_TimeMark is missing" },
+      { "message": "CTI-4501 conformance issue: The state-time-speed 'timing.startTime' DE_TimeMark is missing" }
+    ],
+    "intersectionId": 12109,
+    "cti4501Conformant": false,
+    "revision": 0,
+    "status": {
+      "manualControlIsEnabled": false,
+      "stopTimeIsActivated": false,
+      "failureFlash": false,
+      "preemptIsActive": false,
+      "signalPriorityIsActive": false,
+      "fixedTimeOperation": false,
+      "trafficDependentOperation": false,
+      "standbyOperation": false,
+      "failureMode": false,
+      "off": false,
+      "recentMAPmessageUpdate": false,
+      "recentChangeInMAPassignedLanesIDsUsed": false,
+      "noValidMAPisAvailableAtThisTime": false,
+      "noValidSPATisAvailableAtThisTime": false
+    },
+    "utcTimeStamp": 1760572187867,
+    "enabledLanes": [],
+    "states": [
+      {
+        "signalGroup": 2,
+        "stateTimeSpeed": [
+          {
+            "eventState": "PROTECTED_CLEARANCE",
+            "timing": { "minEndTime": "2025-10-15T23:03:18Z", "maxEndTime": "2025-10-15T23:03:18Z" }
+          }
+        ]
+      },
+      {
+        "signalGroup": 4,
+        "stateTimeSpeed": [
+          {
+            "eventState": "STOP_AND_REMAIN",
+            "timing": { "minEndTime": "2025-10-15T23:03:21.1Z", "maxEndTime": "2025-10-15T23:03:21.1Z" }
+          }
+        ]
+      },
+      {
+        "signalGroup": 6,
+        "stateTimeSpeed": [
+          {
+            "eventState": "PROTECTED_CLEARANCE",
+            "timing": { "minEndTime": "2025-10-15T23:03:18Z", "maxEndTime": "2025-10-15T23:03:18Z" }
+          }
+        ]
+      }
+    ]
+  }
+]

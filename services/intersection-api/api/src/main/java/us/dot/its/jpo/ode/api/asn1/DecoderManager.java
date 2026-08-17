@@ -6,6 +6,8 @@ import us.dot.its.jpo.ode.api.models.MessageType;
 import us.dot.its.jpo.ode.api.models.messages.DecodedMessage;
 import us.dot.its.jpo.ode.api.models.messages.EncodedMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import j2735ffm.MessageFrameCodec;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -14,6 +16,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
+@ConditionalOnBean(MessageFrameCodec.class)
 @Slf4j
 public class DecoderManager {
 

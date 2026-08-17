@@ -1,4 +1,3 @@
-import React from 'react'
 import { render } from '@testing-library/react'
 import AdminEditIntersection from './AdminEditIntersection'
 import { Provider } from 'react-redux'

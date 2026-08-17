@@ -224,42 +224,61 @@ function ControlPanel() {
     if (files == null) return
     const file = files[0]
     const jsZip = new JSZip()
+    // TODO: Store bsm data as a feature array
     const messageData: {
       mapData: ProcessedMap[]
       bsmData: BsmFeatureCollection
       spatData: ProcessedSpat[]
+      srmData: ProcessedSrmFeature[]
+      ssmData: ProcessedSsm[]
       notificationData: any
     } = {
       mapData: [],
       bsmData: { type: 'FeatureCollection', features: [] },
       spatData: [],
+      srmData: [],
+      ssmData: [],
       notificationData: undefined,
     }
-    jsZip
-      .loadAsync(file)
-      .then(async (zip) => {
-        const zipObjects: { relativePath: string; zipEntry: JSZip.JSZipObject }[] = []
-        zip.forEach((relativePath, zipEntry) => zipObjects.push({ relativePath, zipEntry }))
-        for (let i = 0; i < zipObjects.length; i++) {
-          const { relativePath, zipEntry } = zipObjects[i]
-          if (relativePath.endsWith('_MAP_data.json')) {
-            const data = await zipEntry.async('string')
-            messageData.mapData = JSON.parse(data)
-          } else if (relativePath.endsWith('_BSM_data.json')) {
-            const data = await zipEntry.async('string')
+    jsZip.loadAsync(file).then(async (zip) => {
+      const zipObjects: { relativePath: string; zipEntry: JSZip.JSZipObject }[] = []
+      zip.forEach((relativePath, zipEntry) => zipObjects.push({ relativePath, zipEntry }))
+      for (let i = 0; i < zipObjects.length; i++) {
+        const { relativePath, zipEntry } = zipObjects[i]
+        if (relativePath.endsWith('_MAP_data.json')) {
+          const data = await zipEntry.async('string')
+          messageData.mapData = JSON.parse(data)
+        } else if (relativePath.endsWith('_BSM_data.json')) {
+          const data = await zipEntry.async('string')
+          try {
             messageData.bsmData = JSON.parse(data)
-            // TODO: Add notification data to ZIP download
-          } else if (relativePath.endsWith('_SPAT_data.json')) {
-            const data = await zipEntry.async('string')
-            messageData.spatData = JSON.parse(data)
+          } catch (error) {
+            console.error(`Error parsing BSM data from ZIP file: ${error.message}`)
           }
+          // TODO: Add notification data to ZIP download
+        } else if (relativePath.endsWith('_SPAT_data.json')) {
+          const data = await zipEntry.async('string')
+          messageData.spatData = JSON.parse(data)
+        } else if (relativePath.endsWith('_SRM_data.json')) {
+          const data = await zipEntry.async('string')
+          messageData.srmData = JSON.parse(data)
+        } else if (relativePath.endsWith('_SSM_data.json')) {
+          const data = await zipEntry.async('string')
+          messageData.ssmData = JSON.parse(data)
         }
-        dispatch(handleImportedMapMessageData(messageData))
-      })
-      .catch((e) => {
-        toast.error(`Error loading message data. Make sure to upload a previously generated ZIP archive`)
-        console.error(`Error loading message data: ${e.message}`)
-      })
+      }
+      const mapLen = messageData.mapData?.length ?? 0
+      const spatLen = messageData.spatData?.length ?? 0
+      if (mapLen === 0 || spatLen === 0) {
+        toast.error(`No valid message data found in ZIP file. Make sure to upload a previously generated ZIP archive`)
+        return
+      }
+      dispatch(handleImportedMapMessageData(messageData))
+    })
+    .catch((e) => {
+      toast.error(`Error loading message data. Make sure to upload a previously generated ZIP archive`)
+      console.error(`Error loading message data: ${e?.message ?? e}`)
+    })
   }
 
   return (

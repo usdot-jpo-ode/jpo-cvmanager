@@ -1,5 +1,5 @@
-from mock import MagicMock, call, patch
-from subprocess import DEVNULL
+import subprocess
+from mock import MagicMock, patch
 from addons.images.rsu_status_check import rsu_pinger
 
 
@@ -21,50 +21,99 @@ def test_insert_ping_data(mock_write_db):
     mock_write_db.assert_called_with(expected_query)
 
 
-@patch("addons.images.rsu_status_check.rsu_pinger.Popen")
-def test_ping_rsu_ips_online(mock_Popen):
-    mock_p = MagicMock()
-    mock_p.poll.return_value = 1
-    mock_p.returncode = 0
-    mock_Popen.return_value = mock_p
-    rsu_list = [(1, "1.1.1.1"), (2, "2.2.2.2")]
+def test_calculate_max_workers():
+    assert rsu_pinger.calculate_max_workers(0) == 1
+    assert rsu_pinger.calculate_max_workers(1) == 20
+    assert rsu_pinger.calculate_max_workers(160) == 20
+    assert rsu_pinger.calculate_max_workers(600) == 75
+    assert rsu_pinger.calculate_max_workers(10000) == 120
 
-    # call
+
+@patch("addons.images.rsu_status_check.rsu_pinger.subprocess.run")
+def test_ping_single_rsu_online(mock_run):
+    mock_run.return_value = MagicMock(returncode=0)
+
+    result = rsu_pinger.ping_single_rsu((1, "1.1.1.1"), retries=2)
+
+    assert result == (1, "1")
+    assert mock_run.call_count == 1
+    mock_run.assert_called_with(
+        ["ping", "-n", "-c", "1", "-W", "2", "1.1.1.1"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        timeout=3,
+    )
+
+
+@patch("addons.images.rsu_status_check.rsu_pinger.subprocess.run")
+def test_ping_single_rsu_offline_after_retries(mock_run):
+    mock_run.return_value = MagicMock(returncode=1)
+
+    result = rsu_pinger.ping_single_rsu((2, "2.2.2.2"), retries=2)
+
+    assert result == (2, "0")
+    assert mock_run.call_count == 2
+
+
+@patch("addons.images.rsu_status_check.rsu_pinger.subprocess.run")
+def test_ping_single_rsu_timeout_then_success(mock_run):
+    timeout_error = subprocess.TimeoutExpired(cmd="ping", timeout=3)
+    mock_run.side_effect = [timeout_error, MagicMock(returncode=0)]
+
+    result = rsu_pinger.ping_single_rsu((3, "3.3.3.3"), retries=2)
+
+    assert result == (3, "1")
+    assert mock_run.call_count == 2
+
+
+@patch("addons.images.rsu_status_check.rsu_pinger.subprocess.run")
+def test_ping_single_rsu_generic_exception_returns_immediately(mock_run):
+    mock_run.side_effect = RuntimeError("unexpected failure")
+
+    result = rsu_pinger.ping_single_rsu((4, "4.4.4.4"), retries=2)
+
+    assert result == (4, "0")
+    assert mock_run.call_count == 1
+
+
+@patch("addons.images.rsu_status_check.rsu_pinger.calculate_max_workers")
+@patch("addons.images.rsu_status_check.rsu_pinger.ping_single_rsu")
+def test_ping_rsu_ips_uses_calculated_workers_and_collects_results(
+    mock_ping_single_rsu, mock_calculate_max_workers
+):
+    rsu_list = [(1, "1.1.1.1"), (2, "2.2.2.2")]
+    mock_calculate_max_workers.return_value = 33
+    mock_ping_single_rsu.side_effect = [(1, "1"), (2, "0")]
+
     result = rsu_pinger.ping_rsu_ips(rsu_list)
 
-    # check
-    expected_result = {1: "1", 2: "1"}
-    mock_Popen.assert_has_calls(
-        [
-            call(["ping", "-n", "-w20", "-c1", "1.1.1.1"], stdout=DEVNULL),
-            call(["ping", "-n", "-w20", "-c1", "2.2.2.2"], stdout=DEVNULL),
-        ]
-    )
-    assert mock_p.poll.call_count == len(rsu_list)  # 2
-    assert result == expected_result
+    assert result == {1: "1", 2: "0"}
+    mock_calculate_max_workers.assert_called_once_with(len(rsu_list))
 
 
-@patch("addons.images.rsu_status_check.rsu_pinger.Popen")
-def test_ping_rsu_ips_offline(mock_Popen):
-    mock_p = MagicMock()
-    mock_p.poll.return_value = 1
-    mock_p.returncode = 1
-    mock_Popen.return_value = mock_p
-    rsu_list = [(1, "1.1.1.1"), (2, "2.2.2.2")]
+@patch("addons.images.rsu_status_check.rsu_pinger.ping_single_rsu")
+def test_ping_rsu_ips_worker_exception_only_affects_failed_rsu(mock_ping_single_rsu):
+    def _side_effect(rsu):
+        if rsu[0] == 2:
+            raise ValueError("worker failure")
+        return rsu[0], "1"
 
-    # call
+    rsu_list = [(1, "1.1.1.1"), (2, "2.2.2.2"), (3, "3.3.3.3")]
+    mock_ping_single_rsu.side_effect = _side_effect
+
     result = rsu_pinger.ping_rsu_ips(rsu_list)
 
-    # check
-    expected_result = {1: "0", 2: "0"}
-    mock_Popen.assert_has_calls(
-        [
-            call(["ping", "-n", "-w20", "-c1", "1.1.1.1"], stdout=DEVNULL),
-            call(["ping", "-n", "-w20", "-c1", "2.2.2.2"], stdout=DEVNULL),
-        ]
-    )
-    assert mock_p.poll.call_count == len(rsu_list)  # 2
-    assert result == expected_result
+    assert result == {1: "1", 2: "0", 3: "1"}
+
+
+@patch("addons.images.rsu_status_check.rsu_pinger.ping_single_rsu")
+def test_ping_rsu_ips_none_result_marks_rsu_offline(mock_ping_single_rsu):
+    rsu_list = [(1, "1.1.1.1"), (2, "2.2.2.2")]
+    mock_ping_single_rsu.side_effect = [(1, "1"), None]
+
+    result = rsu_pinger.ping_rsu_ips(rsu_list)
+
+    assert result == {1: "1", 2: "0"}
 
 
 @patch("addons.images.rsu_status_check.rsu_pinger.pgquery.query_db")

@@ -12,7 +12,8 @@ public class IntersectionCriteriaTest {
     @Test
     void testWithinTimeWindowWithBothTimes() {
         IntersectionCriteria intersectionCriteria = new IntersectionCriteria();
-        Criteria criteria = intersectionCriteria.withinTimeWindow("dateField", 1735689600000L, 1735693200000L, false);
+        Criteria criteria = intersectionCriteria.withinTimeWindow("dateField", 1735689600000L, 1735693200000L,
+                IntersectionCriteria.TimeStampFormat.DATE);
         assertThat(criteria.getCriteriaObject().toJson()).isEqualTo(
                 "{\"dateField\": {\"$gte\": {\"$date\": \"2025-01-01T00:00:00Z\"}, \"$lte\": {\"$date\": \"2025-01-01T01:00:00Z\"}}}");
     }
@@ -21,7 +22,8 @@ public class IntersectionCriteriaTest {
     void testWithinTimeWindowWithStartTimeOnly() {
         IntersectionCriteria intersectionCriteria = new IntersectionCriteria();
 
-        Criteria criteria = intersectionCriteria.withinTimeWindow("dateField", 1735689600000L, null, false);
+        Criteria criteria = intersectionCriteria.withinTimeWindow("dateField", 1735689600000L, null,
+                IntersectionCriteria.TimeStampFormat.DATE);
         assertThat(criteria.getCriteriaObject().toJson()).isEqualTo(
                 "{\"dateField\": {\"$gte\": {\"$date\": \"2025-01-01T00:00:00Z\"}}}");
     }
@@ -29,7 +31,8 @@ public class IntersectionCriteriaTest {
     @Test
     void testWithinTimeWindowWithEndTimeOnly() {
         IntersectionCriteria intersectionCriteria = new IntersectionCriteria();
-        Criteria criteria = intersectionCriteria.withinTimeWindow("dateField", null, 1735693200000L, false);
+        Criteria criteria = intersectionCriteria.withinTimeWindow("dateField", null, 1735693200000L,
+                IntersectionCriteria.TimeStampFormat.DATE);
         assertThat(criteria.getCriteriaObject().toJson()).isEqualTo(
                 "{\"dateField\": {\"$lte\": {\"$date\": \"2025-01-01T01:00:00Z\"}}}");
     }
@@ -37,8 +40,45 @@ public class IntersectionCriteriaTest {
     @Test
     void testWithinTimeWindowWithNoTimes() {
         IntersectionCriteria intersectionCriteria = new IntersectionCriteria();
-        Criteria criteria = intersectionCriteria.withinTimeWindow("dateField", null, null, false);
+        Criteria criteria = intersectionCriteria.withinTimeWindow("dateField", null, null,
+                IntersectionCriteria.TimeStampFormat.DATE);
         assertThat(criteria.getCriteriaObject().toJson()).isEqualTo("{}");
+    }
+
+    @Test
+    void testWithinTimeWindowWithBothTimesStringFormat() {
+        IntersectionCriteria intersectionCriteria = new IntersectionCriteria();
+        Criteria criteria = intersectionCriteria.withinTimeWindow("dateField", 1735689600000L, 1735693200000L,
+                IntersectionCriteria.TimeStampFormat.STRING);
+        assertThat(criteria.getCriteriaObject().toJson()).isEqualTo(
+                "{\"dateField\": {\"$gte\": \"2025-01-01T00:00:00Z\", \"$lte\": \"2025-01-01T01:00:00Z\"}}");
+    }
+
+    @Test
+    void testWithinTimeWindowWithStartTimeOnlyStringFormat() {
+        IntersectionCriteria intersectionCriteria = new IntersectionCriteria();
+        Criteria criteria = intersectionCriteria.withinTimeWindow("dateField", 1735689600000L, null,
+                IntersectionCriteria.TimeStampFormat.STRING);
+        assertThat(criteria.getCriteriaObject().toJson()).isEqualTo(
+                "{\"dateField\": {\"$gte\": \"2025-01-01T00:00:00Z\"}}");
+    }
+
+    @Test
+    void testWithinTimeWindowWithBothTimesLongFormat() {
+        IntersectionCriteria intersectionCriteria = new IntersectionCriteria();
+        Criteria criteria = intersectionCriteria.withinTimeWindow("dateField", 1735689600000L, 1735693200000L,
+                IntersectionCriteria.TimeStampFormat.LONG);
+        assertThat(criteria.getCriteriaObject().toJson()).isEqualTo(
+                "{\"dateField\": {\"$gte\": 1735689600000, \"$lte\": 1735693200000}}");
+    }
+
+    @Test
+    void testWithinTimeWindowWithEndTimeOnlyLongFormat() {
+        IntersectionCriteria intersectionCriteria = new IntersectionCriteria();
+        Criteria criteria = intersectionCriteria.withinTimeWindow("dateField", null, 1735693200000L,
+                IntersectionCriteria.TimeStampFormat.LONG);
+        assertThat(criteria.getCriteriaObject().toJson()).isEqualTo(
+                "{\"dateField\": {\"$lte\": 1735693200000}}");
     }
 
     @Test

@@ -1,4 +1,3 @@
-import React from 'react'
 import { render } from '@testing-library/react'
 import AdminTable from './AdminTable'
 import { replaceChaoticIds } from '../utils/test-utils'

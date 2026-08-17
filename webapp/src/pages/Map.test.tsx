@@ -1,4 +1,3 @@
-import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import Map from './Map'
 import { Provider } from 'react-redux'
@@ -10,6 +9,7 @@ import { replaceChaoticIds } from '../utils/test-utils'
 it('snapshot bsmCoordinates wzdx', () => {
   const initialState = {
     rsu: {
+      loading: false,
       value: {
         rsuCounts: {},
         mapList: [],
@@ -24,6 +24,7 @@ it('snapshot bsmCoordinates wzdx', () => {
       },
     },
     wzdx: {
+      loading: false,
       value: {
         features: [
           {
@@ -49,7 +50,8 @@ it('snapshot bsmCoordinates wzdx', () => {
         ],
       },
     },
-  } as RootState
+    user: { value: { authLoginData: { token: 'testToken' } } },
+  }
   const { container } = render(
     <ThemeProvider theme={testTheme}>
       <Provider store={setupStore(initialState)}>
@@ -72,6 +74,7 @@ it('snapshot bsmData clicked', () => {
         bsmCoordinates: [],
         rsuCounts: {},
         mapList: [],
+        rsuData: [],
         bsmStart: '2023-05-10T03:24:00',
         bsmFilterStep: 60, // 1 hour
         bsmFilterOffset: 24 * 4, // 4 days
@@ -96,7 +99,8 @@ it('snapshot bsmData clicked', () => {
         addConfigPoint: false,
       },
     },
-  } as RootState
+    user: { value: { authLoginData: { token: 'testToken' } } },
+  }
   const { container } = render(
     <ThemeProvider theme={testTheme}>
       <Provider store={setupStore(initialState)}>

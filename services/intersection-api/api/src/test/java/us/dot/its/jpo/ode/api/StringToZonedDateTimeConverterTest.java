@@ -5,19 +5,10 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import us.dot.its.jpo.ode.api.converters.StringToZonedDateTimeConverter;
 
-@SpringBootTest
-@RunWith(SpringRunner.class)
-@ActiveProfiles("test")
-@AutoConfigureEmbeddedDatabase
 public class StringToZonedDateTimeConverterTest {
+
 
     String[] inputTimeStrings = {
             "2025-01-21T21:14:45.123Z",

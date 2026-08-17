@@ -9,32 +9,32 @@ services:
     image: count_metric:latest
     restart: on-failure:3
     environment:
-      ENABLE_EMAILER: ${ENABLE_EMAILER}
-      DEPLOYMENT_TITLE: ${DEPLOYMENT_TITLE}
+      ENABLE_EMAILER: ${ENABLE_EMAILER:-}
+      DEPLOYMENT_TITLE: ${DEPLOYMENT_TITLE:-}
 
-      SMTP_SERVER_IP: ${SMTP_SERVER_IP}
-      SMTP_USERNAME: ${SMTP_USERNAME}
-      SMTP_PASSWORD: ${SMTP_PASSWORD}
-      SMTP_EMAIL: ${SMTP_EMAIL}
+      IAPI_ENDPOINT: ${IAPI_ENDPOINT:-http://${DOCKER_HOST_IP}:8089}
+      KC_ENDPOINT: ${KEYCLOAK_ENDPOINT:-http://${DOCKER_HOST_IP:?error}:8084}
+      KC_REALM: ${KEYCLOAK_REALM:-cvmanager}
+      KC_SA_CLIENT_ID: ${KEYCLOAK_SA_COUNT_METRIC_CLIENT_ID:-sa_count_metric}
+      KC_SA_CLIENT_SECRET: ${KEYCLOAK_SA_COUNT_METRIC_CLIENT_SECRET_KEY:-sa-count-metric-secret-key}
 
-      MESSAGE_TYPES: ${COUNT_MESSAGE_TYPES}
-      PROJECT_ID: ${GCP_PROJECT_ID}
+      PROJECT_ID: ${GCP_PROJECT_ID:-}
 
-      PG_DB_HOST: ${PG_DB_HOST}
-      PG_DB_NAME: ${PG_DB_NAME}
-      PG_DB_USER: ${PG_DB_USER}
-      PG_DB_PASS: ${PG_DB_PASS}
+      PG_DB_HOST: ${PG_DB_HOST:-cvmanager_postgres:5432}
+      PG_DB_NAME: ${PG_DB_NAME:-postgres}
+      PG_DB_USER: ${PG_DB_USER:-postgres}
+      PG_DB_PASS: ${PG_DB_PASS:-postgres}
 
-      DESTINATION_DB: ${COUNT_DESTINATION_DB}
+      DESTINATION_DB: ${COUNT_DESTINATION_DB:-MONGODB}
 
-      MONGO_DB_URI: ${MONGO_DB_URI}
-      MONGO_DB_NAME: ${CM_DATABASE_NAME}
-      INPUT_COUNTS_MONGO_COLLECTION_NAME: ${INPUT_COUNTS_MONGO_COLLECTION_NAME}
-      OUTPUT_COUNTS_MONGO_COLLECTION_NAME: ${OUTPUT_COUNTS_MONGO_COLLECTION_NAME}
+      MONGO_DB_URI: ${MONGO_DB_URI:-mongodb://${MONGO_READ_WRITE_USER:-ode}:${MONGO_READ_WRITE_PASS:-replace-me}@${DB_HOST_IP:-mongo}:${DB_HOST_PORT:-27017}/?directConnection=true&authSource=admin}
+      MONGO_DB_NAME: ${CM_DATABASE_NAME:-CV}
+      INPUT_COUNTS_MONGO_COLLECTION_NAME: ${INPUT_COUNTS_MONGO_COLLECTION_NAME:-}
+      OUTPUT_COUNTS_MONGO_COLLECTION_NAME: ${OUTPUT_COUNTS_MONGO_COLLECTION_NAME:-}
 
-      KAFKA_BIGQUERY_TABLENAME: ${KAFKA_BIGQUERY_TABLENAME}
+      KAFKA_BIGQUERY_TABLENAME: ${KAFKA_BIGQUERY_TABLENAME:-}
 
-      LOGGING_LEVEL: ${COUNTS_LOGGING_LEVEL}
+      LOGGING_LEVEL: ${COUNTS_LOGGING_LEVEL:-}
     logging:
       options:
         max-size: '10m'
@@ -50,24 +50,24 @@ services:
     image: rsu_status_check:latest
     restart: on-failure:3
     environment:
-      RSU_PING: ${RSU_PING}
-      ZABBIX: ${ZABBIX}
-      RSU_MSGFWD_FETCH: ${RSU_MSGFWD_FETCH}
-      RSU_SECURITY_FETCH: ${RSU_SECURITY_FETCH}
-      RSU_HEALTH_FETCH: ${RSU_HEALTH_FETCH}
+      RSU_PING: ${RSU_PING:-True}
+      ZABBIX: ${ZABBIX:-False}
+      RSU_MSGFWD_FETCH: ${RSU_MSGFWD_FETCH:-True}
+      RSU_SECURITY_FETCH: ${RSU_SECURITY_FETCH:-True}
+      RSU_HEALTH_FETCH: ${RSU_HEALTH_FETCH:-True}
 
-      ZABBIX_ENDPOINT: ${ZABBIX_ENDPOINT}
-      ZABBIX_USER: ${ZABBIX_USER}
-      ZABBIX_PASSWORD: ${ZABBIX_PASSWORD}
+      ZABBIX_ENDPOINT: ${ZABBIX_ENDPOINT:-}
+      ZABBIX_USER: ${ZABBIX_USER:-}
+      ZABBIX_PASSWORD: ${ZABBIX_PASSWORD:-}
 
-      STALE_PERIOD: ${STALE_PERIOD}
+      STALE_PERIOD: ${STALE_PERIOD:-24}
 
-      PG_DB_HOST: ${PG_DB_HOST}
-      PG_DB_NAME: ${PG_DB_NAME}
-      PG_DB_USER: ${PG_DB_USER}
-      PG_DB_PASS: ${PG_DB_PASS}
+      PG_DB_HOST: ${PG_DB_HOST:-cvmanager_postgres:5432}
+      PG_DB_NAME: ${PG_DB_NAME:-postgres}
+      PG_DB_USER: ${PG_DB_USER:-postgres}
+      PG_DB_PASS: ${PG_DB_PASS:-postgres}
 
-      LOGGING_LEVEL: ${RSU_STATUS_LOGGING_LEVEL}
+      LOGGING_LEVEL: ${RSU_STATUS_LOGGING_LEVEL:-}
     logging:
       options:
         max-size: '10m'
@@ -87,26 +87,26 @@ services:
         condition: service_healthy
         required: false
     environment:
-      STORAGE_TYPE: ${STORAGE_TYPE}
+      STORAGE_TYPE: ${STORAGE_TYPE:-postgres}
 
-      ISS_API_KEY: ${ISS_API_KEY}
-      ISS_API_KEY_NAME: ${ISS_API_KEY_NAME}
-      ISS_PROJECT_ID: ${ISS_PROJECT_ID}
-      ISS_SCMS_TOKEN_REST_ENDPOINT: ${ISS_SCMS_TOKEN_REST_ENDPOINT}
-      ISS_SCMS_VEHICLE_REST_ENDPOINT: ${ISS_SCMS_VEHICLE_REST_ENDPOINT}
-      ISS_KEY_TABLE_NAME: ${ISS_KEY_TABLE_NAME}
+      ISS_API_KEY: ${ISS_API_KEY:-}
+      ISS_API_KEY_NAME: ${ISS_API_KEY_NAME:-}
+      ISS_PROJECT_ID: ${ISS_PROJECT_ID:-}
+      ISS_SCMS_TOKEN_REST_ENDPOINT: ${ISS_SCMS_TOKEN_REST_ENDPOINT:-}
+      ISS_SCMS_VEHICLE_REST_ENDPOINT: ${ISS_SCMS_VEHICLE_REST_ENDPOINT:-}
+      ISS_KEY_TABLE_NAME: ${ISS_KEY_TABLE_NAME:-}
 
-      PG_DB_HOST: ${PG_DB_HOST}
-      PG_DB_NAME: ${PG_DB_NAME}
-      PG_DB_USER: ${PG_DB_USER}
-      PG_DB_PASS: ${PG_DB_PASS}
+      PG_DB_HOST: ${PG_DB_HOST:-cvmanager_postgres:5432}
+      PG_DB_NAME: ${PG_DB_NAME:-postgres}
+      PG_DB_USER: ${PG_DB_USER:-postgres}
+      PG_DB_PASS: ${PG_DB_PASS:-postgres}
 
-      PROJECT_ID: ${GCP_PROJECT_ID}
+      PROJECT_ID: ${GCP_PROJECT_ID:-}
       GOOGLE_APPLICATION_CREDENTIALS: /home/gcp_key.json
 
-      LOGGING_LEVEL: ${ISS_LOGGING_LEVEL}
+      LOGGING_LEVEL: ${ISS_LOGGING_LEVEL:-}
     volumes:
-      - ./resources/google/${GOOGLE_ACCESS_KEY_NAME}:/home/gcp_key.json
+      - ./resources/google/${GOOGLE_ACCESS_KEY_NAME:-}:/home/gcp_key.json
     logging:
       options:
         max-size: '10m'
@@ -123,18 +123,18 @@ services:
     restart: on-failure:3
 
     ports:
-      - '8089:8080'
+      - '8091:8080'
     environment:
-      PG_DB_HOST: ${PG_DB_HOST}
-      PG_DB_NAME: postgres
-      PG_DB_USER: ${PG_DB_USER}
-      PG_DB_PASS: ${PG_DB_PASS}
+      PG_DB_HOST: ${PG_DB_HOST:-cvmanager_postgres:5432}
+      PG_DB_NAME: ${PG_DB_NAME:-postgres}
+      PG_DB_USER: ${PG_DB_USER:-postgres}
+      PG_DB_PASS: ${PG_DB_PASS:-postgres}
 
-      UPGRADE_RUNNER_ENDPOINT: ${FIRMWARE_MANAGER_UPGRADE_RUNNER_ENDPOINT}
+      UPGRADE_RUNNER_ENDPOINT: ${FIRMWARE_MANAGER_UPGRADE_RUNNER_ENDPOINT:-http://firmware_manager_upgrade_runner:8080}
 
-      LOGGING_LEVEL: ${FIRMWARE_MANAGER_LOGGING_LEVEL}
+      LOGGING_LEVEL: ${FIRMWARE_MANAGER_LOGGING_LEVEL:-}
     volumes:
-      - ${HOST_BLOB_STORAGE_DIRECTORY}:/mnt/blob_storage
+      - ${HOST_BLOB_STORAGE_DIRECTORY:-./local_blob_storage}:/mnt/blob_storage
     logging:
       options:
         max-size: '10m'
@@ -153,25 +153,26 @@ services:
     ports:
       - '8090:8080'
     environment:
-      BLOB_STORAGE_PROVIDER: ${BLOB_STORAGE_PROVIDER}
-      BLOB_STORAGE_BUCKET: ${BLOB_STORAGE_BUCKET}
+      BLOB_STORAGE_PROVIDER: ${BLOB_STORAGE_PROVIDER:-DOCKER}
+      BLOB_STORAGE_BUCKET: ${BLOB_STORAGE_BUCKET:-DOCKER}
 
-      FW_UPGRADE_MAX_RETRY_LIMIT: ${FW_UPGRADE_MAX_RETRY_LIMIT}
+      FW_UPGRADE_MAX_RETRY_LIMIT: ${FW_UPGRADE_MAX_RETRY_LIMIT:-3}
 
-      GCP_PROJECT: ${GCP_PROJECT_ID}
+      GCP_PROJECT: ${GCP_PROJECT_ID:-}
       GOOGLE_APPLICATION_CREDENTIALS: /home/gcp_key.json
 
-      SMTP_SERVER_IP: ${SMTP_SERVER_IP}
-      SMTP_EMAIL: ${SMTP_EMAIL}
-      SMTP_USERNAME: ${SMTP_USERNAME}
-      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      IAPI_ENDPOINT: ${IAPI_ENDPOINT:-http://${DOCKER_HOST_IP}:8089}
+      KC_ENDPOINT: ${KEYCLOAK_ENDPOINT:-http://${DOCKER_HOST_IP:?error}:8084}
+      KC_REALM: ${KEYCLOAK_REALM:-cvmanager}
+      KC_SA_CLIENT_ID: ${KEYCLOAK_SA_FIRMWARE_UPGRADE_RUNNER_CLIENT_ID:-sa_firmware_upgrade_runner}
+      KC_SA_CLIENT_SECRET: ${KEYCLOAK_SA_FIRMWARE_UPGRADE_RUNNER_CLIENT_SECRET_KEY:-sa-firmware-upgrade-runner-secret-key}
 
-      UPGRADE_SCHEDULER_ENDPOINT: ${FIRMWARE_MANAGER_UPGRADE_SCHEDULER_ENDPOINT}
+      UPGRADE_SCHEDULER_ENDPOINT: ${FIRMWARE_MANAGER_UPGRADE_SCHEDULER_ENDPOINT:-http://firmware_manager_upgrade_scheduler:8090}
 
-      LOGGING_LEVEL: ${FIRMWARE_MANAGER_LOGGING_LEVEL}
+      LOGGING_LEVEL: ${FIRMWARE_MANAGER_LOGGING_LEVEL:-}
     volumes:
-      - ./resources/google/${GOOGLE_ACCESS_KEY_NAME}:/home/gcp_key.json
-      - ${HOST_BLOB_STORAGE_DIRECTORY}:/mnt/blob_storage
+      - ./resources/google/${GOOGLE_ACCESS_KEY_NAME:-sample_gcp_service_account.json}:/home/gcp_key.json
+      - ${HOST_BLOB_STORAGE_DIRECTORY:-./local_blob_storage}:/mnt/blob_storage
     logging:
       options:
         max-size: '10m'

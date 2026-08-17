@@ -1,0 +1,32 @@
+services:
+  rsu_status_monitor:
+    profiles:
+      - rsu_status_monitor
+    image: rsu-status-monitor:latest
+    build:
+      context: ./services
+      dockerfile: Dockerfile.rsu_status_monitor
+      args:
+        MAVEN_GITHUB_TOKEN: ${MAVEN_GITHUB_TOKEN:?error}
+        MAVEN_GITHUB_ORG: ${MAVEN_GITHUB_ORG:-usdot-jpo-ode}
+    ports:
+      - '8086:8080'
+      - '42300:42300/udp'
+    environment:
+      LOGGING_LEVEL: ${RSU_STATUS_LOGGING_LEVEL}
+      KAFKA_CONCURRENCY: ${KAFKA_CONCURRENCY:-1}
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-default}
+      POSTGRES_SERVER_URL: jdbc:postgresql://${PG_DB_HOST}
+      POSTGRES_DB: ${PG_DB_NAME:-postgres}
+      POSTGRES_USER: ${PG_DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${PG_DB_PASS:-postgres}
+      RSU_STATUS_MONITOR_ENABLE_MONITORING: ${RSU_STATUS_MONITOR_ENABLE_MONITORING:-true}
+      INTERSECTION_API_MONITOR_INTERVAL: ${INTERSECTION_API_MONITOR_INTERVAL:-300000}
+    depends_on:
+      cvmanager_postgres:
+        required: false
+        condition: service_started
+      kafka-setup:
+        required: false
+        condition: service_started

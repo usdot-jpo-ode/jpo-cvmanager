@@ -2,12 +2,13 @@
 
 This is a web application that is made with React JS that is a front-end for interfacing with CDOT RSUs. The code for the application is being hosted in a public repository to allow other CV projects to utilize. Automated deployment of the application is not included within the project.
 
-## Required Tools For Running The CV Manager React Webapp
+## Requirements
 
 - Mapbox Access Token
   - Create account at https://www.mapbox.com/
   - An access token will be provided on the account page once the account has been created
-  - Put the access key in the "sample.env.local" file for REACT_APP_MAPBOX_TOKEN and rename the file ".env.development.local"
+  - For more instructions, see the main README [Creating a Mapbox Token](../README.md#creating-a-mapbox-token)
+  - Set the access key in the "sample.env.development.local" file as the VITE_MAPBOX_TOKEN
 - npm
   - Download instructions: https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
 - Nodejs
@@ -16,15 +17,18 @@ This is a web application that is made with React JS that is a front-end for int
   - Repository: https://github.com/usdot-jpo-ode/jpo-conflictmonitor
   - Follow the instructions in the README to build/deploy the tool
 
-## Building The Application
+## Running The Application
 
-1. Setup environment variables
-   - The project includes a sample environment variable file in [sample.env.local](sample.env.local) for running the application locally.
-   - Use the dev, test and prod environment var files for deploying in different environments. The commented out environment variables are required.
-2. Build the application
-   - Building for local: `npm run build`
-   - Building for specific environment: `npm run build:dev`
-   - Build for all environments: `npm run build:all`
+1. Copy the `sample.env.development.local` file to a new file named `.env.local`. Make sure this new file is located in this directory (webapp), not root
+2. Edit the `.env.local` file to set the required environment variables. At a minimum, you will need to set the following variables:
+   - `DOCKER_HOST_IP`: The IP address of your Docker host. This can be found through linux/wsl through the command "ifconfig", or "localhost" if using Docker Desktop on Windows or Linux (not mac).
+   - `VITE_MAPBOX_TOKEN`: Any valid mapbox token. Please see the main README [Creating a Mapbox Token](../README.md#creating-a-mapbox-token) for instructions on how to create and account/generate a new token
+3. Build the application
+
+```sh
+npm install
+npm start
+```
 
 ## Theming
 
@@ -35,8 +39,8 @@ This application uses MUI themes to set the color scheme. There are currently 2 
 - 'light': light theme (not currently maintained)
 - 'dark': dark theme
   To set the theme of the UI, simply set the following environment variables:
-- WEBAPP_THEME_LIGHT: set name of theme to use when browser is in light mode
-- WEBAPP_THEME_DARK: set name of theme to use when browser is in dark mode
+- VITE_WEBAPP_THEME_LIGHT: set name of theme to use when browser is in light mode
+- VITE_WEBAPP_THEME_DARK: set name of theme to use when browser is in dark mode
 
 To make a custom theme, create another theme definition in ./src/styles/index.ts. Instructions for modifying an MUI theme can be found at [MUI Theming](https://mui.com/material-ui/customization/theming/)
 
@@ -44,8 +48,8 @@ To make a custom theme, create another theme definition in ./src/styles/index.ts
 
 The CVManager has an icon in the upper left. This icon is configurable through environment variables:
 
-- WEBAPP_LOGO_PNG_ROOT_FILE_PATH_LIGHT: Set the path to a .png icon to use when displaying a light theme (from MUI theme.palette.mode)
-- WEBAPP_LOGO_PNG_ROOT_FILE_PATH_DARK: Set the path to a .png icon to use when displaying a dark theme (from MUI theme.palette.mode)
+- VITE_WEBAPP_LOGO_PNG_ROOT_FILE_PATH_LIGHT: Set the path to a .png icon to use when displaying a light theme (from MUI theme.palette.mode)
+- VITE_WEBAPP_LOGO_PNG_ROOT_FILE_PATH_DARK: Set the path to a .png icon to use when displaying a dark theme (from MUI theme.palette.mode)
 
 ## Editing Mapbox Style
 
@@ -63,7 +67,7 @@ The CVManager has an icon in the upper left. This icon is configurable through e
 3. Download zip
 4. Paste the new "style.json" inside the zip in 'cdot-web-app/style/'
 
-To use a new style, the style URL from Mapbox Studio must be pasted in the ".env.local" file for REACT_APP_MAPBOX_STYLE.
+To use a new style, the style URL from Mapbox Studio must be pasted in the ".env.local" file for VITE_MAPBOX_STYLE.
 
 ## Google Cloud Storage (GCS) Web Hosting: Hosting the CV Manager React Webapp
 
@@ -129,19 +133,14 @@ Re-factoring RSU manager to utilize Redux Toolkit for state management
    - WZDx data
    - References
      - Map.js - read and load WZDx data
-5. mooveaiSlice
-   - Moove.AI data
-   - References
-     - Map.js - read and load Moove.AI data
 
 ## Feature Flags
 
 This application has the ability to disable certain features based on environment variables. For each of these variables, the feature will be enabled if the variable is anything but 'false'. These features include:
 
-- ENABLE_RSU_FEATURES: if 'false', disable all RSU-specific features, including map, RSU data, RSU configuration, and RSU organization linking.
-- ENABLE_INTERSECTION_FEATURES: if 'false', disable all intersection-specific features, including intersection map, intersection dashboard, and intersection admin pages.
-- ENABLE_WZDX_FEATURES: if 'false', disable all wzdx-specific features, including WZDx data on the main map.
-- ENABLE_MOOVE_AI_FEATURES: if 'false', disable all Moove.AI-specific features. This includes the Moove.AI visualization layer on the map.
+- VITE_ENABLE_RSU_FEATURES: if 'false', disable all RSU-specific features, including map, RSU data, RSU configuration, and RSU organization linking.
+- VITE_ENABLE_INTERSECTION_FEATURES: if 'false', disable all intersection-specific features, including intersection map, intersection dashboard, and intersection admin pages.
+- VITE_ENABLE_WZDX_FEATURES: if 'false', disable all wzdx-specific features, including WZDx data on the main map.
 
 These variables apply to API calls, by returning empty data if the feature is disabled.
 To aid in applying these features visually, components were created to handle the conditional rendering of these features. These components are:
@@ -162,7 +161,15 @@ The USDOT [jpo-conflictvisualizer](https://github.com/usdot-jpo-ode/jpo-conflict
 
 The conflictvisualizer API is now integrated into the cvmanager as the intersection-api.
 
-These changes were tested running locally in docker. These changes require an intersection-api to be running, and to be connected to the cvmanager keycloak server (and cvmanager keycloak realm). This API also requires the jpo-conflictmonitor and jpo-geojsonconverter to be running, so that there is data available. Once the jpo-conflictmonitor, jpo-geojsonconverter, and jpo-ode, then a jpo-conflictvisualizer api should be deployed, which should be modified to authenticate with the cvmanager keycloak realm (see the conflictvisualizer-map-page branch), and the port should be specified in the environment file (REACT_APP_CVIZ_API_SERVER_URL). Once all of these components are deployed, then the cvmanager webapp can be run!
+These changes were tested running locally in docker. These changes require an intersection-api to be running, and to be connected to the cvmanager keycloak server (and cvmanager keycloak realm). This API also requires the jpo-conflictmonitor and jpo-geojsonconverter to be running, so that there is data available. Once the jpo-conflictmonitor, jpo-geojsonconverter, and jpo-ode, then a jpo-conflictvisualizer api should be deployed, which should be modified to authenticate with the cvmanager keycloak realm (see the conflictvisualizer-map-page branch), and the port should be specified in the environment file (VITE_CVIZ_API_SERVER_URL). Once all of these components are deployed, then the cvmanager webapp can be run!
+
+## Typescript Type Checking
+
+To run typescript type checking, you can use the following command:
+
+```sh
+npm run typecheck
+```
 
 ## Unit Testing
 

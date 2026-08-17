@@ -52,8 +52,8 @@ To properly run the rsu_ping_fetch service the following additional services are
 
 The rsu_ping_fetch service expects the following environment variables to be set:
 
-- RSU_PING = True
 - ZABBIX = True
+- RSU_PING = False
 - ZABBIX_ENDPOINT - Zabbix API access endpoint.
 - ZABBIX_USER - Zabbix API access username.
 - ZABBIX_PASSWORD - Zabbix API access password.

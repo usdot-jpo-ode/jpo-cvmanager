@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import AdminTable from '../../components/AdminTable'
 import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -9,13 +9,9 @@ import { DropdownList, Multiselect } from 'react-widgets'
 import { confirmAlert } from 'react-confirm-alert'
 import { Options } from '../../components/AdminDeletionOptions'
 import {
-  selectAvailableUserList,
   selectSelectedUserList,
-  selectAvailableRoles,
 
   // actions
-  getAvailableRoles,
-  getAvailableUsers,
   userDeleteSingle,
   userDeleteMultiple,
   userAddMultiple,
@@ -35,11 +31,13 @@ import '../adminRsuTab/Admin.css'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { Action, Column } from '@material-table/core'
-import { AdminOrgUser } from '../adminOrganizationTab/adminOrganizationTabSlice'
+import { AdminOrgUser, selectSelectedOrgName } from '../adminOrganizationTab/adminOrganizationTabSlice'
 import toast from 'react-hot-toast'
 
 import { useTheme } from '@mui/material'
 import { AddCircleOutline, DeleteOutline } from '@mui/icons-material'
+import { useGetAllUsersNotInOrganizationQuery } from '../api/organizationApiSlice'
+import { useGetUserAllowedSelectionsQuery } from '../api/userApiSlice'
 
 interface AdminOrganizationTabUserProps {
   selectedOrg: string
@@ -49,12 +47,17 @@ interface AdminOrganizationTabUserProps {
 }
 
 const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
+  const { selectedOrg } = props
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const theme = useTheme()
-  const { selectedOrg } = props
-  const availableUserList = useSelector(selectAvailableUserList)
+  const organizationName = useSelector(selectSelectedOrgName)
+
+  const { data: availableUserList } = useGetAllUsersNotInOrganizationQuery(organizationName, {
+    skip: !organizationName, // Skip if no organization selected
+  })
+  const { data: allowedSelections } = useGetUserAllowedSelectionsQuery()
+
   const selectedUserList = useSelector(selectSelectedUserList)
-  const availableRoles = useSelector(selectAvailableRoles)
   const loadingGlobal = useSelector(selectLoadingGlobal)
   const authLoginData = useSelector(selectAuthLoginData)
   const userEmail = useSelector(selectEmail)
@@ -184,12 +187,7 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
   }
 
   useEffect(() => {
-    dispatch(getAvailableRoles())
-  }, [dispatch])
-
-  useEffect(() => {
     dispatch(setSelectedUserList([]))
-    dispatch(getAvailableUsers(selectedOrg))
   }, [selectedOrg, dispatch])
 
   const userOnDelete = async (row: AdminOrgUser) => {
@@ -306,10 +304,10 @@ const AdminOrganizationTabUser = (props: AdminOrganizationTabUserProps) => {
                       className="org-form-dropdown"
                       dataKey="role"
                       textField="role"
-                      data={availableRoles}
+                      data={allowedSelections?.roles || []}
                       value={user}
                       onChange={(value) => {
-                        dispatch(setSelectedUserRole({ email: user.email, role: value.role }))
+                        dispatch(setSelectedUserRole({ email: user.email, role: value }))
                       }}
                     />
                   </div>

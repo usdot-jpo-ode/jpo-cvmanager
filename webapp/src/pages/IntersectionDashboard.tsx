@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { updateTableData as updateRsuTableData } from '../features/adminRsuTab/adminRsuTabSlice'
-import { getAvailableUsers } from '../features/adminUserTab/adminUserTabSlice'
 
 import './css/NoTableWidth.css'
 import { NotFound } from './404'
@@ -40,11 +38,6 @@ function IntersectionDashboard() {
   const intersections = useSelector(selectIntersections)
   const [openMapDialog, setOpenMapDialog] = useState(false)
   const theme = useTheme()
-
-  useEffect(() => {
-    dispatch(updateRsuTableData())
-    dispatch(getAvailableUsers())
-  }, [dispatch])
 
   return (
     <>
@@ -112,12 +105,13 @@ function IntersectionDashboard() {
           height={`calc(100vh - ${headerTabHeight}px)`}
           notFoundRoute={
             <NotFound
-              redirectRoute="/dashboard/intersection"
+              redirectRoute="/dashboard/intersectionDashboard"
               redirectRouteName="Intersection Dashboard Page"
               description="This page does not exist. Please return to the main admin page."
             />
           }
           defaultTabIndex={0}
+          parentRoute={'dashboard/intersectionDashboard'}
           tabs={[
             {
               path: 'dashboard',

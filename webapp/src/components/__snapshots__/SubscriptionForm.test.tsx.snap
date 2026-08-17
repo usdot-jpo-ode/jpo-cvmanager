@@ -1,0 +1,106 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`should take a snapshot 1`] = `
+<div>
+  <div
+    class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation3 css-mocked-MuiPaper-root"
+    style="--Paper-shadow: 0px 3px 3px -2px rgba(0,0,0,0.2),0px 3px 4px 0px rgba(0,0,0,0.14),0px 1px 8px 0px rgba(0,0,0,0.12);"
+  >
+    <h3
+      class="MuiTypography-root MuiTypography-h5 MuiTypography-gutterBottom css-mocked-MuiTypography-root"
+    >
+      Email Subscription Preferences
+    </h3>
+    <hr
+      class="MuiDivider-root MuiDivider-fullWidth css-mocked-MuiDivider-root"
+    />
+    <div
+      class="MuiFormGroup-root css-mocked-MuiFormGroup-root"
+    />
+    <div
+      class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation0 MuiAlert-root MuiAlert-colorWarning MuiAlert-standardWarning MuiAlert-standard css-mocked-MuiPaper-root-MuiAlert-root"
+      role="alert"
+      style="--Paper-shadow: none;"
+    >
+      <div
+        class="MuiAlert-icon css-mocked-MuiAlert-icon"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit css-mocked-MuiSvgIcon-root"
+          data-testid="ReportProblemOutlinedIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M12 5.99L19.53 19H4.47L12 5.99M12 2L1 21h22L12 2zm1 14h-2v2h2v-2zm0-6h-2v4h2v-4z"
+          />
+        </svg>
+      </div>
+      <div
+        class="MuiAlert-message css-mocked-MuiAlert-message"
+      >
+        Unable to retrieve subscription details - this unsubscribe link may be invalid
+      </div>
+    </div>
+    <hr
+      class="MuiDivider-root MuiDivider-fullWidth css-mocked-MuiDivider-root"
+    />
+    <div
+      class="MuiBox-root css-1wuwhar"
+    >
+      <div
+        class="MuiBox-root css-0"
+      >
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeSmall MuiButton-outlinedSizeSmall MuiButton-colorPrimary MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeSmall MuiButton-outlinedSizeSmall MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-icon MuiButton-startIcon MuiButton-iconSizeSmall css-mocked-MuiButton-startIcon"
+          >
+            <svg
+              aria-hidden="true"
+              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-mocked-MuiSvgIcon-root"
+              data-testid="HomeIcon"
+              focusable="false"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
+              />
+            </svg>
+          </span>
+          Home
+        </button>
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedWarning MuiButton-sizeSmall MuiButton-outlinedSizeSmall MuiButton-colorWarning Mui-disabled MuiButton-root MuiButton-outlined MuiButton-outlinedWarning MuiButton-sizeSmall MuiButton-outlinedSizeSmall MuiButton-colorWarning css-mocked-MuiButtonBase-root-MuiButton-root"
+          disabled=""
+          tabindex="-1"
+          type="button"
+        >
+          Unsubscribe from All
+        </button>
+      </div>
+      <button
+        class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary Mui-disabled MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
+        disabled=""
+        tabindex="-1"
+        type="button"
+      >
+        Save Preferences
+      </button>
+    </div>
+    <div
+      class="MuiBox-root css-1hw29i9"
+    >
+      <span
+        class="MuiTypography-root MuiTypography-caption css-mocked-MuiTypography-root"
+      >
+        Your subscription preferences will be applied immediately. You can update these settings at any time.
+      </span>
+    </div>
+  </div>
+</div>
+`;

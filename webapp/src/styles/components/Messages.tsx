@@ -1,5 +1,4 @@
 import { Typography, TypographyProps, useTheme } from '@mui/material'
-import React from 'react'
 
 export const ErrorMessageText = (props: TypographyProps) => {
   const theme = useTheme()

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React from 'react'
 import PropTypes from 'prop-types'
 import toast from 'react-hot-toast'
 import * as Yup from 'yup'
@@ -21,7 +20,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   useUpdateDefaultParameterMutation,
   useUpdateIntersectionParameterMutation,
-} from '../../api/intersectionApiSlice'
+} from '../../api/intersectionConfigSlice'
 
 export const ConfigParamEditForm = (props) => {
   const { parameter }: { parameter: DefaultConfig | IntersectionConfig } = props

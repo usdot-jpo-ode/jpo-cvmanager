@@ -1,5 +1,4 @@
 import { Card, CardContent, Grid2, Typography, useTheme } from '@mui/material'
-import React from 'react'
 import {
   BarChart,
   CartesianGrid,

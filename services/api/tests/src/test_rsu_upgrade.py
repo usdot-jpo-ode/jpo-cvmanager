@@ -2,7 +2,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from api.src import rsu_upgrade
-import os
 from werkzeug.exceptions import Conflict
 
 
@@ -77,7 +76,7 @@ def test_check_for_upgrade_false(mock_query_db):
     assert actual_response == expected_response
 
 
-@patch.dict(os.environ, {"FIRMWARE_MANAGER_ENDPOINT": "http://1.1.1.1:8080"})
+@patch("api_environment.FIRMWARE_MANAGER_ENDPOINT", "http://1.1.1.1:8080")
 @patch("api.src.rsu_upgrade.requests.post")
 @patch("api.src.rsu_upgrade.pgquery.write_db")
 @patch(
@@ -116,7 +115,7 @@ def test_mark_rsu_for_upgrade_eligible(
     assert actual_status_code == expected_status_code
 
 
-@patch.dict(os.environ, {"FIRMWARE_MANAGER_ENDPOINT": "http://1.1.1.1:8080"})
+@patch("api_environment.FIRMWARE_MANAGER_ENDPOINT", "http://1.1.1.1:8080")
 @patch("api.src.rsu_upgrade.requests.post")
 @patch("api.src.rsu_upgrade.pgquery.write_db")
 @patch(
@@ -157,7 +156,7 @@ def test_mark_rsu_for_upgrade_eligible_but_rejected(
     assert actual_status_code == expected_status_code
 
 
-@patch.dict(os.environ, {"FIRMWARE_MANAGER_ENDPOINT": "http://1.1.1.1:8080"})
+@patch("api_environment.FIRMWARE_MANAGER_ENDPOINT", "http://1.1.1.1:8080")
 @patch("api.src.rsu_upgrade.requests.post")
 @patch("api.src.rsu_upgrade.pgquery.write_db")
 @patch(

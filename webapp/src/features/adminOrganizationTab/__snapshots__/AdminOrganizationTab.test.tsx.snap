@@ -1,9 +1,9 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`should take a snapshot 1`] = `
 <div>
   <div
-    style="background-color: rgb(255, 255, 255); padding: 10px 0px;"
+    style="background-color: rgb(255, 255, 255); height: fit-content; padding: 10px 0px;"
   >
     <div
       style="display: flex; flex-direction: row; margin: 10px;"
@@ -192,24 +192,72 @@ exports[`should take a snapshot 1`] = `
           <h3
             class="MuiAccordion-heading css-mocked-MuiAccordion-heading"
           >
-            <div
+            <button
               aria-controls="panel1a-content"
               aria-expanded="false"
               class="MuiButtonBase-root MuiAccordionSummary-root MuiAccordionSummary-gutters css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
               id="panel1a-header"
-              role="button"
               tabindex="0"
+              type="button"
             >
-              <div
+              <span
                 class="MuiAccordionSummary-content MuiAccordionSummary-contentGutters css-mocked-MuiAccordionSummary-content"
               >
-                <h6
-                  class="MuiTypography-root MuiTypography-h6 css-mocked-MuiTypography-root"
+                <div
+                  style="display: flex; align-items: center; flex-grow: 1; gap: 16px;"
                 >
-                  RSUs
-                </h6>
-              </div>
-              <div
+                  <h6
+                    class="MuiTypography-root MuiTypography-h6 css-mocked-MuiTypography-root"
+                  >
+                    RSUs
+                  </h6>
+                  <h6
+                    class="MuiTypography-root MuiTypography-subtitle1 css-mocked-MuiTypography-root"
+                  >
+                    TIM Deposit: 
+                    Disabled
+                  </h6>
+                  <h6
+                    class="MuiTypography-root MuiTypography-subtitle1 css-mocked-MuiTypography-root"
+                  >
+                    SNMP Monitoring: 
+                    Disabled
+                  </h6>
+                </div>
+                <div
+                  style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; max-width: 50%;"
+                >
+                  <button
+                    class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
+                    tabindex="0"
+                    type="button"
+                  >
+                    Enable TIM Deposit
+                  </button>
+                  <button
+                    class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedError MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorError MuiButton-root MuiButton-contained MuiButton-containedError MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorError css-mocked-MuiButtonBase-root-MuiButton-root"
+                    tabindex="0"
+                    type="button"
+                  >
+                    Disable TIM Deposit
+                  </button>
+                  <button
+                    class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
+                    tabindex="0"
+                    type="button"
+                  >
+                    Enable SNMP Monitoring
+                  </button>
+                  <button
+                    class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedError MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorError MuiButton-root MuiButton-contained MuiButton-containedError MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorError css-mocked-MuiButtonBase-root-MuiButton-root"
+                    tabindex="0"
+                    type="button"
+                  >
+                    Disable SNMP Monitoring
+                  </button>
+                </div>
+              </span>
+              <span
                 class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
               >
                 <svg
@@ -223,8 +271,8 @@ exports[`should take a snapshot 1`] = `
                     d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
                   />
                 </svg>
-              </div>
-            </div>
+              </span>
+            </button>
           </h3>
           <div
             class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-mocked-MuiCollapse-root"
@@ -261,15 +309,15 @@ exports[`should take a snapshot 1`] = `
           <h3
             class="MuiAccordion-heading css-mocked-MuiAccordion-heading"
           >
-            <div
+            <button
               aria-controls="panel1a-content"
               aria-expanded="false"
               class="MuiButtonBase-root MuiAccordionSummary-root MuiAccordionSummary-gutters css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
               id="panel1a-header"
-              role="button"
               tabindex="0"
+              type="button"
             >
-              <div
+              <span
                 class="MuiAccordionSummary-content MuiAccordionSummary-contentGutters css-mocked-MuiAccordionSummary-content"
               >
                 <h6
@@ -277,8 +325,8 @@ exports[`should take a snapshot 1`] = `
                 >
                   Intersections
                 </h6>
-              </div>
-              <div
+              </span>
+              <span
                 class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
               >
                 <svg
@@ -292,8 +340,8 @@ exports[`should take a snapshot 1`] = `
                     d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
                   />
                 </svg>
-              </div>
-            </div>
+              </span>
+            </button>
           </h3>
           <div
             class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-mocked-MuiCollapse-root"
@@ -328,15 +376,15 @@ exports[`should take a snapshot 1`] = `
           <h3
             class="MuiAccordion-heading css-mocked-MuiAccordion-heading"
           >
-            <div
+            <button
               aria-controls="panel1a-content"
               aria-expanded="false"
               class="MuiButtonBase-root MuiAccordionSummary-root MuiAccordionSummary-gutters css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
               id="panel1a-header"
-              role="button"
               tabindex="0"
+              type="button"
             >
-              <div
+              <span
                 class="MuiAccordionSummary-content MuiAccordionSummary-contentGutters css-mocked-MuiAccordionSummary-content"
               >
                 <h6
@@ -344,8 +392,8 @@ exports[`should take a snapshot 1`] = `
                 >
                   Users
                 </h6>
-              </div>
-              <div
+              </span>
+              <span
                 class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
               >
                 <svg
@@ -359,8 +407,8 @@ exports[`should take a snapshot 1`] = `
                     d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
                   />
                 </svg>
-              </div>
-            </div>
+              </span>
+            </button>
           </h3>
           <div
             class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-mocked-MuiCollapse-root"

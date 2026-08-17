@@ -7,6 +7,7 @@ export type RsuProperties = {
   primary_route: string
   serial_number: string
   manufacturer_name: string
+  tim_deposit: boolean
 }
 
 export type RsuInfoList = {
@@ -37,10 +38,14 @@ export type RsuOnlineStatusRespSingle = {
   last_online: string | undefined
 }
 
+export type MessageType = 'SPAT' | 'MAP' | 'BSM' | 'SRM' | 'SSM' | 'TIM' | 'PSM'
+
 export type RsuCounts = {
   [ip: string]: {
     road: string
-    count: number
+    messageTypeCounts: {
+      [messageType: string]: number
+    }
   }
 }
 
@@ -55,18 +60,6 @@ export type RsuMapInfo = {
   date: string
 }
 export type RsuMapInfoIpList = string[]
-
-// No response used, this method does not appear to be used
-export type SsmSrmData = Array<{
-  time: string
-  ip: string
-  requestId: string
-  role: string
-  lat: number
-  long: number
-  type: string
-  status: string
-}>
 
 export type IssScmsStatus = {
   [ip: string]: {
@@ -85,6 +78,16 @@ export type GeoMsgDataPostBody = {
 export type RsuCommandPostBody = {
   command: 'rsufwdsnmpwalk' | 'rsufwdsnmpset' | 'rsufwdsnmpset-del' | 'reboot' | 'upgrade-rsu' | 'upgrade-check'
   rsu_ip: string[]
+  args: object
+}
+
+export type RsuUpgradePostBody = {
+  rsu_ips: string[]
+  args: object
+}
+
+export type RsuUpgradeCheckPostBody = {
+  rsu_ip: string
   args: object
 }
 

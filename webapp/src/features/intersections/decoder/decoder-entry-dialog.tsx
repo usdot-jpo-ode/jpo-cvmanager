@@ -1,5 +1,5 @@
 import { Dialog, DialogTitle, Container, DialogActions, Button, Typography } from '@mui/material'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { DecoderTables } from './decoder-tables'
 import {
   setAsn1DecoderDialogOpen,

@@ -1,0 +1,27 @@
+{
+  "sequenceNumber": 1,
+  "validationMessages": [],
+  "schemaVersion": 1,
+  "recordGeneratedAt": {
+    "$date": "2025-10-21T21:29:09.503Z"
+  },
+  "statusSequenceNumber": 1,
+  "timeStamp": "2025-10-15T23:49:02.961Z",
+  "messageType": "SSM",
+  "statusList": [
+    {
+      "inboundOnLaneID": 3,
+      "requesterRole": "PUBLICTRANSPORT",
+      "requesterSequenceNumber": 1,
+      "requestID": 1,
+      "estimatedTimeOfArrivalDurationSeconds": 1.02,
+      "vehicleID": "312977882",
+      "outboundOnLaneID": 10,
+      "status": "PROCESSING"
+    }
+  ],
+  "asn1": "001E18646CA942683A0010BD440C944A9EA768040820040A39E590",
+  "intersectionId": 12109,
+  "odeReceivedAt": "2025-10-15T23:49:02.961Z",
+  "originIp": "172.25.0.1"
+}

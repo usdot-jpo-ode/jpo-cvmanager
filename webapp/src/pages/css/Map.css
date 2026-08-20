@@ -15,6 +15,11 @@
   margin-right: 10px;
 }
 
+/* Remove vertical padding from rsu popup */
+.rsu-popup .mapboxgl-popup-content {
+  padding: 0 !important;
+}
+
 .rw-dropdown-list-value {
   font-family: 'museo-slab', Arial, Helvetica, sans-serif;
 }

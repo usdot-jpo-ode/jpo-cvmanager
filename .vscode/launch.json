@@ -35,7 +35,23 @@
       "stopOnEntry": false,
       "program": "${workspaceRoot}/services/api/src/main.py",
       "env": {
-        "FLASK_APP": "${workspaceRoot}/services/api/src/main.py"
+        "PYTHONPATH": "${workspaceRoot}/services",
+        "FLASK_APP": "${workspaceRoot}/services/api/src/main.py",
+        "FLASK_RUN_PORT": "8081",
+        "PG_DB_HOST": "localhost:5432",
+        "PG_DB_USER": "postgres",
+        "PG_DB_PASS": "postgres",
+        "PG_DB_NAME": "postgres",
+        "MONGO_DB_URI": "mongodb://ode:replace-me@localhost:27017/?directConnection=true&authSource=admin",
+        "MONGO_DB_NAME": "CV",
+        "MONGO_PROCESSED_BSM_COLLECTION_NAME": "processed_bsm",
+        "MONGO_PROCESSED_PSM_COLLECTION_NAME": "processed_psm",
+        "ENABLE_WZDX_FEATURES": "false",
+        "CORS_DOMAIN": "*",
+        "KEYCLOAK_ENDPOINT": "http://localhost:8084",
+        "KEYCLOAK_REALM": "cvmanager",
+        "KEYCLOAK_API_CLIENT_ID": "cvmanager-api",
+        "KEYCLOAK_API_CLIENT_SECRET_KEY": "keycloak-secret-key"
       },
       "args": ["run"],
       "envFile": "${workspaceRoot}/services/api/.env",
@@ -48,13 +64,26 @@
       "mainClass": "us.dot.its.jpo.ode.api.ConflictApiApplication",
       "projectName": "intersection-api",
       "envFile": "${workspaceFolder}/.env",
-      "preLaunchTask": "run-docker-compose-intersection-no-api"
+      "preLaunchTask": "run-intersection-no-api",
+      "env": {
+        "AUTH_SERVER_URL": "http://localhost:8084",
+        "KAFKA_BROKER_IP": "localhost",
+        "DB_HOST_IP": "localhost",
+        "PG_DB_PASS": "postgres",
+        "POSTGRES_SERVER_URL": "jdbc:postgresql://localhost:5432",
+        "CM_SERVER_URL": "http://localhost:8082",
+        "UNSUBSCRIBE_SECRET_KEY": "b5f9070ca58d4576ea6a2d8d4c1b97caf8abc2554198f8f9acf86d0d31a52a52",
+        "INTERSECTION_SMTP_USERNAME": "admin",
+        "INTERSECTION_SMTP_PASSWORD": "password",
+        "INTERSECTION_SMTP_AUTH": "true",
+        "INTERSECTION_SMTP_STARTTLS": "false"
+      }
     }
   ],
   "compounds": [
     {
       "name": "Debug Solution",
-      "configurations": ["Python: Flask", "Launch web app with Intersection Data"]
+      "configurations": ["Python: Flask", "Launch web app with Intersection API"]
     }
   ]
 }

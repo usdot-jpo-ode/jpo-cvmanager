@@ -1,4 +1,3 @@
-import React from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, TooltipProps, Legend } from 'recharts'
 import { Box, Typography } from '@mui/material'
 import reportColorPalette from '../report-color-palette'

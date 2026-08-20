@@ -30,11 +30,23 @@ type MapFeatureCollection = {
   features: MapFeature[]
 }
 
+type MapFeatureCollectionWithSsmSrm = {
+  type: 'FeatureCollection'
+  features: MapFeatureWithSsmSrm[]
+}
+
 type MapFeature = {
   type: 'Feature'
   id: number
   geometry: GeoJSON.LineString
   properties: MapProperties
+}
+
+type MapFeatureWithSsmSrm = {
+  type: 'Feature'
+  id: number
+  geometry: GeoJSON.LineString
+  properties: MapPropertiesWithSsmSrm
 }
 
 type Geometry = {
@@ -56,6 +68,11 @@ type MapProperties = {
   connectsTo?: J2735Connection[]
 }
 
+type MapPropertiesWithSsmSrm = MapProperties & {
+  signalRequests: SrmInfo[]
+  signalStatuses: SsmInfo[]
+}
+
 type MapNode = {
   delta: number[]
   dWidth?: number
@@ -73,6 +90,11 @@ type ConnectingLanesFeatureCollectionWithSignalState = {
   features: ConnectingLanesFeatureWithSignalState[]
 }
 
+type ConnectingLanesFeatureCollectionWithSsmSrm = {
+  type: 'FeatureCollection'
+  features: ConnectingLanesFeatureWithSsmSrm[]
+}
+
 type ConnectingLanesFeature = {
   type: 'Feature'
   id: number | string
@@ -86,6 +108,17 @@ type ConnectingLanesFeatureWithSignalState = {
   geometry: GeoJSON.LineString
   properties: ConnectingLanesProperties & {
     signalState?: SignalState
+  }
+}
+
+type ConnectingLanesFeatureWithSsmSrm = {
+  type: 'Feature'
+  id: number | string
+  geometry: GeoJSON.LineString
+  properties: ConnectingLanesProperties & {
+    signalState?: SignalState
+    signalRequests: SrmInfo[]
+    signalStatuses: SsmInfo[]
   }
 }
 

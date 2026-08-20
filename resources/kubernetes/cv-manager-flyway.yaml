@@ -1,0 +1,48 @@
+# Job that runs Flyway migrations before the CV Manager API starts.
+# Requires a pre-built cvmanager-flyway image. See resources/db/Dockerfile and
+# resources/kubernetes/README.md for build and push instructions.
+#
+# Apply this before scaling up cv-manager-api. The API's init container
+# waits for a successful row in flyway_schema_history before starting.
+#
+# To add a new migration:
+# 1. Create a migration in resources/db/migration/ following the standard outlined in resources/db/README.md
+# 2. Rebuild and push the cvmanager-flyway image
+# 3. Update the image tag below, delete the old Job, and re-apply
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cv-manager-flyway-migrate
+spec:
+  ttlSecondsAfterFinished: 3600
+  backoffLimit: 3
+  template:
+    spec:
+      restartPolicy: OnFailure
+      automountServiceAccountToken: false
+      containers:
+        - name: flyway
+          # Replace <your-org> with your GitHub org/user and set the tag to the
+          # git SHA of the migrations you want to deploy.
+          # CI pushes to: ghcr.io/<github-org>/cvmanager-flyway:sha-<short-sha>
+          image: ghcr.io/your-org/cvmanager-flyway:sha-<git-sha>
+          command: ["flyway", "migrate"]
+          resources:
+            limits:
+              memory: 512Mi
+          env:
+            # Fill in PG_DB_NAME to match the value used in cv-manager-api.yaml
+            - name: PG_DB_NAME
+              value: "" # Required: set to your database name (matches PG_DB_NAME in cv-manager-api)
+            - name: FLYWAY_URL
+              value: jdbc:postgresql://cv-manager-postgres-svc:5432/$(PG_DB_NAME)
+            - name: FLYWAY_USER
+              valueFrom:
+                secretKeyRef:
+                  name: some-postgres-secret-user
+                  key: some-postgres-secret-key
+            - name: FLYWAY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: some-postgres-secret-password
+                  key: some-postgres-secret-key

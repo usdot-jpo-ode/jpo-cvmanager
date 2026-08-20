@@ -1,8 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { selectToken } from '../../generalSlices/userSlice'
-import EnvironmentVars from '../../EnvironmentVars'
-import apiHelper from '../../apis/api-helper'
-import { updateTableData as updateIntersectionTableData } from '../adminIntersectionTab/adminIntersectionTabSlice'
+import { createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { AdminEditIntersectionFormType } from './AdminEditIntersection'
 
@@ -50,15 +46,11 @@ const initialState = {
  *
  * No other checks are required, all other data is validated by the form input fields
  *
- * @param {RootState['adminAddIntersection']} state - The current state of the adminEditIntersection slice.
+ * @param {RootState['adminEditIntersection']} state - The current state of the adminEditIntersection slice.
  * @returns {boolean} - Returns true if the form is valid, otherwise false.
  */
 export const validateFormContents = (state: RootState['adminEditIntersection']) => {
-  if (state.value.selectedOrganizations.length === 0) {
-    return false
-  } else {
-    return true
-  }
+  return state.value.selectedOrganizations.length !== 0;
 }
 
 /**
@@ -75,7 +67,7 @@ export const mapFormToRequestJson = (
   data: AdminEditIntersectionFormType,
   state: RootState['adminEditIntersection']
 ): AdminEditIntersectionBody => {
-  const json = data
+  const json = { ...data }
 
   if (!json.bbox || !json.bbox.latitude1 || !json.bbox.longitude1 || !json.bbox.latitude2 || !json.bbox.longitude2) {
     delete json.bbox
@@ -131,102 +123,9 @@ export const mapFormToRequestJson = (
   return json
 }
 
-/**
- * Fetches intersection data from the API
- * - Fetches intersection data for a given intersection_id
- *
- * @param {string} intersection_id - The intersection_id of the intersection to fetch.
- * @returns {Promise<{ success: boolean, message: string, data?: adminEditIntersectionData }>} - The success status, message, and intersection data.
- */
-export const getIntersectionInfo = createAsyncThunk(
-  'adminEditIntersection/getIntersectionInfo',
-  async (intersection_id: string, { getState, dispatch }) => {
-    const currentState = getState() as RootState
-    const token = selectToken(currentState)
-
-    const data = await apiHelper._getDataWithCodes({
-      url: EnvironmentVars.adminIntersection,
-      token,
-      query_params: { intersection_id },
-      additional_headers: { 'Content-Type': 'application/json' },
-      tag: 'intersection',
-    })
-
-    switch (data.status) {
-      case 200:
-        dispatch(adminEditIntersectionSlice.actions.updateStates(data.body))
-        return { success: true, message: '', data: data.body }
-      default:
-        return { success: false, message: data.message }
-    }
-  },
-  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
-)
-
-/**
- * Edits an intersection
- * - Edits an intersection with the given intersection_id
- *
- * @param {AdminEditIntersectionBody} json - The intersection data to apply to the edit.
- * @returns {Promise<{ success: boolean, message: string }>} - The success status and message.
- */
-export const editIntersection = createAsyncThunk(
-  'adminEditIntersection/editIntersection',
-  async (json: AdminEditIntersectionBody, { getState, dispatch }) => {
-    const currentState = getState() as RootState
-    const token = selectToken(currentState)
-
-    const data = await apiHelper._patchData({
-      url: EnvironmentVars.adminIntersection,
-      token,
-      query_params: { intersection_id: json.orig_intersection_id },
-      body: JSON.stringify(json),
-      tag: 'intersection',
-    })
-
-    if (data == null) {
-      return { success: false, message: 'Failed to complete the request with unknown error' }
-    }
-
-    switch (data.status) {
-      case 200:
-        dispatch(updateIntersectionTableData())
-        return { success: true, message: 'Changes were successfully applied!' }
-      default:
-        return { success: false, message: data.message }
-    }
-  },
-  { condition: (_, { getState }) => selectToken(getState() as RootState) != undefined }
-)
-
-/**
- * Submits the intersection form, first validating the form contents and then calling the editIntersection thunk
- *
- * @param {AdminEditIntersectionFormType} data - The intersection form data to submit.
- * @returns {Promise<{ submitAttempt: boolean, success: boolean, message: string }>} - The submit attempt status, success status, and message. The submitAttempt is used to display validation error messages on the form.
- */
-export const submitForm = createAsyncThunk(
-  'adminEditIntersection/submitForm',
-  async (data: AdminEditIntersectionFormType, { getState, dispatch }) => {
-    const currentState = getState() as RootState
-    if (validateFormContents(currentState.adminEditIntersection)) {
-      const json = mapFormToRequestJson(data, currentState.adminEditIntersection)
-      const res = await dispatch(editIntersection(json))
-      if ((res.payload as any).success) {
-        return { submitAttempt: false, success: true, message: 'Intersection Updated Successfully' }
-      } else {
-        return { submitAttempt: false, success: false, message: (res.payload as any).message }
-      }
-    } else {
-      return { submitAttempt: true, success: false, message: 'Please fill out all required fields' }
-    }
-  }
-)
-
 export const adminEditIntersectionSlice = createSlice({
   name: 'adminEditIntersection',
   initialState: {
-    loading: false,
     value: initialState,
   },
   reducers: {
@@ -238,6 +137,9 @@ export const adminEditIntersectionSlice = createSlice({
     },
     setSelectedRsus: (state, action) => {
       state.value.selectedRsus = action.payload
+    },
+    setSubmitAttempt: (state, action: { payload: boolean }) => {
+      state.value.submitAttempt = action.payload
     },
     updateStates: (state, action: { payload: adminEditIntersectionData }) => {
       const apiData = action.payload
@@ -260,38 +162,11 @@ export const adminEditIntersectionSlice = createSlice({
       state.value.apiData = apiData
     },
   },
-  extraReducers: (builder) => {
-    builder
-      .addCase(getIntersectionInfo.pending, (state) => {
-        state.loading = true
-      })
-      .addCase(getIntersectionInfo.fulfilled, (state, action) => {
-        state.loading = false
-        if (action.payload.success) {
-          state.value.apiData = action.payload.data
-        }
-      })
-      .addCase(getIntersectionInfo.rejected, (state) => {
-        state.loading = false
-      })
-      .addCase(editIntersection.pending, (state) => {
-        state.loading = true
-      })
-      .addCase(editIntersection.fulfilled, (state) => {
-        state.loading = false
-      })
-      .addCase(editIntersection.rejected, (state) => {
-        state.loading = false
-      })
-      .addCase(submitForm.fulfilled, (state, action) => {
-        state.value.submitAttempt = action.payload.submitAttempt
-      })
-  },
 })
 
-export const { clear, setSelectedOrganizations, setSelectedRsus, updateStates } = adminEditIntersectionSlice.actions
+export const { clear, setSelectedOrganizations, setSelectedRsus, setSubmitAttempt, updateStates } =
+  adminEditIntersectionSlice.actions
 
-export const selectLoading = (state: RootState) => state.adminEditIntersection.loading
 export const selectApiData = (state: RootState) => state.adminEditIntersection.value.apiData
 export const selectOrganizations = (state: RootState) => state.adminEditIntersection.value.organizations
 export const selectSelectedOrganizations = (state: RootState) => state.adminEditIntersection.value.selectedOrganizations

@@ -1,0 +1,121 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-105.0909344, 39.5877785] },
+      "properties": {
+        "schemaVersion": 2,
+        "messageType": "BSM",
+        "odeReceivedAt": "2025-10-15T23:49:47.376Z",
+        "timeStamp": "2025-10-15T23:49:47.376Z",
+        "originIp": "10.11.81.12",
+        "validationMessages": [
+          {
+            "message": "$.metadata.source: is missing but it is required",
+            "jsonPath": "$.metadata",
+            "schemaPath": "#/properties/metadata/required"
+          },
+          {
+            "message": "$.metadata.asn1: is missing but it is required",
+            "jsonPath": "$.metadata",
+            "schemaPath": "#/properties/metadata/required"
+          },
+          {
+            "message": "$.metadata.isCertPresent: is missing but it is required",
+            "jsonPath": "$.metadata",
+            "schemaPath": "#/properties/metadata/required"
+          },
+          {
+            "message": "$.metadata.schemaVersion: must be a constant value 9",
+            "jsonPath": "$.metadata.schemaVersion",
+            "schemaPath": "#/properties/metadata/properties/schemaVersion/const"
+          }
+        ],
+        "accelSet": { "accelLat": 0, "accelLong": -0.05, "accelVert": 0, "accelYaw": -0.65 },
+        "accuracy": { "semiMajor": 0.1, "semiMinor": 0.1, "orientation": 0 },
+        "angle": 0,
+        "brakes": {
+          "wheelBrakes": {
+            "unavailable": true,
+            "leftFront": false,
+            "leftRear": false,
+            "rightFront": false,
+            "rightRear": false
+          },
+          "traction": "UNAVAILABLE",
+          "abs": "OFF",
+          "scs": "UNAVAILABLE",
+          "brakeBoost": "UNAVAILABLE",
+          "auxBrakes": "UNAVAILABLE"
+        },
+        "heading": 164.10000000000002,
+        "id": "8D3DBE0F",
+        "msgCnt": 50,
+        "secMark": 47376,
+        "size": { "width": 180, "length": 480 },
+        "speed": 16.72,
+        "transmission": "UNAVAILABLE",
+        "odeReceivedAtEpochSeconds": 1760572187.376
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-105.0909398, 39.587793] },
+      "properties": {
+        "schemaVersion": 2,
+        "messageType": "BSM",
+        "odeReceivedAt": "2025-10-15T23:49:47.271Z",
+        "timeStamp": "2025-10-15T23:49:47.271Z",
+        "originIp": "10.11.81.12",
+        "validationMessages": [
+          {
+            "message": "$.metadata.source: is missing but it is required",
+            "jsonPath": "$.metadata",
+            "schemaPath": "#/properties/metadata/required"
+          },
+          {
+            "message": "$.metadata.asn1: is missing but it is required",
+            "jsonPath": "$.metadata",
+            "schemaPath": "#/properties/metadata/required"
+          },
+          {
+            "message": "$.metadata.isCertPresent: is missing but it is required",
+            "jsonPath": "$.metadata",
+            "schemaPath": "#/properties/metadata/required"
+          },
+          {
+            "message": "$.metadata.schemaVersion: must be a constant value 9",
+            "jsonPath": "$.metadata.schemaVersion",
+            "schemaPath": "#/properties/metadata/properties/schemaVersion/const"
+          }
+        ],
+        "accelSet": { "accelLat": 0, "accelLong": -0.05, "accelVert": 0, "accelYaw": -0.65 },
+        "accuracy": { "semiMajor": 0.1, "semiMinor": 0.1, "orientation": 0 },
+        "angle": 0,
+        "brakes": {
+          "wheelBrakes": {
+            "unavailable": true,
+            "leftFront": false,
+            "leftRear": false,
+            "rightFront": false,
+            "rightRear": false
+          },
+          "traction": "UNAVAILABLE",
+          "abs": "OFF",
+          "scs": "UNAVAILABLE",
+          "brakeBoost": "UNAVAILABLE",
+          "auxBrakes": "UNAVAILABLE"
+        },
+        "heading": 165.3,
+        "id": "8D3DBE0F",
+        "msgCnt": 49,
+        "secMark": 47271,
+        "size": { "width": 180, "length": 480 },
+        "speed": 22.580000000000002,
+        "transmission": "UNAVAILABLE",
+        "odeReceivedAtEpochSeconds": 1760572187.271
+      }
+    }
+  ]
+}

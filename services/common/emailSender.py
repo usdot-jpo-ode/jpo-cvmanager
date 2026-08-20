@@ -22,8 +22,8 @@ class EmailSender:
         username,
         password,
         pretty=False,
-        tlsEnabled="true",
-        authEnabled="true",
+        tlsEnabled=True,
+        authEnabled=True,
     ):
         try:
             # prepare email
@@ -33,10 +33,10 @@ class EmailSender:
             else:
                 toSend = self.format(recipient, subject, message, replyEmail)
 
-            if tlsEnabled == "true":
+            if tlsEnabled:
                 self.server.starttls(context=self.context)  # start TLS encryption
                 self.server.ehlo()  # say hello
-            if authEnabled == "true":
+            if authEnabled:
                 self.server.login(username, password)
 
             # send email

@@ -10,7 +10,7 @@ import rsu_commands
 msg_type_map = {
     "bsm": {"port": "46800", "psid": "20", "tx": False, "raw": False},
     "spat": {"port": "44910", "psid": "8002", "tx": True, "raw": False},
-    "map": {"port": "44920", "psid": "20", "tx": True, "raw": True},
+    "map": {"port": "44920", "psid": "E0000017", "tx": True, "raw": True},
     "ssm": {"port": "44900", "psid": "E0000015", "tx": True, "raw": True},
     "srm": {"port": "44930", "psid": "E0000016", "tx": False, "raw": True},
     "tim": {"port": "47900", "psid": "8003", "tx": True, "raw": True},

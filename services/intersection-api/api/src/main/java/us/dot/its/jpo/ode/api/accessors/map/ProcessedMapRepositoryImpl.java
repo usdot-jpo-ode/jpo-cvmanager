@@ -78,7 +78,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
             Long endTime) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, IntersectionCriteria.TimeStampFormat.STRING);
         Query query = Query.query(criteria);
         return mongoTemplate.count(query, collectionName);
     }
@@ -100,7 +100,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
             boolean compact) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, IntersectionCriteria.TimeStampFormat.STRING);
         Query query = Query.query(criteria);
         List<String> excludedFields = new ArrayList<>();
         excludedFields.add(RECORD_GENERATED_AT_FIELD);
@@ -134,7 +134,7 @@ public class ProcessedMapRepositoryImpl implements ProcessedMapRepository, Pagea
             Pageable pageable) {
         Criteria criteria = new IntersectionCriteria()
                 .whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-                .withinTimeWindow(DATE_FIELD, startTime, endTime, true);
+                .withinTimeWindow(DATE_FIELD, startTime, endTime, IntersectionCriteria.TimeStampFormat.STRING);
         List<String> excludedFields = new ArrayList<>();
         excludedFields.add(RECORD_GENERATED_AT_FIELD);
         if (compact) {

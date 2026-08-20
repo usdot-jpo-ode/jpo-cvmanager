@@ -8,7 +8,6 @@ import {
   Tab,
   Tabs,
   TextField,
-  TextFieldProps,
   Typography,
   useTheme,
 } from '@mui/material'
@@ -16,7 +15,7 @@ import { NotificationsTableResults } from './notifications-table-results'
 import RefreshIcon from '@mui/icons-material/Refresh'
 import SearchIcon from '@mui/icons-material/Search'
 import NotificationApi from '../../../apis/intersections/notification-api'
-import React, { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { selectToken } from '../../../generalSlices/userSlice'
 import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
 import { useSelector } from 'react-redux'
@@ -76,7 +75,6 @@ const applyPagination = (parameters, page, rowsPerPage) =>
 
 export const NotificationsTable = (props: { simple: boolean }) => {
   const { simple } = props
-  const queryRef = useRef<TextFieldProps>(null)
   const [notifications, setNotifications] = useState<MessageMonitor.Notification[]>([])
   const [acceptedNotifications, setAcceptedNotifications] = useState<string[]>([])
   const [expandedNotifications, setExpandedNotifications] = useState<string[]>([])

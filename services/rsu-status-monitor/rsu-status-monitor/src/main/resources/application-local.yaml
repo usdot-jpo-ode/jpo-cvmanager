@@ -1,0 +1,6 @@
+# Local properties
+spring:
+  config:
+    activate:
+      on-profile: 'local'
+  kafka.bootstrap-servers: localhost:9092

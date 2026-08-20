@@ -2015,31 +2015,30 @@
     "cti4501Conformant": false,
     "validationMessages": [
       {
-        "message": "$.metadata.source: does not have a value in the enumeration [RSU, V2X, MMITSS, UNKNOWN]",
-        "jsonPath": "$.metadata.source",
-        "schemaPath": "#/properties/metadata/properties/source/enum"
+        "message": "does not have a value in the enumeration [\"RSU\", \"V2X\", \"MMITSS\", \"UNKNOWN\"]",
+        "jsonPath": "/$ref/properties/metadata/properties/source/enum",
+        "schemaPath": "https://raw.githubusercontent.com/usdot-jpo-ode/jpo-ode/jpo-ode-5.1.0/jpo-ode-core/src/main/resources/schemas/schema-map.json#/properties/metadata/properties/source/enum"
       },
       {
-        "message": "$.metadata.logFileName: is missing but it is required",
-        "jsonPath": "$.metadata",
-        "schemaPath": "#/properties/metadata/required"
+        "message": "required property 'logFileName' not found",
+        "jsonPath": "/$ref/properties/metadata/required",
+        "schemaPath": "https://raw.githubusercontent.com/usdot-jpo-ode/jpo-ode/jpo-ode-5.1.0/jpo-ode-core/src/main/resources/schemas/schema-map.json#/properties/metadata/required"
       },
       {
-        "message": "$.metadata.receivedMessageDetails: is missing but it is required",
-        "jsonPath": "$.metadata",
-        "schemaPath": "#/properties/metadata/required"
+        "message": "required property 'receivedMessageDetails' not found",
+        "jsonPath": "/$ref/properties/metadata/required",
+        "schemaPath": "https://raw.githubusercontent.com/usdot-jpo-ode/jpo-ode/jpo-ode-5.1.0/jpo-ode-core/src/main/resources/schemas/schema-map.json#/properties/metadata/required"
       },
       {
-        "message": "$.metadata.recordGeneratedAt: is missing but it is required",
-        "jsonPath": "$.metadata",
-        "schemaPath": "#/properties/metadata/required"
+        "message": "required property 'recordGeneratedAt' not found",
+        "jsonPath": "/$ref/properties/metadata/required",
+        "schemaPath": "https://raw.githubusercontent.com/usdot-jpo-ode/jpo-ode/jpo-ode-5.1.0/jpo-ode-core/src/main/resources/schemas/schema-map.json#/properties/metadata/required"
       },
       {
-        "message": "$.metadata.asn1: is missing but it is required",
-        "jsonPath": "$.metadata",
-        "schemaPath": "#/properties/metadata/required"
+        "message": "required property 'asn1' not found",
+        "jsonPath": "/$ref/properties/metadata/required",
+        "schemaPath": "https://raw.githubusercontent.com/usdot-jpo-ode/jpo-ode/jpo-ode-5.1.0/jpo-ode-core/src/main/resources/schemas/schema-map.json#/properties/metadata/required"
       },
-      { "message": "CTI-4501 conformance issue: The laneSet 'connectsTo' DF_ConnectsToList is missing" },
       { "message": "CTI-4501 conformance issue: The connectsTo 'signalGroup' DE_SignalGroupID is missing" },
       { "message": "CTI-4501 conformance issue: The intersections 'id.region' DE_RoadRegulatorID is missing" },
       { "message": "CTI-4501 conformance issue: The intersections 'speedLimits' DF_SpeedLimitList is missing" },

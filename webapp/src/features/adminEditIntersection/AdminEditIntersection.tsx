@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import { ErrorMessage } from '@hookform/error-message'
@@ -11,10 +11,12 @@ import {
   selectSubmitAttempt,
 
   // actions
-  submitForm,
   setSelectedOrganizations,
   setSelectedRsus,
-  selectLoading,
+  setSubmitAttempt,
+  updateStates,
+  validateFormContents,
+  mapFormToRequestJson,
 } from './adminEditIntersectionSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -22,7 +24,7 @@ import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
 import { AdminIntersection } from '../../models/Intersection'
 import { useNavigate, useParams } from 'react-router-dom'
-import { selectTableData, updateTableData } from '../adminIntersectionTab/adminIntersectionTabSlice'
+import { useGetIntersectionQuery, usePatchIntersectionMutation } from '../api/adminIntersectionApiSlice'
 import {
   Button,
   Dialog,
@@ -58,8 +60,7 @@ const AdminEditIntersection = () => {
   const rsus = useSelector(selectRsus)
   const selectedRsus = useSelector(selectSelectedRsus)
   const submitAttempt = useSelector(selectSubmitAttempt)
-  const intersectionTableData = useSelector(selectTableData)
-  const loading = useSelector(selectLoading)
+  const editIntersectionState = useSelector((state: RootState) => state.adminEditIntersection)
 
   const [open, setOpen] = useState(true)
   const navigate = useNavigate()
@@ -94,45 +95,53 @@ const AdminEditIntersection = () => {
 
   const { intersectionId } = useParams<{ intersectionId: string }>()
 
-  useEffect(() => {
-    const currIntersection = (intersectionTableData ?? []).find(
-      (intersection: AdminIntersection) => intersection.intersection_id === intersectionId
-    )
-    if (currIntersection) {
-      setValue('orig_intersection_id', currIntersection.intersection_id)
-      setValue('intersection_id', currIntersection.intersection_id)
-      setValue('ref_pt.latitude', currIntersection.ref_pt?.latitude?.toString())
-      setValue('ref_pt.longitude', currIntersection.ref_pt?.longitude?.toString())
-      setValue('bbox.latitude1', currIntersection.bbox?.latitude1?.toString())
-      setValue('bbox.longitude1', currIntersection.bbox?.longitude1?.toString())
-      setValue('bbox.latitude2', currIntersection.bbox?.latitude2?.toString())
-      setValue('bbox.longitude2', currIntersection.bbox?.longitude2?.toString())
-      setValue('intersection_name', currIntersection.intersection_name)
-      setValue('origin_ip', currIntersection.origin_ip)
-    } else {
-      console.error('Unknown Intersection ID: ', intersectionId)
-    }
-  }, [apiData, intersectionId, intersectionTableData, setValue])
+  const { data: intersectionData, isLoading } = useGetIntersectionQuery(intersectionId, {
+    skip: !intersectionId,
+  })
+  const [patchIntersection] = usePatchIntersectionMutation()
 
   useEffect(() => {
-    dispatch(updateTableData())
-  }, [dispatch])
+    if (intersectionData) {
+      dispatch(updateStates(intersectionData))
+      const intersection = intersectionData.intersection_data
+      setValue('orig_intersection_id', intersection.intersection_id)
+      setValue('intersection_id', intersection.intersection_id)
+      setValue('ref_pt.latitude', intersection.ref_pt?.latitude?.toString())
+      setValue('ref_pt.longitude', intersection.ref_pt?.longitude?.toString())
+      setValue('bbox.latitude1', intersection.bbox?.latitude1?.toString())
+      setValue('bbox.longitude1', intersection.bbox?.longitude1?.toString())
+      setValue('bbox.latitude2', intersection.bbox?.latitude2?.toString())
+      setValue('bbox.longitude2', intersection.bbox?.longitude2?.toString())
+      setValue('intersection_name', intersection.intersection_name)
+      setValue('origin_ip', intersection.origin_ip)
+    }
+  }, [intersectionData, dispatch, setValue])
 
   const onSubmit = (data: AdminEditIntersectionFormType) => {
-    dispatch(submitForm(data)).then((data: any) => {
-      if (data.payload.success) {
+    if (!validateFormContents(editIntersectionState)) {
+      dispatch(setSubmitAttempt(true))
+      return
+    }
+    const json = mapFormToRequestJson(data, editIntersectionState)
+    patchIntersection(json)
+      .unwrap()
+      .then(() => {
         toast.success('Intersection updated successfully')
-      } else {
-        toast.error('Failed to update Intersection: ' + data.payload.message)
-      }
-    })
-    setOpen(false)
-    navigate('/dashboard/admin/intersections')
+        setOpen(false)
+        navigate('/dashboard/admin/intersections')
+      })
+      .catch((error) => {
+        const detail =
+          error && typeof error === 'object' && 'data' in error && error.data && typeof error.data === 'object'
+            ? (error.data as { detail?: string }).detail
+            : undefined
+        toast.error(detail ? `Failed to update Intersection: ${detail}` : 'Failed to update Intersection')
+      })
   }
 
   return (
     <Dialog open={open}>
-      {apiData && !loading ? (
+      {apiData && !isLoading ? (
         <>
           <DialogContent sx={{ width: '600px', padding: '5px 10px' }}>
             <SideBarHeader
@@ -340,7 +349,6 @@ const AdminEditIntersection = () => {
                     defaultValue={selectedRsus.map((rsu) => rsu.name)}
                     onChange={(event) => {
                       const selectedRsus = event.target.value as string[]
-                      const filteredRsus = rsus.filter((rsu) => selectedRsus.includes(rsu.name))
                       dispatch(setSelectedRsus(rsus.filter((rsu) => selectedRsus.includes(rsu.name))))
                     }}
                   >
@@ -379,7 +387,7 @@ const AdminEditIntersection = () => {
           </DialogActions>
         </>
       ) : (
-        !loading && (
+        !isLoading && (
           <DialogContent>
             <Typography variant={'h4'}>
               Unknown Intersection ID. Either this Intersection does not exist, or you do not have access to it.

@@ -1,4 +1,3 @@
-import React from 'react'
 import { css } from '@emotion/react'
 import RingLoader from 'react-spinners/RingLoader'
 import Header from './components/Header'
@@ -9,22 +8,22 @@ import Tabs, { TabItem } from './components/Tabs'
 import Map from './pages/Map'
 import './App.css'
 import { useSelector } from 'react-redux'
-import { selectAuthLoginData, selectLoadingGlobal } from './generalSlices/userSlice'
-import { SecureStorageManager } from './managers'
+import { selectAuthLoginData, selectIsAdminOrAbove, selectLoadingGlobal } from './generalSlices/userSlice'
 import keycloak from './keycloak-config'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import IntersectionMapView from './pages/IntersectionMapView'
 import IntersectionDashboard from './pages/IntersectionDashboard'
 import { NotFound } from './pages/404'
-import AdminNotificationTab from './features/adminNotificationTab/AdminNotificationTab'
 import { ConditionalRenderRsu, IntersectionRouteGuard } from './feature-flags'
 import { Paper, useTheme } from '@mui/material'
 import { headerTabHeight } from './styles/index'
+import SubscriptionManagement from './components/SubscriptionManagement'
 
 const Dashboard = () => {
   const theme = useTheme()
   const authLoginData = useSelector(selectAuthLoginData)
   const loadingGlobal = useSelector(selectLoadingGlobal)
+  const isAdmin = useSelector(selectIsAdminOrAbove)
 
   return (
     <Paper id="masterdiv" style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
@@ -36,7 +35,7 @@ const Dashboard = () => {
               <TabItem label={'Map'} path={'map'} />
               <TabItem label={'Intersection Map'} path={'intersectionMap'} tag={'intersection'} />
               <TabItem label={'Intersection Dashboard'} path={'intersectionDashboard'} tag={'intersection'} />
-              {SecureStorageManager.getUserRole() !== 'admin' ? <></> : <TabItem label={'Admin'} path={'admin'} />}
+              {isAdmin ? <TabItem label={'Admin'} path={'admin'} /> : <></>}
               <TabItem label={'Help'} path={'help'} />
               <TabItem label={'User Settings'} path={'settings'} />
             </Tabs>
@@ -78,7 +77,7 @@ const Dashboard = () => {
                     }
                   />
                   <Route path="admin/*" element={<Admin />} />
-                  <Route path="settings/*" element={<AdminNotificationTab />} />
+                  <Route path="settings/*" element={<SubscriptionManagement />} />
                   <Route path="help" element={<Help />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>

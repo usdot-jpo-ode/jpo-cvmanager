@@ -39,14 +39,14 @@ public class MockDecodedMessageGenerator {
     }
 
     public static SrmDecodedMessage getSrmDecodedMessage() {
-        SrmDecodedMessage message = new SrmDecodedMessage(MockSrmGenerator.getJsonSrms().get(0),
-                "001d2130000010090bd341080d00855c6c0c6899853000a534f7c24cb29897694759b7c0", "");
+        SrmDecodedMessage message = new SrmDecodedMessage(MockSrmGenerator.getProcessedSrms().get(0),
+                "001D267236548000010090BD4404801028E796C08953D4ED000B534E64B70B29DF6C545F000871A600", "");
         return message;
     }
 
     public static SsmDecodedMessage getSsmDecodedMessage() {
-        SsmDecodedMessage message = new SsmDecodedMessage(MockSsmGenerator.getJsonSsms().get(0),
-                "001e120000000005e9c04071a26614c06000040ba0", "");
+        SsmDecodedMessage message = new SsmDecodedMessage(MockSsmGenerator.getProcessedSsms().get(0),
+                "001E18646CA942683A0010BD440C944A9EA768040820040A39E590", "");
         return message;
     }
 }

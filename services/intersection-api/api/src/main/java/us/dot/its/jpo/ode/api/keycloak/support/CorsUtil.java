@@ -25,7 +25,7 @@ public class CorsUtil {
         UrlBasedCorsConfigurationSource defaultUrlBasedCorsConfigSource = new UrlBasedCorsConfigurationSource();
         CorsConfiguration corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
         corsConfiguration.addAllowedOrigin(properties.getCors());
-        List.of("GET", "POST", "PUT", "DELETE", "OPTIONS").forEach(corsConfiguration::addAllowedMethod);
+        List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH").forEach(corsConfiguration::addAllowedMethod);
         defaultUrlBasedCorsConfigSource.registerCorsConfiguration("/**", corsConfiguration);
 
         cors.configurationSource(req -> {

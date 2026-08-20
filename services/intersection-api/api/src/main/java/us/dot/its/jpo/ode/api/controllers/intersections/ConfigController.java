@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpEntity;
@@ -42,7 +42,6 @@ import us.dot.its.jpo.ode.api.ConflictMonitorApiProperties;
 import us.dot.its.jpo.ode.api.accessors.config.default_config.DefaultConfigRepository;
 import us.dot.its.jpo.ode.api.accessors.config.intersection_config.IntersectionConfigRepository;
 import us.dot.its.jpo.ode.api.services.PermissionService;
-import us.dot.its.jpo.ode.api.services.PostgresService;
 
 import org.springframework.http.MediaType;
 
@@ -55,12 +54,12 @@ import org.springframework.http.MediaType;
         @ApiResponse(responseCode = "500", description = "Internal Server Error")
 })
 @RequestMapping("/intersections/configuration")
+@RequiredArgsConstructor
 public class ConfigController {
 
     private final DefaultConfigRepository defaultConfigRepository;
     private final IntersectionConfigRepository intersectionConfigRepository;
     private final ConflictMonitorApiProperties props;
-    private final PostgresService postgresService;
     private final PermissionService permissionService;
 
     private final RestTemplate restTemplate = new RestTemplate();
@@ -69,20 +68,6 @@ public class ConfigController {
     private final String intersectionConfigTemplate = "%s/config/intersection/%s/%s";
     private final String defaultConfigAllTemplate = "%s/config/defaults";
     private final String intersectionConfigAllTemplate = "%s/config/intersections";
-
-    @Autowired
-    public ConfigController(
-            DefaultConfigRepository defaultConfigRepository,
-            IntersectionConfigRepository intersectionConfigRepository,
-            ConflictMonitorApiProperties props,
-            PostgresService postgresService,
-            PermissionService permissionService) {
-        this.defaultConfigRepository = defaultConfigRepository;
-        this.intersectionConfigRepository = intersectionConfigRepository;
-        this.props = props;
-        this.postgresService = postgresService;
-        this.permissionService = permissionService;
-    }
 
     @Operation(summary = "Set Default Config", description = "Set a default configuration parameter, this will change this parameter on all non-overridden intersections. Requires SUPER_USER permissions.")
     @PostMapping(value = "/default", produces = "application/json")
@@ -257,13 +242,13 @@ public class ConfigController {
             if (organization == null) {
                 Authentication auth = SecurityContextHolder.getContext().getAuthentication();
                 String username = PermissionService.getUsername(auth);
-                List<Integer> allowedIntersectionIds = postgresService.getAllowedIntersectionIdsByEmail(username);
+                List<Integer> allowedIntersectionIds = permissionService.getAllowedIntersectionIdsByEmail(username);
                 return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(results
                         .stream()
                         .filter(intersection -> allowedIntersectionIds.contains(intersection.getIntersectionID()))
                         .collect(Collectors.toList()));
             } else {
-                List<Integer> allowedIntersectionIds = postgresService
+                List<Integer> allowedIntersectionIds = permissionService
                         .getAllowedIntersectionIdsByOrganization(organization);
                 return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(results
                         .stream()

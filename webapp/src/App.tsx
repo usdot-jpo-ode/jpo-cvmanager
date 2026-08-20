@@ -1,17 +1,23 @@
-import React, { useEffect, useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import './App.css'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   // Actions
   getRsuData,
 } from './generalSlices/rsuSlice'
-import { keycloakLogin, selectAuthLoginData, selectRouteNotFound } from './generalSlices/userSlice'
+import {
+  keycloakLogin,
+  selectAuthLoginData,
+  selectOrganizationName,
+  selectRouteNotFound,
+} from './generalSlices/userSlice'
 import keycloak from './keycloak-config'
 import { ThunkDispatch } from 'redux-thunk'
 import { RootState } from './store'
 import { AnyAction } from '@reduxjs/toolkit'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Dashboard from './Dashboard'
+import Unsubscribe from './Unsubscribe'
 import { NotFound } from './pages/404'
 import { getCurrentTheme } from './styles'
 import { getIntersections } from './generalSlices/intersectionSlice'
@@ -29,6 +35,7 @@ const App = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()
   const authLoginData = useSelector(selectAuthLoginData)
   const routeNotFound = useSelector(selectRouteNotFound)
+  const organizationName = useSelector(selectOrganizationName)
 
   const isDarkTheme = useBrowserThemeDetector()
   const theme = useMemo(
@@ -54,44 +61,55 @@ const App = () => {
 
   useEffect(() => {
     dispatch(getRsuData())
-    dispatch(getIntersections())
-  }, [authLoginData, dispatch])
+    dispatch(getIntersections(organizationName))
+  }, [authLoginData, organizationName, dispatch])
 
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <ReactKeycloakProvider
-          initOptions={{ onLoad: 'login-required' }}
-          authClient={keycloak}
-          onTokens={({ token }: { token: string }) => {
-            // Logic to prevent multiple login triggers
-            if (!loginDispatched && token) {
-              dispatch(keycloakLogin(token))
-              loginDispatched = true
-            }
-            setTimeout(() => (loginDispatched = false), 5000)
-          }}
-        >
-          <BrowserRouter>
-            {routeNotFound ? (
-              <NotFound offsetHeight={0} />
-            ) : (
-              <Routes>
-                <Route index element={<Navigate to="dashboard" replace />} />
-                <Route path="dashboard/*" element={<Dashboard />} />
-                <Route path="*" element={<NotFound shouldRedirect={true} />} />
-              </Routes>
-            )}
-          </BrowserRouter>
-          <Toaster
-            toastOptions={{
-              style: {
-                fontFamily: '"museo-slab", Arial, Helvetica, sans-serif',
-              },
-            }}
-          />
-        </ReactKeycloakProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Public routes - no authentication required */}
+            <Route path="unsubscribe" element={<Unsubscribe />} />
+
+            {/* Protected routes - authentication required */}
+            <Route
+              path="/*"
+              element={
+                <ReactKeycloakProvider
+                  initOptions={{ onLoad: 'login-required', checkLoginIframe: false }}
+                  authClient={keycloak}
+                  onTokens={({ token }: { token: string }) => {
+                    // Logic to prevent multiple login triggers
+                    if (!loginDispatched && token) {
+                      dispatch(keycloakLogin(token))
+                      loginDispatched = true
+                    }
+                    setTimeout(() => (loginDispatched = false), 5000)
+                  }}
+                >
+                  {routeNotFound ? (
+                    <NotFound offsetHeight={0} />
+                  ) : (
+                    <Routes>
+                      <Route index element={<Navigate to="dashboard" replace />} />
+                      <Route path="dashboard/*" element={<Dashboard />} />
+                      <Route path="*" element={<NotFound shouldRedirect={true} />} />
+                    </Routes>
+                  )}
+                  <Toaster
+                    toastOptions={{
+                      style: {
+                        fontFamily: '"museo-slab", Arial, Helvetica, sans-serif',
+                      },
+                    }}
+                  />
+                </ReactKeycloakProvider>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
       </ThemeProvider>
     </StyledEngineProvider>
   )

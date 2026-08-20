@@ -1,5 +1,4 @@
 import { Button, ButtonProps, useTheme } from '@mui/material'
-import React from 'react'
 import '../../styles/fonts/museo-slab.css'
 
 export const AdminButton = (props: ButtonProps) => {

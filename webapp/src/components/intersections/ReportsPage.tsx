@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Box, Grid2, Typography } from '@mui/material'
 import { StyledEngineProvider, ThemeProvider, useTheme } from '@mui/material/styles'
 import { ReportListFilters } from '../../features/intersections/reports/report-list-filters'

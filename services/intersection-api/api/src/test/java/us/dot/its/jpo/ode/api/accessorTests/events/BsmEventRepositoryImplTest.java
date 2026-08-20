@@ -3,12 +3,12 @@ package us.dot.its.jpo.ode.api.accessorTests.events;
 import java.util.Date;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -24,7 +24,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,16 +33,7 @@ import us.dot.its.jpo.conflictmonitor.monitor.models.bsm.BsmEvent;
 import us.dot.its.jpo.ode.api.accessors.events.bsm_event.BsmEventRepositoryImpl;
 import us.dot.its.jpo.ode.api.models.IDCount;
 
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
-
-@SpringBootTest
-@RunWith(SpringRunner.class)
-@ActiveProfiles("test")
-@AutoConfigureEmbeddedDatabase
+@ExtendWith(MockitoExtension.class)
 public class BsmEventRepositoryImplTest {
 
     @Mock
@@ -60,7 +50,6 @@ public class BsmEventRepositoryImplTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         repository = new BsmEventRepositoryImpl(mongoTemplate);
     }
 
@@ -180,8 +169,8 @@ public class BsmEventRepositoryImplTest {
         // Verify time window condition
         Document timeCondition = (Document) queryObject.get("startingBsmTimestamp");
         assertThat(timeCondition).isNotNull();
-        assertThat(timeCondition.get("$gte")).isEqualTo(Date.from(Instant.ofEpochMilli(startTime)));
-        assertThat(timeCondition.get("$lte")).isEqualTo(Date.from(Instant.ofEpochMilli(endTime)));
+        assertThat(timeCondition.get("$gte")).isEqualTo(startTime);
+        assertThat(timeCondition.get("$lte")).isEqualTo(endTime);
     }
 
     @Test
@@ -213,8 +202,8 @@ public class BsmEventRepositoryImplTest {
         // Verify time window condition
         Document timeCondition = (Document) queryObject.get("startingBsmTimestamp");
         assertThat(timeCondition).isNotNull();
-        assertThat(timeCondition.get("$gte")).isEqualTo(Date.from(Instant.ofEpochMilli(startTime)));
-        assertThat(timeCondition.get("$lte")).isEqualTo(Date.from(Instant.ofEpochMilli(endTime)));
+        assertThat(timeCondition.get("$gte")).isEqualTo(startTime);
+        assertThat(timeCondition.get("$lte")).isEqualTo(endTime);
     }
 
     @Test
@@ -246,8 +235,8 @@ public class BsmEventRepositoryImplTest {
         // Verify time window condition
         Document timeCondition = (Document) queryObject.get("startingBsmTimestamp");
         assertThat(timeCondition).isNotNull();
-        assertThat(timeCondition.get("$gte")).isEqualTo(Date.from(Instant.ofEpochMilli(startTime)));
-        assertThat(timeCondition.get("$lte")).isEqualTo(Date.from(Instant.ofEpochMilli(endTime)));
+        assertThat(timeCondition.get("$gte")).isEqualTo(startTime);
+        assertThat(timeCondition.get("$lte")).isEqualTo(endTime);
     }
 
     @Test
@@ -314,17 +303,17 @@ public class BsmEventRepositoryImplTest {
 
     @Test
     void testFindLatest() {
-        BsmEvent event = new BsmEvent();
-        event.setIntersectionID(intersectionID);
+        Document document = new Document();
+        document.put("intersectionID", intersectionID);
 
-        doReturn(event).when(mongoTemplate).findOne(any(Query.class), eq(BsmEvent.class),
-                anyString());
+        doReturn(document).when(mongoTemplate).findOne(any(Query.class), eq(Document.class),
+                eq(collectionName));
 
         Page<BsmEvent> page = repository.findLatest(intersectionID, startTime, endTime);
 
         assertThat(page.getContent()).hasSize(1);
         assertThat(page.getContent().get(0).getIntersectionID()).isEqualTo(intersectionID);
-        verify(mongoTemplate).findOne(any(Query.class), eq(BsmEvent.class),
-                eq("CmBsmEvents"));
+        verify(mongoTemplate).findOne(any(Query.class), eq(Document.class),
+                eq(collectionName));
     }
 }

@@ -8,11 +8,13 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableWebMvc
 @SpringBootApplication
 @EnableScheduling
+@EnableCaching
 @ComponentScan(basePackages = { "us.dot.its.jpo.ode.api", "us.dot.its.jpo.geojsonconverter.validator" })
 @Slf4j
 public class ConflictApiApplication extends SpringBootServletInitializer {

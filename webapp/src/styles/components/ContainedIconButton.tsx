@@ -1,5 +1,4 @@
 import { IconButton, IconButtonProps, useTheme } from '@mui/material'
-import React from 'react'
 
 export const ContainedIconButton = (props: IconButtonProps) => {
   const theme = useTheme()

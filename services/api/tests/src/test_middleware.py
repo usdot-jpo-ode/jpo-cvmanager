@@ -1,5 +1,4 @@
 from unittest.mock import patch, Mock
-
 from api.src import middleware
 from api.tests.data import auth_data
 from werkzeug.exceptions import Unauthorized
@@ -42,7 +41,7 @@ def test_get_user_role(mock_get_user_info, mock_keycloak, mock_jwt):
 def test_middleware_class_call_options(mock_kc, mock_request, mock_get_user_role):
     # mock
     mock_request.return_value.method = "OPTIONS"
-    mock_request.return_value.path = "/user-auth"
+    mock_request.return_value.path = "/rsuinfo"
 
     # create instance
     app = Mock()
@@ -68,7 +67,7 @@ def test_middleware_class_call_user_unauthorized(mock_request, mock_get_user_rol
     middleware_instance = middleware.Middleware(app)
     # call
     mock_get_user_role.return_value = None
-    environ = {"REQUEST_METHOD": "GET", "PATH_INFO": "/user-auth"}
+    environ = {"REQUEST_METHOD": "GET", "PATH_INFO": "/rsuinfo"}
     start_response = Mock()
     # check
     response = middleware_instance(environ, start_response)
@@ -85,7 +84,7 @@ def test_middleware_class_call_user_authorized(mock_request, mock_get_user_role)
     # create instance
     app = Mock()
     mock_request.return_value.method = "GET"
-    mock_request.return_value.path = "/user-auth"
+    mock_request.return_value.path = "/wzdx-feed"
     mock_request.return_value.headers = {"Authorization": "test"}
     middleware_instance = middleware.Middleware(app)
     # call
@@ -118,7 +117,7 @@ def test_middleware_class_call_exception(
     # create instance
     app = Mock()
     mock_request.return_value.method = "GET"
-    mock_request.return_value.path = "/user-auth"
+    mock_request.return_value.path = "/rsuinfo"
     mock_request.return_value.headers = {"Authorization": "token"}
 
     # call
@@ -126,7 +125,7 @@ def test_middleware_class_call_exception(
     mock_keycloak_instance.introspect.side_effect = Unauthorized("test")
     mock_get_user_info.return_value = None
 
-    environ = {"REQUEST_METHOD": "GET", "PATH_INFO": "/user-auth"}
+    environ = {"REQUEST_METHOD": "GET", "PATH_INFO": "/rsuinfo"}
     start_response = Mock()
     middleware_instance = middleware.Middleware(app)
 
@@ -137,62 +136,48 @@ def test_middleware_class_call_exception(
     mock_request.assert_called_once_with(environ)
 
 
-@patch("api.src.middleware.get_user_role")
-@patch("api.src.middleware.Request")
-def test_middleware_class_call_contact_support(mock_request, mock_get_user_role):
-    # mock
-    mock_request.return_value.method = "POST"
-    mock_request.return_value.path = "/contact-support"
-
-    # create instance
-    app = Mock()
-    middleware_instance = middleware.Middleware(app)
-
-    # call
-    environ = {"GOOGLE_CLIENT_ID": "test"}
-    start_response = Mock()
-    middleware_instance(environ, start_response)
-
-    # check
-    mock_get_user_role.assert_not_called()
-    app.assert_called_once_with(environ, start_response)
-    mock_request.assert_called_once_with(environ)
-
-
-@patch("api.src.middleware.ENABLE_RSU_FEATURES", True)
-@patch("api.src.middleware.ENABLE_INTERSECTION_FEATURES", True)
-@patch("api.src.middleware.ENABLE_WZDX_FEATURES", True)
+@patch("api_environment.ENABLE_RSU_FEATURES", True)
+@patch("api_environment.ENABLE_INTERSECTION_FEATURES", True)
+@patch("api_environment.ENABLE_WZDX_FEATURES", True)
 def test_evaluate_tag_all_enabled():
-    assert not middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.RSU)
-    assert not middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.INTERSECTION)
-    assert not middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.WZDX)
+    assert middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.RSU) is False
+    assert (
+        middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.INTERSECTION)
+        is False
+    )
+    assert middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.WZDX) is False
 
 
-@patch("api.src.middleware.ENABLE_RSU_FEATURES", False)
-@patch("api.src.middleware.ENABLE_INTERSECTION_FEATURES", False)
-@patch("api.src.middleware.ENABLE_WZDX_FEATURES", False)
+@patch("api_environment.ENABLE_RSU_FEATURES", False)
+@patch("api_environment.ENABLE_INTERSECTION_FEATURES", False)
+@patch("api_environment.ENABLE_WZDX_FEATURES", False)
 def test_evaluate_tag_all_disabled():
     from api.src import middleware as middleware
 
-    assert middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.RSU)
-    assert middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.INTERSECTION)
-    assert middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.WZDX)
+    assert middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.RSU) is True
+    assert (
+        middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.INTERSECTION) is True
+    )
+    assert middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.WZDX) is True
 
 
-@patch("api.src.middleware.ENABLE_RSU_FEATURES", False)
-@patch("api.src.middleware.ENABLE_INTERSECTION_FEATURES", True)
-@patch("api.src.middleware.ENABLE_WZDX_FEATURES", False)
+@patch("api_environment.ENABLE_RSU_FEATURES", False)
+@patch("api_environment.ENABLE_INTERSECTION_FEATURES", True)
+@patch("api_environment.ENABLE_WZDX_FEATURES", False)
 def test_evaluate_tag_different():
     from api.src import middleware as middleware
 
-    assert middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.RSU)
-    assert not middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.INTERSECTION)
-    assert middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.WZDX)
+    assert middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.RSU) is True
+    assert (
+        middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.INTERSECTION)
+        is False
+    )
+    assert middleware.is_tag_disabled(middleware.FEATURE_KEYS_LITERAL.WZDX) is True
 
 
-@patch("api.src.middleware.ENABLE_RSU_FEATURES", False)
-@patch("api.src.middleware.ENABLE_INTERSECTION_FEATURES", False)
-@patch("api.src.middleware.ENABLE_WZDX_FEATURES", False)
+@patch("api_environment.ENABLE_RSU_FEATURES", False)
+@patch("api_environment.ENABLE_INTERSECTION_FEATURES", False)
+@patch("api_environment.ENABLE_WZDX_FEATURES", False)
 def test_is_feature_disabled_disabled():
     from api.src import middleware as middleware
 
@@ -203,16 +188,16 @@ def test_is_feature_disabled_disabled():
         "/d": None,
     }
 
-    assert middleware.is_endpoint_disabled(feature_tags, "/a")
-    assert middleware.is_endpoint_disabled(feature_tags, "/b")
-    assert middleware.is_endpoint_disabled(feature_tags, "/c")
-    assert not middleware.is_endpoint_disabled(feature_tags, "/d")
-    assert not middleware.is_endpoint_disabled(feature_tags, "/f")
+    assert middleware.is_endpoint_disabled(feature_tags, "/a") is True
+    assert middleware.is_endpoint_disabled(feature_tags, "/b") is True
+    assert middleware.is_endpoint_disabled(feature_tags, "/c") is True
+    assert middleware.is_endpoint_disabled(feature_tags, "/d") is False
+    assert middleware.is_endpoint_disabled(feature_tags, "/f") is False
 
 
-@patch("api.src.middleware.ENABLE_RSU_FEATURES", True)
-@patch("api.src.middleware.ENABLE_INTERSECTION_FEATURES", True)
-@patch("api.src.middleware.ENABLE_WZDX_FEATURES", True)
+@patch("api_environment.ENABLE_RSU_FEATURES", True)
+@patch("api_environment.ENABLE_INTERSECTION_FEATURES", True)
+@patch("api_environment.ENABLE_WZDX_FEATURES", True)
 def test_is_feature_disabled_enabled():
     from api.src import middleware as middleware
 
@@ -223,16 +208,16 @@ def test_is_feature_disabled_enabled():
         "/d": None,
     }
 
-    assert not middleware.is_endpoint_disabled(feature_tags, "/a")
-    assert not middleware.is_endpoint_disabled(feature_tags, "/b")
-    assert not middleware.is_endpoint_disabled(feature_tags, "/c")
-    assert not middleware.is_endpoint_disabled(feature_tags, "/d")
-    assert not middleware.is_endpoint_disabled(feature_tags, "/f")
+    assert middleware.is_endpoint_disabled(feature_tags, "/a") is False
+    assert middleware.is_endpoint_disabled(feature_tags, "/b") is False
+    assert middleware.is_endpoint_disabled(feature_tags, "/c") is False
+    assert middleware.is_endpoint_disabled(feature_tags, "/d") is False
+    assert middleware.is_endpoint_disabled(feature_tags, "/f") is False
 
 
-@patch("api.src.middleware.ENABLE_RSU_FEATURES", True)
-@patch("api.src.middleware.ENABLE_INTERSECTION_FEATURES", False)
-@patch("api.src.middleware.ENABLE_WZDX_FEATURES", False)
+@patch("api_environment.ENABLE_RSU_FEATURES", True)
+@patch("api_environment.ENABLE_INTERSECTION_FEATURES", False)
+@patch("api_environment.ENABLE_WZDX_FEATURES", False)
 def test_is_feature_disabled_different():
     from api.src import middleware as middleware
 
@@ -243,8 +228,8 @@ def test_is_feature_disabled_different():
         "/d": None,
     }
 
-    assert not middleware.is_endpoint_disabled(feature_tags, "/a")
-    assert middleware.is_endpoint_disabled(feature_tags, "/b")
-    assert middleware.is_endpoint_disabled(feature_tags, "/c")
-    assert not middleware.is_endpoint_disabled(feature_tags, "/d")
-    assert not middleware.is_endpoint_disabled(feature_tags, "/f")
+    assert middleware.is_endpoint_disabled(feature_tags, "/a") is False
+    assert middleware.is_endpoint_disabled(feature_tags, "/b") is True
+    assert middleware.is_endpoint_disabled(feature_tags, "/c") is True
+    assert middleware.is_endpoint_disabled(feature_tags, "/d") is False
+    assert middleware.is_endpoint_disabled(feature_tags, "/f") is False

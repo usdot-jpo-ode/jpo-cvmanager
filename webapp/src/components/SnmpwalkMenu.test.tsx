@@ -1,4 +1,3 @@
-import React from 'react'
 import { render } from '@testing-library/react'
 import SnmpwalkMenu from './SnmpwalkMenu'
 import { Provider } from 'react-redux'

@@ -27,6 +27,7 @@ return_value_single_result = [
                 "PrimaryRoute": "C-470",
                 "SerialNumber": "PEM00055",
                 "FirmwareVersion": 1,
+                "tim_deposit": True,
             },
         },
     )
@@ -49,6 +50,7 @@ expected_rsu_data_single_result = {
                 "PrimaryRoute": "C-470",
                 "SerialNumber": "PEM00055",
                 "FirmwareVersion": 1,
+                "tim_deposit": True,
             },
         }
     ]
@@ -71,6 +73,7 @@ return_value_multiple_results = [
                 "PrimaryRoute": "C-470",
                 "SerialNumber": "PEM00055",
                 "FirmwareVersion": 1,
+                "tim_deposit": True,
             },
         },
     ),
@@ -90,6 +93,7 @@ return_value_multiple_results = [
                 "PrimaryRoute": "C-470",
                 "SerialNumber": "PEM00060",
                 "FirmwareVersion": 1,
+                "tim_deposit": True,
             },
         },
     ),
@@ -109,6 +113,7 @@ return_value_multiple_results = [
                 "PrimaryRoute": "C-470",
                 "SerialNumber": "PEM00084",
                 "FirmwareVersion": 1,
+                "tim_deposit": True,
             },
         },
     ),
@@ -131,6 +136,7 @@ expected_rsu_data_multiple_results = {
                 "PrimaryRoute": "C-470",
                 "SerialNumber": "PEM00055",
                 "FirmwareVersion": 1,
+                "tim_deposit": True,
             },
         },
         {
@@ -148,6 +154,7 @@ expected_rsu_data_multiple_results = {
                 "PrimaryRoute": "C-470",
                 "SerialNumber": "PEM00060",
                 "FirmwareVersion": 1,
+                "tim_deposit": True,
             },
         },
         {
@@ -165,6 +172,7 @@ expected_rsu_data_multiple_results = {
                 "PrimaryRoute": "C-470",
                 "SerialNumber": "PEM00084",
                 "FirmwareVersion": 1,
+                "tim_deposit": True,
             },
         },
     ]

@@ -56,5 +56,5 @@ type ProcessedBsmProperties = {
     length: number
   }
   speed: number
-  transmission: string
+  transmission?: ProcessedTransmissionState
 }

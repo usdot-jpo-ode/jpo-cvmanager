@@ -1,142 +1,390 @@
-import reducer from './menuSlice'
-import {
-  // functions
-  sortCountList,
-  changeDate,
+import reducer, {
+  // thunks
+  toggleMapMenuSelection,
 
   // reducers
-  setCurrentSort,
-  setSortedCountList,
+  setCountsMsgType,
+  setCountsStartDate,
+  setCountsEndDate,
   setDisplay,
 
   // selectors
   selectLoading,
-  selectCurrentSort,
-  selectSortedCountList,
+  selectCountsMsgType,
   selectDisplayCounts,
+  selectDisplayRsuErrors,
+  selectMenuSelection,
+  selectCountsStartDate,
+  selectCountsEndDate,
 } from './menuSlice'
-import apiHelper from '../../apis/api-helper'
 import { RootState } from '../../store'
-import { DateTime } from 'luxon'
+import { configureStore } from '@reduxjs/toolkit'
+import { vi } from 'vitest'
+
+// Mock dayjs to ensure consistent test results
+vi.mock('dayjs', async (importOriginal) => {
+  const actualDayjs: any = await importOriginal()
+  const defaultExport = actualDayjs.default || actualDayjs
+  const mockNow = defaultExport('2024-01-15T12:00:00.000Z')
+
+  const dayjsMock = vi.fn((date?: any) => {
+    if (date) {
+      return defaultExport(date)
+    }
+    return mockNow
+  })
+
+  // Copy all dayjs methods
+  Object.keys(defaultExport).forEach((key) => {
+    dayjsMock[key] = defaultExport[key]
+  })
+
+  return {
+    default: dayjsMock,
+  }
+})
 
 describe('menu reducer', () => {
   it('should handle initial state', () => {
-    expect(reducer(undefined, { type: 'unknown' })).toEqual({
+    const expected = {
       loading: false,
       value: {
-        currentSort: null,
-        sortedCountList: [],
+        countsMsgType: 'BSM',
+        countsStartDate: expect.any(Date),
+        countsEndDate: expect.any(Date),
         displayCounts: false,
         displayRsuErrors: false,
         menuSelection: [],
       },
-    })
+    }
+
+    const actual = reducer(undefined, { type: 'unknown' })
+    expect(actual).toEqual(expected)
+
+    // Verify dates are set correctly (yesterday and today)
+    const startDate = new Date(actual.value.countsStartDate)
+    const endDate = new Date(actual.value.countsEndDate)
+    expect(endDate.getTime() - startDate.getTime()).toBe(24 * 60 * 60 * 1000) // 1 day difference
   })
 })
 
 describe('reducers', () => {
   const initialState: RootState['menu'] = {
-    loading: null,
+    loading: false,
     value: {
-      currentSort: null,
-      sortedCountList: null,
+      countsMsgType: 'BSM',
+      countsStartDate: new Date('2024-01-14T12:00:00.000Z'),
+      countsEndDate: new Date('2024-01-15T12:00:00.000Z'),
       displayCounts: false,
       displayRsuErrors: false,
       menuSelection: [],
     },
   }
 
-  it('setCurrentSort reducer updates state correctly', async () => {
-    const currentSort = 'currentSort'
-    expect(reducer(initialState, setCurrentSort(currentSort))).toEqual({
+  it('setCountsMsgType reducer updates state correctly', () => {
+    const newMsgType = 'SPAT'
+    expect(reducer(initialState, setCountsMsgType(newMsgType))).toEqual({
       ...initialState,
-      value: { ...initialState.value, currentSort },
+      value: { ...initialState.value, countsMsgType: newMsgType },
     })
   })
 
-  it('setSortedCountList reducer updates state correctly', async () => {
-    const sortedCountList = 'sortedCountList'
-    expect(reducer(initialState, setSortedCountList(sortedCountList))).toEqual({
-      ...initialState,
-      value: { ...initialState.value, sortedCountList },
+  it('setCountsMsgType handles different message types', () => {
+    const messageTypes = ['BSM', 'SPAT', 'MAP', 'SSM', 'SRM', 'TIM', 'PSM']
+
+    messageTypes.forEach((msgType) => {
+      const result = reducer(initialState, setCountsMsgType(msgType as any))
+      expect(result.value.countsMsgType).toBe(msgType)
     })
   })
 
-  it('setDisplay reducer updates state correctly', async () => {
+  it('setCountsStartDate reducer updates state correctly', () => {
+    const newStartDate = new Date('2024-01-10T12:00:00.000Z')
+    expect(reducer(initialState, setCountsStartDate(newStartDate))).toEqual({
+      ...initialState,
+      value: { ...initialState.value, countsStartDate: newStartDate },
+    })
+  })
+
+  it('setCountsEndDate reducer updates state correctly', () => {
+    const newEndDate = new Date('2024-01-20T12:00:00.000Z')
+    expect(reducer(initialState, setCountsEndDate(newEndDate))).toEqual({
+      ...initialState,
+      value: { ...initialState.value, countsEndDate: newEndDate },
+    })
+  })
+
+  it('setDisplay reducer updates displayCounts correctly', () => {
     expect(reducer(initialState, setDisplay('displayCounts'))).toEqual({
       ...initialState,
-      value: { ...initialState.value, displayCounts: true },
+      value: {
+        ...initialState.value,
+        displayCounts: true,
+        displayRsuErrors: false,
+      },
     })
+  })
 
+  it('setDisplay reducer updates displayRsuErrors correctly', () => {
+    expect(reducer(initialState, setDisplay('displayRsuErrors'))).toEqual({
+      ...initialState,
+      value: {
+        ...initialState.value,
+        displayCounts: false,
+        displayRsuErrors: true,
+      },
+    })
+  })
+
+  it('setDisplay reducer sets both to false for other values', () => {
     expect(reducer(initialState, setDisplay('somethingElse'))).toEqual({
       ...initialState,
-      value: { ...initialState.value, displayCounts: false },
+      value: {
+        ...initialState.value,
+        displayCounts: false,
+        displayRsuErrors: false,
+      },
+    })
+
+    expect(reducer(initialState, setDisplay(null))).toEqual({
+      ...initialState,
+      value: {
+        ...initialState.value,
+        displayCounts: false,
+        displayRsuErrors: false,
+      },
     })
   })
 })
 
-describe('functions', () => {
-  it('sortCountList ascending', async () => {
-    const dispatch = jest.fn()
-    const key = 'key'
-    const currentSort = 'keydesc'
-    const countList = [{ key: 1 }, { key: 2 }] as any
-    const resp = sortCountList(key, currentSort, countList)(dispatch)
-    expect(resp).toEqual(countList)
-    expect(dispatch).toHaveBeenCalledTimes(2)
+describe('thunks', () => {
+  let store
+
+  beforeEach(() => {
+    store = configureStore({
+      reducer: {
+        menu: reducer,
+      },
+    })
   })
 
-  it('sortCountList descending', async () => {
-    const dispatch = jest.fn()
-    const key = 'key'
-    const currentSort = 'key'
-    const countList = [{ key: 1 }, { key: 2 }] as any
-    const resp = sortCountList(key, currentSort, countList)(dispatch)
-    expect(resp).toEqual([{ key: 2 }, { key: 1 }])
-    expect(dispatch).toHaveBeenCalledTimes(2)
-  })
+  describe('toggleMapMenuSelection', () => {
+    it('adds "Display Message Counts" to menu selection and sets displayCounts', async () => {
+      const result = await store.dispatch(toggleMapMenuSelection('Display Message Counts'))
 
-  it('changeDate start', async () => {
-    const dispatch = jest.fn()
-    const e = DateTime.fromISO('2021-01-01T07:00:00.000Z').toJSDate()
-    const expected = { start: '2021-01-01T00:00:00.000-07:00' }
-    const type = 'start'
-    const requestOut = true
-    apiHelper._deleteData = jest.fn().mockReturnValue({ status: 200, data: 'data' })
-    const resp = changeDate(e, type, requestOut)(dispatch)
-    expect(resp).toEqual(expected)
-    expect(dispatch).toHaveBeenCalledTimes(1)
-  })
+      expect(result.payload).toEqual(['Display Message Counts'])
 
-  it('changeDate end', async () => {
-    const dispatch = jest.fn()
-    const e = DateTime.fromISO('2021-01-01T07:00:00.000Z').toJSDate()
-    const expected = { end: '2021-01-01T00:00:00.000-07:00' }
-    const type = 'end'
-    const requestOut = true
-    apiHelper._deleteData = jest.fn().mockReturnValue({ status: 200, data: 'data' })
-    const resp = changeDate(e, type, requestOut)(dispatch)
-    expect(resp).toEqual(expected)
-    expect(dispatch).toHaveBeenCalledTimes(1)
+      const state = store.getState() as RootState
+      expect(state.menu.value.menuSelection).toEqual(['Display Message Counts'])
+      expect(state.menu.value.displayCounts).toBe(true)
+      expect(state.menu.value.displayRsuErrors).toBe(false)
+    })
+
+    it('adds "Display RSU Status" to menu selection and sets displayRsuErrors', async () => {
+      const result = await store.dispatch(toggleMapMenuSelection('Display RSU Status'))
+
+      expect(result.payload).toEqual(['Display RSU Status'])
+
+      const state = store.getState() as RootState
+      expect(state.menu.value.menuSelection).toEqual(['Display RSU Status'])
+      expect(state.menu.value.displayCounts).toBe(false)
+      expect(state.menu.value.displayRsuErrors).toBe(true)
+    })
+
+    it('removes "Display Message Counts" from menu selection', async () => {
+      // First add it
+      await store.dispatch(toggleMapMenuSelection('Display Message Counts'))
+
+      // Then remove it
+      const result = await store.dispatch(toggleMapMenuSelection('Display Message Counts'))
+
+      expect(result.payload).toEqual([])
+
+      const state = store.getState() as RootState
+      expect(state.menu.value.menuSelection).toEqual([])
+      expect(state.menu.value.displayCounts).toBe(false)
+      expect(state.menu.value.displayRsuErrors).toBe(false)
+    })
+
+    it('switches from "Display RSU Status" to "Display Message Counts"', async () => {
+      // First add RSU Status
+      await store.dispatch(toggleMapMenuSelection('Display RSU Status'))
+
+      // Then toggle Message Counts (should replace RSU Status)
+      const result = await store.dispatch(toggleMapMenuSelection('Display Message Counts'))
+
+      expect(result.payload).toEqual(['Display Message Counts'])
+
+      const state = store.getState() as RootState
+      expect(state.menu.value.menuSelection).toEqual(['Display Message Counts'])
+      expect(state.menu.value.displayCounts).toBe(true)
+      expect(state.menu.value.displayRsuErrors).toBe(false)
+    })
+
+    it('switches from "Display Message Counts" to "Display RSU Status"', async () => {
+      // First add Message Counts
+      await store.dispatch(toggleMapMenuSelection('Display Message Counts'))
+
+      // Then toggle RSU Status (should replace Message Counts)
+      const result = await store.dispatch(toggleMapMenuSelection('Display RSU Status'))
+
+      expect(result.payload).toEqual(['Display RSU Status'])
+
+      const state = store.getState() as RootState
+      expect(state.menu.value.menuSelection).toEqual(['Display RSU Status'])
+      expect(state.menu.value.displayCounts).toBe(false)
+      expect(state.menu.value.displayRsuErrors).toBe(true)
+    })
+
+    it('handles adding other menu items without affecting displays', async () => {
+      const result = await store.dispatch(toggleMapMenuSelection('Some Other Item'))
+
+      expect(result.payload).toEqual(['Some Other Item'])
+
+      const state = store.getState() as RootState
+      expect(state.menu.value.menuSelection).toEqual(['Some Other Item'])
+      expect(state.menu.value.displayCounts).toBe(false)
+      expect(state.menu.value.displayRsuErrors).toBe(false)
+    })
+
+    it('can toggle other menu items on and off', async () => {
+      // Add item
+      await store.dispatch(toggleMapMenuSelection('Some Other Item'))
+      let state = store.getState() as RootState
+      expect(state.menu.value.menuSelection).toEqual(['Some Other Item'])
+
+      // Remove item
+      await store.dispatch(toggleMapMenuSelection('Some Other Item'))
+      state = store.getState() as RootState
+      expect(state.menu.value.menuSelection).toEqual([])
+    })
+
+    it('maintains other selections when toggling display items', async () => {
+      // Add other item first
+      await store.dispatch(toggleMapMenuSelection('Other Item'))
+
+      // Add Display Message Counts
+      const result = await store.dispatch(toggleMapMenuSelection('Display Message Counts'))
+
+      expect(result.payload).toContain('Other Item')
+      expect(result.payload).toContain('Display Message Counts')
+
+      const state = store.getState() as RootState
+      expect(state.menu.value.menuSelection.length).toBe(2)
+    })
   })
 })
 
 describe('selectors', () => {
-  const initialState = {
-    loading: 'loading',
-    value: {
-      display: 'display',
-      currentSort: 'currentSort',
-      sortedCountList: 'sortedCountList',
-      displayCounts: 'displayCounts',
-    },
-  }
-  const state = { menu: initialState } as any
+  const mockStartDate = new Date('2024-01-14T12:00:00.000Z')
+  const mockEndDate = new Date('2024-01-15T12:00:00.000Z')
 
-  it('selectors return the correct value', async () => {
-    expect(selectLoading(state)).toEqual('loading')
-    expect(selectCurrentSort(state)).toEqual('currentSort')
-    expect(selectSortedCountList(state)).toEqual('sortedCountList')
-    expect(selectDisplayCounts(state)).toEqual('displayCounts')
+  const initialState = {
+    menu: {
+      loading: true,
+      value: {
+        countsMsgType: 'SPAT',
+        countsStartDate: mockStartDate,
+        countsEndDate: mockEndDate,
+        displayCounts: true,
+        displayRsuErrors: false,
+        menuSelection: ['Display Message Counts', 'Other Item'],
+      },
+    },
+  } as RootState
+
+  it('selectLoading returns the correct value', () => {
+    expect(selectLoading(initialState)).toBe(true)
+
+    const falseState = {
+      ...initialState,
+      menu: { ...initialState.menu, loading: false },
+    }
+    expect(selectLoading(falseState)).toBe(false)
+  })
+
+  it('selectCountsMsgType returns the correct value', () => {
+    expect(selectCountsMsgType(initialState)).toBe('SPAT')
+
+    const bsmState = {
+      ...initialState,
+      menu: {
+        ...initialState.menu,
+        value: { ...initialState.menu.value, countsMsgType: 'BSM' as any },
+      },
+    }
+    expect(selectCountsMsgType(bsmState)).toBe('BSM')
+  })
+
+  it('selectDisplayCounts returns the correct value', () => {
+    expect(selectDisplayCounts(initialState)).toBe(true)
+
+    const falseState = {
+      ...initialState,
+      menu: {
+        ...initialState.menu,
+        value: { ...initialState.menu.value, displayCounts: false },
+      },
+    }
+    expect(selectDisplayCounts(falseState)).toBe(false)
+  })
+
+  it('selectDisplayRsuErrors returns the correct value', () => {
+    expect(selectDisplayRsuErrors(initialState)).toBe(false)
+
+    const trueState = {
+      ...initialState,
+      menu: {
+        ...initialState.menu,
+        value: { ...initialState.menu.value, displayRsuErrors: true },
+      },
+    }
+    expect(selectDisplayRsuErrors(trueState)).toBe(true)
+  })
+
+  it('selectMenuSelection returns the correct value', () => {
+    expect(selectMenuSelection(initialState)).toEqual(['Display Message Counts', 'Other Item'])
+
+    const emptyState = {
+      ...initialState,
+      menu: {
+        ...initialState.menu,
+        value: { ...initialState.menu.value, menuSelection: [] },
+      },
+    }
+    expect(selectMenuSelection(emptyState)).toEqual([])
+  })
+
+  it('selectCountsStartDate returns the correct value', () => {
+    expect(selectCountsStartDate(initialState)).toEqual(mockStartDate)
+  })
+
+  it('selectCountsEndDate returns the correct value', () => {
+    expect(selectCountsEndDate(initialState)).toEqual(mockEndDate)
+  })
+
+  it('all selectors handle undefined state gracefully', () => {
+    const undefinedState = {
+      menu: {
+        loading: false,
+        value: {
+          countsMsgType: undefined,
+          countsStartDate: undefined,
+          countsEndDate: undefined,
+          displayCounts: undefined,
+          displayRsuErrors: undefined,
+          menuSelection: undefined,
+        },
+      },
+    } as any
+
+    // Selectors should not throw, but return undefined values
+    expect(() => selectLoading(undefinedState)).not.toThrow()
+    expect(() => selectCountsMsgType(undefinedState)).not.toThrow()
+    expect(() => selectDisplayCounts(undefinedState)).not.toThrow()
+    expect(() => selectDisplayRsuErrors(undefinedState)).not.toThrow()
+    expect(() => selectMenuSelection(undefinedState)).not.toThrow()
+    expect(() => selectCountsStartDate(undefinedState)).not.toThrow()
+    expect(() => selectCountsEndDate(undefinedState)).not.toThrow()
   })
 })

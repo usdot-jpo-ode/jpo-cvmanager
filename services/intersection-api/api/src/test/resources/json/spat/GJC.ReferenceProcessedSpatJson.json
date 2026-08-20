@@ -1,66 +1,18 @@
 {
-  "schemaVersion": 2,
+  "cti4501Conformant": false,
+  "enabledLanes": [],
+  "intersectionId": 12111,
   "messageType": "SPAT",
   "odeReceivedAt": "2025-08-29T16:09:34.416Z",
-  "validationMessages": [
-    {
-      "message": "$.metadata.source: does not have a value in the enumeration [RSU, V2X, MMITSS, UNKNOWN]",
-      "jsonPath": "$.metadata.source",
-      "schemaPath": "#/properties/metadata/properties/source/enum"
-    },
-    {
-      "message": "$.metadata.logFileName: is missing but it is required",
-      "jsonPath": "$.metadata",
-      "schemaPath": "#/properties/metadata/required"
-    },
-    {
-      "message": "$.metadata.receivedMessageDetails: is missing but it is required",
-      "jsonPath": "$.metadata",
-      "schemaPath": "#/properties/metadata/required"
-    },
-    {
-      "message": "$.metadata.recordGeneratedAt: is missing but it is required",
-      "jsonPath": "$.metadata",
-      "schemaPath": "#/properties/metadata/required"
-    },
-    {
-      "message": "$.metadata.asn1: is missing but it is required",
-      "jsonPath": "$.metadata",
-      "schemaPath": "#/properties/metadata/required"
-    },
-    { "message": "CTI-4501 conformance issue: The SPAT 'timeStamp' DE_MinuteOfTheYear is missing" },
-    { "message": "CTI-4501 conformance issue: The intersections 'id.region' DE_RoadRegulatorID is missing" },
-    { "message": "CTI-4501 conformance issue: The state-time-speed 'timing.nextTime' DE_TimeMark is missing" },
-    { "message": "CTI-4501 conformance issue: The state-time-speed 'timing.startTime' DE_TimeMark is missing" }
-  ],
-  "intersectionId": 12111,
-  "cti4501Conformant": false,
   "revision": 0,
-  "status": {
-    "manualControlIsEnabled": false,
-    "stopTimeIsActivated": false,
-    "failureFlash": false,
-    "preemptIsActive": false,
-    "signalPriorityIsActive": false,
-    "fixedTimeOperation": false,
-    "trafficDependentOperation": false,
-    "standbyOperation": false,
-    "failureMode": false,
-    "off": false,
-    "recentMAPmessageUpdate": false,
-    "recentChangeInMAPassignedLanesIDsUsed": false,
-    "noValidMAPisAvailableAtThisTime": false,
-    "noValidSPATisAvailableAtThisTime": false
-  },
-  "utcTimeStamp": "2025-08-29T16:09:35.176Z",
-  "enabledLanes": [],
+  "schemaVersion": 3,
   "states": [
     {
       "signalGroup": 2,
       "stateTimeSpeed": [
         {
           "eventState": "PROTECTED_MOVEMENT_ALLOWED",
-          "timing": { "minEndTime": "2025-08-29T16:36:52Z", "maxEndTime": "2025-08-29T16:36:52.1Z" }
+          "timing": { "maxEndTime": "2025-08-29T16:36:52.1Z", "minEndTime": "2025-08-29T16:36:52Z" }
         }
       ]
     },
@@ -69,7 +21,7 @@
       "stateTimeSpeed": [
         {
           "eventState": "STOP_AND_REMAIN",
-          "timing": { "minEndTime": "2025-08-29T16:36:58.1Z", "maxEndTime": "2025-08-29T16:36:58.1Z" }
+          "timing": { "maxEndTime": "2025-08-29T16:36:58.1Z", "minEndTime": "2025-08-29T16:36:58.1Z" }
         }
       ]
     },
@@ -78,7 +30,7 @@
       "stateTimeSpeed": [
         {
           "eventState": "PROTECTED_MOVEMENT_ALLOWED",
-          "timing": { "minEndTime": "2025-08-29T16:36:52Z", "maxEndTime": "2025-08-29T16:36:52.1Z" }
+          "timing": { "maxEndTime": "2025-08-29T16:36:52.1Z", "minEndTime": "2025-08-29T16:36:52Z" }
         }
       ]
     },
@@ -87,7 +39,7 @@
       "stateTimeSpeed": [
         {
           "eventState": "STOP_AND_REMAIN",
-          "timing": { "minEndTime": "2025-08-29T16:36:25.2Z", "maxEndTime": "2025-08-29T16:36:25.2Z" }
+          "timing": { "maxEndTime": "2025-08-29T16:36:25.2Z", "minEndTime": "2025-08-29T16:36:25.2Z" }
         }
       ]
     },
@@ -96,7 +48,7 @@
       "stateTimeSpeed": [
         {
           "eventState": "STOP_AND_REMAIN",
-          "timing": { "minEndTime": "2025-08-29T16:36:25.2Z", "maxEndTime": "2025-08-29T16:36:25.2Z" }
+          "timing": { "maxEndTime": "2025-08-29T16:36:25.2Z", "minEndTime": "2025-08-29T16:36:25.2Z" }
         }
       ]
     },
@@ -105,9 +57,58 @@
       "stateTimeSpeed": [
         {
           "eventState": "STOP_AND_REMAIN",
-          "timing": { "minEndTime": "2025-08-29T16:36:25.2Z", "maxEndTime": "2025-08-29T16:36:25.2Z" }
+          "timing": { "maxEndTime": "2025-08-29T16:36:25.2Z", "minEndTime": "2025-08-29T16:36:25.2Z" }
         }
       ]
     }
+  ],
+  "status": {
+    "failureFlash": false,
+    "failureMode": false,
+    "fixedTimeOperation": false,
+    "manualControlIsEnabled": false,
+    "noValidMAPisAvailableAtThisTime": false,
+    "noValidSPATisAvailableAtThisTime": false,
+    "off": false,
+    "preemptIsActive": false,
+    "recentChangeInMAPassignedLanesIDsUsed": false,
+    "recentMAPmessageUpdate": false,
+    "signalPriorityIsActive": false,
+    "standbyOperation": false,
+    "stopTimeIsActivated": false,
+    "trafficDependentOperation": false
+  },
+  "utcTimeStamp": "2025-08-29T16:09:35.176Z",
+  "utcTimeStampTS": "2025-08-29T16:09:35.176Z",
+  "validationMessages": [
+    {
+      "jsonPath": "/$ref/properties/metadata/properties/source/enum",
+      "message": "does not have a value in the enumeration [\"RSU\", \"V2X\", \"MMITSS\", \"UNKNOWN\"]",
+      "schemaPath": "https://raw.githubusercontent.com/usdot-jpo-ode/jpo-ode/jpo-ode-5.1.0/jpo-ode-core/src/main/resources/schemas/schema-spat.json#/properties/metadata/properties/source/enum"
+    },
+    {
+      "jsonPath": "/$ref/properties/metadata/required",
+      "message": "required property 'logFileName' not found",
+      "schemaPath": "https://raw.githubusercontent.com/usdot-jpo-ode/jpo-ode/jpo-ode-5.1.0/jpo-ode-core/src/main/resources/schemas/schema-spat.json#/properties/metadata/required"
+    },
+    {
+      "jsonPath": "/$ref/properties/metadata/required",
+      "message": "required property 'receivedMessageDetails' not found",
+      "schemaPath": "https://raw.githubusercontent.com/usdot-jpo-ode/jpo-ode/jpo-ode-5.1.0/jpo-ode-core/src/main/resources/schemas/schema-spat.json#/properties/metadata/required"
+    },
+    {
+      "jsonPath": "/$ref/properties/metadata/required",
+      "message": "required property 'recordGeneratedAt' not found",
+      "schemaPath": "https://raw.githubusercontent.com/usdot-jpo-ode/jpo-ode/jpo-ode-5.1.0/jpo-ode-core/src/main/resources/schemas/schema-spat.json#/properties/metadata/required"
+    },
+    {
+      "jsonPath": "/$ref/properties/metadata/required",
+      "message": "required property 'asn1' not found",
+      "schemaPath": "https://raw.githubusercontent.com/usdot-jpo-ode/jpo-ode/jpo-ode-5.1.0/jpo-ode-core/src/main/resources/schemas/schema-spat.json#/properties/metadata/required"
+    },
+    { "message": "CTI-4501 conformance issue: The SPAT 'timeStamp' DE_MinuteOfTheYear is missing" },
+    { "message": "CTI-4501 conformance issue: The intersections 'id.region' DE_RoadRegulatorID is missing" },
+    { "message": "CTI-4501 conformance issue: The state-time-speed 'timing.nextTime' DE_TimeMark is missing" },
+    { "message": "CTI-4501 conformance issue: The state-time-speed 'timing.startTime' DE_TimeMark is missing" }
   ]
 }

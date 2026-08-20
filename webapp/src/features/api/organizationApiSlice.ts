@@ -20,9 +20,7 @@ export const organizationApiSlice = createApi({
       const currentState = getState() as RootState
       const token = selectToken(currentState)
 
-      // Endpoint names must match the keys in the endpoints objects below
-      const endpointsWithoutToken = []
-      if (token && !endpointsWithoutToken.includes(endpoint)) {
+      if (token) {
         headers.set('Authorization', `Bearer ${token}`)
       }
 

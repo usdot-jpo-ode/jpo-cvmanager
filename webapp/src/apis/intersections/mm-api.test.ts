@@ -134,15 +134,18 @@ describe('MessageMonitorApi', () => {
     expect(result).toEqual(expected)
     expect(authApiHelper.invokeApi).toHaveBeenCalledWith(
       expect.objectContaining({
+        abortController: undefined,
+        failureMessage: 'Failed to retrieve BSM messages',
         path: '/data/processed-bsm',
         token: 'token',
+        tag: 'intersection',
         queryParams: {
-          origin_ip: '10.11.81.12',
           start_time_utc_millis: startTime.getTime().toString(),
           end_time_utc_millis: endTime.getTime().toString(),
           longitude: '-105.0909',
           latitude: '39.588',
           distance: '500',
+          vehicle_id: '10.11.81.12',
         },
       })
     )

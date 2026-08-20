@@ -499,7 +499,7 @@ exports[`should take a snapshot 1`] = `
                         <th
                           class="MuiTableCell-root MuiTableCell-head MuiTableCell-paddingCheckbox MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
                           scope="col"
-                          style="text-align: center; background-color: rgb(255, 255, 255); width: 96px; box-sizing: border-box;"
+                          style="text-align: center; background-color: rgb(255, 255, 255); width: 144px; box-sizing: border-box;"
                         >
                           <span
                             aria-disabled="true"

@@ -1055,7 +1055,7 @@ exports[`snapshot bsmData clicked 1`] = `
                           <input
                             checked=""
                             class="PrivateSwitchBase-input css-mocked-MuiSwitchBase-root"
-                            name="mui-7"
+                            name="mui-8"
                             type="radio"
                             value="online"
                           />
@@ -1100,7 +1100,7 @@ exports[`snapshot bsmData clicked 1`] = `
                         >
                           <input
                             class="PrivateSwitchBase-input css-mocked-MuiSwitchBase-root"
-                            name="mui-7"
+                            name="mui-8"
                             type="radio"
                             value="scms"
                           />

@@ -1,6 +1,8 @@
 package us.dot.its.jpo.ode.api.asn1;
 
 import lombok.extern.slf4j.Slf4j;
+
+import java.time.ZonedDateTime;
 import java.util.HexFormat;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -26,6 +28,12 @@ import us.dot.its.jpo.ode.util.DateTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import us.dot.its.jpo.asn.j2735.r2024.MessageFrame.MessageFrame;
 import us.dot.its.jpo.asn.j2735.r2024.SignalRequestMessage.SignalRequestMessageMessageFrame;
+import us.dot.its.jpo.geojsonconverter.converter.srm.SrmConverter;
+import us.dot.its.jpo.geojsonconverter.pojos.common.DeserializedRawMessageFrame;
+import us.dot.its.jpo.geojsonconverter.pojos.geojson.srm.ProcessedSrm;
+import us.dot.its.jpo.geojsonconverter.utils.ProcessedSchemaVersions;
+import us.dot.its.jpo.geojsonconverter.validator.JsonValidatorResult;
+import us.dot.its.jpo.geojsonconverter.validator.SrmJsonValidator;
 
 /**
  * Decoder implementation for Basic Safety Message (SRM) messages.
@@ -37,6 +45,8 @@ import us.dot.its.jpo.asn.j2735.r2024.SignalRequestMessage.SignalRequestMessageM
 public class SrmDecoder implements Decoder {
 
     MessageFrameCodec codec;
+    SrmJsonValidator srmJsonValidator;
+    public static final SrmConverter converter = new SrmConverter();
     public static final XmlMapper xmlMapper = new XmlMapper();
 
     /**
@@ -62,8 +72,13 @@ public class SrmDecoder implements Decoder {
 
         try {
             OdeMessageFrameData odeMessageFrameData = convertXERToMessageFrame(xer);
+            ProcessedSrm processedSrm = convertMessageFrameToProcessedSrm(odeMessageFrameData);
+            processedSrm.getProperties().setAsn1(message.getAsn1Message());
+            processedSrm.getProperties().setOriginIp(odeMessageFrameData.getMetadata().getOriginIp());
+            processedSrm.getProperties()
+                    .setOdeReceivedAt(ZonedDateTime.parse(odeMessageFrameData.getMetadata().getOdeReceivedAt()));
             return new SrmDecodedMessage(
-                    ((SignalRequestMessageMessageFrame) odeMessageFrameData.getPayload().getData()).getValue(),
+                    processedSrm,
                     message.getAsn1Message(), "");
 
         } catch (JsonProcessingException e) {
@@ -110,6 +125,45 @@ public class SrmDecoder implements Decoder {
         OdeMessageFramePayload payload = new OdeMessageFramePayload(messageFrame);
 
         return new OdeMessageFrameData(metadata, payload);
+
+    }
+
+    /**
+     * Converts OdeMessageFrameData to a processed SRM object.
+     * Validates the message and returns either a processed or failure SRM.
+     *
+     * @param odeMessageFrameData OdeMessageFrameData to process
+     * @return ProcessedSrm object containing SRM data or validation failure
+     */
+    public ProcessedSrm convertMessageFrameToProcessedSrm(OdeMessageFrameData odeMessageFrameData) {
+        DeserializedRawMessageFrame deserializedSrm = new DeserializedRawMessageFrame();
+        try {
+            JsonValidatorResult validationResults = srmJsonValidator.validate(odeMessageFrameData.toJson());
+            deserializedSrm.setOdeMessageFrameData(odeMessageFrameData);
+            deserializedSrm.setValidationResults(validationResults);
+        } catch (Exception e) {
+            JsonValidatorResult validatorResult = new JsonValidatorResult();
+
+            validatorResult.addException(e);
+            deserializedSrm.setValidationFailure(true);
+            deserializedSrm.setValidationResults(validatorResult);
+            deserializedSrm.setFailedMessage(e.getMessage());
+        }
+
+        OdeMessageFrameData rawValue = new OdeMessageFrameData();
+        rawValue.setMetadata(odeMessageFrameData.getMetadata());
+        rawValue.setPayload(odeMessageFrameData.getPayload());
+
+        SignalRequestMessageMessageFrame srmMessageFrame = (SignalRequestMessageMessageFrame) rawValue.getPayload()
+                .getData();
+
+        ZonedDateTime zdt = ZonedDateTime.parse(rawValue.getMetadata().getOdeReceivedAt());
+
+        ProcessedSrm processedSrm = converter.processSrm(srmMessageFrame, zdt);
+
+        // Set the schema version
+        processedSrm.getProperties().setSchemaVersion(ProcessedSchemaVersions.PROCESSED_SRM_SCHEMA_VERSION);
+        return processedSrm;
 
     }
 }

@@ -165,10 +165,6 @@ spec:
               value: ""
             - name: MONGO_PROCESSED_PSM_COLLECTION_NAME
               value: ""
-            - name: MONGO_SSM_COLLECTION_NAME
-              value: ""
-            - name: MONGO_SRM_COLLECTION_NAME
-              value: ""
             - name: WZDX_ENDPOINT
               value: ""
             - name: WZDX_API_KEY

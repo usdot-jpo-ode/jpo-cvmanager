@@ -2,7 +2,7 @@ import { Box, Container, Typography } from '@mui/material'
 import { ConfigParamEditForm } from '../../../features/intersections/configuration/configuration-edit-form'
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
-import { selectParameter } from '../../../features/api/intersectionApiSlice'
+import { selectParameter } from '../../../features/api/intersectionConfigSlice'
 
 const ConfigParamEdit = () => {
   const { key } = useParams<{ key: string }>()

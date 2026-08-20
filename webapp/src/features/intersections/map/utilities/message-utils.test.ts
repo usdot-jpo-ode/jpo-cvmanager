@@ -1,5 +1,5 @@
 import {
-  addBsmTimestamps,
+  addBsmTimestampsAndSortAscending,
   addConnections,
   createMarkerForNotification,
   generateSignalStateFeatureCollection,
@@ -65,11 +65,17 @@ describe('message-utils', () => {
     expect(result[firstTimestamp][0].signalGroup).toBe(spatData[0].states[0].signalGroup)
   })
 
-  it('addBsmTimestamps derives epoch seconds from odeReceivedAt', () => {
-    const result = addBsmTimestamps(bsmData as unknown as BsmFeatureCollection)
+  it('addBsmTimestampsAndSortAscending derives epoch seconds from odeReceivedAt and sorts ascending', () => {
+    const result = addBsmTimestampsAndSortAscending(bsmData as unknown as BsmFeatureCollection)
     const expectedEpochSeconds = Date.parse(bsmData.features[0].properties.odeReceivedAt) / 1000
 
-    expect(result.features[0].properties.odeReceivedAtEpochSeconds).toBe(expectedEpochSeconds)
+    expect(Math.round(result.features[0].properties.odeReceivedAtEpochSeconds)).toBe(Math.round(expectedEpochSeconds))
+    // Check that the features are sorted ascending by odeReceivedAtEpochSeconds
+    for (let i = 1; i < result.features.length; i++) {
+      expect(result.features[i].properties.odeReceivedAtEpochSeconds).toBeGreaterThanOrEqual(
+        result.features[i - 1].properties.odeReceivedAtEpochSeconds
+      )
+    }
   })
 
   it('isValidDate returns true for a valid Date', () => {

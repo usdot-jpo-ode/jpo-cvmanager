@@ -20,9 +20,9 @@ public interface UserEmailNotificationRepository extends JpaRepository<UserEmail
             "WHERE uen.emailType.emailType = :notificationType " +
             "AND ((:frequency = 'IMMEDIATE' AND uen.immediate = true) " +
             "OR (:frequency = 'HOURLY' AND uen.hourly = true) " +
-            "OR (:frequency = 'DAILY' AND uen.daily = true) " +
-            "OR (:frequency = 'WEEKLY' AND uen.weekly = true) " +
-            "OR (:frequency = 'MONTHLY' AND uen.monthly = true))")
+            "OR (:frequency = 'ONCE_PER_DAY' AND uen.daily = true) " +
+            "OR (:frequency = 'ONCE_PER_WEEK' AND uen.weekly = true) " +
+            "OR (:frequency = 'ONCE_PER_MONTH' AND uen.monthly = true))")
     List<String> findUsersByNotificationType(@Param("notificationType") String notificationType,
             @Param("frequency") String frequency);
 
@@ -35,9 +35,9 @@ public interface UserEmailNotificationRepository extends JpaRepository<UserEmail
             "AND r.ipv4Address = :rsuIp " +
             "AND ((:frequency = 'IMMEDIATE' AND uen.immediate = true) " +
             "OR (:frequency = 'HOURLY' AND uen.hourly = true) " +
-            "OR (:frequency = 'DAILY' AND uen.daily = true) " +
-            "OR (:frequency = 'WEEKLY' AND uen.weekly = true) " +
-            "OR (:frequency = 'MONTHLY' AND uen.monthly = true))")
+            "OR (:frequency = 'ONCE_PER_DAY' AND uen.daily = true) " +
+            "OR (:frequency = 'ONCE_PER_WEEK' AND uen.weekly = true) " +
+            "OR (:frequency = 'ONCE_PER_MONTH' AND uen.monthly = true))")
     List<String> findUsersByNotificationTypeAndRsu(@Param("notificationType") String notificationType,
             @Param("frequency") String frequency, @Param("rsuIp") InetAddress rsuIp);
 
@@ -49,9 +49,9 @@ public interface UserEmailNotificationRepository extends JpaRepository<UserEmail
             "AND o.name = :organizationName " +
             "AND ((:frequency = 'IMMEDIATE' AND uen.immediate = true) " +
             "OR (:frequency = 'HOURLY' AND uen.hourly = true) " +
-            "OR (:frequency = 'DAILY' AND uen.daily = true) " +
-            "OR (:frequency = 'WEEKLY' AND uen.weekly = true) " +
-            "OR (:frequency = 'MONTHLY' AND uen.monthly = true))")
+            "OR (:frequency = 'ONCE_PER_DAY' AND uen.daily = true) " +
+            "OR (:frequency = 'ONCE_PER_WEEK' AND uen.weekly = true) " +
+            "OR (:frequency = 'ONCE_PER_MONTH' AND uen.monthly = true))")
     List<String> findUsersByNotificationTypeAndOrganization(@Param("notificationType") String notificationType,
             @Param("frequency") String frequency, @Param("organizationName") String organizationName);
 

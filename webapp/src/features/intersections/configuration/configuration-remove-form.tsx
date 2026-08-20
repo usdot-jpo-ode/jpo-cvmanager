@@ -4,7 +4,7 @@ import * as Yup from 'yup'
 import { useFormik } from 'formik'
 import { Button, Card, CardActions, CardContent, CardHeader, Divider, Grid2, TextField } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
-import { useRemoveOverriddenParameterMutation } from '../../api/intersectionApiSlice'
+import { useRemoveOverriddenParameterMutation } from '../../api/intersectionConfigSlice'
 
 export const ConfigParamRemoveForm = (props) => {
   const { parameter, defaultParameter, ...other } = props

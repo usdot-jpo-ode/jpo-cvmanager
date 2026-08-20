@@ -78,8 +78,11 @@ export function generateColorDictionary(inputSet: Set<string>): { [key: string]:
   return colorDictionary
 }
 
-export function generateMapboxStyleExpression(colors: { [key: string]: string }): mapboxgl.Expression {
-  const layerStyle: mapboxgl.Expression = ['match', ['get', 'id'], 'temp-id', '#0004ff']
+export function generateMapboxStyleExpression(
+  colors: { [key: string]: string },
+  idKey: string = 'id'
+): mapboxgl.Expression {
+  const layerStyle: mapboxgl.Expression = ['match', ['get', idKey], 'temp-id', '#0004ff']
   for (const [key, value] of Object.entries(colors)) {
     layerStyle.push(key)
     layerStyle.push(value)

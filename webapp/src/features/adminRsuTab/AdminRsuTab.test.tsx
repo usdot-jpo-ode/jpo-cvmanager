@@ -10,7 +10,12 @@ import { BrowserRouter } from 'react-router-dom'
 it('should take a snapshot', () => {
   const { container } = render(
     <ThemeProvider theme={testTheme}>
-      <Provider store={setupStore({ adminRsuTab: { loading: false, value: { activeDiv: 'rsu_table' } } })}>
+      <Provider
+        store={setupStore({
+          adminRsuTab: { loading: false, value: { activeDiv: 'rsu_table' } },
+          user: { value: { authLoginData: { token: 'testToken' } } },
+        })}
+      >
         <BrowserRouter>
           <AdminRsuTab />
         </BrowserRouter>

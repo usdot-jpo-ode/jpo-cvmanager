@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 
+import us.dot.its.jpo.ode.api.converters.DoubleToDurationConverter;
 import us.dot.its.jpo.ode.api.converters.StringToZonedDateTimeConverter;
 import us.dot.its.jpo.ode.api.converters.ZonedDateTimeToStringConverter;
 
@@ -64,7 +65,6 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
                     + authenticationDatabase;
         }
 
-        
         logger.info("MongoDB Connection String: {}", uri);
         builder.applyConnectionString(new ConnectionString(uri));
     }
@@ -73,6 +73,7 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
     public MongoCustomConversions customConversions() {
         converters.add(new StringToZonedDateTimeConverter());
         converters.add(new ZonedDateTimeToStringConverter());
+        converters.add(new DoubleToDurationConverter());
         return new MongoCustomConversions(converters);
     }
 }

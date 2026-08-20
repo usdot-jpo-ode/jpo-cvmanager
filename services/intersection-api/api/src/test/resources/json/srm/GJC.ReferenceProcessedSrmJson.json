@@ -1,0 +1,27 @@
+{
+  "type": "Feature",
+  "geometry": { "type": "Point", "coordinates": [-105.0913829, 39.5904915] },
+  "properties": {
+    "schemaVersion": 1,
+    "messageType": "SRM",
+    "odeReceivedAt": "2025-08-29T16:09:34.416Z",
+    "sequenceNumber": 1,
+    "vehicleID": "2366845094",
+    "role": "PUBLICTRANSPORT",
+    "latitude": 39.5904915,
+    "longitude": -105.0913829,
+    "elevation": 1685.4,
+    "heading": 175.9,
+    "requests": [
+      {
+        "intersectionId": 12109,
+        "requestID": 4,
+        "priorityRequestType": "PRIORITYREQUEST",
+        "inboundLaneID": 13,
+        "outboundLaneID": 4,
+        "estimatedTimeOfArrivalDurationSeconds":10.979000000
+      }
+    ],
+    "validationMessages": []
+  }
+}

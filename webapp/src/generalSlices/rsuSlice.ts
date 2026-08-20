@@ -6,11 +6,9 @@ import {
   RsuMapInfoIpList,
   RsuOnlineStatusRespMultiple,
   RsuOnlineStatusRespSingle,
-  SsmSrmData,
 } from '../models/RsuApi'
 import { RootState } from '../store'
 import { selectToken, selectOrganizationName } from './userSlice'
-import { SelectedSrm } from '../models/Srm'
 import { MessageType } from '../models/MessageTypes'
 import { toast } from 'react-hot-toast'
 import { DateTime } from 'luxon'
@@ -37,9 +35,6 @@ const initialState = {
   geoMsgFilter: false,
   geoMsgFilterStep: 60,
   geoMsgFilterOffset: 0,
-  ssmDisplay: false,
-  srmSsmList: [] as SsmSrmData,
-  selectedSrm: [] as SelectedSrm[],
 }
 
 export const getRsuData = createAsyncThunk(
@@ -83,13 +78,6 @@ export const _getRsuOnlineStatus = createAsyncThunk(
     return rsuOnlineStatus
   }
 )
-
-export const getSsmSrmData = createAsyncThunk('rsu/getSsmSrmData', async (_, { getState }) => {
-  const currentState = getState() as RootState
-  const token = selectToken(currentState)
-  return await RsuApi.getSsmSrmData(token)
-})
-
 
 export const updateGeoMsgData = createAsyncThunk(
   'rsu/updateGeoMsgData',
@@ -176,12 +164,6 @@ export const rsuSlice = createSlice({
       state.value.geoMsgData = []
       state.value.geoMsgDateError = false
     },
-    toggleSsmSrmDisplay: (state) => {
-      state.value.ssmDisplay = !state.value.ssmDisplay
-    },
-    setSelectedSrm: (state, action: PayloadAction<SelectedSrm>) => {
-      state.value.selectedSrm = Object.keys(action.payload ?? {}).length === 0 ? [] : [action.payload]
-    },
     toggleGeoMsgPointSelect: (state) => {
       state.value.addGeoMsgPoint = !state.value.addGeoMsgPoint
     },
@@ -243,15 +225,6 @@ export const rsuSlice = createSlice({
       .addCase(_getRsuOnlineStatus.fulfilled, (state, action) => {
         state.value.rsuOnlineStatus = action.payload as RsuOnlineStatusRespMultiple
       })
-      .addCase(getSsmSrmData.pending, (state) => {
-        state.loading = true
-      })
-      .addCase(getSsmSrmData.rejected, (state) => {
-        state.loading = false
-      })
-      .addCase(getSsmSrmData.fulfilled, (state, action) => {
-        state.value.srmSsmList = action.payload
-      })
       .addCase(updateGeoMsgData.pending, (state) => {
         state.loading = true
         state.value.addGeoMsgPoint = false
@@ -291,16 +264,11 @@ export const selectGeoMsgDateError = (state: RootState) => state.rsu.value.geoMs
 export const selectGeoMsgFilter = (state: RootState) => state.rsu.value.geoMsgFilter
 export const selectGeoMsgFilterStep = (state: RootState) => state.rsu.value.geoMsgFilterStep
 export const selectGeoMsgFilterOffset = (state: RootState) => state.rsu.value.geoMsgFilterOffset
-export const selectSsmDisplay = (state: RootState) => state.rsu.value.ssmDisplay
-export const selectSrmSsmList = (state: RootState) => state.rsu.value.srmSsmList
-export const selectSelectedSrm = (state: RootState) => state.rsu.value.selectedSrm
 
 export const {
   selectRsu,
   toggleMapDisplay,
   clearGeoMsg,
-  toggleSsmSrmDisplay,
-  setSelectedSrm,
   toggleGeoMsgPointSelect,
   updateGeoMsgPoints,
   updateGeoMsgDate,

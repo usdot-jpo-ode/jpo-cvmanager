@@ -13,6 +13,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import lombok.extern.slf4j.Slf4j;
 import us.dot.its.jpo.asn.j2735.r2024.SignalRequestMessage.SignalRequestMessage;
+import us.dot.its.jpo.geojsonconverter.pojos.geojson.srm.ProcessedSrm;
 
 @Slf4j
 public class MockSrmGenerator {
@@ -33,7 +34,29 @@ public class MockSrmGenerator {
         } catch (JsonProcessingException e) {
             log.error("JsonProcessingException", e);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            log.error("IOException", e);
+            e.printStackTrace();
+        }
+        return srms;
+    }
+
+    public static List<ProcessedSrm> getProcessedSrms() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+
+        ArrayList<ProcessedSrm> srms = new ArrayList<>();
+
+        try {
+            String processedSrmString = new String(
+                    Files.readAllBytes(Paths.get("src/main/resources/mockdata/processed_srm.json")));
+            ProcessedSrm srm = objectMapper.readValue(processedSrmString, ProcessedSrm.class);
+            srms.add(srm);
+        } catch (JsonMappingException e) {
+            log.error("JsonMappingException", e);
+        } catch (JsonProcessingException e) {
+            log.error("JsonProcessingException", e);
+        } catch (IOException e) {
+            log.error("IOException", e);
             e.printStackTrace();
         }
         return srms;

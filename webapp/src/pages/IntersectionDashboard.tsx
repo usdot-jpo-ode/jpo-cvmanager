@@ -105,12 +105,13 @@ function IntersectionDashboard() {
           height={`calc(100vh - ${headerTabHeight}px)`}
           notFoundRoute={
             <NotFound
-              redirectRoute="/dashboard/intersection"
+              redirectRoute="/dashboard/intersectionDashboard"
               redirectRouteName="Intersection Dashboard Page"
               description="This page does not exist. Please return to the main admin page."
             />
           }
           defaultTabIndex={0}
+          parentRoute={'dashboard/intersectionDashboard'}
           tabs={[
             {
               path: 'dashboard',

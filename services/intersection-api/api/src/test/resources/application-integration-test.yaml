@@ -1,0 +1,123 @@
+# Integration test profile
+#
+# PostgreSQL (PostGIS) is provided automatically by Testcontainers via the tc: JDBC URL
+# scheme — no container code required. Testcontainers intercepts the URL, pulls the
+# postgis/postgis:17-3.5 image, and wires the connection before Hibernate runs DDL.
+#
+# MongoDB is provided by a shared MongoDBContainer bean declared in TestcontainersConfiguration.
+# The @ServiceConnection annotation on that bean automatically overrides spring.data.mongodb.uri
+# with the container's actual URI. The placeholder URI below is never used in practice.
+#
+# Usage in tests:
+#   @SpringBootTest
+#   @ActiveProfiles("integration-test")
+#   @Import(TestcontainersConfiguration.class)
+#   class MyIntegrationTest { ... }
+
+server:
+  port: 8089
+
+### Keycloak — not needed for service-layer integration tests (no HTTP requests)
+keycloak:
+  realm: cvmanager
+  auth-server-url: http://localhost:8084
+  client-id: cvmanager-api
+  client-secret: test-secret
+
+spring.security.oauth2.resourceserver.jwt:
+  issuer-uri: http://localhost:8084/realms/cvmanager
+  jwk-set-uri: http://localhost:8084/realms/cvmanager/protocol/openid-connect/certs
+
+spring.kafka.bootstrap-servers: localhost:9092
+
+kafka.linger_ms: 50
+
+kafka.topics:
+  autoCreateTopics: false
+  numPartitions: 1
+  numReplicas: 1
+  createTopics:
+    - name: topic.ProcessedSpat
+      cleanupPolicy: delete
+      retentionMs: 300000
+    - name: topic.ProcessedMap
+      cleanupPolicy: delete
+      retentionMs: 300000
+
+conflict:
+  monitor:
+    api:
+      kafka-consumers-always-on: false
+
+spring:
+  data:
+    mongodb:
+      # uri overrides host/port/credentials at runtime via MongoConfig.configureClientSettings;
+      # the individual properties below must be present to satisfy @Value injection in MongoConfig
+      # but are not used for the actual connection when uri is set.
+      uri: mongodb://localhost:27017/testdb
+      database: testdb
+      host: localhost
+      port: '27017'
+      username: test
+      password: test
+      authenticationDatabase: admin
+  # PostgreSQL — Testcontainers starts a postgis/postgis:17-3.5 container automatically
+  datasource:
+    url: jdbc:tc:postgis:17-3.5:///testdb
+    username: postgres
+    password: postgres
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    hikari:
+      # Limit pool size to prevent "too many clients" errors when multiple test contexts
+      # share the same PostgreSQL container. Each @SpringBootTest with different mock
+      # configurations creates a separate context (and connection pool). With ~20 test
+      # classes and the default pool size of 10, we'd exceed PostgreSQL's max_connections (100).
+      maximum-pool-size: 2
+      minimum-idle: 1
+      connection-timeout: 30000
+  jpa:
+    hibernate:
+      ddl-auto: create-only
+  mail:
+    host: localhost
+    port: 1025
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+  cache:
+    cache-names: []
+    caffeine:
+      spec: maximumSize=100000,expireAfterWrite=1h
+
+enable:
+  api: true
+  email: false
+  report: false
+  asn1-decoder: false
+
+cmServerURL: http://localhost:8082
+mongoTimeoutMs: 5000
+cors: '*'
+maximumResponseSize: 10000
+
+bucket4j:
+  enabled: false
+  filters:
+    - cache-name: email-rate-limit
+      url: /emails/.*
+      strategy: all
+      rate-limits:
+        - cache-key: "@jwtSubjectExtractor.extractSubject(getHeader('Authorization')) != null ? @jwtSubjectExtractor.extractSubject(getHeader('Authorization')) : getRemoteAddr()"
+          bandwidths:
+            - capacity: 3
+              time: 1
+              unit: hours
+        - cache-key: "'email_global'"
+          bandwidths:
+            - capacity: 6
+              time: 1
+              unit: hours

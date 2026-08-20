@@ -178,6 +178,7 @@ def test_yunex_upgrader_core_upgrade_fail(
     test_yunex_upgrader.run_xfer_upgrade = MagicMock(return_value=-1)
     test_yunex_upgrader.wait_until_online = MagicMock(return_value=0)
     test_yunex_upgrader.cleanup = MagicMock()
+    test_yunex_upgrader.send_error_email = MagicMock()
     notify = MagicMock()
     test_yunex_upgrader.notify_firmware_manager = notify
 
@@ -231,6 +232,7 @@ def test_yunex_upgrader_core_ping_fail(
     test_yunex_upgrader.run_xfer_upgrade = MagicMock(return_value=0)
     test_yunex_upgrader.wait_until_online = MagicMock(return_value=-1)
     test_yunex_upgrader.cleanup = MagicMock()
+    test_yunex_upgrader.send_error_email = MagicMock()
     notify = MagicMock()
     test_yunex_upgrader.notify_firmware_manager = notify
 
@@ -284,6 +286,7 @@ def test_yunex_upgrader_sdk_upgrade_fail(
     test_yunex_upgrader.run_xfer_upgrade = MagicMock(side_effect=[0, -1])
     test_yunex_upgrader.wait_until_online = MagicMock(return_value=0)
     test_yunex_upgrader.cleanup = MagicMock()
+    test_yunex_upgrader.send_error_email = MagicMock()
     notify = MagicMock()
     test_yunex_upgrader.notify_firmware_manager = notify
 
@@ -338,6 +341,7 @@ def test_yunex_upgrader_sdk_ping_fail(
     test_yunex_upgrader.run_xfer_upgrade = MagicMock(return_value=0)
     test_yunex_upgrader.wait_until_online = MagicMock(side_effect=[0, -1])
     test_yunex_upgrader.cleanup = MagicMock()
+    test_yunex_upgrader.send_error_email = MagicMock()
     notify = MagicMock()
     test_yunex_upgrader.notify_firmware_manager = notify
 
@@ -392,6 +396,7 @@ def test_yunex_upgrader_provision_upgrade_fail(
     test_yunex_upgrader.run_xfer_upgrade = MagicMock(side_effect=[0, 0, -1])
     test_yunex_upgrader.wait_until_online = MagicMock(return_value=0)
     test_yunex_upgrader.cleanup = MagicMock()
+    test_yunex_upgrader.send_error_email = MagicMock()
     notify = MagicMock()
     test_yunex_upgrader.notify_firmware_manager = notify
 

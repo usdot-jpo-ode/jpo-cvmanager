@@ -1,4 +1,3 @@
-import React from 'react'
 import {
   LineChart,
   Line,
@@ -61,17 +60,20 @@ const HeadingErrorOverTimeGraph: React.FC<HeadingErrorOverTimeGraphProps> = ({
   const segmentIDs = Array.from(new Set(data.map((item) => item.segmentID))).sort((a, b) => a - b)
 
   // Aggregate data by minute
-  const aggregatedData = sortedData.reduce((acc, item) => {
-    const minute = new Date(item.timestamp).setSeconds(0, 0)
-    if (!acc[minute]) {
-      acc[minute] = {}
-    }
-    if (!acc[minute][`Segment ${item.segmentID}`]) {
-      acc[minute][`Segment ${item.segmentID}`] = []
-    }
-    acc[minute][`Segment ${item.segmentID}`].push(normalizeHeadingError(item.headingDelta))
-    return acc
-  }, {} as { [minute: number]: { [segment: string]: number[] } })
+  const aggregatedData = sortedData.reduce(
+    (acc, item) => {
+      const minute = new Date(item.timestamp).setSeconds(0, 0)
+      if (!acc[minute]) {
+        acc[minute] = {}
+      }
+      if (!acc[minute][`Segment ${item.segmentID}`]) {
+        acc[minute][`Segment ${item.segmentID}`] = []
+      }
+      acc[minute][`Segment ${item.segmentID}`].push(normalizeHeadingError(item.headingDelta))
+      return acc
+    },
+    {} as { [minute: number]: { [segment: string]: number[] } }
+  )
 
   // Process aggregated data to calculate the average for each segment per minute
   const processedData = Object.keys(aggregatedData).map((minute) => {

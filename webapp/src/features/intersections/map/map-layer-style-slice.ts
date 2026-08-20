@@ -11,21 +11,29 @@ const mapMessageLayer: LineLayer = {
   },
 }
 
+const mapMessageHighlightLayer: LineLayer = {
+  id: 'srm-requested-lanes',
+  type: 'line',
+  paint: {
+    'line-width': 12,
+    'line-color': '#ccff33',
+  },
+}
+
 const mapMessageLabelsLayer: SymbolLayer = {
   id: 'map-message-labels',
   type: 'symbol',
   layout: {
-    'text-field': ['concat', 'lane: ', ['to-string', ['get', 'laneId']]],
+    'text-field': ['concat', '#', ['to-string', ['get', 'laneId']]],
     'text-size': 20,
-    // "text-offset": [0, 1],
-    'text-variable-anchor': ['top', 'left', 'right', 'bottom'],
+    'text-font': ['literal', ['Open Sans Bold', 'Arial Unicode MS Bold']],
     'text-allow-overlap': true,
     'icon-allow-overlap': true,
   },
   paint: {
-    'text-color': '#000000',
-    'text-halo-color': '#ffffff',
-    'text-halo-width': 5,
+    'text-color': '#ffffff',
+    'text-halo-color': '#000000',
+    'text-halo-width': 2,
   },
 }
 
@@ -111,34 +119,113 @@ const connectingLanesLayer: LineLayer = {
   },
 }
 
+const connectingLanesSsmStatusLayer: SymbolLayer = {
+  id: 'ssm-connection-status',
+  type: 'symbol',
+  minzoom: 1,
+  maxzoom: 24,
+  layout: {
+    'icon-image': [
+      'match',
+      ['get', 'ssmStatus'],
+      'UNKNOWN',
+      'question-mark',
+      'REQUESTED',
+      'circular-arrow',
+      'PROCESSING',
+      'gear',
+      'WATCH_OTHER_TRAFFIC',
+      'warning',
+      'GRANTED',
+      'check',
+      'REJECTED',
+      'close',
+      'MAX_PRESENCE',
+      'timer',
+      'RESERVICE_LOCKED',
+      'lock',
+      'close',
+    ],
+    'symbol-placement': 'line-center',
+    'icon-allow-overlap': true,
+    'icon-ignore-placement': true,
+    'text-allow-overlap': true,
+    'text-ignore-placement': true,
+    'icon-optional': false,
+    'icon-rotation-alignment': 'viewport',
+    'icon-size': ['interpolate', ['linear'], ['zoom'], 10, 0.003, 14, 0.05, 18, 0.08, 22, 0.12],
+  },
+  paint: {
+    'icon-color': [
+      'match',
+      ['get', 'ssmStatus'],
+      'UNKNOWN',
+      '#202020',
+      'REQUESTED',
+      '#002f9e',
+      'PROCESSING',
+      '#383838',
+      'WATCH_OTHER_TRAFFIC',
+      '#c06600',
+      'GRANTED',
+      '#109501',
+      'REJECTED',
+      '#ff0000',
+      'MAX_PRESENCE',
+      '#740000',
+      'RESERVICE_LOCKED',
+      '#680c00',
+      '#202020',
+    ],
+    'icon-opacity': 1,
+  },
+}
+
+const connectingLanesHighlightLayer: LineLayer = {
+  id: 'ssm-connection-highlight',
+  type: 'line',
+  paint: {
+    'line-width': 12,
+    'line-color': '#ccff33',
+  },
+}
+
 const connectingLanesLabelsLayer: SymbolLayer = {
   id: 'connecting-lanes-labels',
   type: 'symbol',
   layout: {
-    'text-field': ['concat', 'sig-group: ', ['to-string', ['get', 'signalGroupId']]],
+    'text-field': ['concat', 'SG:', ['to-string', ['get', 'signalGroupId']]],
     'text-size': 20,
     'text-offset': [0, 1],
-    'text-variable-anchor': ['top', 'left', 'right', 'bottom'],
+    'text-font': ['literal', ['Open Sans Bold', 'Arial Unicode MS Bold']],
     'text-allow-overlap': true,
     'icon-allow-overlap': true,
     'icon-image': 'rounded',
     'icon-text-fit': 'both',
   },
   paint: {
-    'text-color': '#000000',
-    'text-halo-color': '#ffffff',
-    'text-halo-width': 5,
+    'text-color': '#ffffff',
+    'text-halo-color': '#000000',
+    'text-halo-width': 2,
   },
 }
 
-const srmLayer: CircleLayer = {
-  id: 'srmMarker',
-  type: 'circle',
+const srmLayer: SymbolLayer = {
+  id: 'srm',
+  type: 'symbol',
   source: 'srmData',
-  minzoom: 12,
+  layout: {
+    'icon-image': 'srm_square',
+    'icon-size': ['interpolate', ['linear'], ['zoom'], 12, 0.4, 16, 0.6, 20, 1],
+    'icon-allow-overlap': true,
+    'icon-ignore-placement': true,
+    'icon-rotation-alignment': 'viewport',
+  },
   paint: {
-    'circle-radius': 8,
-    'circle-color': 'rgb(14, 32, 82)',
+    'icon-color': ['match', ['get', 'vehicleID'], 'temp-id', '#0004ff', '#0004ff'],
+    'icon-opacity': 1,
+    'icon-halo-color': '#000000',
+    'icon-halo-width': 20,
   },
 }
 
@@ -158,6 +245,8 @@ const bsmLayerStyle: CircleLayer = {
   paint: {
     'circle-color': ['match', ['get', 'id'], 'temp-id', '#0004ff', '#0004ff'],
     'circle-radius': 8,
+    'circle-stroke-color': '#000000',
+    'circle-stroke-width': 1,
   },
 }
 
@@ -197,11 +286,35 @@ const signalStateLayer: SymbolLayer = {
   },
 }
 
+/**
+ * LAYER RENDERING ORDER
+ * Layers are rendered from bottom to top (first = bottom, last = top).
+ * This controls which layers appear on top of others on the map.
+ * Modify this array to change the visual stacking order.
+ */
+export const LAYER_RENDER_ORDER = [
+  // Base layers (bottom)
+  'srm-requested-lanes', // SRM requested lanes highlight (yellow)
+  'ssm-connection-highlight', // SSM connection highlight (yellow)
+  'map-message', // Map lanes
+  'connecting-lanes', // Connecting lanes with signal states
+  'invalid-lane-collection', // Invalid lane markers (red)
+  'signal-states', // Signal head icons
+  'ssm-connection-status', // SSM status icons on lanes
+  'bsm', // BSM vehicle circles
+  'srm', // SRM vehicle markers
+  // Label layers (top - always visible over other elements)
+  'map-message-labels', // Map lane labels
+  'connecting-lanes-labels', // Connecting lane labels
+] as const
+
 export type MAP_LEGEND_COLORS = {
   bsmColors: { [key: string]: string }
   laneColors: { [key: string]: string }
   travelConnectionColors: { [key: string]: [string, number[]] }
   signalHeadIcons: { [key: string]: string }
+  ssmStatusIcons: { [key: string]: [string, string] }
+  srmColors: { [key: string]: string }
 }
 
 const mapLegendColors: MAP_LEGEND_COLORS = {
@@ -209,6 +322,7 @@ const mapLegendColors: MAP_LEGEND_COLORS = {
   laneColors: {
     Ingress: '#eb34e8',
     Egress: '#0004ff',
+    'RSM/SSM Info (highlighted)': '#ccff33',
   },
   travelConnectionColors: {
     UNAVAILABLE: ['#797979', [2, 1]],
@@ -221,6 +335,7 @@ const mapLegendColors: MAP_LEGEND_COLORS = {
     PERMISSIVE_CLEARANCE: ['#e6b000', [2, 1]],
     PROTECTED_CLEARANCE: ['#e6b000', [1]],
     CAUTION_CONFLICTING_TRAFFIC: ['#e6b000', [1, 4]],
+    'RSM/SSM Info (highlighted)': ['#ccff33', [1]],
   },
   signalHeadIcons: {
     UNAVAILABLE: '/icons/traffic-light-icon-unknown.svg',
@@ -234,12 +349,26 @@ const mapLegendColors: MAP_LEGEND_COLORS = {
     PROTECTED_CLEARANCE: '/icons/traffic-light-icon-yellow-1.svg',
     CAUTION_CONFLICTING_TRAFFIC: '/icons/traffic-light-icon-yellow-1.svg',
   },
+  ssmStatusIcons: {
+    UNKNOWN: ['/icons/question-mark.png', '#202020'],
+    REQUESTED: ['/icons/circular-arrow.png', '#002f9e'],
+    PROCESSING: ['/icons/gear.png', '#383838'],
+    WATCH_OTHER_TRAFFIC: ['/icons/warning.png', '#c06600'],
+    GRANTED: ['/icons/check.png', '#109501'],
+    REJECTED: ['/icons/close.png', '#ff0000'],
+    MAX_PRESENCE: ['/icons/timer.png', '#740000'],
+    RESERVICE_LOCKED: ['/icons/lock.png', '#680c00'],
+  },
+  srmColors: { Other: '#0004ff' },
 }
 
 export const initialState = {
   mapMessageLayerStyle: { ...mapMessageLayer, source: 'string' },
+  mapMessageHighlightLayerStyle: { ...mapMessageHighlightLayer, source: 'string' },
   mapMessageLabelsLayerStyle: { ...mapMessageLabelsLayer, source: 'string' },
   connectingLanesLayerStyle: { ...connectingLanesLayer, source: 'string' },
+  connectingLanesSsmStatusLayerStyle: { ...connectingLanesSsmStatusLayer, source: 'string' },
+  connectingLanesHighlightLayerStyle: { ...connectingLanesHighlightLayer, source: 'string' },
   connectingLanesLabelsLayerStyle: { ...connectingLanesLabelsLayer, source: 'string' },
   srmLayerStyle: { ...srmLayer, source: 'string' },
   markerLayerStyle: { ...markerLayer, source: 'string' },
@@ -258,10 +387,19 @@ export const intersectionMapLayerStyleSlice = createSlice({
     setBsmLegendColors: (state, action: PayloadAction<{ [key: string]: string }>) => {
       state.value.mapLegendColors = { ...state.value.mapLegendColors, bsmColors: action.payload }
     },
+    setSrmLegendColors: (state, action: PayloadAction<{ [key: string]: string }>) => {
+      state.value.mapLegendColors = { ...state.value.mapLegendColors, srmColors: action.payload }
+    },
     setBsmCircleColor: (state, action: PayloadAction<mapboxgl.CirclePaint['circle-color']>) => {
       state.value.bsmLayerStyle = {
         ...state.value.bsmLayerStyle,
         paint: { ...state.value.bsmLayerStyle.paint, 'circle-color': action.payload },
+      }
+    },
+    setSrmCircleColor: (state, action: PayloadAction<mapboxgl.SymbolPaint['icon-color']>) => {
+      state.value.srmLayerStyle = {
+        ...state.value.srmLayerStyle,
+        paint: { ...state.value.srmLayerStyle.paint, 'icon-color': action.payload },
       }
     },
     setSignalLayerLayout: (state, action: PayloadAction<mapboxgl.SymbolLayout>) => {
@@ -272,10 +410,16 @@ export const intersectionMapLayerStyleSlice = createSlice({
 
 export const selectMapMessageLayerStyle = (state: RootState) =>
   state.intersectionMapLayerStyle.value.mapMessageLayerStyle
+export const selectMapMessageHighlightLayerStyle = (state: RootState) =>
+  state.intersectionMapLayerStyle.value.mapMessageHighlightLayerStyle
 export const selectMapMessageLabelsLayerStyle = (state: RootState) =>
   state.intersectionMapLayerStyle.value.mapMessageLabelsLayerStyle
 export const selectConnectingLanesLayerStyle = (state: RootState) =>
   state.intersectionMapLayerStyle.value.connectingLanesLayerStyle
+export const selectConnectingLanesSsmStatusLayerStyle = (state: RootState) =>
+  state.intersectionMapLayerStyle.value.connectingLanesSsmStatusLayerStyle
+export const selectConnectingLanesHighlightLayerStyle = (state: RootState) =>
+  state.intersectionMapLayerStyle.value.connectingLanesHighlightLayerStyle
 export const selectConnectingLanesLabelsLayerStyle = (state: RootState) =>
   state.intersectionMapLayerStyle.value.connectingLanesLabelsLayerStyle
 export const selectSrmLayerStyle = (state: RootState) => state.intersectionMapLayerStyle.value.srmLayerStyle
@@ -285,6 +429,7 @@ export const selectSignalStateLayerStyle = (state: RootState) =>
   state.intersectionMapLayerStyle.value.signalStateLayerStyle
 export const selectMapLegendColors = (state: RootState) => state.intersectionMapLayerStyle.value.mapLegendColors
 
-export const { setBsmLegendColors, setBsmCircleColor, setSignalLayerLayout } = intersectionMapLayerStyleSlice.actions
+export const { setBsmLegendColors, setSrmLegendColors, setBsmCircleColor, setSrmCircleColor, setSignalLayerLayout } =
+  intersectionMapLayerStyleSlice.actions
 
 export default intersectionMapLayerStyleSlice.reducer

@@ -1,19 +1,14 @@
-import { AnyAction, createAsyncThunk, createSlice, PayloadAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import RsuApi from '../apis/rsu-api'
 import {
-  IssScmsStatus,
-  RsuCounts,
   RsuInfo,
   RsuMapInfo,
   RsuMapInfoIpList,
   RsuOnlineStatusRespMultiple,
   RsuOnlineStatusRespSingle,
-  SsmSrmData,
 } from '../models/RsuApi'
 import { RootState } from '../store'
 import { selectToken, selectOrganizationName } from './userSlice'
-import { SelectedSrm } from '../models/Srm'
-import { CountsListElement } from '../models/Rsu'
 import { MessageType } from '../models/MessageTypes'
 import { toast } from 'react-hot-toast'
 import { DateTime } from 'luxon'
@@ -24,15 +19,7 @@ const initialState = {
   selectedRsu: null as RsuInfo,
   rsuData: [] as RsuInfo[],
   rsuOnlineStatus: {} as RsuOnlineStatusRespMultiple,
-  rsuCounts: {} as RsuCounts,
-  countList: [] as CountsListElement[],
-  currentSort: '',
-  startDate: currentDate.minus({ days: 1 }).toString(),
-  endDate: currentDate.toString(),
-  messageLoading: false,
-  warningMessage: false,
-  countsMsgType: 'BSM',
-  geoMsgType: 'BSM',
+  geoMsgType: 'BSM' as MessageType | undefined,
   rsuMapData: {} as RsuMapInfo['geojson'],
   mapList: [] as RsuMapInfoIpList,
   mapDate: '' as RsuMapInfo['date'],
@@ -48,47 +35,19 @@ const initialState = {
   geoMsgFilter: false,
   geoMsgFilterStep: 60,
   geoMsgFilterOffset: 0,
-  issScmsStatusData: {} as IssScmsStatus,
-  ssmDisplay: false,
-  srmSsmList: [] as SsmSrmData,
-  selectedSrm: [] as SelectedSrm[],
-  heatMapData: {
-    type: 'FeatureCollection',
-    features: [],
-  } as GeoJSON.FeatureCollection<GeoJSON.Geometry>,
 }
-
-export const updateMessageType =
-  (messageType: MessageType) => async (dispatch: ThunkDispatch<RootState, void, AnyAction>) => {
-    dispatch(changeCountsMsgType(messageType))
-    dispatch(updateRowData({ message: messageType }))
-  }
 
 export const getRsuData = createAsyncThunk(
   'rsu/getRsuData',
   async (_, { getState, dispatch }) => {
     const currentState = getState() as RootState
 
-    await Promise.all([
-      dispatch(resetCountsDates()),
-      dispatch(_getRsuInfo()),
-      dispatch(_getRsuOnlineStatus(currentState.rsu.value.rsuOnlineStatus)),
-      dispatch(_getRsuCounts()),
-    ])
+    await Promise.all([dispatch(_getRsuInfo()), dispatch(_getRsuOnlineStatus(currentState.rsu.value.rsuOnlineStatus))])
   },
   {
     condition: (_, { getState }) => selectToken(getState() as RootState) != undefined,
   }
 )
-
-export const getRsuInfoOnly = createAsyncThunk('rsu/getRsuInfoOnly', async (_, { getState }) => {
-  const currentState = getState() as RootState
-  const token = selectToken(currentState)
-  const organization = selectOrganizationName(currentState)
-  const rsuInfo = await RsuApi.getRsuInfo(token, organization)
-  const rsuData = rsuInfo.rsuList
-  return rsuData
-})
 
 export const getRsuLastOnline = createAsyncThunk('rsu/getRsuLastOnline', async (rsu_ip: string, { getState }) => {
   const currentState = getState() as RootState
@@ -117,103 +76,6 @@ export const _getRsuOnlineStatus = createAsyncThunk(
     const rsuOnlineStatus = (await RsuApi.getRsuOnline(token, organization)) ?? rsuOnlineStatusState
 
     return rsuOnlineStatus
-  }
-)
-
-export const _getRsuCounts = createAsyncThunk('rsu/_getRsuCounts', async (_, { getState }) => {
-  const currentState = getState() as RootState
-  const token = selectToken(currentState)
-  const organization = selectOrganizationName(currentState)
-
-  const query_params = {
-    message: currentState.rsu.value.countsMsgType,
-    start: currentState.rsu.value.startDate,
-    end: currentState.rsu.value.endDate,
-  }
-  const rsuCounts =
-    (await RsuApi.getRsuCounts(token, organization, '', query_params)) ?? currentState.rsu.value.rsuCounts
-  const countList = Object.entries(rsuCounts).map(([key, value]) => {
-    return {
-      key: key,
-      rsu: key,
-      road: value.road,
-      count: value.count,
-    }
-  })
-
-  return { rsuCounts, countList }
-})
-
-export const getSsmSrmData = createAsyncThunk('rsu/getSsmSrmData', async (_, { getState }) => {
-  const currentState = getState() as RootState
-  const token = selectToken(currentState)
-  return await RsuApi.getSsmSrmData(token)
-})
-
-export const getIssScmsStatus = createAsyncThunk(
-  'rsu/getIssScmsStatus',
-  async (_, { getState }) => {
-    const currentState = getState() as RootState
-    const token = selectToken(currentState)
-    const organization = selectOrganizationName(currentState)
-
-    return await RsuApi.getIssScmsStatus(token, organization)
-  },
-  {
-    condition: (_, { getState }) => selectToken(getState() as RootState) != undefined,
-  }
-)
-
-export const updateRowData = createAsyncThunk(
-  'rsu/updateRowData',
-  async (
-    data: {
-      message?: MessageType
-      start?: string
-      end?: string
-    },
-    { getState }
-  ) => {
-    const currentState = getState() as RootState
-    const token = selectToken(currentState)
-    const organization = selectOrganizationName(currentState)
-
-    const countsMsgType = Object.prototype.hasOwnProperty.call(data, 'message')
-      ? data['message']
-      : currentState.rsu.value.countsMsgType
-    const startDate = Object.prototype.hasOwnProperty.call(data, 'start')
-      ? data['start']
-      : currentState.rsu.value.startDate
-    const endDate = Object.prototype.hasOwnProperty.call(data, 'end') ? data['end'] : currentState.rsu.value.endDate
-
-    const warningMessage = new Date(endDate).getTime() - new Date(startDate).getTime() > 86400000
-
-    const rsuCountsData = await RsuApi.getRsuCounts(token, organization, '', {
-      message: countsMsgType,
-      start: startDate,
-      end: endDate,
-    })
-
-    const countList = Object.entries(rsuCountsData).map(([key, value]) => {
-      return {
-        key: key,
-        rsu: key,
-        road: value.road,
-        count: value.count,
-      }
-    })
-
-    return {
-      countsMsgType,
-      startDate,
-      endDate,
-      warningMessage,
-      rsuCounts: rsuCountsData,
-      countList,
-    }
-  },
-  {
-    condition: (_, { getState }) => selectToken(getState() as RootState) != undefined,
   }
 )
 
@@ -278,11 +140,7 @@ export const updateGeoMsgData = createAsyncThunk(
     // Will guard thunk from being executed
     condition: (_, { getState }) => {
       const { rsu } = getState() as RootState
-      const valid =
-        rsu.value.geoMsgStart !== '' &&
-        rsu.value.geoMsgEnd !== '' &&
-        rsu.value.geoMsgCoordinates.length > 2 &&
-        rsu.value.countsMsgType !== ''
+      const valid = rsu.value.geoMsgStart !== '' && rsu.value.geoMsgEnd !== '' && rsu.value.geoMsgCoordinates.length > 2
       return valid
     },
   }
@@ -292,7 +150,6 @@ export const rsuSlice = createSlice({
   name: 'rsu',
   initialState: {
     loading: false,
-    requestOut: false,
     value: initialState,
   },
   reducers: {
@@ -307,12 +164,6 @@ export const rsuSlice = createSlice({
       state.value.geoMsgData = []
       state.value.geoMsgDateError = false
     },
-    toggleSsmSrmDisplay: (state) => {
-      state.value.ssmDisplay = !state.value.ssmDisplay
-    },
-    setSelectedSrm: (state, action: PayloadAction<SelectedSrm>) => {
-      state.value.selectedSrm = Object.keys(action.payload ?? {}).length === 0 ? [] : [action.payload]
-    },
     toggleGeoMsgPointSelect: (state) => {
       state.value.addGeoMsgPoint = !state.value.addGeoMsgPoint
     },
@@ -326,10 +177,7 @@ export const rsuSlice = createSlice({
     triggerGeoMsgDateError: (state) => {
       state.value.geoMsgDateError = true
     },
-    changeCountsMsgType: (state, action) => {
-      state.value.countsMsgType = action.payload
-    },
-    changeGeoMsgType: (state, action: PayloadAction<string>) => {
+    changeGeoMsgType: (state, action: PayloadAction<MessageType | undefined>) => {
       state.value.geoMsgType = action.payload
     },
     setGeoMsgFilter: (state, action: PayloadAction<boolean>) => {
@@ -344,11 +192,6 @@ export const rsuSlice = createSlice({
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload
     },
-    resetCountsDates: (state) => {
-      const now = DateTime.local().setZone(DateTime.local().zoneName)
-      state.value.startDate = now.minus({ days: 1 }).toString()
-      state.value.endDate = now.toString()
-    },
   },
   extraReducers: (builder) => {
     builder
@@ -356,44 +199,11 @@ export const rsuSlice = createSlice({
         state.loading = true
         state.value.rsuData = []
         state.value.rsuOnlineStatus = {}
-        state.value.rsuCounts = {}
-        state.value.countList = []
-        state.value.heatMapData = {
-          type: 'FeatureCollection',
-          features: [],
-        }
       })
       .addCase(getRsuData.fulfilled, (state) => {
-        const heatMapFeatures: GeoJSON.Feature<GeoJSON.Geometry>[] = []
-        state.value.rsuData.forEach((rsu) => {
-          heatMapFeatures.push({
-            type: 'Feature',
-            geometry: {
-              type: 'Point',
-              coordinates: [rsu.geometry.coordinates[0], rsu.geometry.coordinates[1]],
-            },
-            properties: {
-              ipv4_address: rsu.properties.ipv4_address,
-              count:
-                rsu.properties.ipv4_address in state.value.rsuCounts
-                  ? state.value.rsuCounts[rsu.properties.ipv4_address].count
-                  : 0,
-            },
-          })
-        })
-        state.value.heatMapData.features = heatMapFeatures
         state.loading = false
       })
       .addCase(getRsuData.rejected, (state) => {
-        state.loading = false
-      })
-      .addCase(getRsuInfoOnly.pending, (state) => {
-        state.loading = true
-      })
-      .addCase(getRsuInfoOnly.fulfilled, (state) => {
-        state.loading = false
-      })
-      .addCase(getRsuInfoOnly.rejected, (state) => {
         state.loading = false
       })
       .addCase(getRsuLastOnline.pending, (state) => {
@@ -403,7 +213,7 @@ export const rsuSlice = createSlice({
         state.loading = false
         const payload = action.payload as RsuOnlineStatusRespSingle
         if (Object.prototype.hasOwnProperty.call(state.value.rsuOnlineStatus, payload.ip)) {
-          (state.value.rsuOnlineStatus as RsuOnlineStatusRespMultiple)[payload.ip]['last_online'] = payload.last_online
+          ;(state.value.rsuOnlineStatus as RsuOnlineStatusRespMultiple)[payload.ip]['last_online'] = payload.last_online
         }
       })
       .addCase(getRsuLastOnline.rejected, (state) => {
@@ -414,46 +224,6 @@ export const rsuSlice = createSlice({
       })
       .addCase(_getRsuOnlineStatus.fulfilled, (state, action) => {
         state.value.rsuOnlineStatus = action.payload as RsuOnlineStatusRespMultiple
-      })
-      .addCase(_getRsuCounts.fulfilled, (state, action) => {
-        state.value.rsuCounts = action.payload.rsuCounts
-        state.value.countList = action.payload.countList
-      })
-      .addCase(getSsmSrmData.pending, (state) => {
-        state.loading = true
-      })
-      .addCase(getSsmSrmData.rejected, (state) => {
-        state.loading = false
-      })
-      .addCase(getSsmSrmData.fulfilled, (state, action) => {
-        state.value.srmSsmList = action.payload
-      })
-      .addCase(getIssScmsStatus.fulfilled, (state, action) => {
-        state.value.issScmsStatusData = action.payload ?? state.value.issScmsStatusData
-      })
-      .addCase(updateRowData.pending, (state) => {
-        state.requestOut = true
-        state.value.messageLoading = false
-      })
-      .addCase(updateRowData.fulfilled, (state, action) => {
-        if (action.payload === null) return
-        state.value.rsuCounts = action.payload.rsuCounts
-        state.value.countList = action.payload.countList
-        state.value.heatMapData.features.forEach((feat, index) => {
-          const ip = feat.properties.ipv4_address as string
-          state.value.heatMapData.features[index].properties.count =
-            ip in action.payload.rsuCounts ? action.payload.rsuCounts[ip].count : 0
-        })
-        state.value.warningMessage = action.payload.warningMessage
-        state.requestOut = false
-        state.value.messageLoading = false
-        state.value.countsMsgType = action.payload.countsMsgType
-        state.value.startDate = action.payload.startDate
-        state.value.endDate = action.payload.endDate
-      })
-      .addCase(updateRowData.rejected, (state) => {
-        state.requestOut = false
-        state.value.messageLoading = false
       })
       .addCase(updateGeoMsgData.pending, (state) => {
         state.loading = true
@@ -473,7 +243,6 @@ export const rsuSlice = createSlice({
 })
 
 export const selectLoading = (state: RootState) => state.rsu.loading
-export const selectRequestOut = (state: RootState) => state.rsu.requestOut
 
 export const selectSelectedRsu = (state: RootState) => state.rsu.value.selectedRsu
 export const selectRsuManufacturer = (state: RootState) => state.rsu.value.selectedRsu?.properties?.manufacturer_name
@@ -481,14 +250,6 @@ export const selectRsuIpv4 = (state: RootState) => state.rsu.value.selectedRsu?.
 export const selectRsuPrimaryRoute = (state: RootState) => state.rsu.value.selectedRsu?.properties?.primary_route
 export const selectRsuData = (state: RootState) => state.rsu.value.rsuData
 export const selectRsuOnlineStatus = (state: RootState) => state.rsu.value.rsuOnlineStatus
-export const selectRsuCounts = (state: RootState) => state.rsu.value.rsuCounts
-export const selectCountList = (state: RootState) => state.rsu.value.countList
-export const selectCurrentSort = (state: RootState) => state.rsu.value.currentSort
-export const selectStartDate = (state: RootState) => state.rsu.value.startDate
-export const selectEndDate = (state: RootState) => state.rsu.value.endDate
-export const selectMessageLoading = (state: RootState) => state.rsu.value.messageLoading
-export const selectWarningMessage = (state: RootState) => state.rsu.value.warningMessage
-export const selectMsgType = (state: RootState) => state.rsu.value.countsMsgType
 export const selectGeoMsgType = (state: RootState) => state.rsu.value.geoMsgType
 export const selectRsuMapData = (state: RootState) => state.rsu.value.rsuMapData
 export const selectMapList = (state: RootState) => state.rsu.value.mapList
@@ -503,29 +264,20 @@ export const selectGeoMsgDateError = (state: RootState) => state.rsu.value.geoMs
 export const selectGeoMsgFilter = (state: RootState) => state.rsu.value.geoMsgFilter
 export const selectGeoMsgFilterStep = (state: RootState) => state.rsu.value.geoMsgFilterStep
 export const selectGeoMsgFilterOffset = (state: RootState) => state.rsu.value.geoMsgFilterOffset
-export const selectIssScmsStatusData = (state: RootState) => state.rsu.value.issScmsStatusData
-export const selectSsmDisplay = (state: RootState) => state.rsu.value.ssmDisplay
-export const selectSrmSsmList = (state: RootState) => state.rsu.value.srmSsmList
-export const selectSelectedSrm = (state: RootState) => state.rsu.value.selectedSrm
-export const selectHeatMapData = (state: RootState) => state.rsu.value.heatMapData
 
 export const {
   selectRsu,
   toggleMapDisplay,
   clearGeoMsg,
-  toggleSsmSrmDisplay,
-  setSelectedSrm,
   toggleGeoMsgPointSelect,
   updateGeoMsgPoints,
   updateGeoMsgDate,
   triggerGeoMsgDateError,
-  changeCountsMsgType,
   changeGeoMsgType,
   setGeoMsgFilter,
   setGeoMsgFilterStep,
   setGeoMsgFilterOffset,
   setLoading,
-  resetCountsDates,
 } = rsuSlice.actions
 
 export default rsuSlice.reducer

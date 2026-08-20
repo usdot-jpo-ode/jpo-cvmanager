@@ -11,7 +11,7 @@ keycloak:
   realm: cvmanager
   auth-server-url: ${AUTH_SERVER_URL:http://localhost:8084}
   client-id: ${KEYCLOAK_CLIENT_API_ID:cvmanager-api}
-  client-secret: ${KEYCLOAK_CLIENT_API_SECRET:w8zpoArUwIVN6TSDY5WQgX9TlVAgH9OF}
+  client-secret: ${KEYCLOAK_CLIENT_API_SECRET:keycloak-secret-key}
 
 spring.security.oauth2.resourceserver.jwt:
   issuer-uri: ${AUTH_SERVER_URL:http://localhost:8084}/realms/cvmanager
@@ -69,7 +69,7 @@ spring:
       dialect: org.hibernate.dialect.PostgreSQLDialect
   ### Spring Mail Settings (If using emailBroker SMTP)
   mail:
-    host: ${INTERSECTION_SMTP_SERVER_IP:localhost}
+    host: ${INTERSECTION_SMTP_SERVER_HOST:localhost}
     port: ${INTERSECTION_SMTP_SERVER_PORT:1025}
     properties:
       mail:
@@ -91,15 +91,14 @@ maximumResponseSize: ${CM_MAXIMUM_RESPONSE_SIZE:10000}
 spring.main.allow-circular-references: true
 
 ### General Email Settings
+email:
+  # Email Broker Options: sendgrid, postmark, anything else will use generic SMTP mail server.
+  broker: ${INTERSECTION_EMAIL_BROKER:SMTP}
+  sender-address: ${INTERSECTION_SENDER_EMAIL:donotreply@cvmanager.com}
+  unsubscribe-secret-key: ${UNSUBSCRIBE_SECRET_KEY:b5f9070ca58d4576ea6a2d8d4c1b97caf8abc2554198f8f9acf86d0d31a52a52}
+  cvmgr-front-end-uri: ${CV_MANAGER_FRONT_END_URI:http://localhost}
 
-# Email Broker Options: sendgrid, postmark, anything else will use generic SMTP mail server.
-emailBroker: ${INTERSECTION_EMAIL_BROKER:""}
-emailFromAddress: ${INTERSECTION_SENDER_EMAIL:""}
-
-### SendGrid Email Settings
-sendgrid:
-  username: ${SENDGRID_USERNAME:""}
-  password: ${SENDGRID_PASSWORD:""}
-
-### Postmark Email Settings
-postmark.api.secretKey: ${CM_POSTMARK_SECRET_KEY:""}
+  sendgrid:
+    api-key: ${SENDGRID_API_KEY:}
+  postmark:
+    api-key: ${POSTMARK_API_KEY:}

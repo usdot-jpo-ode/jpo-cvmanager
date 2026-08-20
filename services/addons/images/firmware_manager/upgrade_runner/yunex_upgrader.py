@@ -1,11 +1,12 @@
 import upgrader
 import json
 import logging
-import os
 import subprocess
 import sys
 import tarfile
 import time
+import traceback
+from common import common_environment
 
 
 class YunexUpgrader(upgrader.UpgraderAbstractClass):
@@ -16,7 +17,7 @@ class YunexUpgrader(upgrader.UpgraderAbstractClass):
         xfer_command = [
             "java",
             "-jar",
-            f"/home/tools/xfer_yunex.jar",
+            "/home/tools/xfer_yunex.jar",
             "-upload",
             file_name,
             f"{self.rsu_ip}:3600",
@@ -111,7 +112,8 @@ class YunexUpgrader(upgrader.UpgraderAbstractClass):
             self.cleanup()
             self.notify_firmware_manager(success=False)
             # send email to support team with the rsu and error
-            self.send_error_email("Firmware Upgrader", err)
+            stack_trace = traceback.format_exc()
+            self.send_error_email(str(err), stack_trace, "Yunex Firmware Upgrade Error")
 
 
 # sys.argv[1] - JSON string with the following key-values:
@@ -124,8 +126,10 @@ class YunexUpgrader(upgrader.UpgraderAbstractClass):
 # - target_firmware_version
 # - install_package
 if __name__ == "__main__":
-    log_level = os.environ.get("LOGGING_LEVEL", "INFO")
-    logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
+    logging.info(
+        "Yunex Upgrader running with LOGGING_LEVEL: "
+        + str(common_environment.LOGGING_LEVEL)
+    )
     # Trimming outer single quotes from the json.loads
     upgrade_info = json.loads(sys.argv[1][1:-1])
     yunex_upgrader = YunexUpgrader(upgrade_info)

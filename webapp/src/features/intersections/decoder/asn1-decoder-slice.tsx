@@ -189,6 +189,8 @@ export const updateAllDataOnMap = createAsyncThunk(
             )
             .map((v: any) => v.decodedResponse?.processedSpat),
           bsm: { type: 'FeatureCollection', features: currentBsms },
+          ssm: [],
+          srm: [],
         },
         sourceDataType: null,
         intersectionId,
@@ -218,6 +220,8 @@ export const decoderModeToggled = createAsyncThunk(
             map: [],
             spat: [],
             bsm: { type: 'FeatureCollection', features: [] },
+            ssm: [],
+            srm: [],
           },
           sourceDataType: initialSourceDataType,
           intersectionId,

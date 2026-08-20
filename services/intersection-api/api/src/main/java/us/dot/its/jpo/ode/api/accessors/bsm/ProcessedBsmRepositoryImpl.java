@@ -68,7 +68,7 @@ public class ProcessedBsmRepositoryImpl implements ProcessedBsmRepository, Pagea
 		Criteria criteria = new IntersectionCriteria()
 				.whereOptional(ORIGIN_IP_FIELD, originIp)
 				.whereOptional(VEHICLE_ID_FIELD, vehicleId)
-				.withinTimeWindow(DATE_FIELD, startTime, endTime, true);
+				.withinTimeWindow(DATE_FIELD, startTime, endTime, IntersectionCriteria.TimeStampFormat.STRING);
 
 		if (centerLng != null && centerLat != null && distance != null) {
 			Envelope boundingBox = GeographyCalculator.calculateBoundingBox(centerLng, centerLat, distance);
@@ -117,7 +117,7 @@ public class ProcessedBsmRepositoryImpl implements ProcessedBsmRepository, Pagea
 		Criteria criteria = new IntersectionCriteria()
 				.whereOptional(ORIGIN_IP_FIELD, originIp)
 				.whereOptional(VEHICLE_ID_FIELD, vehicleId)
-				.withinTimeWindow(DATE_FIELD, startTime, endTime, true);
+				.withinTimeWindow(DATE_FIELD, startTime, endTime, IntersectionCriteria.TimeStampFormat.STRING);
 
 		if (centerLng != null && centerLat != null && distance != null) {
 			Envelope boundingBox = GeographyCalculator.calculateBoundingBox(centerLng, centerLat, distance);

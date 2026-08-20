@@ -1,5 +1,4 @@
 import { Button, ButtonProps, useTheme, alpha } from '@mui/material'
-import React from 'react'
 
 export const PrimaryButton = (props: ButtonProps) => {
   const theme = useTheme()

@@ -1,5 +1,4 @@
 import { Box, Container } from '@mui/material'
-import React from 'react'
 import MapTab from '../../features/intersections/map/map-component'
 import { selectSelectedIntersectionId } from '../../generalSlices/intersectionSlice'
 import { useSelector } from 'react-redux'

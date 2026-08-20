@@ -1,5 +1,4 @@
 from unittest.mock import patch
-import os
 
 from addons.images.iss_health_check import iss_health_checker
 from addons.images.iss_health_check.iss_health_checker import RsuDataWrapper
@@ -39,14 +38,12 @@ def test_get_rsu_data_with_data(mock_query_db):
     )
 
 
-@patch.dict(
-    os.environ,
-    {
-        "ISS_API_KEY": "test",
-        "ISS_SCMS_VEHICLE_REST_ENDPOINT": "https://api.dm.iss-scms.com/api/test",
-        "ISS_PROJECT_ID": "test",
-    },
+@patch("iss_health_check_environment.ISS_API_KEY", "test")
+@patch(
+    "iss_health_check_environment.ISS_SCMS_VEHICLE_REST_ENDPOINT",
+    "https://api.dm.iss-scms.com/api/test",
 )
+@patch("iss_health_check_environment.ISS_PROJECT_ID", "test")
 @patch("addons.images.iss_health_check.iss_health_checker.requests.Response")
 @patch("addons.images.iss_health_check.iss_health_checker.requests")
 @patch("addons.images.iss_health_check.iss_health_checker.iss_token")

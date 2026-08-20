@@ -56,7 +56,7 @@ public class SignalGroupAlignmentEventRepositoryImpl
 			Long endTime) {
 		Criteria criteria = new IntersectionCriteria()
 				.whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-				.withinTimeWindow(DATE_FIELD, startTime, endTime, false);
+				.withinTimeWindow(DATE_FIELD, startTime, endTime, IntersectionCriteria.TimeStampFormat.DATE);
 		Query query = Query.query(criteria);
 		return mongoTemplate.count(query, collectionName);
 	}
@@ -77,7 +77,7 @@ public class SignalGroupAlignmentEventRepositoryImpl
 			Long endTime) {
 		Criteria criteria = new IntersectionCriteria()
 				.whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-				.withinTimeWindow(DATE_FIELD, startTime, endTime, false);
+				.withinTimeWindow(DATE_FIELD, startTime, endTime, IntersectionCriteria.TimeStampFormat.DATE);
 		Query query = Query.query(criteria);
 		Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
 		return wrapSingleResultWithPage(
@@ -104,7 +104,7 @@ public class SignalGroupAlignmentEventRepositoryImpl
 			Pageable pageable) {
 		Criteria criteria = new IntersectionCriteria()
 				.whereOptional(INTERSECTION_ID_FIELD, intersectionID)
-				.withinTimeWindow(DATE_FIELD, startTime, endTime, false);
+				.withinTimeWindow(DATE_FIELD, startTime, endTime, IntersectionCriteria.TimeStampFormat.DATE);
 		Sort sort = Sort.by(Sort.Direction.DESC, DATE_FIELD);
 		return findPage(mongoTemplate, collectionName, pageable, criteria, sort, null,
 				SignalGroupAlignmentEvent.class);

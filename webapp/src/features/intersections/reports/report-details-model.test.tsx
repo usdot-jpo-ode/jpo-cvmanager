@@ -1,4 +1,3 @@
-import React from 'react'
 import { render } from '@testing-library/react'
 import ReportDetailsModal from './report-details-modal'
 import { Provider } from 'react-redux'

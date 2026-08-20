@@ -74,7 +74,10 @@ def test_cleanup_not_exist(mock_Path, mock_shutil):
     mock_shutil.rmtree.assert_not_called()
 
 
-@patch.dict(os.environ, {"BLOB_STORAGE_PROVIDER": "GCP"})
+@patch(
+    "upgrade_runner_environment.BLOB_STORAGE_PROVIDER",
+    "GCP",
+)
 @patch("common.gcs_utils.download_gcp_blob")
 @patch("addons.images.firmware_manager.upgrade_runner.upgrader.Path")
 def test_download_blob_gcp(mock_Path, mock_download_gcp_blob):
@@ -91,7 +94,10 @@ def test_download_blob_gcp(mock_Path, mock_download_gcp_blob):
     )
 
 
-@patch.dict(os.environ, {"BLOB_STORAGE_PROVIDER": "DOCKER"})
+@patch(
+    "upgrade_runner_environment.BLOB_STORAGE_PROVIDER",
+    "DOCKER",
+)
 @patch(
     "addons.images.firmware_manager.upgrade_runner.upgrader.download_blob.download_docker_blob"
 )
@@ -109,7 +115,10 @@ def test_download_blob_docker(mock_Path, mock_download_docker_blob):
     )
 
 
-@patch.dict(os.environ, {"BLOB_STORAGE_PROVIDER": "Test"})
+@patch(
+    "upgrade_runner_environment.BLOB_STORAGE_PROVIDER",
+    "Test",
+)
 @patch("addons.images.firmware_manager.upgrade_runner.upgrader.logging")
 @patch("common.gcs_utils.download_gcp_blob")
 @patch("addons.images.firmware_manager.upgrade_runner.upgrader.Path")
@@ -125,7 +134,10 @@ def test_download_blob_not_supported(mock_Path, mock_download_gcp_blob, mock_log
         mock_logging.error.assert_called_with("Unsupported blob storage provider")
 
 
-@patch.dict("os.environ", {"UPGRADE_SCHEDULER_ENDPOINT": "http://test-endpoint"})
+@patch(
+    "upgrade_runner_environment.UPGRADE_SCHEDULER_ENDPOINT",
+    "http://test-endpoint",
+)
 @patch("addons.images.firmware_manager.upgrade_runner.upgrader.logging")
 @patch("addons.images.firmware_manager.upgrade_runner.upgrader.requests")
 def test_notify_firmware_manager_success(mock_requests, mock_logging):
@@ -142,7 +154,10 @@ def test_notify_firmware_manager_success(mock_requests, mock_logging):
     mock_requests.post.assert_called_with(expected_url, json=expected_body)
 
 
-@patch.dict("os.environ", {"UPGRADE_SCHEDULER_ENDPOINT": "http://test-endpoint"})
+@patch(
+    "upgrade_runner_environment.UPGRADE_SCHEDULER_ENDPOINT",
+    "http://test-endpoint",
+)
 @patch("addons.images.firmware_manager.upgrade_runner.upgrader.logging")
 @patch("addons.images.firmware_manager.upgrade_runner.upgrader.requests")
 def test_notify_firmware_manager_fail(mock_requests, mock_logging):

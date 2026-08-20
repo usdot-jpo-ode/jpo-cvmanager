@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`should take a snapshot 1`] = `
 <div>
@@ -51,7 +51,7 @@ exports[`should take a snapshot 1`] = `
                   <input
                     aria-label="Search"
                     class="MuiInputBase-input MuiInput-input MuiInputBase-inputAdornedStart MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiInput-input"
-                    id="mui-11"
+                    id="mui-25"
                     placeholder="Search"
                     type="text"
                     value=""
@@ -179,10 +179,10 @@ exports[`should take a snapshot 1`] = `
                           style="background-color: rgb(255, 255, 255); width: 48px;"
                         >
                           <span
-                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
+                            class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiSwitchBase-root-MuiCheckbox-root"
                           >
                             <input
-                              class="PrivateSwitchBase-input css-1m9pwf3"
+                              class="PrivateSwitchBase-input css-mocked-MuiSwitchBase-root"
                               data-indeterminate="false"
                               type="checkbox"
                             />
@@ -205,7 +205,7 @@ exports[`should take a snapshot 1`] = `
                         <th
                           class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                           scope="col"
-                          style="background-color: rgb(255, 255, 255); box-sizing: border-box;"
+                          style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.25 * (100% - 0px));"
                         >
                           <div
                             aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -247,7 +247,7 @@ exports[`should take a snapshot 1`] = `
                         <th
                           class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                           scope="col"
-                          style="background-color: rgb(255, 255, 255); box-sizing: border-box;"
+                          style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.25 * (100% - 0px));"
                         >
                           <div
                             aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -289,7 +289,7 @@ exports[`should take a snapshot 1`] = `
                         <th
                           class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                           scope="col"
-                          style="background-color: rgb(255, 255, 255); box-sizing: border-box;"
+                          style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.25 * (100% - 0px));"
                         >
                           <div
                             aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -331,7 +331,7 @@ exports[`should take a snapshot 1`] = `
                         <th
                           class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                           scope="col"
-                          style="background-color: rgb(255, 255, 255); box-sizing: border-box;"
+                          style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.25 * (100% - 0px));"
                         >
                           <div
                             aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -391,7 +391,7 @@ exports[`should take a snapshot 1`] = `
                     >
                       <tr
                         class="MuiTableRow-root css-mocked-MuiTableRow-root"
-                        style="height: 245px;"
+                        style="height: 1225px;"
                       >
                         <td
                           class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
@@ -450,14 +450,14 @@ exports[`should take a snapshot 1`] = `
                         <div
                           class="MuiBox-root css-c8mw91"
                         >
-                          5 rows 
+                          25 rows 
                         </div>
                       </div>
                       <input
                         aria-hidden="true"
                         class="MuiSelect-nativeInput css-mocked-MuiSelect-nativeInput"
                         tabindex="-1"
-                        value="5"
+                        value="25"
                       />
                       <svg
                         aria-hidden="true"
@@ -531,7 +531,7 @@ exports[`should take a snapshot 1`] = `
                       </span>
                       <span
                         class="MuiTypography-root MuiTypography-caption css-mocked-MuiTypography-root"
-                        style="flex: 1; text-align: center; align-self: center; flex-basis: inherit;"
+                        style="flex-grow: 1; flex-shrink: 1; text-align: center; align-self: center; flex-basis: inherit;"
                       >
                         0-0 of 0
                       </span>
@@ -591,6 +591,37 @@ exports[`should take a snapshot 1`] = `
               </tr>
             </tfoot>
           </table>
+          <div
+            style="position: absolute; top: 0px; left: 0px; height: 100%; width: 100%; z-index: 11;"
+          >
+            <div
+              style="display: table; width: 100%; height: 100%; background-color: rgb(255, 255, 255); opacity: 0.7;"
+            >
+              <div
+                style="display: table-cell; width: 100%; height: 100%; vertical-align: middle; text-align: center;"
+              >
+                <span
+                  class="MuiCircularProgress-root MuiCircularProgress-indeterminate MuiCircularProgress-colorPrimary css-mocked-MuiCircularProgress-root"
+                  role="progressbar"
+                  style="width: 40px; height: 40px;"
+                >
+                  <svg
+                    class="MuiCircularProgress-svg css-mocked-MuiCircularProgress-svg"
+                    viewBox="22 22 44 44"
+                  >
+                    <circle
+                      class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate css-mocked-MuiCircularProgress-circle"
+                      cx="44"
+                      cy="44"
+                      fill="none"
+                      r="20.2"
+                      stroke-width="3.6"
+                    />
+                  </svg>
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

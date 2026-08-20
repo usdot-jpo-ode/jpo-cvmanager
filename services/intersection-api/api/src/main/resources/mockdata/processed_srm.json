@@ -1,0 +1,41 @@
+{
+  "geometry": {
+    "coordinates": [
+      -105.09067366355893,
+      39.587492478813054
+    ],
+    "type": "Point"
+  },
+  "type": "Feature",
+  "properties": {
+    "elevation": 1676.4,
+    "sequenceNumber": 1,
+    "validationMessages": [],
+    "schemaVersion": 1,
+    "role": "PUBLICTRANSPORT",
+    "heading": 0.2,
+    "latitude": 39.58680500555366,
+    "requests": [
+      {
+        "priorityRequestType": "PRIORITYREQUEST",
+        "requestID": 1,
+        "outboundLaneID": 10,
+        "estimatedTimeOfArrivalDurationSeconds": 3.422,
+        "intersectionId": 12109,
+        "inboundLaneID": 3
+      }
+    ],
+    "timeStamp": "2025-10-15T23:49:01.961Z",
+    "transmission": "UNAVAILABLE",
+    "messageType": "SRM",
+    "speedMetersPerSecond": 16.88,
+    "asn1": "001D267236548000010090BD4404801028E796C08953D4ED000B534E64B70B29DF6C545F000871A600",
+    "vehicleID": "312977882",
+    "odeReceivedAt": "2025-10-15T23:49:01.961Z",
+    "originIp": "172.25.0.1",
+    "longitude": -105.09040558483096
+  },
+  "recordGeneratedAt": {
+    "$date": "2025-10-21T21:27:25.319Z"
+  }
+}

@@ -1,59 +1,15 @@
-from collections import namedtuple
-import os
-from unittest.mock import patch, MagicMock, call, mock_open
-from api.src.smtp_error_handler import SMTP_SSLHandler
+import sys
+from unittest.mock import patch, MagicMock
+from api.src.smtp_error_handler import ErrorEmailHandler
 import api.src.smtp_error_handler as smtp_error_handler
-import api.tests.data.smtp_error_handler_data as smtp_error_handler_data
-from unittest.mock import ANY
 
 
-def test_get_environment_name_success():
-    expected = "test"
-    actual = smtp_error_handler.get_environment_name("test:1234")
-
-    assert actual == expected
-
-
-def test_get_environment_name_fail():
-    expected = "True"
-    actual = smtp_error_handler.get_environment_name(True)
-
-    assert actual == str(expected)
-
-
-###################################### Testing Functions ##########################################
-@patch.dict(
-    os.environ,
-    {"CSM_EMAILS_TO_SEND_TO": "test@gmail.com,test2@gmail.com"},
-    clear=True,
-)
-def test_get_subscribed_users_success():
-    expected = ["test@gmail.com", "test2@gmail.com"]
-    actual = smtp_error_handler.get_subscribed_users()
-    assert actual == expected
-
-
-EMAIL_TO_SEND_FROM = "test@test.test"
-EMAIL_APP_USERNAME = "test"
-EMAIL_APP_PASSWORD = "test"
-DEFAULT_TARGET_SMTP_SERVER_ADDRESS = "smtp.gmail.com"
-DEFAULT_TARGET_SMTP_SERVER_PORT = 587
-ENVIRONMENT_NAME = "ENVIRONMENT"
 LOGS_LINK = "http://logs_link.com"
-ERROR_EMAIL_UNSUBSCRIBE_LINK = "http://unsubscribe-{email}"
+IAPI_ENDPOINT = "http://test.test"
+KC_SA_CLIENT_ID = "sa_cvmanager_python_api"
+KC_SA_CLIENT_SECRET = "sa_cvmanager_python_api_secret"
 
 
-@patch.dict(
-    os.environ,
-    {
-        "CSM_TARGET_SMTP_SERVER_ADDRESS": DEFAULT_TARGET_SMTP_SERVER_ADDRESS,
-        "CSM_TARGET_SMTP_SERVER_PORT": str(DEFAULT_TARGET_SMTP_SERVER_PORT),
-        "CSM_EMAIL_TO_SEND_FROM": EMAIL_TO_SEND_FROM,
-        "CSM_EMAIL_APP_USERNAME": EMAIL_APP_USERNAME,
-        "CSM_EMAIL_APP_PASSWORD": EMAIL_APP_PASSWORD,
-    },
-    clear=True,
-)
 def test_configure_error_emails():
     app = MagicMock()
     app.logger = MagicMock()
@@ -62,60 +18,170 @@ def test_configure_error_emails():
     app.logger.addHandler.assert_called_once()
 
 
-@patch.dict(
-    os.environ,
-    {
-        "LOGS_LINK": LOGS_LINK,
-        "ENVIRONMENT_NAME": ENVIRONMENT_NAME,
-        "ERROR_EMAIL_UNSUBSCRIBE_LINK": ERROR_EMAIL_UNSUBSCRIBE_LINK,
-    },
-    clear=True,
-)
-@patch("builtins.open", new_callable=mock_open, read_data="data")
-@patch("api.src.smtp_error_handler.smtplib")
-@patch("api.src.smtp_error_handler.get_subscribed_users")
-def test_send(mock_get_subscribed_users, mock_smtplib, mock_file):
-    # prepare
-    emailHandler = SMTP_SSLHandler(
-        mailhost=[DEFAULT_TARGET_SMTP_SERVER_ADDRESS, DEFAULT_TARGET_SMTP_SERVER_PORT],
-        fromaddr=EMAIL_TO_SEND_FROM,
-        toaddrs=[],
-        subject="Automated CV Manager API Error",
-        credentials=[EMAIL_APP_USERNAME, EMAIL_APP_PASSWORD],
-        secure=(),
+@patch("api_environment.LOGS_LINK", LOGS_LINK)
+@patch("api_environment.IAPI_ENDPOINT", IAPI_ENDPOINT)
+@patch("api_environment.KC_SA_CLIENT_ID", KC_SA_CLIENT_ID)
+@patch("api_environment.KC_SA_CLIENT_SECRET", KC_SA_CLIENT_SECRET)
+def test_emit_with_asctime():
+    # Test emit when record has asctime
+    email_handler = ErrorEmailHandler()
+    email_handler.email_api = MagicMock()
+
+    record = MagicMock()
+    record.asctime = "2023-09-15 00:00:00,000"
+    record.exc_text = "Test stack trace"
+    record.exc_info = None
+    record.getMessage.return_value = "Test error message"
+
+    email_handler.emit(record)
+
+    email_handler.email_api.send_api_error_email.assert_called_once_with(
+        error_message="Test error message",
+        stack_trace="Test stack trace",
+        timestamp="2023-09-15 00:00:00,000",
+        logs_link=LOGS_LINK,
     )
 
-    smtp_obj = MagicMock()
-    mock_smtplib.SMTP = MagicMock()
-    mock_smtplib.SMTP.return_value = smtp_obj
 
-    smtp_obj.starttls = MagicMock()
-    smtp_obj.ehlo = MagicMock()
-    smtp_obj.login = MagicMock()
-    smtp_obj.sendmail = MagicMock()
-    smtp_obj.quit = MagicMock()
-    mock_get_subscribed_users.return_value = (
-        smtp_error_handler_data.subscribed_user_emails
+@patch("api_environment.LOGS_LINK", LOGS_LINK)
+@patch("api_environment.IAPI_ENDPOINT", IAPI_ENDPOINT)
+@patch("api_environment.KC_SA_CLIENT_ID", KC_SA_CLIENT_ID)
+@patch("api_environment.KC_SA_CLIENT_SECRET", KC_SA_CLIENT_SECRET)
+def test_emit_without_asctime():
+    # Test emit when record doesn't have asctime
+    email_handler = ErrorEmailHandler()
+    email_handler.email_api = MagicMock()
+
+    # Create a record without asctime
+    record = MagicMock()
+    record.getMessage = MagicMock(return_value="Test error message")
+    record.exc_text = "Test stack trace"
+    record.exc_info = None
+    # Remove asctime attribute
+    delattr(record, "asctime")
+
+    with patch("datetime.datetime") as mock_datetime:
+        mock_datetime.now.return_value.strftime.return_value = (
+            "2023-09-15 00:00:00,123456"
+        )
+
+        email_handler.emit(record)
+
+        # Verify asctime was set
+        assert hasattr(record, "asctime")
+        assert record.asctime == "2023-09-15 00:00:00,123"
+
+        email_handler.email_api.send_api_error_email.assert_called_once_with(
+            error_message="Test error message",
+            stack_trace="Test stack trace",
+            timestamp="2023-09-15 00:00:00,123",
+            logs_link=LOGS_LINK,
+        )
+
+
+@patch("api_environment.LOGS_LINK", LOGS_LINK)
+@patch("api_environment.IAPI_ENDPOINT", IAPI_ENDPOINT)
+@patch("api_environment.KC_SA_CLIENT_ID", KC_SA_CLIENT_ID)
+@patch("api_environment.KC_SA_CLIENT_SECRET", KC_SA_CLIENT_SECRET)
+def test_emit_without_stack_trace():
+    # Test emit when record doesn't have exc_text
+    email_handler = ErrorEmailHandler()
+    email_handler.email_api = MagicMock()
+
+    record = MagicMock()
+    record.asctime = "2023-09-15 00:00:00,000"
+    record.exc_text = None
+    record.exc_info = None
+    record.getMessage.return_value = "Test error message"
+
+    email_handler.emit(record)
+
+    email_handler.email_api.send_api_error_email.assert_called_once_with(
+        error_message="Test error message",
+        stack_trace="No stack trace available",
+        timestamp="2023-09-15 00:00:00,000",
+        logs_link=LOGS_LINK,
     )
-    mock_file = MagicMock()
-    mock_file.read = MagicMock()
-    mock_file.read.return_value = smtp_error_handler_data.html_email_template
 
-    Record = namedtuple("Record", ["asctime"])
-    record = Record("2023-09-15 00:00:00,000000")
-    emailHandler.format = lambda x: "%s".format(x)
 
-    # execute
-    emailHandler.emit(record)
+@patch("api_environment.LOGS_LINK", LOGS_LINK)
+@patch("api_environment.IAPI_ENDPOINT", IAPI_ENDPOINT)
+@patch("api_environment.KC_SA_CLIENT_ID", KC_SA_CLIENT_ID)
+@patch("api_environment.KC_SA_CLIENT_SECRET", KC_SA_CLIENT_SECRET)
+def test_emit_with_newlines():
+    # Test that newlines are converted to <br> tags
+    email_handler = ErrorEmailHandler()
+    email_handler.email_api = MagicMock()
 
-    # assert
-    mock_get_subscribed_users.assert_called_once()
-    smtp_obj.starttls.assert_called_once()
-    smtp_obj.ehlo.assert_called_once()
-    smtp_obj.login.assert_called_once_with(EMAIL_APP_USERNAME, EMAIL_APP_PASSWORD)
+    record = MagicMock()
+    record.asctime = "2023-09-15 00:00:00,000"
+    record.exc_text = "Line 1\nLine 2\nLine 3"
+    record.exc_info = None
+    record.getMessage.return_value = "Error line 1\nError line 2"
 
-    smtp_obj.sendmail.call_count == 2
-    smtp_obj.sendmail.assert_any_call(EMAIL_TO_SEND_FROM, "test1@gmail.com", ANY)
-    smtp_obj.sendmail.assert_any_call(EMAIL_TO_SEND_FROM, "test2@gmail.com", ANY)
+    email_handler.emit(record)
 
-    smtp_obj.quit.call_count == 2
+    email_handler.email_api.send_api_error_email.assert_called_once_with(
+        error_message="Error line 1\nError line 2",
+        stack_trace="Line 1\nLine 2\nLine 3",
+        timestamp="2023-09-15 00:00:00,000",
+        logs_link=LOGS_LINK,
+    )
+
+
+@patch("api_environment.LOGS_LINK", LOGS_LINK)
+@patch("api_environment.IAPI_ENDPOINT", IAPI_ENDPOINT)
+@patch("api_environment.KC_SA_CLIENT_ID", KC_SA_CLIENT_ID)
+@patch("api_environment.KC_SA_CLIENT_SECRET", KC_SA_CLIENT_SECRET)
+def test_emit_handles_exception():
+    # Test that exceptions in emit are handled
+    email_handler = ErrorEmailHandler()
+    email_handler.email_api = MagicMock()
+    email_handler.email_api.send_api_error_email.side_effect = Exception("API Error")
+    email_handler.handleError = MagicMock()
+
+    record = MagicMock()
+    record.asctime = "2023-09-15 00:00:00,000"
+    record.exc_text = "Test stack trace"
+    record.exc_info = None
+    record.getMessage.return_value = "Test error message"
+
+    email_handler.emit(record)
+
+    # Verify handleError was called when exception occurred
+    email_handler.handleError.assert_called_once_with(record)
+
+
+@patch("api_environment.LOGS_LINK", LOGS_LINK)
+@patch("api_environment.IAPI_ENDPOINT", IAPI_ENDPOINT)
+@patch("api_environment.KC_SA_CLIENT_ID", KC_SA_CLIENT_ID)
+@patch("api_environment.KC_SA_CLIENT_SECRET", KC_SA_CLIENT_SECRET)
+def test_emit_with_real_exception():
+    """Test emit with a real exception and traceback (exc_info)"""
+    email_handler = ErrorEmailHandler()
+    email_handler.email_api = MagicMock()
+
+    # Create a real exception with traceback
+    try:
+        raise ValueError("Test exception")
+    except ValueError:
+        exc_info = sys.exc_info()
+
+    record = MagicMock()
+    record.asctime = "2023-09-15 00:00:00,000"
+    record.exc_info = exc_info
+    record.exc_text = None
+    record.getMessage.return_value = "ValueError occurred"
+
+    email_handler.emit(record)
+
+    # Verify the email was sent
+    assert email_handler.email_api.send_api_error_email.called
+    call_args = email_handler.email_api.send_api_error_email.call_args[1]
+
+    # Check that stack trace contains expected elements
+    assert "ValueError: Test exception" in call_args["stack_trace"]
+    assert "raise ValueError" in call_args["stack_trace"]
+    assert "\n" in call_args["stack_trace"]  # Newlines preserved
+    assert call_args["error_message"] == "ValueError occurred"
+    assert call_args["timestamp"] == "2023-09-15 00:00:00,000"

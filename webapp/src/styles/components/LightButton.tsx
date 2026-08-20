@@ -1,5 +1,4 @@
 import { Button, ButtonProps } from '@mui/material'
-import React from 'react'
 import { useTheme } from '@mui/material/styles'
 
 export const LightButton = (props: ButtonProps) => {

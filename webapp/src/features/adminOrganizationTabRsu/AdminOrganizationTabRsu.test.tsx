@@ -1,4 +1,3 @@
-import React from 'react'
 import { render } from '@testing-library/react'
 import AdminOrganizationTabRsu from './AdminOrganizationTabRsu'
 import { Provider } from 'react-redux'

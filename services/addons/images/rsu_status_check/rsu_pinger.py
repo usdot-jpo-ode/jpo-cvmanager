@@ -1,9 +1,19 @@
-import os
 import logging
 import time
 import common.pgquery as pgquery
 from datetime import datetime
-from subprocess import Popen, DEVNULL
+import subprocess
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import rsu_status_check_environment
+
+
+def calculate_max_workers(rsu_count):
+    """
+    Scale workers with list size, using a minimum of 20 workers (except when rsu_count <= 0) and a maximum of 120.
+    """
+    if rsu_count <= 0:
+        return 1
+    return min(120, max(20, rsu_count // 8))
 
 
 def insert_ping_data(ping_data, ping_time):
@@ -17,30 +27,69 @@ def insert_ping_data(ping_data, ping_time):
     pgquery.write_db(query)
 
 
+def ping_single_rsu(rsu, retries=2):
+    """
+    Ping a single RSU, retrying up to `retries` total attempts.
+    Returns tuple: (rsu_id, status)
+    """
+
+    rsu_id = rsu[0]
+    ip_address = rsu[1]
+
+    for attempt in range(retries):
+        try:
+            result = subprocess.run(
+                ["ping", "-n", "-c", "1", "-W", "2", ip_address],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                timeout=3,
+            )
+
+            if result.returncode == 0:
+                logging.debug("%s active", rsu_id)
+                return rsu_id, "1"
+
+        except subprocess.TimeoutExpired:
+            logging.debug("%s ping timeout attempt %s", rsu_id, attempt + 1)
+        except Exception as ex:
+            logging.warning(
+                "%s ping command failed on attempt %s: %s", rsu_id, attempt + 1, ex
+            )
+            return rsu_id, "0"
+
+    logging.debug("%s no response", rsu_id)
+    return rsu_id, "0"
+
+
 def ping_rsu_ips(rsu_list):
-    p = {}
-    # Start ping processes
-    for rsu in rsu_list:
-        # id: rsu_id
-        # key: process pinging the RSU's ipv4_address
-        p[rsu[0]] = Popen(["ping", "-n", "-w20", "-c1", rsu[1]], stdout=DEVNULL)
-
     ping_data = {}
-    while p:
-        for rsu_id, proc in p.items():
-            # Check if process has ended
-            if proc.poll() is not None:
-                del p[rsu_id]
+    future_to_rsu_id = {}
+    max_workers = calculate_max_workers(len(rsu_list))
 
-                if proc.returncode == 0:
-                    # Active
-                    logging.debug("%s active" % rsu_id)
-                    ping_data[rsu_id] = "1"
-                else:
-                    # Offline/Unresponsive
-                    logging.debug("%s no response" % rsu_id)
+    # Limit concurrency
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+
+        futures = [executor.submit(ping_single_rsu, rsu) for rsu in rsu_list]
+        future_to_rsu_id = {future: rsu[0] for future, rsu in zip(futures, rsu_list)}
+
+        for future in as_completed(futures):
+            rsu_id = future_to_rsu_id.get(future)
+            try:
+                result = future.result()
+                if result is None:
+                    if rsu_id is not None:
+                        logging.warning("%s returned no ping result", rsu_id)
+                        ping_data[rsu_id] = "0"
+                    continue
+                rsu_id, status = result
+            except Exception as ex:
+                if rsu_id is not None:
+                    logging.warning(
+                        "%s failed with exception in worker: %s", rsu_id, ex
+                    )
                     ping_data[rsu_id] = "0"
-                break
+                continue
+            ping_data[rsu_id] = status
 
     return ping_data
 
@@ -83,14 +132,8 @@ def run_rsu_pinger():
 
 
 if __name__ == "__main__":
-    # Configure logging based on ENV var or use default if not set
-    log_level = os.environ.get("LOGGING_LEVEL", "INFO")
-    log_level = "INFO" if log_level == "" else log_level
-    logging.basicConfig(format="%(levelname)s:%(message)s", level=log_level)
-
     run_service = (
-        os.environ.get("RSU_PING", "False").lower() == "true"
-        and os.environ.get("ZABBIX", "False").lower() == "false"
+        rsu_status_check_environment.RSU_PING and not rsu_status_check_environment.ZABBIX
     )
     if not run_service:
         logging.info("The rsu-pinger service is disabled and will not run")

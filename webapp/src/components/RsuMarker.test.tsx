@@ -1,4 +1,3 @@
-import React from 'react'
 import { render } from '@testing-library/react'
 import RsuMarker from './RsuMarker'
 import { replaceChaoticIds } from '../utils/test-utils'
@@ -24,17 +23,17 @@ it('snapshot online other', () => {
 })
 
 it('snapshot scms 1', () => {
-  const { container } = render(<RsuMarker displayType="scms" scmsStatus="1" />)
+  const { container } = render(<RsuMarker displayType="scms" scmsStatus={true} />)
   expect(replaceChaoticIds(container)).toMatchSnapshot()
 })
 
 it('snapshot scms 0', () => {
-  const { container } = render(<RsuMarker displayType="online" scmsStatus="0" />)
+  const { container } = render(<RsuMarker displayType="online" scmsStatus={false} />)
   expect(replaceChaoticIds(container)).toMatchSnapshot()
 })
 
 it('snapshot scms other', () => {
-  const { container } = render(<RsuMarker displayType="online" scmsStatus="other" />)
+  const { container } = render(<RsuMarker displayType="online" scmsStatus={null} />)
   expect(replaceChaoticIds(container)).toMatchSnapshot()
 })
 

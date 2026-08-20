@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`snapshot organization 1`] = `
 <div>
@@ -6,7 +6,7 @@ exports[`snapshot organization 1`] = `
     class="scroll-div"
   >
     <div
-      style="background-color: rgb(255, 255, 255); padding: 10px 0px;"
+      style="background-color: rgb(255, 255, 255); height: fit-content; padding: 10px 0px;"
     >
       <div
         style="display: flex; flex-direction: row; margin: 10px;"
@@ -195,24 +195,72 @@ exports[`snapshot organization 1`] = `
             <h3
               class="MuiAccordion-heading css-mocked-MuiAccordion-heading"
             >
-              <div
+              <button
                 aria-controls="panel1a-content"
                 aria-expanded="false"
                 class="MuiButtonBase-root MuiAccordionSummary-root MuiAccordionSummary-gutters css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
                 id="panel1a-header"
-                role="button"
                 tabindex="0"
+                type="button"
               >
-                <div
+                <span
                   class="MuiAccordionSummary-content MuiAccordionSummary-contentGutters css-mocked-MuiAccordionSummary-content"
                 >
-                  <h6
-                    class="MuiTypography-root MuiTypography-h6 css-mocked-MuiTypography-root"
+                  <div
+                    style="display: flex; align-items: center; flex-grow: 1; gap: 16px;"
                   >
-                    RSUs
-                  </h6>
-                </div>
-                <div
+                    <h6
+                      class="MuiTypography-root MuiTypography-h6 css-mocked-MuiTypography-root"
+                    >
+                      RSUs
+                    </h6>
+                    <h6
+                      class="MuiTypography-root MuiTypography-subtitle1 css-mocked-MuiTypography-root"
+                    >
+                      TIM Deposit: 
+                      Disabled
+                    </h6>
+                    <h6
+                      class="MuiTypography-root MuiTypography-subtitle1 css-mocked-MuiTypography-root"
+                    >
+                      SNMP Monitoring: 
+                      Disabled
+                    </h6>
+                  </div>
+                  <div
+                    style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; max-width: 50%;"
+                  >
+                    <button
+                      class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
+                      tabindex="0"
+                      type="button"
+                    >
+                      Enable TIM Deposit
+                    </button>
+                    <button
+                      class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedError MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorError MuiButton-root MuiButton-contained MuiButton-containedError MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorError css-mocked-MuiButtonBase-root-MuiButton-root"
+                      tabindex="0"
+                      type="button"
+                    >
+                      Disable TIM Deposit
+                    </button>
+                    <button
+                      class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorPrimary css-mocked-MuiButtonBase-root-MuiButton-root"
+                      tabindex="0"
+                      type="button"
+                    >
+                      Enable SNMP Monitoring
+                    </button>
+                    <button
+                      class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedError MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorError MuiButton-root MuiButton-contained MuiButton-containedError MuiButton-sizeSmall MuiButton-containedSizeSmall MuiButton-colorError css-mocked-MuiButtonBase-root-MuiButton-root"
+                      tabindex="0"
+                      type="button"
+                    >
+                      Disable SNMP Monitoring
+                    </button>
+                  </div>
+                </span>
+                <span
                   class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
                 >
                   <svg
@@ -226,8 +274,8 @@ exports[`snapshot organization 1`] = `
                       d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
                     />
                   </svg>
-                </div>
-              </div>
+                </span>
+              </button>
             </h3>
             <div
               class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-mocked-MuiCollapse-root"
@@ -264,15 +312,15 @@ exports[`snapshot organization 1`] = `
             <h3
               class="MuiAccordion-heading css-mocked-MuiAccordion-heading"
             >
-              <div
+              <button
                 aria-controls="panel1a-content"
                 aria-expanded="false"
                 class="MuiButtonBase-root MuiAccordionSummary-root MuiAccordionSummary-gutters css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
                 id="panel1a-header"
-                role="button"
                 tabindex="0"
+                type="button"
               >
-                <div
+                <span
                   class="MuiAccordionSummary-content MuiAccordionSummary-contentGutters css-mocked-MuiAccordionSummary-content"
                 >
                   <h6
@@ -280,8 +328,8 @@ exports[`snapshot organization 1`] = `
                   >
                     Intersections
                   </h6>
-                </div>
-                <div
+                </span>
+                <span
                   class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
                 >
                   <svg
@@ -295,8 +343,8 @@ exports[`snapshot organization 1`] = `
                       d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
                     />
                   </svg>
-                </div>
-              </div>
+                </span>
+              </button>
             </h3>
             <div
               class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-mocked-MuiCollapse-root"
@@ -331,15 +379,15 @@ exports[`snapshot organization 1`] = `
             <h3
               class="MuiAccordion-heading css-mocked-MuiAccordion-heading"
             >
-              <div
+              <button
                 aria-controls="panel1a-content"
                 aria-expanded="false"
                 class="MuiButtonBase-root MuiAccordionSummary-root MuiAccordionSummary-gutters css-mocked-MuiButtonBase-root-MuiAccordionSummary-root"
                 id="panel1a-header"
-                role="button"
                 tabindex="0"
+                type="button"
               >
-                <div
+                <span
                   class="MuiAccordionSummary-content MuiAccordionSummary-contentGutters css-mocked-MuiAccordionSummary-content"
                 >
                   <h6
@@ -347,8 +395,8 @@ exports[`snapshot organization 1`] = `
                   >
                     Users
                   </h6>
-                </div>
-                <div
+                </span>
+                <span
                   class="MuiAccordionSummary-expandIconWrapper css-mocked-MuiAccordionSummary-expandIconWrapper"
                 >
                   <svg
@@ -362,8 +410,8 @@ exports[`snapshot organization 1`] = `
                       d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
                     />
                   </svg>
-                </div>
-              </div>
+                </span>
+              </button>
             </h3>
             <div
               class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-mocked-MuiCollapse-root"
@@ -450,7 +498,7 @@ exports[`snapshot rsu 1`] = `
                     <input
                       aria-label="Search"
                       class="MuiInputBase-input MuiInput-input MuiInputBase-inputAdornedStart MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiInput-input"
-                      id="mui-11"
+                      id="mui-25"
                       placeholder="Search"
                       type="text"
                       value=""
@@ -578,10 +626,10 @@ exports[`snapshot rsu 1`] = `
                             style="background-color: rgb(255, 255, 255); width: 48px;"
                           >
                             <span
-                              class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
+                              class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiSwitchBase-root-MuiCheckbox-root"
                             >
                               <input
-                                class="PrivateSwitchBase-input css-1m9pwf3"
+                                class="PrivateSwitchBase-input css-mocked-MuiSwitchBase-root"
                                 data-indeterminate="false"
                                 type="checkbox"
                               />
@@ -604,7 +652,7 @@ exports[`snapshot rsu 1`] = `
                           <th
                             class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                             scope="col"
-                            style="background-color: rgb(255, 255, 255); box-sizing: border-box;"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.14285714285714285 * (100% - 0px));"
                           >
                             <div
                               aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -646,7 +694,7 @@ exports[`snapshot rsu 1`] = `
                           <th
                             class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                             scope="col"
-                            style="background-color: rgb(255, 255, 255); box-sizing: border-box;"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.14285714285714285 * (100% - 0px));"
                           >
                             <div
                               aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -688,7 +736,7 @@ exports[`snapshot rsu 1`] = `
                           <th
                             class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                             scope="col"
-                            style="background-color: rgb(255, 255, 255); box-sizing: border-box;"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.14285714285714285 * (100% - 0px));"
                           >
                             <div
                               aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -730,7 +778,7 @@ exports[`snapshot rsu 1`] = `
                           <th
                             class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                             scope="col"
-                            style="background-color: rgb(255, 255, 255); box-sizing: border-box;"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.14285714285714285 * (100% - 0px));"
                           >
                             <div
                               aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -772,7 +820,7 @@ exports[`snapshot rsu 1`] = `
                           <th
                             class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                             scope="col"
-                            style="background-color: rgb(255, 255, 255); box-sizing: border-box;"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.14285714285714285 * (100% - 0px));"
                           >
                             <div
                               aria-describedby="rfd-hidden-text-0-hidden-text-0"
@@ -812,9 +860,93 @@ exports[`snapshot rsu 1`] = `
                             </div>
                           </th>
                           <th
+                            class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
+                            scope="col"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.14285714285714285 * (100% - 0px));"
+                          >
+                            <div
+                              aria-describedby="rfd-hidden-text-0-hidden-text-0"
+                              data-rfd-drag-handle-context-id="0"
+                              data-rfd-drag-handle-draggable-id="5"
+                              data-rfd-draggable-context-id="0"
+                              data-rfd-draggable-id="5"
+                              draggable="false"
+                              role="button"
+                              style="position: relative; min-width: 0; display: flex;"
+                              tabindex="0"
+                            >
+                              <span
+                                aria-sort="none"
+                                class="MuiButtonBase-root MuiTableSortLabel-root css-mocked-MuiButtonBase-root-MuiTableSortLabel-root"
+                                data-testid="mtableheader-sortlabel"
+                                role="columnheader"
+                                tabindex="0"
+                              >
+                                TIM Deposit
+                                <svg
+                                  aria-hidden="true"
+                                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionAsc css-mocked-MuiSvgIcon-root-MuiTableSortLabel-icon"
+                                  data-testid="arrow_downward"
+                                  focusable="false"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8z"
+                                  />
+                                </svg>
+                              </span>
+                              <span
+                                data-testid="material-table-column-sort-order-indicator"
+                                style="width: 1em;"
+                              />
+                            </div>
+                          </th>
+                          <th
+                            class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
+                            scope="col"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.14285714285714285 * (100% - 0px));"
+                          >
+                            <div
+                              aria-describedby="rfd-hidden-text-0-hidden-text-0"
+                              data-rfd-drag-handle-context-id="0"
+                              data-rfd-drag-handle-draggable-id="6"
+                              data-rfd-draggable-context-id="0"
+                              data-rfd-draggable-id="6"
+                              draggable="false"
+                              role="button"
+                              style="position: relative; min-width: 0; display: flex;"
+                              tabindex="0"
+                            >
+                              <span
+                                aria-sort="none"
+                                class="MuiButtonBase-root MuiTableSortLabel-root css-mocked-MuiButtonBase-root-MuiTableSortLabel-root"
+                                data-testid="mtableheader-sortlabel"
+                                role="columnheader"
+                                tabindex="0"
+                              >
+                                SNMP Monitoring
+                                <svg
+                                  aria-hidden="true"
+                                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionAsc css-mocked-MuiSvgIcon-root-MuiTableSortLabel-icon"
+                                  data-testid="arrow_downward"
+                                  focusable="false"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8z"
+                                  />
+                                </svg>
+                              </span>
+                              <span
+                                data-testid="material-table-column-sort-order-indicator"
+                                style="width: 1em;"
+                              />
+                            </div>
+                          </th>
+                          <th
                             class="MuiTableCell-root MuiTableCell-head MuiTableCell-paddingCheckbox MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
                             scope="col"
-                            style="text-align: center; background-color: rgb(255, 255, 255); width: 96px; box-sizing: border-box;"
+                            style="text-align: center; background-color: rgb(255, 255, 255); width: 144px; box-sizing: border-box;"
                           >
                             <span
                               aria-disabled="true"
@@ -832,11 +964,11 @@ exports[`snapshot rsu 1`] = `
                       >
                         <tr
                           class="MuiTableRow-root css-mocked-MuiTableRow-root"
-                          style="height: 245px;"
+                          style="height: 1225px;"
                         >
                           <td
                             class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
-                            colspan="7"
+                            colspan="9"
                             style="padding-top: 0px; padding-bottom: 0px; text-align: center;"
                           >
                             No records to display
@@ -891,14 +1023,14 @@ exports[`snapshot rsu 1`] = `
                           <div
                             class="MuiBox-root css-c8mw91"
                           >
-                            5 rows 
+                            25 rows 
                           </div>
                         </div>
                         <input
                           aria-hidden="true"
                           class="MuiSelect-nativeInput css-mocked-MuiSelect-nativeInput"
                           tabindex="-1"
-                          value="5"
+                          value="25"
                         />
                         <svg
                           aria-hidden="true"
@@ -972,7 +1104,7 @@ exports[`snapshot rsu 1`] = `
                         </span>
                         <span
                           class="MuiTypography-root MuiTypography-caption css-mocked-MuiTypography-root"
-                          style="flex: 1; text-align: center; align-self: center; flex-basis: inherit;"
+                          style="flex-grow: 1; flex-shrink: 1; text-align: center; align-self: center; flex-basis: inherit;"
                         >
                           0-0 of 0
                         </span>
@@ -1032,6 +1164,37 @@ exports[`snapshot rsu 1`] = `
                 </tr>
               </tfoot>
             </table>
+            <div
+              style="position: absolute; top: 0px; left: 0px; height: 100%; width: 100%; z-index: 11;"
+            >
+              <div
+                style="display: table; width: 100%; height: 100%; background-color: rgb(255, 255, 255); opacity: 0.7;"
+              >
+                <div
+                  style="display: table-cell; width: 100%; height: 100%; vertical-align: middle; text-align: center;"
+                >
+                  <span
+                    class="MuiCircularProgress-root MuiCircularProgress-indeterminate MuiCircularProgress-colorPrimary css-mocked-MuiCircularProgress-root"
+                    role="progressbar"
+                    style="width: 40px; height: 40px;"
+                  >
+                    <svg
+                      class="MuiCircularProgress-svg css-mocked-MuiCircularProgress-svg"
+                      viewBox="22 22 44 44"
+                    >
+                      <circle
+                        class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate css-mocked-MuiCircularProgress-circle"
+                        cx="44"
+                        cy="44"
+                        fill="none"
+                        r="20.2"
+                        stroke-width="3.6"
+                      />
+                    </svg>
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1094,7 +1257,7 @@ exports[`snapshot user 1`] = `
                     <input
                       aria-label="Search"
                       class="MuiInputBase-input MuiInput-input MuiInputBase-inputAdornedStart MuiInputBase-inputAdornedEnd css-mocked-MuiInputBase-input-MuiInput-input"
-                      id="mui-26"
+                      id="mui-58"
                       placeholder="Search"
                       type="text"
                       value=""
@@ -1222,10 +1385,10 @@ exports[`snapshot user 1`] = `
                             style="background-color: rgb(255, 255, 255); width: 48px;"
                           >
                             <span
-                              class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiCheckbox-root"
+                              class="MuiButtonBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium PrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-sizeMedium css-mocked-MuiButtonBase-root-MuiSwitchBase-root-MuiCheckbox-root"
                             >
                               <input
-                                class="PrivateSwitchBase-input css-1m9pwf3"
+                                class="PrivateSwitchBase-input css-mocked-MuiSwitchBase-root"
                                 data-indeterminate="false"
                                 type="checkbox"
                               />
@@ -1248,10 +1411,10 @@ exports[`snapshot user 1`] = `
                           <th
                             class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                             scope="col"
-                            style="background-color: rgb(255, 255, 255); box-sizing: border-box;"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.25 * (100% - 0px));"
                           >
                             <div
-                              aria-describedby="rfd-hidden-text-1-hidden-text-7"
+                              aria-describedby="rfd-hidden-text-1-hidden-text-9"
                               data-rfd-drag-handle-context-id="1"
                               data-rfd-drag-handle-draggable-id="0"
                               data-rfd-draggable-context-id="1"
@@ -1290,10 +1453,10 @@ exports[`snapshot user 1`] = `
                           <th
                             class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                             scope="col"
-                            style="background-color: rgb(255, 255, 255); box-sizing: border-box;"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.25 * (100% - 0px));"
                           >
                             <div
-                              aria-describedby="rfd-hidden-text-1-hidden-text-7"
+                              aria-describedby="rfd-hidden-text-1-hidden-text-9"
                               data-rfd-drag-handle-context-id="1"
                               data-rfd-drag-handle-draggable-id="1"
                               data-rfd-draggable-context-id="1"
@@ -1332,10 +1495,10 @@ exports[`snapshot user 1`] = `
                           <th
                             class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                             scope="col"
-                            style="background-color: rgb(255, 255, 255); box-sizing: border-box;"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.25 * (100% - 0px));"
                           >
                             <div
-                              aria-describedby="rfd-hidden-text-1-hidden-text-7"
+                              aria-describedby="rfd-hidden-text-1-hidden-text-9"
                               data-rfd-drag-handle-context-id="1"
                               data-rfd-drag-handle-draggable-id="2"
                               data-rfd-draggable-context-id="1"
@@ -1374,10 +1537,10 @@ exports[`snapshot user 1`] = `
                           <th
                             class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignLeft MuiTableCell-sizeSmall css-mocked-MuiTableCell-root"
                             scope="col"
-                            style="background-color: rgb(255, 255, 255); box-sizing: border-box;"
+                            style="background-color: rgb(255, 255, 255); box-sizing: border-box; width: calc(0.25 * (100% - 0px));"
                           >
                             <div
-                              aria-describedby="rfd-hidden-text-1-hidden-text-7"
+                              aria-describedby="rfd-hidden-text-1-hidden-text-9"
                               data-rfd-drag-handle-context-id="1"
                               data-rfd-drag-handle-draggable-id="3"
                               data-rfd-draggable-context-id="1"
@@ -1434,7 +1597,7 @@ exports[`snapshot user 1`] = `
                       >
                         <tr
                           class="MuiTableRow-root css-mocked-MuiTableRow-root"
-                          style="height: 245px;"
+                          style="height: 1225px;"
                         >
                           <td
                             class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-mocked-MuiTableCell-root"
@@ -1473,7 +1636,7 @@ exports[`snapshot user 1`] = `
                       />
                       <p
                         class="MuiTablePagination-selectLabel css-mocked-MuiTablePagination-selectLabel"
-                        id="mui-24"
+                        id="mui-42"
                       >
                         Rows per page:
                       </p>
@@ -1481,26 +1644,26 @@ exports[`snapshot user 1`] = `
                         class="MuiInputBase-root MuiInputBase-colorPrimary MuiTablePagination-input css-mocked-MuiInputBase-root-MuiTablePagination-select"
                       >
                         <div
-                          aria-controls="mui-18"
+                          aria-controls="mui-36"
                           aria-expanded="false"
                           aria-haspopup="listbox"
-                          aria-labelledby="mui-24 mui-23"
+                          aria-labelledby="mui-42 mui-41"
                           class="MuiSelect-select MuiTablePagination-select MuiSelect-standard MuiInputBase-input css-mocked-MuiSelect-select-MuiInputBase-input"
-                          id="mui-23"
+                          id="mui-41"
                           role="combobox"
                           tabindex="0"
                         >
                           <div
                             class="MuiBox-root css-c8mw91"
                           >
-                            5 rows 
+                            25 rows 
                           </div>
                         </div>
                         <input
                           aria-hidden="true"
                           class="MuiSelect-nativeInput css-mocked-MuiSelect-nativeInput"
                           tabindex="-1"
-                          value="5"
+                          value="25"
                         />
                         <svg
                           aria-hidden="true"
@@ -1574,7 +1737,7 @@ exports[`snapshot user 1`] = `
                         </span>
                         <span
                           class="MuiTypography-root MuiTypography-caption css-mocked-MuiTypography-root"
-                          style="flex: 1; text-align: center; align-self: center; flex-basis: inherit;"
+                          style="flex-grow: 1; flex-shrink: 1; text-align: center; align-self: center; flex-basis: inherit;"
                         >
                           0-0 of 0
                         </span>
@@ -1634,6 +1797,37 @@ exports[`snapshot user 1`] = `
                 </tr>
               </tfoot>
             </table>
+            <div
+              style="position: absolute; top: 0px; left: 0px; height: 100%; width: 100%; z-index: 11;"
+            >
+              <div
+                style="display: table; width: 100%; height: 100%; background-color: rgb(255, 255, 255); opacity: 0.7;"
+              >
+                <div
+                  style="display: table-cell; width: 100%; height: 100%; vertical-align: middle; text-align: center;"
+                >
+                  <span
+                    class="MuiCircularProgress-root MuiCircularProgress-indeterminate MuiCircularProgress-colorPrimary css-mocked-MuiCircularProgress-root"
+                    role="progressbar"
+                    style="width: 40px; height: 40px;"
+                  >
+                    <svg
+                      class="MuiCircularProgress-svg css-mocked-MuiCircularProgress-svg"
+                      viewBox="22 22 44 44"
+                    >
+                      <circle
+                        class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate css-mocked-MuiCircularProgress-circle"
+                        cx="44"
+                        cy="44"
+                        fill="none"
+                        r="20.2"
+                        stroke-width="3.6"
+                      />
+                    </svg>
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

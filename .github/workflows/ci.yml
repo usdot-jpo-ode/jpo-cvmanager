@@ -7,7 +7,7 @@ on:
       - cdot-release*
   pull_request:
     branches:
-      - "**" # Run on PRs to any branch
+      - '**' # Run on PRs to any branch
 
 jobs:
   test_change_limit:
@@ -39,7 +39,7 @@ jobs:
 
   build_api:
     needs: test_change_limit
-    if: ${{ always() && !failure() && !cancelled() }}
+    if: ${{ always() && !cancelled() }}
     runs-on: ubuntu-latest
     container:
       image: python:3.12.2
@@ -80,13 +80,14 @@ jobs:
 
   webapp:
     needs: test_change_limit
-    if: ${{ always() && !failure() && !cancelled() }}
+    if: ${{ always() && !cancelled() }}
     runs-on: ubuntu-latest
     container:
-      image: node:19.8.1
+      image: node:22
       options: --user root
       env:
         CI: true
+        TZ: America/Denver
     steps:
       - name: Checkout ${{ github.event.repository.name }}
         uses: actions/checkout@v4
@@ -96,9 +97,7 @@ jobs:
         run: |
           # Navigate to the webapp directory and perform necessary setup
           cd $GITHUB_WORKSPACE/webapp
-          npm install -g nodemon
-          npm init -y
-          npm install --force
+          npm ci --ignore-scripts
 
           # Run tests with coverage and suppress failures
           npm test -- --coverage
@@ -116,7 +115,7 @@ jobs:
 
   build_keycloak_provider:
     needs: test_change_limit
-    if: ${{ always() && !failure() && !cancelled() }}
+    if: ${{ always() && !cancelled() }}
     runs-on: ubuntu-latest
     container:
       image: maven:3.9.9-eclipse-temurin-21
@@ -128,8 +127,8 @@ jobs:
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          distribution: "adopt"
-          java-version: "21"
+          distribution: 'adopt'
+          java-version: '21'
 
       - name: Build and Test with Maven
         run: |
@@ -142,16 +141,53 @@ jobs:
           name: keycloak-user-provider-test-results
           path: $GITHUB_WORKSPACE/resources/keycloak/custom-user-provider/target/surefire-reports
 
-  build_intersection_api:
+  build_rsu_info_bridge:
     needs: test_change_limit
-    if: ${{ always() && !failure() && !cancelled() }}
+    if: ${{ always() && !cancelled() }}
     runs-on: ubuntu-latest
-    container:
-      image: maven:3.9.9-eclipse-temurin-22
-      options: --user root
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "25"
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-rsu-info-bridge-${{ hashFiles('**/services/rsu-info-bridge/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-rsu-info-bridge-
+            ${{ runner.os }}-maven-
+
+      - name: Build and Test with Maven
+        run: |
+          cd $GITHUB_WORKSPACE/services/rsu-info-bridge
+          ./mvnw clean verify
+
+      - name: Archive Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: rsu-info-bridge-test-results
+          path: $GITHUB_WORKSPACE/services/rsu-info-bridge/target/surefire-reports
+
+  build_intersection_api:
+    needs: test_change_limit
+    if: ${{ always() && !cancelled() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 22
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "22"
 
       - name: Cache Maven packages
         uses: actions/cache@v4
@@ -190,6 +226,140 @@ jobs:
         run: |
           rm -rf $GITHUB_WORKSPACE/services/intersection-api/api/target
 
+  build_rsu_status_monitor:
+    needs: test_change_limit
+    if: ${{ always() && !failure() && !cancelled() }}
+    runs-on: ubuntu-latest
+    container:
+      image: maven:3.9.9-eclipse-temurin-22
+      options: --user root
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}-${{ hashFiles('**/settings.xml') }}-${{ runner.os }}-java-22
+          restore-keys: |
+            ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}-${{ runner.os }}-java-22
+            ${{ runner.os }}-maven-${{ runner.os }}-java-22
+            ${{ runner.os }}-maven
+
+      - name: Install Dependencies
+        env:
+          MAVEN_GITHUB_TOKEN: ${{ secrets.MAVEN_GITHUB_TOKEN }}
+          MAVEN_GITHUB_ORG: ${{ github.repository_owner }}
+        run: |
+          cd $GITHUB_WORKSPACE/services/rsu-status-monitor/rsu-status-monitor
+          mvn clean install -DskipTests -s ./settings.xml
+          mvn dependency:go-offline -s ./settings.xml
+
+      - name: Run tests
+        env:
+          MAVEN_GITHUB_TOKEN: ${{ secrets.MAVEN_GITHUB_TOKEN }}
+          MAVEN_GITHUB_ORG: ${{ github.repository_owner }}
+        run: |
+          cd $GITHUB_WORKSPACE/services/rsu-status-monitor/rsu-status-monitor
+          mvn verify -s ./settings.xml
+
+      - name: Archive Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: rsu-status-monitor-test-results
+          path: $GITHUB_WORKSPACE/services/rsu-status-monitor/rsu-status-monitor/target/surefire-reports
+
+      - name: Clean up
+        run: |
+          rm -rf $GITHUB_WORKSPACE/services/rsu-status-monitor/rsu-status-monitor/target
+
+  build_flyway_image:
+    needs: [test_change_limit, validate_migrations]
+    if: ${{ !cancelled() && needs.validate_migrations.result == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/cvmanager-flyway
+          tags: |
+            type=sha
+            type=ref,event=branch
+
+      - name: Build and push Flyway image
+        uses: docker/build-push-action@v6
+        with:
+          context: resources/db/
+          file: resources/db/Dockerfile
+          push: ${{ github.event_name == 'push' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  validate_migrations:
+    needs: test_change_limit
+    if: ${{ always() && !cancelled() }}
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:15-3.4
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - name: Checkout ${{ github.event.repository.name }}
+        uses: actions/checkout@v4
+
+      - name: Run Flyway migrations
+        run: |
+          docker run --rm \
+            --network host \
+            -v "$GITHUB_WORKSPACE/resources/db/migration:/flyway/sql" \
+            -v "$GITHUB_WORKSPACE/resources/db/flyway.toml:/flyway/conf/flyway.toml" \
+            flyway/flyway:10-alpine \
+            -url=jdbc:postgresql://localhost:5432/postgres \
+            -user=postgres \
+            -password=postgres \
+            migrate
+
+      - name: Verify migration state
+        run: |
+          docker run --rm \
+            --network host \
+            -v "$GITHUB_WORKSPACE/resources/db/migration:/flyway/sql" \
+            -v "$GITHUB_WORKSPACE/resources/db/flyway.toml:/flyway/conf/flyway.toml" \
+            flyway/flyway:10-alpine \
+            -url=jdbc:postgresql://localhost:5432/postgres \
+            -user=postgres \
+            -password=postgres \
+            info
+
   sonar:
     if: github.event.pull_request.base.repo.owner.login == 'usdot-jpo-ode'
     needs: [build_api, webapp]
@@ -224,8 +394,8 @@ jobs:
 
       - uses: actions/setup-java@v4
         with:
-          distribution: "temurin"
-          java-version: "17"
+          distribution: 'temurin'
+          java-version: '17'
 
       - name: Setup SonarScanner
         uses: warchant/setup-sonar-scanner@v7
@@ -235,6 +405,7 @@ jobs:
           cat <<EOF > /tmp/sonar-scanner.properties
           sonar.host.url=https://sonarcloud.io
           sonar.exclusions=**/__init__.py,**/*test*.py,**/test/**
+          sonar.cpd.exclusions=services/intersection-api/api/src/test/resources/snapshots/**,services/intersection-api/api/src/main/resources/templates/**,services/intersection-api/docs/**,resources/deprecated/**
           sonar.coverage.exclusions=**/__init__.py,**/*test*.py,**/test/**
           sonar.javascript.lcov.reportPaths=/home/runner/work/jpo-cvmanager/jpo-cvmanager/webapp/lcov.info
           sonar.modules=api,webapp

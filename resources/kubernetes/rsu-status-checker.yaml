@@ -35,7 +35,7 @@ spec:
               value:
             - name: ZABBIX
               value:
-            - name: RSU_SNMP_FETCH
+            - name: RSU_MSGFWD_FETCH
               value:
             - name: PG_DB_HOST
               value:

@@ -78,12 +78,12 @@ def test_insert_rsu_ping(mock_write_db):
 
 
 def createRsuStatusFetchInstance():
-    rsu_ping_fetch.os.environ["ZABBIX_ENDPOINT"] = "endpoint"
-    rsu_ping_fetch.os.environ["ZABBIX_USER"] = "user"
-    rsu_ping_fetch.os.environ["ZABBIX_PASSWORD"] = "password"
     return rsu_ping_fetch.RsuStatusFetch()
 
 
+@patch("rsu_status_check_environment.ZABBIX_ENDPOINT", "endpoint")
+@patch("rsu_status_check_environment.ZABBIX_USER", "user")
+@patch("rsu_status_check_environment.ZABBIX_PASSWORD", "password")
 def test_setZabbixAuth():
     # prepare
     rsf = createRsuStatusFetchInstance()
@@ -110,6 +110,9 @@ def test_setZabbixAuth():
     assert rsf.ZABBIX_AUTH == "auth"
 
 
+@patch("rsu_status_check_environment.ZABBIX_ENDPOINT", "endpoint")
+@patch("rsu_status_check_environment.ZABBIX_USER", "user")
+@patch("rsu_status_check_environment.ZABBIX_PASSWORD", "password")
 def test_getHostInfo():
     # prepare
     rsf = createRsuStatusFetchInstance()
@@ -139,6 +142,9 @@ def test_getHostInfo():
     assert result == {"result": "result"}
 
 
+@patch("rsu_status_check_environment.ZABBIX_ENDPOINT", "endpoint")
+@patch("rsu_status_check_environment.ZABBIX_USER", "user")
+@patch("rsu_status_check_environment.ZABBIX_PASSWORD", "password")
 def test_getItem():
     # prepare
     rsf = createRsuStatusFetchInstance()
@@ -170,6 +176,9 @@ def test_getItem():
     assert result == {"result": "result"}
 
 
+@patch("rsu_status_check_environment.ZABBIX_ENDPOINT", "endpoint")
+@patch("rsu_status_check_environment.ZABBIX_USER", "user")
+@patch("rsu_status_check_environment.ZABBIX_PASSWORD", "password")
 def test_getHistory():
     # prepare
     rsf = createRsuStatusFetchInstance()
@@ -207,6 +216,9 @@ def test_getHistory():
     assert result == {"result": "result"}
 
 
+@patch("rsu_status_check_environment.ZABBIX_ENDPOINT", "endpoint")
+@patch("rsu_status_check_environment.ZABBIX_USER", "user")
+@patch("rsu_status_check_environment.ZABBIX_PASSWORD", "password")
 def test_insertHistoryItem():
     # prepare
     rsf = createRsuStatusFetchInstance()
@@ -236,6 +248,9 @@ def test_insertHistoryItem():
     assert result == True
 
 
+@patch("rsu_status_check_environment.ZABBIX_ENDPOINT", "endpoint")
+@patch("rsu_status_check_environment.ZABBIX_USER", "user")
+@patch("rsu_status_check_environment.ZABBIX_PASSWORD", "password")
 def test_printConfigInfo():
     # prepare
     rsf = createRsuStatusFetchInstance()
@@ -250,6 +265,9 @@ def test_printConfigInfo():
     rsu_ping_fetch.logging.info.assert_called_once_with(expected_message)
 
 
+@patch("rsu_status_check_environment.ZABBIX_ENDPOINT", "endpoint")
+@patch("rsu_status_check_environment.ZABBIX_USER", "user")
+@patch("rsu_status_check_environment.ZABBIX_PASSWORD", "password")
 def test_run():
     # prepare
     rsf = createRsuStatusFetchInstance()
@@ -281,6 +299,9 @@ def test_run():
     rsu_ping_fetch.logging.error.assert_not_called()
 
 
+@patch("rsu_status_check_environment.ZABBIX_ENDPOINT", "endpoint")
+@patch("rsu_status_check_environment.ZABBIX_USER", "user")
+@patch("rsu_status_check_environment.ZABBIX_PASSWORD", "password")
 def test_run_insert_failure():
     # prepare
     rsf = createRsuStatusFetchInstance()
@@ -314,6 +335,9 @@ def test_run_insert_failure():
     rsu_ping_fetch.logging.error.assert_not_called()
 
 
+@patch("rsu_status_check_environment.ZABBIX_ENDPOINT", "endpoint")
+@patch("rsu_status_check_environment.ZABBIX_USER", "user")
+@patch("rsu_status_check_environment.ZABBIX_PASSWORD", "password")
 def test_run_exception():
     # prepare
     rsf = createRsuStatusFetchInstance()

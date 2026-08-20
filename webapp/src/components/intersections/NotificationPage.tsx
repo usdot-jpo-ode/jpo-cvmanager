@@ -1,6 +1,5 @@
 import { Box } from '@mui/material'
 import { NotificationsTable } from '../../features/intersections/notifications/notifications-table'
-import React from 'react'
 
 const Page = () => {
   return (

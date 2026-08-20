@@ -1,5 +1,4 @@
 import { Button, ButtonProps, IconButton, IconButtonProps, useTheme } from '@mui/material'
-import React from 'react'
 
 export const PositionedToggleButton = (props: ButtonProps) => {
   return (

@@ -87,7 +87,9 @@ spring:
   cache:
     jcache:
       provider: com.github.benmanes.caffeine.jcache.spi.CaffeineCachingProvider
-    cache-names: email-rate-limit
+    cache-names: 
+      - email-rate-limit
+      - timesync-rate-limit
     caffeine:
       spec: maximumSize=100000,expireAfterWrite=1h
 
@@ -142,5 +144,19 @@ bucket4j:
         - cache-key: "'email_global'"
           bandwidths:
             - capacity: ${EMAIL_RATE_LIMIT_PER_INSTANCE:120}
+              time: 1
+              unit: hours
+    - cache-name: timesync-rate-limit
+      url: /timesync/.*
+      strategy: all
+      rate-limits:
+        - cache-key: "@jwtSubjectExtractor.extractSubject(getHeader('Authorization')) != null ? @jwtSubjectExtractor.extractSubject(getHeader('Authorization')) : getRemoteAddr()"
+          bandwidths:
+            - capacity: ${TIMESYNC_RATE_LIMIT_PER_USER:360}
+              time: 1
+              unit: hours
+        - cache-key: "'timesync_global'"
+          bandwidths:
+            - capacity: ${TIMESYNC_RATE_LIMIT_PER_INSTANCE:18000}
               time: 1
               unit: hours

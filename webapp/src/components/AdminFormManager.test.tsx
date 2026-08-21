@@ -10,7 +10,7 @@ import { BrowserRouter } from 'react-router-dom'
 it('snapshot rsu', () => {
   const { container } = render(
     <ThemeProvider theme={testTheme}>
-      <Provider store={setupStore({})}>
+      <Provider store={setupStore({ user: { value: { authLoginData: { token: 'testToken' } } } })}>
         <BrowserRouter>
           <AdminFormManager activeForm={'add_rsu'} />
         </BrowserRouter>
@@ -24,7 +24,7 @@ it('snapshot rsu', () => {
 it('snapshot user', () => {
   const { container } = render(
     <ThemeProvider theme={testTheme}>
-      <Provider store={setupStore({})}>
+      <Provider store={setupStore({ user: { value: { authLoginData: { token: 'testToken' } } } })}>
         <BrowserRouter>
           <AdminFormManager activeForm={'add_user'} />
         </BrowserRouter>
@@ -38,7 +38,7 @@ it('snapshot user', () => {
 it('snapshot organization', () => {
   const { container } = render(
     <ThemeProvider theme={testTheme}>
-      <Provider store={setupStore({})}>
+      <Provider store={setupStore({ user: { value: { authLoginData: { token: 'testToken' } } } })}>
         <BrowserRouter>
           <AdminFormManager activeForm={'add_organization'} />
         </BrowserRouter>

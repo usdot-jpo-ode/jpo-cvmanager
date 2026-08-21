@@ -1,5 +1,5 @@
 import React from 'react'
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createAction, createAsyncThunk, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '../../../store'
 import { selectToken } from '../../../generalSlices/userSlice'
 import { IMessage, Client } from '@stomp/stompjs'
@@ -8,7 +8,11 @@ import EventsApi from '../../../apis/intersections/events-api'
 import NotificationApi from '../../../apis/intersections/notification-api'
 import toast from 'react-hot-toast'
 import {
-  addBsmTimestamps,
+  addBsmTimestampsAndSortAscending,
+  addMapTimestampsAndSortAscending,
+  addSpatTimestampsAndSortAscending,
+  addSrmTimestampsAndSortAscending,
+  addSsmTimestampsAndSortAscending,
   generateSignalStateFeatureCollection,
   isValidDate,
   parseMapSignalGroups,
@@ -17,15 +21,21 @@ import {
 import { generateColorDictionary, generateMapboxStyleExpression } from './utilities/colors'
 import { setBsmCircleColor, setBsmLegendColors } from './map-layer-style-slice'
 import { getTimeRangeDeciseconds } from './utilities/map-utils'
-import { MapRef, ViewState } from 'react-map-gl'
+import { MapRef } from 'react-map-gl'
 import { selectRsuMapData } from '../../../generalSlices/rsuSlice'
 import EnvironmentVars from '../../../EnvironmentVars'
 import { downloadAllData } from './utilities/file-utilities'
-import { SsmSrmData } from '../../../models/RsuApi'
 import { getTimestamp } from './map-component'
 import { getAccurateTimeMillis, selectTimeOffsetMillis } from '../../../generalSlices/timeSyncSlice'
 import { combineUrlPaths } from '../../../apis/intersections/api-helper-cviz'
 import { ThunkAbortController } from './utilities/thunk-abort-contoller'
+import {
+  fetchSrmWithinTimeWindow,
+  fetchSsmWithinTimeWindow,
+  filterSrms,
+  filterSsms,
+  getTimeWindowFromRenderInterval,
+} from '../../api/intersectionMapApiSlice'
 
 export type MAP_LAYERS =
   | 'map-message'
@@ -35,6 +45,10 @@ export type MAP_LAYERS =
   | 'invalid-lane-collection'
   | 'bsm'
   | 'signal-states'
+  | 'srm'
+  | 'srm-requested-lanes'
+  | 'ssm-connection-status'
+  | 'ssm-connection-highlight'
 
 export type MAP_QUERY_PARAMS = {
   startDate: Date
@@ -49,6 +63,8 @@ export type IMPORTED_MAP_MESSAGE_DATA = {
   mapData: ProcessedMap[]
   bsmData: BsmFeatureCollection
   spatData: ProcessedSpat[]
+  srmData: ProcessedSrmFeature[]
+  ssmData: ProcessedSsm[]
   notificationData: any
 }
 
@@ -66,6 +82,8 @@ export type MAP_PROPS = {
         map: ProcessedMap[]
         spat: ProcessedSpat[]
         bsm: BsmFeatureCollection
+        srm: ProcessedSrmFeature[]
+        ssm: ProcessedSsm[]
       }
     | undefined
   sourceDataType: 'notification' | 'event' | 'assessment' | 'timestamp' | undefined
@@ -77,6 +95,8 @@ export type RAW_MESSAGE_DATA_EXPORT = {
   map?: ProcessedMap[]
   spat?: ProcessedSpat[]
   bsm?: BsmFeatureCollection
+  srm?: ProcessedSrmFeature[]
+  ssm?: ProcessedSsm[]
   notification?: MessageMonitor.Notification
   event?: MessageMonitor.Event
   assessment?: Assessment
@@ -90,15 +110,28 @@ export type BSM_COUNTS_CHART_DATA = MessageMonitor.MinuteCount & {
 const initialState = {
   mapRef: React.createRef() as React.MutableRefObject<MapRef>,
   layersVisible: {
-    'map-message': false,
+    'map-message': true,
     'map-message-labels': false,
-    'connecting-lanes': false,
+    'connecting-lanes': true,
     'connecting-lanes-labels': false,
-    'invalid-lane-collection': false,
-    bsm: false,
-    'signal-states': false,
+    'invalid-lane-collection': true,
+    'signal-states': true,
+    bsm: true,
+    srm: true,
+    'srm-requested-lanes': true,
+    'ssm-connection-status': true,
+    'ssm-connection-highlight': true,
   } as Record<MAP_LAYERS, boolean>,
-  allInteractiveLayerIds: ['map-message', 'connecting-lanes', 'signal-states', 'bsm'] as MAP_LAYERS[],
+  allInteractiveLayerIds: [
+    'map-message',
+    'connecting-lanes',
+    'signal-states',
+    'bsm',
+    'srm',
+    'ssm-connection-status',
+    'srm-requested-lanes',
+    'ssm-connection-highlight',
+  ] as MAP_LAYERS[],
   queryParams: {
     startDate: new Date(Date.now() - 1000 * 60 * 1),
     endDate: new Date(Date.now() + 1000 * 60 * 1),
@@ -125,18 +158,15 @@ const initialState = {
     type: 'FeatureCollection' as const,
     features: [],
   } as BsmFeatureCollection,
+  currentSsmData: [] as ProcessedSsm[],
+  currentSrmData: [] as ProcessedSrmFeature[],
   surroundingEvents: [] as MessageMonitor.Event[],
   filteredSurroundingEvents: [] as MessageMonitor.Event[],
   surroundingNotifications: [] as MessageMonitor.Notification[],
   filteredSurroundingNotifications: [] as MessageMonitor.Notification[],
   bsmEventsByMinute: [] as BSM_COUNTS_CHART_DATA[],
   playbackModeActive: false,
-  viewState: {
-    latitude: 39.587905,
-    longitude: -105.0907089,
-    zoom: 19,
-  } as Partial<ViewState>,
-  timeWindowSeconds: 60,
+  timeWindowSeconds: 10,
   sliderValueDeciseconds: 0,
   sliderTimeValue: {
     start: new Date(),
@@ -144,33 +174,20 @@ const initialState = {
   },
   lastSliderUpdate: undefined as number | undefined,
   renderTimeInterval: [0, 0],
-  hoveredFeature: undefined as any,
-  selectedFeature: undefined as any,
-  rawData: {} as RAW_MESSAGE_DATA_EXPORT,
   mapSpatTimes: { mapTime: 0, spatTime: 0 },
-  sigGroupLabelsVisible: false,
-  laneLabelsVisible: false,
   showPopupOnHover: false,
   importedMessageData: undefined as IMPORTED_MAP_MESSAGE_DATA | undefined,
-  cursor: 'default',
   loadInitialDataTimeoutId: undefined as NodeJS.Timeout | undefined,
   wsClient: undefined as Client | undefined,
   wsSessionId: undefined as number | undefined,
   liveDataActive: false,
   currentMapData: [] as ProcessedMap[],
   currentSpatData: [] as ProcessedSpat[],
-  currentBsmData: {
-    type: 'FeatureCollection',
-    features: [],
-  } as BsmFeatureCollection,
   bsmTrailLength: 20,
   liveDataRestart: -1,
   liveDataRestartTimeoutId: undefined as NodeJS.Timeout | undefined,
   pullInitialDataAbortControllers: [] as AbortController[],
   abortAllFutureRequests: false,
-  srmCount: 0,
-  srmSsmCount: 0,
-  srmMsgList: [],
   decoderModeEnabled: false,
   liveSpatLatestLatencyMs: undefined as number | undefined,
 }
@@ -187,15 +204,14 @@ export const generateQueryParams = (
   sourceDataType: MAP_PROPS['sourceDataType'],
   decoderModeEnabled: boolean
 ) => {
-  const startOffset = 1000 * 60 * 1
-  const endOffset = 1000 * 60 * 1
+  const offset = 1000 * 60 * 1
 
   switch (sourceDataType) {
     case 'notification': {
       const notification = source as MessageMonitor.Notification
       return {
-        startDate: new Date(notification.notificationGeneratedAt - startOffset),
-        endDate: new Date(notification.notificationGeneratedAt + endOffset),
+        startDate: new Date(notification.notificationGeneratedAt - offset),
+        endDate: new Date(notification.notificationGeneratedAt + offset),
         eventDate: new Date(notification.notificationGeneratedAt),
         vehicleId: undefined,
         isDefault: false,
@@ -204,8 +220,8 @@ export const generateQueryParams = (
     case 'event': {
       const event = source as MessageMonitor.Event
       return {
-        startDate: new Date(event.eventGeneratedAt - startOffset),
-        endDate: new Date(event.eventGeneratedAt + endOffset),
+        startDate: new Date(event.eventGeneratedAt - offset),
+        endDate: new Date(event.eventGeneratedAt + offset),
         eventDate: new Date(event.eventGeneratedAt),
         vehicleId: undefined,
         isDefault: false,
@@ -214,8 +230,8 @@ export const generateQueryParams = (
     case 'assessment': {
       const assessment = source as Assessment
       return {
-        startDate: new Date(assessment.assessmentGeneratedAt - startOffset),
-        endDate: new Date(assessment.assessmentGeneratedAt + endOffset),
+        startDate: new Date(assessment.assessmentGeneratedAt - offset),
+        endDate: new Date(assessment.assessmentGeneratedAt + offset),
         eventDate: new Date(assessment.assessmentGeneratedAt),
         vehicleId: undefined,
         isDefault: false,
@@ -224,8 +240,8 @@ export const generateQueryParams = (
     case 'timestamp': {
       const ts = (source as timestamp).timestamp
       return {
-        startDate: new Date(ts - startOffset),
-        endDate: new Date(ts + endOffset),
+        startDate: new Date(ts - offset),
+        endDate: new Date(ts + offset),
         eventDate: new Date(ts),
         vehicleId: undefined,
         isDefault: false,
@@ -253,14 +269,60 @@ export const generateQueryParams = (
         }
       }
       return {
-        startDate: new Date(Date.now() - startOffset),
-        endDate: new Date(Date.now() + endOffset),
+        startDate: new Date(Date.now() - offset),
+        endDate: new Date(Date.now() + offset),
         eventDate: new Date(Date.now()),
         vehicleId: undefined,
         isDefault: true,
       }
   }
 }
+
+export const updateQueryParamsActionFromTimestamp = createAction(
+  'intersectionMap/updateQueryParamsActionFromTimestamp',
+  (args: { intersectionId: number; tsMillis: number }) => {
+    const { intersectionId, tsMillis } = args
+    const offset = 1000 * 60 * 1
+    return {
+      payload: {
+        startDate: new Date(tsMillis - offset),
+        endDate: new Date(tsMillis + offset),
+        eventDate: new Date(tsMillis),
+        vehicleId: undefined,
+        intersectionId: intersectionId,
+        isDefault: false,
+      } as MAP_QUERY_PARAMS,
+    }
+  }
+)
+
+export const updateQueryParamsActionFromSpats = createAction(
+  'intersectionMap/updateQueryParamsActionFromSpats',
+  (args: { intersectionId: number; spats: ProcessedSpat[] }) => {
+    const { intersectionId, spats } = args
+    let startDate = undefined as number | undefined
+    let endDate = undefined as number | undefined
+
+    for (const spat of spats) {
+      if (!startDate || spat.utcTimeStamp < startDate) {
+        startDate = getTimestamp(spat.utcTimeStamp)
+      }
+      if (!endDate || getTimestamp(spat.utcTimeStamp) > endDate) {
+        endDate = getTimestamp(spat.utcTimeStamp)
+      }
+    }
+    return {
+      payload: {
+        startDate: new Date(startDate ?? Date.now()),
+        endDate: new Date(endDate ?? Date.now() + 1),
+        eventDate: new Date((startDate ?? Date.now()) / 2 + (endDate ?? Date.now() + 1) / 2),
+        vehicleId: undefined,
+        intersectionId: intersectionId,
+        isDefault: false,
+      } as MAP_QUERY_PARAMS,
+    }
+  }
+)
 
 export const pullInitialData = createAsyncThunk(
   'intersectionMap/pullInitialData',
@@ -289,19 +351,19 @@ export const pullInitialData = createAsyncThunk(
     let rawBsmGeojson: BsmFeatureCollection = { type: 'FeatureCollection', features: [] }
     let abortController = new AbortController()
     if (decoderModeEnabled) {
-      rawMap = (sourceData as { map: ProcessedMap[] }).map.map((map) => ({
-        ...map,
-        properties: {
-          ...map.properties,
-          timeStamp: getTimestamp(map.properties.timeStamp),
-          odeReceivedAt: getTimestamp(map.properties.odeReceivedAt),
-        },
-      }))
-      rawSpat = (sourceData as { spat: ProcessedSpat[] }).spat.map((spat) => ({
-        ...spat,
-        utcTimeStamp: getTimestamp(spat.utcTimeStamp),
-      }))
-      rawBsmGeojson = addBsmTimestamps((sourceData as { bsm: BsmFeatureCollection }).bsm)
+      // Use source data loaded from decoder module
+      const localSourceData = sourceData as {
+        map: ProcessedMap[]
+        spat: ProcessedSpat[]
+        bsm: BsmFeatureCollection
+        srm: ProcessedSrmFeature[]
+        ssm: ProcessedSsm[]
+      }
+      rawMap = addMapTimestampsAndSortAscending(localSourceData.map)
+      rawSpat = addSpatTimestampsAndSortAscending(localSourceData.spat)
+      rawBsmGeojson = addBsmTimestampsAndSortAscending(localSourceData.bsm)
+      dispatch(setCurrentSsmData(addSsmTimestampsAndSortAscending(localSourceData.ssm)))
+      dispatch(setCurrentSrmData(addSrmTimestampsAndSortAscending(localSourceData.srm)))
       if (rawSpat && rawSpat.length != 0 && rawMap && rawMap.length != 0) {
         const sortedSpatData = rawSpat.sort((x, y) => x.utcTimeStamp - y.utcTimeStamp)
         const startTime = new Date(sortedSpatData[0].utcTimeStamp)
@@ -313,25 +375,12 @@ export const pullInitialData = createAsyncThunk(
           isValidDate(endTime)
         ) {
           dispatch(
-            updateQueryParams({
-              ...generateQueryParams(
-                {
-                  map: [],
-                  spat: rawSpat,
-                  bsm: {
-                    type: 'FeatureCollection',
-                    features: [],
-                  },
-                },
-                null,
-                decoderModeEnabled
-              ),
-              intersectionId: rawMap[0].properties.intersectionId,
-            })
+            updateQueryParamsActionFromSpats({ intersectionId: rawMap[0].properties.intersectionId, spats: rawSpat })
           )
         }
       }
     } else if (queryParams.isDefault == true) {
+      // Retrieve latest SPAT to set time range, which will re-trigger pull initial data with new time range
       abortController = new AbortController()
       dispatch(addInitialDataAbortController(abortController))
       if (selectAbortAllFutureRequests(getState() as RootState)) {
@@ -345,28 +394,23 @@ export const pullInitialData = createAsyncThunk(
       })
       if (latestSpats && latestSpats.length > 0) {
         dispatch(
-          updateQueryParams({
-            state: currentState.intersectionMap,
-            ...generateQueryParams(
-              { timestamp: getTimestamp(latestSpats.at(-1)?.utcTimeStamp) },
-              'timestamp',
-              decoderModeEnabled
-            ),
+          updateQueryParamsActionFromTimestamp({
             intersectionId: queryParams.intersectionId,
+            tsMillis: getTimestamp(latestSpats.at(-1)?.utcTimeStamp),
           })
         )
         return
       } else {
         dispatch(
-          updateQueryParams({
-            state: currentState.intersectionMap,
-            ...generateQueryParams({ timestamp: Date.now() }, 'timestamp', decoderModeEnabled),
+          updateQueryParamsActionFromTimestamp({
             intersectionId: queryParams.intersectionId,
+            tsMillis: Date.now(),
           })
         )
         return
       }
     } else if (importedMessageData == undefined) {
+      // Retrieve fresh data from Intersection API
       if (selectAbortAllFutureRequests(getState() as RootState)) {
         return
       }
@@ -394,12 +438,16 @@ export const pullInitialData = createAsyncThunk(
         },
       }))
     } else {
+      // Use imported message data
       rawMap = [...importedMessageData.mapData]
       rawSpat = [...importedMessageData.spatData].sort((a, b) => a.utcTimeStamp - b.utcTimeStamp)
       rawBsmGeojson = importedMessageData.bsmData
+      dispatch(setCurrentSsmData(importedMessageData.ssmData))
+      dispatch(setCurrentSrmData(importedMessageData.srmData))
     }
 
     if (decoderModeEnabled) {
+      // In decoder mode only, allow display of BSMs without MAP or SPaT data
       let bsmGeojson = rawBsmGeojson
       bsmGeojson = {
         ...rawBsmGeojson,
@@ -422,15 +470,25 @@ export const pullInitialData = createAsyncThunk(
     dispatch(
       handleNewMapMessageData({
         mapData: latestMapMessage,
+        allMapData: rawMap,
         connectingLanes: latestMapMessage.connectingLanesFeatureCollection,
         mapSignalGroups: mapSignalGroupsLocal,
         mapTime: latestMapMessage.properties.odeReceivedAt as unknown as number,
       })
     )
+
     if (importedMessageData == undefined && !decoderModeEnabled) {
+      // Pull remaining data feeds from Intersection API
       if (selectAbortAllFutureRequests(getState() as RootState)) {
         return
       }
+
+      dispatch(getBsmDailyCounts())
+      dispatch(getSurroundingEvents())
+      dispatch(getSurroundingNotifications())
+      await fetchSsmWithinTimeWindow(queryParams, dispatch)
+      await fetchSrmWithinTimeWindow(queryParams, dispatch)
+
       // ######################### Retrieve SPAT Data #########################
       abortController = new AbortController()
       dispatch(addInitialDataAbortController(abortController))
@@ -456,15 +514,11 @@ export const pullInitialData = createAsyncThunk(
       if (selectAbortAllFutureRequests(getState() as RootState)) {
         return
       }
-      dispatch(getBsmDailyCounts())
-      dispatch(getSurroundingEvents())
-      dispatch(getSurroundingNotifications())
     }
 
     // ######################### SPAT Signal Groups #########################
     const spatSignalGroupsLocal = parseSpatSignalGroups(rawSpat)
-    dispatch(setSpatSignalGroups(spatSignalGroupsLocal))
-    dispatch(setRawData({ map: rawMap, spat: rawSpat }))
+    dispatch(setSpatSignalGroups({ signalGroups: spatSignalGroupsLocal, spat: rawSpat }))
 
     // ######################### BSMs #########################
     if (selectAbortAllFutureRequests(getState() as RootState)) {
@@ -489,7 +543,7 @@ export const pullInitialData = createAsyncThunk(
         success: `Successfully got BSM Data`,
         error: `Failed to get BSM data. Please see console`,
       })
-      rawBsmGeojson = addBsmTimestamps({ type: 'FeatureCollection', features: await rawBsmPromise })
+      rawBsmGeojson = addBsmTimestampsAndSortAscending({ type: 'FeatureCollection', features: await rawBsmPromise })
     }
     const bsmGeojson = {
       ...rawBsmGeojson,
@@ -515,15 +569,17 @@ export const pullInitialData = createAsyncThunk(
 export const renderEntireMap = createAsyncThunk(
   'intersectionMap/renderEntireMap',
   async (
-    args: { currentMapData: ProcessedMap[]; currentSpatData: ProcessedSpat[]; currentBsmData: BsmFeatureCollection },
+    args: {
+      currentMapData: ProcessedMap[]
+      currentSpatData: ProcessedSpat[]
+      currentBsmData: BsmFeatureCollection
+    },
     { getState, dispatch }
   ) => {
     const { currentMapData, currentSpatData, currentBsmData } = args
     const currentState = getState() as RootState
 
     const queryParams = selectQueryParams(currentState)
-    const sourceData = selectSourceData(currentState)
-    const sourceDataType = selectSourceDataType(currentState)
     const decoderModeEnabled = selectDecoderModeEnabled(currentState)
 
     // Still render BSMs if decoderModeEnabled is true, even if there are no map messages.
@@ -539,7 +595,6 @@ export const renderEntireMap = createAsyncThunk(
 
       return {
         bsmData: currentBsmData,
-        rawData: { bsm: currentBsmData },
         sliderValueDeciseconds: Math.min(
           getTimeRangeDeciseconds(queryParams.startDate, queryParams.eventDate ?? new Date()),
           getTimeRangeDeciseconds(queryParams.startDate, queryParams.endDate)
@@ -553,6 +608,7 @@ export const renderEntireMap = createAsyncThunk(
     dispatch(
       handleNewMapMessageData({
         mapData: latestMapMessage,
+        allMapData: currentMapData,
         connectingLanes: latestMapMessage.connectingLanesFeatureCollection,
         mapSignalGroups: mapSignalGroupsLocal,
         mapTime: latestMapMessage.properties.odeReceivedAt as unknown as number,
@@ -561,23 +617,10 @@ export const renderEntireMap = createAsyncThunk(
 
     // ######################### SPAT Signal Groups #########################
     const spatSignalGroupsLocal = parseSpatSignalGroups(currentSpatData)
-    dispatch(setSpatSignalGroups(spatSignalGroupsLocal))
+    dispatch(setSpatSignalGroups({ signalGroups: spatSignalGroupsLocal, spat: currentSpatData }))
 
-    // ######################### Message Data #########################
-    const rawData = {}
-    rawData['map'] = currentMapData
-    rawData['spat'] = currentSpatData
-    rawData['bsm'] = currentBsmData
-    if (sourceDataType == 'notification') {
-      rawData['notification'] = sourceData as MessageMonitor.Notification
-    } else if (sourceDataType == 'event') {
-      rawData['event'] = sourceData as MessageMonitor.Event
-    } else if (sourceDataType == 'assessment') {
-      rawData['assessment'] = sourceData as Assessment
-    }
     return {
       bsmData: currentBsmData,
-      rawData: rawData,
       sliderValueDeciseconds: Math.min(
         getTimeRangeDeciseconds(queryParams.startDate, queryParams.eventDate ?? new Date()),
         getTimeRangeDeciseconds(queryParams.startDate, queryParams.endDate)
@@ -653,6 +696,7 @@ export const renderIterative_Map = createAsyncThunk(
     const currentState = getState() as RootState
     const queryParams = selectQueryParams(currentState)
     const currentMapData: ProcessedMap[] = selectCurrentMapData(currentState)
+    const mapRef = selectMapRef(currentState)
 
     newMapData = newMapData.map((map) => ({
       ...map,
@@ -689,10 +733,10 @@ export const renderIterative_Map = createAsyncThunk(
     // ######################### MAP Data #########################
     const latestMapMessage: ProcessedMap = currentMapDataLocal.at(-1)!
     if (latestMapMessage != null) {
-      setViewState({
-        latitude: latestMapMessage?.properties.refPoint.latitude,
-        longitude: latestMapMessage?.properties.refPoint.longitude,
+      mapRef.current.flyTo({
+        center: [latestMapMessage?.properties.refPoint.longitude, latestMapMessage?.properties.refPoint.latitude],
         zoom: 19,
+        duration: 100, //ms
       })
     }
 
@@ -705,13 +749,12 @@ export const renderIterative_Map = createAsyncThunk(
       (latestMapMessage.properties.refPoint.latitude != previousMapMessage?.properties.refPoint.latitude ||
         latestMapMessage.properties.refPoint.longitude != previousMapMessage?.properties.refPoint.longitude)
     ) {
-      setViewState({
-        latitude: latestMapMessage?.properties.refPoint.latitude,
-        longitude: latestMapMessage?.properties.refPoint.longitude,
+      mapRef.current.flyTo({
+        center: [latestMapMessage?.properties.refPoint.longitude, latestMapMessage?.properties.refPoint.latitude],
         zoom: 19,
+        duration: 100, //ms
       })
     }
-    dispatch(setRawData({ map: currentMapDataLocal }))
     return {
       currentMapData: currentMapDataLocal,
       connectingLanes: latestMapMessage.connectingLanesFeatureCollection,
@@ -808,9 +851,12 @@ export const renderIterative_Bsm = createAsyncThunk(
   async (newBsmData: ProcessedBsmFeature[], { getState, dispatch }) => {
     const currentState = getState() as RootState
     const queryParams = selectQueryParams(currentState)
-    const currentBsmData: BsmFeatureCollection = selectCurrentBsmData(currentState)
+    const currentBsmData: BsmFeatureCollection = selectBsmData(currentState)
 
-    const newBsmFeatureCollection = addBsmTimestamps({ type: 'FeatureCollection', features: newBsmData })
+    const newBsmFeatureCollection = addBsmTimestampsAndSortAscending({
+      type: 'FeatureCollection',
+      features: newBsmData,
+    })
 
     const OLDEST_DATA_TO_KEEP = queryParams.eventDate.getTime() - queryParams.startDate.getTime() // milliseconds
 
@@ -847,7 +893,6 @@ export const renderIterative_Bsm = createAsyncThunk(
     }
 
     dispatch(updateBsmData(currentBsmGeojson))
-    dispatch(setRawData({ bsm: currentBsmGeojson }))
     return currentBsmGeojson
   },
   {
@@ -1244,8 +1289,30 @@ export const downloadMapData = createAsyncThunk(
   'intersectionMap/downloadMapData',
   async (_, { getState }) => {
     const currentState = getState() as RootState
-    const rawData = selectRawData(currentState)!
     const queryParams = selectQueryParams(currentState)
+    const sourceData = selectSourceData(currentState)
+    const sourceDataType = selectSourceDataType(currentState)
+
+    const spatData = selectCurrentSpatData(currentState)
+    const mapData = selectCurrentMapData(currentState)
+    const bsmData = selectBsmData(currentState)
+    const ssmData = selectCurrentSsmData(currentState)
+    const srmData = selectCurrentSrmData(currentState)
+
+    const rawData: any = {}
+    rawData['spat'] = spatData
+    rawData['map'] = mapData
+    rawData['bsm'] = bsmData
+    rawData['ssm'] = ssmData
+    rawData['srm'] = srmData
+
+    if (sourceDataType == 'notification') {
+      rawData['notification'] = sourceData as MessageMonitor.Notification
+    } else if (sourceDataType == 'event') {
+      rawData['event'] = sourceData as MessageMonitor.Event
+    } else if (sourceDataType == 'assessment') {
+      rawData['assessment'] = sourceData as Assessment
+    }
 
     return downloadAllData(rawData, queryParams)
   },
@@ -1288,24 +1355,6 @@ export const intersectionMapSlice = createSlice({
     value: initialState,
   },
   reducers: {
-    updateSsmSrmCounts: (state, action: PayloadAction<{ srmSsmList: SsmSrmData; rsuIpv4: string }>) => {
-      let localSrmCount = 0
-      let localSsmCount = 0
-      const localMsgList = []
-      for (const elem of action.payload.srmSsmList) {
-        if (elem.ip === action.payload.rsuIpv4) {
-          localMsgList.push(elem)
-          if (elem.type === 'srmTx') {
-            localSrmCount += 1
-          } else {
-            localSsmCount += 1
-          }
-        }
-      }
-      state.value.srmCount = localSrmCount
-      state.value.srmSsmCount = localSsmCount
-      state.value.srmMsgList = localMsgList
-    },
     setSurroundingEvents: (state, action: PayloadAction<MessageMonitor.Event[]>) => {
       state.value.surroundingEvents = action.payload
     },
@@ -1342,23 +1391,22 @@ export const intersectionMapSlice = createSlice({
           100
       }
     },
-    setViewState: (state, action: PayloadAction<Partial<ViewState>>) => {
-      state.value.viewState = action.payload
-    },
     handleImportedMapMessageData: (
       state,
       action: PayloadAction<{
         mapData: ProcessedMap[]
         bsmData: BsmFeatureCollection
         spatData: ProcessedSpat[]
+        srmData: ProcessedSrmFeature[]
+        ssmData: ProcessedSsm[]
         notificationData: any
       }>
     ) => {
-      const { mapData, bsmData, spatData, notificationData } = action.payload
+      const { mapData, bsmData, spatData, srmData, ssmData, notificationData } = action.payload
       const sortedSpatData = spatData.sort((x, y) => x.utcTimeStamp - y.utcTimeStamp)
       const startTime = new Date(sortedSpatData[0].utcTimeStamp)
       const endTime = new Date(sortedSpatData[sortedSpatData.length - 1].utcTimeStamp)
-      state.value.importedMessageData = { mapData, bsmData, spatData, notificationData }
+      state.value.importedMessageData = { mapData, bsmData, spatData, srmData, ssmData, notificationData }
       state.value.queryParams = {
         startDate: startTime,
         endDate: endTime,
@@ -1370,7 +1418,7 @@ export const intersectionMapSlice = createSlice({
         state.value.sliderValueDeciseconds,
         state.value.timeWindowSeconds
       )
-      state.value.timeWindowSeconds = 60
+      state.value.timeWindowSeconds = 10
     },
     updateQueryParams: (
       state,
@@ -1400,7 +1448,7 @@ export const intersectionMapSlice = createSlice({
           state.value.sliderValueDeciseconds,
           state.value.timeWindowSeconds
         )
-        if (action.payload.resetTimeWindow) state.value.timeWindowSeconds = 60
+        if (action.payload.resetTimeWindow) state.value.timeWindowSeconds = 10
         if (action.payload.updateSlider)
           state.value.sliderValueDeciseconds = getTimeRangeDeciseconds(newQueryParams.startDate, newQueryParams.endDate)
       }
@@ -1457,48 +1505,6 @@ export const intersectionMapSlice = createSlice({
         state.value.timeWindowSeconds
       )
     },
-    onMapClick: (
-      state,
-      action: PayloadAction<{
-        event: { point: mapboxgl.Point; lngLat: mapboxgl.LngLat }
-        mapRef: React.MutableRefObject<any>
-      }>
-    ) => {
-      const features = action.payload.mapRef.current.queryRenderedFeatures(action.payload.event.point, {
-        // layers: state.value.allInteractiveLayerIds,
-      })
-      const feature = features?.[0]
-      if (feature && state.value.allInteractiveLayerIds.includes(feature.layer.id)) {
-        state.value.selectedFeature = { clickedLocation: action.payload.event.lngLat, feature }
-      } else {
-        state.value.selectedFeature = undefined
-      }
-    },
-    onMapMouseMove: (
-      state,
-      action: PayloadAction<{ features: mapboxgl.MapboxGeoJSONFeature[] | undefined; lngLat: mapboxgl.LngLat }>
-    ) => {
-      const feature = action.payload.features?.[0]
-      if (feature && state.value.allInteractiveLayerIds.includes(feature.layer.id as MAP_LAYERS)) {
-        state.value.hoveredFeature = { clickedLocation: action.payload.lngLat, feature }
-      }
-    },
-    onMapMouseEnter: (
-      state,
-      action: PayloadAction<{ features: mapboxgl.MapboxGeoJSONFeature[] | undefined; lngLat: mapboxgl.LngLat }>
-    ) => {
-      state.value.cursor = 'pointer'
-      const feature = action.payload.features?.[0]
-      if (feature && state.value.allInteractiveLayerIds.includes(feature.layer.id as MAP_LAYERS)) {
-        state.value.hoveredFeature = { clickedLocation: action.payload.lngLat, feature }
-      } else {
-        state.value.hoveredFeature = undefined
-      }
-    },
-    onMapMouseLeave: (state) => {
-      state.value.cursor = ''
-      state.value.hoveredFeature = undefined
-    },
     cleanUpLiveStreaming: (state, action: PayloadAction<boolean>) => {
       const isRestart = action.payload ?? false
       if (state.value.wsClient) {
@@ -1513,7 +1519,7 @@ export const intersectionMapSlice = createSlice({
             clearTimeout(state.value.liveDataRestartTimeoutId)
             state.value.liveDataRestartTimeoutId = undefined
           }
-        state.value.timeWindowSeconds = 60
+        state.value.timeWindowSeconds = 10
         state.value.liveDataActive = false
         state.value.liveDataRestart = -1
         state.value.liveSpatLatestLatencyMs = undefined
@@ -1521,18 +1527,6 @@ export const intersectionMapSlice = createSlice({
     },
     setLoadInitialDataTimeoutId: (state, action: PayloadAction<NodeJS.Timeout>) => {
       state.value.loadInitialDataTimeoutId = action.payload
-    },
-    clearSelectedFeature: (state) => {
-      state.value.selectedFeature = undefined
-    },
-    clearHoveredFeature: (state) => {
-      state.value.hoveredFeature = undefined
-    },
-    setLaneLabelsVisible: (state, action: PayloadAction<boolean>) => {
-      state.value.laneLabelsVisible = action.payload
-    },
-    setSigGroupLabelsVisible: (state, action: PayloadAction<boolean>) => {
-      state.value.sigGroupLabelsVisible = action.payload
     },
     setShowPopupOnHover: (state, action: PayloadAction<boolean>) => {
       state.value.showPopupOnHover = action.payload
@@ -1545,14 +1539,6 @@ export const intersectionMapSlice = createSlice({
     },
     setTimeWindowSeconds: (state, action: PayloadAction<number>) => {
       state.value.timeWindowSeconds = action.payload
-    },
-    setRawData: (state, action: PayloadAction<RAW_MESSAGE_DATA_EXPORT>) => {
-      state.value.rawData.map = action.payload.map ?? state.value.rawData.map
-      state.value.rawData.spat = action.payload.spat ?? state.value.rawData.spat
-      state.value.rawData.bsm = action.payload.bsm ?? state.value.rawData.bsm
-      state.value.rawData.notification = action.payload.notification ?? state.value.rawData.notification
-      state.value.rawData.event = action.payload.event ?? state.value.rawData.event
-      state.value.rawData.assessment = action.payload.assessment ?? state.value.rawData.assessment
     },
     setMapProps: (state, action: PayloadAction<MAP_PROPS>) => {
       state.value.sourceData = action.payload.sourceData
@@ -1582,11 +1568,11 @@ export const intersectionMapSlice = createSlice({
       state.value.filteredSurroundingNotifications = []
       state.value.bsmData = { type: 'FeatureCollection', features: [] }
       state.value.currentBsms = { type: 'FeatureCollection', features: [] }
-      state.value.currentBsmData = { type: 'FeatureCollection', features: [] }
+      state.value.currentSsmData = []
+      state.value.currentSrmData = []
       state.value.mapData = undefined
       state.value.mapSpatTimes = { mapTime: 0, spatTime: 0 }
-      state.value.rawData = {}
-      state.value.sourceData = { map: [], spat: [], bsm: { type: 'FeatureCollection', features: [] } }
+      state.value.sourceData = { map: [], spat: [], bsm: { type: 'FeatureCollection', features: [] }, srm: [], ssm: [] }
       state.value.sliderValueDeciseconds = 0
       state.value.playbackModeActive = false
       state.value.currentSpatData = []
@@ -1624,6 +1610,7 @@ export const intersectionMapSlice = createSlice({
       state,
       action: PayloadAction<{
         mapData: ProcessedMap
+        allMapData: ProcessedMap[]
         connectingLanes: ConnectingLanesFeatureCollection
         mapSignalGroups: SignalStateFeatureCollection
         mapTime: number
@@ -1631,12 +1618,16 @@ export const intersectionMapSlice = createSlice({
     ) => {
       if (!action.payload) return
       state.value.mapData = action.payload.mapData
+      state.value.currentMapData = action.payload.allMapData
       if (action.payload.mapData != null)
-        state.value.viewState = {
-          latitude: action.payload.mapData.properties.refPoint.latitude,
-          longitude: action.payload.mapData.properties.refPoint.longitude,
+        state.value.mapRef.current.flyTo({
+          center: [
+            action.payload.mapData.properties.refPoint.longitude,
+            action.payload.mapData.properties.refPoint.latitude,
+          ],
           zoom: 19,
-        }
+          duration: 100, //ms
+        })
       state.value.connectingLanes = action.payload.connectingLanes
       state.value.mapSignalGroups = action.payload.mapSignalGroups
       state.value.mapSpatTimes = { ...state.value.mapSpatTimes, mapTime: action.payload.mapTime }
@@ -1656,8 +1647,9 @@ export const intersectionMapSlice = createSlice({
       state.value.abortAllFutureRequests = true
       controllers.forEach((abortController) => abortController.abort())
     },
-    setSpatSignalGroups: (state, action: PayloadAction<SpatSignalGroups>) => {
-      state.value.spatSignalGroups = action.payload
+    setSpatSignalGroups: (state, action: PayloadAction<{ signalGroups: SpatSignalGroups; spat: ProcessedSpat[] }>) => {
+      state.value.spatSignalGroups = action.payload.signalGroups
+      state.value.currentSpatData = action.payload.spat
     },
     setCurrentBsms: (state, action: PayloadAction<BsmFeatureCollection>) => {
       state.value.currentBsms = action.payload
@@ -1671,8 +1663,23 @@ export const intersectionMapSlice = createSlice({
     setAbortAllFutureRequests: (state, action: PayloadAction<boolean>) => {
       state.value.abortAllFutureRequests = action.payload
     },
+    setLayerVisibility: (state, action: PayloadAction<{ key: MAP_LAYERS; visible: boolean }>) => {
+      state.value.layersVisible = {
+        ...state.value.layersVisible,
+        [action.payload.key]: action.payload.visible,
+      }
+    },
+    setLayersVisible: (state, action: PayloadAction<Record<MAP_LAYERS, boolean>>) => {
+      state.value.layersVisible = action.payload
+    },
     setLiveSpatLatestLatencyMs: (state, action: PayloadAction<number | undefined>) => {
       state.value.liveSpatLatestLatencyMs = action.payload
+    },
+    setCurrentSsmData: (state, action: PayloadAction<ProcessedSsm[]>) => {
+      state.value.currentSsmData = action.payload ?? []
+    },
+    setCurrentSrmData: (state, action: PayloadAction<ProcessedSrmFeature[]>) => {
+      state.value.currentSrmData = action.payload ?? []
     },
   },
   extraReducers: (builder) => {
@@ -1689,12 +1696,10 @@ export const intersectionMapSlice = createSlice({
           state,
           action: PayloadAction<{
             bsmData: BsmFeatureCollection
-            rawData: any
             sliderValueDeciseconds: number
           }>
         ) => {
           state.value.bsmData = action.payload.bsmData
-          state.value.rawData = action.payload.rawData
           state.value.sliderValueDeciseconds = action.payload.sliderValueDeciseconds
           state.value.sliderTimeValue = getNewSliderTimeValue(
             state.value.queryParams.startDate,
@@ -1722,16 +1727,18 @@ export const intersectionMapSlice = createSlice({
             (state.value.mapData.properties.refPoint.latitude != previousMapMessage?.properties.refPoint.latitude ||
               state.value.mapData.properties.refPoint.longitude != previousMapMessage?.properties.refPoint.longitude)
           )
-            state.value.viewState = {
-              latitude: action.payload.mapData.properties.refPoint.latitude,
-              longitude: action.payload.mapData.properties.refPoint.longitude,
+            state.value.mapRef.current.flyTo({
+              center: [
+                action.payload.mapData.properties.refPoint.longitude,
+                action.payload.mapData.properties.refPoint.latitude,
+              ],
               zoom: 19,
-            }
+              duration: 100, //ms
+            })
           state.value.connectingLanes = action.payload.connectingLanes
           state.value.mapData = action.payload.mapData
           state.value.mapSignalGroups = action.payload.mapSignalGroups
           state.value.mapSpatTimes = { ...state.value.mapSpatTimes, mapTime: action.payload.mapTime }
-          state.value.rawData = { ...state.value.rawData, map: action.payload.currentMapData }
         }
       )
       .addCase(
@@ -1739,13 +1746,10 @@ export const intersectionMapSlice = createSlice({
         (state, action: PayloadAction<{ signalGroups: SpatSignalGroups; raw: ProcessedSpat[] }>) => {
           state.value.spatSignalGroups = action.payload.signalGroups
           state.value.currentSpatData = action.payload.raw
-          state.value.rawData = { ...state.value.rawData, spat: action.payload.raw }
         }
       )
       .addCase(renderIterative_Bsm.fulfilled, (state, action: PayloadAction<BsmFeatureCollection>) => {
-        state.value.currentBsmData = action.payload
         state.value.bsmData = action.payload
-        state.value.rawData = { ...state.value.rawData, bsm: action.payload }
       })
       .addCase(
         updateRenderedMapState.fulfilled,
@@ -1800,11 +1804,18 @@ export const intersectionMapSlice = createSlice({
       .addCase(updateTrailedBsmData.fulfilled, (state, action: PayloadAction<BsmFeatureCollection>) => {
         state.value.currentBsms = action.payload
       })
+      .addCase(updateQueryParamsActionFromTimestamp, (state, action: PayloadAction<MAP_QUERY_PARAMS>) => {
+        state.value.queryParams = action.payload
+      })
+      .addCase(updateQueryParamsActionFromSpats, (state, action: PayloadAction<MAP_QUERY_PARAMS>) => {
+        state.value.queryParams = action.payload
+      })
   },
 })
 
 export const selectLoading = (state: RootState) => state.intersectionMap.loading
 
+export const selectMapRef = (state: RootState) => state.intersectionMap.value.mapRef
 export const selectLayersVisible = (state: RootState) => state.intersectionMap.value.layersVisible
 export const selectAllInteractiveLayerIds = (state: RootState) => state.intersectionMap.value.allInteractiveLayerIds
 export const selectQueryParams = (state: RootState) => state.intersectionMap.value.queryParams
@@ -1821,6 +1832,8 @@ export const selectSpatSignalGroups = (state: RootState) => state.intersectionMa
 export const selectCurrentSignalGroups = (state: RootState) => state.intersectionMap.value.currentSignalGroups
 export const selectCurrentBsms = (state: RootState) => state.intersectionMap.value.currentBsms
 export const selectConnectingLanes = (state: RootState) => state.intersectionMap.value.connectingLanes
+export const selectCurrentSsmData = (state: RootState) => state.intersectionMap.value.currentSsmData
+export const selectCurrentSrmData = (state: RootState) => state.intersectionMap.value.currentSrmData
 export const selectSurroundingEvents = (state: RootState) => state.intersectionMap.value.surroundingEvents
 export const selectFilteredSurroundingEvents = (state: RootState) =>
   state.intersectionMap.value.filteredSurroundingEvents
@@ -1829,65 +1842,66 @@ export const selectFilteredSurroundingNotifications = (state: RootState) =>
   state.intersectionMap.value.filteredSurroundingNotifications
 export const selectBsmEventsByMinute = (state: RootState) => state.intersectionMap.value.bsmEventsByMinute
 export const selectPlaybackModeActive = (state: RootState) => state.intersectionMap.value.playbackModeActive
-export const selectViewState = (state: RootState) => state.intersectionMap.value.viewState
 export const selectTimeWindowSeconds = (state: RootState) => state.intersectionMap.value.timeWindowSeconds
 export const selectSliderValueDeciseconds = (state: RootState) => state.intersectionMap.value.sliderValueDeciseconds
 export const selectRenderTimeInterval = (state: RootState) => state.intersectionMap.value.renderTimeInterval
-export const selectHoveredFeature = (state: RootState) => state.intersectionMap.value.hoveredFeature
-export const selectSelectedFeature = (state: RootState) => state.intersectionMap.value.selectedFeature
-export const selectRawData = (state: RootState) => state.intersectionMap.value.rawData
 export const selectMapSpatTimes = (state: RootState) => state.intersectionMap.value.mapSpatTimes
-export const selectSigGroupLabelsVisible = (state: RootState) => state.intersectionMap.value.sigGroupLabelsVisible
-export const selectLaneLabelsVisible = (state: RootState) => state.intersectionMap.value.laneLabelsVisible
 export const selectShowPopupOnHover = (state: RootState) => state.intersectionMap.value.showPopupOnHover
 export const selectImportedMessageData = (state: RootState) => state.intersectionMap.value.importedMessageData
-export const selectCursor = (state: RootState) => state.intersectionMap.value.cursor
 export const selectLoadInitialDataTimeoutId = (state: RootState) => state.intersectionMap.value.loadInitialDataTimeoutId
 export const selectWsClient = (state: RootState) => state.intersectionMap.value.wsClient
 export const selectWsSessionId = (state: RootState) => state.intersectionMap.value.wsSessionId
 export const selectLiveDataActive = (state: RootState) => state.intersectionMap.value.liveDataActive
 export const selectCurrentMapData = (state: RootState) => state.intersectionMap.value.currentMapData
 export const selectCurrentSpatData = (state: RootState) => state.intersectionMap.value.currentSpatData
-export const selectCurrentBsmData = (state: RootState) => state.intersectionMap.value.currentBsmData
 export const selectSliderTimeValue = (state: RootState) => state.intersectionMap.value.sliderTimeValue
 export const selectBsmTrailLength = (state: RootState) => state.intersectionMap.value.bsmTrailLength
 export const selectLiveDataRestartTimeoutId = (state: RootState) => state.intersectionMap.value.liveDataRestartTimeoutId
 export const selectLiveDataRestart = (state: RootState) => state.intersectionMap.value.liveDataRestart
 export const selectPullInitialDataAbortControllers = (state: RootState) =>
   state.intersectionMap.value.pullInitialDataAbortControllers
-export const selectSrmCount = (state: RootState) => state.intersectionMap.value.srmCount
-export const selectSrmSsmCount = (state: RootState) => state.intersectionMap.value.srmSsmCount
-export const selectSrmMsgList = (state: RootState) => state.intersectionMap.value.srmMsgList
 export const selectDecoderModeEnabled = (state: RootState) => state.intersectionMap.value.decoderModeEnabled
 export const selectTimeFilterBsms = (state: RootState) => !state.intersectionMap.value.decoderModeEnabled
 export const selectAbortAllFutureRequests = (state: RootState) => state.intersectionMap.value.abortAllFutureRequests
 export const selectLiveSpatLatestLatencyMs = (state: RootState) => state.intersectionMap.value.liveSpatLatestLatencyMs
 
+export const selectActiveSsmData = createSelector(
+  [
+    (state: RootState) => state.intersectionMap.value.currentSsmData,
+    (state: RootState) => state.intersectionMap.value.renderTimeInterval,
+  ],
+  (currentSsmData, renderTimeInterval) => {
+    const timeWindow = getTimeWindowFromRenderInterval(renderTimeInterval)
+    return filterSsms(currentSsmData, timeWindow)
+  }
+)
+
+export const selectActiveSrmData = createSelector(
+  [
+    (state: RootState) => state.intersectionMap.value.currentSrmData,
+    (state: RootState) => state.intersectionMap.value.renderTimeInterval,
+  ],
+  (currentSrmData, renderTimeInterval) => {
+    const timeWindow = getTimeWindowFromRenderInterval(renderTimeInterval)
+    return filterSrms(currentSrmData, timeWindow)
+  }
+)
+
 export const {
   setSurroundingEvents,
   maybeUpdateSliderValue,
-  setViewState,
   handleImportedMapMessageData,
   updateQueryParams,
   onTimeQueryChanged,
   setSliderValueDeciseconds,
   incrementSliderValue,
   updateRenderTimeInterval,
-  onMapClick,
-  onMapMouseMove,
-  onMapMouseEnter,
-  onMapMouseLeave,
   cleanUpLiveStreaming,
   setLoadInitialDataTimeoutId,
-  clearSelectedFeature,
-  clearHoveredFeature,
-  setLaneLabelsVisible,
-  setSigGroupLabelsVisible,
   setShowPopupOnHover,
   setLiveDataActive,
   setBsmTrailLength,
   setTimeWindowSeconds,
-  setRawData,
   setMapProps,
   togglePlaybackModeActive,
   resetMapView,
@@ -1903,7 +1917,11 @@ export const {
   setMapRef,
   setDecoderModeEnabled,
   setAbortAllFutureRequests,
+  setLayerVisibility,
+  setLayersVisible,
   setLiveSpatLatestLatencyMs,
+  setCurrentSsmData,
+  setCurrentSrmData,
 } = intersectionMapSlice.actions
 
 export default intersectionMapSlice.reducer

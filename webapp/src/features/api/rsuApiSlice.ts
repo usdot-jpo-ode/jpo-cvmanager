@@ -2,8 +2,8 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import EnvironmentVars from '../../EnvironmentVars'
 import { RootState } from '../../store'
 import { selectToken } from '../../generalSlices/userSlice'
-import { getQueryString } from './intersectionApiSlice'
-import { AdminRsu, AdminRsuAllowedSelections } from '../../models/Rsu'
+import { getQueryString } from './intersectionConfigSlice'
+import { AdminRsu, AdminRsuAllowedSelections, AdminRsuPatch } from '../../models/Rsu'
 import { PaginatedQueryParams, PaginatedResponse } from '../../models/pagination'
 import { AdminRsuCreationBody } from '../adminAddRsu/AdminAddRsu'
 
@@ -26,9 +26,7 @@ export const rsuApiSlice = createApi({
 
       headers.set('Accept', 'application/json')
 
-      // Endpoint names must match the keys in the endpoints objects below
-      const endpointsWithoutToken = []
-      if (token && !endpointsWithoutToken.includes(endpoint)) {
+      if (token) {
         headers.set('Authorization', `Bearer ${token}`)
       }
 
@@ -85,13 +83,13 @@ export const rsuApiSlice = createApi({
       }),
       invalidatesTags: (result, error, vars) => [{ type: RSU_API_RSU_TAG, id: RSU_API_RSU_LIST_ID }],
     }),
-    patchRsu: builder.mutation<void, { rsuIp: string; patch: Partial<AdminRsu> }>({
+    patchRsu: builder.mutation<void, { rsuIp: string; patch: AdminRsuPatch }>({
       query: ({ rsuIp, patch }) => ({
         url: `${getQueryString({
           rsu_ip: rsuIp,
         })}`,
         method: 'PATCH',
-        body: { origin_ip: rsuIp, ...patch },
+        body: { ip: rsuIp, ...patch },
       }),
       invalidatesTags: (result, error, { rsuIp }) => [
         { type: RSU_API_RSU_TAG, id: rsuIp },

@@ -211,8 +211,6 @@ HTTP URL Arguments:
 - PG_PG_DB_PASS: The database user's password that will be used to authenticate the cloud function.
 - MONGO_PROCESSED_BSM_COLLECTION_NAME: The database name for processed BSM messages output from the [Geojson Converter](https://github.com/usdot-jpo-ode/geojson-converter).
 - MONGO_PROCESSED_PSM_COLLECTION_NAME: The database name for processed PSM messages output from the [Geojson Converter](https://github.com/usdot-jpo-ode/geojson-converter).
-- MONGO_SSM_COLLECTION_NAME: The database name for SSM visualization data.
-- MONGO_SRM_COLLECTION_NAME: The database name for SRM visualization data.
 - MONGO_DB_URI: URI for the MongoDB connection.
 - MONGO_DB_NAME: Database name for RSU counts.
 - KEYCLOAK_ENDPOINT: Keycloak base URL to send requests to. Reference the sample.env for the URL formatting.

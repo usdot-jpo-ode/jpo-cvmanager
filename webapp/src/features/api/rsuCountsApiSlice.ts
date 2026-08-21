@@ -4,7 +4,7 @@ import EnvironmentVars from '../../EnvironmentVars'
 import { RootState } from '../../store'
 import { selectToken } from '../../generalSlices/userSlice'
 import { RsuCounts } from '../../models/RsuApi'
-import { getQueryString } from './intersectionApiSlice'
+import { getQueryString } from './intersectionConfigSlice'
 
 // Define a service using a base URL and expected endpoints
 export const rsuCountsApiSlice = createApi({
@@ -15,10 +15,7 @@ export const rsuCountsApiSlice = createApi({
       const currentState = getState() as RootState
       const token = selectToken(currentState)
 
-      // Specify endpoints that do not require a token or organization. These names must match the keys in the endpoints object below.
-      const endpointsWithoutToken = []
-
-      if (token && !endpointsWithoutToken.includes(endpoint)) {
+      if (token) {
         headers.set('Authorization', `${token}`)
       }
 

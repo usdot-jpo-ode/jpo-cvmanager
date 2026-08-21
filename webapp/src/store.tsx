@@ -17,8 +17,10 @@ import asn1DecoderSlice from './features/intersections/decoder/asn1-decoder-slic
 import intersectionMapReducer from './features/intersections/map/map-slice'
 import intersectionMapLayerStyleReducer from './features/intersections/map/map-layer-style-slice'
 import dataSelectorReducer from './features/intersections/data-selector/dataSelectorSlice'
+import { intersectionConfigSlice } from './features/api/intersectionConfigSlice'
+import { intersectionMapApiSlice } from './features/api/intersectionMapApiSlice'
+import { intersectionMapApiMiddleware } from './features/api/intersection-map-api-middleware'
 import { emailApiSlice } from './features/api/emailApiSlice'
-import { intersectionApiSlice } from './features/api/intersectionApiSlice'
 import { organizationApiSlice } from './features/api/organizationApiSlice'
 import { rsuCountsApiSlice } from './features/api/rsuCountsApiSlice'
 import { unsubscribeApiSlice } from './features/api/unsubscribeApiSlice'
@@ -55,8 +57,9 @@ export const setupStore = (preloadedState?: Partial<any>) => {
       asn1Decoder: asn1DecoderSlice,
       timeSync: timeSyncReducer,
       haas: haasSliceReducer,
+      [intersectionConfigSlice.reducerPath]: intersectionConfigSlice.reducer,
+      [intersectionMapApiSlice.reducerPath]: intersectionMapApiSlice.reducer,
       [emailApiSlice.reducerPath]: emailApiSlice.reducer,
-      [intersectionApiSlice.reducerPath]: intersectionApiSlice.reducer,
       [organizationApiSlice.reducerPath]: organizationApiSlice.reducer,
       [rsuCountsApiSlice.reducerPath]: rsuCountsApiSlice.reducer,
       [unsubscribeApiSlice.reducerPath]: unsubscribeApiSlice.reducer,
@@ -73,8 +76,10 @@ export const setupStore = (preloadedState?: Partial<any>) => {
         serializableCheck: false,
         immutableCheck: false,
       })
+        .concat(intersectionConfigSlice.middleware)
+        .concat(intersectionMapApiSlice.middleware)
+        .concat(intersectionMapApiMiddleware.middleware)
         .concat(emailApiSlice.middleware)
-        .concat(intersectionApiSlice.middleware)
         .concat(rsuCountsApiSlice.middleware)
         .concat(unsubscribeApiSlice.middleware)
         .concat(subscriptionManagementApiSlice.middleware)

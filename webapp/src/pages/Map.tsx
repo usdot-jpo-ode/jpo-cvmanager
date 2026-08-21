@@ -127,6 +127,9 @@ import { Feature, Point } from 'geojson'
 import { PrimaryButton } from '../styles/components/PrimaryButton'
 import { ConditionalRenderRsu, evaluateFeatureFlags } from '../feature-flags'
 import { DateTime } from 'luxon'
+import RsuStatusDialog from '../features/adminRsuTab/RsuStatusDialog'
+import { selectToken } from '../generalSlices/userSlice'
+
 import { MessageType } from '../models/MessageTypes'
 import { useGetRsuCountsQuery } from '../features/api/rsuCountsApiSlice'
 import { formatScmsExpiration, useGetScmsStatusQuery } from '../features/api/scmsApiSlice'
@@ -464,7 +467,7 @@ function MapPage() {
 
   const heatMapData = useMemo(() => {
     return {
-      type: 'FeatureCollection' as 'FeatureCollection',
+      type: 'FeatureCollection' as const,
       features:
         rsuData
           ?.map(
@@ -864,6 +867,17 @@ function MapPage() {
   const messageTypeOptions = messageViewerTypes.map((type) => {
     return { value: type, label: type }
   })
+
+  // Added logic to open RsuStatusDialog from Map popup
+  const [statusDialogOpen, setStatusDialogOpen] = useState(false)
+  const [selectedRsuIp, setSelectedRsuIp] = useState<string | null>(null)
+
+  const token = useSelector(selectToken)
+
+  const handlePopupClick = (rsuIp: string) => {
+    setSelectedRsuIp(rsuIp)
+    setStatusDialogOpen(true)
+  }
 
   return (
     <div className="container">
@@ -1489,6 +1503,9 @@ function MapPage() {
                     {selectedRsu.properties.serial_number ? selectedRsu.properties.serial_number : 'Unknown'}
                   </Typography>
                 </Box>
+                <Button onClick={() => handlePopupClick(selectedRsu.properties.ipv4_address)}>
+                  View RSU Status Charts
+                </Button>
               </Box>
             </Popup>
           ) : null}
@@ -1685,6 +1702,12 @@ function MapPage() {
             </div>
           </Paper>
         ))}
+      <RsuStatusDialog
+        open={statusDialogOpen}
+        onClose={() => setStatusDialogOpen(false)}
+        rsuIp={selectedRsuIp}
+        token={token}
+      />
     </div>
   )
 }

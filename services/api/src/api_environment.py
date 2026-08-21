@@ -20,8 +20,6 @@ CORS_DOMAIN = get_env_var("CORS_DOMAIN", "*")
 
 MONGO_DB_URI = get_env_var("MONGO_DB_URI", "mongodb://localhost:27017/", warn=True)
 MONGO_DB_NAME = get_env_var("MONGO_DB_NAME", "CV", warn=True)
-MONGO_SSM_COLLECTION_NAME = get_env_var("MONGO_SSM_COLLECTION_NAME")
-MONGO_SRM_COLLECTION_NAME = get_env_var("MONGO_SRM_COLLECTION_NAME")
 MONGO_PROCESSED_BSM_COLLECTION_NAME = get_env_var(
     "MONGO_PROCESSED_BSM_COLLECTION_NAME", "ProcessedBsm", warn=False
 )

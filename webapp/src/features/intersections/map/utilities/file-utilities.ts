@@ -7,6 +7,8 @@ export const downloadAllData = (rawData: RAW_MESSAGE_DATA_EXPORT, queryParams: M
   zip.file(`intersection_${queryParams.intersectionId}_MAP_data.json`, JSON.stringify(rawData.map))
   zip.file(`intersection_${queryParams.intersectionId}_SPAT_data.json`, JSON.stringify(rawData.spat))
   zip.file(`intersection_${queryParams.intersectionId}_BSM_data.json`, JSON.stringify(rawData.bsm))
+  zip.file(`intersection_${queryParams.intersectionId}_SSM_data.json`, JSON.stringify(rawData.ssm))
+  zip.file(`intersection_${queryParams.intersectionId}_SRM_data.json`, JSON.stringify(rawData.srm))
   if (rawData.event)
     zip.file(`intersection_${queryParams.intersectionId}_Event_data.json`, JSON.stringify(rawData.event))
   if (rawData.assessment)

@@ -15,13 +15,6 @@ type ProcessedSpat = {
   states: MovementState[]
 }
 
-type ProcessedValidationMessage = {
-  message: string
-  jsonPath: string
-  schemaPath: string
-  exception?: string
-}
-
 type IntersectionStatusObject = {
   manualControlIsEnabled: boolean
   stopTimeIsActivated: boolean

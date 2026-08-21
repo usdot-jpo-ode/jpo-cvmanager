@@ -42,9 +42,10 @@ public class ReportsControllerTest {
         doc.setReportContents(new byte[] { 1, 2, 3 });
         when(reportService.buildReport(anyInt(), anyLong(), anyLong())).thenReturn(doc);
 
-        byte[] result = controller.generateReport(1, 1000L, 2000L);
+        ResponseEntity<Page<ReportDocument>> result = controller.generateReport(1, 1000L, 2000L);
 
-        assertThat(result).containsExactly(1, 2, 3);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(result.getBody()).contains(doc);
         verify(reportService).buildReport(1, 1000L, 2000L);
     }
 

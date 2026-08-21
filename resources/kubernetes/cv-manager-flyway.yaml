@@ -19,6 +19,7 @@ spec:
   template:
     spec:
       restartPolicy: OnFailure
+      automountServiceAccountToken: false
       containers:
         - name: flyway
           # Replace <your-org> with your GitHub org/user and set the tag to the
@@ -26,6 +27,9 @@ spec:
           # CI pushes to: ghcr.io/<github-org>/cvmanager-flyway:sha-<short-sha>
           image: ghcr.io/your-org/cvmanager-flyway:sha-<git-sha>
           command: ["flyway", "migrate"]
+          resources:
+            limits:
+              memory: 512Mi
           env:
             # Fill in PG_DB_NAME to match the value used in cv-manager-api.yaml
             - name: PG_DB_NAME

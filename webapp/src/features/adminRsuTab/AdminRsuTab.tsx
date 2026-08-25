@@ -24,6 +24,7 @@ import {
   useGetAllRsusQuery,
 } from '../api/rsuApiSlice'
 import { useAdminTableQuerySync } from '../../hooks/useAdminTableQuerySync'
+import { applyFlagsToList } from '../../feature-flags'
 
 const AdminRsuTab = () => {
   const navigate = useNavigate()
@@ -111,8 +112,9 @@ const AdminRsuTab = () => {
     setSelectedRsuIp(null)
   }
 
-  const tableActions: Action<AdminEditRsuFormType>[] = [
+  const tableActions: Action<AdminEditRsuFormType>[] = applyFlagsToList<Action<AdminEditRsuFormType> & FlaggedElem>([
     {
+      tag: 'rsuStatusMonitor',
       icon: () => <InfoOutlinedIcon sx={{ color: theme.palette.custom.rowActionIcon }} />,
       tooltip: 'RSU Status',
       position: 'row',
@@ -194,7 +196,7 @@ const AdminRsuTab = () => {
         navigate('addRsu')
       },
     },
-  ]
+  ])
 
   const handleQueryChange = useCallback(
     async (query) => {

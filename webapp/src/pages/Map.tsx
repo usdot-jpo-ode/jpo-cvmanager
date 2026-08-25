@@ -125,7 +125,7 @@ import { HaasLocationProperties } from '../models/haas/HaasWebsocketLocation'
 import { HaasAlertVisualization } from '../components/HaasAlertVisualization'
 import { Feature, Point } from 'geojson'
 import { PrimaryButton } from '../styles/components/PrimaryButton'
-import { ConditionalRenderRsu, evaluateFeatureFlags } from '../feature-flags'
+import { ConditionalRenderRsu, ConditionalRenderRsuStatusMonitor, evaluateFeatureFlags } from '../feature-flags'
 import { DateTime } from 'luxon'
 import RsuStatusDialog from '../features/adminRsuTab/RsuStatusDialog'
 import { selectToken } from '../generalSlices/userSlice'
@@ -1463,10 +1463,9 @@ function MapPage() {
                         <Grid2 size={12} justifyContent="flex-start">
                           <Typography
                             sx={{
-                              color:
-                                issScmsStatusData[rsuIpv4].health
-                                  ? theme.palette.success.light
-                                  : theme.palette.error.light,
+                              color: issScmsStatusData[rsuIpv4].health
+                                ? theme.palette.success.light
+                                : theme.palette.error.light,
                             }}
                           >
                             {issScmsStatusData[rsuIpv4].health ? 'Healthy' : 'Unhealthy'}
@@ -1503,9 +1502,11 @@ function MapPage() {
                     {selectedRsu.properties.serial_number ? selectedRsu.properties.serial_number : 'Unknown'}
                   </Typography>
                 </Box>
-                <Button onClick={() => handlePopupClick(selectedRsu.properties.ipv4_address)}>
-                  View RSU Status Charts
-                </Button>
+                <ConditionalRenderRsuStatusMonitor>
+                  <Button onClick={() => handlePopupClick(selectedRsu.properties.ipv4_address)}>
+                    View RSU Status Charts
+                  </Button>
+                </ConditionalRenderRsuStatusMonitor>
               </Box>
             </Popup>
           ) : null}

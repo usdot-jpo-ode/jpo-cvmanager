@@ -376,6 +376,9 @@ exports[`should take a snapshot 1`] = `
         <li>
           HAAS Alert Viewer: ENABLED
         </li>
+        <li>
+          RSU Status Monitor: ENABLED
+        </li>
       </ul>
       <h2>
         <a

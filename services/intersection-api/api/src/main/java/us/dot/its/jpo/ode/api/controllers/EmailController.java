@@ -45,22 +45,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class EmailController {
     private final EmailService emailService;
 
-    @Operation(summary = "Intersection Notification Summary", description = "Sends an email with a summary of intersection notifications.")
-    @RequestMapping(value = "/intersection-notifications", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "All emails sent successfully"),
-            @ApiResponse(responseCode = "207", description = "Partial success - some emails sent, some failed"),
-            @ApiResponse(responseCode = "400", description = "Invalid message body"),
-            @ApiResponse(responseCode = "500", description = "All emails failed to send"),
-    })
-    public @ResponseBody EmailApiResponse sendIntersectionNotificationSummaryEmails(
-            @RequestBody @Valid IntersectionNotificationSummaryEmailContents body) {
-
-        return EmailSendResponse
-                .getCombinedResponseEntity(emailService.sendIntersectionNotificationSummaryEmailSendResponses(body));
-    }
-
     @Operation(summary = "Send Message Counts Emails", description = "Send message counts emails")
     @RequestMapping(value = "/message-counts", method = RequestMethod.POST, produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || hasRole('ROLE_SEND_MESSAGE_COUNTS_EMAILS')")

@@ -131,7 +131,7 @@ INSERT INTO public.email_type(email_type, required_role, description, supports_i
     ('Firmware Upgrade Failures',        2, 'Receive automated firmware upgrade failure emails', true,  false, false, false, false),
     ('Daily Message Counts',             3, 'Receive automated daily message count emails', false, false, true, false, false),
     ('Access Requests',                  1, 'Receive organization access requests from users', true,  false, false, false, false),
-    ('Intersection Notification Summary',3, 'Receive automated intersection notification summary emails', true,  true,  true,  true,  true),
+    ('Intersection Notification Summary',3, 'Receive automated intersection notification summary emails', false,  true,  true,  true,  true),
     ('Critical Error Messages',          2, 'Receive automated critical error message emails', true,  false, false, false, false)
   ON CONFLICT (email_type) DO UPDATE SET
     required_role      = EXCLUDED.required_role,

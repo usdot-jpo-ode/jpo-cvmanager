@@ -67,6 +67,14 @@ class EmailProviderSmtpTest {
     }
 
     @Test
+    void testSendBatchedEmailsExitWhenNoRecipients() {
+        List<EmailSendResponse> results = provider.sendBatchedEmails(List.of(), content);
+
+        assertEquals(0, results.size());
+        verifyNoInteractions(mailSender);
+    }
+
+    @Test
     void testSendBatchedEmailsMailAuthenticationException() {
         doThrow(new MailAuthenticationException("Auth failed"))
                 .when(mailSender).send(any(MimeMessage[].class));

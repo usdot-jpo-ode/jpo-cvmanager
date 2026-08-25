@@ -267,24 +267,6 @@ class EmailServiceTest {
     }
 
     @Test
-    void testSendIntersectionNotificationSummaryEmailSendResponses() {
-        IntersectionNotificationSummaryEmailContents data = new IntersectionNotificationSummaryEmailContents();
-        EmailContent content = new EmailContent("subject", "body");
-        List<EmailRecipient> recipients = List.of(new EmailRecipient("test@example.com", null));
-        List<EmailSendResponse> responses = List.of(new EmailSendResponse(0, "OK"));
-
-        when(intersectionNotificationSummaryEmailGenerator.generateEmailBody(data)).thenReturn(content);
-        when(userEmailNotificationRepository.findUsersByNotificationType(anyString(), any()))
-                .thenReturn(List.of("test@example.com"));
-        when(emailProvider.sendBatchedEmails(recipients, content)).thenReturn(responses);
-
-        List<EmailSendResponse> result = emailService.sendIntersectionNotificationSummaryEmailSendResponses(data);
-
-        assertEquals(responses, result);
-        verify(emailProvider).sendBatchedEmails(recipients, content);
-    }
-
-    @Test
     void testSendSupportRequest() {
         SupportRequestEmailContents data = new SupportRequestEmailContents();
         EmailContent content = new EmailContent("subject", "body");

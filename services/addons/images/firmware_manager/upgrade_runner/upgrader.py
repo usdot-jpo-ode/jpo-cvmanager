@@ -8,7 +8,7 @@ import requests
 import shutil
 from common.email_api import EmailApi
 from common.keycloak_api import KeycloakServiceAccountApi
-from addons.images.firmware_manager.upgrade_runner import download_blob
+import download_blob
 import upgrade_runner_environment
 
 

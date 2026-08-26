@@ -365,6 +365,7 @@ const DisplayRsuErrors = ({ initialSelectedRsu }: { initialSelectedRsu?: RsuInfo
             data={rsuTableData}
             title=""
             selection={false}
+            defaultPageSize={5}
             tableLayout="auto"
             pageSizeOptions={[]}
           />

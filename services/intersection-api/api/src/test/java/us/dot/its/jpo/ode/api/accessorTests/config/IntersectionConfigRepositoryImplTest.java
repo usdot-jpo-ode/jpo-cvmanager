@@ -74,7 +74,7 @@ class IntersectionConfigRepositoryImplTest {
         IntersectionConfig<?> config = mock(IntersectionConfig.class);
         when(mongoTemplate.find(eq(query), eq(IntersectionConfig.class), anyString())).thenReturn(List.of(config));
 
-        List<IntersectionConfig> result = repository.find(query);
+        var result = repository.find(query);
 
         assertThat(result).hasSize(1);
         assertThat(result.getFirst()).isEqualTo(config);
@@ -93,6 +93,7 @@ class IntersectionConfigRepositoryImplTest {
 
     @Test
     void testSave() {
+        @SuppressWarnings("unchecked")
         IntersectionConfig<String> config = mock(IntersectionConfig.class);
         when(config.getKey()).thenReturn("key1");
         when(config.getCategory()).thenReturn("cat1");

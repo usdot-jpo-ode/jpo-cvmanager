@@ -63,84 +63,11 @@ class EmailControllerTest {
 
     @BeforeEach
     void setUp() {
-        when(emailService.sendIntersectionNotificationSummaryEmailSendResponses(any())).thenReturn(SUCCESS);
         when(emailService.sendMessageCounts(any())).thenReturn(SUCCESS);
         when(emailService.sendFirmwareUpgradeFailure(any())).thenReturn(SUCCESS);
         when(emailService.sendApiError(any())).thenReturn(SUCCESS);
         when(emailService.sendRsuErrorSummary(any())).thenReturn(SUCCESS);
         when(emailService.sendSupportRequest(any())).thenReturn(SUCCESS);
-    }
-
-    // ──────────────────────────────────────────────────────────────────────────
-    // POST /emails/intersection-notifications
-    // @PreAuthorize: @PermissionService.isSuperUser() ||
-    // @PermissionService.hasRole('USER')
-    // ──────────────────────────────────────────────────────────────────────────
-
-    @Nested
-    @DisplayName("POST /emails/intersection-notifications")
-    class IntersectionNotifications {
-
-        @Test
-        @DisplayName("returns 403 when unauthenticated")
-        void unauthenticated_returns403() throws Exception {
-            mockMvc.perform(post("/emails/intersection-notifications")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(validIntersectionNotificationBody())))
-                    .andExpect(status().isForbidden());
-        }
-
-        @Test
-        @WithMockUser
-        @DisplayName("returns 403 when authenticated but neither isSuperUser nor hasRole('USER')")
-        void insufficientPermissions_returns403() throws Exception {
-            when(permissionService.isSuperUser()).thenReturn(false);
-            when(permissionService.hasRole(UserRole.USER)).thenReturn(false);
-
-            mockMvc.perform(post("/emails/intersection-notifications")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(validIntersectionNotificationBody())))
-                    .andExpect(status().isForbidden());
-        }
-
-        @Test
-        @WithMockUser
-        @DisplayName("returns 200 when isSuperUser returns true")
-        void superUser_returns200() throws Exception {
-            when(permissionService.isSuperUser()).thenReturn(true);
-
-            mockMvc.perform(post("/emails/intersection-notifications")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(validIntersectionNotificationBody())))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.successCount").value(1))
-                    .andExpect(jsonPath("$.failureCount").value(0));
-        }
-
-        @Test
-        @WithMockUser
-        @DisplayName("returns 200 when hasRole('USER') returns true")
-        void userRole_returns200() throws Exception {
-            when(permissionService.isSuperUser()).thenReturn(false);
-            when(permissionService.hasRole(UserRole.USER)).thenReturn(true);
-
-            mockMvc.perform(post("/emails/intersection-notifications")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(validIntersectionNotificationBody())))
-                    .andExpect(status().isOk());
-        }
-
-        @Test
-        @WithMockUser
-        @DisplayName("returns 400 when notifications field is null")
-        void nullNotifications_returns400() throws Exception {
-            when(permissionService.isSuperUser()).thenReturn(true);
-
-            mockMvc.perform(post("/emails/intersection-notifications")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("{}"))
-                    .andExpect(status().isBadRequest());
-        }
     }
 
     // ──────────────────────────────────────────────────────────────────────────

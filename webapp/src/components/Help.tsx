@@ -139,6 +139,7 @@ const Help = () => {
           <li>{`Intersection Map/Dashboard: ${EnvironmentVars.ENABLE_INTERSECTION_FEATURES ? 'ENABLED' : 'DISABLED'}`}</li>
           <li>{`WZDx Viewer: ${EnvironmentVars.ENABLE_WZDX_FEATURES ? 'ENABLED' : 'DISABLED'}`}</li>
           <li>{`HAAS Alert Viewer: ${EnvironmentVars.ENABLE_HAAS_FEATURES ? 'ENABLED' : 'DISABLED'}`}</li>
+          <li>{`RSU Status Monitor: ${EnvironmentVars.ENABLE_RSU_STATUS_MONITOR_FEATURES ? 'ENABLED' : 'DISABLED'}`}</li>
         </ul>
 
         <h2>

@@ -19,7 +19,6 @@ import us.dot.its.jpo.ode.api.models.emails.EmailSendResponse;
 import us.dot.its.jpo.ode.api.models.emails.UserEmailNotificationDto;
 import us.dot.its.jpo.ode.api.models.emails.contents.ApiErrorEmailContents;
 import us.dot.its.jpo.ode.api.models.emails.contents.FirmwareUpgradeFailureEmailContents;
-import us.dot.its.jpo.ode.api.models.emails.contents.IntersectionNotificationSummaryEmailContents;
 import us.dot.its.jpo.ode.api.models.postgres.tables.EmailType;
 import us.dot.its.jpo.ode.api.models.postgres.tables.User;
 import us.dot.its.jpo.ode.api.models.postgres.tables.UserEmailNotification;
@@ -31,7 +30,6 @@ import us.dot.its.jpo.ode.api.emails.generators.ApiErrorEmailGenerator;
 import us.dot.its.jpo.ode.api.emails.generators.FirmwareUpgradeFailureEmailGenerator;
 import us.dot.its.jpo.ode.api.repositories.UserEmailNotificationRepository;
 import us.dot.its.jpo.ode.api.repositories.UserRepository;
-import us.dot.its.jpo.ode.api.emails.generators.IntersectionNotificationSummaryEmailGenerator;
 import us.dot.its.jpo.ode.api.emails.generators.MessageCountEmailGenerator;
 import us.dot.its.jpo.ode.api.emails.generators.RsuErrorSummaryEmailGenerator;
 import us.dot.its.jpo.ode.api.emails.generators.SupportRequestEmailGenerator;
@@ -45,7 +43,6 @@ public class EmailService {
     private final EmailProvider emailProvider;
     private final EmailTypeRepository emailTypeRepository;
     private final UserEmailNotificationMapper userEmailNotificationMapper;
-    private final IntersectionNotificationSummaryEmailGenerator intersectionNotificationSummaryEmailGenerator;
     private final UserEmailNotificationRepository userEmailNotificationRepository;
     private final UserRepository userRepository;
     private final PermissionService permissionService;
@@ -88,18 +85,6 @@ public class EmailService {
                 .stream()
                 .map(email -> new EmailRecipient(email, null))
                 .toList();
-    }
-
-    public List<EmailSendResponse> sendIntersectionNotificationSummaryEmailSendResponses(
-            IntersectionNotificationSummaryEmailContents data) {
-        EmailContent content = intersectionNotificationSummaryEmailGenerator.generateEmailBody(data);
-        List<EmailRecipient> recipients = getUsersForNotificationType(EmailCategory.INTERSECTION_NOTIFICATION_SUMMARY,
-                EmailFrequency.IMMEDIATE);
-        if (recipients.isEmpty()) {
-            log.warn("No recipients found for intersection notification summary email");
-            return Collections.emptyList();
-        }
-        return emailProvider.sendBatchedEmails(recipients, content);
     }
 
     public List<EmailSendResponse> sendSupportRequest(SupportRequestEmailContents data) {

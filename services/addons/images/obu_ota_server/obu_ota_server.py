@@ -2,7 +2,7 @@ from typing import Any
 from fastapi import FastAPI, Request, Response, HTTPException, Depends
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from common import gcs_utils, pgquery
-from addons.images.obu_ota_server import commsignia_manifest
+import commsignia_manifest
 import glob
 import os
 import aiofiles

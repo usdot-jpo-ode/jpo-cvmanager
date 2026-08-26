@@ -174,11 +174,11 @@ class RsuUpgradeServiceTest {
         assertEquals(Map.of("message", "started"), result.body());
         assertEquals(targetImage, rsu.getTargetFirmwareVersion());
 
-        ArgumentCaptor<HttpEntity> entityCaptor = ArgumentCaptor.forClass(HttpEntity.class);
+        ArgumentCaptor<HttpEntity<?>> entityCaptor = ArgumentCaptor.captor();
         verify(restTemplate).postForEntity(eq(endpoint + "/init_firmware_upgrade"), entityCaptor.capture(),
                 eq(Map.class));
 
-        HttpEntity requestEntity = entityCaptor.getValue();
+        HttpEntity<?> requestEntity = entityCaptor.getValue();
         assertNotNull(requestEntity);
         assertEquals(MediaType.APPLICATION_JSON, requestEntity.getHeaders().getContentType());
         assertEquals(Map.of("rsu_ip", rsuIp), requestEntity.getBody());

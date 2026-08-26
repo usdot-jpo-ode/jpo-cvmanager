@@ -29,11 +29,12 @@ public class EmailProviderSmtp implements EmailProvider {
 
     @Override
     public List<EmailSendResponse> sendBatchedEmails(List<EmailRecipient> recipients, EmailContent content) {
+        if (recipients == null || recipients.isEmpty()) {
+            log.warn("No recipients provided for email batch. No emails will be sent.");
+            return List.of();
+        }
         try {
-            log.warn("Sending SMTP Batched Emails");
-            for (EmailRecipient recipient : recipients) {
-                log.warn(String.format("%s, %s", recipient.getEmail(), recipient.getName()));
-            }
+            log.info("Sending SMTP Batched Emails to {} recipients", recipients.size());
             MimeMessage[] messages = recipients.stream().map(r -> getMessage(r, content)).filter((v) -> v != null)
                     .toArray(MimeMessage[]::new);
             mailSender.send(messages);

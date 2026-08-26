@@ -4,7 +4,6 @@ import jakarta.persistence.EntityNotFoundException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,9 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -42,7 +38,6 @@ public class RsuUpgradeService {
     private String firmwareManagerEndpoint;
 
     private final RestTemplate restTemplate;
-    private final PlatformTransactionManager transactionManager;
 
     public FirmwareUpgradeCheckResponseDto checkFirmwareUpgrade(String rsuIp) {
         Rsu rsu = rsuUpgradeContextService.findRsuByIp(rsuIp);
@@ -97,11 +92,7 @@ public class RsuUpgradeService {
     }
 
     protected UpgradeExecutionResult executeUpgradeForRsu(String rsuIp) {
-        TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
-        transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-        return Objects.requireNonNull(
-                transactionTemplate.execute(status -> markRsuForUpgrade(rsuIp)),
-                "Upgrade execution result must not be null");
+        return markRsuForUpgrade(rsuIp);
     }
 
     protected UpgradeExecutionResult markRsuForUpgrade(String rsuIp) {
@@ -130,7 +121,8 @@ public class RsuUpgradeService {
             Map<String, String> postBody = Map.of("rsu_ip", rsuIp);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            ResponseEntity<Map> response = restTemplate.postForEntity(
+
+            ResponseEntity<?> response = restTemplate.postForEntity(
                     firmwareManagerEndpoint + "/init_firmware_upgrade",
                     new HttpEntity<>(postBody, headers),
                     Map.class);

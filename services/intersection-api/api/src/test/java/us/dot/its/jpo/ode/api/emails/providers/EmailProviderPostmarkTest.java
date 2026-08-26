@@ -44,6 +44,7 @@ class EmailProviderPostmarkTest {
         content = new EmailContent("subject", "body with {{unsubscribe_url}}");
     }
 
+
     @Test
     void testSendBatchedEmailsSuccess() throws Exception {
         MessageResponse resp1 = new MessageResponse();
@@ -61,6 +62,14 @@ class EmailProviderPostmarkTest {
         assertEquals("OK1", results.get(0).getMessage());
         assertEquals("OK2", results.get(1).getMessage());
         verify(postmark, times(1)).deliverMessage(anyList());
+    }
+
+    @Test
+    void testSendBatchedEmailsExitWhenNoRecipients() throws Exception {
+        List<EmailSendResponse> results = provider.sendBatchedEmails(List.of(), content);
+
+        assertEquals(0, results.size());
+        verify(postmark, times(0)).deliverMessage(anyList());
     }
 
     @Test

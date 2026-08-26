@@ -17,7 +17,6 @@ import us.dot.its.jpo.ode.api.models.emails.EmailApiResponse;
 import us.dot.its.jpo.ode.api.models.emails.EmailSendResponse;
 import us.dot.its.jpo.ode.api.models.emails.contents.ApiErrorEmailContents;
 import us.dot.its.jpo.ode.api.models.emails.contents.FirmwareUpgradeFailureEmailContents;
-import us.dot.its.jpo.ode.api.models.emails.contents.IntersectionNotificationSummaryEmailContents;
 import us.dot.its.jpo.ode.api.models.emails.contents.RsuErrorSummaryEmailContents;
 import us.dot.its.jpo.ode.api.models.emails.contents.SupportRequestEmailContents;
 import us.dot.its.jpo.ode.api.models.emails.contents.message_counts.MessageCountEmailContents;
@@ -44,22 +43,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequiredArgsConstructor
 public class EmailController {
     private final EmailService emailService;
-
-    @Operation(summary = "Intersection Notification Summary", description = "Sends an email with a summary of intersection notifications.")
-    @RequestMapping(value = "/intersection-notifications", method = RequestMethod.POST, produces = "application/json")
-    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('USER')")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "All emails sent successfully"),
-            @ApiResponse(responseCode = "207", description = "Partial success - some emails sent, some failed"),
-            @ApiResponse(responseCode = "400", description = "Invalid message body"),
-            @ApiResponse(responseCode = "500", description = "All emails failed to send"),
-    })
-    public @ResponseBody EmailApiResponse sendIntersectionNotificationSummaryEmails(
-            @RequestBody @Valid IntersectionNotificationSummaryEmailContents body) {
-
-        return EmailSendResponse
-                .getCombinedResponseEntity(emailService.sendIntersectionNotificationSummaryEmailSendResponses(body));
-    }
 
     @Operation(summary = "Send Message Counts Emails", description = "Send message counts emails")
     @RequestMapping(value = "/message-counts", method = RequestMethod.POST, produces = "application/json")

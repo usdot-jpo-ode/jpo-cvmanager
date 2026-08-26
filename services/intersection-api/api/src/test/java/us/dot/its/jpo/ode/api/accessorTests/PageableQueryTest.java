@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.convert.MongoConverter;
 import org.springframework.data.mongodb.core.query.Criteria;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import us.dot.its.jpo.conflictmonitor.monitor.models.notifications.ConnectionOfTravelNotification;
 import us.dot.its.jpo.ode.api.accessors.PageableQuery;
@@ -25,6 +26,7 @@ import us.dot.its.jpo.ode.api.models.AggregationResultCount;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,7 +56,8 @@ public class PageableQueryTest {
                 new ConnectionOfTravelNotification());
         AggregationResult aggregationResult = new AggregationResult();
         List<Document> inputDocs = expectedData.stream()
-                .map(doc -> new Document(objectMapper.convertValue(doc, java.util.Map.class)))
+                .map(doc -> new Document(objectMapper.convertValue(doc,
+                        new TypeReference<Map<String, Object>>() {})))
                 .collect(Collectors.toList());
         aggregationResult.setResults(inputDocs);
         AggregationResultCount count = new AggregationResultCount();
@@ -69,7 +72,7 @@ public class PageableQueryTest {
         MongoConverter mongoConverter = mock(MongoConverter.class);
         when(mongoTemplate.getConverter())
                 .thenReturn(mongoConverter);
-        when(mongoConverter.read(any(Class.class), any(Document.class)))
+        when(mongoConverter.read(any(), any(Document.class)))
                 .thenAnswer(invocation -> {
                     Class<?> clazz = invocation.getArgument(0);
                     Document doc = invocation.getArgument(1);

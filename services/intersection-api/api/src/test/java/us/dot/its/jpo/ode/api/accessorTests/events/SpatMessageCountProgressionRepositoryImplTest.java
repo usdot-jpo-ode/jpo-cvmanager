@@ -66,6 +66,8 @@ class SpatMessageCountProgressionRepositoryImplTest {
     void testFind() {
         PageRequest pageRequest = PageRequest.of(0, 1);
         SpatMessageCountProgressionRepositoryImpl spyRepo = Mockito.spy(repository);
+
+        @SuppressWarnings("unchecked")
         Page<SpatMessageCountProgressionEvent> mockPage = mock(Page.class);
 
         doReturn(mockPage).when(spyRepo).findPage(

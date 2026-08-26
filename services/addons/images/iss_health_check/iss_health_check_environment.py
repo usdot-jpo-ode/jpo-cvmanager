@@ -10,7 +10,7 @@ def process_storage_type(val: str, default: str) -> str:
     return value
 
 
-PROJECT_ID=get_env_var("PROJECT_ID", error=True)
+PROJECT_ID = get_env_var("PROJECT_ID")
 ISS_API_KEY = get_env_var("ISS_API_KEY")
 ISS_API_KEY_NAME=get_env_var("ISS_API_KEY_NAME", error=True)
 ISS_KEY_TABLE_NAME = get_env_var("ISS_KEY_TABLE_NAME")

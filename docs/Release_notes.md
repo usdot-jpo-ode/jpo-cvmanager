@@ -4,8 +4,6 @@
 
 ### **Summary**
 
-In this hotfix:
-
 This hotfix resolves CV Manager addon import and SCMS expiration display issues, removes transactional behavior from the Intersection API firmware endpoint, reduces email notification frequency, and adds a feature flag for disabling RSU Status Monitor UX features.
 
 Enhancements in this release:

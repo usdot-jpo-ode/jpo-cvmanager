@@ -148,7 +148,7 @@ INSERT INTO public.user_email_notification(user_email_notification_id, user_id, 
     (2, 1, 2, true, false, false, false, false),
     (3, 1, 3, false, false, true, false, false),
     (4, 1, 4, true, false, false, false, false),
-    (5, 1, 5, true, true, true, true, true),
+    (5, 1, 5, false, true, true, true, true),
     (6, 1, 6, true, false, false, false, false)
   ON CONFLICT DO NOTHING;
 

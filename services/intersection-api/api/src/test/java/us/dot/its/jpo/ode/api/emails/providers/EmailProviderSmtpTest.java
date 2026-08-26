@@ -70,7 +70,7 @@ class EmailProviderSmtpTest {
     void testSendBatchedEmailsExitWhenNoRecipients() {
         List<EmailSendResponse> results = provider.sendBatchedEmails(List.of(), content);
 
-        assertEquals(1, results.size());
+        assertEquals(0, results.size());
         verifyNoInteractions(mailSender);
     }
 

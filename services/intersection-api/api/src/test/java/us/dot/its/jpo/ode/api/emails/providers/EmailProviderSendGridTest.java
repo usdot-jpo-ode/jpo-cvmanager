@@ -17,7 +17,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -66,7 +65,7 @@ class EmailProviderSendGridTest {
     void testSendBatchedEmailsExitWhenNoRecipients() throws Exception {
         List<EmailSendResponse> results = provider.sendBatchedEmails(List.of(), content);
 
-        assertEquals(1, results.size());
+        assertEquals(0, results.size());
         verify(sendGrid, times(0)).api(any());
     }
 

@@ -37,7 +37,7 @@ public class EmailProviderSendGrid implements EmailProvider {
     public List<EmailSendResponse> sendBatchedEmails(List<EmailRecipient> recipients, EmailContent content) {
         if (recipients == null || recipients.isEmpty()) {
             log.warn("No recipients provided for email batch. No emails will be sent.");
-            return List.of(new EmailSendResponse(400, "No recipients provided"));
+            return List.of();
         }
         try {
             log.info("Sending SendGrid Batched Emails to: {}",

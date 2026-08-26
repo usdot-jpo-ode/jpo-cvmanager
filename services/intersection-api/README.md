@@ -22,7 +22,6 @@ The intersection API exposes a set of `/emails/*` endpoints for triggering outbo
 | Endpoint | Role Required | Description | Example |
 |---|---|---|---|
 | `POST /emails/support-requests` | Any authenticated user | User-submitted support request forwarded to the support team | [support_request_email_multiline_snapshot.html](api/src/test/resources/snapshots/emails/support_request_email_multiline_snapshot.html) |
-| `POST /emails/intersection-notifications` | `USER` or super user | Summary of active intersection notifications for configured recipients | [intersection_notification_summary_email_snapshot.html](api/src/test/resources/snapshots/emails/intersection_notification_summary_email_snapshot.html) |
 | `POST /emails/rsu-errors` | `USER` or super user | Summary of RSU errors detected by the conflict monitor | [rsu_error_summary_email_snapshot.html](api/src/test/resources/snapshots/emails/rsu_error_summary_email_snapshot.html) |
 | `POST /emails/api-errors` | `ROLE_SEND_CRITICAL_ERROR_MESSAGE_EMAILS` or super user | Critical API error notification with stack trace | [api_error_email_snapshot.html](api/src/test/resources/snapshots/emails/api_error_email_snapshot.html) |
 | `POST /emails/message-counts` | `ROLE_SEND_MESSAGE_COUNTS_EMAILS` or super user | Per-intersection message count summary | [message_count_snapshot.html](api/src/test/resources/snapshots/emails/message_count_snapshot.html) |

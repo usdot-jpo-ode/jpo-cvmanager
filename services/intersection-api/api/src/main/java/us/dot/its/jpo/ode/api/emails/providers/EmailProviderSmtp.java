@@ -34,8 +34,7 @@ public class EmailProviderSmtp implements EmailProvider {
             return List.of();
         }
         try {
-            log.info("Sending SMTP Batched Emails to: {}",
-                    String.join(", ", recipients.stream().map(r -> r.getEmail()).toList()));
+            log.info("Sending SMTP Batched Emails to {} recipients", recipients.size());
             MimeMessage[] messages = recipients.stream().map(r -> getMessage(r, content)).filter((v) -> v != null)
                     .toArray(MimeMessage[]::new);
             mailSender.send(messages);

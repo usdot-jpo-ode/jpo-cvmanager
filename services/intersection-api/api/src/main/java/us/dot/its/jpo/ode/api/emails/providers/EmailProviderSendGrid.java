@@ -40,8 +40,7 @@ public class EmailProviderSendGrid implements EmailProvider {
             return List.of();
         }
         try {
-            log.info("Sending SendGrid Batched Emails to: {}",
-                    String.join(", ", recipients.stream().map(r -> r.getEmail()).toList()));
+            log.info("Sending SendGrid Batched Emails to {} recipients", recipients.size());
             Mail mail = getMail(recipients.get(0), content);
             recipients.stream().forEach(r -> mail.addPersonalization(getPersonalization(r)));
 

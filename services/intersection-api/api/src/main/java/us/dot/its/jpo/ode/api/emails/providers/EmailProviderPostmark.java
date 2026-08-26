@@ -36,8 +36,7 @@ public class EmailProviderPostmark implements EmailProvider {
             return List.of();
         }
         try {
-            log.info("Sending Postmark Batched Emails to: {}",
-                    String.join(", ", recipients.stream().map(r -> r.getEmail()).toList()));
+            log.info("Sending Postmark Batched Emails to {} recipients", recipients.size());
             List<Message> messages = recipients.stream().map(r -> getMessage(r, content)).toList();
             List<MessageResponse> responses = postmark.deliverMessage(messages);
             return responses.stream().map(r -> new EmailSendResponse(r.getErrorCode(), r.getMessage())).toList();

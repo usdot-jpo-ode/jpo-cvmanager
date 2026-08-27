@@ -176,6 +176,8 @@ This application has the ability to disable certain features based on environmen
 - ENABLE_RSU_FEATURES: if 'false', disable all RSU-specific features, including map, RSU data, RSU configuration, and RSU organization linking.
 - ENABLE_INTERSECTION_FEATURES: if 'false', disable all intersection-specific features, including intersection map, intersection dashboard, and intersection admin pages.
 - ENABLE_WZDX_FEATURES: if 'false', disable all wzdx-specific features, including WZDx data on the main map.
+- ENABLE_HAAS_FEATURES: if 'false', disable all HAAS-specific features, including HAAS data on the main map.
+- ENABLE_RSU_STATUS_MONITOR_FEATURES: if 'false', disable all RSU status monitor-specific features, including RSU status data on the main map and RSU admin page.
 
 These variables will disable UI pages/visuals, UI features, and API endpoints.
 

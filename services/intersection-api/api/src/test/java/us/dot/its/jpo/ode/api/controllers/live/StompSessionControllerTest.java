@@ -36,6 +36,8 @@ class StompSessionControllerTest {
         Map<String, Object> headersMap = new HashMap<>();
         headersMap.put("simpSessionId", "session1");
         MessageHeaders headers = new MessageHeaders(headersMap);
+
+        @SuppressWarnings("unchecked")
         Message<byte[]> message = mock(Message.class);
         when(message.getHeaders()).thenReturn(headers);
 
@@ -51,6 +53,8 @@ class StompSessionControllerTest {
     @Test
     void testHandleSessionConnectEvent_NullSessionIdThrows() {
         MessageHeaders headers = new MessageHeaders(new HashMap<>());
+
+        @SuppressWarnings("unchecked")
         Message<byte[]> message = mock(Message.class);
         when(message.getHeaders()).thenReturn(headers);
 
@@ -68,6 +72,8 @@ class StompSessionControllerTest {
         Map<String, Object> headersMap = new HashMap<>();
         headersMap.put("simpSessionId", "session2");
         MessageHeaders headers = new MessageHeaders(headersMap);
+
+        @SuppressWarnings("unchecked")
         Message<byte[]> message = mock(Message.class);
         when(message.getHeaders()).thenReturn(headers);
 
@@ -91,6 +97,8 @@ class StompSessionControllerTest {
         Map<String, Object> headersMap = new HashMap<>();
         headersMap.put("simpSessionId", "sessionX");
         MessageHeaders headers = new MessageHeaders(headersMap);
+
+        @SuppressWarnings("unchecked")
         Message<byte[]> message = mock(Message.class);
         when(message.getHeaders()).thenReturn(headers);
 

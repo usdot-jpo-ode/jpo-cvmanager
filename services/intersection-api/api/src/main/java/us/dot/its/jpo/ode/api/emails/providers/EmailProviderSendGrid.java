@@ -35,8 +35,13 @@ public class EmailProviderSendGrid implements EmailProvider {
 
     @Override
     public List<EmailSendResponse> sendBatchedEmails(List<EmailRecipient> recipients, EmailContent content) {
+        if (recipients == null || recipients.isEmpty()) {
+            log.warn("No recipients provided for email batch. No emails will be sent.");
+            return List.of();
+        }
         try {
-            Mail mail = getMail(recipients.getFirst(), content);
+            log.info("Sending SendGrid Batched Emails to {} recipients", recipients.size());
+            Mail mail = getMail(recipients.get(0), content);
             recipients.stream().forEach(r -> mail.addPersonalization(getPersonalization(r)));
 
             Response response = sendGrid.api(generateRequest(mail));

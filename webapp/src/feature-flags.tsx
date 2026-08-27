@@ -62,6 +62,20 @@ export const ConditionalRenderHaas: React.FC<{
   return <>{shouldRender}</>
 }
 
+export const ConditionalRenderRsuStatusMonitor: React.FC<{
+  children: React.ReactNode // Specify the type for children prop
+}> = ({ children }) => {
+  const shouldRender = React.Children.map(children, (child) => {
+    return !evaluateFeatureFlags('rsuStatusMonitor') ? null : child
+  })
+
+  return <>{shouldRender}</>
+}
+
+export const applyFlagsToList = <T extends FlaggedElem>(list: T[]): T[] => {
+  return list.filter((item) => evaluateFeatureFlags(item.tag))
+}
+
 export const evaluateFeatureFlags = (tag?: FEATURE_KEY): boolean => {
   // Evaluate list of tags against environment variable feature flags. If tag is present, and ENABLED_FEATURE is false, return false
   if (!tag) {
@@ -73,6 +87,8 @@ export const evaluateFeatureFlags = (tag?: FEATURE_KEY): boolean => {
   } else if (tag === 'wzdx' && !EnvironmentVars.ENABLE_WZDX_FEATURES) {
     return false
   } else if (tag === 'haas' && !EnvironmentVars.ENABLE_HAAS_FEATURES) {
+    return false
+  } else if (tag === 'rsuStatusMonitor' && !EnvironmentVars.ENABLE_RSU_STATUS_MONITOR_FEATURES) {
     return false
   }
   return true

@@ -18,6 +18,7 @@ interface AdminTableProps {
   actions: Action<any>[]
   columns: Column<any>[]
   data?: any[] // Optional for client-side pagination
+  defaultPageSize?: number
   title: string
   editable?: any
   selection?: boolean
@@ -161,7 +162,7 @@ const AdminTable = (props: AdminTableProps) => {
           headerStyle: {
             backgroundColor: theme.palette.background.paper,
           },
-          pageSize: 25,
+          pageSize: props.defaultPageSize ?? 25,
           pageSizeOptions: props.pageSizeOptions === undefined ? [5, 25, 50, 100] : props.pageSizeOptions,
           paging: true,
           search: true, // Enable search UI; search term is passed to handleQueryChange for server-side filtering

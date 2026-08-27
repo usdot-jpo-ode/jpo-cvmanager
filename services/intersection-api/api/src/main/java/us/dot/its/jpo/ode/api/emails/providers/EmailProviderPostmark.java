@@ -31,7 +31,12 @@ public class EmailProviderPostmark implements EmailProvider {
 
     @Override
     public List<EmailSendResponse> sendBatchedEmails(List<EmailRecipient> recipients, EmailContent content) {
+        if (recipients == null || recipients.isEmpty()) {
+            log.warn("No recipients provided for email batch. No emails will be sent.");
+            return List.of();
+        }
         try {
+            log.info("Sending Postmark Batched Emails to {} recipients", recipients.size());
             List<Message> messages = recipients.stream().map(r -> getMessage(r, content)).toList();
             List<MessageResponse> responses = postmark.deliverMessage(messages);
             return responses.stream().map(r -> new EmailSendResponse(r.getErrorCode(), r.getMessage())).toList();

@@ -97,6 +97,7 @@
         <java.version>17</java.version>
 
         <keycloak.version>25.0.6</keycloak.version>
+        <byte-buddy.version>1.17.6</byte-buddy.version>
 
         <!-- these should be updated together with Keycloak -->
         <!-- check keycloak-dependencies-server-all effective pom -->

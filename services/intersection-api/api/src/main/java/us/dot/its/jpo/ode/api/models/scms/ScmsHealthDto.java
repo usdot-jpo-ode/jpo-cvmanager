@@ -8,6 +8,8 @@ import lombok.Setter;
 
 import java.time.Instant;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Schema(description = "A single SCMS health record")
 @Getter
 @Setter
@@ -18,5 +20,6 @@ public class ScmsHealthDto {
     private Boolean health;
 
     @Schema(description = "The expiration time of the SCMS certificates associated with an RSU (ISO-8601, UTC)", example = "2026-04-10T13:28:01Z")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Instant expiration;
 }

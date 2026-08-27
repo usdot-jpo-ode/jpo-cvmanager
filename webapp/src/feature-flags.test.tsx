@@ -7,7 +7,10 @@ import {
   IntersectionRouteGuard,
   WzdxRouteGuard,
   ConditionalRenderWzdx,
+  applyFlagsToList,
   evaluateFeatureFlags,
+  ConditionalRenderHaas,
+  ConditionalRenderRsuStatusMonitor,
 } from './feature-flags'
 import '@testing-library/jest-dom'
 
@@ -214,31 +217,132 @@ describe('Feature Flags', () => {
     expect(queryByText('WZDx Content')).not.toBeInTheDocument()
   })
 
-  test('ConditionalRenderWzdx does not render children when feature is disabled', () => {
+  test('ConditionalRenderHaas renders children when feature is enabled', () => {
+    EnvironmentVars.ENABLE_HAAS_FEATURES = true
+    const { getByText } = render(
+      <ConditionalRenderHaas>
+        <div>HAAS Content</div>
+      </ConditionalRenderHaas>
+    )
+    expect(getByText('HAAS Content')).toBeInTheDocument()
+  })
+
+  test('ConditionalRenderHaas does not render children when feature is disabled', () => {
+    EnvironmentVars.ENABLE_HAAS_FEATURES = false
+    const { queryByText } = render(
+      <ConditionalRenderHaas>
+        <div>HAAS Content</div>
+      </ConditionalRenderHaas>
+    )
+    expect(queryByText('HAAS Content')).not.toBeInTheDocument()
+  })
+
+  test('ConditionalRenderRsuStatusMonitor renders children when feature is enabled', () => {
+    EnvironmentVars.ENABLE_RSU_STATUS_MONITOR_FEATURES = true
+    const { getByText } = render(
+      <ConditionalRenderRsuStatusMonitor>
+        <div>RSU Status Monitor Content</div>
+      </ConditionalRenderRsuStatusMonitor>
+    )
+    expect(getByText('RSU Status Monitor Content')).toBeInTheDocument()
+  })
+
+  test('ConditionalRenderRsuStatusMonitor does not render children when feature is disabled', () => {
+    EnvironmentVars.ENABLE_RSU_STATUS_MONITOR_FEATURES = false
+    const { queryByText } = render(
+      <ConditionalRenderRsuStatusMonitor>
+        <div>RSU Status Monitor Content</div>
+      </ConditionalRenderRsuStatusMonitor>
+    )
+    expect(queryByText('RSU Status Monitor Content')).not.toBeInTheDocument()
+  })
+
+  test('applyFlagsToList keeps items whose flags are enabled', () => {
+    EnvironmentVars.ENABLE_RSU_FEATURES = true
+    EnvironmentVars.ENABLE_INTERSECTION_FEATURES = false
+
+    const items = [
+      { id: 'rsu-item', tag: 'rsu' as const },
+      { id: 'intersection-item', tag: 'intersection' as const },
+    ]
+
+    expect(applyFlagsToList(items)).toEqual([{ id: 'rsu-item', tag: 'rsu' }])
+  })
+
+  test('applyFlagsToList keeps untagged items', () => {
+    EnvironmentVars.ENABLE_RSU_FEATURES = false
+
+    const items = [{ id: 'always-visible' }, { id: 'rsu-item', tag: 'rsu' as const }]
+
+    expect(applyFlagsToList(items)).toEqual([{ id: 'always-visible' }])
+  })
+
+  test('applyFlagsToList returns the full list when all matching flags are enabled', () => {
+    EnvironmentVars.ENABLE_RSU_FEATURES = true
+    EnvironmentVars.ENABLE_HAAS_FEATURES = true
+
+    const items = [
+      { id: 'rsu-item', tag: 'rsu' as const },
+      { id: 'haas-item', tag: 'haas' as const },
+      { id: 'always-visible' },
+    ]
+
+    expect(applyFlagsToList(items)).toEqual(items)
+  })
+
+  test('evaluateFeatureFlags correctly handles environment variable values', () => {
     EnvironmentVars.ENABLE_RSU_FEATURES = false
     EnvironmentVars.ENABLE_INTERSECTION_FEATURES = false
     EnvironmentVars.ENABLE_WZDX_FEATURES = false
+    EnvironmentVars.ENABLE_HAAS_FEATURES = false
+    EnvironmentVars.ENABLE_RSU_STATUS_MONITOR_FEATURES = false
 
     expect(evaluateFeatureFlags('rsu')).toEqual(false)
     expect(evaluateFeatureFlags('intersection')).toEqual(false)
     expect(evaluateFeatureFlags('wzdx')).toEqual(false)
+    expect(evaluateFeatureFlags('haas')).toEqual(false)
+    expect(evaluateFeatureFlags('rsuStatusMonitor')).toEqual(false)
 
     EnvironmentVars.ENABLE_RSU_FEATURES = true
 
     expect(evaluateFeatureFlags('rsu')).toEqual(true)
     expect(evaluateFeatureFlags('intersection')).toEqual(false)
     expect(evaluateFeatureFlags('wzdx')).toEqual(false)
+    expect(evaluateFeatureFlags('haas')).toEqual(false)
+    expect(evaluateFeatureFlags('rsuStatusMonitor')).toEqual(false)
 
     EnvironmentVars.ENABLE_INTERSECTION_FEATURES = true
 
     expect(evaluateFeatureFlags('rsu')).toEqual(true)
     expect(evaluateFeatureFlags('intersection')).toEqual(true)
     expect(evaluateFeatureFlags('wzdx')).toEqual(false)
+    expect(evaluateFeatureFlags('haas')).toEqual(false)
+    expect(evaluateFeatureFlags('rsuStatusMonitor')).toEqual(false)
 
     EnvironmentVars.ENABLE_WZDX_FEATURES = true
 
     expect(evaluateFeatureFlags('rsu')).toEqual(true)
     expect(evaluateFeatureFlags('intersection')).toEqual(true)
     expect(evaluateFeatureFlags('wzdx')).toEqual(true)
+    expect(evaluateFeatureFlags('haas')).toEqual(false)
+    expect(evaluateFeatureFlags('rsuStatusMonitor')).toEqual(false)
+
+    EnvironmentVars.ENABLE_HAAS_FEATURES = true
+
+    expect(evaluateFeatureFlags('rsu')).toEqual(true)
+    expect(evaluateFeatureFlags('intersection')).toEqual(true)
+    expect(evaluateFeatureFlags('wzdx')).toEqual(true)
+    expect(evaluateFeatureFlags('haas')).toEqual(true)
+    expect(evaluateFeatureFlags('rsuStatusMonitor')).toEqual(false)
+
+    EnvironmentVars.ENABLE_RSU_STATUS_MONITOR_FEATURES = true
+
+    expect(evaluateFeatureFlags('rsuStatusMonitor')).toEqual(true)
+
+    expect(evaluateFeatureFlags('rsu')).toEqual(true)
+    expect(evaluateFeatureFlags('intersection')).toEqual(true)
+    expect(evaluateFeatureFlags('wzdx')).toEqual(true)
+    expect(evaluateFeatureFlags('haas')).toEqual(true)
+    expect(evaluateFeatureFlags('rsuStatusMonitor')).toEqual(true)
   })
 })

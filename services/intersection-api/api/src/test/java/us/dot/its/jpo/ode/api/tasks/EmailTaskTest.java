@@ -87,48 +87,6 @@ class EmailTaskTest {
     }
 
     @Test
-    void testSendAlwaysNotificationsFirstRunSetsLastAlwaysList() {
-        Notification n1 = createNotification("k1", "h1", "t1", 1, 1000);
-        List<Notification> notifications = Collections.singletonList(n1);
-        Page<Notification> page = new PageImpl<>(notifications, PageRequest.of(0, maximumResponseSize),
-                notifications.size());
-        when(activeNotificationRepo.find(null, null, null, PageRequest.of(0, maximumResponseSize))).thenReturn(page);
-
-        emailTask.sendAlwaysNotifications();
-
-        // Should set lastAlwaysList and not send email
-        verify(emailService, never()).sendEmails(anyList(), any());
-    }
-
-    @Test
-    void testSendAlwaysNotificationsSendsEmailOnNew() {
-        Notification old1 = createNotification("k1", "h1", "t1", 1, 1000);
-        Notification new1 = createNotification("k2", "h2", "t2", 2, 2000);
-        List<Notification> oldList = Collections.singletonList(old1);
-        List<Notification> newList = Arrays.asList(old1, new1);
-
-        Page<Notification> page1 = new PageImpl<>(oldList, PageRequest.of(0, maximumResponseSize), oldList.size());
-        Page<Notification> page2 = new PageImpl<>(newList, PageRequest.of(0, maximumResponseSize), newList.size());
-
-        when(activeNotificationRepo.find(null, null, null, PageRequest.of(0, maximumResponseSize)))
-                .thenReturn(page1) // first call
-                .thenReturn(page2); // second call
-
-        emailTask.sendAlwaysNotifications(); // sets lastAlwaysList
-
-        List<EmailRecipient> recipients = List.of(new EmailRecipient("email", "name"));
-        when(emailService.getUsersForNotificationType(EmailCategory.INTERSECTION_NOTIFICATION_SUMMARY,
-                EmailFrequency.IMMEDIATE)).thenReturn(recipients);
-
-        EmailContent content = new EmailContent("subject", "body");
-        when(emailGenerator.generateEmailBody(any())).thenReturn(content);
-
-        emailTask.sendAlwaysNotifications(); // should send email
-
-        verify(emailService).sendEmails(eq(recipients), eq(content));
-    }
-
-    @Test
     void testSendHourlyNotificationsFirstRunSetsLastHourList() {
         Notification n1 = createNotification("k1", "h1", "t1", 1, 1000);
         List<Notification> notifications = Collections.singletonList(n1);
@@ -169,6 +127,35 @@ class EmailTaskTest {
 
         verify(emailService).sendEmails(eq(recipients), eq(content));
     }
+
+    @Test
+    void testDoNotSendHourlyNotificationsWhenNoRecipients() {
+        Notification old1 = createNotification("k1", "h1", "t1", 1, 1000);
+        Notification new1 = createNotification("k2", "h2", "t2", 2, 2000);
+        List<Notification> oldList = Collections.singletonList(old1);
+        List<Notification> newList = Arrays.asList(old1, new1);
+
+        Page<Notification> page1 = new PageImpl<>(oldList, PageRequest.of(0, maximumResponseSize), oldList.size());
+        Page<Notification> page2 = new PageImpl<>(newList, PageRequest.of(0, maximumResponseSize), newList.size());
+
+        when(activeNotificationRepo.find(null, null, null, PageRequest.of(0, maximumResponseSize)))
+                .thenReturn(page1)
+                .thenReturn(page2);
+
+        emailTask.sendHourlyNotifications();
+
+        List<EmailRecipient> recipients = Collections.emptyList();
+        when(emailService.getUsersForNotificationType(EmailCategory.INTERSECTION_NOTIFICATION_SUMMARY,
+                EmailFrequency.ONCE_PER_HOUR)).thenReturn(recipients);
+
+        EmailContent content = new EmailContent("subject", "body");
+        when(emailGenerator.generateEmailBody(any())).thenReturn(content);
+
+        emailTask.sendHourlyNotifications();
+
+        verify(emailService, never()).sendEmails(anyList(), any(EmailContent.class));
+    }
+
 
     @Test
     void testSendDailyNotificationsFirstRunSetsLastDayList() {

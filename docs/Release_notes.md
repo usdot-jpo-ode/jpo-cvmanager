@@ -1,13 +1,30 @@
 ## JPO CV Manager Release Notes
 
+## Version 2.1.1
+
+### **Summary**
+
+This hotfix resolves CV Manager addon import and SCMS expiration display issues, removes transactional behavior from the Intersection API firmware endpoint, reduces email notification frequency, and adds a feature flag for disabling RSU Status Monitor UX features.
+
+Enhancements in this release:
+
+- [CDOT PR 355](https://github.com/CDOT-CV/jpo-cvmanager/pull/355): Resolving OBU OTA Server Import Error
+- [CDOT PR 356](https://github.com/CDOT-CV/jpo-cvmanager/pull/356): Fixing SCMS Health Expiration Format Type
+- [CDOT PR 357](https://github.com/CDOT-CV/jpo-cvmanager/pull/357): Fixing IAPI Firmware Upgrader Failing to Write to Postgres
+- [CDOT PR 358](https://github.com/CDOT-CV/jpo-cvmanager/pull/358): Fixing Firmware Upgrade Runner Addon Import
+- [CDOT PR 359](https://github.com/CDOT-CV/jpo-cvmanager/pull/359): Adding Webapp Feature Flags for RSU Status Monitor
+- [CDOT PR 360](https://github.com/CDOT-CV/jpo-cvmanager/pull/360): Reducing Intersection API Email Notification Frequency
+
 ## Version 2.1.0
 
 ### **Summary**
+
 This release includes significant improvements to first-time-setup and simplification of the deployment process, as well as the following:
+
 - RSU Management
-    - RSUs can now track TIM deposit eligibility
-    - RSUs can be claimed by a single organization to prevent unapproved access and the unintended sharing of secure credentials
-- Email Notifications: All email sending and management is now integrated into the Intersection API. 
+  - RSUs can now track TIM deposit eligibility
+  - RSUs can be claimed by a single organization to prevent unapproved access and the unintended sharing of secure credentials
+- Email Notifications: All email sending and management is now integrated into the Intersection API.
 - Intersection Map now supports SSM/SRM messages
 - New (optional) RSU Status Monitor service monitors RSU metrics
 - Refactoring
@@ -17,86 +34,87 @@ This release includes significant improvements to first-time-setup and simplific
   - Webapp utilizes VITE for faster builds and improved performance
 
 Enhancements in this release:
-[CDOT PR 245](https://github.com/CDOT-CV/jpo-cvmanager/pull/245): Improving Environment Variable Default values
-[CDOT PR 252](https://github.com/CDOT-CV/jpo-cvmanager/pull/252): Admin Pages Only Show Data Associated With Selected Organization
-[CDOT PR 254](https://github.com/CDOT-CV/jpo-cvmanager/pull/254): Update Help Page Descriptions and Images
-[CDOT PR 257](https://github.com/CDOT-CV/jpo-cvmanager/pull/257): Add useEffect to fetch RSU last online status in DisplayRsuErrors component
-[CDOT PR 258](https://github.com/CDOT-CV/jpo-cvmanager/pull/258): Intersection API Email Generation and Templating
-[CDOT PR 261](https://github.com/CDOT-CV/jpo-cvmanager/pull/261): Pull message forward configurations directly from RSU when refreshing
-[CDOT PR 262](https://github.com/CDOT-CV/jpo-cvmanager/pull/262): Allowing Operators to use RSU Configuration Menu
-[CDOT PR 263](https://github.com/CDOT-CV/jpo-cvmanager/pull/263): Fixing RSU Configuration Menu Permissions
-[CDOT PR 265](https://github.com/CDOT-CV/jpo-cvmanager/pull/265): Deprecating Moove AI Features
-[CDOT PR 267](https://github.com/CDOT-CV/jpo-cvmanager/pull/267): Regenerate postgresql entity classes for rsu management using JPA Buddy
-[CDOT PR 268](https://github.com/CDOT-CV/jpo-cvmanager/pull/268): Resolve vulnerabilities by updating webapp dependencies
-[CDOT PR 269](https://github.com/CDOT-CV/jpo-cvmanager/pull/269): Fixing python api port reference
-[CDOT PR 270](https://github.com/CDOT-CV/jpo-cvmanager/pull/270): Migrate to Vite to resolve deprecation warnings
-[CDOT PR 271](https://github.com/CDOT-CV/jpo-cvmanager/pull/271): Intersection API JPA Postgres Tables
-[CDOT PR 272](https://github.com/CDOT-CV/jpo-cvmanager/pull/272): Introduce rsu tim deposit flag in database and backend
-[CDOT PR 274](https://github.com/CDOT-CV/jpo-cvmanager/pull/274): Add ui controls for rsu tim deposit eligibility
-[CDOT PR 275](https://github.com/CDOT-CV/jpo-cvmanager/pull/275): Fix PSID for Map in rsu_snmpset script
-[CDOT PR 276](https://github.com/CDOT-CV/jpo-cvmanager/pull/276): Adding RSU admin endpoints to IAPI
-[CDOT PR 277](https://github.com/CDOT-CV/jpo-cvmanager/pull/277): Admin RSU Webapp Migration to Intersection API
-[CDOT PR 279](https://github.com/CDOT-CV/jpo-cvmanager/pull/279): Add End-to-End Support for RSU TIM Deposit Eligibility
-[CDOT PR 280](https://github.com/CDOT-CV/jpo-cvmanager/pull/280): Migrating User Auth Endpoint To Webapp
-[CDOT PR 281](https://github.com/CDOT-CV/jpo-cvmanager/pull/281): Restrict Super User Privilege Changes to Super Users Only
-[CDOT PR 282](https://github.com/CDOT-CV/jpo-cvmanager/pull/282): npm: update jspdf dependency to version 4.1.0
-[CDOT PR 283](https://github.com/CDOT-CV/jpo-cvmanager/pull/283): Intersection api email generation - python api
-[CDOT PR 284](https://github.com/CDOT-CV/jpo-cvmanager/pull/284): Adding IAPI email generation to addons
-[CDOT PR 285](https://github.com/CDOT-CV/jpo-cvmanager/pull/285): Iapi Email Generation - Python API Email Types
-[CDOT PR 286](https://github.com/CDOT-CV/jpo-cvmanager/pull/286): Restore rsu admin support for tim_deposit and snmp_monitoring in intersection api
-[CDOT PR 287](https://github.com/CDOT-CV/jpo-cvmanager/pull/287): Admin RSU Server Side Searching
-[CDOT PR 288](https://github.com/CDOT-CV/jpo-cvmanager/pull/288): Org Scoped Creds - Add Owner Org To Tables
-[CDOT PR 289](https://github.com/CDOT-CV/jpo-cvmanager/pull/289): Admin Create RSU Intersection API Migration
-[CDOT PR 290](https://github.com/CDOT-CV/jpo-cvmanager/pull/290): Intersection API Authentication From Keycloak Token
-[CDOT PR 291](https://github.com/CDOT-CV/jpo-cvmanager/pull/291): Remove adminrsu endpoint and related functionality
-[CDOT PR 292](https://github.com/CDOT-CV/jpo-cvmanager/pull/292): Org Scoped Creds - Enforce Cred Ownership in CRUD Endpoints
-[CDOT PR 295](https://github.com/CDOT-CV/jpo-cvmanager/pull/295): RSU Info Bridge - Initial Setup
-[CDOT PR 296](https://github.com/CDOT-CV/jpo-cvmanager/pull/296): RSU Info Bridge - DTO & Endpoints
-[CDOT PR 297](https://github.com/CDOT-CV/jpo-cvmanager/pull/297): RSU Info Bridge - OpenAPI Integration
-[CDOT PR 298](https://github.com/CDOT-CV/jpo-cvmanager/pull/298): Migrating Admin User Features to Intersection API
-[CDOT PR 299](https://github.com/CDOT-CV/jpo-cvmanager/pull/299): RSU Info Bridge - Data Access Layer
-[CDOT PR 300](https://github.com/CDOT-CV/jpo-cvmanager/pull/300): Updating Webapp Typescript Configuration
-[CDOT PR 301](https://github.com/CDOT-CV/jpo-cvmanager/pull/301): Resolving Webapp Unused Imports
-[CDOT PR 302](https://github.com/CDOT-CV/jpo-cvmanager/pull/302): Resolving Webapp General Typescript Errors
-[CDOT PR 305](https://github.com/CDOT-CV/jpo-cvmanager/pull/305): Add Jib Maven plugin for Docker image building and update README instructions
-[CDOT PR 306](https://github.com/CDOT-CV/jpo-cvmanager/pull/306): Fixing Webapp Refresh Absolute Path
-[CDOT PR 308](https://github.com/CDOT-CV/jpo-cvmanager/pull/308): Adding Enum for IAPI User Role
-[CDOT PR 309](https://github.com/CDOT-CV/jpo-cvmanager/pull/309): CV Manager Firmware Upgrade Endpoint Migration
-[CDOT PR 310](https://github.com/CDOT-CV/jpo-cvmanager/pull/310): Fix iapi integration test failures wsl
-[CDOT PR 311](https://github.com/CDOT-CV/jpo-cvmanager/pull/311): Migrate iapi admin intersection to Spring Boot
-[CDOT PR 312](https://github.com/CDOT-CV/jpo-cvmanager/pull/312): Fix: Webapp Role Handling Consistency Issue
-[CDOT PR 313](https://github.com/CDOT-CV/jpo-cvmanager/pull/313): Migrate SCMS Status Endpoint
-[CDOT PR 315](https://github.com/CDOT-CV/jpo-cvmanager/pull/315): Standardizing Webapp User Role Verification
-[CDOT PR 317](https://github.com/CDOT-CV/jpo-cvmanager/pull/317): IAPI admin intersection UI
-[CDOT PR 318](https://github.com/CDOT-CV/jpo-cvmanager/pull/318): Migrating Admin New User Endpoint to Intersection API
-[CDOT PR 319](https://github.com/CDOT-CV/jpo-cvmanager/pull/319): Migrate iapi admin new intersection API to Spring Boot
-[CDOT PR 320](https://github.com/CDOT-CV/jpo-cvmanager/pull/320): Iapi email generation python email sending
-[CDOT PR 321](https://github.com/CDOT-CV/jpo-cvmanager/pull/321): Update iapi admin new intersection UI to use Spring Boot backend
-[CDOT PR 322](https://github.com/CDOT-CV/jpo-cvmanager/pull/322): Intersection API Email Subscription Management Endpoints
-[CDOT PR 323](https://github.com/CDOT-CV/jpo-cvmanager/pull/323): Intersection API Email Subscription Management Frontend
-[CDOT PR 324](https://github.com/CDOT-CV/jpo-cvmanager/pull/324): Re-enabling swagger documentation for intersection api
-[CDOT PR 327](https://github.com/CDOT-CV/jpo-cvmanager/pull/327): Intersection API Email Controller Rate Limiting
-[CDOT PR 333](https://github.com/CDOT-CV/jpo-cvmanager/pull/333): Replace manual SQL scripts with Flyway-managed migrations
-[CDOT PR 334](https://github.com/CDOT-CV/jpo-cvmanager/pull/334): Normalize schema constraints, indexes, and JPA annotations
-[CDOT PR 335](https://github.com/CDOT-CV/jpo-cvmanager/pull/335): Intersection map Bugfixes
-[CDOT PR 337](https://github.com/CDOT-CV/jpo-cvmanager/pull/337): Fixed issue where dismissing a notification returns a 500 error
-[CDOT PR 338](https://github.com/CDOT-CV/jpo-cvmanager/pull/338): RSU Info Endpoint Migration
-[CDOT PR 339](https://github.com/CDOT-CV/jpo-cvmanager/pull/339): Add manufacturer name to RSU DTO
-[CDOT PR 340](https://github.com/CDOT-CV/jpo-cvmanager/pull/340): Fixed issues where BSM Activity didn't load properly in CV-Manager
-[CDOT PR 348](https://github.com/CDOT-CV/jpo-cvmanager/pull/348): Improved RSU Pinger Service
-[NEAERA CONSULTING PR 1](https://github.com/neaeraconsulting/jpo-cvmanager/pull/1): Ssm srm visualization
-[NEAERA CONSULTING PR 2](https://github.com/neaeraconsulting/jpo-cvmanager/pull/2): Rsu Status Visualization
-[NEAERA CONSULTING PR 3](https://github.com/neaeraconsulting/jpo-cvmanager/pull/3): Report Fixes
-[NEAERA CONSULTING PR 4](https://github.com/neaeraconsulting/jpo-cvmanager/pull/4): RSU Status Monitor
-[NEAERA CONSULTING PR 8](https://github.com/neaeraconsulting/jpo-cvmanager/pull/8): Report Fixes
-[NEAERA CONSULTING PR 11](https://github.com/neaeraconsulting/jpo-cvmanager/pull/11): Merging CDOT-CV and NeaeraConsulting Codebases
-[NEAERA CONSULTING PR 12](https://github.com/neaeraconsulting/jpo-cvmanager/pull/12): Ssm Srm Visualization - Merging to Develop
-[NEAERA CONSULTING PR 13](https://github.com/neaeraconsulting/jpo-cvmanager/pull/13): Merging CDOT-CV and NeaeraConsulting Changes
-[NEAERA CONSULTING PR 14](https://github.com/neaeraconsulting/jpo-cvmanager/pull/14): Merging CDOT-CV and NeaeraConsulting RSU Pinger Changes
-[NEAERA CONSULTING PR 15](https://github.com/neaeraconsulting/jpo-cvmanager/pull/15): Admin RSU/User Bugfixes
-[NEAERA CONSULTING PR 16](https://github.com/neaeraconsulting/jpo-cvmanager/pull/16): Merging CDOT-CV and NeaeraConsulting IAPI Email Subscription Changes
-[NEAERA CONSULTING PR 19](https://github.com/neaeraconsulting/jpo-cvmanager/pull/19): Adding USDOT 2026 Q2 Release Notes
-[NEAERA CONSULTING PR 21](https://github.com/neaeraconsulting/jpo-cvmanager/pull/21): Adding Intersection API TimeSync Endpoint
+
+- [CDOT PR 245](https://github.com/CDOT-CV/jpo-cvmanager/pull/245): Improving Environment Variable Default values
+- [CDOT PR 252](https://github.com/CDOT-CV/jpo-cvmanager/pull/252): Admin Pages Only Show Data Associated With Selected Organization
+- [CDOT PR 254](https://github.com/CDOT-CV/jpo-cvmanager/pull/254): Update Help Page Descriptions and Images
+- [CDOT PR 257](https://github.com/CDOT-CV/jpo-cvmanager/pull/257): Add useEffect to fetch RSU last online status in DisplayRsuErrors component
+- [CDOT PR 258](https://github.com/CDOT-CV/jpo-cvmanager/pull/258): Intersection API Email Generation and Templating
+- [CDOT PR 261](https://github.com/CDOT-CV/jpo-cvmanager/pull/261): Pull message forward configurations directly from RSU when refreshing
+- [CDOT PR 262](https://github.com/CDOT-CV/jpo-cvmanager/pull/262): Allowing Operators to use RSU Configuration Menu
+- [CDOT PR 263](https://github.com/CDOT-CV/jpo-cvmanager/pull/263): Fixing RSU Configuration Menu Permissions
+- [CDOT PR 265](https://github.com/CDOT-CV/jpo-cvmanager/pull/265): Deprecating Moove AI Features
+- [CDOT PR 267](https://github.com/CDOT-CV/jpo-cvmanager/pull/267): Regenerate postgresql entity classes for rsu management using JPA Buddy
+- [CDOT PR 268](https://github.com/CDOT-CV/jpo-cvmanager/pull/268): Resolve vulnerabilities by updating webapp dependencies
+- [CDOT PR 269](https://github.com/CDOT-CV/jpo-cvmanager/pull/269): Fixing python api port reference
+- [CDOT PR 270](https://github.com/CDOT-CV/jpo-cvmanager/pull/270): Migrate to Vite to resolve deprecation warnings
+- [CDOT PR 271](https://github.com/CDOT-CV/jpo-cvmanager/pull/271): Intersection API JPA Postgres Tables
+- [CDOT PR 272](https://github.com/CDOT-CV/jpo-cvmanager/pull/272): Introduce rsu tim deposit flag in database and backend
+- [CDOT PR 274](https://github.com/CDOT-CV/jpo-cvmanager/pull/274): Add ui controls for rsu tim deposit eligibility
+- [CDOT PR 275](https://github.com/CDOT-CV/jpo-cvmanager/pull/275): Fix PSID for Map in rsu_snmpset script
+- [CDOT PR 276](https://github.com/CDOT-CV/jpo-cvmanager/pull/276): Adding RSU admin endpoints to IAPI
+- [CDOT PR 277](https://github.com/CDOT-CV/jpo-cvmanager/pull/277): Admin RSU Webapp Migration to Intersection API
+- [CDOT PR 279](https://github.com/CDOT-CV/jpo-cvmanager/pull/279): Add End-to-End Support for RSU TIM Deposit Eligibility
+- [CDOT PR 280](https://github.com/CDOT-CV/jpo-cvmanager/pull/280): Migrating User Auth Endpoint To Webapp
+- [CDOT PR 281](https://github.com/CDOT-CV/jpo-cvmanager/pull/281): Restrict Super User Privilege Changes to Super Users Only
+- [CDOT PR 282](https://github.com/CDOT-CV/jpo-cvmanager/pull/282): npm: update jspdf dependency to version 4.1.0
+- [CDOT PR 283](https://github.com/CDOT-CV/jpo-cvmanager/pull/283): Intersection api email generation - python api
+- [CDOT PR 284](https://github.com/CDOT-CV/jpo-cvmanager/pull/284): Adding IAPI email generation to addons
+- [CDOT PR 285](https://github.com/CDOT-CV/jpo-cvmanager/pull/285): Iapi Email Generation - Python API Email Types
+- [CDOT PR 286](https://github.com/CDOT-CV/jpo-cvmanager/pull/286): Restore rsu admin support for tim_deposit and snmp_monitoring in intersection api
+- [CDOT PR 287](https://github.com/CDOT-CV/jpo-cvmanager/pull/287): Admin RSU Server Side Searching
+- [CDOT PR 288](https://github.com/CDOT-CV/jpo-cvmanager/pull/288): Org Scoped Creds - Add Owner Org To Tables
+- [CDOT PR 289](https://github.com/CDOT-CV/jpo-cvmanager/pull/289): Admin Create RSU Intersection API Migration
+- [CDOT PR 290](https://github.com/CDOT-CV/jpo-cvmanager/pull/290): Intersection API Authentication From Keycloak Token
+- [CDOT PR 291](https://github.com/CDOT-CV/jpo-cvmanager/pull/291): Remove adminrsu endpoint and related functionality
+- [CDOT PR 292](https://github.com/CDOT-CV/jpo-cvmanager/pull/292): Org Scoped Creds - Enforce Cred Ownership in CRUD Endpoints
+- [CDOT PR 295](https://github.com/CDOT-CV/jpo-cvmanager/pull/295): RSU Info Bridge - Initial Setup
+- [CDOT PR 296](https://github.com/CDOT-CV/jpo-cvmanager/pull/296): RSU Info Bridge - DTO & Endpoints
+- [CDOT PR 297](https://github.com/CDOT-CV/jpo-cvmanager/pull/297): RSU Info Bridge - OpenAPI Integration
+- [CDOT PR 298](https://github.com/CDOT-CV/jpo-cvmanager/pull/298): Migrating Admin User Features to Intersection API
+- [CDOT PR 299](https://github.com/CDOT-CV/jpo-cvmanager/pull/299): RSU Info Bridge - Data Access Layer
+- [CDOT PR 300](https://github.com/CDOT-CV/jpo-cvmanager/pull/300): Updating Webapp Typescript Configuration
+- [CDOT PR 301](https://github.com/CDOT-CV/jpo-cvmanager/pull/301): Resolving Webapp Unused Imports
+- [CDOT PR 302](https://github.com/CDOT-CV/jpo-cvmanager/pull/302): Resolving Webapp General Typescript Errors
+- [CDOT PR 305](https://github.com/CDOT-CV/jpo-cvmanager/pull/305): Add Jib Maven plugin for Docker image building and update README instructions
+- [CDOT PR 306](https://github.com/CDOT-CV/jpo-cvmanager/pull/306): Fixing Webapp Refresh Absolute Path
+- [CDOT PR 308](https://github.com/CDOT-CV/jpo-cvmanager/pull/308): Adding Enum for IAPI User Role
+- [CDOT PR 309](https://github.com/CDOT-CV/jpo-cvmanager/pull/309): CV Manager Firmware Upgrade Endpoint Migration
+- [CDOT PR 310](https://github.com/CDOT-CV/jpo-cvmanager/pull/310): Fix iapi integration test failures wsl
+- [CDOT PR 311](https://github.com/CDOT-CV/jpo-cvmanager/pull/311): Migrate iapi admin intersection to Spring Boot
+- [CDOT PR 312](https://github.com/CDOT-CV/jpo-cvmanager/pull/312): Fix: Webapp Role Handling Consistency Issue
+- [CDOT PR 313](https://github.com/CDOT-CV/jpo-cvmanager/pull/313): Migrate SCMS Status Endpoint
+- [CDOT PR 315](https://github.com/CDOT-CV/jpo-cvmanager/pull/315): Standardizing Webapp User Role Verification
+- [CDOT PR 317](https://github.com/CDOT-CV/jpo-cvmanager/pull/317): IAPI admin intersection UI
+- [CDOT PR 318](https://github.com/CDOT-CV/jpo-cvmanager/pull/318): Migrating Admin New User Endpoint to Intersection API
+- [CDOT PR 319](https://github.com/CDOT-CV/jpo-cvmanager/pull/319): Migrate iapi admin new intersection API to Spring Boot
+- [CDOT PR 320](https://github.com/CDOT-CV/jpo-cvmanager/pull/320): Iapi email generation python email sending
+- [CDOT PR 321](https://github.com/CDOT-CV/jpo-cvmanager/pull/321): Update iapi admin new intersection UI to use Spring Boot backend
+- [CDOT PR 322](https://github.com/CDOT-CV/jpo-cvmanager/pull/322): Intersection API Email Subscription Management Endpoints
+- [CDOT PR 323](https://github.com/CDOT-CV/jpo-cvmanager/pull/323): Intersection API Email Subscription Management Frontend
+- [CDOT PR 324](https://github.com/CDOT-CV/jpo-cvmanager/pull/324): Re-enabling swagger documentation for intersection api
+- [CDOT PR 327](https://github.com/CDOT-CV/jpo-cvmanager/pull/327): Intersection API Email Controller Rate Limiting
+- [CDOT PR 333](https://github.com/CDOT-CV/jpo-cvmanager/pull/333): Replace manual SQL scripts with Flyway-managed migrations
+- [CDOT PR 334](https://github.com/CDOT-CV/jpo-cvmanager/pull/334): Normalize schema constraints, indexes, and JPA annotations
+- [CDOT PR 335](https://github.com/CDOT-CV/jpo-cvmanager/pull/335): Intersection map Bugfixes
+- [CDOT PR 337](https://github.com/CDOT-CV/jpo-cvmanager/pull/337): Fixed issue where dismissing a notification returns a 500 error
+- [CDOT PR 338](https://github.com/CDOT-CV/jpo-cvmanager/pull/338): RSU Info Endpoint Migration
+- [CDOT PR 339](https://github.com/CDOT-CV/jpo-cvmanager/pull/339): Add manufacturer name to RSU DTO
+- [CDOT PR 340](https://github.com/CDOT-CV/jpo-cvmanager/pull/340): Fixed issues where BSM Activity didn't load properly in CV-Manager
+- [CDOT PR 348](https://github.com/CDOT-CV/jpo-cvmanager/pull/348): Improved RSU Pinger Service
+- [NEAERA CONSULTING PR 1](https://github.com/neaeraconsulting/jpo-cvmanager/pull/1): Ssm srm visualization
+- [NEAERA CONSULTING PR 2](https://github.com/neaeraconsulting/jpo-cvmanager/pull/2): Rsu Status Visualization
+- [NEAERA CONSULTING PR 3](https://github.com/neaeraconsulting/jpo-cvmanager/pull/3): Report Fixes
+- [NEAERA CONSULTING PR 4](https://github.com/neaeraconsulting/jpo-cvmanager/pull/4): RSU Status Monitor
+- [NEAERA CONSULTING PR 8](https://github.com/neaeraconsulting/jpo-cvmanager/pull/8): Report Fixes
+- [NEAERA CONSULTING PR 11](https://github.com/neaeraconsulting/jpo-cvmanager/pull/11): Merging CDOT-CV and NeaeraConsulting Codebases
+- [NEAERA CONSULTING PR 12](https://github.com/neaeraconsulting/jpo-cvmanager/pull/12): Ssm Srm Visualization - Merging to Develop
+- [NEAERA CONSULTING PR 13](https://github.com/neaeraconsulting/jpo-cvmanager/pull/13): Merging CDOT-CV and NeaeraConsulting Changes
+- [NEAERA CONSULTING PR 14](https://github.com/neaeraconsulting/jpo-cvmanager/pull/14): Merging CDOT-CV and NeaeraConsulting RSU Pinger Changes
+- [NEAERA CONSULTING PR 15](https://github.com/neaeraconsulting/jpo-cvmanager/pull/15): Admin RSU/User Bugfixes
+- [NEAERA CONSULTING PR 16](https://github.com/neaeraconsulting/jpo-cvmanager/pull/16): Merging CDOT-CV and NeaeraConsulting IAPI Email Subscription Changes
+- [NEAERA CONSULTING PR 19](https://github.com/neaeraconsulting/jpo-cvmanager/pull/19): Adding USDOT 2026 Q2 Release Notes
+- [NEAERA CONSULTING PR 21](https://github.com/neaeraconsulting/jpo-cvmanager/pull/21): Adding Intersection API TimeSync Endpoint
 
 ## Version 2.0.1
 

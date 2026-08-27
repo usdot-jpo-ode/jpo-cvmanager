@@ -62,6 +62,14 @@ class EmailProviderSendGridTest {
     }
 
     @Test
+    void testSendBatchedEmailsExitWhenNoRecipients() throws Exception {
+        List<EmailSendResponse> results = provider.sendBatchedEmails(List.of(), content);
+
+        assertEquals(0, results.size());
+        verify(sendGrid, times(0)).api(any());
+    }
+
+    @Test
     void testSendBatchedEmailsThrowsIOException() throws IOException {
         when(sendGrid.api(any())).thenThrow(new IOException("Network error"));
 

@@ -64,7 +64,7 @@ class DefaultConfigRepositoryImplTest {
                 UnitsEnum.CENTIMETERS, "The distance from centerline tolerance.");
         when(mongoTemplate.find(eq(query), eq(DefaultConfig.class), anyString())).thenReturn(List.of(config));
 
-        List<DefaultConfig> result = repository.find(query);
+        var result = repository.find(query);
 
         assertThat(result).hasSize(1);
         assertThat(result.getFirst()).isEqualTo(config);

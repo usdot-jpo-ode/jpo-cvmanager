@@ -11,13 +11,18 @@ import { headerTabHeight } from '../../styles/index'
 import { useTheme } from '@mui/material'
 import { selectIsOperatorOrAbove } from '../../generalSlices/userSlice'
 
+const menuTopOffset = headerTabHeight + 91
+const menuRightOffset = 25
+
 const menuStyle: React.CSSProperties = {
   textAlign: 'left',
   position: 'absolute',
   zIndex: 90,
-  height: 'fit-content',
-  top: `${headerTabHeight + 91}px`,
-  right: '25px',
+  height: 'auto',
+  top: `${menuTopOffset}px`,
+  right: `${menuRightOffset}px`,
+  maxHeight: `calc(100dvh - ${menuTopOffset + menuRightOffset}px)`,
+  overflowY: 'auto',
   borderRadius: '4px',
 }
 
@@ -37,8 +42,6 @@ const Menu = () => {
             ...menuStyle,
             backgroundColor: theme.palette.custom.mapLegendBackground,
             width: '400px',
-            maxHeight: `calc(100vh - ${headerTabHeight + 185}px)`,
-            overflowY: 'auto',
             scrollbarColor: `${theme.palette.text.primary} ${theme.palette.background.paper}`,
           }}
           className="visibleProp map-control-container"

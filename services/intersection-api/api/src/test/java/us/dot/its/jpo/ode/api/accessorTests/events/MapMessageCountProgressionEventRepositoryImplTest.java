@@ -66,6 +66,8 @@ class MapMessageCountProgressionEventRepositoryImplTest {
     void testFind() {
         PageRequest pageRequest = PageRequest.of(0, 1);
         MapMessageCountProgressionEventRepositoryImpl spyRepo = Mockito.spy(repository);
+
+        @SuppressWarnings("unchecked")
         Page<MapMessageCountProgressionEvent> mockPage = mock(Page.class);
 
         doReturn(mockPage).when(spyRepo).findPage(

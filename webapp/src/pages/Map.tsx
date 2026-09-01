@@ -13,7 +13,6 @@ const mapStyles: { [key: string]: any } = {
 import { CircleLayer, FillLayer, LineLayer } from 'mapbox-gl' // This is a dependency of react-map-gl even if you didn't explicitly install it
 import Map, { Marker, Popup, Source, Layer } from 'react-map-gl'
 import { Container } from 'reactstrap'
-import RsuMarker from '../components/RsuMarker'
 import EnvironmentVars from '../EnvironmentVars'
 import dayjs from 'dayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -135,6 +134,31 @@ import { useGetRsuCountsQuery } from '../features/api/rsuCountsApiSlice'
 import { formatScmsExpiration, useGetScmsStatusQuery } from '../features/api/scmsApiSlice'
 
 const MILLISECONDS_PER_MINUTE = 60000
+const RSU_SOURCE_ID = 'rsu-source'
+const RSU_POINT_LAYER_ID = 'rsu-points'
+
+const rsuPointLayer: CircleLayer = {
+  id: RSU_POINT_LAYER_ID,
+  type: 'circle',
+  paint: {
+    // RsuMarker rendered a 15px diameter circle (5px content + 5px padding on each side).
+    'circle-radius': 7.5,
+    'circle-color': ['get', 'display_color'],
+  },
+}
+
+const getRsuDisplayColor = (displayType: string, onlineStatus: string, scmsStatus: boolean | null) => {
+  if (displayType === 'online') {
+    if (onlineStatus === 'online') return '#A1D363'
+    if (onlineStatus === 'unstable') return '#D1A711'
+    if (onlineStatus === 'offline') return '#E94F37'
+  } else if (displayType === 'scms') {
+    if (scmsStatus === true) return '#A1D363'
+    if (scmsStatus === false) return '#E94F37'
+  }
+
+  return '#B0B0B0'
+}
 
 const calculateTimeWindow = (baseDate: string | Date, offset: number, step: number) => {
   const start = new Date(new Date(baseDate).getTime() + MILLISECONDS_PER_MINUTE * offset * step)
@@ -499,6 +523,38 @@ function MapPage() {
       })) ?? []
     )
   }, [rsuData, rsuCounts])
+
+  const rsuPointData = useMemo(
+    () =>
+      ({
+        type: 'FeatureCollection',
+        features: rsuDataWithCounts
+          .filter(
+            (rsu) => selectedVendor === 'Select Vendor' || rsu.properties.manufacturer_name === selectedVendor
+          )
+          .map((rsu) => {
+            const ip = rsu.properties.ipv4_address
+            const onlineStatus = Object.prototype.hasOwnProperty.call(rsuOnlineStatus, ip)
+              ? rsuOnlineStatus[ip].current_status
+              : 'offline'
+            const scmsStatus =
+              Object.prototype.hasOwnProperty.call(issScmsStatusData, ip) && issScmsStatusData[ip]
+                ? issScmsStatusData[ip].health
+                : null
+
+            return {
+              type: 'Feature' as const,
+              id: rsu.id,
+              geometry: rsu.geometry,
+              properties: {
+                ipv4_address: ip,
+                display_color: getRsuDisplayColor(displayType, onlineStatus, scmsStatus),
+              },
+            }
+          }),
+      }) as GeoJSON.FeatureCollection<GeoJSON.Point>,
+    [displayType, issScmsStatusData, rsuDataWithCounts, rsuOnlineStatus, selectedVendor]
+  )
 
   function dateChanged(e: Date, type: 'start' | 'end') {
     try {
@@ -1081,7 +1137,7 @@ function MapPage() {
           mapStyle={mbStyle}
           style={{ width: '100%', height: '100%' }}
           onMove={(evt) => dispatch(setMapViewState(evt.viewState))}
-          interactiveLayerIds={['geoMsgPointLayer']}
+          interactiveLayerIds={['geoMsgPointLayer', RSU_POINT_LAYER_ID]}
           onMouseMove={(e) => {
             if (addGeoMsgPoint || addConfigPoint) {
               const point: GeoJSON.Feature<GeoJSON.Point> = {
@@ -1104,6 +1160,24 @@ function MapPage() {
               return
             }
             setLastClickTime(clickTime)
+
+            const clickedRsuFeature = e.features?.find((feature) => feature.layer.id === RSU_POINT_LAYER_ID)
+            if (clickedRsuFeature && !addConfigPoint && !addGeoMsgPoint) {
+              const clickedRsu = rsuDataWithCounts.find(
+                (rsu) => rsu.properties.ipv4_address === clickedRsuFeature.properties?.ipv4_address
+              )
+              if (clickedRsu) {
+                dispatch(selectRsu(clickedRsu))
+                setSelectedWZDxMarkerIndex(null)
+                setSelectedWZDxMarker(null)
+                dispatch(clearFirmware())
+                dispatch(getRsuLastOnline(clickedRsu.properties.ipv4_address))
+              }
+            } else if (selectedRsu) {
+              // The popup no longer receives a DOM-marker click to stop propagation, so close it explicitly on map clicks.
+              dispatch(selectRsu(null))
+              dispatch(clearFirmware())
+            }
 
             if (addGeoMsgPoint) {
               addGeoMsgPointToCoordinates(e.lngLat)
@@ -1153,56 +1227,6 @@ function MapPage() {
                 </Source>
               )}
             </div>
-          )}
-          {rsuDataWithCounts?.map(
-            (rsu) =>
-              activeLayers.includes(MAP_LAYERS.RSU.id) &&
-              (selectedVendor === 'Select Vendor' || rsu['properties']['manufacturer_name'] === selectedVendor) && [
-                <Marker
-                  key={rsu.id}
-                  latitude={rsu.geometry.coordinates[1]}
-                  longitude={rsu.geometry.coordinates[0]}
-                  onClick={(e) => {
-                    // Prevent RSU selection if adding points to geospatial polygon selection
-                    if (addConfigPoint || addGeoMsgPoint) return
-                    e.originalEvent.stopPropagation()
-                    dispatch(selectRsu(rsu))
-                    setSelectedWZDxMarkerIndex(null)
-                    setSelectedWZDxMarker(null)
-                    dispatch(clearFirmware()) // TODO: Should remove??
-                    dispatch(getRsuLastOnline(rsu.properties.ipv4_address))
-                  }}
-                >
-                  <button
-                    className="marker-btn"
-                    onClick={(e) => {
-                      // Prevent RSU selection if adding points to geospatial polygon selection
-                      if (addConfigPoint || addGeoMsgPoint) return
-                      e.stopPropagation()
-                      dispatch(selectRsu(rsu))
-                      dispatch(clearFirmware()) // TODO: Should remove??
-                      setSelectedWZDxMarkerIndex(null)
-                      setSelectedWZDxMarker(null)
-                      dispatch(getRsuLastOnline(rsu.properties.ipv4_address))
-                    }}
-                  >
-                    <RsuMarker
-                      displayType={displayType}
-                      onlineStatus={
-                        Object.prototype.hasOwnProperty.call(rsuOnlineStatus, rsu.properties.ipv4_address)
-                          ? rsuOnlineStatus[rsu.properties.ipv4_address].current_status
-                          : 'offline'
-                      }
-                      scmsStatus={
-                        Object.prototype.hasOwnProperty.call(issScmsStatusData, rsu.properties.ipv4_address) &&
-                        issScmsStatusData[rsu.properties.ipv4_address]
-                          ? issScmsStatusData[rsu.properties.ipv4_address].health
-                          : null
-                      }
-                    />
-                  </button>
-                </Marker>,
-              ]
           )}
           {activeLayers.includes(MAP_LAYERS.HEATMAP.id) && (
             <Source id={MAP_LAYERS.HEATMAP.id} type="geojson" data={heatMapData}>
@@ -1378,6 +1402,7 @@ function MapPage() {
             <Popup
               latitude={selectedRsu.geometry.coordinates[1]}
               longitude={selectedRsu.geometry.coordinates[0]}
+              closeOnClick={false}
               onClose={() => {
                 if (pageOpen) {
                   dispatch(selectRsu(null))
@@ -1518,6 +1543,11 @@ function MapPage() {
               selectedIncident={selectedHaasIncident}
               onIncidentClose={() => setSelectedHaasIncident(null)}
             />
+          )}
+          {activeLayers.includes(MAP_LAYERS.RSU.id) && (
+            <Source id={RSU_SOURCE_ID} type="geojson" data={rsuPointData}>
+              <Layer {...rsuPointLayer} />
+            </Source>
           )}
         </Map>
       </Container>

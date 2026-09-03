@@ -13,7 +13,7 @@ export const parseMapSignalGroups = (mapMessage: ProcessedMap): SignalStateFeatu
       if (connection?.signalGroup) signalGroup = connection?.signalGroup
     })
 
-    if (!mapFeature.properties.ingressApproach || !signalGroup) {
+    if (!signalGroup) {
       return
     }
     const coords = mapFeature.geometry.coordinates.slice(0, 2)

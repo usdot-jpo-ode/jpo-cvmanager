@@ -22,6 +22,9 @@ services:
       ROCKSDB_BLOCK_SIZE: ${ROCKSDB_BLOCK_SIZE:-4096}
       ROCKSDB_N_MEMTABLES: ${ROCKSDB_N_MEMTABLES:-2}
       ROCKSDB_MEMTABLE_SIZE: ${ROCKSDB_MEMTABLE_SIZE:-16777216}
+      ENABLE_AGGREGATE_SPAT_MESSAGE_COUNT_PROGRESSION: true
+      ENABLE_AGGREGATE_MAP_MINIMUM_DATA_EVENTS: true
+      ENABLE_AGGREGATE_SPAT_MINIMUM_DATA_EVENTS: true
     healthcheck:
       test: ['CMD', 'java', '-version']
       interval: 10s
@@ -41,6 +44,9 @@ services:
         required: false
       kafka-setup:
         condition: service_started
+    volumes:
+      - ./application.yaml:/home/application.yaml
+    
 
   ode:
     profiles:

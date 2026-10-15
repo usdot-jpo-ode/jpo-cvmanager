@@ -294,7 +294,11 @@ file in that folder, so publish state is not yet applied to what OBUs receive.
    same upload ID.
 
 Abandoned and failed OBU uploads are expired and purged by the same cleanup task
-and settings as RSU uploads.
+and settings as RSU uploads. An unfinished upload reserves its file name until its
+signed URL expires plus `FIRMWARE_UPLOAD_EXPIRATION_GRACE`; a new upload request
+after that point expires it immediately instead of waiting for the next cleanup
+run. A file that reached storage but was never completed must be deleted from the
+OBU firmware list before the same name can be uploaded again.
 
 ## OBU OTA Request History
 

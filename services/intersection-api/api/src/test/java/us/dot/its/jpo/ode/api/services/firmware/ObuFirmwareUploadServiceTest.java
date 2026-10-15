@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +62,7 @@ class ObuFirmwareUploadServiceTest {
     private final ObjectStorageServiceRegistry objectStorageServices = mock(ObjectStorageServiceRegistry.class);
     private final ObuFirmwareRegistrationService registration = mock(ObuFirmwareRegistrationService.class);
     private final ObjectStorageProperties properties = new ObjectStorageProperties();
+    private final FirmwareUploadCleanupProperties cleanup = new FirmwareUploadCleanupProperties();
     private final ObuFirmwareParserRegistry parsers =
             new ObuFirmwareParserRegistry(List.of(new CommsigniaObuFirmwareFileNameParser()));
 
@@ -71,7 +73,7 @@ class ObuFirmwareUploadServiceTest {
     void setUp() {
         properties.setMaxUploadSize(DataSize.ofMegabytes(500));
         service = new ObuFirmwareUploadService(manufacturers, parsers, uploads, images, objectStorageServices,
-                properties, Mappers.getMapper(ObuFirmwareMapper.class), registration);
+                properties, Mappers.getMapper(ObuFirmwareMapper.class), registration, cleanup);
 
         commsignia = manufacturer(1, "Commsignia");
         when(manufacturers.findFirstByNameIgnoreCaseOrderByIdAsc(argThat("Commsignia"::equalsIgnoreCase)))
@@ -193,11 +195,42 @@ class ObuFirmwareUploadServiceTest {
     }
 
     @Test
+    void rejectsAFileNameReservedByAnUploadInProgress() {
+        var pending = pendingUpload();
+        pending.setExpiresAt(Instant.now().plus(Duration.ofMinutes(3)));
+        when(uploads.findByManufacturerIdAndFileNameAndStatus(1, FILE_NAME, FirmwareUploadStatus.PENDING))
+                .thenReturn(List.of(pending));
+
+        assertThatThrownBy(() -> service.createSignedUploadUrl(request("Commsignia", FILE_NAME), "admin"))
+                .isInstanceOf(FirmwareVersionAlreadyExistsException.class)
+                .hasMessageContaining("in progress").hasMessageContaining("63 minutes");
+        verify(uploads, never()).expirePendingUploads(any(), any(), any(), any(), any());
+        verifyNoInteractions(objectStorageService);
+    }
+
+    @Test
+    void expiresAbandonedUploadsBeforeAcceptingARetry() {
+        var abandoned = pendingUpload();
+        abandoned.setExpiresAt(Instant.now().minus(Duration.ofHours(2)));
+        when(uploads.findByManufacturerIdAndFileNameAndStatus(1, FILE_NAME, FirmwareUploadStatus.PENDING))
+                .thenReturn(List.of(abandoned));
+        stubSignedUrl(OBJECT_NAME);
+
+        var result = service.createSignedUploadUrl(request("Commsignia", FILE_NAME), "admin");
+
+        verify(uploads).expirePendingUploads(eq(FirmwareUploadStatus.PENDING), eq(FirmwareUploadStatus.EXPIRED),
+                any(), any(), eq("SIGNED_URL_EXPIRED"));
+        assertThat(result.objectName()).isEqualTo(OBJECT_NAME);
+    }
+
+    @Test
     void rejectsAnExistingObjectBeforeSigning() {
         when(objectStorageService.objectExists(OBJECT_NAME)).thenReturn(true);
 
         assertThatThrownBy(() -> service.createSignedUploadUrl(request("Commsignia", FILE_NAME), "admin"))
-                .isInstanceOf(FirmwareVersionAlreadyExistsException.class);
+                .isInstanceOf(FirmwareVersionAlreadyExistsException.class)
+                .hasMessageContaining("not in the OBU firmware catalog")
+                .hasMessageContaining("Delete it");
         verify(objectStorageService, never()).createSignedUploadUrl(any());
         verify(uploads, never()).save(any());
     }

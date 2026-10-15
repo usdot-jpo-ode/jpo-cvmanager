@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import us.dot.its.jpo.ode.api.models.postgres.tables.FirmwareUploadStatus;
 import us.dot.its.jpo.ode.api.models.postgres.tables.ObuFirmwareUpload;
 
 @Repository
@@ -19,4 +20,7 @@ public interface ObuFirmwareUploadRepository extends UploadLifecycleRepository<O
             """, nativeQuery = true)
     List<ObuFirmwareUpload> findListingUploads(@Param("provider") String provider,
             @Param("container") String container);
+
+    List<ObuFirmwareUpload> findByManufacturerIdAndFileNameAndStatus(Integer manufacturerId, String fileName,
+            FirmwareUploadStatus status);
 }

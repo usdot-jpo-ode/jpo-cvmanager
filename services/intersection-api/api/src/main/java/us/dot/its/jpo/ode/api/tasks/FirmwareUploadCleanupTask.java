@@ -22,7 +22,7 @@ import us.dot.its.jpo.ode.api.services.firmware.FirmwareUploadCleanupProperties;
 @Slf4j
 @ConditionalOnProperty(prefix = "firmware-upload.cleanup", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class FirmwareUploadCleanupTask {
-    static final String EXPIRATION_REASON = "SIGNED_URL_EXPIRED";
+    public static final String EXPIRATION_REASON = "SIGNED_URL_EXPIRED";
     private static final List<FirmwareUploadStatus> PURGEABLE_STATUSES = List.of(
             FirmwareUploadStatus.FAILED, FirmwareUploadStatus.EXPIRED);
 

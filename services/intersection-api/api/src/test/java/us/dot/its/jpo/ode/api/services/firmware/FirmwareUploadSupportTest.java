@@ -8,6 +8,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -144,6 +145,25 @@ class FirmwareUploadSupportTest {
                 .contains("An upload URL for this firmware is still valid. Try again in 1 minute.");
         assertThat(FirmwareUploadSupport.liveUploadUrlMessage(List.of(soon, later), NOW))
                 .contains("An upload URL for this firmware is still valid. Try again in 3 minutes.");
+    }
+
+    @Test
+    void reportsHowLongAPendingUploadReservesItsFile() {
+        var expired = new FirmwareUpload();
+        expired.setExpiresAt(NOW.minus(Duration.ofMinutes(61)));
+        var inGrace = new FirmwareUpload();
+        inGrace.setExpiresAt(NOW.minus(Duration.ofMinutes(30)));
+        var live = new FirmwareUpload();
+        live.setExpiresAt(NOW.plus(Duration.ofMinutes(4)));
+        Duration grace = Duration.ofHours(1);
+
+        assertThat(FirmwareUploadSupport.uploadInProgressMessage(List.of(expired), NOW, grace)).isEmpty();
+        assertThat(FirmwareUploadSupport.uploadInProgressMessage(List.of(expired, inGrace), NOW, grace))
+                .contains("Another upload of this file is in progress. Finish it, or try again in 30 minutes.");
+        assertThat(FirmwareUploadSupport.uploadInProgressMessage(List.of(inGrace, live), NOW, grace))
+                .contains("Another upload of this file is in progress. Finish it, or try again in 64 minutes.");
+        assertThat(FirmwareUploadSupport.uploadInProgressMessage(List.of(live), NOW, Duration.ZERO))
+                .contains("Another upload of this file is in progress. Finish it, or try again in 4 minutes.");
     }
 
     @Test

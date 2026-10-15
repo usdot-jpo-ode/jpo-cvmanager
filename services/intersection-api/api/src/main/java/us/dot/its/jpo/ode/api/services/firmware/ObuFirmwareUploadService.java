@@ -6,6 +6,7 @@ import static us.dot.its.jpo.ode.api.services.firmware.FirmwareUploadSupport.rea
 import static us.dot.its.jpo.ode.api.services.firmware.FirmwareUploadSupport.validatePathSegment;
 import static us.dot.its.jpo.ode.api.services.firmware.FirmwareUploadSupport.validateSignedLocation;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Locale;
 import java.util.UUID;
@@ -37,6 +38,7 @@ import us.dot.its.jpo.ode.api.storage.ObjectStorageProperties;
 import us.dot.its.jpo.ode.api.storage.ObjectStorageService;
 import us.dot.its.jpo.ode.api.storage.ObjectStorageServiceRegistry;
 import us.dot.its.jpo.ode.api.storage.ObuFirmwareStorageLayout;
+import us.dot.its.jpo.ode.api.tasks.FirmwareUploadCleanupTask;
 
 /**
  * Coordinates the OBU firmware upload lifecycle across PostgreSQL and the
@@ -51,6 +53,8 @@ public class ObuFirmwareUploadService {
             "uq_obu_firmware_uploads_active_file_name",
             "obu_firmware_images_manufacturer_file_name_unique",
             "obu_firmware_images_destination_unique"};
+    static final String UNREGISTERED_OBJECT_MESSAGE = "A file with this name is already in storage but is not "
+            + "in the OBU firmware catalog. Delete it from the OBU firmware list, then upload it again.";
 
     private final ManufacturerRepository manufacturers;
     private final ObuFirmwareParserRegistry parsers;
@@ -60,6 +64,7 @@ public class ObuFirmwareUploadService {
     private final ObjectStorageProperties objectStorageProperties;
     private final ObuFirmwareMapper mapper;
     private final ObuFirmwareRegistrationService registration;
+    private final FirmwareUploadCleanupProperties cleanupProperties;
 
     public FirmwareUploadUrl createSignedUploadUrl(UploadUrlRequest request, String createdBy) {
         // Resolve the manufacturer and its naming convention from trusted records
@@ -93,6 +98,7 @@ public class ObuFirmwareUploadService {
         if (images.existsByManufacturerIdAndFileName(manufacturer.getId(), fileName)) {
             throw new FirmwareVersionAlreadyExistsException(ObuFirmwareRegistrationService.ALREADY_EXISTS_MESSAGE);
         }
+        rejectUploadInProgress(manufacturer, fileName);
 
         String objectName = ObuFirmwareStorageLayout.objectName(
                 validatePathSegment(manufacturer.getName(), "manufacturer"), fileName);
@@ -102,9 +108,10 @@ public class ObuFirmwareUploadService {
 
         // Avoid creating a PENDING intent when the immutable destination is already
         // occupied. The provider's create-only upload condition remains the final
-        // protection against another writer winning after this check
+        // protection against another writer winning after this check. With no catalog
+        // image or pending upload, an existing object was uploaded but never completed
         if (objectStorageService.objectExists(objectName)) {
-            throw new FirmwareVersionAlreadyExistsException(ObuFirmwareRegistrationService.ALREADY_EXISTS_MESSAGE);
+            throw new FirmwareVersionAlreadyExistsException(UNREGISTERED_OBJECT_MESSAGE);
         }
 
         SignedUploadUrl signedUrl = objectStorageService.createSignedUploadUrl(new ObjectUploadRequest(
@@ -124,6 +131,26 @@ public class ObuFirmwareUploadService {
 
         return new FirmwareUploadUrl(upload.getId(), signedUrl.uploadUrl(), signedUrl.method(),
                 location.objectName(), signedUrl.expiresAt(), signedUrl.requiredHeaders());
+    }
+
+    /**
+     * A PENDING upload reserves its file name until its URL expires plus the cleanup
+     * grace period. Abandoned intents past that point are expired now, as the cleanup
+     * task would, so a retry does not wait for the next cleanup run.
+     */
+    private void rejectUploadInProgress(Manufacturer manufacturer, String fileName) {
+        Instant now = Instant.now();
+        Duration grace = cleanupProperties.getExpirationGrace();
+        var pending = uploads.findByManufacturerIdAndFileNameAndStatus(
+                manufacturer.getId(), fileName, FirmwareUploadStatus.PENDING);
+        if (pending.stream().anyMatch(upload -> upload.getExpiresAt().plus(grace).isBefore(now))) {
+            uploads.expirePendingUploads(FirmwareUploadStatus.PENDING, FirmwareUploadStatus.EXPIRED,
+                    now.minus(grace), now, FirmwareUploadCleanupTask.EXPIRATION_REASON);
+        }
+        var inProgress = FirmwareUploadSupport.uploadInProgressMessage(pending, now, grace);
+        if (inProgress.isPresent()) {
+            throw new FirmwareVersionAlreadyExistsException(inProgress.get());
+        }
     }
 
     public UploadVerification completeUpload(UUID uploadId) {

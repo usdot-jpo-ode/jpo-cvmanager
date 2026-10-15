@@ -1,5 +1,6 @@
 package us.dot.its.jpo.ode.api.services.firmware;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Locale;
@@ -187,12 +188,27 @@ public final class FirmwareUploadSupport {
                 .map(VerifiableUpload::getExpiresAt)
                 .filter(expiration -> expiration.isAfter(now))
                 .max(Instant::compareTo)
-                .map(expiration -> {
-                    long remainingMillis = expiration.toEpochMilli() - now.toEpochMilli();
-                    long remainingMinutes = Math.max(1, Math.ceilDiv(remainingMillis, 60_000L));
-                    String minuteLabel = remainingMinutes == 1 ? "minute" : "minutes";
-                    return "An upload URL for this firmware is still valid. Try again in "
-                            + remainingMinutes + " " + minuteLabel + ".";
-                });
+                .map(expiration -> "An upload URL for this firmware is still valid. Try again in "
+                        + minutesUntil(expiration, now) + ".");
+    }
+
+    /**
+     * Describes how long to wait when a PENDING upload still reserves its file. An
+     * intent is reserved until its URL expires plus the cleanup grace period, which
+     * allows an upload started just before expiry to finish. Empty when none is.
+     */
+    public static Optional<String> uploadInProgressMessage(Collection<? extends VerifiableUpload> pendingUploads,
+            Instant now, Duration expirationGrace) {
+        return pendingUploads.stream()
+                .map(upload -> upload.getExpiresAt().plus(expirationGrace))
+                .filter(releasedAt -> !releasedAt.isBefore(now))
+                .max(Instant::compareTo)
+                .map(releasedAt -> "Another upload of this file is in progress. Finish it, or try again in "
+                        + minutesUntil(releasedAt, now) + ".");
+    }
+
+    private static String minutesUntil(Instant time, Instant now) {
+        long remainingMinutes = Math.max(1, Math.ceilDiv(time.toEpochMilli() - now.toEpochMilli(), 60_000L));
+        return remainingMinutes + (remainingMinutes == 1 ? " minute" : " minutes");
     }
 }

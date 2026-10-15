@@ -87,6 +87,8 @@ def test_add_contents_more_than_default_page_size():
     assert manifest["totalPages"] == 1
 
 
+# Keep these cases identical to CommsigniaObuFirmwareFileNameParserTest in the
+# Intersection API, which validates OBU firmware names at upload time.
 @pytest.mark.parametrize(
     "file_name,expected",
     [
@@ -111,6 +113,8 @@ def test_is_valid_firmware_name(file_name, expected):
     assert is_valid_firmware_name(file_name) is expected
 
 
+# Keep these cases identical to CommsigniaObuFirmwareFileNameParserTest in the
+# Intersection API, which validates OBU firmware names at upload time.
 @pytest.mark.parametrize(
     "file_name,expected",
     [

@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
@@ -48,6 +49,7 @@ class ObuFirmwareRegistrationServiceTest {
     @Autowired private ObuFirmwareUploadRepository uploads;
     @MockitoSpyBean private ObuFirmwareImageRepository images;
     @Autowired private ManufacturerRepository manufacturers;
+    @Autowired private JdbcTemplate jdbc;
 
     private Manufacturer manufacturer;
     private ObuFirmwareUpload upload;
@@ -147,6 +149,34 @@ class ObuFirmwareRegistrationServiceTest {
         assertThatThrownBy(() -> registration.register(upload.getId(), stored))
                 .isInstanceOf(FirmwareVersionAlreadyExistsException.class);
         assertThat(uploads.findById(upload.getId()).orElseThrow().getStatus()).isEqualTo(FirmwareUploadStatus.PENDING);
+    }
+
+    @Test
+    void anExpiredUploadCannotClaimTheObjectOfAnotherPendingUpload() {
+        // Late completion of an EXPIRED upload is allowed, but the production index on
+        // active destinations stops it from taking over a newer upload of the same
+        // file. Integration tests build the schema from entities, so add the index here.
+        jdbc.execute("""
+                CREATE UNIQUE INDEX IF NOT EXISTS uq_obu_firmware_uploads_active_destination
+                    ON obu_firmware_uploads (storage_provider, storage_container, object_name)
+                    WHERE status IN ('PENDING', 'VERIFIED')
+                """);
+        try {
+            upload.setStatus(FirmwareUploadStatus.EXPIRED);
+            uploads.saveAndFlush(upload);
+            uploads.saveAndFlush(upload(FILE_NAME));
+
+            assertThatThrownBy(() -> registration.register(upload.getId(), stored))
+                    .isInstanceOf(DataIntegrityViolationException.class)
+                    .satisfies(failure -> assertThat(FirmwareUploadSupport.isConstraintViolation(
+                            failure, "uq_obu_firmware_uploads_active_destination")).isTrue());
+
+            assertThat(uploads.findById(upload.getId()).orElseThrow().getStatus())
+                    .isEqualTo(FirmwareUploadStatus.EXPIRED);
+            assertThat(images.findByManufacturerIdAndFileName(manufacturer.getId(), FILE_NAME)).isEmpty();
+        } finally {
+            jdbc.execute("DROP INDEX IF EXISTS uq_obu_firmware_uploads_active_destination");
+        }
     }
 
     @Test

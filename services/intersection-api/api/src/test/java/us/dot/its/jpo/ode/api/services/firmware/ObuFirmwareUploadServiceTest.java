@@ -24,7 +24,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Sort;
 import org.springframework.util.unit.DataSize;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -318,13 +317,19 @@ class ObuFirmwareUploadServiceTest {
     }
 
     @Test
-    void uploadOptionsListOnlyManufacturersWithANamingConvention() {
-        when(manufacturers.findAll(Sort.by("name"))).thenReturn(List.of(
-                commsignia, manufacturer(2, "Kapsch"), manufacturer(3, "ota")));
+    void uploadOptionsListManufacturersWithANamingConvention() {
         var options = new ObuFirmwareUploadOptionsService(manufacturers, parsers).getOptions();
 
         assertThat(options.manufacturers()).containsExactly(new ManufacturerOption(1, "Commsignia", ".tar.sig",
                 CommsigniaObuFirmwareFileNameParser.PATTERN, 128, FILE_NAME));
+        verify(manufacturers, never()).findAll();
+    }
+
+    @Test
+    void uploadOptionsOmitParsersWhoseManufacturerIsMissing() {
+        when(manufacturers.findFirstByNameIgnoreCaseOrderByIdAsc(any())).thenReturn(Optional.empty());
+
+        assertThat(new ObuFirmwareUploadOptionsService(manufacturers, parsers).getOptions().manufacturers()).isEmpty();
     }
 
     private UploadUrlRequest request(String manufacturer, String fileName) {

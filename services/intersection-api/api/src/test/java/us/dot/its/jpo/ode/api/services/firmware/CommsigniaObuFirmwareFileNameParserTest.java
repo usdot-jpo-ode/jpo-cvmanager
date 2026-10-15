@@ -2,6 +2,8 @@ package us.dot.its.jpo.ode.api.services.firmware;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.time.Duration;
 import java.util.List;
@@ -125,9 +127,20 @@ class CommsigniaObuFirmwareFileNameParserTest {
         assertThat(registry.find(" COMMSIGNIA ")).containsSame(parser);
         assertThat(registry.find("Kapsch")).isEmpty();
         assertThat(registry.find(null)).isEmpty();
+        assertThat(registry.parsers()).containsExactly(parser);
         assertThatThrownBy(() -> new ObuFirmwareParserRegistry(List.of(parser, new CommsigniaObuFirmwareFileNameParser())))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("Commsignia");
+    }
+
+    @Test
+    void registryRejectsAParserForTheReservedName() {
+        var reserved = mock(ObuFirmwareFileNameParser.class);
+        when(reserved.manufacturerName()).thenReturn("OTA");
+
+        assertThatThrownBy(() -> new ObuFirmwareParserRegistry(List.of(reserved)))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("reserved");
     }
 
     private static ObuFirmwareFileMetadata metadata(String variant, ObuFirmwareDeviceType type, boolean writable,

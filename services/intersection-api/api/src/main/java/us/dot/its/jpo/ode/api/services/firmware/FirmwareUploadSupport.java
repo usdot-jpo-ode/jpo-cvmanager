@@ -5,16 +5,22 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Consumer;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import us.dot.its.jpo.ode.api.models.postgres.tables.FirmwareUploadRecord;
 import us.dot.its.jpo.ode.api.models.postgres.tables.FirmwareUploadStatus;
 import us.dot.its.jpo.ode.api.models.postgres.tables.VerifiableUpload;
 import us.dot.its.jpo.ode.api.models.storage.ObjectStorageLocation;
 import us.dot.its.jpo.ode.api.models.storage.StorageObject;
 import us.dot.its.jpo.ode.api.models.storage.StoredObjectMetadata;
+import us.dot.its.jpo.ode.api.repositories.UploadLifecycleRepository;
+import us.dot.its.jpo.ode.api.services.firmware.FirmwareUploadService.FirmwareUploadVerificationException;
 import us.dot.its.jpo.ode.api.storage.ObjectStorageService;
+import us.dot.its.jpo.ode.api.storage.ObjectStorageServiceRegistry;
 
 /** Validation and verification rules shared by RSU and OBU firmware uploads. */
 public final class FirmwareUploadSupport {
@@ -86,6 +92,75 @@ public final class FirmwareUploadSupport {
     /** Returns whether stored metadata matches the size and checksum the upload promised. */
     public static boolean matches(VerifiableUpload upload, StoredObjectMetadata metadata) {
         return matchesSize(upload, metadata) && matchesChecksum(upload, metadata);
+    }
+
+    /**
+     * Reads the uploaded object from the provider recorded on the upload and checks
+     * it against the size and checksum the upload promised. A mismatch is reported
+     * through {@code markFailed} before the verification error is thrown.
+     *
+     * <p>Callers read the upload without a lock before this call and re-read it under
+     * a lock when registering, so no row lock is held during the storage request.
+     */
+    public static StoredObjectMetadata readMatchingObject(ObjectStorageServiceRegistry storage,
+            VerifiableUpload upload, Consumer<String> markFailed) {
+        // The recorded provider stays valid even if the active provider later changes
+        ObjectStorageService service = storage.getService(upload.getStorageProvider());
+        ObjectStorageLocation location = new ObjectStorageLocation(
+                upload.getStorageProvider(), upload.getStorageContainer(), upload.getObjectName());
+        StoredObjectMetadata metadata = service.getObjectMetadata(location, upload.getChecksumAlgorithm())
+                .orElseThrow(() -> new FirmwareUploadVerificationException(
+                        "Cannot verify this upload because the expected firmware file was not found in storage. "
+                                + "Ensure the file upload using the signed URL completed successfully before "
+                                + "requesting verification."));
+        if (!matchesSize(upload, metadata)) {
+            markFailed.accept("SIZE_MISMATCH");
+            throw new FirmwareUploadVerificationException("Uploaded object size does not match content_length");
+        }
+        if (!matchesChecksum(upload, metadata)) {
+            markFailed.accept("CHECKSUM_MISMATCH");
+            throw new FirmwareUploadVerificationException(
+                    "Uploaded object checksum does not match the expected checksum");
+        }
+        return metadata;
+    }
+
+    /**
+     * Marks an upload FAILED. A late verification response must not recreate a
+     * deleted upload or downgrade an upload already verified by another request.
+     * Callers run this inside a transaction so the row lock is held until commit.
+     */
+    public static <T extends FirmwareUploadRecord> void markFailed(UploadLifecycleRepository<T> uploads,
+            UUID uploadId, String reason) {
+        uploads.findByIdForUpdate(uploadId).ifPresent(upload -> {
+            if (upload.getStatus() != FirmwareUploadStatus.VERIFIED) {
+                upload.setStatus(FirmwareUploadStatus.FAILED);
+                upload.setFailureReason(reason);
+                upload.setFinishedAt(Instant.now());
+                uploads.save(upload);
+            }
+        });
+    }
+
+    /**
+     * Records verification evidence on an upload that is not yet VERIFIED, keeping the
+     * provider's observed values so the record identifies the exact object version
+     * checked. Returns whether the upload changed; a VERIFIED upload is left as is.
+     */
+    public static boolean markVerified(FirmwareUploadRecord upload, StoredObjectMetadata metadata) {
+        if (upload.getStatus() == FirmwareUploadStatus.VERIFIED) {
+            return false;
+        }
+        if (!matches(upload, metadata)) {
+            throw new FirmwareUploadVerificationException("Firmware metadata does not match the upload intent");
+        }
+        upload.setStatus(FirmwareUploadStatus.VERIFIED);
+        upload.setObservedChecksum(metadata.checksum().value());
+        upload.setProviderObjectVersion(metadata.providerObjectVersion());
+        upload.setVerifiedAt(Instant.now());
+        upload.setFinishedAt(upload.getVerifiedAt());
+        upload.setFailureReason(null);
+        return true;
     }
 
     /**

@@ -1,6 +1,5 @@
 package us.dot.its.jpo.ode.api.services.firmware;
 
-import java.time.Instant;
 import java.util.UUID;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -9,13 +8,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import us.dot.its.jpo.ode.api.mappers.ObuFirmwareMapper;
-import us.dot.its.jpo.ode.api.models.postgres.tables.FirmwareUploadStatus;
 import us.dot.its.jpo.ode.api.models.postgres.tables.ObuFirmwareImage;
 import us.dot.its.jpo.ode.api.models.postgres.tables.ObuFirmwareUpload;
 import us.dot.its.jpo.ode.api.models.storage.StoredObjectMetadata;
 import us.dot.its.jpo.ode.api.repositories.ObuFirmwareImageRepository;
 import us.dot.its.jpo.ode.api.repositories.ObuFirmwareUploadRepository;
-import us.dot.its.jpo.ode.api.services.firmware.FirmwareUploadService.FirmwareUploadVerificationException;
 import us.dot.its.jpo.ode.api.services.firmware.FirmwareUploadService.FirmwareVersionAlreadyExistsException;
 
 /**
@@ -37,16 +34,7 @@ public class ObuFirmwareRegistrationService {
 
     @Transactional
     public void markFailed(UUID uploadId, String reason) {
-        // A late verification response must not recreate a deleted upload or
-        // downgrade an upload already verified by another request.
-        uploads.findByIdForUpdate(uploadId).ifPresent(upload -> {
-            if (upload.getStatus() != FirmwareUploadStatus.VERIFIED) {
-                upload.setStatus(FirmwareUploadStatus.FAILED);
-                upload.setFailureReason(reason);
-                upload.setFinishedAt(Instant.now());
-                uploads.save(upload);
-            }
-        });
+        FirmwareUploadSupport.markFailed(uploads, uploadId, reason);
     }
 
     @Transactional
@@ -65,16 +53,7 @@ public class ObuFirmwareRegistrationService {
 
         // Completion is idempotent. An upload not yet verified needs its observed
         // storage metadata checked and its verification state updated
-        if (upload.getStatus() != FirmwareUploadStatus.VERIFIED) {
-            if (!FirmwareUploadSupport.matches(upload, metadata)) {
-                throw new FirmwareUploadVerificationException("Firmware metadata does not match the upload intent");
-            }
-            upload.setStatus(FirmwareUploadStatus.VERIFIED);
-            upload.setObservedChecksum(metadata.checksum().value());
-            upload.setProviderObjectVersion(metadata.providerObjectVersion());
-            upload.setVerifiedAt(Instant.now());
-            upload.setFinishedAt(upload.getVerifiedAt());
-            upload.setFailureReason(null);
+        if (FirmwareUploadSupport.markVerified(upload, metadata)) {
             uploads.save(upload);
         }
 

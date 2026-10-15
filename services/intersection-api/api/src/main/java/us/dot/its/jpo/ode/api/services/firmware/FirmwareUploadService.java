@@ -1,9 +1,8 @@
 package us.dot.its.jpo.ode.api.services.firmware;
 
 import static us.dot.its.jpo.ode.api.services.firmware.FirmwareUploadSupport.isConstraintViolation;
-import static us.dot.its.jpo.ode.api.services.firmware.FirmwareUploadSupport.matchesChecksum;
-import static us.dot.its.jpo.ode.api.services.firmware.FirmwareUploadSupport.matchesSize;
 import static us.dot.its.jpo.ode.api.services.firmware.FirmwareUploadSupport.normalizeCreatedBy;
+import static us.dot.its.jpo.ode.api.services.firmware.FirmwareUploadSupport.readMatchingObject;
 import static us.dot.its.jpo.ode.api.services.firmware.FirmwareUploadSupport.validatePathSegment;
 import static us.dot.its.jpo.ode.api.services.firmware.FirmwareUploadSupport.validateSignedLocation;
 
@@ -126,33 +125,9 @@ public class FirmwareUploadService {
             return toVerification(register(uploadId, null));
         }
 
-        // Route completion through the cloud provider recorded when the URL was
-        // issued. This remains valid even if the application's active provider later
-        // changes
-        ObjectStorageService objectStorageService = objectStorageServices.getService(upload.getStorageProvider());
-        ObjectStorageLocation location = new ObjectStorageLocation(
-                upload.getStorageProvider(), upload.getStorageContainer(), upload.getObjectName());
-        StoredObjectMetadata metadata = objectStorageService
-                .getObjectMetadata(location, upload.getChecksumAlgorithm())
-                .orElseThrow(() -> new FirmwareUploadVerificationException(
-                        "Cannot verify this upload because the expected firmware file was not found in storage. "
-                                + "Ensure the file upload using the signed URL completed successfully before "
-                                + "requesting verification."));
-
         // Verification requires both the expected byte size and the exact checksum
-        if (!matchesSize(upload, metadata)) {
-            markFailed(upload, "SIZE_MISMATCH");
-            throw new FirmwareUploadVerificationException(
-                    "Uploaded object size does not match content_length");
-        }
-        if (!matchesChecksum(upload, metadata)) {
-            markFailed(upload, "CHECKSUM_MISMATCH");
-            throw new FirmwareUploadVerificationException(
-                    "Uploaded object checksum does not match the expected checksum");
-        }
-
-        // Retain the provider's observed values so the verified record identifies the
-        // exact stored object version that was checked
+        StoredObjectMetadata metadata = readMatchingObject(objectStorageServices, upload,
+                reason -> registration.markFailed(uploadId, reason));
         return toVerification(register(uploadId, metadata));
     }
 
@@ -171,10 +146,6 @@ public class FirmwareUploadService {
         return new FirmwareUploadVerification(upload.getId(), upload.getStatus(), upload.getObjectName(),
                 upload.getExpectedSize(), upload.getChecksumAlgorithm(), upload.getObservedChecksum(),
                 upload.getProviderObjectVersion(), upload.getVerifiedAt());
-    }
-
-    private void markFailed(FirmwareUpload upload, String reason) {
-        registration.markFailed(upload.getId(), reason);
     }
 
     private boolean isActiveDestinationConflict(Throwable exception) {

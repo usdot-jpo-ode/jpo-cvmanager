@@ -2,11 +2,17 @@ package us.dot.its.jpo.ode.api.services.firmware;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +28,10 @@ import us.dot.its.jpo.ode.api.models.storage.ObjectChecksum;
 import us.dot.its.jpo.ode.api.models.storage.ObjectStorageLocation;
 import us.dot.its.jpo.ode.api.models.storage.StorageObject;
 import us.dot.its.jpo.ode.api.models.storage.StoredObjectMetadata;
+import us.dot.its.jpo.ode.api.repositories.FirmwareUploadRepository;
+import us.dot.its.jpo.ode.api.services.firmware.FirmwareUploadService.FirmwareUploadVerificationException;
 import us.dot.its.jpo.ode.api.storage.ObjectStorageService;
+import us.dot.its.jpo.ode.api.storage.ObjectStorageServiceRegistry;
 
 class FirmwareUploadSupportTest {
     private static final Instant NOW = Instant.parse("2026-09-03T20:00:00Z");
@@ -135,5 +144,85 @@ class FirmwareUploadSupportTest {
                 .contains("An upload URL for this firmware is still valid. Try again in 1 minute.");
         assertThat(FirmwareUploadSupport.liveUploadUrlMessage(List.of(soon, later), NOW))
                 .contains("An upload URL for this firmware is still valid. Try again in 3 minutes.");
+    }
+
+    @Test
+    void readsTheUploadedObjectFromTheRecordedProvider() {
+        var storage = mock(ObjectStorageServiceRegistry.class);
+        var service = mock(ObjectStorageService.class);
+        upload.setStorageProvider("gcp");
+        upload.setStorageContainer("bucket");
+        upload.setObjectName("ota/Commsignia/a.tar.sig");
+        when(storage.getService("gcp")).thenReturn(service);
+        var location = new ObjectStorageLocation("gcp", "bucket", "ota/Commsignia/a.tar.sig");
+        var stored = new StoredObjectMetadata(1024L, new ObjectChecksum("CRC32C", "ImIEBA=="), "17");
+        var failures = new ArrayList<String>();
+
+        when(service.getObjectMetadata(location, "CRC32C")).thenReturn(Optional.of(stored));
+        assertThat(FirmwareUploadSupport.readMatchingObject(storage, upload, failures::add)).isSameAs(stored);
+
+        when(service.getObjectMetadata(location, "CRC32C")).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> FirmwareUploadSupport.readMatchingObject(storage, upload, failures::add))
+                .isInstanceOf(FirmwareUploadVerificationException.class).hasMessageContaining("not found in storage");
+        assertThat(failures).isEmpty();
+
+        when(service.getObjectMetadata(location, "CRC32C")).thenReturn(Optional.of(
+                new StoredObjectMetadata(2048L, stored.checksum(), "17")));
+        assertThatThrownBy(() -> FirmwareUploadSupport.readMatchingObject(storage, upload, failures::add))
+                .isInstanceOf(FirmwareUploadVerificationException.class).hasMessageContaining("size");
+
+        when(service.getObjectMetadata(location, "CRC32C")).thenReturn(Optional.of(
+                new StoredObjectMetadata(1024L, new ObjectChecksum("CRC32C", "other=="), "17")));
+        assertThatThrownBy(() -> FirmwareUploadSupport.readMatchingObject(storage, upload, failures::add))
+                .isInstanceOf(FirmwareUploadVerificationException.class).hasMessageContaining("checksum");
+        assertThat(failures).containsExactly("SIZE_MISMATCH", "CHECKSUM_MISMATCH");
+    }
+
+    @Test
+    void marksOnlyUnverifiedUploadsFailed() {
+        var uploads = mock(FirmwareUploadRepository.class);
+        UUID id = UUID.randomUUID();
+        upload.setStatus(FirmwareUploadStatus.PENDING);
+        when(uploads.findByIdForUpdate(id)).thenReturn(Optional.of(upload));
+
+        FirmwareUploadSupport.markFailed(uploads, id, "SIZE_MISMATCH");
+
+        assertThat(upload.getStatus()).isEqualTo(FirmwareUploadStatus.FAILED);
+        assertThat(upload.getFailureReason()).isEqualTo("SIZE_MISMATCH");
+        assertThat(upload.getFinishedAt()).isNotNull();
+        verify(uploads).save(upload);
+
+        var verified = mock(FirmwareUploadRepository.class);
+        var verifiedUpload = new FirmwareUpload();
+        verifiedUpload.setStatus(FirmwareUploadStatus.VERIFIED);
+        when(verified.findByIdForUpdate(id)).thenReturn(Optional.of(verifiedUpload));
+        FirmwareUploadSupport.markFailed(verified, id, "CHECKSUM_MISMATCH");
+        FirmwareUploadSupport.markFailed(verified, UUID.randomUUID(), "CHECKSUM_MISMATCH");
+        assertThat(verifiedUpload.getStatus()).isEqualTo(FirmwareUploadStatus.VERIFIED);
+        verify(verified, never()).save(any());
+    }
+
+    @Test
+    void marksMatchingUploadsVerifiedOnce() {
+        var stored = new StoredObjectMetadata(1024L, new ObjectChecksum("CRC32C", "ImIEBA=="), "18");
+        assertThat(FirmwareUploadSupport.markVerified(upload, stored)).isFalse();
+        assertThat(upload.getProviderObjectVersion()).isEqualTo("17");
+
+        upload.setStatus(FirmwareUploadStatus.EXPIRED);
+        upload.setFailureReason("SIGNED_URL_EXPIRED");
+        assertThat(FirmwareUploadSupport.markVerified(upload, stored)).isTrue();
+        assertThat(upload.getStatus()).isEqualTo(FirmwareUploadStatus.VERIFIED);
+        assertThat(upload.getProviderObjectVersion()).isEqualTo("18");
+        assertThat(upload.getObservedChecksum()).isEqualTo("ImIEBA==");
+        assertThat(upload.getVerifiedAt()).isNotNull().isEqualTo(upload.getFinishedAt());
+        assertThat(upload.getFailureReason()).isNull();
+
+        upload.setStatus(FirmwareUploadStatus.PENDING);
+        assertThatThrownBy(() -> FirmwareUploadSupport.markVerified(upload, null))
+                .isInstanceOf(FirmwareUploadVerificationException.class);
+        assertThatThrownBy(() -> FirmwareUploadSupport.markVerified(upload,
+                new StoredObjectMetadata(1L, stored.checksum(), "18")))
+                .isInstanceOf(FirmwareUploadVerificationException.class);
+        assertThat(upload.getStatus()).isEqualTo(FirmwareUploadStatus.PENDING);
     }
 }

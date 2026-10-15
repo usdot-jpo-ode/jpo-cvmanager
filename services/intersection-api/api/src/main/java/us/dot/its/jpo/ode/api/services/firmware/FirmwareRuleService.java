@@ -23,6 +23,7 @@ import us.dot.its.jpo.ode.api.repositories.FirmwareImageRepository;
 import us.dot.its.jpo.ode.api.repositories.FirmwareUpgradeRuleRepository;
 import us.dot.its.jpo.ode.api.repositories.RsuRepository;
 import us.dot.its.jpo.ode.api.storage.ObjectStorageServiceRegistry;
+import us.dot.its.jpo.ode.api.storage.ObuFirmwareStorageLayout;
 import us.dot.its.jpo.ode.api.storage.ObjectStorageUnavailableException;
 import us.dot.its.jpo.ode.api.mappers.FirmwareRuleMapper;
 
@@ -188,7 +189,7 @@ public class FirmwareRuleService {
     }
 
     private boolean isObu(FirmwareImage image) {
-        return "ota".equalsIgnoreCase(image.getModel().getManufacturer().getName());
+        return ObuFirmwareStorageLayout.isReservedName(image.getModel().getManufacturer().getName());
     }
 
     public static class FirmwareRuleConflictException extends RuntimeException {

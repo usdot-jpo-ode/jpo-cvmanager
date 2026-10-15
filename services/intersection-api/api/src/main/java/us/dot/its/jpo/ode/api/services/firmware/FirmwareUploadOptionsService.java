@@ -10,12 +10,11 @@ import us.dot.its.jpo.ode.api.models.storage.FirmwareUploadOptions;
 import us.dot.its.jpo.ode.api.models.storage.FirmwareUploadOptions.ManufacturerOption;
 import us.dot.its.jpo.ode.api.models.storage.FirmwareUploadOptions.ModelOption;
 import us.dot.its.jpo.ode.api.repositories.RsuModelRepository;
+import us.dot.its.jpo.ode.api.storage.ObuFirmwareStorageLayout;
 
 @Service
 @RequiredArgsConstructor
 public class FirmwareUploadOptionsService {
-    private static final String RESERVED_OBU_MANUFACTURER = "ota";
-
     private final RsuModelRepository rsuModels;
 
     public FirmwareUploadOptions getOptions() {
@@ -28,7 +27,7 @@ public class FirmwareUploadOptionsService {
 
             // The ota storage hierarchy is reserved for the separate OBU firmware
             // workflow and must not be offered as an RSU firmware upload destination
-            if (RESERVED_OBU_MANUFACTURER.equalsIgnoreCase(manufacturer.getName())) {
+            if (ObuFirmwareStorageLayout.isReservedName(manufacturer.getName())) {
                 continue;
             }
 

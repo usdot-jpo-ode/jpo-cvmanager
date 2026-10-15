@@ -29,12 +29,11 @@ import us.dot.its.jpo.ode.api.repositories.FirmwareUploadRepository;
 import us.dot.its.jpo.ode.api.storage.ObjectIds;
 import us.dot.its.jpo.ode.api.storage.ObjectListings;
 import us.dot.its.jpo.ode.api.storage.ObjectStorageServiceRegistry;
+import us.dot.its.jpo.ode.api.storage.ObuFirmwareStorageLayout;
 
 @Service
 @RequiredArgsConstructor
 public class FirmwareObjectService {
-    private static final Set<String> RESERVED_PREFIXES = Set.of("ota");
-
     private final ObjectStorageServiceRegistry storage;
     private final FirmwareUploadRepository uploads;
     private final FirmwareImageRepository images;
@@ -189,15 +188,13 @@ public class FirmwareObjectService {
                         || Character.isISOControl(character))) {
             throw new IllegalArgumentException("manufacturer must be a valid object path segment");
         }
-        if (RESERVED_PREFIXES.contains(normalized.toLowerCase(Locale.ROOT))) {
+        if (ObuFirmwareStorageLayout.isReservedName(normalized)) {
             throw new IllegalArgumentException("manufacturer is reserved for a separate firmware workflow");
         }
         return normalized;
     }
 
     private boolean isReservedObject(String objectName) {
-        int separator = objectName.indexOf('/');
-        String root = separator < 0 ? objectName : objectName.substring(0, separator);
-        return RESERVED_PREFIXES.contains(root.toLowerCase(Locale.ROOT));
+        return ObuFirmwareStorageLayout.isObuObjectName(objectName);
     }
 }

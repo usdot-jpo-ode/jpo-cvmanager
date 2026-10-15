@@ -1,7 +1,6 @@
 package us.dot.its.jpo.ode.api.services.firmware;
 
 import java.time.Instant;
-import java.util.Locale;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -16,6 +15,7 @@ import us.dot.its.jpo.ode.api.repositories.RsuRepository;
 import us.dot.its.jpo.ode.api.models.postgres.tables.FirmwareImage;
 import us.dot.its.jpo.ode.api.storage.ObjectIds;
 import us.dot.its.jpo.ode.api.storage.ObjectStorageServiceRegistry;
+import us.dot.its.jpo.ode.api.storage.ObuFirmwareStorageLayout;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +43,7 @@ public class FirmwareDeletionService {
     private void deleteRecordsAndObject(String objectId, String providerObjectVersion) {
         var identity = ObjectIds.decode(objectId);
         String objectName = identity.objectName();
-        if (objectName.split("/", 2)[0].toLowerCase(Locale.ROOT).equals("ota")) {
+        if (ObuFirmwareStorageLayout.isObuObjectName(objectName)) {
             throw new IllegalArgumentException("OBU firmware cannot be deleted through the RSU firmware API");
         }
 

@@ -33,6 +33,7 @@ import us.dot.its.jpo.ode.api.repositories.RsuModelRepository;
 import us.dot.its.jpo.ode.api.storage.ObjectStorageProperties;
 import us.dot.its.jpo.ode.api.storage.ObjectStorageService;
 import us.dot.its.jpo.ode.api.storage.ObjectStorageServiceRegistry;
+import us.dot.its.jpo.ode.api.storage.ObuFirmwareStorageLayout;
 
 /**
  * Coordinates the firmware upload lifecycle across PostgreSQL and the selected
@@ -41,8 +42,6 @@ import us.dot.its.jpo.ode.api.storage.ObjectStorageServiceRegistry;
 @Service
 @RequiredArgsConstructor
 public class FirmwareUploadService {
-    // Object names beneath this root are reserved for OBU firmware
-    static final String RESERVED_OBU_ROOT = "ota";
     private static final String[] ACTIVE_DESTINATION_CONSTRAINTS = {
             "uq_firmware_uploads_active_destination",
             "uq_firmware_uploads_active_model_version",
@@ -207,7 +206,7 @@ public class FirmwareUploadService {
 
     private String buildObjectName(FirmwareUploadUrlRequest request, String storedFileName) {
         String vendor = validatePathSegment(request.getVendorName(), "vendor_name");
-        if (RESERVED_OBU_ROOT.equals(vendor.toLowerCase(Locale.ROOT))) {
+        if (ObuFirmwareStorageLayout.isReservedName(vendor)) {
             throw new IllegalArgumentException("vendor_name is reserved for OBU firmware");
         }
         return String.join("/",

@@ -68,7 +68,7 @@ public class ObuFirmwareUploadService {
         if (ObuFirmwareStorageLayout.isReservedName(manufacturerName)) {
             throw new IllegalArgumentException("manufacturer_name is reserved");
         }
-        Manufacturer manufacturer = manufacturers.findByName(manufacturerName)
+        Manufacturer manufacturer = manufacturers.findFirstByNameIgnoreCaseOrderByIdAsc(manufacturerName)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Manufacturer '" + manufacturerName + "' was not found"));
         ObuFirmwareFileNameParser parser = parsers.find(manufacturer.getName())

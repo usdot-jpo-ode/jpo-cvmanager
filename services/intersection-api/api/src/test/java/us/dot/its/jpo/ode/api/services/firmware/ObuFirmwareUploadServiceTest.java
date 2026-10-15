@@ -3,6 +3,7 @@ package us.dot.its.jpo.ode.api.services.firmware;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -75,7 +76,8 @@ class ObuFirmwareUploadServiceTest {
                 properties, Mappers.getMapper(ObuFirmwareMapper.class), registration);
 
         commsignia = manufacturer(1, "Commsignia");
-        when(manufacturers.findByName("Commsignia")).thenReturn(Optional.of(commsignia));
+        when(manufacturers.findFirstByNameIgnoreCaseOrderByIdAsc(argThat("Commsignia"::equalsIgnoreCase)))
+                .thenReturn(Optional.of(commsignia));
         when(objectStorageService.providerName()).thenReturn("gcp");
         when(objectStorageServices.getActiveService()).thenReturn(objectStorageService);
         when(objectStorageServices.getService("gcp")).thenReturn(objectStorageService);
@@ -120,9 +122,20 @@ class ObuFirmwareUploadServiceTest {
         assertThat(result.method()).isEqualTo("PUT");
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = { "commsignia", "COMMSIGNIA" })
+    void matchesManufacturersIgnoringCaseAndKeepsTheStoredSpelling(String name) {
+        stubSignedUrl(OBJECT_NAME);
+
+        var result = service.createSignedUploadUrl(request(name, FILE_NAME), "admin");
+
+        assertThat(result.objectName()).isEqualTo("ota/Commsignia/" + FILE_NAME);
+        verify(objectStorageService).objectExists("ota/Commsignia/" + FILE_NAME);
+    }
+
     @Test
     void rejectsUnknownManufacturers() {
-        when(manufacturers.findByName("Acme")).thenReturn(Optional.empty());
+        when(manufacturers.findFirstByNameIgnoreCaseOrderByIdAsc("Acme")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.createSignedUploadUrl(request("Acme", FILE_NAME), "admin"))
                 .isInstanceOf(EntityNotFoundException.class).hasMessageContaining("Acme");
@@ -131,7 +144,8 @@ class ObuFirmwareUploadServiceTest {
 
     @Test
     void reportsManufacturersWithoutANamingConventionAsUnconfigured() {
-        when(manufacturers.findByName("Kapsch")).thenReturn(Optional.of(manufacturer(2, "Kapsch")));
+        when(manufacturers.findFirstByNameIgnoreCaseOrderByIdAsc("Kapsch"))
+                .thenReturn(Optional.of(manufacturer(2, "Kapsch")));
 
         assertThatThrownBy(() -> service.createSignedUploadUrl(request("Kapsch", FILE_NAME), "admin"))
                 .isInstanceOf(FirmwareUploadConfigurationException.class).hasMessageContaining("Kapsch");

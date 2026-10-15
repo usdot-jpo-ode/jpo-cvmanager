@@ -8,5 +8,9 @@ import us.dot.its.jpo.ode.api.models.postgres.tables.Manufacturer;
 
 @Repository
 public interface ManufacturerRepository extends JpaRepository<Manufacturer, Integer> {
-    Optional<Manufacturer> findByName(String name);
+    /**
+     * Finds a manufacturer by name ignoring case, preferring the oldest row when
+     * names differ only by case. Matches the OBU OTA server's manufacturer lookup.
+     */
+    Optional<Manufacturer> findFirstByNameIgnoreCaseOrderByIdAsc(String name);
 }

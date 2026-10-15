@@ -222,7 +222,8 @@ also available through this API and the Firmware tab.
   the required suffix in `manufacturers.firmware_file_extension`; the selected
   file must match it. Only one active/verified upload is allowed per model/version,
   and existing objects are never overwritten. The `ota/` directory is reserved
-  for OBU firmware and excluded from this feature.
+  for OBU firmware (see [OBU Firmware Management](#obu-firmware-management)) and
+  excluded from this feature, and `ota` cannot be used as an RSU vendor name.
 - New upgrade rules connect different versions of the same model and must target
   a verified, unchanged cloud file. Each source can have only one destination.
   Legacy rules remain usable, and legacy firmware can be a source. Resolve any
@@ -238,6 +239,52 @@ also available through this API and the Firmware tab.
   and upload again. Use **Clean Up Records** for entries marked **Missing file**.
   Automatic cleanup expires stale uploads and removes old failed/expired records;
   it does not delete cloud files or verified firmware.
+
+## OBU Firmware Management
+
+OBU firmware is uploaded through the same signed-URL flow as RSU firmware and is
+stored in the same bucket, beneath the reserved `ota/` directory. It is cataloged
+separately from RSU firmware, in the `obu_firmware_uploads` and
+`obu_firmware_images` tables, because the OBU OTA server serves it by file name
+instead of by RSU model and version. Routes are under `/admin/obu-firmware` and
+require an authenticated admin or superuser.
+
+### File names
+
+OBUs choose firmware from the OTA server's manifest by file name, so uploads keep
+the vendor's original file name. The API reads the device type, variant, release
+version, and partition and secure-boot flags from the name. Commsignia names
+follow `<variant>-<rw|ro>[-secureboot]-<release>.tar.sig`, for example
+`ob4-generic-ro-secureboot-y20.48.2-b228647.tar.sig`, where the variant is
+`ob4-generic` or `rs4-generic` with an optional suffix. Names are limited to 128
+characters. This parsing must match the OBU OTA server's
+`commsignia_manifest.parse_firmware_name`; both test suites share the same cases.
+
+A manufacturer can receive OBU firmware uploads only when it exists in the
+`manufacturers` table and the API has a naming convention for it. Commsignia is
+currently the only supported manufacturer.
+
+Files are stored as `ota/<manufacturer>/<release>/<file name>`. A file name can be
+used once per manufacturer, and existing objects are never overwritten.
+
+### Upload flow
+
+1. Get the supported manufacturers from `GET /upload-options`. Each option lists
+   the file extension, the maximum name length, an example name, and
+   `file_name_pattern`, a JavaScript-compatible regular expression clients can use
+   to check a name before uploading. The API remains the authority on whether a
+   name is accepted.
+2. Request `POST /signed-upload-url` with `manufacturer_name`, `file_name`,
+   `content_length`, `checksum_algorithm`, `checksum`, and optionally
+   `content_type` (default `application/octet-stream`). Upload the file to the
+   returned URL using its method and required headers.
+3. Call `POST /uploads/{uploadId}/complete` to verify the size and checksum. A
+   verified upload is added to the OBU firmware catalog **unpublished**, and the
+   response includes its `obu_firmware_id`. Completion can be retried with the
+   same upload ID.
+
+Abandoned and failed OBU uploads are expired and purged by the same cleanup task
+and settings as RSU uploads.
 
 ## OBU OTA Request History
 

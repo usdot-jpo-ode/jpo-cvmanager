@@ -110,6 +110,19 @@ class ObuFirmwareRegistrationServiceTest {
     }
 
     @Test
+    void requiresAnObjectVersionBeforeRegistering() {
+        for (String version : new String[] { null, " " }) {
+            assertThatThrownBy(() -> registration.register(upload.getId(),
+                    new StoredObjectMetadata(1024L, stored.checksum(), version)))
+                    .isInstanceOf(FirmwareUploadVerificationException.class)
+                    .hasMessageContaining("version");
+        }
+
+        assertThat(images.findByManufacturerIdAndFileName(manufacturer.getId(), FILE_NAME)).isEmpty();
+        assertThat(uploads.findById(upload.getId()).orElseThrow().getStatus()).isEqualTo(FirmwareUploadStatus.PENDING);
+    }
+
+    @Test
     void rollsBackVerificationIfTheImageCannotBeSaved() {
         doThrow(new DataIntegrityViolationException("image insert failed")).when(images).saveAndFlush(any());
 

@@ -8,11 +8,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import us.dot.its.jpo.ode.api.mappers.ObuFirmwareMapper;
+import us.dot.its.jpo.ode.api.models.postgres.tables.FirmwareUploadStatus;
 import us.dot.its.jpo.ode.api.models.postgres.tables.ObuFirmwareImage;
 import us.dot.its.jpo.ode.api.models.postgres.tables.ObuFirmwareUpload;
 import us.dot.its.jpo.ode.api.models.storage.StoredObjectMetadata;
 import us.dot.its.jpo.ode.api.repositories.ObuFirmwareImageRepository;
 import us.dot.its.jpo.ode.api.repositories.ObuFirmwareUploadRepository;
+import us.dot.its.jpo.ode.api.services.firmware.FirmwareUploadService.FirmwareUploadVerificationException;
 import us.dot.its.jpo.ode.api.services.firmware.FirmwareUploadService.FirmwareVersionAlreadyExistsException;
 
 /**
@@ -49,6 +51,14 @@ public class ObuFirmwareRegistrationService {
         if (existing.isPresent() && (existing.get().getVerifiedUpload() == null
                 || !uploadId.equals(existing.get().getVerifiedUpload().getId()))) {
             throw new FirmwareVersionAlreadyExistsException(ALREADY_EXISTS_MESSAGE);
+        }
+
+        // Catalog images record the object version so later changes to the stored
+        // file can be detected, and the database requires it for cloud files
+        if (upload.getStatus() != FirmwareUploadStatus.VERIFIED && metadata != null
+                && (metadata.providerObjectVersion() == null || metadata.providerObjectVersion().isBlank())) {
+            throw new FirmwareUploadVerificationException(
+                    "Object storage did not report a version for the uploaded file");
         }
 
         // Completion is idempotent. An upload not yet verified needs its observed

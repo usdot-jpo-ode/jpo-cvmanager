@@ -47,12 +47,12 @@ public class AdminObuFirmwareController {
     @Operation(summary = "Create a signed OBU firmware upload URL")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Signed upload URL created"),
-            @ApiResponse(responseCode = "400", description = "Invalid upload request or file name"),
+            @ApiResponse(responseCode = "400", description = "Invalid upload request or file name, or the manufacturer does not support OBU firmware uploads"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Requires ADMIN role"),
             @ApiResponse(responseCode = "404", description = "Manufacturer was not found"),
             @ApiResponse(responseCode = "409", description = "Firmware with this file name already exists"),
             @ApiResponse(responseCode = "502", description = "Object storage signing failed"),
-            @ApiResponse(responseCode = "503", description = "Object storage or the manufacturer is not configured")
+            @ApiResponse(responseCode = "503", description = "Object storage is not configured")
     })
     @PostMapping(value = "/signed-upload-url", consumes = "application/json", produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('ADMIN')")

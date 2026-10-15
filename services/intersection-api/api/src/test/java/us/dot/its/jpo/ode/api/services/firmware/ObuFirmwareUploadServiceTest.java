@@ -42,7 +42,6 @@ import us.dot.its.jpo.ode.api.models.storage.StoredObjectMetadata;
 import us.dot.its.jpo.ode.api.repositories.ManufacturerRepository;
 import us.dot.its.jpo.ode.api.repositories.ObuFirmwareImageRepository;
 import us.dot.its.jpo.ode.api.repositories.ObuFirmwareUploadRepository;
-import us.dot.its.jpo.ode.api.services.firmware.FirmwareUploadService.FirmwareUploadConfigurationException;
 import us.dot.its.jpo.ode.api.services.firmware.FirmwareUploadService.FirmwareUploadVerificationException;
 import us.dot.its.jpo.ode.api.services.firmware.FirmwareUploadService.FirmwareVersionAlreadyExistsException;
 import us.dot.its.jpo.ode.api.services.firmware.ObuFirmwareRegistrationService.Registration;
@@ -142,12 +141,13 @@ class ObuFirmwareUploadServiceTest {
     }
 
     @Test
-    void reportsManufacturersWithoutANamingConventionAsUnconfigured() {
+    void rejectsManufacturersWithoutANamingConventionAsBadRequests() {
         when(manufacturers.findFirstByNameIgnoreCaseOrderByIdAsc("Kapsch"))
                 .thenReturn(Optional.of(manufacturer(2, "Kapsch")));
 
         assertThatThrownBy(() -> service.createSignedUploadUrl(request("Kapsch", FILE_NAME), "admin"))
-                .isInstanceOf(FirmwareUploadConfigurationException.class).hasMessageContaining("Kapsch");
+                .isInstanceOf(IllegalArgumentException.class).hasMessageContaining("not supported")
+                .hasMessageContaining("Kapsch");
         verifyNoInteractions(objectStorageService);
     }
 

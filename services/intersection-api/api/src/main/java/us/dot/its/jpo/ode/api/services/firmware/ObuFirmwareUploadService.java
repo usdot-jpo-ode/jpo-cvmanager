@@ -31,7 +31,6 @@ import us.dot.its.jpo.ode.api.models.storage.StoredObjectMetadata;
 import us.dot.its.jpo.ode.api.repositories.ManufacturerRepository;
 import us.dot.its.jpo.ode.api.repositories.ObuFirmwareImageRepository;
 import us.dot.its.jpo.ode.api.repositories.ObuFirmwareUploadRepository;
-import us.dot.its.jpo.ode.api.services.firmware.FirmwareUploadService.FirmwareUploadConfigurationException;
 import us.dot.its.jpo.ode.api.services.firmware.FirmwareUploadService.FirmwareVersionAlreadyExistsException;
 import us.dot.its.jpo.ode.api.services.firmware.ObuFirmwareRegistrationService.Registration;
 import us.dot.its.jpo.ode.api.storage.ObjectStorageProperties;
@@ -71,8 +70,10 @@ public class ObuFirmwareUploadService {
         Manufacturer manufacturer = manufacturers.findFirstByNameIgnoreCaseOrderByIdAsc(manufacturerName)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Manufacturer '" + manufacturerName + "' was not found"));
+        // A manufacturer without a naming convention is never offered by the upload
+        // options, so requesting one is a client error rather than an outage
         ObuFirmwareFileNameParser parser = parsers.find(manufacturer.getName())
-                .orElseThrow(() -> new FirmwareUploadConfigurationException(
+                .orElseThrow(() -> new IllegalArgumentException(
                         "OBU firmware uploads are not supported for manufacturer '" + manufacturer.getName() + "'"));
 
         String fileName = validatePathSegment(request.fileName(), "file_name");

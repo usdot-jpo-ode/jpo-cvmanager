@@ -264,8 +264,18 @@ A manufacturer can receive OBU firmware uploads only when it exists in the
 `manufacturers` table and the API has a naming convention for it. Commsignia is
 currently the only supported manufacturer.
 
-Files are stored as `ota/<manufacturer>/<release>/<file name>`. A file name can be
-used once per manufacturer, and existing objects are never overwritten.
+Files are stored as `ota/<manufacturer>/<file name>`. A file name can be used
+once per manufacturer, and existing objects are never overwritten.
+
+### Serving uploads with the OBU OTA server
+
+The OBU OTA server lists one storage folder and downloads files by name, so each
+manufacturer's uploads are kept together in `ota/<manufacturer>/`. To serve
+firmware uploaded through this API, run the OTA server in GCP mode against the
+same bucket as `OBJECT_STORAGE_GCP_BUCKET_NAME`, with
+`OBU_OTA_BLOB_STORAGE_BUCKET` set to that bucket and
+`OBU_OTA_BLOB_STORAGE_PATH=ota/Commsignia/`. The OTA server currently offers every
+file in that folder, so publish state is not yet applied to what OBUs receive.
 
 ### Upload flow
 

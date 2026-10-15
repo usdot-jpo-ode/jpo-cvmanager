@@ -23,7 +23,7 @@ class ObuFirmwareStorageLayoutTest {
     }
 
     @ParameterizedTest
-    @CsvSource({ "ota/Commsignia/r1/a.tar.sig,true", "OTA/a,true", "ota,true", "otab/a,false",
+    @CsvSource({ "ota/Commsignia/a.tar.sig,true", "OTA/a,true", "ota,true", "otab/a,false",
             "Commsignia/ota/a,false", "'',false" })
     void recognizesObjectsBeneathTheRoot(String objectName, boolean expected) {
         assertThat(ObuFirmwareStorageLayout.isObuObjectName(objectName)).isEqualTo(expected);
@@ -31,8 +31,8 @@ class ObuFirmwareStorageLayoutTest {
 
     @Test
     void buildsObjectNamesBeneathTheRoot() {
-        assertThat(ObuFirmwareStorageLayout.objectName("Commsignia", "y20.48.2", "a.tar.sig"))
-                .isEqualTo("ota/Commsignia/y20.48.2/a.tar.sig");
+        assertThat(ObuFirmwareStorageLayout.objectName("Commsignia", "a.tar.sig"))
+                .isEqualTo("ota/Commsignia/a.tar.sig");
         assertThat(ObuFirmwareStorageLayout.isObuObjectName(null)).isFalse();
     }
 }

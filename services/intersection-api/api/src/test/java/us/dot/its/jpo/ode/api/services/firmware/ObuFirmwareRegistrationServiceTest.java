@@ -183,7 +183,7 @@ class ObuFirmwareRegistrationServiceTest {
         record.setContentType("application/octet-stream");
         record.setStorageProvider("gcp");
         record.setStorageContainer("bucket");
-        record.setObjectName("ota/" + manufacturer.getName() + "/y20.48.2-b228647/" + fileName);
+        record.setObjectName("ota/" + manufacturer.getName() + "/" + fileName);
         record.setExpectedSize(1024L);
         record.setChecksumAlgorithm("CRC32C");
         record.setExpectedChecksum("ImIEBA==");

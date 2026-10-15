@@ -30,10 +30,13 @@ public final class ObuFirmwareStorageLayout {
     }
 
     /**
-     * Builds {@code ota/<manufacturer>/<release>/<file name>}. Callers validate each
-     * segment, and the original file name is kept because OBUs download by name.
+     * Builds {@code ota/<manufacturer>/<file name>}. Callers validate each segment,
+     * and the original file name is kept because OBUs download by name. Keeping
+     * each manufacturer's files in one folder lets the OBU OTA server, which lists
+     * a single folder and downloads by file name, serve them from
+     * {@code BLOB_STORAGE_PATH=ota/<manufacturer>/}.
      */
-    public static String objectName(String manufacturer, String releaseVersion, String fileName) {
-        return String.join("/", ROOT, manufacturer, releaseVersion, fileName);
+    public static String objectName(String manufacturer, String fileName) {
+        return String.join("/", ROOT, manufacturer, fileName);
     }
 }

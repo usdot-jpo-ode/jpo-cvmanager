@@ -261,7 +261,7 @@ INSERT INTO public.obu_firmware_images(manufacturer, file_name, device_type, var
     writable_system_partition, secure_boot, storage_provider, storage_container, object_name,
     published, published_at, published_by)
   SELECT m.manufacturer_id, seed.file_name, 'OBU', 'ob4-generic', seed.release_version, seed.writable, seed.secure,
-    'local', 'local', 'ota/Commsignia/' || seed.release_version || '/' || seed.file_name,
+    'local', 'local', 'ota/Commsignia/' || seed.file_name,
     seed.published, CASE WHEN seed.published THEN CURRENT_TIMESTAMP END,
     CASE WHEN seed.published THEN 'sample-data' END
   FROM (VALUES

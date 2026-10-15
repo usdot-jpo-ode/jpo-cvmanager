@@ -53,7 +53,7 @@ import us.dot.its.jpo.ode.api.storage.ObjectStorageServiceRegistry;
 class ObuFirmwareUploadServiceTest {
     private static final Instant EXPIRES_AT = Instant.parse("2026-10-15T12:15:00Z");
     private static final String FILE_NAME = "ob4-generic-ro-secureboot-y20.48.2-b228647.tar.sig";
-    private static final String OBJECT_NAME = "ota/Commsignia/y20.48.2-b228647/" + FILE_NAME;
+    private static final String OBJECT_NAME = "ota/Commsignia/" + FILE_NAME;
 
     private final ManufacturerRepository manufacturers = mock(ManufacturerRepository.class);
     private final ObuFirmwareUploadRepository uploads = mock(ObuFirmwareUploadRepository.class);
@@ -82,7 +82,7 @@ class ObuFirmwareUploadServiceTest {
     }
 
     @Test
-    void createsAPendingUploadUnderTheOtaRootWithTheOriginalFileName() {
+    void createsAPendingUploadInTheManufacturerFolderWithTheOriginalFileName() {
         stubSignedUrl(OBJECT_NAME);
 
         var result = service.createSignedUploadUrl(new UploadUrlRequest(" Commsignia ", " " + FILE_NAME + " ",

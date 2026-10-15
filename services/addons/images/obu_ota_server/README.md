@@ -76,7 +76,7 @@ The following environmental variables must be set:
 
 <b>BLOB_STORAGE_BUCKET:</b> Cloud blob storage bucket for firmware storage.
 
-<b>BLOB_STORAGE_PATH:</b> Path to firmware files directory within the storage bucket.
+<b>BLOB_STORAGE_PATH:</b> Path to firmware files directory within the storage bucket. Only files directly inside this folder are offered. The Intersection API stores uploaded Commsignia OBU firmware in `ota/Commsignia/`, so set this to `ota/Commsignia/` (and `BLOB_STORAGE_BUCKET` to the API's `OBJECT_STORAGE_GCP_BUCKET_NAME`) to serve firmware uploaded through the CV Manager.
 
 <b>GCP_PROJECT:</b> GCP project for the firmware cloud storage bucket.
 

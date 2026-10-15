@@ -104,7 +104,7 @@ class AdminObuFirmwareControllerTest {
         when(permissionService.hasRole(UserRole.ADMIN)).thenReturn(true);
         UUID uploadId = UUID.randomUUID();
         when(uploadService.createSignedUploadUrl(any(), any())).thenReturn(new FirmwareUploadUrl(uploadId,
-                "https://storage.googleapis.com/signed", "PUT", "ota/Commsignia/y20.48.2-b228647/" + FILE_NAME,
+                "https://storage.googleapis.com/signed", "PUT", "ota/Commsignia/" + FILE_NAME,
                 Instant.parse("2026-10-15T12:15:00Z"), Map.of("x-goog-hash", "crc32c=ImIEBA==")));
 
         mockMvc.perform(post("/admin/obu-firmware/signed-upload-url").contentType(MediaType.APPLICATION_JSON)
@@ -156,7 +156,7 @@ class AdminObuFirmwareControllerTest {
         when(permissionService.hasRole(UserRole.ADMIN)).thenReturn(true);
         UUID uploadId = UUID.randomUUID();
         when(uploadService.completeUpload(uploadId)).thenReturn(new UploadVerification(uploadId,
-                FirmwareUploadStatus.VERIFIED, "ota/Commsignia/y20.48.2-b228647/" + FILE_NAME, 1024L, "CRC32C",
+                FirmwareUploadStatus.VERIFIED, "ota/Commsignia/" + FILE_NAME, 1024L, "CRC32C",
                 "ImIEBA==", "17", Instant.parse("2026-10-15T12:00:00Z"), 42));
 
         mockMvc.perform(post("/admin/obu-firmware/uploads/" + uploadId + "/complete"))

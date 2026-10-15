@@ -94,9 +94,7 @@ public class ObuFirmwareUploadService {
         }
 
         String objectName = ObuFirmwareStorageLayout.objectName(
-                validatePathSegment(manufacturer.getName(), "manufacturer"),
-                validatePathSegment(metadata.getReleaseVersion(), "release_version"),
-                fileName);
+                validatePathSegment(manufacturer.getName(), "manufacturer"), fileName);
         ObjectChecksum expectedChecksum = new ObjectChecksum(
                 request.checksumAlgorithm().trim().toUpperCase(Locale.ROOT), request.checksum().trim());
         ObjectStorageService objectStorageService = objectStorageServices.getActiveService();

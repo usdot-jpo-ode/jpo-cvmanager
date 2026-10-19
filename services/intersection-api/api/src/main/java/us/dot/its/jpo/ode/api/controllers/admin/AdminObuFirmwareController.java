@@ -2,15 +2,23 @@ package us.dot.its.jpo.ode.api.controllers.admin;
 
 import java.util.UUID;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,9 +28,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import us.dot.its.jpo.ode.api.models.storage.FirmwareUploadUrl;
+import us.dot.its.jpo.ode.api.models.storage.ObuFirmwareModels.ObjectPage;
+import us.dot.its.jpo.ode.api.models.storage.ObuFirmwareModels.Publication;
+import us.dot.its.jpo.ode.api.models.storage.ObuFirmwareModels.PublicationRequest;
 import us.dot.its.jpo.ode.api.models.storage.ObuFirmwareModels.UploadOptions;
 import us.dot.its.jpo.ode.api.models.storage.ObuFirmwareModels.UploadUrlRequest;
 import us.dot.its.jpo.ode.api.models.storage.ObuFirmwareModels.UploadVerification;
+import us.dot.its.jpo.ode.api.services.firmware.ObuFirmwareDeletionService;
+import us.dot.its.jpo.ode.api.services.firmware.ObuFirmwareObjectService;
+import us.dot.its.jpo.ode.api.services.firmware.ObuFirmwarePublicationService;
 import us.dot.its.jpo.ode.api.services.firmware.ObuFirmwareUploadOptionsService;
 import us.dot.its.jpo.ode.api.services.firmware.ObuFirmwareUploadService;
 
@@ -36,12 +50,83 @@ import us.dot.its.jpo.ode.api.services.firmware.ObuFirmwareUploadService;
 public class AdminObuFirmwareController {
     private final ObuFirmwareUploadService uploadService;
     private final ObuFirmwareUploadOptionsService uploadOptionsService;
+    private final ObuFirmwareObjectService objectService;
+    private final ObuFirmwarePublicationService publicationService;
+    private final ObuFirmwareDeletionService deletionService;
 
     @Operation(summary = "List manufacturers and file naming conventions accepted for OBU firmware uploads")
     @GetMapping(value = "/upload-options", produces = "application/json")
     @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('ADMIN')")
     public UploadOptions getUploadOptions() {
         return uploadOptionsService.getOptions();
+    }
+
+    @Operation(summary = "List OBU firmware files, their catalog entries, and their verification state")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Firmware listed; storage_available is false when only catalog entries could be read"),
+            @ApiResponse(responseCode = "400", description = "Invalid paging or sort value"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires ADMIN role")
+    })
+    @GetMapping(value = "/objects", produces = "application/json")
+    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('ADMIN')")
+    public ObjectPage listObjects(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "100") int size,
+            @RequestParam(name = "manufacturer", required = false) String manufacturer,
+            @RequestParam(name = "search", required = false) String search,
+            @RequestParam(name = "published", required = false) Boolean published,
+            @RequestParam(name = "sort", defaultValue = "manufacturer,asc") String sort) {
+        return objectService.list(page, size, manufacturer, search, published, sort);
+    }
+
+    @Operation(summary = "Publish OBU firmware to the OBU OTA server, or withdraw it")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Publish state updated"),
+            @ApiResponse(responseCode = "400", description = "Invalid request body"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires ADMIN role"),
+            @ApiResponse(responseCode = "404", description = "Firmware catalog entry was not found"),
+            @ApiResponse(responseCode = "409", description = "The firmware file is missing or changed in storage"),
+            @ApiResponse(responseCode = "503", description = "Object storage is not available")
+    })
+    @PutMapping(value = "/images/{obuFirmwareId}/publication", consumes = "application/json",
+            produces = "application/json")
+    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('ADMIN')")
+    public Publication setPublication(@PathVariable @Positive Integer obuFirmwareId,
+            @Valid @RequestBody PublicationRequest request, Authentication authentication) {
+        log.info("PUT /admin/obu-firmware/images/{}/publication. published={}", obuFirmwareId, request.published());
+        return publicationService.setPublished(obuFirmwareId, request.published(), authentication.getName());
+    }
+
+    @Operation(summary = "Delete an OBU firmware file and its upload and catalog records")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Firmware deleted"),
+            @ApiResponse(responseCode = "400", description = "Invalid object ID or version"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires ADMIN role"),
+            @ApiResponse(responseCode = "409", description = "Firmware is published, an upload URL is still valid, or the file changed"),
+            @ApiResponse(responseCode = "503", description = "Object storage is not available")
+    })
+    @DeleteMapping("/objects/{objectId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('ADMIN')")
+    public void deleteObject(@PathVariable String objectId,
+            @RequestParam(name = "provider_object_version") @NotBlank String providerObjectVersion) {
+        log.info("DELETE /admin/obu-firmware/objects/{}", objectId);
+        deletionService.delete(objectId, providerObjectVersion);
+    }
+
+    @Operation(summary = "Remove records for OBU firmware missing from storage or stored on the OTA server")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Records removed"),
+            @ApiResponse(responseCode = "400", description = "Invalid object ID"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Requires ADMIN role"),
+            @ApiResponse(responseCode = "409", description = "Firmware is published or its file is present in storage")
+    })
+    @DeleteMapping("/objects/{objectId}/records")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("@PermissionService.isSuperUser() || @PermissionService.hasRole('ADMIN')")
+    public void cleanupRecords(@PathVariable String objectId) {
+        log.info("DELETE /admin/obu-firmware/objects/{}/records", objectId);
+        deletionService.cleanupMissingObject(objectId);
     }
 
     @Operation(summary = "Create a signed OBU firmware upload URL")

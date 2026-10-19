@@ -300,6 +300,54 @@ after that point expires it immediately instead of waiting for the next cleanup
 run. A file that reached storage but was never completed must be deleted from the
 OBU firmware list before the same name can be uploaded again.
 
+### Listing
+
+`GET /objects?page&size&manufacturer&search&published&sort` merges the catalog,
+the latest upload for each file, and the files beneath `ota/` in storage. Results
+are filtered, sorted, and paged as one list. `size` is 1-200, `manufacturer` is
+matched ignoring case, `search` matches part of the object name, `published` is
+`true` or `false`, and `sort` is one of `manufacturer`, `file_name`,
+`release_version`, `device_type`, `content_length`, `updated_at`,
+`registered_at`, `published`, or `verification_status`, followed by `,asc` or
+`,desc` (default `manufacturer,asc`).
+
+Each entry has a `verification_status`:
+
+| Status | Meaning |
+| --- | --- |
+| `VERIFIED` | The stored file is the exact version that was verified |
+| `CHANGED` | The catalog entry's file was replaced or modified in storage |
+| `MISSING` | A catalog entry or upload record has no file in storage |
+| `UNVERIFIED` | The file's upload has not been verified |
+| `UNTRACKED` | A file beneath `ota/` with no records; details are read from its name |
+| `LOCAL` | A catalog entry for a file in the OBU OTA server's local firmware folder |
+| `UNKNOWN` | The file could not be checked, because storage is unavailable or the entry uses another bucket |
+
+When storage cannot be listed, the response has `storage_available: false` and
+contains catalog entries only, so deployments that serve only local firmware can
+still manage their catalog.
+
+### Publishing
+
+`PUT /images/{obuFirmwareId}/publication` with `{"published": true}` or
+`{"published": false}` sets whether the OBU OTA server should offer the firmware
+to OBUs. Both directions are idempotent. Publishing a cloud file first checks that
+storage still holds the exact version that was verified, and returns `409` if the
+file is missing or changed. Local files cannot be inspected by the API and are
+published as recorded.
+
+### Deleting
+
+- `DELETE /objects/{objectId}?provider_object_version=` deletes a file and its
+  upload and catalog records, using the object ID and version from the listing.
+  This also removes `UNTRACKED` and `UNVERIFIED` files, which frees their file name
+  for a new upload.
+- `DELETE /objects/{objectId}/records` removes the records of a `MISSING` file, or
+  the catalog entry of a `LOCAL` file. The file in the OTA server's local folder
+  must be removed there.
+- Published firmware must be unpublished first. Deletion is also refused while an
+  issued upload URL can still write the file. OBU OTA request history is kept.
+
 ## OBU OTA Request History
 
 The OBU OTA server (`services/addons/images/obu_ota_server`) records every OBU

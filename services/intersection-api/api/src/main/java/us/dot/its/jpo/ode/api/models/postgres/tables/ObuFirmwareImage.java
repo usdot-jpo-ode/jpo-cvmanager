@@ -33,6 +33,8 @@ import lombok.Setter;
 public class ObuFirmwareImage {
     /** Storage provider for files on the OBU OTA server's local firmware mount. */
     public static final String LOCAL_STORAGE_PROVIDER = "local";
+    /** Storage container recorded for files on the OBU OTA server's local firmware mount. */
+    public static final String LOCAL_STORAGE_CONTAINER = "local";
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "obu_firmware_images_id_gen")

@@ -14,6 +14,7 @@ import jakarta.validation.constraints.Size;
 import tools.jackson.databind.PropertyNamingStrategies;
 import tools.jackson.databind.annotation.JsonNaming;
 import us.dot.its.jpo.ode.api.models.postgres.tables.FirmwareUploadStatus;
+import us.dot.its.jpo.ode.api.models.postgres.tables.ObuFirmwareDeviceType;
 
 /** Request and response bodies for the OBU firmware admin API. */
 public final class ObuFirmwareModels {
@@ -80,4 +81,35 @@ public final class ObuFirmwareModels {
     public record UploadVerification(UUID uploadId, FirmwareUploadStatus status, String objectName,
             Long contentLength, String checksumAlgorithm, String checksum, String providerObjectVersion,
             @JsonFormat(shape = JsonFormat.Shape.STRING) Instant verifiedAt, Integer obuFirmwareId) {}
+
+    /**
+     * One page of OBU firmware files and catalog entries. {@code storageAvailable} is
+     * false when object storage could not be listed, in which case only catalog
+     * entries are returned and cloud files report {@code UNKNOWN}.
+     */
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+    public record ObjectPage(String provider, boolean storageAvailable, List<Item> objects, long totalElements) {}
+
+    /**
+     * An OBU firmware file in storage, its catalog entry, or both. Parsed metadata
+     * comes from the catalog, the upload, or for untracked files the file name.
+     */
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+    public record Item(String objectId, String objectName, String storageProvider, String providerObjectVersion,
+            String manufacturer, String fileName, ObuFirmwareDeviceType deviceType, String variant,
+            String releaseVersion, Boolean writableSystemPartition, Boolean secureBoot, Long contentLength,
+            @JsonFormat(shape = JsonFormat.Shape.STRING) Instant updatedAt,
+            @JsonFormat(shape = JsonFormat.Shape.STRING) Instant registeredAt,
+            UUID uploadId, String uploadStatus, Integer obuFirmwareId, boolean published,
+            @JsonFormat(shape = JsonFormat.Shape.STRING) Instant publishedAt, String publishedBy,
+            String verificationStatus) {}
+
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @Schema(description = "Whether the OBU OTA server should offer this firmware to OBUs")
+    public record PublicationRequest(@NotNull Boolean published) {}
+
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @Schema(description = "Publish state of an OBU firmware catalog entry")
+    public record Publication(Integer obuFirmwareId, boolean published,
+            @JsonFormat(shape = JsonFormat.Shape.STRING) Instant publishedAt, String publishedBy) {}
 }

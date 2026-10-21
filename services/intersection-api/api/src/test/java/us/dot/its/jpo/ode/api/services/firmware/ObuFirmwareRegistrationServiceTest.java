@@ -71,7 +71,7 @@ class ObuFirmwareRegistrationServiceTest {
                 .filter(image -> image.getManufacturer().getId().equals(manufacturer.getId()))
                 .forEach(images::delete);
         uploads.findAll().stream()
-                .filter(record -> record.getManufacturer().getId().equals(manufacturer.getId()))
+                .filter(existing -> existing.getManufacturer().getId().equals(manufacturer.getId()))
                 .forEach(uploads::delete);
         manufacturers.deleteById(manufacturer.getId());
     }
@@ -218,23 +218,23 @@ class ObuFirmwareRegistrationServiceTest {
     }
 
     private ObuFirmwareUpload upload(String fileName) {
-        var record = new ObuFirmwareUpload();
-        record.setId(UUID.randomUUID());
-        record.setManufacturer(manufacturer);
-        record.setFileName(fileName);
-        record.setMetadata(metadata());
-        record.setContentType("application/octet-stream");
-        record.setStorageProvider("gcp");
-        record.setStorageContainer("bucket");
-        record.setObjectName("ota/" + manufacturer.getName() + "/" + fileName);
-        record.setExpectedSize(1024L);
-        record.setChecksumAlgorithm("CRC32C");
-        record.setExpectedChecksum("ImIEBA==");
-        record.setStatus(FirmwareUploadStatus.PENDING);
-        record.setCreatedBy("test");
-        record.setCreatedAt(Instant.now());
-        record.setExpiresAt(Instant.now().plusSeconds(900));
-        return record;
+        var obuUpload = new ObuFirmwareUpload();
+        obuUpload.setId(UUID.randomUUID());
+        obuUpload.setManufacturer(manufacturer);
+        obuUpload.setFileName(fileName);
+        obuUpload.setMetadata(metadata());
+        obuUpload.setContentType("application/octet-stream");
+        obuUpload.setStorageProvider("gcp");
+        obuUpload.setStorageContainer("bucket");
+        obuUpload.setObjectName("ota/" + manufacturer.getName() + "/" + fileName);
+        obuUpload.setExpectedSize(1024L);
+        obuUpload.setChecksumAlgorithm("CRC32C");
+        obuUpload.setExpectedChecksum("ImIEBA==");
+        obuUpload.setStatus(FirmwareUploadStatus.PENDING);
+        obuUpload.setCreatedBy("test");
+        obuUpload.setCreatedAt(Instant.now());
+        obuUpload.setExpiresAt(Instant.now().plusSeconds(900));
+        return obuUpload;
     }
 
     private static ObuFirmwareFileMetadata metadata() {

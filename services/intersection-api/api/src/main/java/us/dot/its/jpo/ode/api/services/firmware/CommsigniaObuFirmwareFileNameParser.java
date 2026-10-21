@@ -70,28 +70,34 @@ public class CommsigniaObuFirmwareFileNameParser implements ObuFirmwareFileNameP
         // Prefer the last rw/ro marker that leaves a valid release, so the variant is
         // as long as possible.
         for (int marker = tokens.length - 2; marker > 1; marker--) {
-            Boolean writable = ACCESS_MODES.get(tokens[marker]);
-            if (writable == null) {
-                continue;
-            }
-            // A variant suffix after "-generic" must not be empty
-            if (marker > 2 && join(tokens, 2, marker).isEmpty()) {
-                continue;
-            }
-
-            String variant = join(tokens, 0, marker);
-            if (SECURE_BOOT_MARKER.equals(tokens[marker + 1])) {
-                String release = join(tokens, marker + 2, tokens.length);
-                if (isRelease(release)) {
-                    return Optional.of(new ObuFirmwareFileMetadata(deviceType, release, variant, writable, true));
-                }
-            }
-            String release = join(tokens, marker + 1, tokens.length);
-            if (isRelease(release)) {
-                return Optional.of(new ObuFirmwareFileMetadata(deviceType, release, variant, writable, false));
+            Optional<ObuFirmwareFileMetadata> parsed = parseAtMarker(tokens, marker, deviceType);
+            if (parsed.isPresent()) {
+                return parsed;
             }
         }
         return Optional.empty();
+    }
+
+    /** Parses name tokens assuming the rw/ro marker is at the given index. */
+    private static Optional<ObuFirmwareFileMetadata> parseAtMarker(String[] tokens, int marker,
+            ObuFirmwareDeviceType deviceType) {
+        Boolean writable = ACCESS_MODES.get(tokens[marker]);
+        // A variant suffix after "-generic" must not be empty
+        if (writable == null || (marker > 2 && join(tokens, 2, marker).isEmpty())) {
+            return Optional.empty();
+        }
+
+        String variant = join(tokens, 0, marker);
+        if (SECURE_BOOT_MARKER.equals(tokens[marker + 1])) {
+            String release = join(tokens, marker + 2, tokens.length);
+            if (isRelease(release)) {
+                return Optional.of(new ObuFirmwareFileMetadata(deviceType, release, variant, writable, true));
+            }
+        }
+        String release = join(tokens, marker + 1, tokens.length);
+        return isRelease(release)
+                ? Optional.of(new ObuFirmwareFileMetadata(deviceType, release, variant, writable, false))
+                : Optional.empty();
     }
 
     private static String join(String[] tokens, int from, int to) {

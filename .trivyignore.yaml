@@ -55,19 +55,9 @@ vulnerabilities:
     purls: ["pkg:deb/debian/libexpat1"]
     statement: "Pre-existing at CVE gate rollout on 2026-10-13. Remediate (update the dependency or base image) or re-review with a new justification before expiry."
     expired_at: 2026-11-30
-  # CRITICAL; fixed in 1.11.4; kafka-connect
-  - id: CVE-2024-47561
-    purls: ["pkg:maven/org.apache.avro/avro"]
-    statement: "Pre-existing at CVE gate rollout on 2026-10-13. Remediate (update the dependency or base image) or re-review with a new justification before expiry."
-    expired_at: 2026-11-30
   # CRITICAL; fixed in 3.0.1; firmware-upgrade-runner, firmware-upgrade-scheduler, repository
   - id: CVE-2024-49768
     purls: ["pkg:pypi/waitress"]
-    statement: "Pre-existing at CVE gate rollout on 2026-10-13. Remediate (update the dependency or base image) or re-review with a new justification before expiry."
-    expired_at: 2026-11-30
-  # CRITICAL; fixed in 2.12.4, 3.0.1; kafka-connect
-  - id: CVE-2024-53990
-    purls: ["pkg:maven/org.asynchttpclient/async-http-client"]
     statement: "Pre-existing at CVE gate rollout on 2026-10-13. Remediate (update the dependency or base image) or re-review with a new justification before expiry."
     expired_at: 2026-11-30
   # CRITICAL; fixed in 2.11.8-r1; ota-nginx
@@ -88,11 +78,6 @@ vulnerabilities:
   # CRITICAL; fixed in 2.14.0; api, repository
   - id: CVE-2026-102268
     purls: ["pkg:pypi/pyjwt"]
-    statement: "Pre-existing at CVE gate rollout on 2026-10-13. Remediate (update the dependency or base image) or re-review with a new justification before expiry."
-    expired_at: 2026-11-30
-  # CRITICAL; fixed in 3.0.13, 2.16.1; kafka-connect
-  - id: CVE-2026-107282
-    purls: ["pkg:maven/org.asynchttpclient/async-http-client"]
     statement: "Pre-existing at CVE gate rollout on 2026-10-13. Remediate (update the dependency or base image) or re-review with a new justification before expiry."
     expired_at: 2026-11-30
   # CRITICAL; fixed in 5.36.0-7+deb12u4; firmware-upgrade-runner, firmware-upgrade-scheduler
@@ -269,49 +254,4 @@ vulnerabilities:
   - id: CVE-2026-8763
     purls: ["pkg:maven/org.bouncycastle/bcprov-jdk18on"]
     statement: "Pre-existing at CVE gate rollout on 2026-10-13. Remediate (update the dependency or base image) or re-review with a new justification before expiry."
-    expired_at: 2026-11-30
-  # CRITICAL; fixed in 2026.10.19; kafka-connect
-  - id: GHSA-6q48-6c7w-9gw2
-    purls: ["pkg:pypi/certifi"]
-    statement: "Published 2026-10-20, after the rollout baseline. certifi ships in the confluentinc/cp-kafka-connect:7.7.0 base image (jpo-utils/kafka-connect), not in our requirements. Remediate with the kafka-connect base image upgrade or re-review before expiry. Owner: @Michael7371."
-    expired_at: 2026-11-30
-  # CRITICAL; fixed in 2026.2.92_v9.0.319-81.3.el8_10; kafka-connect
-  - id: CVE-2026-114406
-    purls: ["pkg:rpm/redhat/ca-certificates"]
-    statement: "Fix published after the rollout baseline. ca-certificates ships in the confluentinc/cp-kafka-connect:7.7.0 base image (jpo-utils/kafka-connect, RHEL 8.10), not in our code. Remediate with the kafka-connect base image upgrade or re-review before expiry. Owner: @Michael7371."
-    expired_at: 2026-11-30
-  # CRITICAL; fixed in 2.2.4, 2.1.10, 2.0.27; kafka-connect
-  - id: CVE-2024-52046
-    purls: ["pkg:maven/org.apache.mina/mina-core"]
-    statement: "Found when the kafka-connect scan target moved to jpo-utils/kafka-connect (confluentinc/cp-kafka-connect:7.7.0) on 2026-10-27. Remediate with the kafka-connect image upgrade in jpo-utils or re-review before expiry. Owner: @Michael7371."
-    expired_at: 2026-11-30
-  # CRITICAL; fixed in 4.10.6; kafka-connect
-  - id: CVE-2026-33117
-    purls: ["pkg:maven/com.azure/azure-security-keyvault-keys"]
-    statement: "Found when the kafka-connect scan target moved to jpo-utils/kafka-connect (confluentinc/cp-kafka-connect:7.7.0) on 2026-10-27. Remediate with the kafka-connect image upgrade in jpo-utils or re-review before expiry. Owner: @Michael7371."
-    expired_at: 2026-11-30
-  # CRITICAL; fixed in 2.0.28, 2.1.11, 2.2.6; kafka-connect
-  - id: CVE-2026-41409
-    purls: ["pkg:maven/org.apache.mina/mina-core"]
-    statement: "Found when the kafka-connect scan target moved to jpo-utils/kafka-connect (confluentinc/cp-kafka-connect:7.7.0) on 2026-10-27. Remediate with the kafka-connect image upgrade in jpo-utils or re-review before expiry. Owner: @Michael7371."
-    expired_at: 2026-11-30
-  # CRITICAL; fixed in 2.0.28, 2.1.11, 2.2.6; kafka-connect
-  - id: CVE-2026-41635
-    purls: ["pkg:maven/org.apache.mina/mina-core"]
-    statement: "Found when the kafka-connect scan target moved to jpo-utils/kafka-connect (confluentinc/cp-kafka-connect:7.7.0) on 2026-10-27. Remediate with the kafka-connect image upgrade in jpo-utils or re-review before expiry. Owner: @Michael7371."
-    expired_at: 2026-11-30
-  # CRITICAL; fixed in 2.1.12, 2.2.7; kafka-connect
-  - id: CVE-2026-42778
-    purls: ["pkg:maven/org.apache.mina/mina-core"]
-    statement: "Found when the kafka-connect scan target moved to jpo-utils/kafka-connect (confluentinc/cp-kafka-connect:7.7.0) on 2026-10-27. Remediate with the kafka-connect image upgrade in jpo-utils or re-review before expiry. Owner: @Michael7371."
-    expired_at: 2026-11-30
-  # CRITICAL; fixed in 2.1.12, 2.2.7; kafka-connect
-  - id: CVE-2026-42779
-    purls: ["pkg:maven/org.apache.mina/mina-core"]
-    statement: "Found when the kafka-connect scan target moved to jpo-utils/kafka-connect (confluentinc/cp-kafka-connect:7.7.0) on 2026-10-27. Remediate with the kafka-connect image upgrade in jpo-utils or re-review before expiry. Owner: @Michael7371."
-    expired_at: 2026-11-30
-  # CRITICAL; fixed in 2.2.8, 2.1.13, 2.0.29; kafka-connect
-  - id: CVE-2026-47065
-    purls: ["pkg:maven/org.apache.mina/mina-core"]
-    statement: "Found when the kafka-connect scan target moved to jpo-utils/kafka-connect (confluentinc/cp-kafka-connect:7.7.0) on 2026-10-27. Remediate with the kafka-connect image upgrade in jpo-utils or re-review before expiry. Owner: @Michael7371."
     expired_at: 2026-11-30

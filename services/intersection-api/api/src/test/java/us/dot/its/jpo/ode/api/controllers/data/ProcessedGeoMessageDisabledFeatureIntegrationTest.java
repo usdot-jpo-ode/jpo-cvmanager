@@ -66,7 +66,7 @@ class ProcessedGeoMessageDisabledFeatureIntegrationTest {
                 .claim("sub", TOKEN)
                 .claim("email", "geo-query@example.com")
                 .claim("cvmanager_data", Map.of(
-                        "super_user", "1",
+                        "super_user", true,
                         "organizations", List.of()))
                 .build());
 

@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnTransformer;
 
 import java.time.Instant;
 
@@ -24,8 +23,7 @@ public class ScmsHealth {
     private Instant timestamp;
 
     @NotNull
-    @Column(name = "health", nullable = false, columnDefinition = "bit(1)")
-    @ColumnTransformer(read = "health::integer::boolean", write = "(?::integer)::bit(1)")
+    @Column(name = "health", nullable = false)
     private Boolean health;
 
     @Column(name = "expiration")

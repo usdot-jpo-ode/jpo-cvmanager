@@ -39,11 +39,11 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
         entity.setUserId(userId);
     }
 
-    public Integer getSuperUser() {
+    public Boolean getSuperUser() {
         return entity.getSuperUser();
     }
 
-    public void setSuperUser(Integer superUser) {
+    public void setSuperUser(Boolean superUser) {
         entity.setSuperUser(superUser);
     }
 
@@ -118,7 +118,7 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
             case UserModel.FIRST_NAME -> entity.setFirstName(value);
             case UserModel.LAST_NAME -> entity.setLastName(value);
             case Constants.CREATED_TIMESTAMP_KEY -> entity.setCreatedTimestamp(value == null ? null : Long.valueOf(value));
-            case Constants.SUPER_USER_KEY -> entity.setSuperUser(value == null ? null : Integer.valueOf(value));
+            case Constants.SUPER_USER_KEY -> entity.setSuperUser(value == null ? null : Boolean.parseBoolean(value));
             case Constants.ORGANIZATIONS_KEY -> entity.setOrganizations(OrganizationObject.listFromString(value));
             default -> super.setSingleAttribute(name, value);
         }

@@ -172,7 +172,7 @@ def removed_old_logs(serialnum: str):
         pgquery.write_db(
             "DELETE FROM public.obu_ota_requests WHERE request_id IN ("
             "SELECT request_id FROM public.obu_ota_requests "
-            "WHERE obu_sn = :obu_sn AND error_status = B'0' "
+            "WHERE obu_sn = :obu_sn AND error_status = FALSE "
             "ORDER BY request_datetime DESC, request_id DESC OFFSET :max_count)",
             {"obu_sn": serialnum, "max_count": obu_ota_server_environment.MAX_COUNT},
         )
@@ -186,7 +186,7 @@ def write_request_log(
     version: str,
     origin_ip: str,
     firmware_id: str,
-    error_status: int,
+    error_status: bool,
     error_message: str,
 ):
     manufacturer_id = get_manufacturer_id(manufacturer_name)
@@ -200,7 +200,7 @@ def write_request_log(
         "INSERT INTO public.obu_ota_requests (obu_sn, manufacturer, request_datetime, origin_ip, "
         "obu_firmware_version, requested_firmware_version, error_status, error_message) VALUES "
         "(:obu_sn, :manufacturer, :request_datetime, CAST(:origin_ip AS inet), :obu_firmware_version, "
-        ":requested_firmware_version, CAST(:error_status AS bit(1)), :error_message)",
+        ":requested_firmware_version, :error_status, :error_message)",
         {
             "obu_sn": serialnum,
             "manufacturer": manufacturer_id,
@@ -208,7 +208,7 @@ def write_request_log(
             "origin_ip": origin_ip,
             "obu_firmware_version": version,
             "requested_firmware_version": truncate(firmware_id),
-            "error_status": "1" if error_status else "0",
+            "error_status": bool(error_status),
             "error_message": truncate(error_message),
         },
     )
@@ -219,7 +219,7 @@ async def log_request(
     manufacturer_name: str,
     request: Request,
     firmware_id: str,
-    error_status: int,
+    error_status: bool,
     error_message: str,
 ):
     try:
@@ -296,7 +296,7 @@ async def get_fw(request: Request, firmware_id: str):
 
         headers["Content-Length"] = str(len(data))
 
-        schedule_log_request(commsignia_manufacturer_name, request, firmware_id, 0, "")
+        schedule_log_request(commsignia_manufacturer_name, request, firmware_id, False, "")
         return Response(
             content=data,
             status_code=status_code,
@@ -306,7 +306,7 @@ async def get_fw(request: Request, firmware_id: str):
     except HTTPException as e:
         # Expected client errors such as unknown firmware or invalid ranges
         schedule_log_request(
-            commsignia_manufacturer_name, request, firmware_id, 1, str(e)
+            commsignia_manufacturer_name, request, firmware_id, True, str(e)
         )
         logging.warning(
             f"get_fw: Responded with {e.status_code} for firmware_id: {firmware_id}"
@@ -314,7 +314,7 @@ async def get_fw(request: Request, firmware_id: str):
         raise
     except Exception as e:
         schedule_log_request(
-            commsignia_manufacturer_name, request, firmware_id, 1, str(e)
+            commsignia_manufacturer_name, request, firmware_id, True, str(e)
         )
         logging.exception(f"get_fw: Error responding with firmware_id: {firmware_id}")
         raise

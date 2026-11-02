@@ -97,7 +97,9 @@ def test_fwdon():
         ("1", "Enabled"),
         ("4", "Enabled"),
         ("active(1)", "Enabled"),
+        (True, "Enabled"),
         ("2", "Disabled"),
+        (False, "Disabled"),
     ],
 )
 def test_active(raw_value, expected):

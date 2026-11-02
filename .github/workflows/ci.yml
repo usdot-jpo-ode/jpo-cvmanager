@@ -164,6 +164,7 @@ jobs:
           path: |
             resources/keycloak/custom-user-provider/target/classes
             resources/keycloak/custom-user-provider/target/test-classes
+            resources/keycloak/custom-user-provider/target/site/jacoco/jacoco.xml
           if-no-files-found: error
 
   build_rsu_info_bridge:
@@ -476,6 +477,7 @@ jobs:
           reports=(
             "services/coverage.xml"
             "webapp/lcov.info"
+            "resources/keycloak/custom-user-provider/target/site/jacoco/jacoco.xml"
             "services/intersection-api/api/target/site/jacoco/jacoco.xml"
             "services/rsu-status-monitor/rsu-status-monitor/target/site/jacoco/jacoco.xml"
           )
@@ -511,7 +513,7 @@ jobs:
           sonar.python.version=3.12.2
           sonar.java.binaries=resources/keycloak/custom-user-provider/target/classes,services/rsu-info-bridge/target/classes,services/intersection-api/api/target/classes,services/rsu-status-monitor/rsu-status-monitor/target/classes
           sonar.java.test.binaries=resources/keycloak/custom-user-provider/target/test-classes,services/rsu-info-bridge/target/test-classes,services/intersection-api/api/target/test-classes,services/rsu-status-monitor/rsu-status-monitor/target/test-classes
-          sonar.coverage.jacoco.xmlReportPaths=services/intersection-api/api/target/site/jacoco/jacoco.xml,services/rsu-status-monitor/rsu-status-monitor/target/site/jacoco/jacoco.xml
+          sonar.coverage.jacoco.xmlReportPaths=resources/keycloak/custom-user-provider/target/site/jacoco/jacoco.xml,services/intersection-api/api/target/site/jacoco/jacoco.xml,services/rsu-status-monitor/rsu-status-monitor/target/site/jacoco/jacoco.xml
           EOF
 
       - name: Run SonarScanner

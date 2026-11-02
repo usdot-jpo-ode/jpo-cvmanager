@@ -27,7 +27,7 @@ class UserObjectTest {
         when(resultSet.getString(Constants.FIRST_NAME_KEY)).thenReturn("first_name");
         when(resultSet.getString(Constants.LAST_NAME_KEY)).thenReturn("last_name");
         when(resultSet.getLong(Constants.CREATED_TIMESTAMP_KEY)).thenReturn(1730828047000L);
-        when(resultSet.getInt(Constants.SUPER_USER_KEY)).thenReturn(1);
+        when(resultSet.getBoolean(Constants.SUPER_USER_KEY)).thenReturn(true);
         when(resultSet.getString(Constants.ORGANIZATIONS_KEY)).thenReturn(
                 "[{\"org_id\": 1, \"org_name\": \"test org 1\", \"org_email\": \"email1\", \"role\": \"test role 1\"}, {\"org_id\": 2, \"org_name\": \"test org 2\", \"org_email\": \"email2\", \"role\": \"test role 2\"}]");
         when(resultSet.next()).thenReturn(true);
@@ -39,7 +39,7 @@ class UserObjectTest {
         assertThat(userObject.getFirstName(), is("first_name"));
         assertThat(userObject.getLastName(), is("last_name"));
         assertThat(userObject.getCreatedTimestamp(), is(1730828047000L));
-        assertThat(userObject.getSuperUser(), is(1));
+        assertThat(userObject.getSuperUser(), is(true));
         assertThat(userObject.getOrganizations().size(), is(2));
         assertThat(userObject.getOrganizations().get(0).getOrgId(), is(1));
         assertThat(userObject.getOrganizations().get(0).getOrgName(), is("test org 1"));
@@ -68,7 +68,7 @@ class UserObjectTest {
         assertThat(userObject.getFirstName(), is("first_name"));
         assertThat(userObject.getLastName(), is("last_name"));
         assertThat(userObject.getCreatedTimestamp(), is(0L));
-        assertThat(userObject.getSuperUser(), is(0));
+        assertThat(userObject.getSuperUser(), is(false));
         assertThat(userObject.getOrganizations(), is(nullValue()));
     }
 
@@ -77,14 +77,14 @@ class UserObjectTest {
     void toTokenMap() {
         UserModel userModel = mock(UserModel.class);
         when(userModel.getCreatedTimestamp()).thenReturn(1730828047000L);
-        when(userModel.getFirstAttribute(Constants.SUPER_USER_KEY)).thenReturn("1");
+        when(userModel.getFirstAttribute(Constants.SUPER_USER_KEY)).thenReturn("true");
         when(userModel.getFirstAttribute(Constants.ORGANIZATIONS_KEY)).thenReturn(
                 "[{\"org_id\": 1, \"org_name\": \"test org 1\", \"org_email\": \"email1\", \"role\": \"test role 1\"}, {\"org_id\": 2, \"org_name\": \"test org 2\", \"org_email\": \"email2\", \"role\": \"test role 2\"}]");
 
         Map<String, Object> tokenMap = UserObject.toTokenMap(userModel);
 
         assertThat(tokenMap.get(Constants.CREATED_TIMESTAMP_TOKEN_KEY), is(1730828047000L));
-        assertThat(tokenMap.get(Constants.SUPER_USER_KEY), is("1"));
+        assertThat(tokenMap.get(Constants.SUPER_USER_KEY), is(true));
         assertThat(tokenMap.get(Constants.ORGANIZATIONS_KEY), is(notNullValue()));
         assertThat(tokenMap.get(Constants.ORGANIZATIONS_KEY), isA(List.class));
         assertThat(((List<Map<String, String>>) tokenMap.get(Constants.ORGANIZATIONS_KEY)).size(), is(2));
@@ -107,5 +107,17 @@ class UserObjectTest {
                 is("email2"));
         assertThat((((List<Map<String, String>>) tokenMap.get(Constants.ORGANIZATIONS_KEY)).get(1)).get("role"),
                 is("test role 2"));
+    }
+
+    @Test
+    void fromResultSet_nullSuperUserStaysNull() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getString(Constants.KEYCLOAK_ID_KEY)).thenReturn("keycloak_id");
+        when(resultSet.getBoolean(Constants.SUPER_USER_KEY)).thenReturn(false);
+        when(resultSet.wasNull()).thenReturn(true);
+
+        UserObject userObject = UserObject.fromResultSet(resultSet);
+
+        assertThat(userObject.getSuperUser(), is(nullValue()));
     }
 }

@@ -30,7 +30,7 @@ public class UserObject {
     @JsonProperty(Constants.CREATED_TIMESTAMP_KEY)
     private Long createdTimestamp;
     @JsonProperty(Constants.SUPER_USER_KEY)
-    private Integer superUser;
+    private Boolean superUser;
     @JsonProperty(Constants.ORGANIZATIONS_KEY)
     private List<OrganizationObject> organizations;
 
@@ -43,7 +43,7 @@ public class UserObject {
             user.setFirstName(re.getString(Constants.FIRST_NAME_KEY));
             user.setLastName(re.getString(Constants.LAST_NAME_KEY));
             user.setCreatedTimestamp(re.getLong(Constants.CREATED_TIMESTAMP_KEY));
-            user.setSuperUser(re.getInt(Constants.SUPER_USER_KEY));
+            user.setSuperUser(getNullableBoolean(re, Constants.SUPER_USER_KEY));
             user.setOrganizations(OrganizationObject.listFromString(re.getString(Constants.ORGANIZATIONS_KEY)));
         } catch (Exception e) {
             log.error("Error parsing UserObject from SQL Result: ", e);
@@ -60,7 +60,7 @@ public class UserObject {
             user.setFirstName(re.getString(Constants.FIRST_NAME_KEY));
             user.setLastName(re.getString(Constants.LAST_NAME_KEY));
             user.setCreatedTimestamp(re.getLong(Constants.CREATED_TIMESTAMP_KEY));
-            user.setSuperUser(re.getInt(Constants.SUPER_USER_KEY));
+            user.setSuperUser(getNullableBoolean(re, Constants.SUPER_USER_KEY));
             user.setOrganizations(null);
         } catch (Exception e) {
             log.error("Error parsing UserObject from SQL Result: ", e);
@@ -77,9 +77,15 @@ public class UserObject {
         //     - role
         Map<String, Object> map = new HashMap<String, Object>();
         map.put(Constants.CREATED_TIMESTAMP_TOKEN_KEY, user.getCreatedTimestamp());
-        map.put(Constants.SUPER_USER_KEY, user.getFirstAttribute(Constants.SUPER_USER_KEY));
+        // super_user is emitted as a JSON boolean (true/false)
+        map.put(Constants.SUPER_USER_KEY, Boolean.parseBoolean(user.getFirstAttribute(Constants.SUPER_USER_KEY)));
         map.put(Constants.ORGANIZATIONS_KEY, OrganizationObject.mapListFromString(user.getFirstAttribute(Constants.ORGANIZATIONS_KEY)));
         return map;
+    }
+
+    private static Boolean getNullableBoolean(ResultSet re, String column) throws java.sql.SQLException {
+        boolean value = re.getBoolean(column);
+        return re.wasNull() ? null : value;
     }
 
     public String getId() {
@@ -130,11 +136,11 @@ public class UserObject {
         this.createdTimestamp = createdTimestamp;
     }
 
-    public Integer getSuperUser() {
+    public Boolean getSuperUser() {
         return superUser;
     }
 
-    public void setSuperUser(Integer superUser) {
+    public void setSuperUser(Boolean superUser) {
         this.superUser = superUser;
     }
 

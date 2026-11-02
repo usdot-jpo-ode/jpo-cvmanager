@@ -32,7 +32,7 @@ class CustomProtocolMapperTest {
         ClientSessionContext clientSessionCtx = mock(ClientSessionContext.class);
 
         Long createdTimestamp = 1234567890L;
-        String superUser = "1";
+        String superUser = "true";
         String organizationsString = "[{\"org_id\":1,\"org_name\":\"org1\",\"org_email\":\"org1@example.com\",\"role\":\"role1\"}]";
         List<Map<String, Object>> organizations = List
                 .of(Map.of("org_id", 1, "org_name", "org1", "org_email", "org1@example.com", "role", "role1"));
@@ -72,7 +72,7 @@ class CustomProtocolMapperTest {
 
         Map<String, Object> expectedTokenMap = new HashMap<String, Object>();
         expectedTokenMap.put(Constants.CREATED_TIMESTAMP_TOKEN_KEY, createdTimestamp);
-        expectedTokenMap.put(Constants.SUPER_USER_KEY, superUser);
+        expectedTokenMap.put(Constants.SUPER_USER_KEY, true);
         expectedTokenMap.put(Constants.ORGANIZATIONS_KEY, organizations);
 
         // verify that the put method was called correctly

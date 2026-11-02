@@ -44,7 +44,7 @@ describe('AuthApi', () => {
         given_name: 'Test',
         family_name: 'User',
         cvmanager_data: {
-          super_user: '1',
+          super_user: true,
           organizations: [{ org_id: 1, org_name: 'Test Org', org_email: 'email', role: 'admin' }],
           user_created_timestamp: 1746773527283,
         },
@@ -157,7 +157,7 @@ describe('AuthApi', () => {
         given_name: 'Test',
         family_name: 'User',
         cvmanager_data: {
-          super_user: '1',
+          super_user: true,
           organizations: [
             { org_id: 1, org_name: 'Test Org', org_email: 'email', role: 'admin' },
             { org_id: 2, org_name: 'Test Org 2', org_email: 'email2', role: 'user' },
@@ -182,40 +182,6 @@ describe('AuthApi', () => {
       })
     })
 
-    it('should convert super_user "0" to false', () => {
-      const mockAuthToken: AuthToken = {
-        exp: 1770396901,
-        iat: 1770395101,
-        jti: '1b921158-2396-461f-8b93-cee772503c2e',
-        iss: 'http://localhost:8084/realms/cvmanager',
-        aud: 'account',
-        sub: 'fc3d8729-8526-4aaa-805b-d64bf3b93860',
-        typ: 'Bearer',
-        azp: 'cvmanager-gui',
-        sid: '75f26b63-1df5-4b9a-953b-61fd72bd8c6b',
-        acr: '1',
-        'allowed-origins': ['http://localhost:3000'],
-        realm_access: { roles: ['offline_access'] },
-        resource_access: { account: { roles: ['manage-account'] } },
-        scope: 'openid email profile',
-        email_verified: false,
-        name: 'Regular User',
-        preferred_username: 'user@gmail.com',
-        given_name: 'Regular',
-        family_name: 'User',
-        cvmanager_data: {
-          super_user: '0',
-          organizations: [{ org_id: 1, org_name: 'Test Org', org_email: 'email', role: 'user' }],
-          user_created_timestamp: 1746773527283,
-        },
-        email: 'user@gmail.com',
-      }
-
-      const result = AuthApi.getUserAuthResponse(mockAuthToken)
-
-      expect(result.super_user).toBe(false)
-    })
-
     it('should handle empty organizations array', () => {
       const mockAuthToken: AuthToken = {
         exp: 1770396901,
@@ -238,7 +204,7 @@ describe('AuthApi', () => {
         given_name: 'Test',
         family_name: 'User',
         cvmanager_data: {
-          super_user: '1',
+          super_user: true,
           organizations: [],
           user_created_timestamp: 1746773527283,
         },
@@ -274,7 +240,7 @@ describe('AuthApi', () => {
       given_name: 'Test',
       family_name: 'User',
       cvmanager_data: {
-        super_user: '1',
+        super_user: true,
         organizations: [{ org_id: 1, org_name: 'Test Org', org_email: 'email', role: 'admin' }],
         user_created_timestamp: 1746773527283,
       },
@@ -359,7 +325,7 @@ describe('AuthApi', () => {
       const mockTokenMultiOrg = {
         ...mockDecodedToken,
         cvmanager_data: {
-          super_user: '0',
+          super_user: false,
           organizations: [
             { org_id: 1, org_name: 'Org 1', org_email: 'email1', role: 'admin' },
             { org_id: 2, org_name: 'Org 2', org_email: 'email2', role: 'user' },

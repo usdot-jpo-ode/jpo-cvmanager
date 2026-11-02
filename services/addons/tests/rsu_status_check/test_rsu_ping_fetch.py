@@ -59,19 +59,19 @@ def test_insert_rsu_ping(mock_write_db):
     # check
     expected_calls = [
         call(
-            "INSERT INTO public.ping (timestamp, result, rsu_id) VALUES (to_timestamp(1632350648), B'1', 230)"
+            "INSERT INTO public.ping (timestamp, result, rsu_id) VALUES (to_timestamp(1632350648), TRUE, 230)"
         ),
         call(
-            "INSERT INTO public.ping (timestamp, result, rsu_id) VALUES (to_timestamp(1632350348), B'1', 230)"
+            "INSERT INTO public.ping (timestamp, result, rsu_id) VALUES (to_timestamp(1632350348), TRUE, 230)"
         ),
         call(
-            "INSERT INTO public.ping (timestamp, result, rsu_id) VALUES (to_timestamp(1632350048), B'1', 230)"
+            "INSERT INTO public.ping (timestamp, result, rsu_id) VALUES (to_timestamp(1632350048), TRUE, 230)"
         ),
         call(
-            "INSERT INTO public.ping (timestamp, result, rsu_id) VALUES (to_timestamp(1632349748), B'1', 230)"
+            "INSERT INTO public.ping (timestamp, result, rsu_id) VALUES (to_timestamp(1632349748), TRUE, 230)"
         ),
         call(
-            "INSERT INTO public.ping (timestamp, result, rsu_id) VALUES (to_timestamp(1632349448), B'1', 230)"
+            "INSERT INTO public.ping (timestamp, result, rsu_id) VALUES (to_timestamp(1632349448), TRUE, 230)"
         ),
     ]
     mock_write_db.assert_has_calls(expected_calls)

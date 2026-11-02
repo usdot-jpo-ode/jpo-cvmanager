@@ -71,7 +71,7 @@ class AuthApi {
       first_name: token.given_name,
       last_name: token.family_name,
       name: `${token.given_name} ${token.family_name}`,
-      super_user: token.cvmanager_data.super_user === '1',
+      super_user: token.cvmanager_data.super_user === true,
       organizations: token.cvmanager_data.organizations.map((org) => ({
         organization: Number(org.org_id),
         name: org.org_name,

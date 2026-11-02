@@ -32,7 +32,7 @@ class UserInfo:
             )
         }
         self.super_user = (
-            token_user_info.get("cvmanager_data", {}).get("super_user") == "1"
+            token_user_info.get("cvmanager_data", {}).get("super_user") is True
         )
         self.first_name = token_user_info.get("given_name")
         self.last_name = token_user_info.get("family_name")
@@ -193,7 +193,7 @@ def get_user_info(email: str) -> Optional[UserInfo]:
     org_rows = pgquery.query_db(org_query, params={"email": email})
     # Combine into JWT token-like structure for UserInfo constructor
     user_info_dict["cvmanager_data"] = {
-        "super_user": user_info_dict.get("super_user", "0"),
+        "super_user": user_info_dict.get("super_user", False),
         "organizations": [dict(row[0]) for row in org_rows],
     }
     return UserInfo(user_info_dict)

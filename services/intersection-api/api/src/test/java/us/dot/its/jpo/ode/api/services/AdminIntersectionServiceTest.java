@@ -157,7 +157,7 @@ class AdminIntersectionServiceTest {
                 .header("alg", "RS256")
                 .claim("sub", "superuser")
                 .claim("preferred_username", "superuser")
-                .claim("cvmanager_data", Map.of("super_user", "1", "organizations", List.of()))
+                .claim("cvmanager_data", Map.of("super_user", true, "organizations", List.of()))
                 .issuedAt(Instant.now())
                 .expiresAt(Instant.now().plusSeconds(3600))
                 .build();
@@ -171,7 +171,7 @@ class AdminIntersectionServiceTest {
                 .claim("sub", "operator")
                 .claim("preferred_username", "operator")
                 .claim("cvmanager_data", Map.of(
-                        "super_user", "0",
+                        "super_user", false,
                         "organizations",
                         List.of(Map.of("org_id", 1, "org_name", orgName, "org_email", "email", "role", "OPERATOR"))))
                 .issuedAt(Instant.now())
@@ -785,7 +785,7 @@ class AdminIntersectionServiceTest {
                     .claim("sub", "user")
                     .claim("preferred_username", "user")
                     .claim("cvmanager_data", Map.of(
-                            "super_user", "0",
+                            "super_user", false,
                             "organizations",
                             List.of(Map.of("org_id", 1, "org_name", orgName, "org_email", "email", "role", "USER"))))
                     .issuedAt(Instant.now())

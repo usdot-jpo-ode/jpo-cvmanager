@@ -26,7 +26,8 @@ def insert_rsu_ping(request_json):
     logging.debug(f"Inserting {len(histories)} new Ping records for RsuData {rsu_id}")
     for history in histories:
         try:
-            query = f'INSERT INTO public.ping (timestamp, result, rsu_id) VALUES (to_timestamp({history["clock"]}), B\'{history["value"]}\', {rsu_id})'
+            result = "TRUE" if str(history["value"]) == "1" else "FALSE"
+            query = f'INSERT INTO public.ping (timestamp, result, rsu_id) VALUES (to_timestamp({history["clock"]}), {result}, {rsu_id})'
             pgquery.write_db(query)
         except Exception as e:
             logging.exception(f"Error inserting Ping record: {e}")

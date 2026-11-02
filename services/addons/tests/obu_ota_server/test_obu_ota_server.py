@@ -291,7 +291,7 @@ async def test_get_fw_full_file(mock_log_request, firmware_dir):
     assert response.headers["Accept-Ranges"] == "bytes"
     assert "Content-Range" not in response.headers
     mock_log_request.assert_called_once()
-    assert mock_log_request.call_args[0][3] == 0
+    assert mock_log_request.call_args[0][3] is False
 
 
 @patch("obu_ota_server_environment.OTA_USERNAME", "username")
@@ -344,7 +344,7 @@ async def test_get_fw_unsatisfiable_range(mock_log_request, firmware_dir):
     assert response.status_code == 416
     assert response.headers["Content-Range"] == "bytes */1024"
     mock_log_request.assert_called_once()
-    assert mock_log_request.call_args[0][3] == 1
+    assert mock_log_request.call_args[0][3] is True
 
 
 @patch("obu_ota_server_environment.OTA_USERNAME", "username")
@@ -358,7 +358,7 @@ async def test_get_fw_missing_file(mock_log_request, firmware_dir):
     )
 
     assert response.status_code == 404
-    assert mock_log_request.call_args[0][3] == 1
+    assert mock_log_request.call_args[0][3] is True
 
 
 @pytest.mark.parametrize(
@@ -424,7 +424,7 @@ def test_write_request_log_uses_bound_parameters(
         "y11.11.1-b11111",
         "127.0.0.1",
         FIRMWARE_NAME,
-        1,
+        True,
         "e" * 300,
     )
 
@@ -433,7 +433,8 @@ def test_write_request_log_uses_bound_parameters(
     assert malicious_serial not in query
     assert "y11.11.1-b11111" not in query
     assert "CAST(:origin_ip AS inet)" in query
-    assert "CAST(:error_status AS bit(1))" in query
+    assert ":error_status," in query
+    assert "bit" not in query
     assert params == {
         "obu_sn": malicious_serial,
         "manufacturer": 3,
@@ -441,7 +442,7 @@ def test_write_request_log_uses_bound_parameters(
         "origin_ip": "127.0.0.1",
         "obu_firmware_version": "y11.11.1-b11111",
         "requested_firmware_version": FIRMWARE_NAME,
-        "error_status": "1",
+        "error_status": True,
         "error_message": "e" * 128,
     }
     mock_removed_old_logs.assert_called_once_with(malicious_serial)
@@ -454,7 +455,7 @@ def test_write_request_log_skips_unknown_manufacturer(
 ):
     mock_pgquery.query_db.return_value = []
 
-    write_request_log("Unknown", "sn", "v", "127.0.0.1", FIRMWARE_NAME, 0, "")
+    write_request_log("Unknown", "sn", "v", "127.0.0.1", FIRMWARE_NAME, False, "")
 
     mock_pgquery.write_db.assert_not_called()
     mock_removed_old_logs.assert_not_called()
@@ -467,10 +468,10 @@ async def test_log_request_normalizes_request_values(mock_write_request_log):
     mock_request.query_params = {"version": "v" * 200}
     mock_request.client.host = "not-an-ip"
 
-    await log_request("Commsignia", mock_request, FIRMWARE_NAME, 0, "")
+    await log_request("Commsignia", mock_request, FIRMWARE_NAME, False, "")
 
     mock_write_request_log.assert_called_once_with(
-        "Commsignia", "", "v" * 128, "0.0.0.0", FIRMWARE_NAME, 0, ""
+        "Commsignia", "", "v" * 128, "0.0.0.0", FIRMWARE_NAME, False, ""
     )
 
 
@@ -483,7 +484,7 @@ async def test_log_request_swallows_errors(mock_write_request_log):
     mock_request.client.host = "10.0.0.1"
 
     # Logging failures must never fail the firmware download
-    await log_request("Commsignia", mock_request, FIRMWARE_NAME, 0, "")
+    await log_request("Commsignia", mock_request, FIRMWARE_NAME, False, "")
 
 
 @patch("obu_ota_server_environment.MAX_COUNT", 10)
@@ -496,6 +497,7 @@ def test_removed_old_logs_is_single_parameterized_delete(mock_pgquery):
     query, params = mock_pgquery.write_db.call_args[0]
     assert serialnum not in query
     assert "OFFSET :max_count" in query
+    assert "error_status = FALSE" in query
     assert params == {"obu_sn": serialnum, "max_count": 10}
 
 

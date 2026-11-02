@@ -24,7 +24,7 @@ jwt_token_data_good = {
     "preferred_username": "test@gmail.com",
     "given_name": "Test",
     "cvmanager_data": {
-        "super_user": "1",
+        "super_user": True,
         "organizations": [
             {"org": "Test Org", "role": "admin"},
             {"org": "Test Org 2", "role": "operator"},
@@ -59,7 +59,7 @@ jwt_token_data_user = {
     "preferred_username": "test@gmail.com",
     "given_name": "Test",
     "cvmanager_data": {
-        "super_user": "0",
+        "super_user": False,
         "organizations": [
             {"org": "Test Org", "role": "user"},
             {"org": "Test Org 2", "role": "user"},

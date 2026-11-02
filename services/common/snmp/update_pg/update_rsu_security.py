@@ -96,7 +96,7 @@ class UpdatePostgresRsuSecurity(UpdatePostgresSnmpAbstractClass):
         # Create an object to represent all RSU security data for PostgreSQL
         config = {
             "timestamp": now_dt,
-            "health": (1 if expiration_dt > now_dt else 0),
+            "health": expiration_dt > now_dt,
             "expiration": expiration_dt,
         }
 

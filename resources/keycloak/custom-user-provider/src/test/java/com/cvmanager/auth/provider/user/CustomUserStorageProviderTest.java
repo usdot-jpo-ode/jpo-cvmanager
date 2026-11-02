@@ -2,6 +2,7 @@ package com.cvmanager.auth.provider.user;
 
 import org.junit.jupiter.api.Test;
 import org.keycloak.component.ComponentModel;
+import org.keycloak.models.GroupModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
@@ -16,6 +17,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,6 +30,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
+import java.util.List;
+import java.util.stream.Collectors;
 
 class CustomUserStorageProviderTest {
 
@@ -39,7 +44,7 @@ class CustomUserStorageProviderTest {
         when(resultSet.getString(Constants.FIRST_NAME_KEY)).thenReturn("first_name");
         when(resultSet.getString(Constants.LAST_NAME_KEY)).thenReturn("last_name");
         when(resultSet.getLong(Constants.CREATED_TIMESTAMP_KEY)).thenReturn(1730828047000L);
-        when(resultSet.getInt(Constants.SUPER_USER_KEY)).thenReturn(1);
+        when(resultSet.getBoolean(Constants.SUPER_USER_KEY)).thenReturn(true);
         when(resultSet.getString(Constants.ORGANIZATIONS_KEY)).thenReturn(
                 "[{\"org_id\": 1, \"org_name\": \"test org 1\", \"org_email\": \"email1\", \"role\": \"test role 1\"}, {\"org_id\": 2, \"org_name\": \"test org 2\", \"org_email\": \"email2\", \"role\": \"test role 2\"}]");
         when(resultSet.next()).thenReturn(true);
@@ -53,7 +58,7 @@ class CustomUserStorageProviderTest {
         assertThat(userAdapter.getFirstName(), is("first_name"));
         assertThat(userAdapter.getLastName(), is("last_name"));
         assertThat(userAdapter.getCreatedTimestamp(), is(1730828047000L));
-        assertThat(userAdapter.getSuperUser(), is(1));
+        assertThat(userAdapter.getSuperUser(), is(true));
         assertThat(userAdapter.getOrganizations().size(), is(2));
         assertThat(userAdapter.getOrganizations().get(0).getOrgId(), is(1));
         assertThat(userAdapter.getOrganizations().get(0).getOrgName(), is("test org 1"));
@@ -113,7 +118,7 @@ class CustomUserStorageProviderTest {
                     LEFT JOIN
                         public.roles ON roles.role_id = uo.role_id
                 ) AS subquery
-                 WHERE keycloak_id = 'user_id'::UUID
+                WHERE keycloak_id = ?::UUID
                 GROUP BY
                     user_id,
                     keycloak_id,
@@ -122,7 +127,6 @@ class CustomUserStorageProviderTest {
                     last_name,
                     created_timestamp,
                     super_user
-
                 ;""";
 
         try (MockedStatic<CustomUserStorageProvider> mockedStatic = Mockito
@@ -140,6 +144,7 @@ class CustomUserStorageProviderTest {
             UserAdapter response = customUserStorageProvider.getUserById(realmModel, userId);
             verify(preparedStatement).execute();
             verify(connection).prepareStatement(expectedQuery);
+            verify(preparedStatement).setObject(1, userId);
             validateUserModel(response);
         }
     }
@@ -189,7 +194,7 @@ class CustomUserStorageProviderTest {
                     LEFT JOIN
                         public.roles ON roles.role_id = uo.role_id
                 ) AS subquery
-                 WHERE email = 'email'
+                WHERE email = ?
                 GROUP BY
                     user_id,
                     keycloak_id,
@@ -198,7 +203,6 @@ class CustomUserStorageProviderTest {
                     last_name,
                     created_timestamp,
                     super_user
-
                 ;""";
 
         try (MockedStatic<CustomUserStorageProvider> mockedStatic = Mockito
@@ -216,6 +220,7 @@ class CustomUserStorageProviderTest {
             UserAdapter response = customUserStorageProvider.getUserByUsername(realmModel, username);
             verify(preparedStatement).execute();
             verify(connection).prepareStatement(expectedQuery);
+            verify(preparedStatement).setObject(1, username);
             validateUserModel(response);
         }
     }
@@ -265,7 +270,7 @@ class CustomUserStorageProviderTest {
                     LEFT JOIN
                         public.roles ON roles.role_id = uo.role_id
                 ) AS subquery
-                 WHERE email = 'email'
+                WHERE email = ?
                 GROUP BY
                     user_id,
                     keycloak_id,
@@ -274,7 +279,6 @@ class CustomUserStorageProviderTest {
                     last_name,
                     created_timestamp,
                     super_user
-
                 ;""";
 
         try (MockedStatic<CustomUserStorageProvider> mockedStatic = Mockito
@@ -289,9 +293,10 @@ class CustomUserStorageProviderTest {
             when(preparedStatement.getResultSet()).thenReturn(resultSet);
 
             CustomUserStorageProvider customUserStorageProvider = new CustomUserStorageProvider(keycloakSession, model);
-            UserAdapter response = customUserStorageProvider.getUserByUsername(realmModel, email);
+            UserAdapter response = customUserStorageProvider.getUserByEmail(realmModel, email);
             verify(preparedStatement).execute();
             verify(connection).prepareStatement(expectedQuery);
+            verify(preparedStatement).setObject(1, email);
             validateUserModel(response);
         }
     }
@@ -351,7 +356,7 @@ class CustomUserStorageProviderTest {
             when(resultSet.getString(Constants.FIRST_NAME_KEY)).thenReturn("");
             when(resultSet.getString(Constants.LAST_NAME_KEY)).thenReturn("");
             when(resultSet.getLong(Constants.CREATED_TIMESTAMP_KEY)).thenReturn(now);
-            when(resultSet.getInt(Constants.SUPER_USER_KEY)).thenReturn(0);
+            when(resultSet.getBoolean(Constants.SUPER_USER_KEY)).thenReturn(false);
             when(resultSet.next()).thenReturn(true);
             when(preparedStatement.executeQuery()).thenReturn(resultSet);
 
@@ -370,7 +375,7 @@ class CustomUserStorageProviderTest {
             assertThat(response.getFirstName(), is(""));
             assertThat(response.getLastName(), is(""));
             assertThat(response.getCreatedTimestamp(), is(now));
-            assertThat(response.getSuperUser(), is(0));
+            assertThat(response.getSuperUser(), is(false));
             assertThat(response.getOrganizations(), nullValue());
         }
     }
@@ -382,7 +387,7 @@ class CustomUserStorageProviderTest {
         KeycloakSession keycloakSession = mock(KeycloakSession.class);
         RealmModel realmModel = mock(RealmModel.class);
 
-        String expectedQuery = "update public.users set email = ?, first_name = ?, last_name = ?, created_timestamp = ?, super_user = ?::bit where keycloak_id = ?::UUID";
+        String expectedQuery = "update public.users set email = ?, first_name = ?, last_name = ?, created_timestamp = ?, super_user = ? where keycloak_id = ?::UUID";
 
         try (MockedStatic<CustomUserStorageProvider> mockedStatic = Mockito
                 .mockStatic(CustomUserStorageProvider.class)) {
@@ -395,7 +400,7 @@ class CustomUserStorageProviderTest {
             when(user.getEmail()).thenReturn("email");
             when(user.getFirstName()).thenReturn("first_name");
             when(user.getLastName()).thenReturn("last_name");
-            when(user.getSuperUser()).thenReturn(1);
+            when(user.getSuperUser()).thenReturn(true);
             when(user.getCreatedTimestamp()).thenReturn(now);
 
             PreparedStatement preparedStatement = mock(PreparedStatement.class);
@@ -408,7 +413,7 @@ class CustomUserStorageProviderTest {
             when(resultSet.getString(Constants.FIRST_NAME_KEY)).thenReturn(null);
             when(resultSet.getString(Constants.LAST_NAME_KEY)).thenReturn(null);
             when(resultSet.getLong(Constants.CREATED_TIMESTAMP_KEY)).thenReturn(now);
-            when(resultSet.getInt(Constants.SUPER_USER_KEY)).thenReturn(0);
+            when(resultSet.getBoolean(Constants.SUPER_USER_KEY)).thenReturn(false);
             when(resultSet.next()).thenReturn(true);
             when(preparedStatement.getGeneratedKeys()).thenReturn(resultSet);
 
@@ -419,7 +424,7 @@ class CustomUserStorageProviderTest {
             verify(preparedStatement).setString(2, "first_name");
             verify(preparedStatement).setString(3, "last_name");
             verify(preparedStatement).setLong(4, now);
-            verify(preparedStatement).setInt(5, 1);
+            verify(preparedStatement).setObject(5, true, Types.BOOLEAN);
             verify(preparedStatement).setString(6, "keycloak_id");
             verify(preparedStatement).executeUpdate();
             assertThat(response.getId(), is("keycloak_id"));
@@ -428,7 +433,7 @@ class CustomUserStorageProviderTest {
             assertThat(response.getFirstName(), nullValue());
             assertThat(response.getLastName(), nullValue());
             assertThat(response.getCreatedTimestamp(), is(now));
-            assertThat(response.getSuperUser(), is(0));
+            assertThat(response.getSuperUser(), is(false));
             assertThat(response.getOrganizations(), nullValue());
         }
     }
@@ -460,6 +465,142 @@ class CustomUserStorageProviderTest {
             verify(preparedStatement).executeUpdate();
 
             assertThat(response, is(true));
+        }
+    }
+
+    @Test
+    void searchForUserStream_bindsSearchAndPagingAsParameters() throws SQLException {
+        KeycloakSession keycloakSession = mock(KeycloakSession.class);
+        RealmModel realmModel = mock(RealmModel.class);
+        ComponentModel model = mock(ComponentModel.class);
+
+        try (MockedStatic<CustomUserStorageProvider> mockedStatic = Mockito
+                .mockStatic(CustomUserStorageProvider.class)) {
+            Connection connection = mock(Connection.class);
+            mockedStatic.when(() -> CustomUserStorageProvider.getConnection(any())).thenReturn(connection);
+
+            PreparedStatement preparedStatement = mock(PreparedStatement.class);
+            when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+            ResultSet resultSet = createResultSet();
+            when(resultSet.next()).thenReturn(true, false);
+            when(preparedStatement.getResultSet()).thenReturn(resultSet);
+
+            String search = "x' OR '1'='1";
+            CustomUserStorageProvider provider = new CustomUserStorageProvider(keycloakSession, model);
+            List<UserModel> users = provider.searchForUserStream(realmModel, search, 20, 10)
+                    .collect(Collectors.toList());
+
+            verify(connection).prepareStatement(Mockito.argThat(
+                    (String q) -> q.contains("WHERE email LIKE ?") && q.endsWith("ORDER BY email LIMIT ? OFFSET ?;")
+                            && !q.contains(search)));
+            verify(preparedStatement).setObject(1, "%" + search + "%");
+            verify(preparedStatement).setObject(2, 10);
+            verify(preparedStatement).setObject(3, 20);
+            assertThat(users.size(), is(1));
+        }
+    }
+
+    @Test
+    void searchForUserStream_wildcardOmitsWhereClause() throws SQLException {
+        KeycloakSession keycloakSession = mock(KeycloakSession.class);
+        RealmModel realmModel = mock(RealmModel.class);
+        ComponentModel model = mock(ComponentModel.class);
+
+        try (MockedStatic<CustomUserStorageProvider> mockedStatic = Mockito
+                .mockStatic(CustomUserStorageProvider.class)) {
+            Connection connection = mock(Connection.class);
+            mockedStatic.when(() -> CustomUserStorageProvider.getConnection(any())).thenReturn(connection);
+
+            PreparedStatement preparedStatement = mock(PreparedStatement.class);
+            when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+            ResultSet resultSet = createResultSet();
+            when(resultSet.next()).thenReturn(false);
+            when(preparedStatement.getResultSet()).thenReturn(resultSet);
+
+            CustomUserStorageProvider provider = new CustomUserStorageProvider(keycloakSession, model);
+            provider.searchForUserStream(realmModel, "*", 0, 10).collect(Collectors.toList());
+
+            verify(connection).prepareStatement(Mockito.argThat((String q) -> !q.contains("WHERE email")));
+            verify(preparedStatement).setObject(1, 10);
+            verify(preparedStatement).setObject(2, 0);
+        }
+    }
+
+    @Test
+    void searchForUserByUserAttributeStream_bindsValueForKnownAttribute() throws SQLException {
+        KeycloakSession keycloakSession = mock(KeycloakSession.class);
+        RealmModel realmModel = mock(RealmModel.class);
+        ComponentModel model = mock(ComponentModel.class);
+
+        try (MockedStatic<CustomUserStorageProvider> mockedStatic = Mockito
+                .mockStatic(CustomUserStorageProvider.class)) {
+            Connection connection = mock(Connection.class);
+            mockedStatic.when(() -> CustomUserStorageProvider.getConnection(any())).thenReturn(connection);
+
+            PreparedStatement preparedStatement = mock(PreparedStatement.class);
+            when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+            ResultSet resultSet = createResultSet();
+            when(resultSet.next()).thenReturn(true, false);
+            when(preparedStatement.executeQuery()).thenReturn(resultSet);
+
+            CustomUserStorageProvider provider = new CustomUserStorageProvider(keycloakSession, model);
+            List<UserModel> users = provider.searchForUserByUserAttributeStream(realmModel, "firstName", "Jane")
+                    .collect(Collectors.toList());
+
+            verify(connection).prepareStatement(Mockito.argThat((String q) -> q.contains("WHERE first_name = ?")));
+            verify(preparedStatement).setObject(1, "Jane");
+            assertThat(users.size(), is(1));
+        }
+    }
+
+    @Test
+    void searchForUserByUserAttributeStream_unknownAttributeReturnsEmptyWithoutQuerying() throws SQLException {
+        KeycloakSession keycloakSession = mock(KeycloakSession.class);
+        RealmModel realmModel = mock(RealmModel.class);
+        ComponentModel model = mock(ComponentModel.class);
+
+        try (MockedStatic<CustomUserStorageProvider> mockedStatic = Mockito
+                .mockStatic(CustomUserStorageProvider.class)) {
+            Connection connection = mock(Connection.class);
+            mockedStatic.when(() -> CustomUserStorageProvider.getConnection(any())).thenReturn(connection);
+
+            CustomUserStorageProvider provider = new CustomUserStorageProvider(keycloakSession, model);
+            List<UserModel> users = provider
+                    .searchForUserByUserAttributeStream(realmModel, "1=1; DROP TABLE users; --", "x")
+                    .collect(Collectors.toList());
+
+            assertThat(users.isEmpty(), is(true));
+            verify(connection, never()).prepareStatement(anyString());
+        }
+    }
+
+    @Test
+    void getGroupMembersStream_bindsPagingAsParameters() throws SQLException {
+        KeycloakSession keycloakSession = mock(KeycloakSession.class);
+        RealmModel realmModel = mock(RealmModel.class);
+        ComponentModel model = mock(ComponentModel.class);
+
+        try (MockedStatic<CustomUserStorageProvider> mockedStatic = Mockito
+                .mockStatic(CustomUserStorageProvider.class)) {
+            Connection connection = mock(Connection.class);
+            mockedStatic.when(() -> CustomUserStorageProvider.getConnection(any())).thenReturn(connection);
+
+            PreparedStatement preparedStatement = mock(PreparedStatement.class);
+            when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+            ResultSet resultSet = createResultSet();
+            when(resultSet.next()).thenReturn(true, false);
+            when(preparedStatement.getResultSet()).thenReturn(resultSet);
+
+            CustomUserStorageProvider provider = new CustomUserStorageProvider(keycloakSession, model);
+            List<UserModel> users = provider
+                    .getGroupMembersStream(realmModel, mock(GroupModel.class), 5, 25)
+                    .collect(Collectors.toList());
+
+            verify(connection).prepareStatement(Mockito.argThat(
+                    (String q) -> !q.contains("\nWHERE ") && q.endsWith("ORDER BY email LIMIT ? OFFSET ?;")));
+            verify(preparedStatement).setObject(1, 25);
+            verify(preparedStatement).setObject(2, 5);
+            assertThat(users.size(), is(1));
         }
     }
 

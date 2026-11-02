@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnTransformer;
 import org.hibernate.annotations.Immutable;
 
 import java.net.InetAddress;
@@ -52,8 +51,7 @@ public class ObuOtaRequest {
     private String requestedFirmwareVersion;
 
     @NotNull
-    @Column(name = "error_status", nullable = false, columnDefinition = "bit(1)")
-    @ColumnTransformer(read = "error_status::integer::boolean", write = "(?::integer)::bit(1)")
+    @Column(name = "error_status", nullable = false)
     private Boolean errorStatus;
 
     @Size(max = 128)

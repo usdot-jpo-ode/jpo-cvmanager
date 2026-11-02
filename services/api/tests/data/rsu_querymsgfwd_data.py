@@ -52,8 +52,8 @@ return_value_rsuDsrcFwd = [
             "dest_port": 46800,
             "start_datetime": "2024/04/01T00:00:00-06:00",
             "end_datetime": "2034/04/01T00:00:00-06:00",
-            "active": "1",
-            "security": "0",
+            "active": True,
+            "security": False,
         },
     ),
     (
@@ -65,8 +65,8 @@ return_value_rsuDsrcFwd = [
             "dest_port": 46800,
             "start_datetime": "2024/04/01T00:00:00-06:00",
             "end_datetime": "2034/04/01T00:00:00-06:00",
-            "active": "1",
-            "security": "1",
+            "active": True,
+            "security": True,
         },
     ),
 ]
@@ -105,8 +105,8 @@ return_value_rxtxfwd = [
             "dest_port": 46800,
             "start_datetime": "2024/04/01T00:00:00-06:00",
             "end_datetime": "2034/04/01T00:00:00-06:00",
-            "active": "1",
-            "security": "1",
+            "active": True,
+            "security": True,
         },
     ),
     (
@@ -118,8 +118,8 @@ return_value_rxtxfwd = [
             "dest_port": 44920,
             "start_datetime": "2024/04/01T00:00:00-06:00",
             "end_datetime": "2034/04/01T00:00:00-06:00",
-            "active": "1",
-            "security": "1",
+            "active": True,
+            "security": True,
         },
     ),
 ]

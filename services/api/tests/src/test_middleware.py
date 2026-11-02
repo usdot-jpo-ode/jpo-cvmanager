@@ -96,7 +96,7 @@ def test_middleware_class_call_user_authorized(mock_request, mock_get_user_role)
                 "last_name": "Doe",
                 "organization": "admin",
                 "role": "admin",
-                "super_user": "1",
+                "super_user": True,
             }
         ]
     ]

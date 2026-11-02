@@ -51,11 +51,11 @@ public class SnmpMsgfwdConfig {
     private Instant endDatetime;
 
     @NotNull
-    @Column(name = "active", nullable = false, columnDefinition = "bit(1)")
+    @Column(name = "active", nullable = false)
     private Boolean active;
 
     @NotNull
-    @Column(name = "security", nullable = false, columnDefinition = "bit(1)")
+    @Column(name = "security", nullable = false)
     private Boolean security;
 }
 

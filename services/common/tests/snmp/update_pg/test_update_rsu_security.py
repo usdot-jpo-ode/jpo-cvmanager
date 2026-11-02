@@ -56,7 +56,7 @@ def test_process_rsu_expired_certificate(rsu_security_instance):
     ):
         rsu_id, config = rsu_security_instance.process_rsu(rsu)
         assert rsu_id == 101
-        assert config["health"] == 0
+        assert config["health"] is False
         assert config["expiration"] == datetime(2022, 1, 1, 12, 0, tzinfo=timezone.utc)
 
 

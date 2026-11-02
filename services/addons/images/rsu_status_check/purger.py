@@ -25,7 +25,7 @@ def get_last_online_rsu_records(rsu_dict):
         "FROM ("
         "SELECT pd.ping_id, pd.rsu_id, pd.timestamp, ROW_NUMBER() OVER (PARTITION BY pd.rsu_id order by pd.timestamp DESC) AS row_id "
         "FROM public.ping AS pd "
-        "WHERE pd.result = '1'"
+        "WHERE pd.result = TRUE"
         ") AS a "
         "WHERE a.row_id <= 1 ORDER BY rsu_id"
         ") as row"

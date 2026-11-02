@@ -73,9 +73,9 @@ class ProcessedGeoMessageHttpIntegrationTest {
 
     @BeforeEach
     void stubJwtDecoder() {
-        when(jwtDecoder.decode(USER_TOKEN)).thenReturn(jwt(USER_TOKEN, "0", true));
-        when(jwtDecoder.decode(SUPER_TOKEN)).thenReturn(jwt(SUPER_TOKEN, "1", false));
-        when(jwtDecoder.decode(NO_ROLE_TOKEN)).thenReturn(jwt(NO_ROLE_TOKEN, "0", false));
+        when(jwtDecoder.decode(USER_TOKEN)).thenReturn(jwt(USER_TOKEN, false, true));
+        when(jwtDecoder.decode(SUPER_TOKEN)).thenReturn(jwt(SUPER_TOKEN, true, false));
+        when(jwtDecoder.decode(NO_ROLE_TOKEN)).thenReturn(jwt(NO_ROLE_TOKEN, false, false));
         when(jwtDecoder.decode(INVALID_TOKEN)).thenThrow(new BadJwtException("invalid token"));
     }
 
@@ -215,10 +215,10 @@ class ProcessedGeoMessageHttpIntegrationTest {
     }
 
     private void authorizeUser() {
-        when(jwtDecoder.decode(USER_TOKEN)).thenReturn(jwt(USER_TOKEN, "0", true));
+        when(jwtDecoder.decode(USER_TOKEN)).thenReturn(jwt(USER_TOKEN, false, true));
     }
 
-    private static Jwt jwt(String token, String superUser, boolean withUserRole) {
+    private static Jwt jwt(String token, boolean superUser, boolean withUserRole) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("iss", "http://localhost:8084/realms/cvmanager");
         claims.put("sub", token);

@@ -131,11 +131,8 @@ def insert_scms_data(data):
         if validate_scms_data(value) is False:
             continue
 
-        # If deviceHealth isn't included in the device's SCMS profile, assume unhealthy
-        if "deviceHealth" in value:
-            health = "1" if value["deviceHealth"] == "Healthy" else "0"
-        else:
-            health = "0"
+        # validate_scms_data guarantees deviceHealth is present
+        health = "TRUE" if value["deviceHealth"] == "Healthy" else "FALSE"
 
         # If expiration isn't included in the device's SCMS profile, assume None
         if "expiration" in value:
@@ -147,7 +144,7 @@ def insert_scms_data(data):
         else:
             expiration = "NULL"
 
-        query = query + f" ('{now_ts}', '{health}', {expiration}, {value['rsu_id']}),"
+        query = query + f" ('{now_ts}', {health}, {expiration}, {value['rsu_id']}),"
 
     query = query[:-1]  # remove comma
     pgquery.write_db(query)

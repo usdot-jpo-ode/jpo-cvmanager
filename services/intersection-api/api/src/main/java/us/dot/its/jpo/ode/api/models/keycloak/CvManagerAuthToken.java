@@ -32,10 +32,7 @@ public class CvManagerAuthToken extends JwtAuthenticationToken {
 
     protected Boolean getIsSuperUserFrom(Map<String, Object> claims) {
         Object superUserObj = claims.get("super_user");
-        if (superUserObj instanceof String superUserStr) {
-            return "1".equals(superUserStr);
-        }
-        return false;
+        return superUserObj instanceof Boolean superUserBool && superUserBool;
     }
 
     protected Map<Integer, Pair<Organization, UserRole>> getOrgRolesFrom(Map<String, Object> claims) {
@@ -70,9 +67,9 @@ public class CvManagerAuthToken extends JwtAuthenticationToken {
      */
     protected String getEmailFrom(Jwt jwt) {
         // Try standard "email" claim first
-        String email = jwt.getClaimAsString("email");
-        if (email != null && !email.isEmpty()) {
-            return email;
+        String emailClaim = jwt.getClaimAsString("email");
+        if (emailClaim != null && !emailClaim.isEmpty()) {
+            return emailClaim;
         }
 
         // Try "preferred_username" (often contains email in Keycloak)

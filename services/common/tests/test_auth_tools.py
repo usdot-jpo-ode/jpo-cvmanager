@@ -42,6 +42,25 @@ def test_user_info():
     }
 
 
+@pytest.mark.parametrize(
+    "super_user_claim, expected",
+    [
+        (True, True),
+        (False, False),
+        # Pre-boolean string claims are not accepted
+        ("1", False),
+        ("0", False),
+        (None, False),
+    ],
+)
+def test_user_info_super_user_claim(super_user_claim, expected):
+    token = {
+        "email": "test@gmail.com",
+        "cvmanager_data": {"super_user": super_user_claim, "organizations": []},
+    }
+    assert UserInfo(token).super_user is expected
+
+
 ######################### RSUs #########################
 @patch("common.pgquery.query_db")
 def test_get_rsu_set_for_org(mock_query_db):
@@ -132,7 +151,7 @@ def test_get_user_info_valid_user(mock_query_db):
                     "email": "test@gmail.com",
                     "given_name": "Test",
                     "family_name": "User",
-                    "super_user": "1",
+                    "super_user": True,
                 }
             ]
         ],  # user_info_query

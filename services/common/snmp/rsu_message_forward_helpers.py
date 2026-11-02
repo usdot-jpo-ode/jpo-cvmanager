@@ -105,7 +105,8 @@ def active(val):
     # 1 - active
     # 4 - create (represents active to older Commsignia models)
     # active(1) - active for NTCIP 1218 response
-    if val == "1" or val == "4" or val == "active(1)":
+    # True - active, as stored in the PostgreSQL boolean active/security columns
+    if val is True or val == "1" or val == "4" or val == "active(1)":
         return "Enabled"
     return "Disabled"
 

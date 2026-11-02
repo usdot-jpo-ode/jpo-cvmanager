@@ -139,8 +139,8 @@ def test_insert_scms_data(mock_write_db, mock_datetime):
 
     expectedQuery = (
         'INSERT INTO public.scms_health("timestamp", health, expiration, rsu_id) VALUES '
-        "('2022-11-03T00:00:00.000Z', '1', '2022-11-02T00:00:00.000Z', 1), "
-        "('2022-11-03T00:00:00.000Z', '0', NULL, 2)"
+        "('2022-11-03T00:00:00.000Z', TRUE, '2022-11-02T00:00:00.000Z', 1), "
+        "('2022-11-03T00:00:00.000Z', FALSE, NULL, 2)"
     )
     mock_write_db.assert_called_with(expectedQuery)
 
@@ -161,7 +161,7 @@ def test_insert_scms_data_no_rsu_id(mock_write_db, mock_datetime):
 
     expectedQuery = (
         'INSERT INTO public.scms_health("timestamp", health, expiration, rsu_id) VALUES '
-        "('2022-11-03T00:00:00.000Z', '0', NULL, 2)"
+        "('2022-11-03T00:00:00.000Z', FALSE, NULL, 2)"
     )
     mock_write_db.assert_called_with(expectedQuery)
 
@@ -182,7 +182,7 @@ def test_insert_scms_data_no_deviceHealth(mock_write_db, mock_datetime):
 
     expectedQuery = (
         'INSERT INTO public.scms_health("timestamp", health, expiration, rsu_id) VALUES '
-        "('2022-11-03T00:00:00.000Z', '0', NULL, 2)"
+        "('2022-11-03T00:00:00.000Z', FALSE, NULL, 2)"
     )
     mock_write_db.assert_called_with(expectedQuery)
 
@@ -203,6 +203,6 @@ def test_insert_scms_data_no_expiration(mock_write_db, mock_datetime):
 
     expectedQuery = (
         'INSERT INTO public.scms_health("timestamp", health, expiration, rsu_id) VALUES '
-        "('2022-11-03T00:00:00.000Z', '0', 'test', 2)"
+        "('2022-11-03T00:00:00.000Z', FALSE, 'test', 2)"
     )
     mock_write_db.assert_called_with(expectedQuery)

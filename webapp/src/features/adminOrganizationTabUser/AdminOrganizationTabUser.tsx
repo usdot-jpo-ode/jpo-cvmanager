@@ -36,7 +36,8 @@ import { AdminOrgUser, selectSelectedOrgName } from '../adminOrganizationTab/adm
 import toast from 'react-hot-toast'
 
 import { useTheme } from '@mui/material'
-import { AddCircleOutline, DeleteOutline } from '@mui/icons-material'
+import AddCircleOutline from '@mui/icons-material/AddCircleOutline'
+import DeleteOutline from '@mui/icons-material/DeleteOutline'
 import { useGetAllUsersNotInOrganizationQuery } from '../api/organizationApiSlice'
 import { useGetUserAllowedSelectionsQuery } from '../api/userApiSlice'
 

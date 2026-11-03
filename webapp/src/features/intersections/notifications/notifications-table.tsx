@@ -19,7 +19,7 @@ import { useEffect, useState } from 'react'
 import { selectToken } from '../../../generalSlices/userSlice'
 import { selectSelectedIntersectionId } from '../../../generalSlices/intersectionSlice'
 import { useSelector } from 'react-redux'
-import { Close } from '@mui/icons-material'
+import Close from '@mui/icons-material/Close'
 
 export const CeaseBroadcastRecommendationTypes = [
   'SpatBroadcastRateNotification',

@@ -30,7 +30,8 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import { ControlPointOutlined, DeleteOutline } from '@mui/icons-material'
+import ControlPointOutlined from '@mui/icons-material/ControlPointOutlined'
+import DeleteOutline from '@mui/icons-material/DeleteOutline'
 
 export type SnmpsetMenuProps = {
   type: string

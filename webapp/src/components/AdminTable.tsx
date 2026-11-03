@@ -12,7 +12,10 @@ import { makeStyles } from '@mui/styles'
 
 import '../features/adminRsuTab/Admin.css'
 import { alpha, Tooltip, useTheme, Button, Typography, Box } from '@mui/material'
-import { AddCircleOutline, DeleteOutline, ModeEditOutline, Refresh } from '@mui/icons-material'
+import AddCircleOutline from '@mui/icons-material/AddCircleOutline'
+import DeleteOutline from '@mui/icons-material/DeleteOutline'
+import ModeEditOutline from '@mui/icons-material/ModeEditOutline'
+import Refresh from '@mui/icons-material/Refresh'
 
 interface AdminTableProps {
   actions: (Action<any> | ((row: any) => Action<any>))[]

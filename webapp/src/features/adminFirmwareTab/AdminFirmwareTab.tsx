@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from 'react'
 import { Action, Column, Query } from '@material-table/core'
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, Typography } from '@mui/material'
-import { DeleteOutline } from '@mui/icons-material'
+import DeleteOutline from '@mui/icons-material/DeleteOutline'
 import { confirmAlert } from 'react-confirm-alert'
 import { Options } from '../../components/AdminDeletionOptions'
 import toast from 'react-hot-toast'

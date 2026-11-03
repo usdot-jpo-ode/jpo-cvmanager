@@ -15,7 +15,8 @@ import { Route, Routes, useNavigate } from 'react-router-dom'
 import { NotFound } from '../../pages/404'
 import toast from 'react-hot-toast'
 import { useTheme, Typography } from '@mui/material'
-import { DeleteOutline, ModeEditOutline } from '@mui/icons-material'
+import DeleteOutline from '@mui/icons-material/DeleteOutline'
+import ModeEditOutline from '@mui/icons-material/ModeEditOutline'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import {
   useLazyGetAllRsusQuery,

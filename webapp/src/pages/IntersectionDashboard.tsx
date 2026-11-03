@@ -28,7 +28,7 @@ import {
 import MapDialog from '../features/intersections/intersection-selector/intersection-selector-dialog'
 import ConfigurationPage from '../components/intersections/ConfigurationPage'
 import { headerTabHeight } from '../styles/index'
-import { TrafficOutlined } from '@mui/icons-material'
+import TrafficOutlined from '@mui/icons-material/TrafficOutlined'
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 

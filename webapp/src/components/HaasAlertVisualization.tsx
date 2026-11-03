@@ -23,7 +23,7 @@ import dayjs from 'dayjs'
 import { getHaasLocationData } from '../generalSlices/haasAlertSlice'
 import { HaasLocationProperties, HaasWebsocketLocationParams } from '../models/haas/HaasWebsocketLocation'
 import { Feature, Point } from 'geojson'
-import { WarningAmber } from '@mui/icons-material'
+import WarningAmber from '@mui/icons-material/WarningAmber'
 import './css/HaasAlertVisualization.css'
 
 interface HaasAlertVisualizationProps {

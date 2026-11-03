@@ -35,7 +35,7 @@ import {
   useTheme,
   Box,
 } from '@mui/material'
-import { ArrowDropDown } from '@mui/icons-material'
+import ArrowDropDown from '@mui/icons-material/ArrowDropDown'
 
 const Header = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()

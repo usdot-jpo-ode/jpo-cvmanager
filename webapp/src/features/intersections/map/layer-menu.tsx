@@ -4,7 +4,8 @@ import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../../store'
 import MapFabTab from './map-fab-tab'
 import { selectLayersVisible, MAP_LAYERS, setLayerVisibility } from './map-slice'
-import { Layers, Label } from '@mui/icons-material'
+import Layers from '@mui/icons-material/Layers'
+import Label from '@mui/icons-material/Label'
 
 type LayerMenuProps = {
   openPanel: string

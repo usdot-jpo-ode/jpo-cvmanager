@@ -11,7 +11,7 @@ import { formatScmsExpiration, useGetScmsStatusQuery } from '../api/scmsApiSlice
 import { RsuOnlineStatus, useGetRsuLastOnlineQuery, useGetRsuOnlineStatusesQuery } from '../api/rsuOnlineStatusApiSlice'
 import { selectOrganizationName } from '../../generalSlices/userSlice'
 
-import { GpsFixedSharp } from '@mui/icons-material'
+import GpsFixedSharp from '@mui/icons-material/GpsFixedSharp'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 import AdminTable from '../../components/AdminTable'

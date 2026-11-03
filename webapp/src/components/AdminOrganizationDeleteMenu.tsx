@@ -5,7 +5,7 @@ import { Options } from './AdminDeletionOptions'
 import '../features/adminRsuTab/Admin.css'
 import { ContainedIconButton } from '../styles/components/ContainedIconButton'
 import { alpha, useTheme } from '@mui/material/styles'
-import { DeleteOutline } from '@mui/icons-material'
+import DeleteOutline from '@mui/icons-material/DeleteOutline'
 
 interface AdminOrganizationDeleteMenuProps {
   selectedOrganization: string

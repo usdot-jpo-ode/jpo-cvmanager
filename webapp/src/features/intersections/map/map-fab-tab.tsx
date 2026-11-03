@@ -1,5 +1,5 @@
 import { Box, Fab, IconButton, Paper, Typography, useTheme } from '@mui/material'
-import { Close } from '@mui/icons-material'
+import Close from '@mui/icons-material/Close'
 
 type MapFabTabProps = {
   title: string

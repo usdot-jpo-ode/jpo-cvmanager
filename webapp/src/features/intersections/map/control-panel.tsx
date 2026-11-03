@@ -60,7 +60,10 @@ import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { RootState } from '../../../store'
 import { decoderModeToggled, setAsn1DecoderDialogOpen } from '../decoder/asn1-decoder-slice'
 import toast from 'react-hot-toast'
-import { ExpandMoreOutlined, Pause, PlayArrowOutlined, UploadFile } from '@mui/icons-material'
+import ExpandMoreOutlined from '@mui/icons-material/ExpandMoreOutlined'
+import Pause from '@mui/icons-material/Pause'
+import PlayArrowOutlined from '@mui/icons-material/PlayArrowOutlined'
+import UploadFile from '@mui/icons-material/UploadFile'
 
 export const getNumber = (value: string | undefined): number | undefined => {
   if (value == null) return undefined

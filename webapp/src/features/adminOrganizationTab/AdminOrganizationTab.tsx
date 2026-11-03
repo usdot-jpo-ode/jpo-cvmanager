@@ -39,7 +39,9 @@ import {
 import { ConditionalRenderIntersection, ConditionalRenderRsu } from '../../feature-flags'
 import { ContainedIconButton } from '../../styles/components/ContainedIconButton'
 import { alpha, Button, useTheme } from '@mui/material'
-import { AddCircleOutline, EditOutlined, Refresh } from '@mui/icons-material'
+import AddCircleOutline from '@mui/icons-material/AddCircleOutline'
+import EditOutlined from '@mui/icons-material/EditOutlined'
+import Refresh from '@mui/icons-material/Refresh'
 
 const AdminOrganizationTab = () => {
   const dispatch: ThunkDispatch<RootState, void, AnyAction> = useDispatch()

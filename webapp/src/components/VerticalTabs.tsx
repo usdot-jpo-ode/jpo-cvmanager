@@ -4,18 +4,16 @@ import '../features/adminRsuTab/Admin.css'
 import { alpha, Box, Tab, Tabs, useTheme } from '@mui/material'
 import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { evaluateFeatureFlags } from '../feature-flags'
-import {
-  ArticleOutlined,
-  CellTowerOutlined,
-  GroupOutlined,
-  HighlightAlt,
-  HomeOutlined,
-  NotificationsNoneOutlined,
-  TrafficOutlined,
-  TuneOutlined,
-  SystemUpdateAltOutlined,
-  WorkspacesOutlined,
-} from '@mui/icons-material'
+import ArticleOutlined from '@mui/icons-material/ArticleOutlined'
+import CellTowerOutlined from '@mui/icons-material/CellTowerOutlined'
+import GroupOutlined from '@mui/icons-material/GroupOutlined'
+import HighlightAlt from '@mui/icons-material/HighlightAlt'
+import HomeOutlined from '@mui/icons-material/HomeOutlined'
+import NotificationsNoneOutlined from '@mui/icons-material/NotificationsNoneOutlined'
+import TrafficOutlined from '@mui/icons-material/TrafficOutlined'
+import TuneOutlined from '@mui/icons-material/TuneOutlined'
+import SystemUpdateAltOutlined from '@mui/icons-material/SystemUpdateAltOutlined'
+import WorkspacesOutlined from '@mui/icons-material/WorkspacesOutlined'
 
 interface TabPanelProps {
   children?: React.ReactNode

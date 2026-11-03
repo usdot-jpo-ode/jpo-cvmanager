@@ -5,7 +5,8 @@ import { styled, useTheme } from '@mui/material/styles'
 import { selectMapLegendColors } from './map-layer-style-slice'
 import { useSelector } from 'react-redux'
 import MapFabTab from './map-fab-tab'
-import { ExpandMoreOutlined, FormatListBulleted } from '@mui/icons-material'
+import ExpandMoreOutlined from '@mui/icons-material/ExpandMoreOutlined'
+import FormatListBulleted from '@mui/icons-material/FormatListBulleted'
 
 const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(
   () => ({})

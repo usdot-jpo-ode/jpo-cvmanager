@@ -106,15 +106,17 @@ jobs:
       - name: Checkout ${{ github.event.repository.name }}
         uses: actions/checkout@v4
 
-      - name: Build Web Application
-        continue-on-error: false
-        run: |
-          # Navigate to the webapp directory and perform necessary setup
-          cd $GITHUB_WORKSPACE/webapp
-          npm ci --ignore-scripts
+      - name: Install Webapp Dependencies
+        working-directory: webapp
+        run: npm ci --ignore-scripts
 
-          # Run tests with coverage and suppress failures
-          npm test -- --coverage
+      - name: Typecheck Webapp
+        working-directory: webapp
+        run: npm run typecheck
+
+      - name: Test Webapp With Coverage
+        working-directory: webapp
+        run: npx --no-install vitest run --coverage
 
       - name: Archive Code Coverage Results
         uses: actions/upload-artifact@v4

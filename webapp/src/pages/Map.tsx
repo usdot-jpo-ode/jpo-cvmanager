@@ -111,7 +111,7 @@ import {
 } from '../features/menu/menuSlice'
 import { MapLayer } from '../models/MapLayer'
 import { toast } from 'react-hot-toast'
-import { RoomOutlined } from '@mui/icons-material'
+import RoomOutlined from '@mui/icons-material/RoomOutlined'
 import { selectHaasLocationData } from '../generalSlices/haasAlertSlice'
 import { HaasLocationProperties } from '../models/haas/HaasWebsocketLocation'
 import { HaasAlertVisualization } from '../components/HaasAlertVisualization'

@@ -186,6 +186,13 @@ Many of the UI components are being tested using Snapshots. These snapshots are 
 
 If you would like to update all snapshots to the current values, simply press 'u' after running the desired tests.
 
+## Test performance
+
+Import MUI icons from their individual module paths, for example
+`import CloseIcon from '@mui/icons-material/Close'`. Importing from
+`@mui/icons-material` loads the full icon index in isolated tests and increases
+module evaluation time. ESLint enforces individual icon imports.
+
 ### Coverage
 
 To generate the coverage report, use the following command:

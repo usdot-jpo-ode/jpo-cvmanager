@@ -20,7 +20,8 @@ import {
   Typography,
   Tooltip,
 } from '@mui/material'
-import { AddCircleOutline, DeleteOutline } from '@mui/icons-material'
+import AddCircleOutline from '@mui/icons-material/AddCircleOutline'
+import DeleteOutline from '@mui/icons-material/DeleteOutline'
 import toast from 'react-hot-toast'
 import { SideBarHeader } from '../../styles/components/SideBarHeader'
 import { FirmwareRule } from '../../models/Firmware'

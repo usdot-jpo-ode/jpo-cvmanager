@@ -22,7 +22,7 @@ import {
   ResponsiveContainer,
   ReferenceArea,
 } from 'recharts'
-import { Close } from '@mui/icons-material'
+import Close from '@mui/icons-material/Close'
 import RsuApi, { type RsuState } from '../../apis/intersections/rsu-api'
 
 type RsuStatusDialogProps = {

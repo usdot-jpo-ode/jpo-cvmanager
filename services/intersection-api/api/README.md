@@ -269,13 +269,13 @@ once per manufacturer, and existing objects are never overwritten.
 
 ### Serving uploads with the OBU OTA server
 
-The OBU OTA server lists one storage folder and downloads files by name, so each
-manufacturer's uploads are kept together in `ota/<manufacturer>/`. To serve
-firmware uploaded through this API, run the OTA server in GCP mode against the
-same bucket as `OBJECT_STORAGE_GCP_BUCKET_NAME`, with
-`OBU_OTA_BLOB_STORAGE_BUCKET` set to that bucket and
-`OBU_OTA_BLOB_STORAGE_PATH=ota/Commsignia/`. The OTA server currently offers every
-file in that folder, so publish state is not yet applied to what OBUs receive.
+The OBU OTA server does not serve firmware uploaded through this API yet. It
+offers every file in its configured storage folder, including uploads that are
+not verified or published, so **do not set `OBU_OTA_BLOB_STORAGE_PATH` to `ota/`
+or a folder beneath it**. A later change makes the OTA server serve only
+published catalog entries, and uploaded firmware should be served only after
+that change is deployed. Until then, deployments keep serving their existing
+firmware folder, and uploads through this API do not reach OBUs.
 
 ### Upload flow
 

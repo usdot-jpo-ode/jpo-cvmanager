@@ -1,9 +1,11 @@
 ################## Install curl to enable health checks ##################
-FROM registry.access.redhat.com/ubi9:9.2 AS ubi-micro-build
+# curl pulls in libbrotli; the pinned digest makes base updates explicit and invalidates
+# cached layers that still hold vulnerable packages (e.g. libbrotli, CVE-2026-111497).
+FROM registry.access.redhat.com/ubi9/ubi:9.8@sha256:5f08e80aa970ae77712e75e5e857ac0b396abc900823c4d041c1150a9538a13f AS ubi-micro-build
 RUN mkdir -p /mnt/rootfs
 RUN dnf install --installroot /mnt/rootfs curl jq \
-    --releasever 9 --setopt install_weak_deps=false --nodocs -y; \
-    dnf --installroot /mnt/rootfs clean all
+    --releasever 9 --setopt install_weak_deps=false --nodocs -y \
+    && dnf --installroot /mnt/rootfs clean all
 
 ################## Build custom user provider to .jar ##################
 FROM maven:3.8-eclipse-temurin-21-alpine as jarbuilder

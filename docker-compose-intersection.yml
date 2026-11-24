@@ -18,7 +18,14 @@ services:
       - '8089:8089'
     restart: always
     environment:
+      # The Keycloak address the browser uses. Login tokens contain this address,
+      # and the API rejects tokens that name a different one.
       AUTH_SERVER_URL: ${KEYCLOAK_ENDPOINT:-http://${DOCKER_HOST_IP:?error}:8084}
+      # The address this container uses to talk to Keycloak directly (to check token
+      # signatures and manage users). Uses KEYCLOAK_INTERNAL_ENDPOINT if it is set,
+      # otherwise KEYCLOAK_ENDPOINT.
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI: ${KEYCLOAK_INTERNAL_ENDPOINT:-${KEYCLOAK_ENDPOINT:-http://${DOCKER_HOST_IP:?error}:8084}}/realms/cvmanager/protocol/openid-connect/certs
+      KEYCLOAK_AUTHSERVERURL: ${KEYCLOAK_INTERNAL_ENDPOINT:-${KEYCLOAK_ENDPOINT:-http://${DOCKER_HOST_IP:?error}:8084}}
       DB_HOST_IP: ${DB_HOST_IP:-mongo}
       DB_HOST_PORT: ${DB_HOST_PORT:-27017}
       SPRING_KAFKA_BOOTSTRAPSERVERS: ${KAFKA_BOOTSTRAP_SERVERS:-kafka:9092}

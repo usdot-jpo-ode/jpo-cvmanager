@@ -347,6 +347,9 @@ In addition to the groups defined in the table below, each service may also be a
 | firmware_manager_upgrade_runner    | ❌    | ❌     | ❌           | ❌              | ✅     | ❌      |
 | jpo_ota_backend                    | ❌    | ❌     | ❌           | ❌              | ❌     | ✅      |
 | jpo_ota_nginx                      | ❌    | ❌     | ❌           | ❌              | ❌     | ✅      |
+| cvmanager_nginx_proxy              | ❌    | ❌     | ❌           | ❌              | ❌     | ❌      |
+
+`cvmanager_nginx_proxy` does not start with any of the profile groups above. To start it, add `cvmanager_nginx_proxy` to `COMPOSE_PROFILES`. See [HTTPS with the Nginx Proxy](#https-with-the-nginx-proxy).
 
 ##### Note on JPO-Utils Profiles
 
@@ -454,6 +457,7 @@ git config --global core.autocrlf false
 - KEYCLOAK_ADMIN: Admin username for Keycloak configuration.
 - KEYCLOAK_ADMIN_PASSWORD: Admin password for Keycloak configuration.
 - KEYCLOAK_ENDPOINT: Keycloak base URL to send requests to. Reference the sample.env for the URL formatting.
+- KEYCLOAK_INTERNAL_ENDPOINT: Optional. The Keycloak address that the cvmanager_api and intersection_api containers use. If blank, they use KEYCLOAK_ENDPOINT. Set it to `http://cvmanager_keycloak:8080` when KEYCLOAK_ENDPOINT doesn't work from inside Docker, for example when using the [nginx HTTPS proxy](#https-with-the-nginx-proxy).
 - KEYCLOAK_REALM: Keycloak Realm name.
 - KEYCLOAK_GUI_CLIENT_ID: Keycloak GUI client name (unauthorized client)
 - KEYCLOAK_API_CLIENT_ID: Keycloak API client name.
@@ -496,6 +500,7 @@ docker compose up --build -d cvmanager_webapp
 
 3. The Keycloak Hostname needs to be accessible from docker and a browser
    Keycloak needs to be accessible other docker containers (cvmanager_api, intersection_api) as well as the webapp (running in a browser). This means that using "localhost" will not work (not accessible from other docker containers), and using "", the docker container network name, will not work either (not accessible in the browser since it is outside of the docker network). This is why the suggested approach is to set your docker host IP address as your keycloak hostname. Keycloak will redirect any incomming connection to the hostname, therefore you cannot set the hostname to "localhost" and have docker services access it at cvmanager_keycloak:8080.
+   Exception: if you use the [nginx HTTPS proxy](#https-with-the-nginx-proxy), the browser's Keycloak address won't work from inside Docker. Set `KEYCLOAK_INTERNAL_ENDPOINT=http://cvmanager_keycloak:8080` so the containers reach Keycloak directly.
 4. The Keycloak volume must be cleared if crucial parameters are changed
    If the keycloak admin user credentials, client id(s), client secret, or webapp endpoint are changed by environment variable, those changes will not be reflected in keycloak unless the volume is cleared and re-built. This can be done by:
 
@@ -503,6 +508,55 @@ docker compose up --build -d cvmanager_webapp
 docker compose down -v
 docker compose up -d
 ```
+
+### HTTPS with the Nginx Proxy
+
+The `cvmanager_nginx_proxy` service lets you use the CV Manager over HTTPS. Your browser connects to nginx over HTTPS, and nginx passes each request on to the webapp, Keycloak, or the CV Manager API. The service is off by default.
+
+nginx uses two ports on your machine:
+
+- **8444** for HTTPS. This is the address you open in the browser.
+- **80** for plain HTTP. It only redirects visitors to the HTTPS port.
+
+To use different ports, set `NGINX_HTTPS_PORT` and `NGINX_HTTP_PORT` in `.env`. If you change the HTTPS port, use the new port in every address in step 3.
+
+To set it up:
+
+1. Add a certificate and its private key at these paths:
+   - `resources/nginx/ssl/certs/server.crt`
+   - `resources/nginx/ssl/private/server.key`
+
+   Git ignores these files, so they are never committed. For local testing, you can create a self-signed certificate:
+
+   ```sh
+   mkdir -p resources/nginx/ssl/certs resources/nginx/ssl/private
+   openssl req -x509 -newkey rsa:2048 -nodes -days 365 \
+     -keyout resources/nginx/ssl/private/server.key \
+     -out resources/nginx/ssl/certs/server.crt \
+     -subj "/CN=localhost" -addext "subjectAltName=DNS:localhost,IP:127.0.0.1"
+   ```
+
+   Your browser will warn about a self-signed certificate unless you tell your computer to trust it.
+
+2. Add `cvmanager_nginx_proxy` to `COMPOSE_PROFILES` in `.env`, for example `COMPOSE_PROFILES=basic,webapp,cvmanager_nginx_proxy`.
+3. Set these values in `.env`:
+
+   ```sh
+   WEBAPP_DOMAIN=localhost
+   WEBAPP_ENDPOINT=https://localhost:8444
+   API_ENDPOINT=https://localhost:8444
+   KEYCLOAK_ENDPOINT=https://localhost:8444
+   KEYCLOAK_INTERNAL_ENDPOINT=http://cvmanager_keycloak:8080
+   ```
+
+   The first four are the addresses the browser uses, and they all point at nginx. `KEYCLOAK_INTERNAL_ENDPOINT` is for the API containers. They can't use `https://localhost:8444`, because inside a container `localhost` means the container itself, not your computer. Instead, they talk to Keycloak directly over the Docker network.
+
+4. Rebuild and start everything: `docker compose up --build -d`. The webapp must be rebuilt because these addresses are built into it.
+5. Allow the HTTPS address in Keycloak:
+   - **New Keycloak data:** nothing to do. Keycloak picks up `WEBAPP_ENDPOINT` the first time it starts.
+   - **Existing Keycloak data:** open `https://localhost:8444/admin` and switch to the `cvmanager` realm. Go to **Clients → cvmanager-gui**, add `https://localhost:8444/*` under **Valid redirect URIs** and `https://localhost:8444` under **Web origins**, and save. Alternatively, reset Keycloak's data as described in [CV Manager Common Issues](#cv-manager-common-issues).
+
+**Limitation:** the intersection API does not go through nginx. If intersection features are on, the browser still calls it directly at `CVIZ_API_SERVER_URL` over plain HTTP. Browsers block plain HTTP requests from an HTTPS page, so intersection pages may not load.
 
 ### SMTP Email Testing
 

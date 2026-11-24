@@ -6,6 +6,40 @@ include:
   - docker-compose-rsu-status-monitor.yml
 
 services:
+  cvmanager_nginx_proxy:
+    profiles:
+      - cvmanager_nginx_proxy
+    build:
+      context: ./resources/nginx
+    image: cvmanager_nginx_proxy:latest
+    restart: unless-stopped
+    ports:
+      - ${NGINX_HTTP_PORT:-80}:80
+      - ${NGINX_HTTPS_PORT:-8444}:443
+    environment:
+      NGINX_ENVSUBST_OUTPUT_DIR: /etc/nginx
+      # The HTTPS port on the host. Visitors who use plain HTTP are redirected to this port.
+      NGINX_HTTPS_PORT: ${NGINX_HTTPS_PORT:-8444}
+      SERVER_HOST: ${WEBAPP_DOMAIN}
+    volumes:
+      - ./resources/nginx/nginx-ssl.conf:/etc/nginx/templates/nginx.conf.template
+      - ./resources/nginx/gen_dhparam.sh:/docker-entrypoint.d/gen_dhparam.sh
+      - ./resources/nginx/ssl:/etc/ssl
+    depends_on:
+      cvmanager_webapp:
+        condition: service_started
+        required: false
+      cvmanager_keycloak:
+        condition: service_started
+        required: false
+      cvmanager_api:
+        condition: service_started
+        required: false
+    logging:
+      options:
+        max-size: '10m'
+        max-file: '5'
+
   cvmanager_api:
     profiles:
       - basic
@@ -46,7 +80,9 @@ services:
       ENABLE_WZDX_FEATURES: ${ENABLE_WZDX_FEATURES:-false}
 
       CORS_DOMAIN: ${CORS_DOMAIN:-*}
-      KEYCLOAK_ENDPOINT: ${KEYCLOAK_ENDPOINT:-http://${DOCKER_HOST_IP:?error}:8084}
+      # The address this container uses to talk to Keycloak.
+      # Uses KEYCLOAK_INTERNAL_ENDPOINT if it is set, otherwise KEYCLOAK_ENDPOINT.
+      KEYCLOAK_ENDPOINT: ${KEYCLOAK_INTERNAL_ENDPOINT:-${KEYCLOAK_ENDPOINT:-http://${DOCKER_HOST_IP:?error}:8084}}
       KEYCLOAK_REALM: ${KEYCLOAK_REALM:-cvmanager}
       KEYCLOAK_API_CLIENT_ID: ${KEYCLOAK_API_CLIENT_ID:-cvmanager-api}
       KEYCLOAK_API_CLIENT_SECRET_KEY: ${KEYCLOAK_API_CLIENT_SECRET_KEY:-keycloak-secret-key}
